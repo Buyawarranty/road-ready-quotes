@@ -130,7 +130,7 @@ Deno.serve(async (req: Request) => {
       final_amount: plan.dealer_price,
       original_amount: plan.retail_price,
       discount_amount: +(plan.retail_price - plan.dealer_price).toFixed(2),
-      status: payment_method === 'invoice' ? 'active' : 'pending',
+      status: 'Active',
       payment_status: payment_method === 'invoice' ? 'invoice_pending' : 'pending',
       purchase_source: 'dealer',
       dealer_id: dealer.id,
