@@ -91,9 +91,10 @@ const DealerWarrantiesList = () => {
   };
 
   const renderActiveStatus = (r: DealerPdfRow) => {
-    if ((r as any).status === 'active') return <Badge className="bg-green-500 text-white">Active</Badge>;
-    if ((r as any).status === 'expired') return <Badge className="bg-gray-600 text-gray-200">Expired</Badge>;
-    if ((r as any).status === 'cancelled') return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40">Cancelled</Badge>;
+    const s = String((r as any).status || '').toLowerCase();
+    if (s === 'active') return <Badge className="bg-green-500 text-white">Active</Badge>;
+    if (s === 'expired') return <Badge className="bg-gray-600 text-gray-200">Expired</Badge>;
+    if (s === 'cancelled') return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40">Cancelled</Badge>;
     return <Badge className="bg-gray-700 text-gray-300">{(r as any).status || 'Pending'}</Badge>;
   };
 
