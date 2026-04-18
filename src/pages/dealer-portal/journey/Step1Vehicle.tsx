@@ -8,6 +8,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useMotMileage } from '@/hooks/useMotMileage';
 
 const Step1Vehicle: React.FC = () => {
   const navigate = useNavigate();
