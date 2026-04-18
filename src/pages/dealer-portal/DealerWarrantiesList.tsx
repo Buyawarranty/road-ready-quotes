@@ -37,12 +37,10 @@ const DealerWarrantiesList = () => {
       if (!dealer?.id) return [];
       const { data } = await supabase
         .from('customers')
-        .select(
-          'id, name, email, registration_plate, vehicle_make, vehicle_model, plan_type, payment_type, final_amount, payment_status, status, warranty_start_date, policy_end_date, signup_date, warranty_number',
-        )
+        .select('*')
         .eq('dealer_id', dealer.id)
         .order('signup_date', { ascending: false });
-      return (data || []) as DealerPdfRow[];
+      return ((data || []) as unknown) as DealerPdfRow[];
     },
     enabled: !!dealer?.id,
   });
