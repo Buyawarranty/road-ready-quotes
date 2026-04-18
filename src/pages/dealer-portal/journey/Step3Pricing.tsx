@@ -78,12 +78,10 @@ const Step3Pricing: React.FC = () => {
   return (
     <DealerJourneyLayout
       step={3}
-      title="Plan & pricing"
-      subtitle="Choose the cover that fits this customer. Your dealer discount is applied at checkout."
+      title=""
       backTo="/dealer-portal/quote/customer"
     >
-      {/* Light surface card so the retail pricing UI (designed for light bg) renders cleanly inside the dark shell */}
-      <div className="rounded-xl overflow-hidden bg-white text-gray-900 shadow-2xl ring-1 ring-gray-800">
+      <div className="-mt-6 sm:-mt-10 -mx-4 dealer-pricing-dark">
         <DealerPricingTable
           vehicleData={vehicleData}
           onBack={() => navigate('/dealer-portal/quote/customer')}
