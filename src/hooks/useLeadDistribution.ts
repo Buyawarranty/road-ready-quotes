@@ -240,7 +240,7 @@ export const useLeadDistribution = () => {
       if (existing) {
         const { data: updatedRows, error } = await supabase
           .from('agent_distribution_caps')
-          .update(updates)
+          .update(updates as any)
           .eq('admin_user_id', adminUserId)
           .select();
 
@@ -252,7 +252,7 @@ export const useLeadDistribution = () => {
       } else {
         const { error } = await supabase
           .from('agent_distribution_caps')
-          .insert({ admin_user_id: adminUserId, ...updates });
+          .insert({ admin_user_id: adminUserId, ...updates } as any);
 
         if (error) throw error;
       }

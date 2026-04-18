@@ -114,7 +114,7 @@ export function InlineWarrantyUpgrade({
           manual_upgrade_at: new Date().toISOString(),
           manual_upgrade_by: adminId,
           manual_upgrade_notes: changeSummary
-        })
+        } as any)
         .eq('id', customerId);
 
       if (customerError) throw customerError;
@@ -128,7 +128,7 @@ export function InlineWarrantyUpgrade({
             manual_upgrade_at: new Date().toISOString(),
             manual_upgrade_by: adminId,
             manual_upgrade_notes: changeSummary
-          })
+          } as any)
           .eq('customer_id', customerId);
 
         if (policyError) {
