@@ -30,6 +30,7 @@ const DealerQuotesList = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { hydrate, reset } = useDealerJourney();
   const [search, setSearch] = useState('');
 
   const { data: quotes = [] } = useQuery({
