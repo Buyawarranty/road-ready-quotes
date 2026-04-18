@@ -165,7 +165,11 @@ const Step1Vehicle: React.FC = () => {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-300 block mb-1">Mileage *</label>
-                <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 45000" className={inputClass} />
+                <div className="relative">
+                  <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'} className={`${inputClass} pr-10`} />
+                  {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
+                </div>
+                {motMileage && <p className="text-xs text-gray-500 mt-1">Auto-filled from latest MOT.</p>}
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
