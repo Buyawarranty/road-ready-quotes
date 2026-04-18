@@ -139,23 +139,46 @@ Deno.serve(async (req: Request) => {
       payment_verified: payment_method === 'invoice',
     } as Record<string, unknown>;
 
-    // === INVOICE PATH ===
-    if (payment_method === 'invoice') {
+    // Helper: upsert dealer customer row by (email, registration_plate) for this dealer.
+    // Reuses an existing dealer-owned pending row instead of failing on the unique index.
+    const upsertDealerCustomer = async () => {
+      const { data: existing } = await adminClient
+        .from('customers')
+        .select('id, payment_status, dealer_id')
+        .eq('email', customerRow.email as string)
+        .eq('registration_plate', customerRow.registration_plate as string)
+        .eq('dealer_id', dealer.id)
+        .maybeSingle();
+
+      if (existing?.id) {
+        const { error: updErr } = await adminClient
+          .from('customers')
+          .update(customerRow)
+          .eq('id', existing.id);
+        if (updErr) return { error: updErr } as const;
+        return { id: existing.id } as const;
+      }
+
       const { data: inserted, error: insertErr } = await adminClient
         .from('customers')
         .insert(customerRow)
         .select('id')
         .single();
+      if (insertErr) return { error: insertErr } as const;
+      return { id: inserted.id } as const;
+    };
 
-      if (insertErr) {
-        console.error('Invoice insert error', insertErr);
-        return new Response(JSON.stringify({ error: insertErr.message }), {
+    // === INVOICE PATH ===
+    if (payment_method === 'invoice') {
+      const result = await upsertDealerCustomer();
+      if ('error' in result) {
+        console.error('Invoice upsert error', result.error);
+        return new Response(JSON.stringify({ error: result.error.message }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-
-      return new Response(JSON.stringify({ customer_id: inserted.id, method: 'invoice' }), {
+      return new Response(JSON.stringify({ customer_id: result.id, method: 'invoice' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
