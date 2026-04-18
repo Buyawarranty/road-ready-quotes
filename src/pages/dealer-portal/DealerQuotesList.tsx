@@ -144,7 +144,7 @@ const DealerQuotesList = () => {
             </div>
 
             <button
-              onClick={() => navigate('/dealer-portal/quote/vehicle')}
+              onClick={handleNewQuote}
               className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400 font-bold text-sm tracking-wide self-start md:self-auto"
             >
               <Plus className="h-5 w-5" /> Add new dealer plan
