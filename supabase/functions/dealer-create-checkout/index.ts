@@ -135,10 +135,8 @@ Deno.serve(async (req: Request) => {
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
-      warranty_start_date: startDate.toISOString().slice(0, 10),
-      policy_end_date: endDate.toISOString().slice(0, 10),
       is_manual_entry: false,
-      payment_verified: payment_method === 'invoice', // invoice = trusted; stripe = wait for webhook
+      payment_verified: payment_method === 'invoice',
     } as Record<string, unknown>;
 
     // === INVOICE PATH ===
