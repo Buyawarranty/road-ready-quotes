@@ -65,6 +65,50 @@ const DealerQuotesList = () => {
     queryClient.invalidateQueries({ queryKey: ['dealer-quotes-list', dealer?.id] });
   };
 
+  const handleResume = (q: any) => {
+    const addr = q.customer_address || {};
+    hydrate({
+      quoteId: q.id,
+      vehicle: {
+        reg: q.vehicle_reg || '',
+        make: q.vehicle_make || undefined,
+        model: q.vehicle_model || undefined,
+        year: q.vehicle_year || undefined,
+        mileage: q.mileage || undefined,
+        fuel_type: q.vehicle_fuel_type || undefined,
+        transmission: q.vehicle_transmission || undefined,
+      },
+      customer: q.customer_name
+        ? {
+            name: q.customer_name || '',
+            email: q.customer_email || '',
+            phone: q.customer_phone || '',
+            address_line1: addr.address_line1 || '',
+            address_line2: addr.address_line2 || '',
+            town: addr.town || '',
+            postcode: addr.postcode || '',
+          }
+        : null,
+      plan:
+        q.plan_type && q.warranty_duration
+          ? {
+              plan_type: q.plan_type as 'basic' | 'gold' | 'platinum',
+              duration_months: Number(q.warranty_duration) as 3 | 12 | 24 | 36,
+              retail_price: Number(q.retail_price || q.price || 0),
+              dealer_price: Number(q.dealer_price || q.price || 0),
+            }
+          : null,
+      discount_pct: Number(q.discount_pct || 0),
+    });
+    const step = Math.min(Math.max(Number(q.current_step || 1), 1), 5);
+    navigate(STEP_PATHS[step] || STEP_PATHS[1]);
+  };
+
+  const handleNewQuote = () => {
+    reset();
+    navigate('/dealer-portal/quote/vehicle');
+  };
+
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
   const formatDateTime = (d: string) => {
     const date = new Date(d);
