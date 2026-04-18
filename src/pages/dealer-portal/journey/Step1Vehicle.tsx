@@ -8,6 +8,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useMotMileage } from '@/hooks/useMotMileage';
 
 const Step1Vehicle: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +27,16 @@ const Step1Vehicle: React.FC = () => {
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
   const lookupTimer = useRef<number | null>(null);
+
+  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+
+  // Auto-fill mileage from MOT when fetched
+  useEffect(() => {
+    if (motMileage && !mileage) {
+      setMileage(String(motMileage));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motMileage]);
 
   const performLookup = async (regToLookup: string) => {
     const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
@@ -154,7 +165,11 @@ const Step1Vehicle: React.FC = () => {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-300 block mb-1">Mileage *</label>
-                <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 45000" className={inputClass} />
+                <div className="relative">
+                  <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'} className={`${inputClass} pr-10`} />
+                  {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
+                </div>
+                {motMileage && <p className="text-xs text-gray-500 mt-1">Auto-filled from latest MOT.</p>}
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
