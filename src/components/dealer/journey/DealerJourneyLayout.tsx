@@ -5,6 +5,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { DealerLayout } from '@/components/dealer/DealerLayout';
 
 interface Props {
   step: 1 | 2 | 3 | 4 | 5;
