@@ -44,7 +44,7 @@ const Step2Customer: React.FC = () => {
   const inputClass = 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-orange-500';
 
   return (
-    <DealerJourneyLayout step={2} title="Customer details" subtitle="The end customer who will hold this warranty.">
+    <DealerJourneyLayout step={2} title="Customer details" subtitle="The end customer who will hold this warranty." backTo="/dealer-portal/quote/vehicle">
       <Card className="bg-gray-900 border-gray-800">
         <CardContent className="pt-6">
           <form onSubmit={handleNext} className="space-y-4">
