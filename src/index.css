@@ -823,3 +823,28 @@ body {
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* ===== Dealer pricing dark theme overrides ===== */
+.dealer-pricing-dark { background: hsl(222 47% 6%); color: #fff; }
+.dealer-pricing-dark .bg-white { background-color: hsl(222 33% 11%) !important; }
+.dealer-pricing-dark .bg-gray-50 { background-color: hsl(222 33% 9%) !important; }
+.dealer-pricing-dark .bg-gray-100 { background-color: hsl(222 33% 14%) !important; }
+.dealer-pricing-dark .bg-gray-200 { background-color: hsl(222 33% 18%) !important; }
+.dealer-pricing-dark .border-b,
+.dealer-pricing-dark .border-t,
+.dealer-pricing-dark .border,
+.dealer-pricing-dark .border-2 { border-color: hsl(222 20% 22%) !important; }
+.dealer-pricing-dark .border-gray-200,
+.dealer-pricing-dark .border-gray-300 { border-color: hsl(222 20% 22%) !important; }
+.dealer-pricing-dark .text-foreground,
+.dealer-pricing-dark .text-gray-900,
+.dealer-pricing-dark .text-gray-800,
+.dealer-pricing-dark .text-black { color: #fff !important; }
+.dealer-pricing-dark .text-gray-700,
+.dealer-pricing-dark .text-gray-600 { color: hsl(220 10% 75%) !important; }
+.dealer-pricing-dark .text-gray-500,
+.dealer-pricing-dark .text-gray-400 { color: hsl(220 10% 60%) !important; }
+.dealer-pricing-dark .text-muted-foreground { color: hsl(220 10% 65%) !important; }
+.dealer-pricing-dark .shadow-lg,
+.dealer-pricing-dark .shadow,
+.dealer-pricing-dark .shadow-md { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5) !important; }

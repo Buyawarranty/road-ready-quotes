@@ -1264,57 +1264,14 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-950 text-white">
       
-      {/* Header with Back button and Get Covered heading */}
-      <div className="bg-white border-b">
+      {/* Heading-only header (Back lives in DealerJourneyLayout) */}
+      <div className="bg-gray-950">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          {/* Back button + Heading row */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-            {/* Mobile: Centered heading */}
-            <div className="flex items-center justify-center gap-2 sm:hidden">
-              <h1 className="text-xl font-bold text-foreground">
-                One complete warranty. Tailored to you.
-              </h1>
-            </div>
-            
-            {/* Mobile: Back and Nav row */}
-            <div className="flex items-center justify-between sm:hidden">
-              <button 
-                onClick={() => {
-                  console.log('🔙 PricingTable Back button clicked');
-                  onBack();
-                }}
-                className="flex items-center gap-2 text-sm font-medium py-2 px-3 rounded-lg transition-all duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </button>
-              <MobileNavigation />
-            </div>
-            
-            {/* Desktop layout */}
-            <button 
-              onClick={() => {
-                console.log('🔙 PricingTable Back button clicked');
-                onBack();
-              }}
-              className="hidden sm:flex items-center gap-2 text-sm font-medium py-2 px-3 rounded-lg transition-all duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </button>
-
-            <div className="hidden sm:flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                One complete warranty. Tailored to you.
-              </h1>
-            </div>
-
-            {/* Spacer for desktop to balance the layout */}
-            <div className="hidden sm:block w-20"></div>
-          </div>
-
+          <h1 className="text-2xl sm:text-3xl font-bold text-white text-center sm:text-left">
+            One complete warranty. Tailored to you.
+          </h1>
         </div>
       </div>
 
