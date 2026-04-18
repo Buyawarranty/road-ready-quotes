@@ -139,23 +139,46 @@ Deno.serve(async (req: Request) => {
       payment_verified: payment_method === 'invoice',
     } as Record<string, unknown>;
 
-    // === INVOICE PATH ===
-    if (payment_method === 'invoice') {
+    // Helper: upsert dealer customer row by (email, registration_plate) for this dealer.
+    // Reuses an existing dealer-owned pending row instead of failing on the unique index.
+    const upsertDealerCustomer = async () => {
+      const { data: existing } = await adminClient
+        .from('customers')
+        .select('id, payment_status, dealer_id')
+        .eq('email', customerRow.email as string)
+        .eq('registration_plate', customerRow.registration_plate as string)
+        .eq('dealer_id', dealer.id)
+        .maybeSingle();
+
+      if (existing?.id) {
+        const { error: updErr } = await adminClient
+          .from('customers')
+          .update(customerRow)
+          .eq('id', existing.id);
+        if (updErr) return { error: updErr } as const;
+        return { id: existing.id } as const;
+      }
+
       const { data: inserted, error: insertErr } = await adminClient
         .from('customers')
         .insert(customerRow)
         .select('id')
         .single();
+      if (insertErr) return { error: insertErr } as const;
+      return { id: inserted.id } as const;
+    };
 
-      if (insertErr) {
-        console.error('Invoice insert error', insertErr);
-        return new Response(JSON.stringify({ error: insertErr.message }), {
+    // === INVOICE PATH ===
+    if (payment_method === 'invoice') {
+      const result = await upsertDealerCustomer();
+      if ('error' in result) {
+        console.error('Invoice upsert error', result.error);
+        return new Response(JSON.stringify({ error: result.error.message }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-
-      return new Response(JSON.stringify({ customer_id: inserted.id, method: 'invoice' }), {
+      return new Response(JSON.stringify({ customer_id: result.id, method: 'invoice' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -171,20 +194,16 @@ Deno.serve(async (req: Request) => {
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
 
-    // Insert customer row as 'pending' first so we have an id to reference
-    const { data: pendingCustomer, error: pendingErr } = await adminClient
-      .from('customers')
-      .insert(customerRow)
-      .select('id')
-      .single();
-
-    if (pendingErr) {
-      console.error('Pending customer insert error', pendingErr);
-      return new Response(JSON.stringify({ error: pendingErr.message }), {
+    // Upsert dealer customer row (handles re-attempts after a cancelled checkout)
+    const result = await upsertDealerCustomer();
+    if ('error' in result) {
+      console.error('Pending customer upsert error', result.error);
+      return new Response(JSON.stringify({ error: result.error.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const pendingCustomerId = result.id;
 
     const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
     const session = await stripe.checkout.sessions.create({
@@ -204,13 +223,13 @@ Deno.serve(async (req: Request) => {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomer.id}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dealer-portal/quote/checkout`,
       metadata: {
         dealer_id: dealer.id,
-        customer_id: pendingCustomer.id,
+        customer_id: pendingCustomerId,
         plan_type: plan.plan_type,
-        plan_id: plan.plan_type, // Required: plan_id = plan_type
+        plan_id: plan.plan_type,
         duration_months: String(plan.duration_months),
         purchase_source: 'dealer',
         discount_pct: String(discount_pct),
@@ -220,7 +239,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         checkout_url: session.url,
-        customer_id: pendingCustomer.id,
+        customer_id: pendingCustomerId,
         session_id: session.id,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
