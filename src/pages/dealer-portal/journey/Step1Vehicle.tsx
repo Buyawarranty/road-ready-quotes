@@ -38,6 +38,21 @@ const Step1Vehicle: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motMileage]);
 
+  // Keep journey context in sync with form so Save & exit always has latest values
+  useEffect(() => {
+    if (!reg.trim()) return;
+    setVehicle({
+      reg: reg.trim().toUpperCase(),
+      make: make.trim() || undefined,
+      model: model.trim() || undefined,
+      year: year.trim() || undefined,
+      fuel_type: fuelType.trim() || undefined,
+      transmission: transmission.trim() || undefined,
+      mileage: mileage.trim(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reg, make, model, year, fuelType, transmission, mileage]);
+
   const performLookup = async (regToLookup: string) => {
     const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
     if (!cleaned || cleaned.length < 4 || cleaned === lookupReg) return;
