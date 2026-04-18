@@ -260,7 +260,7 @@ const DealerWarrantiesList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rows.map((r, idx) => {
+                    {unpaidRows.map((r, idx) => {
                       const unpaid = r.payment_status !== 'paid';
                       return (
                         <TableRow
@@ -284,7 +284,7 @@ const DealerWarrantiesList = () => {
                           </TableCell>
                           <TableCell>{renderStatus(r)}</TableCell>
                           <TableCell className="text-gray-300">{fmt(r.warranty_start_date || r.signup_date)}</TableCell>
-                          <TableCell className="text-gray-300">{fmt(r.policy_end_date)}</TableCell>
+                          <TableCell className="text-gray-300">{fmt(computeEnd(r))}</TableCell>
                           <TableCell className="text-gray-300 uppercase">
                             <div className="font-mono text-white">{r.registration_plate || '—'}</div>
                             <div className="text-xs text-gray-500">
