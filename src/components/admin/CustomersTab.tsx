@@ -1658,7 +1658,7 @@ export const CustomersTab = ({
 
       const { error } = await supabase
         .from('customers')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', customerId);
 
       if (error) throw error;
