@@ -45,10 +45,21 @@ const DealerWarrantiesList = () => {
     enabled: !!dealer?.id,
   });
 
-  const unpaidIds = useMemo(
-    () => rows.filter((r) => r.payment_status !== 'paid').map((r) => r.id),
-    [rows],
-  );
+  const isPaid = (r: DealerPdfRow) => r.payment_status === 'paid';
+  const paidRows = useMemo(() => rows.filter(isPaid), [rows]);
+  const unpaidRows = useMemo(() => rows.filter((r) => !isPaid(r)), [rows]);
+  const unpaidIds = useMemo(() => unpaidRows.map((r) => r.id), [unpaidRows]);
+
+  // Compute expiry from start + payment_type (months) when policy_end_date is missing
+  const computeEnd = (r: DealerPdfRow): string | null => {
+    if (r.policy_end_date) return r.policy_end_date;
+    const start = r.warranty_start_date || r.signup_date;
+    const months = parseInt(String(r.payment_type || '0'), 10);
+    if (!start || !months) return null;
+    const d = new Date(start);
+    d.setMonth(d.getMonth() + months);
+    return d.toISOString();
+  };
   const selectedIds = useMemo(() => Object.keys(selected).filter((k) => selected[k]), [selected]);
   const selectedTotal = useMemo(
     () =>
