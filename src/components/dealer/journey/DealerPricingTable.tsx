@@ -110,7 +110,7 @@ interface PricingTableProps {
   previousBoostAddon?: boolean;
 }
 
-const PricingTable: React.FC<PricingTableProps> = ({ 
+const DealerPricingTable: React.FC<PricingTableProps> = ({ 
   vehicleData, 
   onBack,
   onChangeVehicle,
@@ -3066,4 +3066,4 @@ const PricingTable: React.FC<PricingTableProps> = ({
   );
 };
 
-export default PricingTable;
+export default DealerPricingTable;
