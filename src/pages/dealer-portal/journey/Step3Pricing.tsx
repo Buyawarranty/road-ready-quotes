@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DealerPricingTable from '@/components/dealer/journey/DealerPricingTable';
+import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 
 /**
- * Dealer Step 3 — uses the duplicated retail pricing UI (DealerPricingTable).
- * The full plan/excess/labour/addon selector is rendered, and the chosen plan
- * is captured into the dealer journey context with the dealer discount applied.
+ * Dealer Step 3 — uses the duplicated retail pricing UI (DealerPricingTable),
+ * wrapped in the dealer dark-theme layout with the journey progress bar.
  */
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
@@ -52,13 +52,11 @@ const Step3Pricing: React.FC = () => {
   ) => {
     if (!pricingData) return;
 
-    // Map paymentType → duration months
     const months = paymentType === '12months' ? 12 : paymentType === '24months' ? 24 : paymentType === '36months' ? 36 : 12;
 
     const retail = pricingData.totalPrice;
     const dealer = +(retail * (1 - (discount_pct || 0) / 100)).toFixed(2);
 
-    // Map planId → dealer plan_type bucket (basic/gold/platinum)
     const normalized = (planId || '').toLowerCase();
     const planType: 'basic' | 'gold' | 'platinum' =
       normalized.includes('platinum') || normalized.includes('premium') || normalized.includes('elite')
@@ -78,11 +76,21 @@ const Step3Pricing: React.FC = () => {
   };
 
   return (
-    <DealerPricingTable
-      vehicleData={vehicleData}
-      onBack={() => navigate('/dealer-portal/quote/customer')}
-      onPlanSelected={handlePlanSelected}
-    />
+    <DealerJourneyLayout
+      step={3}
+      title="Plan & pricing"
+      subtitle="Choose the cover that fits this customer. Your dealer discount is applied at checkout."
+      backTo="/dealer-portal/quote/customer"
+    >
+      {/* Light surface card so the retail pricing UI (designed for light bg) renders cleanly inside the dark shell */}
+      <div className="rounded-xl overflow-hidden bg-white text-gray-900 shadow-2xl ring-1 ring-gray-800">
+        <DealerPricingTable
+          vehicleData={vehicleData}
+          onBack={() => navigate('/dealer-portal/quote/customer')}
+          onPlanSelected={handlePlanSelected}
+        />
+      </div>
+    </DealerJourneyLayout>
   );
 };
 
