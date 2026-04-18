@@ -143,7 +143,7 @@ const DealerWarrantiesList = () => {
             value="plans"
             className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-300 font-bold tracking-wide"
           >
-            Plans ({rows.length})
+            Plans ({paidRows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
@@ -156,9 +156,9 @@ const DealerWarrantiesList = () => {
         {/* PLANS TAB */}
         <TabsContent value="plans">
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            {rows.length === 0 ? (
+            {paidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No plans issued yet. Complete a dealer quote to issue your first warranty.
+                No active plans yet. Plans appear here once payment is completed.
               </p>
             ) : (
               <div className="overflow-x-auto">
