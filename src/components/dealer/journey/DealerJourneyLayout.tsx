@@ -87,11 +87,23 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
               )}
               <span className="text-sm font-semibold text-orange-500">DEALER QUOTE</span>
             </div>
-            {discount_pct > 0 && (
-              <span className="text-xs px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 font-semibold">
-                Your dealer discount: {discount_pct}%
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {discount_pct > 0 && (
+                <span className="text-xs px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 font-semibold">
+                  Discount: {discount_pct}%
+                </span>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={saving || !vehicle?.reg}
+                onClick={handleSaveAndExit}
+                className="border-orange-500/40 bg-transparent text-orange-400 hover:bg-orange-500/10 hover:text-orange-300"
+              >
+                {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                Save & exit
+              </Button>
+            </div>
           </div>
 
           {/* Progress */}
