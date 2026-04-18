@@ -225,7 +225,7 @@ const DealerQuotesList = () => {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => navigate('/dealer-portal/quote/vehicle')}
+                      onClick={() => handleResume(q)}
                       className="h-9 bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wide"
                     >
                       Resume quote <ArrowRight className="h-4 w-4 ml-1" />
