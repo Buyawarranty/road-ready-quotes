@@ -28,6 +28,7 @@ export interface DealerJourneyPlan {
 }
 
 export interface DealerJourneyState {
+  quoteId: string | null;
   vehicle: DealerJourneyVehicle | null;
   customer: DealerJourneyCustomer | null;
   plan: DealerJourneyPlan | null;
@@ -35,16 +36,19 @@ export interface DealerJourneyState {
 }
 
 interface DealerJourneyContextValue extends DealerJourneyState {
+  setQuoteId: (id: string | null) => void;
   setVehicle: (v: DealerJourneyVehicle) => void;
   setCustomer: (c: DealerJourneyCustomer) => void;
   setPlan: (p: DealerJourneyPlan) => void;
   setDiscountPct: (n: number) => void;
+  hydrate: (s: Partial<DealerJourneyState>) => void;
   reset: () => void;
 }
 
 const STORAGE_KEY = 'dealerJourney';
 
 const defaultState: DealerJourneyState = {
+  quoteId: null,
   vehicle: null,
   customer: null,
   plan: null,
@@ -73,10 +77,12 @@ export const DealerJourneyProvider: React.FC<{ children: ReactNode }> = ({ child
 
   const value: DealerJourneyContextValue = {
     ...state,
+    setQuoteId: (quoteId) => setState((s) => ({ ...s, quoteId })),
     setVehicle: (vehicle) => setState((s) => ({ ...s, vehicle })),
     setCustomer: (customer) => setState((s) => ({ ...s, customer })),
     setPlan: (plan) => setState((s) => ({ ...s, plan })),
     setDiscountPct: (discount_pct) => setState((s) => ({ ...s, discount_pct })),
+    hydrate: (partial) => setState((s) => ({ ...s, ...partial })),
     reset: () => {
       sessionStorage.removeItem(STORAGE_KEY);
       setState(defaultState);
