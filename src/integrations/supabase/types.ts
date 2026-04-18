@@ -2189,6 +2189,7 @@ export type Database = {
           original_amount: number | null
           payment_confirmed_by: string | null
           payment_due_date: string | null
+          payment_status: string | null
           payment_type: string | null
           payment_verified: boolean | null
           phone: string | null
@@ -2271,6 +2272,7 @@ export type Database = {
           original_amount?: number | null
           payment_confirmed_by?: string | null
           payment_due_date?: string | null
+          payment_status?: string | null
           payment_type?: string | null
           payment_verified?: boolean | null
           phone?: string | null
@@ -2353,6 +2355,7 @@ export type Database = {
           original_amount?: number | null
           payment_confirmed_by?: string | null
           payment_due_date?: string | null
+          payment_status?: string | null
           payment_type?: string | null
           payment_verified?: boolean | null
           phone?: string | null
