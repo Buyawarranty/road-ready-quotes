@@ -1,72 +1,155 @@
-import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { DealerSidebar } from './DealerSidebar';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
-import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Home,
+  FilePlus2,
+  FileText,
+  Shield,
+  BarChart3,
+  Menu,
+  ChevronDown,
+  User,
+  Settings,
+  LogOut,
+  UserCog,
+} from 'lucide-react';
 
 interface DealerLayoutProps {
   children: React.ReactNode;
 }
 
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  matchPaths?: string[];
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: '/dealer-portal/dashboard', label: 'HOME', icon: Home },
+  {
+    to: '/dealer-portal/quote/vehicle',
+    label: 'NEW QUOTE',
+    icon: FilePlus2,
+    matchPaths: ['/dealer-portal/quote/', '/dealer-portal/quotes/create'],
+  },
+  { to: '/dealer-portal/quotes', label: 'QUOTES', icon: FileText },
+  { to: '/dealer-portal/warranties', label: 'DEALER PLANS', icon: Shield },
+  { to: '/dealer-portal/analytics', label: 'ANALYTICS', icon: BarChart3 },
+];
+
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const { user, dealer, loading, signOut } = useDealerAuth();
   const navigate = useNavigate();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate('/dealer-portal/login');
-    }
+    if (!loading && !user) navigate('/dealer-portal/login');
   }, [loading, user, navigate]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-950">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
       </div>
     );
   }
-
   if (!user) return null;
+
+  const isActive = (item: NavItem) => {
+    if (location.pathname === item.to) return true;
+    if (item.matchPaths?.some((p) => location.pathname.startsWith(p))) return true;
+    if (item.to === '/dealer-portal/quotes' && location.pathname === '/dealer-portal/quotes') return true;
+    return false;
+  };
+
+  const displayName = (dealer?.name || user.email || 'DEALER').toUpperCase();
 
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Header */}
       <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Link to="/dealer-portal/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto brightness-0 invert" />
-              </Link>
-              <span className="ml-3 text-xs font-semibold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded">DEALER</span>
-            </div>
+          <div className="flex items-center justify-between h-16 lg:h-20 gap-4">
+            {/* Logo */}
+            <Link to="/dealer-portal/dashboard" className="flex items-center gap-2 shrink-0 hover:opacity-90 transition-opacity">
+              <img
+                src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+                alt="Buy a Warranty"
+                className="h-7 sm:h-8 w-auto brightness-0 invert"
+              />
+              <span className="text-[10px] font-bold tracking-[0.2em] text-orange-500 border border-orange-500/40 px-1.5 py-0.5 rounded-sm">
+                DEALER
+              </span>
+            </Link>
 
-            <nav className="hidden lg:flex items-center space-x-1">
-              <Link to="/dealer-portal/dashboard" className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors">Dashboard</Link>
-              <Link to="/dealer-portal/quotes/create" className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors">Create Quote</Link>
-              <Link to="/dealer-portal/quotes" className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors">Quotes</Link>
-              <Link to="/dealer-portal/warranties" className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md transition-colors">Warranties</Link>
+            {/* Desktop nav (icon + label) */}
+            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+              {NAV_ITEMS.map((item) => {
+                const active = isActive(item);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`group relative flex flex-col items-center px-4 py-2 transition-colors ${
+                      active ? 'text-white' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5 mb-1" />
+                    <span className="text-[11px] font-bold tracking-wider">{item.label}</span>
+                    <span
+                      className={`absolute -bottom-[1px] left-2 right-2 h-0.5 bg-orange-500 transition-transform origin-center ${
+                        active ? 'scale-x-100' : 'scale-x-0'
+                      }`}
+                    />
+                  </Link>
+                );
+              })}
             </nav>
 
-            <div className="hidden lg:flex items-center space-x-4">
-              <span className="text-sm text-gray-400">
-                {dealer?.company_name || dealer?.name || user.email}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={signOut}
-                className="text-red-400 border-red-800 hover:bg-red-950 hover:text-red-300"
-              >
-                Sign Out
-              </Button>
+            {/* Right: user dropdown */}
+            <div className="hidden lg:flex items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wider rounded-md px-4 h-11 transition-colors">
+                    <User className="h-4 w-4" />
+                    <span className="text-xs">{displayName}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-800 text-gray-200">
+                  <DropdownMenuItem className="focus:bg-gray-800 focus:text-white cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
+                    <UserCog className="h-4 w-4 mr-2" /> Manage Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-gray-800 focus:text-white cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
+                    <Settings className="h-4 w-4 mr-2" /> Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-gray-800" />
+                  <DropdownMenuItem
+                    className="focus:bg-red-950 focus:text-red-300 cursor-pointer text-red-400"
+                    onClick={signOut}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" /> Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
+            {/* Mobile */}
             <div className="lg:hidden">
-              <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="sm" className="p-2 text-gray-300 hover:bg-gray-800">
                     <Menu className="h-6 w-6" />
@@ -75,19 +158,37 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                 <SheetContent side="right" className="w-[300px] bg-gray-900 border-gray-800">
                   <div className="flex flex-col h-full">
                     <div className="pb-6">
-                      <Link to="/dealer-portal/">
-                        <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 w-auto brightness-0 invert" />
-                      </Link>
+                      <img
+                        src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+                        alt="Buy a Warranty"
+                        className="h-8 w-auto brightness-0 invert"
+                      />
                     </div>
-                    <nav className="flex flex-col space-y-4 flex-1">
-                      <Link to="/dealer-portal/dashboard" className="text-gray-300 hover:text-white font-medium text-sm py-2 border-b border-gray-800" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
-                      <Link to="/dealer-portal/quotes/create" className="text-gray-300 hover:text-white font-medium text-sm py-2 border-b border-gray-800" onClick={() => setMobileMenuOpen(false)}>Create Quote</Link>
-                      <Link to="/dealer-portal/quotes" className="text-gray-300 hover:text-white font-medium text-sm py-2 border-b border-gray-800" onClick={() => setMobileMenuOpen(false)}>Quotes</Link>
-                      <Link to="/dealer-portal/warranties" className="text-gray-300 hover:text-white font-medium text-sm py-2 border-b border-gray-800" onClick={() => setMobileMenuOpen(false)}>Warranties</Link>
+                    <nav className="flex flex-col gap-1 flex-1">
+                      {NAV_ITEMS.map((item) => {
+                        const Icon = item.icon;
+                        const active = isActive(item);
+                        return (
+                          <Link
+                            key={item.to}
+                            to={item.to}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center gap-3 px-3 py-3 rounded-md text-sm font-bold tracking-wider ${
+                              active ? 'bg-orange-500/10 text-orange-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                            }`}
+                          >
+                            <Icon className="h-5 w-5" />
+                            {item.label}
+                          </Link>
+                        );
+                      })}
                     </nav>
                     <div className="pt-6 mt-auto">
-                      <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors">
-                        Sign Out
+                      <button
+                        onClick={() => { signOut(); setMobileOpen(false); }}
+                        className="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <LogOut className="h-4 w-4" /> Logout
                       </button>
                     </div>
                   </div>
@@ -98,14 +199,9 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col lg:flex-row">
-        <DealerSidebar onSignOut={signOut} />
-        <div className="flex-1 lg:ml-64 overflow-hidden">
-          <main className="p-4 lg:p-6 overflow-y-auto h-[calc(100vh-64px)]">
-            {children}
-          </main>
-        </div>
-      </div>
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {children}
+      </main>
     </div>
   );
 };
