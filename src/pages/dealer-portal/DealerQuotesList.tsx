@@ -6,8 +6,25 @@ import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { Plus, Search, Trash2, Camera, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+
+const STEP_PATHS: Record<number, string> = {
+  1: '/dealer-portal/quote/vehicle',
+  2: '/dealer-portal/quote/customer',
+  3: '/dealer-portal/quote/pricing',
+  4: '/dealer-portal/quote/checkout',
+  5: '/dealer-portal/quote/confirmation',
+};
+
+const STEP_LABELS: Record<number, string> = {
+  1: 'Vehicle details',
+  2: 'Customer details',
+  3: 'Plan & pricing',
+  4: 'Checkout',
+  5: 'Completed',
+};
 
 const DealerQuotesList = () => {
   const { dealer } = useDealerAuth();
