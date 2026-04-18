@@ -28,6 +28,16 @@ const Step1Vehicle: React.FC = () => {
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
   const lookupTimer = useRef<number | null>(null);
 
+  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+
+  // Auto-fill mileage from MOT when fetched
+  useEffect(() => {
+    if (motMileage && !mileage) {
+      setMileage(String(motMileage));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motMileage]);
+
   const performLookup = async (regToLookup: string) => {
     const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
     if (!cleaned || cleaned.length < 4 || cleaned === lookupReg) return;
