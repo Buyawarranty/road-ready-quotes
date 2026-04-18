@@ -29,7 +29,16 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
   const { dealer, loading } = useDealerAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { setDiscountPct, discount_pct } = useDealerJourney();
+  const { setDiscountPct, discount_pct, vehicle, reset } = useDealerJourney();
+  const { save, saving } = useDealerQuoteSave(step);
+
+  const handleSaveAndExit = async () => {
+    const id = await save();
+    if (id) {
+      reset();
+      navigate('/dealer-portal/quotes');
+    }
+  };
 
   // Hydrate dealer discount once
   useEffect(() => {
