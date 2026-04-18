@@ -175,7 +175,7 @@ const DealerWarrantiesList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rows.map((w) => (
+                    {paidRows.map((w) => (
                       <TableRow key={w.id} className="border-gray-800 hover:bg-gray-800/50">
                         <TableCell className="font-medium text-white">
                           <div>{w.name}</div>
@@ -191,7 +191,7 @@ const DealerWarrantiesList = () => {
                           {w.plan_type} · {w.payment_type}mo
                         </TableCell>
                         <TableCell className="text-gray-300">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
-                        <TableCell className="text-gray-300">{fmt(w.policy_end_date)}</TableCell>
+                        <TableCell className="text-gray-300">{fmt(computeEnd(w))}</TableCell>
                         <TableCell className="text-right text-white font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
                       </TableRow>
