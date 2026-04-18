@@ -2491,9 +2491,10 @@ export type Database = {
       dealer_quotes: {
         Row: {
           created_at: string
+          current_step: number
           customer_address: Json | null
           customer_email: string | null
-          customer_name: string
+          customer_name: string | null
           customer_phone: string | null
           dealer_id: string
           dealer_price: number | null
@@ -2502,22 +2503,26 @@ export type Database = {
           mileage: string | null
           paid_at: string | null
           payment_method: string | null
-          plan_type: string
+          plan_type: string | null
           price: number | null
           retail_price: number | null
           status: string
           stripe_session_id: string | null
           updated_at: string
+          vehicle_fuel_type: string | null
           vehicle_make: string | null
           vehicle_model: string | null
           vehicle_reg: string
-          warranty_duration: string
+          vehicle_transmission: string | null
+          vehicle_year: string | null
+          warranty_duration: string | null
         }
         Insert: {
           created_at?: string
+          current_step?: number
           customer_address?: Json | null
           customer_email?: string | null
-          customer_name: string
+          customer_name?: string | null
           customer_phone?: string | null
           dealer_id: string
           dealer_price?: number | null
@@ -2526,22 +2531,26 @@ export type Database = {
           mileage?: string | null
           paid_at?: string | null
           payment_method?: string | null
-          plan_type: string
+          plan_type?: string | null
           price?: number | null
           retail_price?: number | null
           status?: string
           stripe_session_id?: string | null
           updated_at?: string
+          vehicle_fuel_type?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
           vehicle_reg: string
-          warranty_duration: string
+          vehicle_transmission?: string | null
+          vehicle_year?: string | null
+          warranty_duration?: string | null
         }
         Update: {
           created_at?: string
+          current_step?: number
           customer_address?: Json | null
           customer_email?: string | null
-          customer_name?: string
+          customer_name?: string | null
           customer_phone?: string | null
           dealer_id?: string
           dealer_price?: number | null
@@ -2550,16 +2559,19 @@ export type Database = {
           mileage?: string | null
           paid_at?: string | null
           payment_method?: string | null
-          plan_type?: string
+          plan_type?: string | null
           price?: number | null
           retail_price?: number | null
           status?: string
           stripe_session_id?: string | null
           updated_at?: string
+          vehicle_fuel_type?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
           vehicle_reg?: string
-          warranty_duration?: string
+          vehicle_transmission?: string | null
+          vehicle_year?: string | null
+          warranty_duration?: string | null
         }
         Relationships: [
           {
