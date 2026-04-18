@@ -6,13 +6,31 @@ import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { Plus, Search, Trash2, Camera, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+
+const STEP_PATHS: Record<number, string> = {
+  1: '/dealer-portal/quote/vehicle',
+  2: '/dealer-portal/quote/customer',
+  3: '/dealer-portal/quote/pricing',
+  4: '/dealer-portal/quote/checkout',
+  5: '/dealer-portal/quote/confirmation',
+};
+
+const STEP_LABELS: Record<number, string> = {
+  1: 'Vehicle details',
+  2: 'Customer details',
+  3: 'Plan & pricing',
+  4: 'Checkout',
+  5: 'Completed',
+};
 
 const DealerQuotesList = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { hydrate, reset } = useDealerJourney();
   const [search, setSearch] = useState('');
 
   const { data: quotes = [] } = useQuery({
@@ -45,6 +63,50 @@ const DealerQuotesList = () => {
     }
     toast.success('Quote deleted');
     queryClient.invalidateQueries({ queryKey: ['dealer-quotes-list', dealer?.id] });
+  };
+
+  const handleResume = (q: any) => {
+    const addr = q.customer_address || {};
+    hydrate({
+      quoteId: q.id,
+      vehicle: {
+        reg: q.vehicle_reg || '',
+        make: q.vehicle_make || undefined,
+        model: q.vehicle_model || undefined,
+        year: q.vehicle_year || undefined,
+        mileage: q.mileage || undefined,
+        fuel_type: q.vehicle_fuel_type || undefined,
+        transmission: q.vehicle_transmission || undefined,
+      },
+      customer: q.customer_name
+        ? {
+            name: q.customer_name || '',
+            email: q.customer_email || '',
+            phone: q.customer_phone || '',
+            address_line1: addr.address_line1 || '',
+            address_line2: addr.address_line2 || '',
+            town: addr.town || '',
+            postcode: addr.postcode || '',
+          }
+        : null,
+      plan:
+        q.plan_type && q.warranty_duration
+          ? {
+              plan_type: q.plan_type as 'basic' | 'gold' | 'platinum',
+              duration_months: Number(q.warranty_duration) as 3 | 12 | 24 | 36,
+              retail_price: Number(q.retail_price || q.price || 0),
+              dealer_price: Number(q.dealer_price || q.price || 0),
+            }
+          : null,
+      discount_pct: Number(q.discount_pct || 0),
+    });
+    const step = Math.min(Math.max(Number(q.current_step || 1), 1), 5);
+    navigate(STEP_PATHS[step] || STEP_PATHS[1]);
+  };
+
+  const handleNewQuote = () => {
+    reset();
+    navigate('/dealer-portal/quote/vehicle');
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
@@ -82,7 +144,7 @@ const DealerQuotesList = () => {
             </div>
 
             <button
-              onClick={() => navigate('/dealer-portal/quote/vehicle')}
+              onClick={handleNewQuote}
               className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400 font-bold text-sm tracking-wide self-start md:self-auto"
             >
               <Plus className="h-5 w-5" /> Add new dealer plan
@@ -130,8 +192,10 @@ const DealerQuotesList = () => {
                   </div>
                   <p className="text-sm text-gray-400">
                     <span className="font-semibold text-gray-300">Step:</span>{' '}
-                    <span className="text-orange-400 font-medium capitalize">
-                      {q.status === 'converted' ? 'Completed' : 'Vehicle details'}
+                    <span className="text-orange-400 font-medium">
+                      {q.status === 'converted' || q.status === 'completed'
+                        ? 'Completed'
+                        : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
                     </span>
                     <span className="text-gray-500"> · Created on </span>
                     <span className="text-gray-300">{formatDateTime(q.created_at)}</span>
@@ -161,7 +225,7 @@ const DealerQuotesList = () => {
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => navigate('/dealer-portal/quote/vehicle')}
+                      onClick={() => handleResume(q)}
                       className="h-9 bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wide"
                     >
                       Resume quote <ArrowRight className="h-4 w-4 ml-1" />

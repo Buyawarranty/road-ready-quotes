@@ -2,10 +2,11 @@ import React, { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 
 interface Props {
   step: 1 | 2 | 3 | 4 | 5;
@@ -28,7 +29,16 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
   const { dealer, loading } = useDealerAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { setDiscountPct, discount_pct } = useDealerJourney();
+  const { setDiscountPct, discount_pct, vehicle, reset } = useDealerJourney();
+  const { save, saving } = useDealerQuoteSave(step);
+
+  const handleSaveAndExit = async () => {
+    const id = await save();
+    if (id) {
+      reset();
+      navigate('/dealer-portal/quotes');
+    }
+  };
 
   // Hydrate dealer discount once
   useEffect(() => {
@@ -77,11 +87,23 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
               )}
               <span className="text-sm font-semibold text-orange-500">DEALER QUOTE</span>
             </div>
-            {discount_pct > 0 && (
-              <span className="text-xs px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 font-semibold">
-                Your dealer discount: {discount_pct}%
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {discount_pct > 0 && (
+                <span className="text-xs px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 font-semibold">
+                  Discount: {discount_pct}%
+                </span>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={saving || !vehicle?.reg}
+                onClick={handleSaveAndExit}
+                className="border-orange-500/40 bg-transparent text-orange-400 hover:bg-orange-500/10 hover:text-orange-300"
+              >
+                {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                Save & exit
+              </Button>
+            </div>
           </div>
 
           {/* Progress */}
