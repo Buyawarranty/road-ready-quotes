@@ -45,10 +45,21 @@ const DealerWarrantiesList = () => {
     enabled: !!dealer?.id,
   });
 
-  const unpaidIds = useMemo(
-    () => rows.filter((r) => r.payment_status !== 'paid').map((r) => r.id),
-    [rows],
-  );
+  const isPaid = (r: DealerPdfRow) => r.payment_status === 'paid';
+  const paidRows = useMemo(() => rows.filter(isPaid), [rows]);
+  const unpaidRows = useMemo(() => rows.filter((r) => !isPaid(r)), [rows]);
+  const unpaidIds = useMemo(() => unpaidRows.map((r) => r.id), [unpaidRows]);
+
+  // Compute expiry from start + payment_type (months) when policy_end_date is missing
+  const computeEnd = (r: DealerPdfRow): string | null => {
+    if (r.policy_end_date) return r.policy_end_date;
+    const start = r.warranty_start_date || r.signup_date;
+    const months = parseInt(String(r.payment_type || '0'), 10);
+    if (!start || !months) return null;
+    const d = new Date(start);
+    d.setMonth(d.getMonth() + months);
+    return d.toISOString();
+  };
   const selectedIds = useMemo(() => Object.keys(selected).filter((k) => selected[k]), [selected]);
   const selectedTotal = useMemo(
     () =>
@@ -80,9 +91,10 @@ const DealerWarrantiesList = () => {
   };
 
   const renderActiveStatus = (r: DealerPdfRow) => {
-    if ((r as any).status === 'active') return <Badge className="bg-green-500 text-white">Active</Badge>;
-    if ((r as any).status === 'expired') return <Badge className="bg-gray-600 text-gray-200">Expired</Badge>;
-    if ((r as any).status === 'cancelled') return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40">Cancelled</Badge>;
+    const s = String((r as any).status || '').toLowerCase();
+    if (s === 'active') return <Badge className="bg-green-500 text-white">Active</Badge>;
+    if (s === 'expired') return <Badge className="bg-gray-600 text-gray-200">Expired</Badge>;
+    if (s === 'cancelled') return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40">Cancelled</Badge>;
     return <Badge className="bg-gray-700 text-gray-300">{(r as any).status || 'Pending'}</Badge>;
   };
 
@@ -131,7 +143,7 @@ const DealerWarrantiesList = () => {
             value="plans"
             className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-300 font-bold tracking-wide"
           >
-            Plans ({rows.length})
+            Plans ({paidRows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
@@ -144,9 +156,9 @@ const DealerWarrantiesList = () => {
         {/* PLANS TAB */}
         <TabsContent value="plans">
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            {rows.length === 0 ? (
+            {paidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No plans issued yet. Complete a dealer quote to issue your first warranty.
+                No active plans yet. Plans appear here once payment is completed.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -163,7 +175,7 @@ const DealerWarrantiesList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rows.map((w) => (
+                    {paidRows.map((w) => (
                       <TableRow key={w.id} className="border-gray-800 hover:bg-gray-800/50">
                         <TableCell className="font-medium text-white">
                           <div>{w.name}</div>
@@ -179,7 +191,7 @@ const DealerWarrantiesList = () => {
                           {w.plan_type} · {w.payment_type}mo
                         </TableCell>
                         <TableCell className="text-gray-300">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
-                        <TableCell className="text-gray-300">{fmt(w.policy_end_date)}</TableCell>
+                        <TableCell className="text-gray-300">{fmt(computeEnd(w))}</TableCell>
                         <TableCell className="text-right text-white font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
                       </TableRow>
@@ -220,9 +232,9 @@ const DealerWarrantiesList = () => {
           </div>
 
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            {rows.length === 0 ? (
+            {unpaidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No plans yet — nothing to pay.
+                No unpaid invoices — all dealer plans are paid.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -248,7 +260,7 @@ const DealerWarrantiesList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rows.map((r, idx) => {
+                    {unpaidRows.map((r, idx) => {
                       const unpaid = r.payment_status !== 'paid';
                       return (
                         <TableRow
@@ -272,7 +284,7 @@ const DealerWarrantiesList = () => {
                           </TableCell>
                           <TableCell>{renderStatus(r)}</TableCell>
                           <TableCell className="text-gray-300">{fmt(r.warranty_start_date || r.signup_date)}</TableCell>
-                          <TableCell className="text-gray-300">{fmt(r.policy_end_date)}</TableCell>
+                          <TableCell className="text-gray-300">{fmt(computeEnd(r))}</TableCell>
                           <TableCell className="text-gray-300 uppercase">
                             <div className="font-mono text-white">{r.registration_plate || '—'}</div>
                             <div className="text-xs text-gray-500">
