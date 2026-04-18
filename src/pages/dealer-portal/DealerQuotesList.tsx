@@ -192,8 +192,10 @@ const DealerQuotesList = () => {
                   </div>
                   <p className="text-sm text-gray-400">
                     <span className="font-semibold text-gray-300">Step:</span>{' '}
-                    <span className="text-orange-400 font-medium capitalize">
-                      {q.status === 'converted' ? 'Completed' : 'Vehicle details'}
+                    <span className="text-orange-400 font-medium">
+                      {q.status === 'converted' || q.status === 'completed'
+                        ? 'Completed'
+                        : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
                     </span>
                     <span className="text-gray-500"> · Created on </span>
                     <span className="text-gray-300">{formatDateTime(q.created_at)}</span>
