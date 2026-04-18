@@ -232,9 +232,9 @@ const DealerWarrantiesList = () => {
           </div>
 
           <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
-            {rows.length === 0 ? (
+            {unpaidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No plans yet — nothing to pay.
+                No unpaid invoices — all dealer plans are paid.
               </p>
             ) : (
               <div className="overflow-x-auto">
