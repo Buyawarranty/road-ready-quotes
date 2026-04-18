@@ -194,20 +194,16 @@ Deno.serve(async (req: Request) => {
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
 
-    // Insert customer row as 'pending' first so we have an id to reference
-    const { data: pendingCustomer, error: pendingErr } = await adminClient
-      .from('customers')
-      .insert(customerRow)
-      .select('id')
-      .single();
-
-    if (pendingErr) {
-      console.error('Pending customer insert error', pendingErr);
-      return new Response(JSON.stringify({ error: pendingErr.message }), {
+    // Upsert dealer customer row (handles re-attempts after a cancelled checkout)
+    const result = await upsertDealerCustomer();
+    if ('error' in result) {
+      console.error('Pending customer upsert error', result.error);
+      return new Response(JSON.stringify({ error: result.error.message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    const pendingCustomerId = result.id;
 
     const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
     const session = await stripe.checkout.sessions.create({
@@ -227,13 +223,13 @@ Deno.serve(async (req: Request) => {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomer.id}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dealer-portal/quote/checkout`,
       metadata: {
         dealer_id: dealer.id,
-        customer_id: pendingCustomer.id,
+        customer_id: pendingCustomerId,
         plan_type: plan.plan_type,
-        plan_id: plan.plan_type, // Required: plan_id = plan_type
+        plan_id: plan.plan_type,
         duration_months: String(plan.duration_months),
         purchase_source: 'dealer',
         discount_pct: String(discount_pct),
@@ -243,7 +239,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         checkout_url: session.url,
-        customer_id: pendingCustomer.id,
+        customer_id: pendingCustomerId,
         session_id: session.id,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
