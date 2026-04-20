@@ -45,7 +45,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -174,6 +174,14 @@ const DealerJourneyStep3 = lazy(() => import("./pages/dealer-portal/journey/Step
 const DealerJourneyStep4 = lazy(() => import("./pages/dealer-portal/journey/Step4Checkout"));
 const DealerJourneyStep5 = lazy(() => import("./pages/dealer-portal/journey/Step5Confirmation"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
+
+// Dealer Admin (super_admin / admin)
+const DealerAdminLayout = lazy(() => import("./pages/dealer-admin/DealerAdminLayout"));
+const DealerAdminOverview = lazy(() => import("./pages/dealer-admin/DealerAdminOverview"));
+const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSales"));
+const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
+const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminInvoices"));
+const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
