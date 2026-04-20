@@ -388,6 +388,15 @@ const App = () => {
                     <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/confirmation" element={<DealerJourneyProvider><DealerJourneyStep5 /></DealerJourneyProvider>} />
 
+                    {/* Dealer Admin (super_admin / admin only) */}
+                    <Route path="/dealer-admin" element={<DealerAdminLayout />}>
+                      <Route index element={<DealerAdminOverview />} />
+                      <Route path="sales" element={<DealerAdminSales />} />
+                      <Route path="dealers" element={<DealerAdminDealers />} />
+                      <Route path="invoices" element={<DealerAdminInvoices />} />
+                      <Route path="analytics" element={<DealerAdminAnalytics />} />
+                    </Route>
+
                     <Route path="/:slug" element={<DynamicLandingPage />} />
                     
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
