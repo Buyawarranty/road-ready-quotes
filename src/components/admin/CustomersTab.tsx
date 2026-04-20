@@ -1301,10 +1301,13 @@ export const CustomersTab = ({
           google_ads_conversion_status: null,
           customer_dob: null,
           dealer_id: null,
-          payment_status: null
+          payment_status: null,
+          cancellation_note: null,
+          cancellation_note_updated_at: null,
+          cancellation_note_updated_by: null,
         }));
         
-        directData = [...directData, ...orphanedAsCustomers];
+        directData = [...directData, ...(orphanedAsCustomers as any)];
       }
       
       const directCount = directData.length;
