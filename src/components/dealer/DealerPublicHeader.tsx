@@ -65,20 +65,37 @@ export const DealerPublicHeader: React.FC = () => {
           </nav>
 
           {/* Right CTAs */}
-          <div className="hidden lg:flex items-center gap-6">
-            <Link
-              to="/dealer-portal/signup"
-              className="text-sm font-bold tracking-wider text-orange-500 hover:text-orange-400 transition-colors"
+          <div className="hidden lg:flex items-center gap-3">
+            <a
+              href="tel:03302295045"
+              className="inline-flex items-center gap-2 text-sm font-bold tracking-wider text-orange-500 hover:text-orange-400 transition-colors"
             >
-              CREATE DEALER ACCOUNT
-            </Link>
-            <Link to="/dealer-portal/login">
+              <Phone className="h-4 w-4" />
+              Call Us
+            </a>
+            <a
+              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm transition-colors"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp Us
+            </a>
+            <Link to="/dealer-portal/signup">
               <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wider rounded-full px-6 h-10"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wider rounded-full px-6 h-10"
               >
-                LOGIN
+                Start Today
               </Button>
+            </Link>
+            <Link
+              to="/dealer-portal/login"
+              className="inline-flex items-center gap-1.5 text-sm font-bold tracking-wider text-gray-300 hover:text-white transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+              Login
             </Link>
           </div>
 
