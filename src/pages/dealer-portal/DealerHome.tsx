@@ -43,7 +43,7 @@ const DealerHome = () => {
       <DealerPublicHeader />
 
       {/* HERO */}
-      <section className="bg-[#fff8ef] border-b border-gray-200">
+      <section className="bg-gray-100 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 pt-16 pb-0 grid lg:grid-cols-[1fr_460px] gap-12 items-end">
           <div className="pb-16">
             <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-200 rounded-full px-3 py-1 text-xs font-extrabold text-orange-800 tracking-wide mb-6">
