@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { DealerRegHero } from '@/components/dealer/DealerRegHero';
+import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
+import pandaVehicleLineup from '@/assets/panda-vehicle-lineup.png';
+import pandaSavings from '@/assets/panda-savings.png';
 import {
   Check, Zap, TrendingUp, LayoutDashboard, Smartphone, Shield, Users, BarChart3,
   Cog, Settings, Wind, Thermometer, Fuel, Wrench, CircleStop, RefreshCcw,
