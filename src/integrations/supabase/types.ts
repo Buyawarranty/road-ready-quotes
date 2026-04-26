@@ -1197,6 +1197,41 @@ export type Database = {
           },
         ]
       }
+      claim_notes: {
+        Row: {
+          claim_id: string
+          created_at: string
+          created_by: string | null
+          created_by_name: string | null
+          id: string
+          note: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          id?: string
+          note: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_name?: string | null
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_notes_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claim_quick_notes: {
         Row: {
           claim_id: string
@@ -1396,6 +1431,7 @@ export type Database = {
           file_name: string | null
           file_size: number | null
           file_url: string | null
+          file_urls: Json
           follow_up_date: string | null
           id: string
           internal_notes: string | null
@@ -1429,6 +1465,7 @@ export type Database = {
           file_name?: string | null
           file_size?: number | null
           file_url?: string | null
+          file_urls?: Json
           follow_up_date?: string | null
           id?: string
           internal_notes?: string | null
@@ -1462,6 +1499,7 @@ export type Database = {
           file_name?: string | null
           file_size?: number | null
           file_url?: string | null
+          file_urls?: Json
           follow_up_date?: string | null
           id?: string
           internal_notes?: string | null
@@ -2142,6 +2180,7 @@ export type Database = {
       }
       customers: {
         Row: {
+          acquisition_source: string | null
           assigned_to: string | null
           breakdown_recovery: boolean | null
           brevo_contact_id: string | null
@@ -2178,6 +2217,7 @@ export type Database = {
           id: string
           is_deleted: boolean | null
           is_manual_entry: boolean | null
+          is_test_cancellation: boolean
           labour_rate: number | null
           last_login: string | null
           last_name: string | null
@@ -2228,6 +2268,7 @@ export type Database = {
           wear_tear: boolean | null
         }
         Insert: {
+          acquisition_source?: string | null
           assigned_to?: string | null
           breakdown_recovery?: boolean | null
           brevo_contact_id?: string | null
@@ -2264,6 +2305,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           is_manual_entry?: boolean | null
+          is_test_cancellation?: boolean
           labour_rate?: number | null
           last_login?: string | null
           last_name?: string | null
@@ -2314,6 +2356,7 @@ export type Database = {
           wear_tear?: boolean | null
         }
         Update: {
+          acquisition_source?: string | null
           assigned_to?: string | null
           breakdown_recovery?: boolean | null
           brevo_contact_id?: string | null
@@ -2350,6 +2393,7 @@ export type Database = {
           id?: string
           is_deleted?: boolean | null
           is_manual_entry?: boolean | null
+          is_test_cancellation?: boolean
           labour_rate?: number | null
           last_login?: string | null
           last_name?: string | null
@@ -6586,6 +6630,8 @@ export type Database = {
         | "accounts_manager"
         | "lead_gen"
         | "accounts"
+        | "claims_agent"
+        | "claims_manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6773,6 +6819,8 @@ export const Constants = {
         "accounts_manager",
         "lead_gen",
         "accounts",
+        "claims_agent",
+        "claims_manager",
       ],
     },
   },
