@@ -206,19 +206,31 @@ const DealerHome = () => {
       {/* HOW IT WORKS */}
       <section className="py-20 px-6 lg:px-12 border-y border-gray-200" style={{ background: '#fff8ef' }}>
         <div className="max-w-7xl mx-auto">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
-            style={{ color: BRAND_ORANGE, background: '#fff', borderColor: '#fdd6b8' }}
-          >
-            The Process
+          <div className="grid lg:grid-cols-[1fr_400px] gap-10 items-center mb-12">
+            <div>
+              <div
+                className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
+                style={{ color: BRAND_ORANGE, background: '#fff', borderColor: '#fdd6b8' }}
+              >
+                The Process
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
+                Up and running in{' '}
+                <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>four easy steps</em>
+              </h2>
+              <p className="text-base text-gray-600 max-w-xl">
+                From first conversation to your first warranty sold — most dealers are fully set up and earning within 48 hours.
+              </p>
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              <img
+                src={pandaVehicleLineup}
+                alt="BuyAWarranty panda waving in front of cars, a van and a motorbike"
+                className="w-full max-w-md h-auto"
+                loading="lazy"
+              />
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
-            Up and running in{' '}
-            <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>four easy steps</em>
-          </h2>
-          <p className="text-base text-gray-600 max-w-xl mb-12">
-            From first conversation to your first warranty sold — most dealers are fully set up and earning within 48 hours.
-          </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 bg-gray-200 border border-gray-200 rounded-2xl overflow-hidden gap-px">
             {[
