@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { DealerRegHero } from '@/components/dealer/DealerRegHero';
+import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
+import pandaVehicleLineup from '@/assets/panda-vehicle-lineup.png';
+import pandaSavings from '@/assets/panda-savings.png';
 import {
   Check, Zap, TrendingUp, LayoutDashboard, Smartphone, Shield, Users, BarChart3,
   Cog, Settings, Wind, Thermometer, Fuel, Wrench, CircleStop, RefreshCcw,
@@ -105,12 +108,12 @@ const DealerHome = () => {
                 "Quote at the desk, sell at the desk. We've got your back — and your customer's car."
                 <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-t-[10px] border-t-white" />
               </div>
-              <div
-                className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6 shadow-2xl"
-                style={{ background: BRAND_ORANGE }}
-              >
-                <Shield className="w-14 h-14 text-white" strokeWidth={2.5} />
-              </div>
+              <img
+                src={pandaThumbsUp}
+                alt="BuyAWarranty panda mascot giving a thumbs up"
+                className="w-44 h-auto mb-4 drop-shadow-2xl"
+                loading="lazy"
+              />
               <div className="grid grid-cols-2 gap-3 w-full mb-7">
                 {[
                   { v: '58', l: 'New dealers this month' },
@@ -203,19 +206,31 @@ const DealerHome = () => {
       {/* HOW IT WORKS */}
       <section className="py-20 px-6 lg:px-12 border-y border-gray-200" style={{ background: '#fff8ef' }}>
         <div className="max-w-7xl mx-auto">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
-            style={{ color: BRAND_ORANGE, background: '#fff', borderColor: '#fdd6b8' }}
-          >
-            The Process
+          <div className="grid lg:grid-cols-[1fr_400px] gap-10 items-center mb-12">
+            <div>
+              <div
+                className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
+                style={{ color: BRAND_ORANGE, background: '#fff', borderColor: '#fdd6b8' }}
+              >
+                The Process
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
+                Up and running in{' '}
+                <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>four easy steps</em>
+              </h2>
+              <p className="text-base text-gray-600 max-w-xl">
+                From first conversation to your first warranty sold — most dealers are fully set up and earning within 48 hours.
+              </p>
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              <img
+                src={pandaVehicleLineup}
+                alt="BuyAWarranty panda waving in front of cars, a van and a motorbike"
+                className="w-full max-w-md h-auto"
+                loading="lazy"
+              />
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
-            Up and running in{' '}
-            <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>four easy steps</em>
-          </h2>
-          <p className="text-base text-gray-600 max-w-xl mb-12">
-            From first conversation to your first warranty sold — most dealers are fully set up and earning within 48 hours.
-          </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 bg-gray-200 border border-gray-200 rounded-2xl overflow-hidden gap-px">
             {[
@@ -245,19 +260,31 @@ const DealerHome = () => {
       {/* REVENUE CALCULATOR */}
       <section id="calculator" className="py-20 px-6 lg:px-12 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
-            style={{ color: BRAND_ORANGE, background: '#fff4ec', borderColor: '#fdd6b8' }}
-          >
-            Revenue Tool
+          <div className="grid lg:grid-cols-[400px_1fr] gap-10 items-center mb-12">
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <img
+                src={pandaSavings}
+                alt="BuyAWarranty panda dropping a coin into a savings jar"
+                className="w-full max-w-md h-auto"
+                loading="lazy"
+              />
+            </div>
+            <div className="order-1 lg:order-2">
+              <div
+                className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
+                style={{ color: BRAND_ORANGE, background: '#fff4ec', borderColor: '#fdd6b8' }}
+              >
+                Revenue Tool
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
+                See what we could add to your{' '}
+                <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>bottom line</em>
+              </h2>
+              <p className="text-base text-gray-600 max-w-xl">
+                Slide the values to match your dealership and we'll show a realistic monthly warranty revenue picture.
+              </p>
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
-            See what we could add to your{' '}
-            <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>bottom line</em>
-          </h2>
-          <p className="text-base text-gray-600 max-w-xl mb-12">
-            Slide the values to match your dealership and we'll show a realistic monthly warranty revenue picture.
-          </p>
 
           <div className="grid lg:grid-cols-[1fr_420px] gap-10 items-start">
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8">
