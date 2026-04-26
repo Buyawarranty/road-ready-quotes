@@ -10,7 +10,7 @@ import { Check, Zap, TrendingUp, LayoutDashboard, UserPlus, FileText, Shield, Ca
 
 const DealerHome = () => {
   return (
-    <div className="min-h-screen bg-gray-950 overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <SEOHead
         title="Dealer Warranty Solutions | BuyAWarranty"
         description="Create quotes and manage warranties in seconds. Partner with BuyAWarranty for fast dealer warranty solutions."
@@ -20,7 +20,7 @@ const DealerHome = () => {
       <DealerPublicHeader />
 
       {/* Hero Section */}
-      <section className="bg-gray-950 pt-3 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-12 px-3 sm:px-0">
+      <section className="bg-white pt-3 sm:pt-8 lg:pt-16 pb-6 sm:pb-8 lg:pb-12 px-3 sm:px-0">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
             {/* Left Content */}
@@ -29,23 +29,23 @@ const DealerHome = () => {
               <div className="space-y-2 mb-2 sm:mb-4">
                 <span className="inline-block text-xs font-semibold text-orange-500 bg-orange-500/10 px-3 py-1 rounded-full mb-2">DEALER PORTAL</span>
                 <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black leading-tight">
-                  <span className="text-white">Dealer warranties </span>
+                  <span className="text-gray-900">Dealer warranties </span>
                   <span className="text-orange-500">made simple!</span>
                 </h1>
               </div>
 
               {/* Benefits */}
-              <div className="mb-3 sm:mb-6 text-gray-300 text-xs sm:text-sm md:text-base space-y-1 sm:space-y-2">
+              <div className="mb-3 sm:mb-6 text-gray-700 text-xs sm:text-sm md:text-base space-y-1 sm:space-y-2">
                 <div className="flex items-center">
-                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 flex-shrink-0" />
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mr-2 sm:mr-3 flex-shrink-0" />
                   <span className="font-medium">Create quotes in 60 seconds • Increase your revenue</span>
                 </div>
                 <div className="flex items-center">
-                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 flex-shrink-0" />
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mr-2 sm:mr-3 flex-shrink-0" />
                   <span className="font-medium">Simple dashboard • Track conversions • Manage warranties</span>
                 </div>
                 <div className="flex items-center">
-                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-400 mr-2 sm:mr-3 flex-shrink-0" />
+                  <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mr-2 sm:mr-3 flex-shrink-0" />
                   <span className="font-medium">Cars • Vans • Hybrid • EV • Motorbikes</span>
                 </div>
               </div>
@@ -55,15 +55,15 @@ const DealerHome = () => {
                 <DealerRegHero />
 
                 {/* Trust block */}
-                <div className="mt-3 sm:mt-5 bg-gray-900 border border-gray-800 rounded-xl shadow-sm px-5 py-4 text-center">
-                  <h2 className="text-sm sm:text-[17px] font-bold text-white">
+                <div className="mt-3 sm:mt-5 bg-gray-50 border border-gray-200 rounded-xl shadow-sm px-5 py-4 text-center">
+                  <h2 className="text-sm sm:text-[17px] font-bold text-gray-900">
                     Trusted by UK dealers. Fast setup. No surprises.
                   </h2>
                   <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
-                    <span className="text-gray-400">Speak to the team:</span>
+                    <span className="text-gray-600">Speak to the team:</span>
                     <a
                       href="tel:03302295040"
-                      className="font-semibold text-orange-400 hover:underline"
+                      className="font-semibold text-orange-600 hover:underline"
                     >
                       0330 229 5040
                     </a>
@@ -96,8 +96,8 @@ const DealerHome = () => {
                       { icon: Bike, label: 'Motorbikes' },
                     ].map((v) => (
                       <div key={v.label} className="flex items-center space-x-1.5">
-                        <v.icon className="w-5 h-5 text-green-400 flex-shrink-0" />
-                        <span className="font-medium text-gray-300 text-base">{v.label}</span>
+                        <v.icon className="w-5 h-5 text-green-600 flex-shrink-0" />
+                        <span className="font-medium text-gray-700 text-base">{v.label}</span>
                       </div>
                     ))}
                   </div>
@@ -109,8 +109,8 @@ const DealerHome = () => {
                 <div className="flex items-center justify-center gap-3 flex-wrap text-xs sm:text-sm">
                   {['Cars', 'Vans', 'Hybrid', 'EV', 'Motorbikes'].map((type) => (
                     <span key={type} className="flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 text-green-400" />
-                      <span className="font-medium text-gray-300">{type}</span>
+                      <Check className="w-3.5 h-3.5 text-green-600" />
+                      <span className="font-medium text-gray-700">{type}</span>
                     </span>
                   ))}
                 </div>
@@ -121,9 +121,9 @@ const DealerHome = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-12 lg:py-20 bg-gray-900">
+      <section className="py-12 lg:py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-10 text-white">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-10 text-gray-900">
             Why Dealers Choose BuyAWarranty
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
@@ -132,13 +132,13 @@ const DealerHome = () => {
               { icon: TrendingUp, title: 'Increase Revenue', desc: 'Add warranty sales to every vehicle transaction and boost your bottom line effortlessly.' },
               { icon: LayoutDashboard, title: 'Simple Dashboard', desc: 'Track all your quotes, warranties and conversions from one clean, easy-to-use interface.' },
             ].map((b) => (
-              <Card key={b.title} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors">
+              <Card key={b.title} className="bg-white border-gray-200 hover:border-gray-300 transition-colors">
                 <CardContent className="p-6 sm:p-8 text-center">
                   <div className="inline-flex p-4 bg-orange-500/10 rounded-full mb-4">
                     <b.icon className="h-8 w-8 text-orange-500" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-white">{b.title}</h3>
-                  <p className="text-gray-400">{b.desc}</p>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900">{b.title}</h3>
+                  <p className="text-gray-600">{b.desc}</p>
                 </CardContent>
               </Card>
             ))}
@@ -147,9 +147,9 @@ const DealerHome = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-12 lg:py-20 bg-gray-950">
+      <section className="py-12 lg:py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-10 text-white">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center mb-10 text-gray-900">
             How It Works
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -162,8 +162,8 @@ const DealerHome = () => {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 text-white rounded-full text-2xl font-bold mb-4">
                   {s.step}
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-white">{s.title}</h3>
-                <p className="text-gray-400">{s.desc}</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-900">{s.title}</h3>
+                <p className="text-gray-600">{s.desc}</p>
               </div>
             ))}
           </div>
