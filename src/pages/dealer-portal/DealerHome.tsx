@@ -218,7 +218,7 @@ const DealerHome = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-20 px-6 lg:px-12 border-y border-gray-200" style={{ background: '#fff8ef' }}>
+      <section className="py-20 px-6 lg:px-12 border-y border-gray-200 bg-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-[1fr_400px] gap-10 items-center mb-12">
             <div>
