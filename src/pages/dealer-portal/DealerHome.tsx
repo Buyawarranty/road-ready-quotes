@@ -108,12 +108,12 @@ const DealerHome = () => {
                 "Quote at the desk, sell at the desk. We've got your back — and your customer's car."
                 <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-0 h-0 border-x-[10px] border-x-transparent border-t-[10px] border-t-white" />
               </div>
-              <div
-                className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6 shadow-2xl"
-                style={{ background: BRAND_ORANGE }}
-              >
-                <Shield className="w-14 h-14 text-white" strokeWidth={2.5} />
-              </div>
+              <img
+                src={pandaThumbsUp}
+                alt="BuyAWarranty panda mascot giving a thumbs up"
+                className="w-44 h-auto mb-4 drop-shadow-2xl"
+                loading="lazy"
+              />
               <div className="grid grid-cols-2 gap-3 w-full mb-7">
                 {[
                   { v: '58', l: 'New dealers this month' },
