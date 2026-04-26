@@ -364,7 +364,7 @@ const DealerHome = () => {
       </section>
 
       {/* COVERAGE */}
-      <section className="py-20 px-6 lg:px-12 bg-gray-50 border-t border-gray-200">
+      <section className="py-20 px-6 lg:px-12 bg-gray-100 border-t border-gray-200">
         <div className="max-w-7xl mx-auto">
           <div
             className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
