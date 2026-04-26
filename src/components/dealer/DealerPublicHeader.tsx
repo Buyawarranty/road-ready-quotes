@@ -11,7 +11,6 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'HOME', to: '/dealer-portal/' },
   { label: 'WHY US', to: '/dealer-portal/#why-us' },
-  { label: 'DEALER HUB', to: '/dealer-portal/dashboard' },
   { label: 'RESOURCES', to: '/dealer-portal/#resources' },
   { label: 'CONTACT', to: '/dealer-portal/#contact' },
 ];
