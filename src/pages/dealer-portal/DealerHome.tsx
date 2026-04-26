@@ -260,19 +260,31 @@ const DealerHome = () => {
       {/* REVENUE CALCULATOR */}
       <section id="calculator" className="py-20 px-6 lg:px-12 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
-            style={{ color: BRAND_ORANGE, background: '#fff4ec', borderColor: '#fdd6b8' }}
-          >
-            Revenue Tool
+          <div className="grid lg:grid-cols-[400px_1fr] gap-10 items-center mb-12">
+            <div className="flex justify-center lg:justify-start order-2 lg:order-1">
+              <img
+                src={pandaSavings}
+                alt="BuyAWarranty panda dropping a coin into a savings jar"
+                className="w-full max-w-md h-auto"
+                loading="lazy"
+              />
+            </div>
+            <div className="order-1 lg:order-2">
+              <div
+                className="inline-flex items-center gap-2 text-xs font-extrabold tracking-widest uppercase border rounded-full px-3 py-1 mb-4"
+                style={{ color: BRAND_ORANGE, background: '#fff4ec', borderColor: '#fdd6b8' }}
+              >
+                Revenue Tool
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
+                See what we could add to your{' '}
+                <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>bottom line</em>
+              </h2>
+              <p className="text-base text-gray-600 max-w-xl">
+                Slide the values to match your dealership and we'll show a realistic monthly warranty revenue picture.
+              </p>
+            </div>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-950 max-w-2xl mb-4 leading-tight">
-            See what we could add to your{' '}
-            <em className="font-serif italic font-semibold" style={{ color: BRAND_ORANGE }}>bottom line</em>
-          </h2>
-          <p className="text-base text-gray-600 max-w-xl mb-12">
-            Slide the values to match your dealership and we'll show a realistic monthly warranty revenue picture.
-          </p>
 
           <div className="grid lg:grid-cols-[1fr_420px] gap-10 items-start">
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8">
