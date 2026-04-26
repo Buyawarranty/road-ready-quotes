@@ -126,20 +126,36 @@ export const DealerPublicHeader: React.FC = () => {
               </Link>
             ))}
             <div className="pt-2 flex flex-col gap-2">
-              <Link
-                to="/dealer-portal/signup"
+              <a
+                href="tel:03302295045"
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-2 text-sm font-bold tracking-wider text-orange-500"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-bold tracking-wider text-orange-500"
               >
-                CREATE DEALER ACCOUNT
-              </Link>
-              <Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)} className="px-3">
+                <Phone className="h-4 w-4" /> Call Us · 0330 229 5045
+              </a>
+              <a
+                href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center gap-2 mx-3 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm justify-center"
+              >
+                <MessageCircle className="h-4 w-4" /> WhatsApp Us
+              </a>
+              <Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)} className="px-3">
                 <Button
                   size="sm"
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wider rounded-full h-10"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wider rounded-full h-10"
                 >
-                  LOGIN
+                  Start Today
                 </Button>
+              </Link>
+              <Link
+                to="/dealer-portal/login"
+                onClick={() => setMobileOpen(false)}
+                className="px-3 py-2 text-sm font-bold tracking-wider text-gray-300 inline-flex items-center gap-1.5"
+              >
+                <LogIn className="h-4 w-4" /> Login
               </Link>
             </div>
           </div>
