@@ -50,15 +50,21 @@ const DealerHome = () => {
               <span>🇬🇧</span> Trusted by UK Independent Dealers
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-gray-950 mb-5">
-              The warranty partner your{' '}
+              No paperwork. No hassle.{' '}
               <em className="not-italic font-serif font-semibold italic" style={{ color: BRAND_ORANGE }}>
-                customers will thank you for
+                We do all the legwork for you.
               </em>
             </h1>
-            <p className="text-lg text-gray-700 leading-relaxed max-w-xl mb-8">
-              BuyAWarranty gives independent used car dealers straightforward warranties, a real revenue share,
-              and a UK team who actually picks up the phone. No nonsense — just cover that works.
+            <p className="text-lg text-gray-700 leading-relaxed max-w-xl mb-4">
+              Just send us the customer details and we'll process the warranty end-to-end —
+              quotes, paperwork, policy issue and claims. It's fully automated, so you can stay
+              focused on selling cars.
             </p>
+            <ul className="text-sm text-gray-700 mb-8 space-y-1.5">
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-600" /> Send us the details, we handle the rest</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-600" /> Zero paperwork at your end</li>
+              <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-600" /> Fully automated policy issue & claims</li>
+            </ul>
 
             <div className="max-w-md mb-6">
               <DealerRegHero />
@@ -70,14 +76,22 @@ const DealerHome = () => {
                 className="px-7 py-3.5 rounded-xl font-extrabold text-white text-sm shadow-lg hover:-translate-y-0.5 transition-all"
                 style={{ background: BRAND_ORANGE, boxShadow: '0 6px 20px rgba(235,75,0,0.3)' }}
               >
-                Become a Dealer Partner →
+                Start Today →
               </Link>
               <a
-                href="#calculator"
-                className="px-7 py-3.5 rounded-xl border-2 font-bold text-sm transition-all hover:bg-orange-50"
+                href="tel:03302295045"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border-2 font-bold text-sm transition-all hover:bg-orange-50"
                 style={{ borderColor: '#fdc7a8', color: BRAND_ORANGE }}
               >
-                Calculate My Revenue
+                <PhoneCall className="h-4 w-4" /> Call 0330 229 5045
+              </a>
+              <a
+                href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border-2 font-bold text-sm transition-all bg-green-500 hover:bg-green-600 text-white border-green-500"
+              >
+                WhatsApp Us
               </a>
             </div>
 
