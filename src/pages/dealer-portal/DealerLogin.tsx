@@ -23,7 +23,7 @@ const DealerLogin = () => {
     setLoading(true);
     setUnconfirmedEmail(null);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         if (error.message?.toLowerCase().includes('email not confirmed')) {
           setUnconfirmedEmail(email);
@@ -37,7 +37,28 @@ const DealerLogin = () => {
         throw error;
       }
 
-      const { data: dealer } = await supabase.from('dealers').select('id').limit(1).maybeSingle();
+      const userId = signInData.session?.user?.id;
+
+      // Check if this user is a super_admin / admin → route to Dealer Admin Dashboard
+      if (userId) {
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
+        const isAdmin = (roles || []).some((r: any) => ['super_admin', 'admin'].includes(r.role));
+        if (isAdmin) {
+          const redirect = searchParams.get('redirect');
+          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-admin');
+          return;
+        }
+      }
+
+      // Otherwise treat as a regular dealer user — must have a dealer record linked to them
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', userId as string)
+        .maybeSingle();
       if (!dealer) {
         await supabase.auth.signOut();
         toast({ title: 'Access denied', description: 'No dealer account found for this email.', variant: 'destructive' });
