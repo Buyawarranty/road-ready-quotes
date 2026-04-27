@@ -28,9 +28,19 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+  const getSafeRedirectPath = useCallback(() => {
+    const redirect = searchParams.get('redirect');
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return null;
+    if (redirect.startsWith('/dealer-admin')) return redirect;
+    if (redirect.startsWith('/dealer-portal')) return redirect;
+    if (redirect.startsWith('/admin-dashboard')) return redirect;
+    if (redirect.startsWith('/customer-dashboard')) return redirect;
+    return null;
+  }, [searchParams]);
 
   const redirectAfterSignIn = useCallback(async (userId: string) => {
     const fallbackPath = '/customer-dashboard/';
+    const requestedPath = getSafeRedirectPath();
 
     try {
       const timeout = new Promise<{ roleData: any[] | null; dealerData: any | null }>((resolve) => {
@@ -47,7 +57,14 @@ const Auth = () => {
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => adminRoles.includes(r.role as string));
-      const targetPath = hasAdminRole
+      const canUseRequestedPath = requestedPath
+        && (
+          !requestedPath.startsWith('/dealer-admin')
+          || roleData?.some((r) => ['super_admin', 'admin'].includes(r.role as string))
+        );
+      const targetPath = canUseRequestedPath
+        ? requestedPath
+        : hasAdminRole
         ? '/admin-dashboard/'
         : dealerData
           ? '/dealer-portal/dashboard'
@@ -61,9 +78,9 @@ const Auth = () => {
       }, 300);
     } catch (error) {
       console.error('Post-login redirect failed, using fallback:', error);
-      navigate(fallbackPath, { replace: true });
+      navigate(requestedPath || fallbackPath, { replace: true });
     }
-  }, [navigate]);
+  }, [getSafeRedirectPath, navigate]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
