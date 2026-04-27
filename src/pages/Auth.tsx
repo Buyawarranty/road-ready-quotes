@@ -198,10 +198,26 @@ const Auth = () => {
 
       console.log("Sign in successful:", data.user?.email);
       console.log("Session:", data.session);
-      
-      // Don't navigate immediately - let the auth state change handler do it
-      // This ensures proper auth state propagation
-      
+
+      // Explicitly navigate after successful sign-in (don't rely solely on auth listener,
+      // which may not fire SIGNED_IN if a session was already present).
+      if (data.session?.user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.session.user.id);
+
+        const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+        const hasAdminRole = roleData?.some(r => adminRoles.includes(r.role as string));
+
+        toast({
+          title: "Success",
+          description: "You have been signed in successfully!",
+        });
+
+        navigate(hasAdminRole ? '/admin-dashboard' : '/customer-dashboard', { replace: true });
+      }
+
     } catch (error: any) {
       console.error("Sign in failed:", error);
       toast({
