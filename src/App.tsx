@@ -11,6 +11,7 @@ import { preloadCriticalRoutes } from "@/utils/preloadRoutes";
 
 // Eager load critical components
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import WebsiteFooter from "@/components/WebsiteFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import NotFound from "./pages/NotFound";
@@ -146,7 +147,6 @@ const WarrantyTransfer = lazy(() => import("./pages/WarrantyTransfer"));
 
 // Admin and auth pages
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const Auth = lazy(() => import("./pages/Auth"));
 const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
 const PasswordReset = lazy(() => import("./components/PasswordReset"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
