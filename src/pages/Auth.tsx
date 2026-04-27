@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,6 +29,44 @@ const Auth = () => {
   
   const [loading, setLoading] = useState(false);
   const [isAdminUser, setIsAdminUser] = useState(false);
+
+  const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+
+  const redirectAfterSignIn = useCallback(async (userId: string) => {
+    const fallbackPath = '/customer-dashboard/';
+
+    try {
+      const timeout = new Promise<{ roleData: any[] | null; dealerData: any | null }>((resolve) => {
+        window.setTimeout(() => resolve({ roleData: null, dealerData: null }), 4000);
+      });
+
+      const lookups = Promise.all([
+        supabase.from('user_roles').select('role').eq('user_id', userId),
+        supabase.from('dealers').select('id').eq('user_id', userId).maybeSingle(),
+      ]).then(([rolesResult, dealerResult]) => ({
+        roleData: rolesResult.data || [],
+        dealerData: dealerResult.data || null,
+      }));
+
+      const { roleData, dealerData } = await Promise.race([lookups, timeout]);
+      const hasAdminRole = roleData?.some((r) => adminRoles.includes(r.role as string));
+      const targetPath = hasAdminRole
+        ? '/admin-dashboard/'
+        : dealerData
+          ? '/dealer-portal/dashboard'
+          : fallbackPath;
+
+      navigate(targetPath, { replace: true });
+      window.setTimeout(() => {
+        if (window.location.pathname !== targetPath) {
+          window.location.replace(targetPath);
+        }
+      }, 300);
+    } catch (error) {
+      console.error('Post-login redirect failed, using fallback:', error);
+      navigate(fallbackPath, { replace: true });
+    }
+  }, [navigate]);
 
   // Check if current user is super_admin or admin to show debug tools
   useEffect(() => {
@@ -127,47 +165,12 @@ const Auth = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    // Set up auth state listener to handle navigation on successful sign in
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth page: Auth state changed:', event, session?.user?.email);
-        
-        if (event === 'SIGNED_IN' && session) {
-          console.log('Auth page: User signed in, checking role and navigating');
-          
-          // Check user role and navigate - fetch ALL roles for the user
-          const { data: roleData, error } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', session.user.id);
-
-          toast({
-            title: "Success",
-            description: "You have been signed in successfully!",
-          });
-
-          // Define admin roles that should go to admin dashboard
-          const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
-          
-          // Check if user has ANY admin role
-          const hasAdminRole = !error && roleData && roleData.some(r => adminRoles.includes(r.role));
-          
-          if (hasAdminRole) {
-            console.log("Auth page: Admin user detected with roles:", roleData?.map(r => r.role), "redirecting to admin dashboard");
-            navigate('/admin-dashboard', { replace: true });
-          } else {
-            console.log("Auth page: Regular user detected, redirecting to customer dashboard");
-            navigate('/customer-dashboard', { replace: true });
-          }
-        } else if (event === 'SIGNED_OUT') {
-          // User signed out, stay on auth page
-          console.log('Auth page: User signed out');
-        }
-      }
-    );
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth page: Auth state changed:', event, session?.user?.email);
+    });
 
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, []);
 
   // Show password gate if not unlocked (AFTER all hooks)
   if (!isUnlocked) {
@@ -199,23 +202,12 @@ const Auth = () => {
       console.log("Sign in successful:", data.user?.email);
       console.log("Session:", data.session);
 
-      // Explicitly navigate after successful sign-in (don't rely solely on auth listener,
-      // which may not fire SIGNED_IN if a session was already present).
       if (data.session?.user) {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', data.session.user.id);
-
-        const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
-        const hasAdminRole = roleData?.some(r => adminRoles.includes(r.role as string));
-
         toast({
           title: "Success",
           description: "You have been signed in successfully!",
         });
-
-        navigate(hasAdminRole ? '/admin-dashboard' : '/customer-dashboard', { replace: true });
+        await redirectAfterSignIn(data.session.user.id);
       }
 
     } catch (error: any) {
