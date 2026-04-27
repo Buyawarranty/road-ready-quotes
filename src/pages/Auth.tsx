@@ -12,8 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
-import AdminLoginDebug from '@/components/admin/AdminLoginDebug';
-import CustomerLoginDebugTool from '@/components/admin/CustomerLoginDebugTool';
 import { AuthPasswordGate } from '@/components/auth/AuthPasswordGate';
 
 const Auth = () => {
@@ -28,7 +26,6 @@ const Auth = () => {
   });
   
   const [loading, setLoading] = useState(false);
-  const [isAdminUser, setIsAdminUser] = useState(false);
 
   const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
 
@@ -68,21 +65,6 @@ const Auth = () => {
     }
   }, [navigate]);
 
-  // Check if current user is super_admin or admin to show debug tools
-  useEffect(() => {
-    const checkAdminRole = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id);
-        const roles = roleData?.map(r => r.role) || [];
-        setIsAdminUser(roles.some(r => ['super_admin', 'admin'].includes(r as string)));
-      }
-    };
-    checkAdminRole();
-  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -570,13 +552,6 @@ const Auth = () => {
           </CardContent>
         </Card>
         
-        {/* Debug tools - only visible to super_admin and admin */}
-        {isAdminUser && (
-          <div className="mt-8 grid md:grid-cols-2 gap-6">
-            <AdminLoginDebug />
-            <CustomerLoginDebugTool />
-          </div>
-        )}
         </div>
       </div>
     </div>
