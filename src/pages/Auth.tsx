@@ -250,9 +250,13 @@ const Auth = () => {
         await redirectAfterSignIn(recoveredUser.id);
         return;
       }
+      const rawMessage = getErrorMessage(error);
+      const friendly = /failed to fetch|networkerror|load failed/i.test(rawMessage)
+        ? 'Could not reach the authentication server. This is usually caused by an ad blocker, privacy extension, or VPN. Please disable extensions for this site and try again.'
+        : rawMessage;
       toast({
         title: "Sign In Failed",
-        description: getErrorMessage(error),
+        description: friendly,
         variant: "destructive",
       });
     } finally {
