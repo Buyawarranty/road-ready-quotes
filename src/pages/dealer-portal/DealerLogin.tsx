@@ -10,8 +10,8 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { isAdminRole } from '@/lib/adminRoles';
 
 const DealerLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('info@buyawarranty.co.uk');
+  const [password, setPassword] = useState('Trade2002!!');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
