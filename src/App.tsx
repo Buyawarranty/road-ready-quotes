@@ -184,6 +184,7 @@ const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminI
 const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
 const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdminPlaceholder"));
 const DealerAdminCustomers = lazy(() => import("./pages/dealer-admin/DealerAdminCustomers"));
+const DealerAdminLeads = lazy(() => import("./pages/dealer-admin/DealerAdminLeads"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
