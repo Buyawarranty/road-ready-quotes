@@ -60,7 +60,7 @@ const Auth = () => {
       const canUseRequestedPath = requestedPath
         && (
           !requestedPath.startsWith('/dealer-admin')
-          || roleData?.some((r) => ['super_admin', 'admin'].includes(r.role as string))
+          || hasAdminRole
         );
       const targetPath = canUseRequestedPath
         ? requestedPath
