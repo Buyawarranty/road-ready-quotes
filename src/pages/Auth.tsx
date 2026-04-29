@@ -14,6 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { AuthPasswordGate } from '@/components/auth/AuthPasswordGate';
 
+const ADMIN_ROLES = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+
+const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), timeoutMs);
+    }),
+  ]);
+};
+
 const Auth = () => {
   // ALL HOOKS MUST BE CALLED UNCONDITIONALLY AT THE TOP
   const { toast } = useToast();
@@ -27,7 +38,6 @@ const Auth = () => {
   
   const [loading, setLoading] = useState(false);
 
-  const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
     if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return null;
@@ -56,7 +66,7 @@ const Auth = () => {
       }));
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
-      const hasAdminRole = roleData?.some((r) => adminRoles.includes(r.role as string));
+      const hasAdminRole = roleData?.some((r) => ADMIN_ROLES.includes(r.role as string));
       const canUseRequestedPath = requestedPath
         && (
           !requestedPath.startsWith('/dealer-admin')
