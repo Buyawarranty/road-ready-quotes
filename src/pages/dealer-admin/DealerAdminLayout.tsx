@@ -5,6 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
   { to: '/dealer-admin/sales', label: 'Dealer Sales', icon: ShoppingBag },
@@ -30,7 +32,6 @@ const DealerAdminLayout: React.FC = () => {
         .select('role')
         .eq('user_id', user.id);
       const roles = (data || []).map((r) => r.role as string);
-      const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
       setAllowed(roles.some((role) => adminRoles.includes(role)));
     };
     check();
