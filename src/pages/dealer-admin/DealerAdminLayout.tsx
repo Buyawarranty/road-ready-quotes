@@ -15,6 +15,8 @@ const navItems = [
   { to: '/dealer-admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
+const dealerAdminLoginPath = '/dealer-portal/login?redirect=/dealer-admin';
+
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
@@ -24,19 +26,32 @@ const DealerAdminLayout: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!gateUnlocked) return;
+    if (!gateUnlocked) {
+      setAllowed(null);
+      return;
+    }
     const check = async () => {
       if (loading) return;
       if (!user) {
-        navigate('/auth/?redirect=/dealer-admin');
+        navigate(dealerAdminLoginPath, { replace: true });
         return;
       }
-      const { data } = await supabase
+      setAllowed(null);
+      const { data, error } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id);
+      if (error) {
+        console.error('Dealer admin role check failed:', error);
+        navigate(dealerAdminLoginPath, { replace: true });
+        return;
+      }
       const roles = (data || []).map((r) => r.role as string);
-      setAllowed(roles.some((role) => isAdminRole(role)));
+      if (!roles.some((role) => isAdminRole(role))) {
+        navigate(dealerAdminLoginPath, { replace: true });
+        return;
+      }
+      setAllowed(true);
     };
     check();
   }, [user, loading, navigate, gateUnlocked]);
