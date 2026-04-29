@@ -193,15 +193,32 @@ const Auth = () => {
     
     try {
       console.log("Attempting to sign in with:", email);
-      
-      const { data, error } = await withTimeout(
-        supabase.auth.signInWithPassword({
-          email,
-          password,
-        }),
-        8000,
-        'Sign in took too long. Please try again.'
-      );
+
+      // Retry sign-in up to 3 times to handle transient "Failed to fetch" network errors
+      let data: any = null;
+      let error: any = null;
+      let lastFetchError: unknown = null;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const result = await withTimeout(
+            supabase.auth.signInWithPassword({ email, password }),
+            10000,
+            'Sign in took too long. Please try again.'
+          );
+          data = result.data;
+          error = result.error;
+          break;
+        } catch (fetchErr) {
+          lastFetchError = fetchErr;
+          console.warn(`Sign-in attempt ${attempt} failed:`, fetchErr);
+          if (attempt < 3) {
+            await new Promise((r) => setTimeout(r, 600 * attempt));
+          }
+        }
+      }
+      if (!data && !error && lastFetchError) {
+        throw lastFetchError;
+      }
 
       if (error) {
         console.error("Sign in error:", error.message, error);
@@ -233,9 +250,13 @@ const Auth = () => {
         await redirectAfterSignIn(recoveredUser.id);
         return;
       }
+      const rawMessage = getErrorMessage(error);
+      const friendly = /failed to fetch|networkerror|load failed/i.test(rawMessage)
+        ? 'Could not reach the authentication server. This is usually caused by an ad blocker, privacy extension, or VPN. Please disable extensions for this site and try again.'
+        : rawMessage;
       toast({
         title: "Sign In Failed",
-        description: getErrorMessage(error),
+        description: friendly,
         variant: "destructive",
       });
     } finally {
