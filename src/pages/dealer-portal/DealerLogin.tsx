@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { isAdminRole } from '@/lib/adminRoles';
 
 const DealerLogin = () => {
   const [email, setEmail] = useState('');
@@ -45,7 +46,7 @@ const DealerLogin = () => {
           .from('user_roles')
           .select('role')
           .eq('user_id', userId);
-        const isAdmin = (roles || []).some((r: any) => ['super_admin', 'admin'].includes(r.role));
+        const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         if (isAdmin) {
           const redirect = searchParams.get('redirect');
           navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-admin');
