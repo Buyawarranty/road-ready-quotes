@@ -4,8 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+import { isAdminRole } from '@/lib/adminRoles';
 
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -32,7 +31,7 @@ const DealerAdminLayout: React.FC = () => {
         .select('role')
         .eq('user_id', user.id);
       const roles = (data || []).map((r) => r.role as string);
-      setAllowed(roles.some((role) => adminRoles.includes(role)));
+      setAllowed(roles.some((role) => isAdminRole(role)));
     };
     check();
   }, [user, loading, navigate]);
