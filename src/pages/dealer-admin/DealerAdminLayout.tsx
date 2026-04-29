@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isAdminRole } from '@/lib/adminRoles';
+import { DealerAdminPasswordGate } from '@/components/auth/DealerAdminPasswordGate';
 
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -18,6 +19,13 @@ const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [gateUnlocked, setGateUnlocked] = useState<boolean>(
+    () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
+  );
+
+  if (!gateUnlocked) {
+    return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
+  }
 
   useEffect(() => {
     const check = async () => {
