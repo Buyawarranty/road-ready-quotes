@@ -13,8 +13,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { AuthPasswordGate } from '@/components/auth/AuthPasswordGate';
-
-const ADMIN_ROLES = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+import { isAdminRole } from '@/lib/adminRoles';
 
 const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> => {
   return Promise.race([
@@ -66,7 +65,7 @@ const Auth = () => {
       }));
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
-      const hasAdminRole = roleData?.some((r) => ADMIN_ROLES.includes(r.role as string));
+      const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
       const canUseRequestedPath = requestedPath
         && (
           !requestedPath.startsWith('/dealer-admin')
