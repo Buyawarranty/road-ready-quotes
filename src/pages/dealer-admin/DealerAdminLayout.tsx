@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isAdminRole } from '@/lib/adminRoles';
+import { DealerAdminPasswordGate } from '@/components/auth/DealerAdminPasswordGate';
 
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
