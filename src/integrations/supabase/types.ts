@@ -2544,6 +2544,110 @@ export type Database = {
           },
         ]
       }
+      dealer_customers: {
+        Row: {
+          address_line_1: string | null
+          address_line_2: string | null
+          archived_at: string | null
+          assigned_to: string | null
+          city: string | null
+          country: string | null
+          county: string | null
+          created_at: string
+          dealer_id: string | null
+          email: string | null
+          email_normalized: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          mobile: string | null
+          notes: string | null
+          phone: string | null
+          plan_type: string | null
+          postcode: string | null
+          registration_plate: string | null
+          registration_plate_normalized: string | null
+          signup_date: string | null
+          status: string
+          updated_at: string
+          vehicle_fuel_type: string | null
+          vehicle_make: string | null
+          vehicle_mileage: number | null
+          vehicle_model: string | null
+          vehicle_year: number | null
+        }
+        Insert: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          archived_at?: string | null
+          assigned_to?: string | null
+          city?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          dealer_id?: string | null
+          email?: string | null
+          email_normalized?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          plan_type?: string | null
+          postcode?: string | null
+          registration_plate?: string | null
+          registration_plate_normalized?: string | null
+          signup_date?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_fuel_type?: string | null
+          vehicle_make?: string | null
+          vehicle_mileage?: number | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+        }
+        Update: {
+          address_line_1?: string | null
+          address_line_2?: string | null
+          archived_at?: string | null
+          assigned_to?: string | null
+          city?: string | null
+          country?: string | null
+          county?: string | null
+          created_at?: string
+          dealer_id?: string | null
+          email?: string | null
+          email_normalized?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          plan_type?: string | null
+          postcode?: string | null
+          registration_plate?: string | null
+          registration_plate_normalized?: string | null
+          signup_date?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_fuel_type?: string | null
+          vehicle_make?: string | null
+          vehicle_mileage?: number | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_customers_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_quotes: {
         Row: {
           created_at: string
