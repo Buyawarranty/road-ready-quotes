@@ -23,11 +23,8 @@ const DealerAdminLayout: React.FC = () => {
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
   );
 
-  if (!gateUnlocked) {
-    return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
-  }
-
   useEffect(() => {
+    if (!gateUnlocked) return;
     const check = async () => {
       if (loading) return;
       if (!user) {
@@ -42,7 +39,11 @@ const DealerAdminLayout: React.FC = () => {
       setAllowed(roles.some((role) => isAdminRole(role)));
     };
     check();
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, gateUnlocked]);
+
+  if (!gateUnlocked) {
+    return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
+  }
 
   if (loading || allowed === null) {
     return (
