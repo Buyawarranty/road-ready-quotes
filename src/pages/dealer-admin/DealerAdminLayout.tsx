@@ -6,6 +6,7 @@ import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogO
 import { Button } from '@/components/ui/button';
 import { isAdminRole } from '@/lib/adminRoles';
 import { DealerAdminPasswordGate } from '@/components/auth/DealerAdminPasswordGate';
+import { DealerAdminAuthLogin } from '@/components/auth/DealerAdminAuthLogin';
 
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -14,8 +15,6 @@ const navItems = [
   { to: '/dealer-admin/invoices', label: 'Invoices', icon: FileText },
   { to: '/dealer-admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
-
-const dealerAdminLoginPath = '/dealer-portal/login?redirect=/dealer-admin';
 
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ const DealerAdminLayout: React.FC = () => {
     const check = async () => {
       if (loading) return;
       if (!user) {
-        navigate(dealerAdminLoginPath, { replace: true });
+        setAllowed(false);
         return;
       }
       setAllowed(null);
@@ -43,12 +42,12 @@ const DealerAdminLayout: React.FC = () => {
         .eq('user_id', user.id);
       if (error) {
         console.error('Dealer admin role check failed:', error);
-        navigate(dealerAdminLoginPath, { replace: true });
+        setAllowed(false);
         return;
       }
       const roles = (data || []).map((r) => r.role as string);
       if (!roles.some((role) => isAdminRole(role))) {
-        navigate(dealerAdminLoginPath, { replace: true });
+        setAllowed(false);
         return;
       }
       setAllowed(true);
@@ -69,15 +68,7 @@ const DealerAdminLayout: React.FC = () => {
   }
 
   if (!allowed) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center max-w-md p-8">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Access denied</h1>
-          <p className="text-muted-foreground mb-6">Only authorised admin users can access the dealer admin dashboard.</p>
-          <Button onClick={() => navigate('/admin-dashboard/')}>Back to retail admin</Button>
-        </div>
-      </div>
-    );
+    return <DealerAdminAuthLogin onAuthenticated={() => setAllowed(true)} />;
   }
 
   return (
