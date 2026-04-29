@@ -2544,6 +2544,185 @@ export type Database = {
           },
         ]
       }
+      dealer_admin_orders: {
+        Row: {
+          amount_paid: number | null
+          created_at: string
+          created_by: string | null
+          customer_email: string | null
+          customer_email_normalized: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          dealer_id: string | null
+          dealer_name: string | null
+          duration_months: number | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          payment_status: string
+          plan_type: string | null
+          quote_id: string | null
+          status: string
+          updated_at: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_reg: string | null
+          vehicle_reg_normalized: string | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          dealer_name?: string | null
+          duration_months?: number | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          plan_type?: string | null
+          quote_id?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+          vehicle_reg_normalized?: string | null
+        }
+        Update: {
+          amount_paid?: number | null
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          dealer_name?: string | null
+          duration_months?: number | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          plan_type?: string | null
+          quote_id?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+          vehicle_reg_normalized?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_admin_orders_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealer_admin_orders_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "dealer_admin_quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_admin_quotes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          customer_email: string | null
+          customer_email_normalized: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          dealer_id: string | null
+          dealer_name: string | null
+          dealer_price: number | null
+          discount_pct: number | null
+          duration_months: number | null
+          expires_at: string | null
+          id: string
+          notes: string | null
+          plan_type: string | null
+          retail_price: number | null
+          status: string
+          updated_at: string
+          vehicle_make: string | null
+          vehicle_mileage: number | null
+          vehicle_model: string | null
+          vehicle_reg: string | null
+          vehicle_reg_normalized: string | null
+          vehicle_year: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          dealer_name?: string | null
+          dealer_price?: number | null
+          discount_pct?: number | null
+          duration_months?: number | null
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          plan_type?: string | null
+          retail_price?: number | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_mileage?: number | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+          vehicle_reg_normalized?: string | null
+          vehicle_year?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          dealer_name?: string | null
+          dealer_price?: number | null
+          discount_pct?: number | null
+          duration_months?: number | null
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          plan_type?: string | null
+          retail_price?: number | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_mileage?: number | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+          vehicle_reg_normalized?: string | null
+          vehicle_year?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_admin_quotes_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_customers: {
         Row: {
           address_line_1: string | null
