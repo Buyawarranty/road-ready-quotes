@@ -182,6 +182,7 @@ const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSale
 const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
 const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminInvoices"));
 const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
+const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdminPlaceholder"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -395,6 +396,37 @@ const App = () => {
                       <Route path="dealers" element={<DealerAdminDealers />} />
                       <Route path="invoices" element={<DealerAdminInvoices />} />
                       <Route path="analytics" element={<DealerAdminAnalytics />} />
+                      {/* Mirrored retail tabs (dealer-scoped placeholders) */}
+                      <Route path="new-leads" element={<DealerAdminPlaceholder title="New Leads" description="Manage dealer sales pipeline and lead assignments" />} />
+                      <Route path="quotes-orders" element={<DealerAdminPlaceholder title="Quotes & Orders" description="Create dealer quotes or confirm paid orders" />} />
+                      <Route path="sales-script" element={<DealerAdminPlaceholder title="Sales Script" description="Sales script, tips and customer feedback" />} />
+                      <Route path="customers" element={<DealerAdminPlaceholder title="Customers" description="Manage dealer customer accounts and policies" />} />
+                      <Route path="plans" element={<DealerAdminPlaceholder title="Standard Plans" description="Manage Basic, Gold, and Platinum plans for dealers" />} />
+                      <Route path="bulk-pricing" element={<DealerAdminPlaceholder title="Bulk Pricing" description="Update dealer pricing using CSV files" />} />
+                      <Route path="special-plans" element={<DealerAdminPlaceholder title="Special Vehicle Plans" description="Manage EV, PHEV, and Motorbike plans for dealers" />} />
+                      <Route path="discount-codes" element={<DealerAdminPlaceholder title="Discount Codes" description="Manage dealer discount codes and promotions" />} />
+                      <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
+                      <Route path="claims" element={<DealerAdminPlaceholder title="Claims" description="Manage dealer customer claim submissions" />} />
+                      <Route path="reviews" element={<DealerAdminPlaceholder title="Reviews" description="Monitor dealer Trustpilot and Google reviews" />} />
+                      <Route path="contact" element={<DealerAdminPlaceholder title="Contact Submissions" description="Manage dealer contact form submissions" />} />
+                      <Route path="abandoned-carts" element={<DealerAdminPlaceholder title="Abandoned Carts" description="Track and follow up with incomplete dealer purchases" />} />
+                      <Route path="pending-register" element={<DealerAdminPlaceholder title="Pending Register" description="Scheduled dealer warranty submissions to register" />} />
+                      <Route path="marketing-contacts" element={<DealerAdminPlaceholder title="Marketing Contacts" description="Unified mailing list for dealer remarketing" />} />
+                      <Route path="email-hub" element={<DealerAdminPlaceholder title="Email Hub" description="Dealer email templates, campaigns, analytics & automation" />} />
+                      <Route path="page-analytics" element={<DealerAdminPlaceholder title="Page Analytics" description="Track dealer page visits, traffic sources & Google Ads" />} />
+                      <Route path="marketing-analytics" element={<DealerAdminPlaceholder title="Marketing Analytics" description="Google Ads, Facebook Ads, conversions & ROAS" />} />
+                      <Route path="vehicle-stats" element={<DealerAdminPlaceholder title="Vehicle Stats" description="Analyse which vehicles sell the most dealer warranties" />} />
+                      <Route path="lead-backup" element={<DealerAdminPlaceholder title="Lead Backup & Recovery" description="Backup dealer contacts, export & sync to marketing" />} />
+                      <Route path="user-permissions" element={<DealerAdminPlaceholder title="User Permissions" description="Manage dealer admin user access and permissions" />} />
+                      <Route path="document-mapping" element={<DealerAdminPlaceholder title="Document Mapping" description="Manage dealer plan to document mappings" />} />
+                      <Route path="policy-letters" element={<DealerAdminPlaceholder title="Policy Letters" description="Generate printable A4 policy letters for dealer customers" />} />
+                      <Route path="blog-writing" element={<DealerAdminPlaceholder title="Blog Writing" description="Create and manage dealer blog content with AI tools" />} />
+                      <Route path="landing-pages" element={<DealerAdminPlaceholder title="Landing Pages" description="Create SEO-optimised dealer landing pages" />} />
+                      <Route path="testing" element={<DealerAdminPlaceholder title="Testing" description="Test APIs and create dealer test data" />} />
+                      <Route path="timesheets" element={<DealerAdminPlaceholder title="Timesheets" description="Track dealer admin work hours, deals and commissions" />} />
+                      <Route path="sales-scoreboard" element={<DealerAdminPlaceholder title="Sales Scoreboard" description="Dealer leaderboard, awards and sales competition" />} />
+                      <Route path="discounts-given" element={<DealerAdminPlaceholder title="Discounts Given" description="Track dealer discounts vs retail pricing" />} />
+                      <Route path="account" element={<DealerAdminPlaceholder title="Account Settings" description="Manage your dealer admin account and password" />} />
                     </Route>
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
