@@ -24,6 +24,8 @@ const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number, message: 
   ]);
 };
 
+const getErrorMessage = (error: unknown) => error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+
 const Auth = () => {
   // ALL HOOKS MUST BE CALLED UNCONDITIONALLY AT THE TOP
   const { toast } = useToast();
@@ -224,11 +226,16 @@ const Auth = () => {
         await redirectAfterSignIn(signedInUser.id);
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Sign in failed:", error);
+      const recoveredUser = (await supabase.auth.getSession()).data.session?.user;
+      if (recoveredUser) {
+        await redirectAfterSignIn(recoveredUser.id);
+        return;
+      }
       toast({
         title: "Sign In Failed",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
     } finally {
