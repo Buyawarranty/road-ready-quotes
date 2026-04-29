@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { isAdminRole } from '@/lib/adminRoles';
 
 const navItems = [
   { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
@@ -29,8 +30,8 @@ const DealerAdminLayout: React.FC = () => {
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id);
-      const roles = (data || []).map((r) => r.role);
-      setAllowed(roles.includes('super_admin' as any) || roles.includes('admin' as any));
+      const roles = (data || []).map((r) => r.role as string);
+      setAllowed(roles.some((role) => isAdminRole(role)));
     };
     check();
   }, [user, loading, navigate]);
@@ -48,7 +49,7 @@ const DealerAdminLayout: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center max-w-md p-8">
           <h1 className="text-2xl font-bold text-foreground mb-2">Access denied</h1>
-          <p className="text-muted-foreground mb-6">Only super admins and admins can access the dealer admin dashboard.</p>
+          <p className="text-muted-foreground mb-6">Only authorised admin users can access the dealer admin dashboard.</p>
           <Button onClick={() => navigate('/admin-dashboard/')}>Back to retail admin</Button>
         </div>
       </div>
