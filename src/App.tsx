@@ -184,6 +184,7 @@ const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminI
 const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
 const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdminPlaceholder"));
 const DealerAdminCustomers = lazy(() => import("./pages/dealer-admin/DealerAdminCustomers"));
+const DealerAdminLeads = lazy(() => import("./pages/dealer-admin/DealerAdminLeads"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -398,7 +399,7 @@ const App = () => {
                       <Route path="invoices" element={<DealerAdminInvoices />} />
                       <Route path="analytics" element={<DealerAdminAnalytics />} />
                       {/* Mirrored retail tabs (dealer-scoped placeholders) */}
-                      <Route path="new-leads" element={<DealerAdminPlaceholder title="New Leads" description="Manage dealer sales pipeline and lead assignments" />} />
+                      <Route path="new-leads" element={<DealerAdminLeads />} />
                       <Route path="quotes-orders" element={<DealerAdminPlaceholder title="Quotes & Orders" description="Create dealer quotes or confirm paid orders" />} />
                       <Route path="sales-script" element={<DealerAdminPlaceholder title="Sales Script" description="Sales script, tips and customer feedback" />} />
                       <Route path="customers" element={<DealerAdminCustomers />} />
