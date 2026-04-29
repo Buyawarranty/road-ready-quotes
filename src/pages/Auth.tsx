@@ -193,10 +193,14 @@ const Auth = () => {
     try {
       console.log("Attempting to sign in with:", email);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithPassword({
+          email,
+          password,
+        }),
+        8000,
+        'Sign in took too long. Please try again.'
+      );
 
       if (error) {
         console.error("Sign in error:", error.message, error);
@@ -211,12 +215,14 @@ const Auth = () => {
       console.log("Sign in successful:", data.user?.email);
       console.log("Session:", data.session);
 
-      if (data.session?.user) {
+      const signedInUser = data.session?.user || data.user || (await supabase.auth.getUser()).data.user;
+
+      if (signedInUser) {
         toast({
           title: "Success",
           description: "You have been signed in successfully!",
         });
-        await redirectAfterSignIn(data.session.user.id);
+        await redirectAfterSignIn(signedInUser.id);
       }
 
     } catch (error: any) {
