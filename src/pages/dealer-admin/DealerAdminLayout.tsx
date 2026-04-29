@@ -19,6 +19,13 @@ const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [gateUnlocked, setGateUnlocked] = useState<boolean>(
+    () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
+  );
+
+  if (!gateUnlocked) {
+    return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
+  }
 
   useEffect(() => {
     const check = async () => {
