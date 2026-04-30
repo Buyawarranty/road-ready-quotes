@@ -193,6 +193,9 @@ const DealerAdminSalesScript = lazy(() => import("./pages/dealer-admin/DealerAdm
 const DealerAdminReviews = lazy(() => import("./pages/dealer-admin/DealerAdminReviews"));
 const DealerAdminContact = lazy(() => import("./pages/dealer-admin/DealerAdminContact"));
 const DealerAdminDiscountCodes = lazy(() => import("./pages/dealer-admin/DealerAdminDiscountCodes"));
+const DealerAdminAbandonedCarts = lazy(() => import("./pages/dealer-admin/DealerAdminAbandonedCarts"));
+const DealerAdminPendingRegister = lazy(() => import("./pages/dealer-admin/DealerAdminPendingRegister"));
+const DealerAdminReferrals = lazy(() => import("./pages/dealer-admin/DealerAdminReferrals"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
