@@ -434,7 +434,7 @@ const App = () => {
                       <Route path="email-hub" element={<DealerAdminEmailHub />} />
                       <Route path="page-analytics" element={<DealerAdminPageAnalytics />} />
                       <Route path="marketing-analytics" element={<DealerAdminPlaceholder title="Marketing Analytics" description="Google Ads, Facebook Ads, conversions & ROAS" />} />
-                      <Route path="vehicle-stats" element={<DealerAdminPlaceholder title="Vehicle Stats" description="Analyse which vehicles sell the most dealer warranties" />} />
+                      <Route path="vehicle-stats" element={<DealerAdminVehicleStats />} />
                       <Route path="lead-backup" element={<DealerAdminPlaceholder title="Lead Backup & Recovery" description="Backup dealer contacts, export & sync to marketing" />} />
                       <Route path="user-permissions" element={<DealerAdminPlaceholder title="User Permissions" description="Manage dealer admin user access and permissions" />} />
                       <Route path="document-mapping" element={<DealerAdminPlaceholder title="Document Mapping" description="Manage dealer plan to document mappings" />} />
@@ -443,8 +443,8 @@ const App = () => {
                       <Route path="landing-pages" element={<DealerAdminPlaceholder title="Landing Pages" description="Create SEO-optimised dealer landing pages" />} />
                       <Route path="testing" element={<DealerAdminPlaceholder title="Testing" description="Test APIs and create dealer test data" />} />
                       <Route path="timesheets" element={<DealerAdminPlaceholder title="Timesheets" description="Track dealer admin work hours, deals and commissions" />} />
-                      <Route path="sales-scoreboard" element={<DealerAdminPlaceholder title="Sales Scoreboard" description="Dealer leaderboard, awards and sales competition" />} />
-                      <Route path="discounts-given" element={<DealerAdminPlaceholder title="Discounts Given" description="Track dealer discounts vs retail pricing" />} />
+                      <Route path="sales-scoreboard" element={<DealerAdminSalesScoreboard />} />
+                      <Route path="discounts-given" element={<DealerAdminDiscountsGiven />} />
                       <Route path="account" element={<DealerAdminPlaceholder title="Account Settings" description="Manage your dealer admin account and password" />} />
                     </Route>
 
