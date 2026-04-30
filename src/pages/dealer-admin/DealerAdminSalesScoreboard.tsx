@@ -7,13 +7,12 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface DealerRow {
   id: string;
-  business_name: string | null;
-  contact_name: string | null;
+  company_name: string | null;
+  name: string | null;
 }
 interface SaleRow {
   dealer_id: string | null;
   final_amount: number | null;
-  total_amount_paid: number | null;
   signup_date: string | null;
   status: string | null;
 }
