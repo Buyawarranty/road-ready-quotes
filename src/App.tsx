@@ -187,6 +187,9 @@ const DealerAdminCustomers = lazy(() => import("./pages/dealer-admin/DealerAdmin
 const DealerAdminLeads = lazy(() => import("./pages/dealer-admin/DealerAdminLeads"));
 const DealerAdminQuotesOrders = lazy(() => import("./pages/dealer-admin/DealerAdminQuotesOrders"));
 const DealerAdminClaims = lazy(() => import("./pages/dealer-admin/DealerAdminClaims"));
+const DealerAdminPlans = lazy(() => import("./pages/dealer-admin/DealerAdminPlans"));
+const DealerAdminBulkPricing = lazy(() => import("./pages/dealer-admin/DealerAdminBulkPricing"));
+const DealerAdminSalesScript = lazy(() => import("./pages/dealer-admin/DealerAdminSalesScript"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -403,11 +406,11 @@ const App = () => {
                       {/* Mirrored retail tabs (dealer-scoped placeholders) */}
                       <Route path="new-leads" element={<DealerAdminLeads />} />
                       <Route path="quotes-orders" element={<DealerAdminQuotesOrders />} />
-                      <Route path="sales-script" element={<DealerAdminPlaceholder title="Sales Script" description="Sales script, tips and customer feedback" />} />
+                      <Route path="sales-script" element={<DealerAdminSalesScript />} />
                       <Route path="customers" element={<DealerAdminCustomers />} />
-                      <Route path="plans" element={<DealerAdminPlaceholder title="Standard Plans" description="Manage Basic, Gold, and Platinum plans for dealers" />} />
-                      <Route path="bulk-pricing" element={<DealerAdminPlaceholder title="Bulk Pricing" description="Update dealer pricing using CSV files" />} />
-                      <Route path="special-plans" element={<DealerAdminPlaceholder title="Special Vehicle Plans" description="Manage EV, PHEV, and Motorbike plans for dealers" />} />
+                      <Route path="plans" element={<DealerAdminPlans />} />
+                      <Route path="bulk-pricing" element={<DealerAdminBulkPricing />} />
+                      <Route path="special-plans" element={<DealerAdminPlans />} />
                       <Route path="discount-codes" element={<DealerAdminPlaceholder title="Discount Codes" description="Manage dealer discount codes and promotions" />} />
                       <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
                       <Route path="claims" element={<DealerAdminClaims />} />
