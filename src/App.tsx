@@ -186,6 +186,7 @@ const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdm
 const DealerAdminCustomers = lazy(() => import("./pages/dealer-admin/DealerAdminCustomers"));
 const DealerAdminLeads = lazy(() => import("./pages/dealer-admin/DealerAdminLeads"));
 const DealerAdminQuotesOrders = lazy(() => import("./pages/dealer-admin/DealerAdminQuotesOrders"));
+const DealerAdminClaims = lazy(() => import("./pages/dealer-admin/DealerAdminClaims"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -409,7 +410,7 @@ const App = () => {
                       <Route path="special-plans" element={<DealerAdminPlaceholder title="Special Vehicle Plans" description="Manage EV, PHEV, and Motorbike plans for dealers" />} />
                       <Route path="discount-codes" element={<DealerAdminPlaceholder title="Discount Codes" description="Manage dealer discount codes and promotions" />} />
                       <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
-                      <Route path="claims" element={<DealerAdminPlaceholder title="Claims" description="Manage dealer customer claim submissions" />} />
+                      <Route path="claims" element={<DealerAdminClaims />} />
                       <Route path="reviews" element={<DealerAdminPlaceholder title="Reviews" description="Monitor dealer Trustpilot and Google reviews" />} />
                       <Route path="contact" element={<DealerAdminPlaceholder title="Contact Submissions" description="Manage dealer contact form submissions" />} />
                       <Route path="abandoned-carts" element={<DealerAdminPlaceholder title="Abandoned Carts" description="Track and follow up with incomplete dealer purchases" />} />
