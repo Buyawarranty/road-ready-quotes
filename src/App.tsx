@@ -196,6 +196,9 @@ const DealerAdminDiscountCodes = lazy(() => import("./pages/dealer-admin/DealerA
 const DealerAdminAbandonedCarts = lazy(() => import("./pages/dealer-admin/DealerAdminAbandonedCarts"));
 const DealerAdminPendingRegister = lazy(() => import("./pages/dealer-admin/DealerAdminPendingRegister"));
 const DealerAdminReferrals = lazy(() => import("./pages/dealer-admin/DealerAdminReferrals"));
+const DealerAdminMarketingContacts = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingContacts"));
+const DealerAdminEmailHub = lazy(() => import("./pages/dealer-admin/DealerAdminEmailHub"));
+const DealerAdminPageAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminPageAnalytics"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -424,9 +427,9 @@ const App = () => {
                       <Route path="contact" element={<DealerAdminContact />} />
                       <Route path="abandoned-carts" element={<DealerAdminAbandonedCarts />} />
                       <Route path="pending-register" element={<DealerAdminPendingRegister />} />
-                      <Route path="marketing-contacts" element={<DealerAdminPlaceholder title="Marketing Contacts" description="Unified mailing list for dealer remarketing" />} />
-                      <Route path="email-hub" element={<DealerAdminPlaceholder title="Email Hub" description="Dealer email templates, campaigns, analytics & automation" />} />
-                      <Route path="page-analytics" element={<DealerAdminPlaceholder title="Page Analytics" description="Track dealer page visits, traffic sources & Google Ads" />} />
+                      <Route path="marketing-contacts" element={<DealerAdminMarketingContacts />} />
+                      <Route path="email-hub" element={<DealerAdminEmailHub />} />
+                      <Route path="page-analytics" element={<DealerAdminPageAnalytics />} />
                       <Route path="marketing-analytics" element={<DealerAdminPlaceholder title="Marketing Analytics" description="Google Ads, Facebook Ads, conversions & ROAS" />} />
                       <Route path="vehicle-stats" element={<DealerAdminPlaceholder title="Vehicle Stats" description="Analyse which vehicles sell the most dealer warranties" />} />
                       <Route path="lead-backup" element={<DealerAdminPlaceholder title="Lead Backup & Recovery" description="Backup dealer contacts, export & sync to marketing" />} />
