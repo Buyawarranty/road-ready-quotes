@@ -25,10 +25,10 @@ const DealerAdminSalesScoreboard: React.FC = () => {
   useEffect(() => {
     (async () => {
       const [{ data: d }, { data: s }] = await Promise.all([
-        supabase.from('dealers').select('id, business_name, contact_name'),
+        supabase.from('dealers').select('id, company_name, name'),
         supabase
           .from('customers')
-          .select('dealer_id, final_amount, total_amount_paid, signup_date, status')
+          .select('dealer_id, final_amount, signup_date, status')
           .not('dealer_id', 'is', null)
           .eq('is_deleted', false),
       ]);
@@ -45,11 +45,11 @@ const DealerAdminSalesScoreboard: React.FC = () => {
       .map(d => {
         const ds = sales.filter(s => s.dealer_id === d.id && (s.status || '').toLowerCase() !== 'cancelled' && (s.status || '').toLowerCase() !== 'refunded');
         const monthSales = ds.filter(s => s.signup_date && new Date(s.signup_date) >= monthStart);
-        const revenue = ds.reduce((sum, s) => sum + Number(s.total_amount_paid ?? s.final_amount ?? 0), 0);
-        const monthRevenue = monthSales.reduce((sum, s) => sum + Number(s.total_amount_paid ?? s.final_amount ?? 0), 0);
+        const revenue = ds.reduce((sum, s) => sum + Number(s.final_amount ?? 0), 0);
+        const monthRevenue = monthSales.reduce((sum, s) => sum + Number(s.final_amount ?? 0), 0);
         return {
           id: d.id,
-          name: d.business_name || d.contact_name || 'Unnamed dealer',
+          name: d.company_name || d.name || 'Unnamed dealer',
           totalSales: ds.length,
           totalRevenue: revenue,
           monthSales: monthSales.length,
