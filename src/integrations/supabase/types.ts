@@ -2544,6 +2544,102 @@ export type Database = {
           },
         ]
       }
+      dealer_admin_claims: {
+        Row: {
+          approved_amount: number | null
+          assigned_to: string | null
+          attachments: Json | null
+          claim_reference: string
+          created_at: string
+          customer_email: string | null
+          customer_email_normalized: string | null
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          dealer_id: string | null
+          fault_description: string | null
+          id: string
+          internal_notes: string | null
+          paid_amount: number | null
+          registration_plate: string | null
+          registration_plate_normalized: string | null
+          repair_estimate: number | null
+          repair_garage: string | null
+          risk_level: string | null
+          status: string
+          updated_at: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+        }
+        Insert: {
+          approved_amount?: number | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          claim_reference?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          fault_description?: string | null
+          id?: string
+          internal_notes?: string | null
+          paid_amount?: number | null
+          registration_plate?: string | null
+          registration_plate_normalized?: string | null
+          repair_estimate?: number | null
+          repair_garage?: string | null
+          risk_level?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+        }
+        Update: {
+          approved_amount?: number | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          claim_reference?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_email_normalized?: string | null
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          dealer_id?: string | null
+          fault_description?: string | null
+          id?: string
+          internal_notes?: string | null
+          paid_amount?: number | null
+          registration_plate?: string | null
+          registration_plate_normalized?: string | null
+          repair_estimate?: number | null
+          repair_garage?: string | null
+          risk_level?: string | null
+          status?: string
+          updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_admin_claims_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "dealer_customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealer_admin_claims_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_admin_orders: {
         Row: {
           amount_paid: number | null
