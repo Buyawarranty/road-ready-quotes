@@ -414,11 +414,11 @@ const App = () => {
                       <Route path="plans" element={<DealerAdminPlans />} />
                       <Route path="bulk-pricing" element={<DealerAdminBulkPricing />} />
                       <Route path="special-plans" element={<DealerAdminPlans />} />
-                      <Route path="discount-codes" element={<DealerAdminPlaceholder title="Discount Codes" description="Manage dealer discount codes and promotions" />} />
+                      <Route path="discount-codes" element={<DealerAdminDiscountCodes />} />
                       <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
                       <Route path="claims" element={<DealerAdminClaims />} />
-                      <Route path="reviews" element={<DealerAdminPlaceholder title="Reviews" description="Monitor dealer Trustpilot and Google reviews" />} />
-                      <Route path="contact" element={<DealerAdminPlaceholder title="Contact Submissions" description="Manage dealer contact form submissions" />} />
+                      <Route path="reviews" element={<DealerAdminReviews />} />
+                      <Route path="contact" element={<DealerAdminContact />} />
                       <Route path="abandoned-carts" element={<DealerAdminPlaceholder title="Abandoned Carts" description="Track and follow up with incomplete dealer purchases" />} />
                       <Route path="pending-register" element={<DealerAdminPlaceholder title="Pending Register" description="Scheduled dealer warranty submissions to register" />} />
                       <Route path="marketing-contacts" element={<DealerAdminPlaceholder title="Marketing Contacts" description="Unified mailing list for dealer remarketing" />} />
