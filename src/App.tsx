@@ -422,8 +422,8 @@ const App = () => {
                       <Route path="claims" element={<DealerAdminClaims />} />
                       <Route path="reviews" element={<DealerAdminReviews />} />
                       <Route path="contact" element={<DealerAdminContact />} />
-                      <Route path="abandoned-carts" element={<DealerAdminPlaceholder title="Abandoned Carts" description="Track and follow up with incomplete dealer purchases" />} />
-                      <Route path="pending-register" element={<DealerAdminPlaceholder title="Pending Register" description="Scheduled dealer warranty submissions to register" />} />
+                      <Route path="abandoned-carts" element={<DealerAdminAbandonedCarts />} />
+                      <Route path="pending-register" element={<DealerAdminPendingRegister />} />
                       <Route path="marketing-contacts" element={<DealerAdminPlaceholder title="Marketing Contacts" description="Unified mailing list for dealer remarketing" />} />
                       <Route path="email-hub" element={<DealerAdminPlaceholder title="Email Hub" description="Dealer email templates, campaigns, analytics & automation" />} />
                       <Route path="page-analytics" element={<DealerAdminPlaceholder title="Page Analytics" description="Track dealer page visits, traffic sources & Google Ads" />} />
