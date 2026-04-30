@@ -2544,6 +2544,45 @@ export type Database = {
           },
         ]
       }
+      dealer_admin_bulk_pricing_uploads: {
+        Row: {
+          created_at: string
+          error_count: number
+          errors: Json | null
+          filename: string
+          id: string
+          status: string
+          success_count: number
+          total_rows: number
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_count?: number
+          errors?: Json | null
+          filename: string
+          id?: string
+          status?: string
+          success_count?: number
+          total_rows?: number
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_count?: number
+          errors?: Json | null
+          filename?: string
+          id?: string
+          status?: string
+          success_count?: number
+          total_rows?: number
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       dealer_admin_claims: {
         Row: {
           approved_amount: number | null
@@ -2729,6 +2768,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dealer_admin_plans: {
+        Row: {
+          coverage_details: Json | null
+          created_at: string
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean
+          monthly_price: number | null
+          name: string
+          plan_type: string
+          pricing_matrix: Json | null
+          three_yearly_price: number | null
+          updated_at: string
+          vehicle_type: string | null
+          yearly_price: number | null
+        }
+        Insert: {
+          coverage_details?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          monthly_price?: number | null
+          name: string
+          plan_type?: string
+          pricing_matrix?: Json | null
+          three_yearly_price?: number | null
+          updated_at?: string
+          vehicle_type?: string | null
+          yearly_price?: number | null
+        }
+        Update: {
+          coverage_details?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean
+          monthly_price?: number | null
+          name?: string
+          plan_type?: string
+          pricing_matrix?: Json | null
+          three_yearly_price?: number | null
+          updated_at?: string
+          vehicle_type?: string | null
+          yearly_price?: number | null
+        }
+        Relationships: []
       }
       dealer_admin_quotes: {
         Row: {
