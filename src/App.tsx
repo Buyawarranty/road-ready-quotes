@@ -418,7 +418,7 @@ const App = () => {
                       <Route path="bulk-pricing" element={<DealerAdminBulkPricing />} />
                       <Route path="special-plans" element={<DealerAdminPlans />} />
                       <Route path="discount-codes" element={<DealerAdminDiscountCodes />} />
-                      <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
+                      <Route path="referrals" element={<DealerAdminReferrals />} />
                       <Route path="claims" element={<DealerAdminClaims />} />
                       <Route path="reviews" element={<DealerAdminReviews />} />
                       <Route path="contact" element={<DealerAdminContact />} />
