@@ -193,6 +193,9 @@ const DealerAdminSalesScript = lazy(() => import("./pages/dealer-admin/DealerAdm
 const DealerAdminReviews = lazy(() => import("./pages/dealer-admin/DealerAdminReviews"));
 const DealerAdminContact = lazy(() => import("./pages/dealer-admin/DealerAdminContact"));
 const DealerAdminDiscountCodes = lazy(() => import("./pages/dealer-admin/DealerAdminDiscountCodes"));
+const DealerAdminAbandonedCarts = lazy(() => import("./pages/dealer-admin/DealerAdminAbandonedCarts"));
+const DealerAdminPendingRegister = lazy(() => import("./pages/dealer-admin/DealerAdminPendingRegister"));
+const DealerAdminReferrals = lazy(() => import("./pages/dealer-admin/DealerAdminReferrals"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -415,12 +418,12 @@ const App = () => {
                       <Route path="bulk-pricing" element={<DealerAdminBulkPricing />} />
                       <Route path="special-plans" element={<DealerAdminPlans />} />
                       <Route path="discount-codes" element={<DealerAdminDiscountCodes />} />
-                      <Route path="referrals" element={<DealerAdminPlaceholder title="Referrals" description="Track dealer referrals and conversions" />} />
+                      <Route path="referrals" element={<DealerAdminReferrals />} />
                       <Route path="claims" element={<DealerAdminClaims />} />
                       <Route path="reviews" element={<DealerAdminReviews />} />
                       <Route path="contact" element={<DealerAdminContact />} />
-                      <Route path="abandoned-carts" element={<DealerAdminPlaceholder title="Abandoned Carts" description="Track and follow up with incomplete dealer purchases" />} />
-                      <Route path="pending-register" element={<DealerAdminPlaceholder title="Pending Register" description="Scheduled dealer warranty submissions to register" />} />
+                      <Route path="abandoned-carts" element={<DealerAdminAbandonedCarts />} />
+                      <Route path="pending-register" element={<DealerAdminPendingRegister />} />
                       <Route path="marketing-contacts" element={<DealerAdminPlaceholder title="Marketing Contacts" description="Unified mailing list for dealer remarketing" />} />
                       <Route path="email-hub" element={<DealerAdminPlaceholder title="Email Hub" description="Dealer email templates, campaigns, analytics & automation" />} />
                       <Route path="page-analytics" element={<DealerAdminPlaceholder title="Page Analytics" description="Track dealer page visits, traffic sources & Google Ads" />} />
