@@ -2679,6 +2679,96 @@ export type Database = {
           },
         ]
       }
+      dealer_admin_contact_submissions: {
+        Row: {
+          admin_notes: string | null
+          assigned_to: string | null
+          company_name: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          message: string
+          status: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          company_name?: string | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          assigned_to?: string | null
+          company_name?: string | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_discount_codes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          is_active: boolean
+          times_used: number
+          updated_at: string
+          usage_limit: number | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean
+          times_used?: number
+          updated_at?: string
+          usage_limit?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          is_active?: boolean
+          times_used?: number
+          updated_at?: string
+          usage_limit?: number | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: []
+      }
       dealer_admin_orders: {
         Row: {
           amount_paid: number | null
@@ -2908,6 +2998,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dealer_admin_reviews: {
+        Row: {
+          admin_response: string | null
+          body: string | null
+          created_at: string
+          dealer_id: string | null
+          id: string
+          rating: number
+          reviewer_email: string | null
+          reviewer_name: string
+          source: string | null
+          status: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_response?: string | null
+          body?: string | null
+          created_at?: string
+          dealer_id?: string | null
+          id?: string
+          rating: number
+          reviewer_email?: string | null
+          reviewer_name: string
+          source?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_response?: string | null
+          body?: string | null
+          created_at?: string
+          dealer_id?: string | null
+          id?: string
+          rating?: number
+          reviewer_email?: string | null
+          reviewer_name?: string
+          source?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       dealer_customers: {
         Row: {
