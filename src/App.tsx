@@ -436,10 +436,10 @@ const App = () => {
                       <Route path="marketing-contacts" element={<DealerAdminMarketingContacts />} />
                       <Route path="email-hub" element={<DealerAdminEmailHub />} />
                       <Route path="page-analytics" element={<DealerAdminPageAnalytics />} />
-                      <Route path="marketing-analytics" element={<DealerAdminPlaceholder title="Marketing Analytics" description="Google Ads, Facebook Ads, conversions & ROAS" />} />
+                      <Route path="marketing-analytics" element={<DealerAdminMarketingAnalytics />} />
                       <Route path="vehicle-stats" element={<DealerAdminVehicleStats />} />
-                      <Route path="lead-backup" element={<DealerAdminPlaceholder title="Lead Backup & Recovery" description="Backup dealer contacts, export & sync to marketing" />} />
-                      <Route path="user-permissions" element={<DealerAdminPlaceholder title="User Permissions" description="Manage dealer admin user access and permissions" />} />
+                      <Route path="lead-backup" element={<DealerAdminLeadBackup />} />
+                      <Route path="user-permissions" element={<DealerAdminUserPermissions />} />
                       <Route path="document-mapping" element={<DealerAdminPlaceholder title="Document Mapping" description="Manage dealer plan to document mappings" />} />
                       <Route path="policy-letters" element={<DealerAdminPlaceholder title="Policy Letters" description="Generate printable A4 policy letters for dealer customers" />} />
                       <Route path="blog-writing" element={<DealerAdminPlaceholder title="Blog Writing" description="Create and manage dealer blog content with AI tools" />} />
