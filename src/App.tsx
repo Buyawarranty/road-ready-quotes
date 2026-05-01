@@ -205,6 +205,9 @@ const DealerAdminDiscountsGiven = lazy(() => import("./pages/dealer-admin/Dealer
 const DealerAdminMarketingAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingAnalytics"));
 const DealerAdminLeadBackup = lazy(() => import("./pages/dealer-admin/DealerAdminLeadBackup"));
 const DealerAdminUserPermissions = lazy(() => import("./pages/dealer-admin/DealerAdminUserPermissions"));
+const DealerAdminDocumentMapping = lazy(() => import("./pages/dealer-admin/DealerAdminDocumentMapping"));
+const DealerAdminPolicyLetters = lazy(() => import("./pages/dealer-admin/DealerAdminPolicyLetters"));
+const DealerAdminPostedLettersLog = lazy(() => import("./pages/dealer-admin/DealerAdminPostedLettersLog"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
