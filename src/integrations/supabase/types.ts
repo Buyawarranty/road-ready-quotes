@@ -2769,6 +2769,36 @@ export type Database = {
         }
         Relationships: []
       }
+      dealer_admin_document_mappings: {
+        Row: {
+          created_at: string
+          document_path: string
+          id: string
+          notes: string | null
+          plan_name: string
+          updated_at: string
+          vehicle_type: string
+        }
+        Insert: {
+          created_at?: string
+          document_path: string
+          id?: string
+          notes?: string | null
+          plan_name: string
+          updated_at?: string
+          vehicle_type?: string
+        }
+        Update: {
+          created_at?: string
+          document_path?: string
+          id?: string
+          notes?: string | null
+          plan_name?: string
+          updated_at?: string
+          vehicle_type?: string
+        }
+        Relationships: []
+      }
       dealer_admin_email_campaigns: {
         Row: {
           audience: string
@@ -3096,6 +3126,84 @@ export type Database = {
           updated_at?: string
           vehicle_type?: string | null
           yearly_price?: number | null
+        }
+        Relationships: []
+      }
+      dealer_admin_policy_letters: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_active: boolean
+          letter_name: string
+          letter_type: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          letter_name: string
+          letter_type?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          letter_name?: string
+          letter_type?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_posted_letters_log: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_name: string
+          id: string
+          letter_id: string | null
+          letter_type: string
+          notes: string | null
+          posted_at: string
+          posted_by: string | null
+          status: string
+          tracking_ref: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_name: string
+          id?: string
+          letter_id?: string | null
+          letter_type?: string
+          notes?: string | null
+          posted_at?: string
+          posted_by?: string | null
+          status?: string
+          tracking_ref?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_name?: string
+          id?: string
+          letter_id?: string | null
+          letter_type?: string
+          notes?: string | null
+          posted_at?: string
+          posted_by?: string | null
+          status?: string
+          tracking_ref?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
