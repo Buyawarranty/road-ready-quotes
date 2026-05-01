@@ -198,6 +198,11 @@ const DealerAdminPendingRegister = lazy(() => import("./pages/dealer-admin/Deale
 const DealerAdminReferrals = lazy(() => import("./pages/dealer-admin/DealerAdminReferrals"));
 const DealerAdminMarketingContacts = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingContacts"));
 const DealerAdminEmailHub = lazy(() => import("./pages/dealer-admin/DealerAdminEmailHub"));
+const DealerAdminBlogWriting = lazy(() => import("./pages/dealer-admin/DealerAdminBlogWriting"));
+const DealerAdminLandingPages = lazy(() => import("./pages/dealer-admin/DealerAdminLandingPages"));
+const DealerAdminTimesheets = lazy(() => import("./pages/dealer-admin/DealerAdminTimesheets"));
+const DealerAdminTesting = lazy(() => import("./pages/dealer-admin/DealerAdminTesting"));
+const DealerAdminAccount = lazy(() => import("./pages/dealer-admin/DealerAdminAccount"));
 const DealerAdminPageAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminPageAnalytics"));
 const DealerAdminVehicleStats = lazy(() => import("./pages/dealer-admin/DealerAdminVehicleStats"));
 const DealerAdminSalesScoreboard = lazy(() => import("./pages/dealer-admin/DealerAdminSalesScoreboard"));
@@ -446,13 +451,13 @@ const App = () => {
                       <Route path="document-mapping" element={<DealerAdminDocumentMapping />} />
                       <Route path="policy-letters" element={<DealerAdminPolicyLetters />} />
                       <Route path="posted-letters-log" element={<DealerAdminPostedLettersLog />} />
-                      <Route path="blog-writing" element={<DealerAdminPlaceholder title="Blog Writing" description="Create and manage dealer blog content with AI tools" />} />
-                      <Route path="landing-pages" element={<DealerAdminPlaceholder title="Landing Pages" description="Create SEO-optimised dealer landing pages" />} />
-                      <Route path="testing" element={<DealerAdminPlaceholder title="Testing" description="Test APIs and create dealer test data" />} />
-                      <Route path="timesheets" element={<DealerAdminPlaceholder title="Timesheets" description="Track dealer admin work hours, deals and commissions" />} />
+                      <Route path="blog-writing" element={<DealerAdminBlogWriting />} />
+                      <Route path="landing-pages" element={<DealerAdminLandingPages />} />
+                      <Route path="testing" element={<DealerAdminTesting />} />
+                      <Route path="timesheets" element={<DealerAdminTimesheets />} />
                       <Route path="sales-scoreboard" element={<DealerAdminSalesScoreboard />} />
                       <Route path="discounts-given" element={<DealerAdminDiscountsGiven />} />
-                      <Route path="account" element={<DealerAdminPlaceholder title="Account Settings" description="Manage your dealer admin account and password" />} />
+                      <Route path="account" element={<DealerAdminAccount />} />
                     </Route>
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
