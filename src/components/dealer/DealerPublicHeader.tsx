@@ -34,7 +34,7 @@ export const DealerPublicHeader: React.FC = () => {
             <img
               src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
               alt="Buy a Warranty"
-              className="h-7 sm:h-8 w-auto brightness-0 invert"
+              className="h-7 sm:h-8 w-auto "
             />
             <span className="text-[10px] font-bold tracking-[0.2em] text-orange-500 border border-orange-500/40 px-1.5 py-0.5 rounded-sm">
               DEALER

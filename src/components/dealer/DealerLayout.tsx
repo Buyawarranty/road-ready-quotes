@@ -87,7 +87,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               <img
                 src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
                 alt="Buy a Warranty"
-                className="h-7 sm:h-8 w-auto brightness-0 invert"
+                className="h-7 sm:h-8 w-auto "
               />
               <span className="text-[10px] font-bold tracking-[0.2em] text-orange-500 border border-orange-500/40 px-1.5 py-0.5 rounded-sm">
                 DEALER
@@ -161,7 +161,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                       <img
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
                         alt="Buy a Warranty"
-                        className="h-8 w-auto brightness-0 invert"
+                        className="h-8 w-auto "
                       />
                     </div>
                     <nav className="flex flex-col gap-1 flex-1">
@@ -186,7 +186,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <div className="pt-6 mt-auto">
                       <button
                         onClick={() => { signOut(); setMobileOpen(false); }}
-                        className="w-full bg-red-600 text-gray-900 px-4 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
                       >
                         <LogOut className="h-4 w-4" /> Logout
                       </button>
