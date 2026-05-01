@@ -89,7 +89,7 @@ const DealerHome = () => {
                 href="https://wa.me/message/SPQPJ6O3UBF5B1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border-2 font-bold text-sm transition-all bg-green-500 hover:bg-green-600 text-gray-900 border-green-500"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border-2 font-bold text-sm transition-all bg-green-500 hover:bg-green-600 text-white border-green-500"
               >
                 WhatsApp Us
               </a>

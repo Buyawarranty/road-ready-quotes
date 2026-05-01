@@ -65,7 +65,7 @@ export const DealerRegHero: React.FC = () => {
     <form onSubmit={handleSubmit} className="space-y-3 w-full max-w-md mx-auto lg:mx-0" noValidate>
       {/* UK reg-plate styled input */}
       <div className="flex items-stretch rounded-lg overflow-hidden shadow-lg border-2 border-gray-300 w-full">
-        <div className="bg-blue-600 text-gray-900 font-bold px-2 sm:px-3 md:px-4 py-2 sm:py-4 flex items-center justify-center min-w-[45px] sm:min-w-[70px] md:min-w-[80px] h-[56px] sm:h-[64px] md:h-[68px]">
+        <div className="bg-blue-600 text-white font-bold px-2 sm:px-3 md:px-4 py-2 sm:py-4 flex items-center justify-center min-w-[45px] sm:min-w-[70px] md:min-w-[80px] h-[56px] sm:h-[64px] md:h-[68px]">
           <div className="flex flex-col items-center">
             <div className="text-xs sm:text-base md:text-lg leading-tight mb-1">🇬🇧</div>
             <div className="text-xs sm:text-sm md:text-base font-bold leading-none">UK</div>

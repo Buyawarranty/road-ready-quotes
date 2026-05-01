@@ -1629,7 +1629,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                   )}
                   {isBestValue && (
                     <div className="absolute -top-3 right-4 z-10">
-                      <span className="bg-green-600 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
+                      <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap">
                         BEST VALUE
                       </span>
                     </div>
@@ -2435,7 +2435,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
             </Collapsible>
             
             <Collapsible>
-              <CollapsibleTrigger className="flex items-center justify-between w-full text-left bg-green-500 text-gray-900 hover:bg-green-600 font-semibold py-4 px-6 rounded-lg transition-colors group">
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-left bg-green-500 text-white hover:bg-green-600 font-semibold py-4 px-6 rounded-lg transition-colors group">
                 <div className="flex items-center gap-3">
                   <Bike className="w-6 h-6" />
                   <span className="text-lg">Motorcycles (Petrol, Hybrid, EV)</span>
@@ -2696,7 +2696,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                 <Button
                   onClick={retryFetchPlans}
                   size="sm"
-                  className="bg-green-600 hover:bg-green-700 text-gray-900"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
                   Retry
@@ -2776,7 +2776,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                       <Button
                         onClick={handleSelectPlan}
                         size="lg"
-                        className="w-full text-base font-semibold py-3 bg-green-600 hover:bg-green-700 text-gray-900 rounded-xl"
+                        className="w-full text-base font-semibold py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl"
                       >
                         Continue to checkout
                         <ArrowRight className="w-4 h-4 ml-2" strokeWidth={3} />
@@ -2844,7 +2844,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                         <Button
                           onClick={handleSelectPlan}
                           size="lg"
-                          className="text-base lg:text-lg font-semibold px-4 lg:px-8 py-3 lg:py-3.5 bg-green-600 hover:bg-green-700 hover:shadow-lg text-gray-900 rounded-xl whitespace-nowrap"
+                          className="text-base lg:text-lg font-semibold px-4 lg:px-8 py-3 lg:py-3.5 bg-green-600 hover:bg-green-700 hover:shadow-lg text-white rounded-xl whitespace-nowrap"
                         >
                           Continue to checkout
                           <ArrowRight className="w-4 lg:w-5 h-4 lg:h-5 ml-2" strokeWidth={3} />

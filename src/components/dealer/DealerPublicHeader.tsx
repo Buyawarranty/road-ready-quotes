@@ -77,7 +77,7 @@ export const DealerPublicHeader: React.FC = () => {
               href="https://wa.me/message/SPQPJ6O3UBF5B1"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-gray-900 font-bold tracking-wider rounded-full px-4 h-10 text-sm transition-colors"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp Us
@@ -138,7 +138,7 @@ export const DealerPublicHeader: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-2 mx-3 bg-green-500 hover:bg-green-600 text-gray-900 font-bold tracking-wider rounded-full px-4 h-10 text-sm justify-center"
+                className="inline-flex items-center gap-2 mx-3 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm justify-center"
               >
                 <MessageCircle className="h-4 w-4" /> WhatsApp Us
               </a>
