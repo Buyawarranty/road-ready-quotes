@@ -20,9 +20,9 @@ interface DealerRecentQuotesProps {
 
 export const DealerRecentQuotes: React.FC<DealerRecentQuotesProps> = ({ quotes }) => {
   return (
-    <Card className="bg-gray-900 border-gray-800">
+    <Card className="bg-white border-gray-200">
       <CardHeader>
-        <CardTitle className="text-lg font-bold text-white">Recent Quotes</CardTitle>
+        <CardTitle className="text-lg font-bold text-gray-900">Recent Quotes</CardTitle>
       </CardHeader>
       <CardContent>
         {quotes.length === 0 ? (
@@ -30,24 +30,24 @@ export const DealerRecentQuotes: React.FC<DealerRecentQuotesProps> = ({ quotes }
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-800 hover:bg-transparent">
-                <TableHead className="text-gray-400">Customer</TableHead>
-                <TableHead className="text-gray-400">Vehicle</TableHead>
-                <TableHead className="text-gray-400">Price</TableHead>
-                <TableHead className="text-gray-400">Status</TableHead>
-                <TableHead className="text-gray-400">Date</TableHead>
+              <TableRow className="border-gray-200 hover:bg-transparent">
+                <TableHead className="text-gray-600">Customer</TableHead>
+                <TableHead className="text-gray-600">Vehicle</TableHead>
+                <TableHead className="text-gray-600">Price</TableHead>
+                <TableHead className="text-gray-600">Status</TableHead>
+                <TableHead className="text-gray-600">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {quotes.slice(0, 5).map((quote) => (
-                <TableRow key={quote.id} className="border-gray-800 hover:bg-gray-800/50">
-                  <TableCell className="font-medium text-white">{quote.customer_name}</TableCell>
-                  <TableCell className="text-gray-300">
+                <TableRow key={quote.id} className="border-gray-200 hover:bg-gray-100">
+                  <TableCell className="font-medium text-gray-900">{quote.customer_name}</TableCell>
+                  <TableCell className="text-gray-700">
                     {quote.vehicle_reg}
                     {quote.vehicle_make && ` - ${quote.vehicle_make}`}
                     {quote.vehicle_model && ` ${quote.vehicle_model}`}
                   </TableCell>
-                  <TableCell className="text-gray-300">{quote.price ? `£${Number(quote.price).toFixed(2)}` : '—'}</TableCell>
+                  <TableCell className="text-gray-700">{quote.price ? `£${Number(quote.price).toFixed(2)}` : '—'}</TableCell>
                   <TableCell>
                     <Badge variant={quote.status === 'converted' ? 'default' : 'secondary'}
                       className={quote.status === 'converted' ? 'bg-green-500' : 'bg-amber-500/20 text-amber-400'}

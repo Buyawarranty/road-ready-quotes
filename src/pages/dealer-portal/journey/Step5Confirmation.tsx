@@ -21,15 +21,15 @@ const Step5Confirmation: React.FC = () => {
 
   return (
     <DealerJourneyLayout step={5} title="Order confirmed" subtitle="The warranty is now in your dashboard." showBack={false}>
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white border-gray-200">
         <CardContent className="pt-8 pb-8 text-center">
           <div className="inline-flex p-4 rounded-full bg-green-500/10 mb-4">
             <CheckCircle2 className="h-10 w-10 text-green-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {method === 'invoice' ? 'Added to your invoice' : 'Payment successful'}
           </h2>
-          <p className="text-gray-400 mb-6 max-w-md mx-auto">
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
             {method === 'invoice'
               ? "We've recorded this warranty against your account. It will appear on your next monthly invoice."
               : 'Your customer is now covered. A confirmation email has been sent.'}
@@ -37,21 +37,21 @@ const Step5Confirmation: React.FC = () => {
 
           {id && (
             <p className="text-xs text-gray-500 mb-6">
-              Reference: <span className="font-mono text-gray-400">{id.slice(0, 8).toUpperCase()}</span>
+              Reference: <span className="font-mono text-gray-600">{id.slice(0, 8).toUpperCase()}</span>
             </p>
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button
               onClick={() => navigate('/dealer-portal/warranties')}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
+              className="bg-orange-500 hover:bg-orange-600 text-gray-900"
             >
               <FileText className="h-4 w-4 mr-2" /> View warranties
             </Button>
             <Button
               onClick={() => navigate('/dealer-portal/quote/vehicle')}
               variant="outline"
-              className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+              className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
             >
               Start another quote
             </Button>

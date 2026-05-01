@@ -93,9 +93,9 @@ const DealerWarrantiesList = () => {
   const renderActiveStatus = (r: DealerPdfRow) => {
     const s = String((r as any).status || '').toLowerCase();
     if (s === 'active') return <Badge className="bg-green-500 text-white">Active</Badge>;
-    if (s === 'expired') return <Badge className="bg-gray-600 text-gray-200">Expired</Badge>;
+    if (s === 'expired') return <Badge className="bg-gray-600 text-gray-800">Expired</Badge>;
     if (s === 'cancelled') return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40">Cancelled</Badge>;
-    return <Badge className="bg-gray-700 text-gray-300">{(r as any).status || 'Pending'}</Badge>;
+    return <Badge className="bg-gray-700 text-gray-700">{(r as any).status || 'Pending'}</Badge>;
   };
 
   const handlePaySelected = async () => {
@@ -125,29 +125,29 @@ const DealerWarrantiesList = () => {
   return (
     <DealerLayout>
       {/* Dark header band */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-gray-900 border-b border-gray-800 px-4 sm:px-6 lg:px-8 py-8 mb-6">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-8 mb-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wider text-orange-500">DEALER PLANS</h1>
             <span className="text-orange-500 text-2xl">◆</span>
           </div>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-600 text-sm">
             All warranty plans you've issued, plus payment status for outstanding invoices.
           </p>
         </div>
       </div>
 
       <Tabs defaultValue="plans" className="space-y-6">
-        <TabsList className="bg-gray-900 border border-gray-800">
+        <TabsList className="bg-white border border-gray-200">
           <TabsTrigger
             value="plans"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-300 font-bold tracking-wide"
+            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-700 font-bold tracking-wide"
           >
             Plans ({paidRows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-300 font-bold tracking-wide"
+            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-700 font-bold tracking-wide"
           >
             Payments ({unpaidIds.length} unpaid)
           </TabsTrigger>
@@ -155,7 +155,7 @@ const DealerWarrantiesList = () => {
 
         {/* PLANS TAB */}
         <TabsContent value="plans">
-          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
             {paidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
                 No active plans yet. Plans appear here once payment is completed.
@@ -164,35 +164,35 @@ const DealerWarrantiesList = () => {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-gray-800 hover:bg-transparent bg-gray-800/40">
-                      <TableHead className="text-gray-300 font-bold">Customer</TableHead>
-                      <TableHead className="text-gray-300 font-bold">Vehicle</TableHead>
-                      <TableHead className="text-gray-300 font-bold">Plan</TableHead>
-                      <TableHead className="text-gray-300 font-bold">Start</TableHead>
-                      <TableHead className="text-gray-300 font-bold">End</TableHead>
-                      <TableHead className="text-gray-300 font-bold text-right">Amount</TableHead>
-                      <TableHead className="text-gray-300 font-bold">Status</TableHead>
+                    <TableRow className="border-gray-200 hover:bg-transparent bg-gray-100/40">
+                      <TableHead className="text-gray-700 font-bold">Customer</TableHead>
+                      <TableHead className="text-gray-700 font-bold">Vehicle</TableHead>
+                      <TableHead className="text-gray-700 font-bold">Plan</TableHead>
+                      <TableHead className="text-gray-700 font-bold">Start</TableHead>
+                      <TableHead className="text-gray-700 font-bold">End</TableHead>
+                      <TableHead className="text-gray-700 font-bold text-right">Amount</TableHead>
+                      <TableHead className="text-gray-700 font-bold">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paidRows.map((w) => (
-                      <TableRow key={w.id} className="border-gray-800 hover:bg-gray-800/50">
-                        <TableCell className="font-medium text-white">
+                      <TableRow key={w.id} className="border-gray-200 hover:bg-gray-100">
+                        <TableCell className="font-medium text-gray-900">
                           <div>{w.name}</div>
                           <div className="text-xs text-gray-500">{w.email}</div>
                         </TableCell>
-                        <TableCell className="text-gray-300">
+                        <TableCell className="text-gray-700">
                           <div className="font-mono uppercase">{w.registration_plate}</div>
                           {(w.vehicle_make || w.vehicle_model) && (
                             <div className="text-xs text-gray-500">{w.vehicle_make} {w.vehicle_model}</div>
                           )}
                         </TableCell>
-                        <TableCell className="text-gray-300 capitalize">
+                        <TableCell className="text-gray-700 capitalize">
                           {w.plan_type} · {w.payment_type}mo
                         </TableCell>
-                        <TableCell className="text-gray-300">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
-                        <TableCell className="text-gray-300">{fmt(computeEnd(w))}</TableCell>
-                        <TableCell className="text-right text-white font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
+                        <TableCell className="text-gray-700">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
+                        <TableCell className="text-gray-700">{fmt(computeEnd(w))}</TableCell>
+                        <TableCell className="text-right text-gray-900 font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
                       </TableRow>
                     ))}
@@ -207,11 +207,11 @@ const DealerWarrantiesList = () => {
         <TabsContent value="payments">
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-600">
               {selectedIds.length > 0 ? (
                 <span>
-                  <span className="text-white font-bold">{selectedIds.length}</span> selected ·{' '}
-                  <span className="text-orange-400 font-bold">£{selectedTotal.toFixed(2)}</span>
+                  <span className="text-gray-900 font-bold">{selectedIds.length}</span> selected ·{' '}
+                  <span className="text-orange-600 font-bold">£{selectedTotal.toFixed(2)}</span>
                 </span>
               ) : (
                 <span>Select unpaid plans to pay them in one Stripe checkout.</span>
@@ -231,7 +231,7 @@ const DealerWarrantiesList = () => {
             </Button>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
             {unpaidRows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
                 No unpaid invoices — all dealer plans are paid.
@@ -240,12 +240,12 @@ const DealerWarrantiesList = () => {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-gray-800 hover:bg-transparent bg-orange-500">
+                    <TableRow className="border-gray-200 hover:bg-transparent bg-orange-500">
                       <TableHead className="w-10">
                         <Checkbox
                           checked={allSelected}
                           onCheckedChange={toggleAll}
-                          className="border-gray-900 data-[state=checked]:bg-gray-900 data-[state=checked]:text-orange-500"
+                          className="border-gray-900 data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
                         />
                       </TableHead>
                       <TableHead className="text-gray-900 font-extrabold tracking-wider">REF</TableHead>
@@ -265,8 +265,8 @@ const DealerWarrantiesList = () => {
                       return (
                         <TableRow
                           key={r.id}
-                          className={`border-gray-800 hover:bg-gray-800/50 ${
-                            idx % 2 === 0 ? 'bg-gray-900' : 'bg-gray-900/60'
+                          className={`border-gray-200 hover:bg-gray-100 ${
+                            idx % 2 === 0 ? 'bg-white' : 'bg-white/60'
                           }`}
                         >
                           <TableCell>
@@ -276,26 +276,26 @@ const DealerWarrantiesList = () => {
                               onCheckedChange={(v) =>
                                 setSelected((s) => ({ ...s, [r.id]: !!v }))
                               }
-                              className="border-gray-600 data-[state=checked]:bg-orange-500 data-[state=checked]:text-gray-900"
+                              className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:text-gray-900"
                             />
                           </TableCell>
-                          <TableCell className="font-mono text-orange-400 font-bold">
+                          <TableCell className="font-mono text-orange-600 font-bold">
                             {ref(r.id)}
                           </TableCell>
                           <TableCell>{renderStatus(r)}</TableCell>
-                          <TableCell className="text-gray-300">{fmt(r.warranty_start_date || r.signup_date)}</TableCell>
-                          <TableCell className="text-gray-300">{fmt(computeEnd(r))}</TableCell>
-                          <TableCell className="text-gray-300 uppercase">
-                            <div className="font-mono text-white">{r.registration_plate || '—'}</div>
+                          <TableCell className="text-gray-700">{fmt(r.warranty_start_date || r.signup_date)}</TableCell>
+                          <TableCell className="text-gray-700">{fmt(computeEnd(r))}</TableCell>
+                          <TableCell className="text-gray-700 uppercase">
+                            <div className="font-mono text-gray-900">{r.registration_plate || '—'}</div>
                             <div className="text-xs text-gray-500">
                               {[r.vehicle_make, r.vehicle_model].filter(Boolean).join(' ')}
                             </div>
                           </TableCell>
-                          <TableCell className="text-gray-300">{r.name || '—'}</TableCell>
-                          <TableCell className="text-gray-300 capitalize">
+                          <TableCell className="text-gray-700">{r.name || '—'}</TableCell>
+                          <TableCell className="text-gray-700 capitalize">
                             {r.plan_type || '—'}
                           </TableCell>
-                          <TableCell className="text-right text-white font-bold">
+                          <TableCell className="text-right text-gray-900 font-bold">
                             £{Number(r.final_amount || 0).toFixed(2)}
                           </TableCell>
                           <TableCell className="text-right">
@@ -305,7 +305,7 @@ const DealerWarrantiesList = () => {
                                 variant="ghost"
                                 title="Download invoice"
                                 onClick={() => downloadInvoicePdf(r, dealer?.name)}
-                                className="h-8 w-8 text-gray-300 hover:text-orange-400 hover:bg-gray-800"
+                                className="h-8 w-8 text-gray-700 hover:text-orange-600 hover:bg-gray-100"
                               >
                                 <Download className="h-4 w-4" />
                               </Button>
@@ -314,7 +314,7 @@ const DealerWarrantiesList = () => {
                                 variant="ghost"
                                 title="Download warranty"
                                 onClick={() => downloadWarrantyPdf(r, dealer?.name)}
-                                className="h-8 w-8 text-gray-300 hover:text-orange-400 hover:bg-gray-800"
+                                className="h-8 w-8 text-gray-700 hover:text-orange-600 hover:bg-gray-100"
                               >
                                 <FileText className="h-4 w-4" />
                               </Button>

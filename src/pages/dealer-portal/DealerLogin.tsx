@@ -96,28 +96,28 @@ const DealerLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <DealerPublicHeader />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
       <SEOHead title="Dealer Login | BuyAWarranty" description="Sign in to your dealer portal." />
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800">
+      <Card className="w-full max-w-md bg-white border-gray-200">
         <CardHeader className="text-center">
           <Link to="/dealer-portal/" className="inline-block mb-4">
-            <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 mx-auto brightness-0 invert" />
+            <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 mx-auto " />
           </Link>
-          <span className="inline-block text-xs font-semibold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded mb-2">DEALER PORTAL</span>
-          <CardTitle className="text-2xl font-bold text-white">Dealer Login</CardTitle>
-          <CardDescription className="text-gray-400">Sign in to your dealer portal</CardDescription>
+          <span className="inline-block text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded mb-2">DEALER PORTAL</span>
+          <CardTitle className="text-2xl font-bold text-gray-900">Dealer Login</CardTitle>
+          <CardDescription className="text-gray-600">Sign in to your dealer portal</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-300">Email</label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="dealer@example.com" required className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" />
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="dealer@example.com" required className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500" />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-300">Password</label>
-              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" required className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" />
+              <label className="text-sm font-medium text-gray-700">Password</label>
+              <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" required className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500" />
             </div>
             {unconfirmedEmail && (
               <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-200">
@@ -125,22 +125,22 @@ const DealerLogin = () => {
                 <button
                   type="button"
                   onClick={handleResendConfirmation}
-                  className="font-medium text-amber-100 underline hover:text-white"
+                  className="font-medium text-amber-100 underline hover:text-gray-900"
                 >
                   Resend confirmation email
                 </button>
               </div>
             )}
-            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white" disabled={loading}>
+            <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
           <div className="text-center mt-4">
-            <Link to="/forgot-password/" className="text-sm text-orange-400 hover:underline">Forgot password?</Link>
+            <Link to="/forgot-password/" className="text-sm text-orange-600 hover:underline">Forgot password?</Link>
           </div>
           <p className="text-center text-sm text-gray-500 mt-6">
             Don't have an account?{' '}
-            <Link to="/dealer-portal/signup" className="text-orange-400 hover:underline font-medium">Create one</Link>
+            <Link to="/dealer-portal/signup" className="text-orange-600 hover:underline font-medium">Create one</Link>
           </p>
         </CardContent>
       </Card>

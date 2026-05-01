@@ -64,7 +64,7 @@ export const DealerRegHero: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-3 w-full max-w-md mx-auto lg:mx-0" noValidate>
       {/* UK reg-plate styled input */}
-      <div className="flex items-stretch rounded-lg overflow-hidden shadow-lg border-2 border-gray-700 w-full">
+      <div className="flex items-stretch rounded-lg overflow-hidden shadow-lg border-2 border-gray-300 w-full">
         <div className="bg-blue-600 text-white font-bold px-2 sm:px-3 md:px-4 py-2 sm:py-4 flex items-center justify-center min-w-[45px] sm:min-w-[70px] md:min-w-[80px] h-[56px] sm:h-[64px] md:h-[68px]">
           <div className="flex flex-col items-center">
             <div className="text-xs sm:text-base md:text-lg leading-tight mb-1">🇬🇧</div>
@@ -87,7 +87,7 @@ export const DealerRegHero: React.FC = () => {
       </div>
 
       {error && (
-        <p className="text-sm text-red-400 font-medium px-1" role="alert">
+        <p className="text-sm text-red-600 font-medium px-1" role="alert">
           {error}
         </p>
       )}
@@ -96,7 +96,7 @@ export const DealerRegHero: React.FC = () => {
         type="submit"
         size="lg"
         disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-base sm:text-lg h-14 rounded-lg transition-colors"
+        className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold text-base sm:text-lg h-14 rounded-lg transition-colors"
       >
         {loading ? (
           <Loader2 className="h-5 w-5 animate-spin" />
@@ -106,7 +106,7 @@ export const DealerRegHero: React.FC = () => {
       </Button>
 
       {!dealer && !loading && (
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-600 text-center">
           New to BuyAWarranty? Account creation takes 60 seconds.
         </p>
       )}

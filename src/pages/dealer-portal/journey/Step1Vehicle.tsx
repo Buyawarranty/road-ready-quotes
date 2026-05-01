@@ -138,15 +138,15 @@ const Step1Vehicle: React.FC = () => {
     navigate('/dealer-portal/quote/customer');
   };
 
-  const inputClass = 'bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus-visible:ring-orange-500';
+  const inputClass = 'bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500';
 
   return (
     <DealerJourneyLayout step={1} title="Vehicle details" subtitle="Enter the registration — we'll fetch the rest." backTo="/dealer-portal/dashboard">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white border-gray-200">
         <CardContent className="pt-6">
           <form onSubmit={handleNext} className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-300 block mb-1">Vehicle registration *</label>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Vehicle registration *</label>
               <div className="relative">
                 <Input
                   value={reg}
@@ -165,21 +165,21 @@ const Step1Vehicle: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Make</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Make</label>
                 <Input value={make} onChange={(e) => setMake(e.target.value)} placeholder="e.g. Ford" className={inputClass} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Model</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Model</label>
                 <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. Focus" className={inputClass} />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Year</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Year</label>
                 <Input value={year} onChange={(e) => setYear(e.target.value)} placeholder="e.g. 2020" className={inputClass} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Mileage *</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Mileage *</label>
                 <div className="relative">
                   <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'} className={`${inputClass} pr-10`} />
                   {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
@@ -189,19 +189,19 @@ const Step1Vehicle: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Fuel type</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Fuel type</label>
                 <Input value={fuelType} onChange={(e) => setFuelType(e.target.value)} placeholder="e.g. Petrol" className={inputClass} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300 block mb-1">Transmission</label>
+                <label className="text-sm font-medium text-gray-700 block mb-1">Transmission</label>
                 <Input value={transmission} onChange={(e) => setTransmission(e.target.value)} placeholder="e.g. Manual" className={inputClass} />
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            {error && <p className="text-sm text-red-600">{error}</p>}
 
             <div className="pt-2">
-              <Button type="submit" disabled={isLookingUp} className="bg-orange-500 hover:bg-orange-600 text-white w-full sm:w-auto">
+              <Button type="submit" disabled={isLookingUp} className="bg-orange-500 hover:bg-orange-600 text-gray-900 w-full sm:w-auto">
                 Continue → Customer
               </Button>
             </div>

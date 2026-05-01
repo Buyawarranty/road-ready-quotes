@@ -73,7 +73,7 @@ const DealerHome = () => {
             <div className="flex gap-3 flex-wrap items-center">
               <Link
                 to="/dealer-portal/signup"
-                className="px-7 py-3.5 rounded-xl font-extrabold text-white text-sm shadow-lg hover:-translate-y-0.5 transition-all"
+                className="px-7 py-3.5 rounded-xl font-extrabold text-gray-900 text-sm shadow-lg hover:-translate-y-0.5 transition-all"
                 style={{ background: BRAND_ORANGE, boxShadow: '0 6px 20px rgba(235,75,0,0.3)' }}
               >
                 Start Today →
@@ -140,7 +140,7 @@ const DealerHome = () => {
                     className="rounded-xl px-4 py-3 text-center border"
                     style={{ background: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.25)' }}
                   >
-                    <strong className="block text-2xl font-black text-white leading-none mb-1">{s.v}</strong>
+                    <strong className="block text-2xl font-black text-gray-900 leading-none mb-1">{s.v}</strong>
                     <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: 'rgba(255,255,255,0.75)' }}>
                       {s.l}
                     </span>
@@ -153,7 +153,7 @@ const DealerHome = () => {
       </section>
 
       {/* TRUST BAR */}
-      <div className="bg-gray-950 px-6 lg:px-12 py-5 flex items-center justify-center gap-x-8 gap-y-3 flex-wrap">
+      <div className="bg-gray-50 px-6 lg:px-12 py-5 flex items-center justify-center gap-x-8 gap-y-3 flex-wrap">
         {[
           { icon: BadgeCheck, t: 'FCA Authorised & Regulated' },
           { icon: Award, t: 'Warranty Provider Finalist 2025' },
@@ -255,7 +255,7 @@ const DealerHome = () => {
             ].map((s) => (
               <div key={s.n} className="bg-white p-7 hover:bg-orange-50 transition-colors">
                 <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center text-white font-black mb-5 shadow-md"
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-gray-900 font-black mb-5 shadow-md"
                   style={{ background: BRAND_ORANGE }}
                 >
                   {s.n}
@@ -333,7 +333,7 @@ const DealerHome = () => {
               <div className="text-[11px] font-extrabold tracking-widest uppercase mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
                 Your estimated annual warranty revenue
               </div>
-              <div className="text-5xl font-black text-white tracking-tighter leading-none mb-2">
+              <div className="text-5xl font-black text-gray-900 tracking-tighter leading-none mb-2">
                 {fmt(calc.annual)}
               </div>
               <div className="text-sm font-semibold mb-7" style={{ color: 'rgba(255,255,255,0.65)' }}>
@@ -347,7 +347,7 @@ const DealerHome = () => {
                 ].map((r) => (
                   <div key={r.l} className="flex justify-between items-center">
                     <span className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.7)' }}>{r.l}</span>
-                    <strong className="text-sm font-extrabold text-white">{r.v}</strong>
+                    <strong className="text-sm font-extrabold text-gray-900">{r.v}</strong>
                   </div>
                 ))}
               </div>
@@ -520,13 +520,13 @@ const DealerHome = () => {
                 >
                   {t.badge}
                 </span>
-                <div className={`text-xl font-black mb-2 ${t.featured ? 'text-white' : 'text-gray-950'}`}>{t.name}</div>
-                <p className={`text-sm font-medium leading-relaxed mb-5 flex-1 ${t.featured ? 'text-white/80' : 'text-gray-500'}`}>
+                <div className={`text-xl font-black mb-2 ${t.featured ? 'text-gray-900' : 'text-gray-950'}`}>{t.name}</div>
+                <p className={`text-sm font-medium leading-relaxed mb-5 flex-1 ${t.featured ? 'text-gray-900/80' : 'text-gray-500'}`}>
                   {t.desc}
                 </p>
                 <ul className="flex flex-col gap-2 mb-6">
                   {t.features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2 text-sm font-semibold ${t.featured ? 'text-white/90' : 'text-gray-700'}`}>
+                    <li key={f} className={`flex items-start gap-2 text-sm font-semibold ${t.featured ? 'text-gray-900/90' : 'text-gray-700'}`}>
                       <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: t.featured ? '#fdc7a8' : BRAND_ORANGE }} />
                       {f}
                     </li>
@@ -552,11 +552,11 @@ const DealerHome = () => {
       {/* CTA BAND */}
       <section className="px-6 lg:px-12 py-20 grid md:grid-cols-[1fr_auto] gap-10 items-center" style={{ background: BRAND_ORANGE }}>
         <div className="max-w-3xl mx-auto md:mx-0">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-gray-900 leading-tight">
             Ready to add warranty revenue to{' '}
             <em className="font-serif italic font-semibold" style={{ color: '#ffe1cc' }}>every car you sell?</em>
           </h2>
-          <p className="text-base font-semibold text-white/80 mt-4 max-w-xl">
+          <p className="text-base font-semibold text-gray-900/80 mt-4 max-w-xl">
             Join hundreds of UK dealers earning meaningful margin on every unit. Sign up takes 5 minutes.
           </p>
         </div>
@@ -568,7 +568,7 @@ const DealerHome = () => {
           >
             Become a Partner →
           </Link>
-          <a href="tel:03302295040" className="text-sm font-bold text-white/85 hover:text-white flex items-center gap-2">
+          <a href="tel:03302295040" className="text-sm font-bold text-gray-900/85 hover:text-gray-900 flex items-center gap-2">
             <PhoneCall className="w-4 h-4" /> 0330 229 5040
           </a>
         </div>
