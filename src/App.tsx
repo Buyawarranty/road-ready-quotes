@@ -205,6 +205,9 @@ const DealerAdminDiscountsGiven = lazy(() => import("./pages/dealer-admin/Dealer
 const DealerAdminMarketingAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingAnalytics"));
 const DealerAdminLeadBackup = lazy(() => import("./pages/dealer-admin/DealerAdminLeadBackup"));
 const DealerAdminUserPermissions = lazy(() => import("./pages/dealer-admin/DealerAdminUserPermissions"));
+const DealerAdminDocumentMapping = lazy(() => import("./pages/dealer-admin/DealerAdminDocumentMapping"));
+const DealerAdminPolicyLetters = lazy(() => import("./pages/dealer-admin/DealerAdminPolicyLetters"));
+const DealerAdminPostedLettersLog = lazy(() => import("./pages/dealer-admin/DealerAdminPostedLettersLog"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -440,8 +443,9 @@ const App = () => {
                       <Route path="vehicle-stats" element={<DealerAdminVehicleStats />} />
                       <Route path="lead-backup" element={<DealerAdminLeadBackup />} />
                       <Route path="user-permissions" element={<DealerAdminUserPermissions />} />
-                      <Route path="document-mapping" element={<DealerAdminPlaceholder title="Document Mapping" description="Manage dealer plan to document mappings" />} />
-                      <Route path="policy-letters" element={<DealerAdminPlaceholder title="Policy Letters" description="Generate printable A4 policy letters for dealer customers" />} />
+                      <Route path="document-mapping" element={<DealerAdminDocumentMapping />} />
+                      <Route path="policy-letters" element={<DealerAdminPolicyLetters />} />
+                      <Route path="posted-letters-log" element={<DealerAdminPostedLettersLog />} />
                       <Route path="blog-writing" element={<DealerAdminPlaceholder title="Blog Writing" description="Create and manage dealer blog content with AI tools" />} />
                       <Route path="landing-pages" element={<DealerAdminPlaceholder title="Landing Pages" description="Create SEO-optimised dealer landing pages" />} />
                       <Route path="testing" element={<DealerAdminPlaceholder title="Testing" description="Test APIs and create dealer test data" />} />
