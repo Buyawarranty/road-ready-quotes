@@ -111,44 +111,44 @@ const DealerAnalytics: React.FC = () => {
     <DealerLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-wide">DEALER ANALYTICS</h1>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-wide">DEALER ANALYTICS</h1>
           <p className="text-gray-500 text-sm mt-1">Performance overview of your dealer plans and quotes</p>
         </div>
 
         {/* Top row: Last activated + plans activated chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-6">
-              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-400 mb-4">LAST DEALER PLAN ACTIVATED</h2>
+              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">LAST DEALER PLAN ACTIVATED</h2>
               {lastActivated ? (
                 <>
                   <div className="flex items-baseline gap-2 mb-6">
-                    <span className="text-6xl font-bold text-white leading-none">
+                    <span className="text-6xl font-bold text-gray-900 leading-none">
                       {lastActivatedDays ?? 0}
                     </span>
-                    <span className="text-xs font-bold tracking-[0.2em] text-gray-400 uppercase">
+                    <span className="text-xs font-bold tracking-[0.2em] text-gray-600 uppercase">
                       {lastActivatedDays === 1 ? 'Day Ago' : 'Days Ago'}
                     </span>
                   </div>
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2 text-orange-400">
+                    <div className="flex items-center gap-2 text-orange-600">
                       <Car className="h-4 w-4" />
                       <span className="font-semibold uppercase">
                         {[lastActivated.vehicle_make, lastActivated.vehicle_model].filter(Boolean).join(' ') || '—'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-orange-400">
+                    <div className="flex items-center gap-2 text-orange-600">
                       <UserIcon className="h-4 w-4" />
                       <span className="font-semibold uppercase">{lastActivated.name}</span>
                     </div>
                     {lastActivated.mileage && (
-                      <div className="flex items-center gap-2 text-orange-400">
+                      <div className="flex items-center gap-2 text-orange-600">
                         <Gauge className="h-4 w-4" />
                         <span className="font-semibold">{lastActivated.mileage}</span>
                       </div>
                     )}
                     {lastActivated.final_amount && (
-                      <div className="flex items-center gap-2 text-orange-400">
+                      <div className="flex items-center gap-2 text-orange-600">
                         <Tag className="h-4 w-4" />
                         <span className="font-semibold">£{Number(lastActivated.final_amount).toLocaleString()}</span>
                       </div>
@@ -161,13 +161,13 @@ const DealerAnalytics: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-6">
-              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-400 mb-4">DEALER PLANS ACTIVATED</h2>
+              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">DEALER PLANS ACTIVATED</h2>
               <div className="grid grid-cols-3 gap-4 items-center">
                 <div className="col-span-1 text-center">
-                  <div className="text-6xl font-bold text-white leading-none">{thisMonthCount}</div>
-                  <div className="text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase mt-2">
+                  <div className="text-6xl font-bold text-gray-900 leading-none">{thisMonthCount}</div>
+                  <div className="text-[11px] font-bold tracking-[0.2em] text-gray-600 uppercase mt-2">
                     This Month
                   </div>
                 </div>
@@ -206,27 +206,27 @@ const DealerAnalytics: React.FC = () => {
 
         {/* Bottom row: Quotes created + manufacturers pie */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-6">
-              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-400 mb-4">QUOTES CREATED</h2>
+              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">QUOTES CREATED</h2>
               <div className="flex items-baseline gap-4">
-                <span className="text-6xl font-bold text-white leading-none">{quotes.length}</span>
-                <span className="text-xs font-bold tracking-wider text-gray-400 uppercase max-w-[180px]">
+                <span className="text-6xl font-bold text-gray-900 leading-none">{quotes.length}</span>
+                <span className="text-xs font-bold tracking-wider text-gray-600 uppercase max-w-[180px]">
                   Number of quotes created
                   <br />
                   <span className="text-gray-500 normal-case">({uncompletedQuotes} uncompleted)</span>
                 </span>
               </div>
-              <div className="mt-6 flex items-center gap-2 text-sm text-gray-400">
+              <div className="mt-6 flex items-center gap-2 text-sm text-gray-600">
                 <Calendar className="h-4 w-4" />
                 Total quotes across all time
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-white border-gray-200">
             <CardContent className="p-6">
-              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-400 mb-4">MANUFACTURERS ON COVER</h2>
+              <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">MANUFACTURERS ON COVER</h2>
               {manufacturerData.length === 0 ? (
                 <p className="text-gray-500 text-sm">No vehicles on cover yet.</p>
               ) : (

@@ -71,45 +71,45 @@ const DealerCreateQuote = () => {
 
   const update = (field: string, value: string) => setForm({ ...form, [field]: value });
 
-  const inputClass = "bg-gray-800 border-gray-700 text-white placeholder:text-gray-500";
+  const inputClass = "bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500";
 
   return (
     <DealerLayout>
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-bold text-white mb-6">Create Quote</h1>
-        <Card className="bg-gray-900 border-gray-800">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Quote</h1>
+        <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className="text-lg text-white">Vehicle & Customer Details</CardTitle>
+            <CardTitle className="text-lg text-gray-900">Vehicle & Customer Details</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-300">Customer Name *</label>
+                <label className="text-sm font-medium text-gray-700">Customer Name *</label>
                 <Input value={form.customer_name} onChange={(e) => update('customer_name', e.target.value)} placeholder="Customer full name" required className={inputClass} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Vehicle Registration *</label>
+                <label className="text-sm font-medium text-gray-700">Vehicle Registration *</label>
                 <Input value={form.vehicle_reg} onChange={(e) => update('vehicle_reg', e.target.value)} placeholder="AB12 CDE" required className={`uppercase ${inputClass}`} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Make</label>
+                  <label className="text-sm font-medium text-gray-700">Make</label>
                   <Input value={form.vehicle_make} onChange={(e) => update('vehicle_make', e.target.value)} placeholder="e.g. Ford" className={inputClass} />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-300">Model</label>
+                  <label className="text-sm font-medium text-gray-700">Model</label>
                   <Input value={form.vehicle_model} onChange={(e) => update('vehicle_model', e.target.value)} placeholder="e.g. Focus" className={inputClass} />
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Mileage</label>
+                <label className="text-sm font-medium text-gray-700">Mileage</label>
                 <Input value={form.mileage} onChange={(e) => update('mileage', e.target.value)} placeholder="e.g. 45000" className={inputClass} />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Warranty Duration *</label>
+                <label className="text-sm font-medium text-gray-700">Warranty Duration *</label>
                 <Select value={form.warranty_duration} onValueChange={(v) => update('warranty_duration', v)}>
                   <SelectTrigger className={inputClass}><SelectValue placeholder="Select duration" /></SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-gray-100 border-gray-300">
                     <SelectItem value="3">3 Months</SelectItem>
                     <SelectItem value="6">6 Months</SelectItem>
                     <SelectItem value="12">12 Months</SelectItem>
@@ -119,10 +119,10 @@ const DealerCreateQuote = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Plan Type *</label>
+                <label className="text-sm font-medium text-gray-700">Plan Type *</label>
                 <Select value={form.plan_type} onValueChange={(v) => update('plan_type', v)}>
                   <SelectTrigger className={inputClass}><SelectValue placeholder="Select plan" /></SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectContent className="bg-gray-100 border-gray-300">
                     <SelectItem value="basic">Basic</SelectItem>
                     <SelectItem value="gold">Gold</SelectItem>
                     <SelectItem value="platinum">Platinum</SelectItem>
@@ -130,14 +130,14 @@ const DealerCreateQuote = () => {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-300">Price (£)</label>
+                <label className="text-sm font-medium text-gray-700">Price (£)</label>
                 <Input type="number" step="0.01" min="0" value={form.price} onChange={(e) => update('price', e.target.value)} placeholder="e.g. 299.99" className={inputClass} />
               </div>
               <div className="flex gap-3 pt-2">
-                <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white" disabled={loading}>
+                <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-gray-900" disabled={loading}>
                   {loading ? 'Saving...' : 'Save Quote'}
                 </Button>
-                <Button type="button" variant="outline" onClick={() => navigate('/dealer-portal/quotes')} className="border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white">
+                <Button type="button" variant="outline" onClick={() => navigate('/dealer-portal/quotes')} className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900">
                   Cancel
                 </Button>
               </div>

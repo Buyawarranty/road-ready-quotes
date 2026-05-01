@@ -134,7 +134,7 @@ const DealerSignup = () => {
                   <Button variant="outline" className="border-gray-300">Back to Home</Button>
                 </Link>
                 <Link to="/dealer-portal/login">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold">
+                  <Button className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold">
                     Go to Sign In
                   </Button>
                 </Link>
@@ -160,25 +160,25 @@ const DealerSignup = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="text-sm font-semibold text-gray-700">Full Name *</label>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Smith" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Smith" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-gray-700">Email *</label>
-                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="dealer@example.com" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="dealer@example.com" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-gray-700">Phone</label>
-                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07700 900000" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07700 900000" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-gray-700">Company Name *</label>
-                  <Input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} placeholder="ABC Motors Ltd" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+                  <Input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} placeholder="ABC Motors Ltd" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-gray-700">Password *</label>
-                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400" />
+                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
                 </div>
-                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold" disabled={loading}>
+                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold" disabled={loading}>
                   {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>
               </form>

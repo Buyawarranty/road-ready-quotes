@@ -170,7 +170,7 @@ const DealerAdminInvoices: React.FC = () => {
                           </td>
                           <td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td>
                           <td className="px-3 py-2">
-                            <Badge variant="secondary" className="bg-amber-500 text-white">
+                            <Badge variant="secondary" className="bg-amber-500 text-gray-900">
                               {r.payment_status || 'Unpaid'}
                             </Badge>
                           </td>

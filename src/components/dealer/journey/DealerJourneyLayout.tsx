@@ -59,7 +59,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
       </div>
     );
@@ -71,8 +71,8 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
 
   return (
     <DealerLayout>
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-6 lg:-my-8 bg-gray-950 text-white min-h-[calc(100vh-5rem)]">
-        <div className="border-b border-gray-800 bg-gray-900/50 backdrop-blur">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-6 lg:-my-8 bg-gray-50 text-gray-900 min-h-[calc(100vh-5rem)]">
+        <div className="border-b border-gray-200 bg-gray-100/50 backdrop-blur">
           <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               {showBack && (
@@ -80,7 +80,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                   variant="ghost"
                   size="sm"
                   onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
-                  className="text-gray-400 hover:text-white hover:bg-gray-800"
+                  className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
@@ -89,7 +89,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
             </div>
             <div className="flex items-center gap-2">
               {discount_pct > 0 && (
-                <span className="text-xs px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 font-semibold">
+                <span className="text-xs px-3 py-1 rounded-full bg-orange-100 text-orange-600 font-semibold">
                   Discount: {discount_pct}%
                 </span>
               )}
@@ -98,7 +98,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                 size="sm"
                 disabled={saving || !vehicle?.reg}
                 onClick={handleSaveAndExit}
-                className="border-orange-500/40 bg-transparent text-orange-400 hover:bg-orange-500/10 hover:text-orange-300"
+                className="border-orange-500/40 bg-transparent text-orange-600 hover:bg-orange-100 hover:text-orange-300"
               >
                 {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
                 Save & exit
@@ -118,20 +118,20 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                       <div
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                           done
-                            ? 'bg-orange-500 text-white'
+                            ? 'bg-orange-500 text-gray-900'
                             : active
-                            ? 'bg-orange-500 text-white ring-4 ring-orange-500/20'
-                            : 'bg-gray-800 text-gray-500'
+                            ? 'bg-orange-500 text-gray-900 ring-4 ring-orange-500/20'
+                            : 'bg-gray-100 text-gray-500'
                         }`}
                       >
                         {s.n}
                       </div>
-                      <span className={`text-xs hidden sm:inline ${active ? 'text-white font-semibold' : 'text-gray-500'}`}>
+                      <span className={`text-xs hidden sm:inline ${active ? 'text-gray-900 font-semibold' : 'text-gray-500'}`}>
                         {s.label}
                       </span>
                     </div>
                     {i < STEPS.length - 1 && (
-                      <div className={`flex-1 h-px ${done ? 'bg-orange-500' : 'bg-gray-800'}`} />
+                      <div className={`flex-1 h-px ${done ? 'bg-orange-500' : 'bg-gray-100'}`} />
                     )}
                   </React.Fragment>
                 );
@@ -143,8 +143,8 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
         <main className="max-w-4xl mx-auto px-4 py-6 sm:py-10">
           {(title || subtitle) && (
             <div className="mb-6">
-              {title && <h1 className="text-2xl sm:text-3xl font-bold text-white">{title}</h1>}
-              {subtitle && <p className="text-gray-400 mt-1 text-sm sm:text-base">{subtitle}</p>}
+              {title && <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>}
+              {subtitle && <p className="text-gray-600 mt-1 text-sm sm:text-base">{subtitle}</p>}
             </div>
           )}
           {children}

@@ -118,7 +118,7 @@ const DealerQuotesList = () => {
   return (
     <DealerLayout>
       {/* Header section — dark band */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-gray-900 border-b border-gray-800 px-4 sm:px-6 lg:px-8 py-8">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-2 mb-6">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wider text-orange-500">QUOTES</h1>
@@ -145,14 +145,14 @@ const DealerQuotesList = () => {
 
             <button
               onClick={handleNewQuote}
-              className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-400 font-bold text-sm tracking-wide self-start md:self-auto"
+              className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-bold text-sm tracking-wide self-start md:self-auto"
             >
               <Plus className="h-5 w-5" /> Add new dealer plan
             </button>
           </div>
 
           <div className="mt-4 text-sm">
-            <span className="text-gray-400 font-semibold">Summary Stats: </span>
+            <span className="text-gray-600 font-semibold">Summary Stats: </span>
             <span className="text-orange-500 font-bold">Total Quotes ({quotes.length})</span>
           </div>
         </div>
@@ -161,8 +161,8 @@ const DealerQuotesList = () => {
       {/* Quote list */}
       <div className="mt-6 space-y-3">
         {filtered.length === 0 ? (
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-12 text-center">
-            <p className="text-gray-400">
+          <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+            <p className="text-gray-600">
               {search ? 'No quotes match your search.' : 'No saved quotes yet. Start a new quote to get going.'}
             </p>
           </div>
@@ -170,11 +170,11 @@ const DealerQuotesList = () => {
           filtered.map((q: any) => (
             <div
               key={q.id}
-              className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
+              className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
             >
               <div className="flex flex-col md:flex-row">
                 {/* Vehicle image / placeholder */}
-                <div className="w-full md:w-56 h-40 md:h-auto bg-gray-800 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-800">
+                <div className="w-full md:w-56 h-40 md:h-auto bg-gray-100 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
                   <div className="flex flex-col items-center text-gray-600">
                     <Camera className="h-8 w-8 mb-1" />
                     <span className="text-[10px] font-bold tracking-widest">NO PHOTO</span>
@@ -184,33 +184,33 @@ const DealerQuotesList = () => {
                 {/* Middle: details */}
                 <div className="flex-1 p-5 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <h3 className="text-base sm:text-lg font-bold text-white tracking-wide uppercase truncate">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 tracking-wide uppercase truncate">
                       {q.vehicle_reg || '—'}{' '}
                       {[q.vehicle_make, q.vehicle_model].filter(Boolean).join(' ')}
                     </h3>
                     <span className="text-gray-500 text-sm font-mono">#{formatRef(q.id)}</span>
                   </div>
-                  <p className="text-sm text-gray-400">
-                    <span className="font-semibold text-gray-300">Step:</span>{' '}
-                    <span className="text-orange-400 font-medium">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-700">Step:</span>{' '}
+                    <span className="text-orange-600 font-medium">
                       {q.status === 'converted' || q.status === 'completed'
                         ? 'Completed'
                         : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
                     </span>
                     <span className="text-gray-500"> · Created on </span>
-                    <span className="text-gray-300">{formatDateTime(q.created_at)}</span>
+                    <span className="text-gray-700">{formatDateTime(q.created_at)}</span>
                   </p>
                   {q.customer_name && (
-                    <p className="text-sm text-gray-400 mt-1">
-                      <span className="font-semibold text-gray-300">Customer:</span>{' '}
-                      <span className="text-gray-300">{q.customer_name}</span>
+                    <p className="text-sm text-gray-600 mt-1">
+                      <span className="font-semibold text-gray-700">Customer:</span>{' '}
+                      <span className="text-gray-700">{q.customer_name}</span>
                     </p>
                   )}
                 </div>
 
                 {/* Right: price + actions */}
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 px-5 py-4 md:py-5 md:min-w-[200px] border-t md:border-t-0 md:border-l border-gray-800 bg-gray-900/60">
-                  <div className="text-2xl md:text-3xl font-extrabold text-white">
+                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 px-5 py-4 md:py-5 md:min-w-[200px] border-t md:border-t-0 md:border-l border-gray-200 bg-white/60">
+                  <div className="text-2xl md:text-3xl font-extrabold text-gray-900">
                     {q.price ? `£${Number(q.price).toFixed(2)}` : '—'}
                   </div>
                   <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ const DealerQuotesList = () => {
                       size="icon"
                       variant="outline"
                       onClick={() => handleDelete(q.id)}
-                      className="h-9 w-9 border-gray-700 bg-transparent text-gray-400 hover:bg-red-950 hover:text-red-400 hover:border-red-800"
+                      className="h-9 w-9 border-gray-300 bg-transparent text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-800"
                       aria-label="Delete quote"
                     >
                       <Trash2 className="h-4 w-4" />

@@ -60,7 +60,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-950">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
       </div>
     );
@@ -77,9 +77,9 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const displayName = (dealer?.name || user.email || 'DEALER').toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20 gap-4">
             {/* Logo */}
@@ -104,7 +104,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     key={item.to}
                     to={item.to}
                     className={`group relative flex flex-col items-center px-4 py-2 transition-colors ${
-                      active ? 'text-white' : 'text-gray-400 hover:text-white'
+                      active ? 'text-gray-900' : 'text-gray-600 hover:text-gray-900'
                     }`}
                   >
                     <Icon className="h-5 w-5 mb-1" />
@@ -129,16 +129,16 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <ChevronDown className="h-4 w-4" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-gray-900 border-gray-800 text-gray-200">
-                  <DropdownMenuItem className="focus:bg-gray-800 focus:text-white cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
+                <DropdownMenuContent align="end" className="w-56 bg-white border-gray-200 text-gray-800">
+                  <DropdownMenuItem className="focus:bg-gray-100 focus:text-gray-900 cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
                     <UserCog className="h-4 w-4 mr-2" /> Manage Account
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-gray-800 focus:text-white cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
+                  <DropdownMenuItem className="focus:bg-gray-100 focus:text-gray-900 cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-gray-800" />
+                  <DropdownMenuSeparator className="bg-gray-100" />
                   <DropdownMenuItem
-                    className="focus:bg-red-950 focus:text-red-300 cursor-pointer text-red-400"
+                    className="focus:bg-red-50 focus:text-red-700 cursor-pointer text-red-600"
                     onClick={signOut}
                   >
                     <LogOut className="h-4 w-4 mr-2" /> Logout
@@ -151,11 +151,11 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
             <div className="lg:hidden">
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2 text-gray-300 hover:bg-gray-800">
+                  <Button variant="ghost" size="sm" className="p-2 text-gray-700 hover:bg-gray-100">
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] bg-gray-900 border-gray-800">
+                <SheetContent side="right" className="w-[300px] bg-white border-gray-200">
                   <div className="flex flex-col h-full">
                     <div className="pb-6">
                       <img
@@ -174,7 +174,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                             to={item.to}
                             onClick={() => setMobileOpen(false)}
                             className={`flex items-center gap-3 px-3 py-3 rounded-md text-sm font-bold tracking-wider ${
-                              active ? 'bg-orange-500/10 text-orange-400' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                              active ? 'bg-orange-100 text-orange-600' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                             }`}
                           >
                             <Icon className="h-5 w-5" />
@@ -186,7 +186,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <div className="pt-6 mt-auto">
                       <button
                         onClick={() => { signOut(); setMobileOpen(false); }}
-                        className="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                        className="w-full bg-red-600 text-gray-900 px-4 py-3 rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
                       >
                         <LogOut className="h-4 w-4" /> Logout
                       </button>

@@ -26,7 +26,7 @@ export const DealerPublicHeader: React.FC = () => {
   };
 
   return (
-    <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
@@ -50,7 +50,7 @@ export const DealerPublicHeader: React.FC = () => {
                   key={item.to}
                   to={item.to}
                   className={`relative text-sm font-bold tracking-wider transition-colors ${
-                    active ? 'text-white' : 'text-gray-300 hover:text-white'
+                    active ? 'text-gray-900' : 'text-gray-700 hover:text-gray-900'
                   }`}
                 >
                   {item.label}
@@ -68,7 +68,7 @@ export const DealerPublicHeader: React.FC = () => {
           <div className="hidden lg:flex items-center gap-3">
             <a
               href="tel:03302295045"
-              className="inline-flex items-center gap-2 text-sm font-bold tracking-wider text-orange-500 hover:text-orange-400 transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-bold tracking-wider text-orange-500 hover:text-orange-600 transition-colors"
             >
               <Phone className="h-4 w-4" />
               Call Us
@@ -77,7 +77,7 @@ export const DealerPublicHeader: React.FC = () => {
               href="https://wa.me/message/SPQPJ6O3UBF5B1"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm transition-colors"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-gray-900 font-bold tracking-wider rounded-full px-4 h-10 text-sm transition-colors"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp Us
@@ -85,14 +85,14 @@ export const DealerPublicHeader: React.FC = () => {
             <Link to="/dealer-portal/signup">
               <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wider rounded-full px-6 h-10"
+                className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wider rounded-full px-6 h-10"
               >
                 Start Today
               </Button>
             </Link>
             <Link
               to="/dealer-portal/login"
-              className="inline-flex items-center gap-1.5 text-sm font-bold tracking-wider text-gray-300 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-bold tracking-wider text-gray-700 hover:text-gray-900 transition-colors"
             >
               <LogIn className="h-4 w-4" />
               Login
@@ -103,7 +103,7 @@ export const DealerPublicHeader: React.FC = () => {
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-gray-300 hover:text-white hover:bg-gray-800"
+            className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -112,14 +112,14 @@ export const DealerPublicHeader: React.FC = () => {
 
         {/* Mobile nav */}
         {mobileOpen && (
-          <div className="lg:hidden border-t border-gray-800 py-3 space-y-1">
+          <div className="lg:hidden border-t border-gray-200 py-3 space-y-1">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setMobileOpen(false)}
                 className={`block px-3 py-2 rounded-md text-sm font-bold tracking-wider ${
-                  isActive(item.to) ? 'text-white bg-gray-800' : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  isActive(item.to) ? 'text-gray-900 bg-gray-100' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 {item.label}
@@ -138,14 +138,14 @@ export const DealerPublicHeader: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-2 mx-3 bg-green-500 hover:bg-green-600 text-white font-bold tracking-wider rounded-full px-4 h-10 text-sm justify-center"
+                className="inline-flex items-center gap-2 mx-3 bg-green-500 hover:bg-green-600 text-gray-900 font-bold tracking-wider rounded-full px-4 h-10 text-sm justify-center"
               >
                 <MessageCircle className="h-4 w-4" /> WhatsApp Us
               </a>
               <Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)} className="px-3">
                 <Button
                   size="sm"
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wider rounded-full h-10"
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wider rounded-full h-10"
                 >
                   Start Today
                 </Button>
@@ -153,7 +153,7 @@ export const DealerPublicHeader: React.FC = () => {
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-2 text-sm font-bold tracking-wider text-gray-300 inline-flex items-center gap-1.5"
+                className="px-3 py-2 text-sm font-bold tracking-wider text-gray-700 inline-flex items-center gap-1.5"
               >
                 <LogIn className="h-4 w-4" /> Login
               </Link>
