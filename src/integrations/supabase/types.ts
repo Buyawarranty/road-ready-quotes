@@ -2544,6 +2544,60 @@ export type Database = {
           },
         ]
       }
+      dealer_admin_blog_posts: {
+        Row: {
+          author: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          keywords: string[] | null
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dealer_admin_bulk_pricing_uploads: {
         Row: {
           created_at: string
@@ -2837,6 +2891,66 @@ export type Database = {
           sent_count?: number
           status?: string
           subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_landing_pages: {
+        Row: {
+          body_content: string
+          created_at: string
+          created_by: string | null
+          cta_label: string | null
+          cta_url: string | null
+          hero_heading: string | null
+          hero_subheading: string | null
+          id: string
+          keywords: string[] | null
+          meta_description: string | null
+          meta_title: string | null
+          published_at: string | null
+          slug: string
+          status: string
+          target_location: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_content?: string
+          created_at?: string
+          created_by?: string | null
+          cta_label?: string | null
+          cta_url?: string | null
+          hero_heading?: string | null
+          hero_subheading?: string | null
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug: string
+          status?: string
+          target_location?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_content?: string
+          created_at?: string
+          created_by?: string | null
+          cta_label?: string | null
+          cta_url?: string | null
+          hero_heading?: string | null
+          hero_subheading?: string | null
+          id?: string
+          keywords?: string[] | null
+          meta_description?: string | null
+          meta_title?: string | null
+          published_at?: string | null
+          slug?: string
+          status?: string
+          target_location?: string | null
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -3338,6 +3452,81 @@ export type Database = {
           status?: string
           title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_test_runs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          payload: Json | null
+          result: Json | null
+          run_by: string | null
+          status: string
+          test_name: string
+          test_type: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          run_by?: string | null
+          status?: string
+          test_name: string
+          test_type?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          payload?: Json | null
+          result?: Json | null
+          run_by?: string | null
+          status?: string
+          test_name?: string
+          test_type?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_timesheet_entries: {
+        Row: {
+          commission_amount: number
+          created_at: string
+          deals_closed: number
+          hours_worked: number
+          id: string
+          notes: string | null
+          updated_at: string
+          user_email: string | null
+          user_id: string
+          work_date: string
+        }
+        Insert: {
+          commission_amount?: number
+          created_at?: string
+          deals_closed?: number
+          hours_worked?: number
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+          work_date: string
+        }
+        Update: {
+          commission_amount?: number
+          created_at?: string
+          deals_closed?: number
+          hours_worked?: number
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string
+          work_date?: string
         }
         Relationships: []
       }
