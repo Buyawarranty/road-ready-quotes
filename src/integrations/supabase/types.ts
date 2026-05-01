@@ -2811,6 +2811,42 @@ export type Database = {
         }
         Relationships: []
       }
+      dealer_admin_lead_backups: {
+        Row: {
+          backup_name: string
+          backup_type: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          record_count: number
+          snapshot: Json
+          updated_at: string
+        }
+        Insert: {
+          backup_name: string
+          backup_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          record_count?: number
+          snapshot?: Json
+          updated_at?: string
+        }
+        Update: {
+          backup_name?: string
+          backup_type?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          record_count?: number
+          snapshot?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dealer_admin_marketing_contacts: {
         Row: {
           created_at: string
@@ -3194,6 +3230,45 @@ export type Database = {
           status?: string
           title?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      dealer_admin_user_permissions: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          last_login_at: string | null
+          permissions: Json
+          role: string
+          status: string
+          updated_at: string
+          user_email: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          invited_by?: string | null
+          last_login_at?: string | null
+          permissions?: Json
+          role?: string
+          status?: string
+          updated_at?: string
+          user_email: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          invited_by?: string | null
+          last_login_at?: string | null
+          permissions?: Json
+          role?: string
+          status?: string
+          updated_at?: string
+          user_email?: string
         }
         Relationships: []
       }
