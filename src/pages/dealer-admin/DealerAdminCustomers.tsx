@@ -38,6 +38,7 @@ interface DealerCustomer {
   archived_at: string | null;
   created_at: string;
   updated_at: string;
+  source?: 'dealer' | 'retail';
 }
 
 interface DealerOption { id: string; name: string }
@@ -61,16 +62,56 @@ const DealerAdminCustomers: React.FC = () => {
 
   const load = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('dealer_customers')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1000);
-    if (error) {
-      toast.error('Failed to load dealer customers', { description: error.message });
-    } else {
-      setRows((data || []) as DealerCustomer[]);
+    const [dcRes, retailRes] = await Promise.all([
+      supabase
+        .from('dealer_customers')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1000),
+      supabase
+        .from('customers')
+        .select('id, dealer_id, first_name, last_name, email, phone, postcode, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, status, signup_date, created_at, updated_at')
+        .not('dealer_id', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1000),
+    ]);
+    if (dcRes.error) {
+      toast.error('Failed to load dealer customers', { description: dcRes.error.message });
     }
+    const dealerRows: DealerCustomer[] = ((dcRes.data || []) as any[]).map((r) => ({ ...r, source: 'dealer' }));
+    const retailRows: DealerCustomer[] = ((retailRes.data || []) as any[]).map((r) => ({
+      id: r.id,
+      dealer_id: r.dealer_id,
+      first_name: r.first_name,
+      last_name: r.last_name,
+      email: r.email,
+      phone: r.phone,
+      mobile: null,
+      address_line_1: null,
+      address_line_2: null,
+      city: null,
+      county: null,
+      postcode: r.postcode,
+      country: null,
+      registration_plate: r.registration_plate,
+      vehicle_make: r.vehicle_make,
+      vehicle_model: r.vehicle_model,
+      vehicle_year: r.vehicle_year,
+      vehicle_mileage: null,
+      vehicle_fuel_type: null,
+      plan_type: r.plan_type,
+      status: r.status || 'active',
+      signup_date: r.signup_date,
+      notes: null,
+      archived_at: null,
+      created_at: r.created_at,
+      updated_at: r.updated_at,
+      source: 'retail',
+    }));
+    const merged = [...dealerRows, ...retailRows].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    setRows(merged);
     setLoading(false);
   };
 
@@ -226,17 +267,33 @@ const DealerAdminCustomers: React.FC = () => {
                       <td className="px-4 py-3 text-foreground">{dealerName(r.dealer_id)}</td>
                       <td className="px-4 py-3 text-foreground">{r.plan_type || '—'}</td>
                       <td className="px-4 py-3">
-                        {r.archived_at ? (
-                          <Badge variant="secondary">Archived</Badge>
-                        ) : (
-                          <Badge>{r.status}</Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {r.archived_at ? (
+                            <Badge variant="secondary">Archived</Badge>
+                          ) : (
+                            <Badge>{r.status}</Badge>
+                          )}
+                          {r.source === 'retail' && (
+                            <Badge variant="outline" className="text-[10px]">Retail</Badge>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <Button size="sm" variant="ghost" onClick={() => startEdit(r)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => startEdit(r)}
+                          disabled={r.source === 'retail'}
+                          title={r.source === 'retail' ? 'Edit in main Customers tab' : 'Edit'}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => toggleArchive(r)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => toggleArchive(r)}
+                          disabled={r.source === 'retail'}
+                        >
                           {r.archived_at ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
                         </Button>
                       </td>
