@@ -267,17 +267,33 @@ const DealerAdminCustomers: React.FC = () => {
                       <td className="px-4 py-3 text-foreground">{dealerName(r.dealer_id)}</td>
                       <td className="px-4 py-3 text-foreground">{r.plan_type || '—'}</td>
                       <td className="px-4 py-3">
-                        {r.archived_at ? (
-                          <Badge variant="secondary">Archived</Badge>
-                        ) : (
-                          <Badge>{r.status}</Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {r.archived_at ? (
+                            <Badge variant="secondary">Archived</Badge>
+                          ) : (
+                            <Badge>{r.status}</Badge>
+                          )}
+                          {r.source === 'retail' && (
+                            <Badge variant="outline" className="text-[10px]">Retail</Badge>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <Button size="sm" variant="ghost" onClick={() => startEdit(r)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => startEdit(r)}
+                          disabled={r.source === 'retail'}
+                          title={r.source === 'retail' ? 'Edit in main Customers tab' : 'Edit'}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={() => toggleArchive(r)}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => toggleArchive(r)}
+                          disabled={r.source === 'retail'}
+                        >
                           {r.archived_at ? <ArchiveRestore className="h-4 w-4" /> : <Archive className="h-4 w-4" />}
                         </Button>
                       </td>
