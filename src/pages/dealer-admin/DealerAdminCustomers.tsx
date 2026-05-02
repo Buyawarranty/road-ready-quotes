@@ -38,6 +38,7 @@ interface DealerCustomer {
   archived_at: string | null;
   created_at: string;
   updated_at: string;
+  source?: 'dealer' | 'retail';
 }
 
 interface DealerOption { id: string; name: string }
