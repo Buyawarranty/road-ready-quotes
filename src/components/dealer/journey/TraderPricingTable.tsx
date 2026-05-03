@@ -99,10 +99,10 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-5">
-          <Row label="Warranty term" options={TERM_OPTIONS} value={term} onChange={setTerm} format={(v) => `${v} months`} />
-          <Row label="Repair excess" options={EXCESS_OPTIONS} value={excess} onChange={setExcess} format={(v) => `£${v}`} />
-          <Row label="Labour rate" options={LABOUR_OPTIONS} value={labour} onChange={setLabour} format={(v) => `£${v}/hr`} />
-          <Row label="Claim limit" options={CLAIM_OPTIONS} value={claim} onChange={setClaim} format={(v) => formatClaim(Number(v))} />
+          <Row label="Warranty term" options={TERM_OPTIONS} value={term} onChange={(v) => setTerm(v as TraderTerm)} format={(v) => `${v} months`} />
+          <Row label="Repair excess" options={EXCESS_OPTIONS} value={excess} onChange={(v) => setExcess(v as TraderExcess)} format={(v) => `£${v}`} />
+          <Row label="Labour rate" options={LABOUR_OPTIONS} value={labour} onChange={(v) => setLabour(v as TraderLabour)} format={(v) => `£${v}/hr`} />
+          <Row label="Claim limit" options={CLAIM_OPTIONS} value={claim} onChange={(v) => setClaim(v as TraderClaim)} format={(v) => formatClaim(Number(v))} />
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-500 mb-2 font-semibold">Parts contribution</p>
             <div className="flex flex-wrap gap-2">
