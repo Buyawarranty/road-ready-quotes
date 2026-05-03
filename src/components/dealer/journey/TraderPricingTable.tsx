@@ -97,13 +97,36 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   return (
     <div className="space-y-6">
+      {/* Price view toggle: Retail (no dealer discount) vs Dealer (discounted) */}
+      <div className="flex items-center justify-end gap-3">
+        <span className={`text-xs font-semibold ${!dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Retail price</span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={dealerView}
+          onClick={() => setDealerView((v) => !v)}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+            dealerView ? 'bg-orange-500' : 'bg-gray-300'
+          }`}
+        >
+          <span
+            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+              dealerView ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+        <span className={`text-xs font-semibold ${dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Dealer price</span>
+      </div>
+
       <Card className="border-orange-200">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-orange-600 font-semibold">Trader plan</p>
+              <p className="text-[10px] uppercase tracking-widest text-orange-600 font-semibold">
+                {dealerView ? 'Trader plan · dealer price' : 'Trader plan · retail price'}
+              </p>
               <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
-                Gold <Check className="h-5 w-5 text-orange-500" />
+                Gold (£{result.gross.toFixed(2)}) <Check className="h-5 w-5 text-orange-500" />
               </CardTitle>
             </div>
             <div className="text-right">
@@ -114,7 +137,32 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-5">
-          <Row label="Warranty term" options={TERM_OPTIONS} value={term} onChange={(v) => setTerm(v as TraderTerm)} format={(v) => `${v} months`} />
+          <div>
+            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2 font-semibold">
+              What terms would you like? <span className="text-gray-400 normal-case font-normal">Promo: we're giving extra months for free</span>
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {allTermPrices.map(({ term: t, gross }) => {
+                const active = term === t;
+                const label = t === 6 ? '6+1' : t === 12 ? '12+12' : t === 24 ? '24+12' : t === 36 ? '36+12' : `${t}`;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTerm(t)}
+                    className={`px-3 py-3 rounded-lg text-sm font-semibold border transition-colors text-left ${
+                      active
+                        ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
+                        : 'bg-white text-gray-800 border-gray-200 hover:border-orange-300'
+                    }`}
+                  >
+                    <div className="text-base">£{gross.toFixed(2)}</div>
+                    <div className={`text-xs ${active ? 'text-white/90' : 'text-gray-500'}`}>{label} mths</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <Row label="Repair excess" options={EXCESS_OPTIONS} value={excess} onChange={(v) => setExcess(v as TraderExcess)} format={(v) => `£${v}`} />
           <Row label="Labour rate" options={LABOUR_OPTIONS} value={labour} onChange={(v) => setLabour(v as TraderLabour)} format={(v) => `£${v}/hr`} />
           <Row label="Claim limit" options={CLAIM_OPTIONS} value={claim} onChange={(v) => setClaim(v as TraderClaim)} format={(v) => formatClaim(Number(v))} />
