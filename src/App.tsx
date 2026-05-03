@@ -213,6 +213,7 @@ const DealerAdminUserPermissions = lazy(() => import("./pages/dealer-admin/Deale
 const DealerAdminDocumentMapping = lazy(() => import("./pages/dealer-admin/DealerAdminDocumentMapping"));
 const DealerAdminPolicyLetters = lazy(() => import("./pages/dealer-admin/DealerAdminPolicyLetters"));
 const DealerAdminPostedLettersLog = lazy(() => import("./pages/dealer-admin/DealerAdminPostedLettersLog"));
+const DealerAdminTraderPricing = lazy(() => import("./pages/dealer-admin/DealerAdminTraderPricing"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -458,6 +459,7 @@ const App = () => {
                       <Route path="sales-scoreboard" element={<DealerAdminSalesScoreboard />} />
                       <Route path="discounts-given" element={<DealerAdminDiscountsGiven />} />
                       <Route path="account" element={<DealerAdminAccount />} />
+                      <Route path="trader-pricing" element={<DealerAdminTraderPricing />} />
                     </Route>
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
