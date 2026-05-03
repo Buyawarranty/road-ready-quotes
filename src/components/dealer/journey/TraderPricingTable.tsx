@@ -33,10 +33,25 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const [labour, setLabour] = useState<TraderLabour>(70);
   const [parts, setParts] = useState<TraderParts>('age_mileage');
   const [claim, setClaim] = useState<TraderClaim>(1000);
+  const [dealerView, setDealerView] = useState<boolean>(true);
+
+  const effectiveConfig = useMemo(() => {
+    if (!config) return config;
+    return dealerView ? config : { ...config, dealer_pct: 1 };
+  }, [config, dealerView]);
 
   const result = useMemo(
-    () => calcTraderPrice({ term, excess, labour, parts, claim, config }),
-    [term, excess, labour, parts, claim, config],
+    () => calcTraderPrice({ term, excess, labour, parts, claim, config: effectiveConfig }),
+    [term, excess, labour, parts, claim, effectiveConfig],
+  );
+
+  const allTermPrices = useMemo(
+    () =>
+      TERM_OPTIONS.map((t) => ({
+        term: t,
+        gross: calcTraderPrice({ term: t, excess, labour, parts, claim, config: effectiveConfig }).gross,
+      })),
+    [excess, labour, parts, claim, effectiveConfig],
   );
 
   if (isLoading) {
