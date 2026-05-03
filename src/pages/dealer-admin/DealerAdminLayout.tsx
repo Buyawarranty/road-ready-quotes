@@ -54,6 +54,7 @@ const navGroups: NavGroup[] = [
   {
     label: 'Plans & Pricing',
     items: [
+      { to: '/dealer-admin/trader-pricing', label: 'Trader Pricing', icon: Calculator },
       { to: '/dealer-admin/plans', label: 'Standard Plans', icon: FileText },
       { to: '/dealer-admin/bulk-pricing', label: 'Bulk Pricing', icon: Receipt },
       { to: '/dealer-admin/special-plans', label: 'Special Vehicle Plans', icon: Car },

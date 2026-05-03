@@ -25,6 +25,8 @@ export interface DealerJourneyPlan {
   duration_months: 3 | 12 | 24 | 36;
   retail_price: number; // before discount
   dealer_price: number; // after discount
+  term_months?: 3 | 6 | 12 | 24 | 36;
+  selected_options?: Record<string, any>;
 }
 
 export interface DealerJourneyState {

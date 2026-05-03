@@ -1,69 +1,94 @@
+# Trader (Dealer) Pricing — Single Gold Plan, Isolated Engine
 
-## Revised Dealer Journey Plan — with Payment Step
+Goal: replace the dealer journey's reused retail pricing with a dedicated trader engine that mirrors the uploaded `base_pricing.xlsx`. Only **one product: Gold**. Retail pricing stays untouched.
 
-User wants the dealer checkout to mirror retail (Stripe payment), not just a quote save.
+## Scope
 
-### Build error fixes (unblock compile)
-Cast payloads to `as any` in:
-- `src/components/admin/CustomersTab.tsx` (line 1661)
-- `src/components/admin/InlineWarrantyUpgrade.tsx` (lines 112, 126)
-- `src/components/admin/ReviewsTab.tsx` (line 165)
-- `src/hooks/useLeadDistribution.ts` (lines 243, 255)
+Affects only:
+- Dealer portal Step 3 (`/dealer-portal/quote/pricing`)
+- Dealer portal Step 4 checkout summary (display-only)
+- Dealer admin trader-pricing editor (so ratios can be tuned without code)
 
-### Routes (`src/App.tsx`)
-Add canonical dealer routes inside `DealerJourneyProvider`:
-- `/dealer/quote` → Step1Vehicle
-- `/dealer/vehicle-details` → Step1Vehicle (confirm view)
-- `/dealer/customer` → Step2Customer
-- `/dealer/plans` → Step3Plans (NEW)
-- `/dealer/pricing` → Step4Pricing (NEW)
-- `/dealer/checkout` → Step5Checkout (NEW, payment)
-- `/dealer/confirmation` → Step6Confirmation (NEW)
+Does NOT touch retail pricing logic, retail `plans` table, `pricingMatrix.ts`, retail `PricingTable.tsx`, retail checkout, or admin retail quote tabs.
 
-Keep existing `/dealer-portal/quote/*` routes as redirects.
+## Pricing formula (from spreadsheet)
 
-### New step components
+```
+ex_vat = base × excess × labour × parts × claim × dealer_pct × term
+gross  = ex_vat × 1.20
+```
 
-**Step3Plans** — Basic / Gold / Platinum × duration (3/12/24/36 mo). Shows retail crossed out + dealer net (20% off via `calcDealerPrice`). Saves to context.
+Defaults extracted from xlsx:
+- base = 147.50 (Gold)
+- excess: £0→1.10, £50→1.00, £75→0.90, £100→0.87, £150→0.83
+- labour: £40→0.90, £50→0.95, £70→1.00, £100→1.10, £120→1.20, £200→1.50
+- parts: `Age & Mileage`→1.00, `No contribution`→1.20
+- claim: £750→0.85, £1k→1.00, £1.25k→1.10, £2k→1.30
+- dealer_pct = 0.80
+- term: 3m→0.6, 6m→0.8, 12m→1.0, 24m→1.8, 36m→2.6
+- VAT = 1.20
 
-**Step4Pricing** — Summary (vehicle + customer + plan), price breakdown (Retail / −20% dealer discount / Dealer Net), edit links, CTA → checkout.
+All multipliers stored in DB so admins can tune without redeploys.
 
-**Step5Checkout** — Two payment options (matches existing `Step4Checkout.tsx` pattern already in repo):
-1. **Pay now** — Stripe card payment
-2. **Add to monthly invoice** — no card, billed later
+## New files
 
-Calls a NEW dealer-only edge function `dealer-create-checkout` with `{ dealer_id, payment_method, vehicle, customer, plan, discount_pct }`.
-- `pay_now` → returns Stripe `checkout_url`, redirects browser
-- `invoice` → creates `dealer_quotes` row directly, returns id, navigates to confirmation
+**Engine**
+- `src/lib/traderPricing.ts` — `calcTraderPrice({term, excess, labour, parts, claim})` → `{exVat, gross, breakdown[]}`.
+- `src/lib/traderPricingDefaults.ts` — fallback ratios if DB fetch fails.
 
-**Step6Confirmation** — Success screen with reference number, "Start new quote" button (calls `reset()`).
+**Hook**
+- `src/hooks/useTraderPricingConfig.ts` — fetches `trader_pricing_config`, caches via React Query, merges with defaults.
 
-### New edge function: `dealer-create-checkout`
-Isolated from retail Stripe functions. Responsibilities:
-- Validate dealer JWT
-- Insert `dealer_quotes` row (status: `pending_payment` for card, `invoiced` for invoice)
-- For `pay_now`: create Stripe Checkout Session in dealer's currency, success_url → `/dealer/confirmation?id=…&method=pay_now`, store session id on the quote
-- For `invoice`: just return the quote id
+**UI — dealer portal**
+- `src/components/dealer/journey/TraderPricingTable.tsx` — single Gold panel with term cards (3/6/12/24/36 mo) and selectors for excess / labour rate / parts contribution / claim limit. Live recalculation. Shows ex-VAT, VAT, gross.
 
-Requires Stripe secret (already in project per parent secrets sync). Will use `STRIPE_SECRET_KEY`.
+**UI — dealer admin**
+- `src/pages/dealer-admin/DealerAdminTraderPricing.tsx` — editable tables for base, excess/labour/parts/claim ratios, term multipliers, dealer pay %, VAT. Save → `trader_pricing_config`. Includes "Reset to defaults".
+- Sidebar entry "Trader Pricing" added in `DealerAdminLayout`.
 
-### New edge function: `dealer-stripe-webhook` (optional, recommended)
-Marks `dealer_quotes.status = 'paid'` and creates `dealer_warranties` row on `checkout.session.completed`. Listens to dealer sessions only (filter via metadata `source=dealer_journey`). Does NOT touch retail webhook.
+## Files edited (minimal)
 
-### Hero update
-`src/components/dealer/DealerRegHero.tsx` — point CTA to `/dealer/quote?reg=…`.
+- `src/pages/dealer-portal/journey/Step3Pricing.tsx` — render `TraderPricingTable` instead of `DealerPricingTable`. Plan payload stores `retail_price = exVat`, `dealer_price = gross`, plus `term_months` and `selected_options`.
+- `src/contexts/DealerJourneyContext.tsx` — extend `DealerJourneyPlan` with `term_months: 3|6|12|24|36` and `selected_options` (optional jsonb). Keep `plan_type` literal `'gold'`.
+- `src/pages/dealer-portal/journey/Step4Checkout.tsx` — show breakdown lines from engine (display only).
+- `src/App.tsx` — add `/dealer-admin/trader-pricing` route (lazy).
 
-### Isolation guarantees
-- Zero edits to retail tables, retail edge functions, `pricingMatrix.ts`, `StreamlinedCheckout.tsx`, retail Stripe webhook
-- Writes only to existing `dealer_quotes` / `dealer_warranties` (already present)
-- New session container `dealerJourney` (already exists)
-- New edge functions namespaced `dealer-*`
+`DealerPricingTable.tsx` left in place but unused (safe rollback).
 
-### Files
-**Edit (6):** 4 admin/hook casts + `src/App.tsx` + `src/components/dealer/DealerRegHero.tsx`
-**Create (4 frontend):** Step3Plans, Step4Pricing, Step5Checkout, Step6Confirmation under `src/pages/dealer-portal/journey/`
-**Create (2 edge functions):** `dealer-create-checkout`, `dealer-stripe-webhook`
-**No DB migrations.**
+## Database (one migration)
 
-### Out of scope
-Touching anything retail.
+```sql
+create table public.trader_pricing_config (
+  id uuid primary key default gen_random_uuid(),
+  category text not null check (category in
+    ('base','excess','labour','parts','claim','term','dealer_pct','vat')),
+  option_key text not null,        -- e.g. '50','100','age_mileage','12','default'
+  option_label text,
+  multiplier numeric not null,
+  active boolean not null default true,
+  updated_at timestamptz not null default now(),
+  unique (category, option_key)
+);
+alter table public.trader_pricing_config enable row level security;
+
+create policy "Authenticated read trader pricing"
+  on public.trader_pricing_config for select to authenticated using (true);
+
+create policy "Admins manage trader pricing"
+  on public.trader_pricing_config for all to authenticated
+  using (public.is_admin(auth.uid())) with check (public.is_admin(auth.uid()));
+```
+
+Same migration seeds the rows above (~25 rows).
+
+## Out of scope (explicit)
+
+- No changes to `pricingMatrix.ts`, `PricingTable.tsx`, `StreamlinedCheckout.tsx`, `GetQuoteTab.tsx`, `ConfirmExternalPaymentTab.tsx`, retail `plans` table, or retail flows.
+- No Basic/Platinum tiers — single Gold plan only.
+- No Stripe/webhook changes — dealer journey saves price to `dealer_quotes` / `dealer_warranties` already.
+
+## Validation
+
+1. `/dealer-portal/quote/pricing`: toggling options reproduces the four xlsx rows exactly (12-month ex-VAT: 95.58 / 155.76 / 106.20 / 88.15).
+2. Retail flow `/`: prices unchanged.
+3. Admin → Trader Pricing → bump base 147.50 → 160 → dealer Step 3 reflects on refresh; retail unaffected.
