@@ -1,13 +1,9 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DealerPricingTable from '@/components/dealer/journey/DealerPricingTable';
+import TraderPricingTable, { TraderSelection } from '@/components/dealer/journey/TraderPricingTable';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 
-/**
- * Dealer Step 3 — uses the duplicated retail pricing UI (DealerPricingTable),
- * wrapped in the dealer dark-theme layout with the journey progress bar.
- */
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const { vehicle, customer, setPlan, discount_pct } = useDealerJourney();
@@ -19,75 +15,36 @@ const Step3Pricing: React.FC = () => {
 
   if (!vehicle || !customer) return null;
 
-  // Adapt dealer journey vehicle → PricingTable's expected shape
-  const vehicleData = {
-    regNumber: vehicle.reg,
-    mileage: vehicle.mileage || '',
-    make: vehicle.make,
-    model: vehicle.model,
-    year: vehicle.year,
-    fuelType: vehicle.fuel_type,
-    transmission: vehicle.transmission,
-    email: customer.email,
-    phone: customer.phone,
-    firstName: customer.name?.split(' ')[0],
-    lastName: customer.name?.split(' ').slice(1).join(' '),
-    address: [customer.address_line1, customer.town, customer.postcode].filter(Boolean).join(', '),
-  };
-
-  const handlePlanSelected = (
-    planId: string,
-    paymentType: string,
-    planName?: string,
-    pricingData?: {
-      totalPrice: number;
-      monthlyPrice: number;
-      voluntaryExcess: number;
-      selectedAddOns: { [addon: string]: boolean };
-      protectionAddOns?: { [key: string]: boolean };
-      claimLimit?: number;
-      labourRate?: number;
-      boostAddon?: boolean;
-    }
-  ) => {
-    if (!pricingData) return;
-
-    const months = paymentType === '12months' ? 12 : paymentType === '24months' ? 24 : paymentType === '36months' ? 36 : 12;
-
-    const retail = pricingData.totalPrice;
+  const handleContinue = (sel: TraderSelection) => {
+    const retail = sel.gross;
     const dealer = +(retail * (1 - (discount_pct || 0) / 100)).toFixed(2);
-
-    const normalized = (planId || '').toLowerCase();
-    const planType: 'basic' | 'gold' | 'platinum' =
-      normalized.includes('platinum') || normalized.includes('premium') || normalized.includes('elite')
-        ? 'platinum'
-        : normalized.includes('gold') || normalized.includes('essential')
-        ? 'gold'
-        : 'basic';
-
+    // Map non-retail terms onto the existing context union (3/12/24/36).
+    // 6m falls back to 12 for legacy fields, but selected_options is the source of truth.
+    const ctxMonths: 3 | 12 | 24 | 36 =
+      sel.term === 3 ? 3 : sel.term === 24 ? 24 : sel.term === 36 ? 36 : 12;
     setPlan({
-      plan_type: planType,
-      duration_months: months as 3 | 12 | 24 | 36,
+      plan_type: 'gold',
+      duration_months: ctxMonths,
       retail_price: retail,
       dealer_price: dealer,
-    });
-
+      term_months: sel.term,
+      selected_options: {
+        excess: sel.excess,
+        labour: sel.labour,
+        parts: sel.parts,
+        claim: sel.claim,
+        ex_vat: sel.exVat,
+        gross: sel.gross,
+        vat: sel.vat,
+        monthly_equiv: sel.monthlyEquivalent,
+      },
+    } as any);
     navigate('/dealer-portal/quote/checkout');
   };
 
   return (
-    <DealerJourneyLayout
-      step={3}
-      title=""
-      backTo="/dealer-portal/quote/customer"
-    >
-      <div className="-mt-6 sm:-mt-10 -mx-4 dealer-pricing-dark">
-        <DealerPricingTable
-          vehicleData={vehicleData}
-          onBack={() => navigate('/dealer-portal/quote/customer')}
-          onPlanSelected={handlePlanSelected}
-        />
-      </div>
+    <DealerJourneyLayout step={3} title="Choose your trader plan" subtitle="Single Gold tier — adjust options to match the deal." backTo="/dealer-portal/quote/customer">
+      <TraderPricingTable onContinue={handleContinue} onBack={() => navigate('/dealer-portal/quote/customer')} />
     </DealerJourneyLayout>
   );
 };
