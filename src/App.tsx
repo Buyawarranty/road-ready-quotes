@@ -36,6 +36,9 @@ const ConditionalSeasonalBanner = () => {
 const ConditionalStickyNavigation = () => {
   const location = useLocation();
   if (location.pathname.startsWith('/dealer-portal')) return null;
+  // Dealer homepage routes render their own DealerPublicHeader
+  const isDealerHomepage = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/home/';
+  if (isDealerHomepage) return null;
   return <StickyNavigation />;
 };
 
