@@ -18,6 +18,7 @@ import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import nissanQashqaiImage from '@/assets/nissan-qashqai-warranty-cover.png';
 import nissanJukeImage from '@/assets/nissan-juke-extended-warranty.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const NissanWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -115,102 +116,7 @@ const NissanWarranty = () => {
       />
 
       {/* Header */}
-      <header className="bg-white shadow-sm py-1 sm:py-2 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
-              </Link>
-            </div>
-            
-            <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
-              <Link to="/what-is-covered/" className="relative text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">What's Covered</Link>
-              <Link to="/make-a-claim/" className="relative text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Make a Claim</Link>
-              <Link to="/faq/" className="relative text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">FAQs</Link>
-              <Link to="/contact-us/" className="relative text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Contact Us</Link>
-            </nav>
-
-            <div className="hidden lg:flex items-center space-x-3">
-              <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="bg-[#00B67A] text-white border-[#00B67A] hover:bg-[#008C5A] hover:border-[#008C5A] px-3 text-sm"
-                >
-                  WhatsApp Us
-                </Button>
-              </a>
-              <Button 
-                size="sm"
-                onClick={navigateToQuoteForm}
-                className="bg-primary text-white hover:bg-primary/90 px-3 text-sm"
-              >
-                Get my quote
-              </Button>
-            </div>
-
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="lg" className="lg:hidden p-3 min-w-[48px] min-h-[48px]">
-                  <Menu className="h-8 w-8" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <nav className="flex flex-col space-y-6 mt-8">
-                  <Link 
-                    to="/what-is-covered/" 
-                    className="text-gray-700 hover:text-primary text-xl font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    What's Covered
-                  </Link>
-                  <Link 
-                    to="/make-a-claim/" 
-                    className="text-gray-700 hover:text-primary text-xl font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Make a Claim
-                  </Link>
-                  <Link 
-                    to="/faq/" 
-                    className="text-gray-700 hover:text-primary text-xl font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    FAQs
-                  </Link>
-                  <Link 
-                    to="/contact-us/" 
-                    className="text-gray-700 hover:text-primary text-xl font-medium"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Contact Us
-                  </Link>
-                  <div className="pt-4 space-y-3">
-                    <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
-                      <Button 
-                        className="w-full bg-[#00B67A] text-white border-[#00B67A] hover:bg-[#008C5A]"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        WhatsApp Us
-                      </Button>
-                    </a>
-                    <Button 
-                      className="w-full bg-primary text-white hover:bg-primary/90"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        navigateToQuoteForm();
-                      }}
-                    >
-                      Get my quote
-                    </Button>
-                  </div>
-                </nav>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
-      </header>
+      <DealerPublicHeader />
 
       <TrustpilotHeader />
 

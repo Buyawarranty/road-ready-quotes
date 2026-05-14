@@ -11,6 +11,7 @@ import { SeasonalOfferBanner } from '@/components/SeasonalOfferBanner';
 import pandaHeroImage from '@/assets/blog-hero-panda-mechanic.png';
 import warrantyCarImage from '@/assets/blog-hero-warranty-car.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,6 +93,7 @@ const Blog = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead 
         title="Best Car Warranty UK | Expert Vehicle Protection Advice & Tips"
         description="Get expert advice on car warranties across the UK. Compare car and van warranties in Manchester, Birmingham, London & nationwide. Affordable cover and peace of mind today."

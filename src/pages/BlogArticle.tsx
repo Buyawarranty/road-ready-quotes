@@ -11,6 +11,7 @@ import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface BlogPost {
   id: string;
   title: string;
@@ -223,48 +224,7 @@ const BlogArticle = () => {
         </Link>
 
         {/* Article header */}
-        <header className="mb-8">
-          <Badge variant="secondary" className="mb-4">
-            {post.blog_categories?.name}
-          </Badge>
-          <h1 className="text-4xl font-bold text-foreground mb-4 leading-tight">
-            {post.title}
-          </h1>
-          {post.excerpt && (
-            <p className="text-xl text-muted-foreground mb-6">
-              {post.excerpt}
-            </p>
-          )}
-          
-          {/* Meta info */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <User className="mr-2 h-4 w-4" />
-              {post.blog_authors?.name}
-            </div>
-            <div className="flex items-center">
-              <Calendar className="mr-2 h-4 w-4" />
-              {new Date(post.published_at).toLocaleDateString('en-GB', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </div>
-            <div className="flex items-center">
-              <Clock className="mr-2 h-4 w-4" />
-              {post.read_time_minutes} min read
-            </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={handleShare}
-              className="flex items-center gap-2"
-            >
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
-          </div>
-        </header>
+        <DealerPublicHeader />
 
         {/* Featured image */}
         {post.featured_image_url && (

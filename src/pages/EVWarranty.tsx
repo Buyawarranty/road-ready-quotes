@@ -26,6 +26,7 @@ import seatLogo from '@/assets/logos/seat.webp';
 import skodaLogo from '@/assets/logos/skoda.webp';
 import ssangyongLogo from '@/assets/logos/ssangyong.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const EVWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -160,6 +161,7 @@ const EVWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="EV Extended Warranty UK | Electric & Hybrid Car Cover | Panda Protect"
         description="Protect your electric or hybrid car from costly repairs with affordable UK EV extended warranty plans. Cover for battery systems, motors & electronics. Get instant quotes online."

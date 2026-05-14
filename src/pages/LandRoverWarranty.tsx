@@ -17,6 +17,7 @@ import heroImg from '@/assets/land-rover-range-rover-sport-warranty.png';
 import defenderImg from '@/assets/land-rover-defender-warranty.png';
 import discoveryImg from '@/assets/land-rover-discovery-sport-warranty.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const LandRoverWarranty: React.FC = () => {
   const [showRegForm, setShowRegForm] = useState(false);
 
@@ -80,6 +81,7 @@ const LandRoverWarranty: React.FC = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Land Rover Extended Warranty UK | Cover All Models 2012–2026"
         description="Protect your Land Rover with an affordable extended warranty. Cover for Defender, Range Rover, Discovery & Evoque. Instant quotes, 150,000-mile limit, flexible UK plans from £20/month."

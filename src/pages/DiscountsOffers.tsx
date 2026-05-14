@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import pandaCarWarranty from '@/assets/car-warranty-uk-suv-warranty.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface PublicDiscountCode {
   id: string;
   code: string;
@@ -204,6 +205,7 @@ const DiscountsOffers: React.FC = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Panda Protect Discount Codes & Promo Codes 2026 | Save on Car Warranties UK"
         description="Active Panda Protect promo codes & discount codes for 2026. Save up to £50 on car, van, EV & motorbike warranties. Copy a promo code and apply at checkout — limited availability."

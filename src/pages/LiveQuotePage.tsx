@@ -22,6 +22,7 @@ import bumperLogo from '@/assets/bumper-logo-transparent.png';
 import stripeLogo from '@/assets/stripe-logo.png';
 import MinimalLandingFooter from '@/components/brand-pages/MinimalLandingFooter';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface QuoteData {
   id: string;
   customerName: string;
@@ -978,24 +979,7 @@ export default function LiveQuotePage() {
   return (
     <div className="min-h-screen bg-[#e8f4fb]">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-orange-600" />
-            <span className="font-bold text-xl">Panda Protect</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <TrustpilotHeader className="h-6" />
-            <a
-              href="tel:03302295045"
-              className="inline-flex items-center gap-1.5 bg-[#FF6B00] hover:bg-[#e56000] text-white font-bold text-sm px-3 py-2 rounded-lg transition-colors"
-            >
-              <Phone className="h-4 w-4" />
-              0330 229 5045
-            </a>
-          </div>
-        </div>
-      </header>
+      <DealerPublicHeader />
 
       <main className="max-w-4xl mx-auto px-4 py-6">
         {/* Cancelled/Failed alerts */}

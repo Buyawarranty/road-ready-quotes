@@ -16,6 +16,7 @@ import { trackButtonClick } from '@/utils/analytics';
 import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const SkodaWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -74,6 +75,7 @@ const SkodaWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Škoda Car Extended Warranty | Cover for New & Used Models"
         description="Protect your Škoda with comprehensive extended warranty cover for new and used models. Get instant quotes, flexible plans and protection from costly repairs."

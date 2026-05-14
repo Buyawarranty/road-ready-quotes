@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Footer from '@/components/Footer';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const TRANSFER_FEE = 19.95;
 
 const WarrantyTransfer = () => {
@@ -103,6 +104,7 @@ const WarrantyTransfer = () => {
   if (isComplete) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <DealerPublicHeader />
         <Helmet>
           <title>Transfer Confirmed - Panda Protect</title>
         </Helmet>
