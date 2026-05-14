@@ -4002,6 +4002,7 @@ export type Database = {
           id: string
           is_public: boolean
           is_referral_code: boolean | null
+          min_order_amount: number
           public_description: string | null
           referrer_email: string | null
           stripe_coupon_id: string | null
@@ -4027,6 +4028,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           is_referral_code?: boolean | null
+          min_order_amount?: number
           public_description?: string | null
           referrer_email?: string | null
           stripe_coupon_id?: string | null
@@ -4052,6 +4054,7 @@ export type Database = {
           id?: string
           is_public?: boolean
           is_referral_code?: boolean | null
+          min_order_amount?: number
           public_description?: string | null
           referrer_email?: string | null
           stripe_coupon_id?: string | null
@@ -4401,6 +4404,42 @@ export type Database = {
           unsubscribed_by?: string | null
           unsubscribed_by_name?: string | null
           vehicle_reg?: string | null
+        }
+        Relationships: []
+      }
+      ghl_push_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          id: string
+          last_error: string | null
+          next_attempt_at: string
+          payload: Json
+          sent_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload: Json
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          payload?: Json
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -7753,6 +7792,7 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_sales: { Args: { _user_id: string }; Returns: boolean }
+      is_agent_on_duty: { Args: { p_admin_user_id: string }; Returns: boolean }
       is_blog_writer: { Args: { user_id: string }; Returns: boolean }
       is_ip_blocked: { Args: { check_ip: unknown }; Returns: boolean }
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
