@@ -107,7 +107,7 @@ export const DealerRegHero: React.FC = () => {
 
       {!dealer && !loading && (
         <p className="text-xs text-gray-600 text-center">
-          New to BuyAWarranty? Account creation takes 60 seconds.
+          New to Panda Protect? Account creation takes 60 seconds.
         </p>
       )}
     </form>

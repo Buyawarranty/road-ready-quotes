@@ -295,7 +295,7 @@ const testimonials = [
     location: "Reading",
     model: "Toyota RAV4 Hybrid",
     boldLine: "Hybrid inverter replaced — £2,200 covered.",
-    text: "My RAV4's power control unit failed at 78,000 miles. Buy A Warranty handled everything and the garage was paid directly. Brilliant service.",
+    text: "My RAV4's power control unit failed at 78,000 miles. Panda Protect handled everything and the garage was paid directly. Brilliant service.",
     rating: 5
   },
   {
@@ -520,10 +520,10 @@ const HybridWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Hybrid Car Warranty UK — Extended Cover for HEV, PHEV & Mild Hybrids",
     "description": "UK's specialist hybrid vehicle extended warranty from £19/month. Covers Toyota Prius, RAV4, Corolla Hybrid, Honda CR-V e:HEV, Kia Niro, Hyundai Tucson Hybrid, BMW 330e, Volvo XC60 Recharge, Mercedes C 300 e, Lexus NX, Audi Q5 TFSI e, and 100+ hybrid models. Protection for electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ components. Unlimited claims at any VAT-registered garage across the UK.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
@@ -535,7 +535,7 @@ const HybridWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/hybrid-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
     },
@@ -558,7 +558,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "alternateName": ["Hybrid Vehicle Warranty UK", "PHEV Warranty", "Plug-in Hybrid Warranty", "HEV Extended Warranty"],
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-330-229-5040",
       "priceRange": "£19-£99/month",
@@ -601,7 +601,7 @@ const HybridWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "legalName": "BUY A WARRANTY LIMITED",
@@ -621,7 +621,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "url": "https://buyawarranty.co.uk/warranty-types/hybrid-warranty/",
     "dateModified": new Date().toISOString().split('T')[0],
     "inLanguage": "en-GB",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": [
       { "@type": "Thing", "name": "Hybrid Vehicle Extended Warranty" },
       { "@type": "Thing", "name": "Plug-in Hybrid Car Warranty" },
@@ -682,9 +682,9 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta name="slurp" content="index, follow" />
 
         {/* Author & Publisher */}
-        <meta name="author" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="BUY A WARRANTY LIMITED" />
-        <meta name="copyright" content="© 2016–2026 Buy A Warranty Limited. All rights reserved." />
+        <meta name="copyright" content="© 2016–2026 Panda Protect Limited. All rights reserved." />
 
         {/* Geographic targeting — UK-wide with major city coordinates */}
         <meta name="geo.region" content="GB" />
@@ -702,7 +702,7 @@ const HybridWarrantyLanding: React.FC = () => {
 
         {/* AI search engine discoverability — ChatGPT, Gemini, Claude, Copilot */}
         <meta name="ai-content-declaration" content="Human-authored, fact-checked, and regularly updated. This page provides accurate hybrid vehicle warranty pricing, coverage details, and eligibility criteria for UK hybrid car owners as of 2026." />
-        <meta name="ai-summary" content="Buy A Warranty is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at buyawarranty.co.uk. Claims line: 0330 229 5040." />
+        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at buyawarranty.co.uk. Claims line: 0330 229 5040." />
         <meta name="ai-purpose" content="To help UK hybrid vehicle owners find affordable extended warranty protection for their HEV, PHEV, or mild hybrid car" />
 
         {/* Open Graph — unique, keyword-rich, click-worthy */}
@@ -713,8 +713,8 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Buy A Warranty hybrid vehicle warranty — covers Toyota, BMW, Kia, Volvo and 100+ UK hybrid models from £19 per month" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Panda Protect hybrid vehicle warranty — covers Toyota, BMW, Kia, Volvo and 100+ UK hybrid models from £19 per month" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         <meta property="product:price:amount" content="19" />
         <meta property="product:price:currency" content="GBP" />
@@ -726,10 +726,10 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta name="twitter:title" content="Hybrid Car Warranty UK — From £19/mo | 100+ Models Covered" />
         <meta name="twitter:description" content="Specialist hybrid warranty for Toyota, BMW, Kia, Volvo & more. Electric motors, inverters, battery systems covered. Unlimited claims, any UK garage. Quote in 60 seconds." />
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
-        <meta name="twitter:image:alt" content="Hybrid Vehicle Warranty UK — Buy A Warranty — From £19 per month" />
+        <meta name="twitter:image:alt" content="Hybrid Vehicle Warranty UK — Panda Protect — From £19 per month" />
 
         {/* Facebook/Meta domain verification compatibility */}
-        <meta property="article:publisher" content="Buy A Warranty" />
+        <meta property="article:publisher" content="Panda Protect" />
         <meta property="article:section" content="Hybrid Vehicle Warranty" />
 
         {/* Structured Data - 7 JSON-LD schemas */}
@@ -824,7 +824,7 @@ const HybridWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage
                     src={hybridHeroImage}
-                    alt="Hybrid car warranty UK - Toyota RAV4 Hybrid covered by Buy A Warranty from £19 per month"
+                    alt="Hybrid car warranty UK - Toyota RAV4 Hybrid covered by Panda Protect from £19 per month"
                     className="w-full h-auto max-w-md mx-auto object-contain"
                     priority={true}
                     width={600}
@@ -1189,7 +1189,7 @@ const HybridWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end">
                 <OptimizedImage 
                   src={hybridKiaNiro}
-                  alt="Kia Niro hybrid warranty UK - covered by Buy A Warranty specialist hybrid cover"
+                  alt="Kia Niro hybrid warranty UK - covered by Panda Protect specialist hybrid cover"
                   className="w-[400px] h-auto object-contain"
                   width={400}
                   height={300}

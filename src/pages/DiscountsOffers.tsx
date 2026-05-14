@@ -100,12 +100,12 @@ const DiscountsOffers: React.FC = () => {
   const offerCatalogSchema = {
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
-    "name": "Buy A Warranty Discount Codes & Offers 2026",
-    "description": "Active discount codes, promo codes and special offers for vehicle warranty plans from Buy A Warranty UK. Save on car, van, EV and motorbike warranties.",
+    "name": "Panda Protect Discount Codes & Offers 2026",
+    "description": "Active discount codes, promo codes and special offers for vehicle warranty plans from Panda Protect UK. Save on car, van, EV and motorbike warranties.",
     "url": "https://buyawarranty.co.uk/discount-promo-offers/",
     "provider": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk"
     },
     "itemListElement": codes.map((code, i) => ({
@@ -123,8 +123,8 @@ const DiscountsOffers: React.FC = () => {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Buy A Warranty",
-    "alternateName": "Buyawarranty",
+    "name": "Panda Protect",
+    "alternateName": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/buyawarranty-logo.webp",
     "image": "https://buyawarranty.co.uk/lovable-uploads/buyawarranty-logo.webp",
@@ -172,12 +172,12 @@ const DiscountsOffers: React.FC = () => {
   const webPageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "Buy A Warranty Discount Codes & Promo Offers 2026",
-    "description": "Find active Buy A Warranty discount codes and promo offers. Save on car, van, EV and motorbike warranty plans. Codes updated regularly.",
+    "name": "Panda Protect Discount Codes & Promo Offers 2026",
+    "description": "Find active Panda Protect discount codes and promo offers. Save on car, van, EV and motorbike warranty plans. Codes updated regularly.",
     "url": "https://buyawarranty.co.uk/discount-promo-offers/",
     "isPartOf": {
       "@type": "WebSite",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk"
     },
     "about": {
@@ -205,8 +205,8 @@ const DiscountsOffers: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="Buy A Warranty Discount Codes & Promo Codes 2026 | Save on Car Warranties UK"
-        description="Active Buy A Warranty promo codes & discount codes for 2026. Save up to £50 on car, van, EV & motorbike warranties. Copy a promo code and apply at checkout — limited availability."
+        title="Panda Protect Discount Codes & Promo Codes 2026 | Save on Car Warranties UK"
+        description="Active Panda Protect promo codes & discount codes for 2026. Save up to £50 on car, van, EV & motorbike warranties. Copy a promo code and apply at checkout — limited availability."
         keywords="buy a warranty discount code, buyawarranty promo code, car warranty promo code UK, buy a warranty voucher code, vehicle warranty discount code, warranty coupon code, buy a warranty offers, car warranty deal UK, buyawarranty discount, warranty promo code 2026, car warranty discount, promo code car warranty"
         canonical="https://buyawarranty.co.uk/discount-promo-offers/"
       />
@@ -226,7 +226,7 @@ const DiscountsOffers: React.FC = () => {
               </div>
 
               <h1 className="text-3xl md:text-5xl font-bold leading-tight">
-                Buy A Warranty <span className="text-[#eb4b00]">Discount Codes</span> & Promo Offers
+                Panda Protect <span className="text-[#eb4b00]">Discount Codes</span> & Promo Offers
               </h1>
 
               <p className="text-xl text-gray-700">
@@ -272,7 +272,7 @@ const DiscountsOffers: React.FC = () => {
             <div className="relative">
               <img
                 src={pandaCarWarranty}
-                alt="Buy A Warranty discount codes — save on car, van and EV warranties in the UK"
+                alt="Panda Protect discount codes — save on car, van and EV warranties in the UK"
                 className="w-full h-auto"
                 loading="eager"
               />
@@ -412,11 +412,11 @@ const DiscountsOffers: React.FC = () => {
         </div>
       </section>
 
-      {/* Why Buy A Warranty */}
+      {/* Why Panda Protect */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why choose <span className="text-[#1e40af]">Buy A Warranty</span>?
+            Why choose <span className="text-[#1e40af]">Panda Protect</span>?
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

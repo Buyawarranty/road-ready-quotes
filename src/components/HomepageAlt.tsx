@@ -253,7 +253,7 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
               <div className="relative flex items-center justify-center">
                 <OptimizedImage 
                   src={pandaMechanicImage}
-                  alt="Friendly mechanic panda with car and tools - Buy A Warranty UK comprehensive vehicle warranty cover"
+                  alt="Friendly mechanic panda with car and tools - Panda Protect UK comprehensive vehicle warranty cover"
                   className="w-full max-w-[350px] h-auto object-contain"
                   priority={true}
                   width={350}

@@ -460,7 +460,7 @@ const EmailManagementTab = () => {
     return (
       <div className="border rounded-lg p-6 bg-white max-h-96 overflow-y-auto">
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-t-lg -m-6 mb-6">
-          <h3 className="font-bold text-lg">Buyawarranty.co.uk</h3>
+          <h3 className="font-bold text-lg">Panda Protect</h3>
         </div>
         <div className="space-y-4">
           <p className="font-semibold text-lg">{greeting}</p>
@@ -1004,7 +1004,7 @@ const EmailManagementTab = () => {
                   id="subject"
                   value={formData.subject}
                   onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  placeholder="Welcome to Buyawarranty.co.uk"
+                  placeholder="Welcome to Panda Protect"
                 />
               </div>
 

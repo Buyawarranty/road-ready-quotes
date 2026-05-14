@@ -35,7 +35,7 @@ const BuyCarWarranty: React.FC = () => {
   return (
     <>
       <SEOHead
-        title="Buy a Car Warranty Online - Trusted UK Cover for All Budgets | Buy A Warranty"
+        title="Buy a Car Warranty Online - Trusted UK Cover for All Budgets | Panda Protect"
         description="Compare car warranty quotes and get extended cover for your vehicle. Best car warranty UK options for used cars, low monthly costs, and trusted protection. Get a quote today."
         keywords="buy a car warranty online, car warranty UK, extended car warranty, used car warranty, best car warranty provider, affordable car warranty UK, car warranty quotes, car warranty cover, cheap car warranty, car warranty cost, vehicle warranty UK"
         canonical="https://buyawarranty.co.uk/buy-a-warranty-for-my-car-uk-warranties"
@@ -114,7 +114,7 @@ const BuyCarWarranty: React.FC = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            Why choose <span className="text-[#1e40af]">Buy A Warranty</span>?
+            Why choose <span className="text-[#1e40af]">Panda Protect</span>?
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -692,7 +692,7 @@ const BuyCarWarranty: React.FC = () => {
           <div className="flex justify-center">
             <img 
               src={companyRegistration} 
-              alt="Buy A Warranty company registration - FCA regulated"
+              alt="Panda Protect company registration - FCA regulated"
               className="h-16 opacity-70"
             />
           </div>

@@ -313,7 +313,7 @@ Additional Information: ${formData.additionalInfo}
   return (
     <>
       <SEOHead
-        title="Make a Claim - Buy a Warranty"
+        title="Make a Claim - Panda Protect"
         description="Submit your warranty claim easily. Fast, simple, hassle-free process. We've got you covered!"
         keywords="warranty claim, car warranty claim, vehicle warranty support, customer service"
       />
@@ -859,7 +859,7 @@ Additional Information: ${formData.additionalInfo}
             </h2>
             <div className="space-y-6 text-lg text-gray-600 max-w-3xl mx-auto">
               <p className="leading-relaxed">
-                At Buyawarranty.co.uk, your maximum repair limit is clearly outlined in your warranty email and visible in your online account. If a repair exceeds your limit, you can simply top it up.
+                At Panda Protect, your maximum repair limit is clearly outlined in your warranty email and visible in your online account. If a repair exceeds your limit, you can simply top it up.
               </p>
               <p className="leading-relaxed">
                 In our experience at Buy-A-Warranty, this situation is very rare - especially if you've selected a claim limit that suits your vehicle and driving habits.

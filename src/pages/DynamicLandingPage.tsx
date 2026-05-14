@@ -242,7 +242,7 @@ const DynamicLandingPage: React.FC = () => {
       {page.include_review_schema && <ReviewSchema />}
       {page.include_local_business_schema && (
         <LocalBusinessSchema
-          name={page.local_business_name || 'Buy A Warranty'}
+          name={page.local_business_name || 'Panda Protect'}
           telephone={page.local_business_phone || '0330 229 5040'}
           email={page.local_business_email || 'support@buyawarranty.co.uk'}
           address={page.local_business_address || {
@@ -271,7 +271,7 @@ const DynamicLandingPage: React.FC = () => {
           name={`${page.brand_name} Extended Warranty`}
           description={page.meta_description}
           price="35"
-          brand="Buy A Warranty"
+          brand="Panda Protect"
           category="Vehicle Warranty"
           image="https://buyawarranty.co.uk/logo.png"
           availability="https://schema.org/InStock"

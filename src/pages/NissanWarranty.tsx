@@ -86,7 +86,7 @@ const NissanWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Nissan Extended Warranty - Buy A Warranty"
+        name="Nissan Extended Warranty - Panda Protect"
         description="Protect your Nissan from costly repairs with comprehensive extended warranty cover. Includes engine, gearbox, electrics and more. Get an instant online quote today."
         url="https://buyawarranty.co.uk/car-extended-warranty/nissan/"
         lastReviewed={new Date().toISOString()}
@@ -97,7 +97,7 @@ const NissanWarranty = () => {
         name="Nissan Extended Warranty"
         description="Comprehensive extended warranty coverage for Nissan vehicles including engine, gearbox, electrical systems, CVT transmission, hybrid and EV components."
         price="350.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
@@ -120,7 +120,7 @@ const NissanWarranty = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             

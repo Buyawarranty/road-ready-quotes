@@ -94,7 +94,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
     "description": metaDescription,
     "brand": {
       "@type": "Brand",
-      "name": "Buy A Warranty"
+      "name": "Panda Protect"
     },
     "offers": {
       "@type": "Offer",
@@ -113,7 +113,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "description": `${brandName} extended warranty specialists in the UK`,
     "url": "https://buyawarranty.co.uk",
     "telephone": "+44-330-229-5040",

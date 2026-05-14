@@ -211,7 +211,7 @@ const testimonials = [
     name: "Tom H.",
     location: "Southampton",
     model: "VW Passat",
-    text: "I was sceptical about third-party warranties but Buy A Warranty proved me wrong. Turbo issue fixed, £1,600 claim paid without any hassle.",
+    text: "I was sceptical about third-party warranties but Panda Protect proved me wrong. Turbo issue fixed, £1,600 claim paid without any hassle.",
     rating: 5
   },
   {
@@ -394,10 +394,10 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Volkswagen Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Volkswagen models including Golf, Polo, Tiguan, Passat, T-Roc, Touareg, Arteon, ID.3, ID.4, ID.5, and ID.7. Covers engine, DSG gearbox, transmission, electrical systems, and more. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
@@ -409,7 +409,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
     },
@@ -432,7 +432,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "alternateName": "VW Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£85/month",
@@ -475,7 +475,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
@@ -490,7 +490,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "name": "Volkswagen Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Volkswagen with comprehensive extended warranty cover. All models from Polo to Touareg and ID. Series. Nationwide UK coverage, approved garages, unlimited claims. Get your instant quote in 60 seconds.",
     "url": "https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": { "@type": "Thing", "name": "Volkswagen Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Volkswagen" },
@@ -517,7 +517,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Volkswagen Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>Volkswagen Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your Volkswagen with comprehensive extended warranty cover. All models from Polo to Touareg and ID. Series covered. Engine, DSG gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £19/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Volkswagen extended warranty, VW used car warranty, VW warranty UK, Volkswagen warranty cost, VW warranty quote, VW Golf warranty, VW Tiguan warranty, VW ID.4 warranty, VW Polo warranty, VW Passat warranty, VW electric warranty, VW hybrid warranty, used VW warranty, second hand Volkswagen warranty, VW DSG warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/" />
@@ -538,8 +538,8 @@ const VolkswagenWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Volkswagen Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Volkswagen Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         <meta name="twitter:card" content="summary_large_image" />
@@ -548,8 +548,8 @@ const VolkswagenWarrantyLanding: React.FC = () => {
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Volkswagen extended warranty services in the UK. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
@@ -1093,7 +1093,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
               <div className="flex justify-center">
                 <OptimizedImage 
                   src={vwHighMileage}
-                  alt="VW ID.3 with BuyAWarranty branding - High mileage Volkswagen warranty coverage"
+                  alt="VW ID.3 with Panda Protect branding - High mileage Volkswagen warranty coverage"
                   className="w-64 sm:w-80 md:w-96 lg:w-[28rem] h-auto object-contain"
                   width={448}
                   height={300}

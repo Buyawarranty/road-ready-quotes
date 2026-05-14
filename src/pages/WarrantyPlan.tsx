@@ -78,7 +78,7 @@ const WarrantyPlan = () => {
   return (
     <>
       <SEOHead
-        title="Platinum Warranty Plan - Buy a Warranty"
+        title="Platinum Warranty Plan - Panda Protect"
         description="Comprehensive Platinum warranty coverage for Cars, Vans, SUVs and Motorcycles. Mechanical & electrical breakdown protection with unlimited claims."
         keywords="platinum warranty plan, car warranty, vehicle warranty, mechanical breakdown, electrical coverage"
       />
@@ -90,7 +90,7 @@ const WarrantyPlan = () => {
             {/* Logo */}
             <div className="flex items-center">
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             
@@ -142,7 +142,7 @@ const WarrantyPlan = () => {
                     <Link to="/" className="hover:opacity-80 transition-opacity">
                       <img 
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                        alt="Buy a Warranty" 
+                        alt="Panda Protect" 
                         className="h-8 w-auto"
                       />
                     </Link>
@@ -1697,7 +1697,7 @@ const WarrantyPlan = () => {
                     <div className="space-y-4">
                       <h4 className="font-bold text-gray-900">Vehicle Hire Coverage</h4>
                       <p className="text-gray-600 text-sm leading-relaxed">
-                        Stay on the move even if your vehicle is undergoing repairs. Enjoy the convenience of a replacement vehicle with up to £45 per day towards rental costs, ensuring minimal disruption to your daily life. Applicable if manufacturer's repair time exceeds 8 working hours, with prior approval from Buy a Warranty.
+                        Stay on the move even if your vehicle is undergoing repairs. Enjoy the convenience of a replacement vehicle with up to £45 per day towards rental costs, ensuring minimal disruption to your daily life. Applicable if manufacturer's repair time exceeds 8 working hours, with prior approval from Panda Protect.
                       </p>
                     </div>
                     <div className="space-y-4">
@@ -1801,7 +1801,7 @@ const WarrantyPlan = () => {
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
                   <p className="text-gray-600 mb-6">
-                    This warranty is transferable should the vehicle be sold privately or you change your vehicle, subject to the approval of Buy A Warranty.
+                    This warranty is transferable should the vehicle be sold privately or you change your vehicle, subject to the approval of Panda Protect.
                   </p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1915,7 +1915,7 @@ const WarrantyPlan = () => {
         <section className="py-16 lg:py-24 px-4 bg-blue-600 text-white">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl lg:text-4xl font-bold mb-8">
-              Thank you for choosing Buy A Warranty!
+              Thank you for choosing Panda Protect!
             </h2>
             
             <div className="space-y-6 mb-12">

@@ -206,7 +206,7 @@ const testimonials = [
     name: "Mark D.",
     location: "Glasgow",
     model: "Citroën ë-C4",
-    text: "Finding warranty cover for an electric Citroën was hard until I found Buy A Warranty. Great price and they actually cover the EV components properly.",
+    text: "Finding warranty cover for an electric Citroën was hard until I found Panda Protect. Great price and they actually cover the EV components properly.",
     rating: 5
   }
 ];
@@ -331,9 +331,9 @@ const CitroenWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org", "@type": "Product",
     "name": "Citroën Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Citroën models including C3, C4, C5 Aircross, Berlingo, ë-C4 and more. Covers engine, gearbox, electrical systems, turbocharger, and more. Nationwide UK coverage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
-    "manufacturer": { "@type": "Organization", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB" } },
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/citroen-warranty/", "seller": { "@type": "Organization", "name": "Buy A Warranty" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB" } },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/citroen-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
     "category": "Vehicle Extended Warranty",
@@ -356,7 +356,7 @@ const CitroenWarrantyLanding: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Citroën Extended Warranty UK | From £19/mo | Buy A Warranty</title>
+        <title>Citroën Extended Warranty UK | From £19/mo | Panda Protect</title>
         <meta name="description" content="Protect your Citroën with comprehensive extended warranty cover. All models from C3 to C5 Aircross and ë-C4 covered. Engine, gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage. Prices from £19/month." />
         <meta name="keywords" content="Citroën extended warranty, Citroën used car warranty, Citroën warranty UK, Citroën warranty cost, Citroën C3 warranty, Citroën C4 warranty, Citroën C5 Aircross warranty, Citroën Berlingo warranty, Citroën electric warranty, used Citroën warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/citroen-warranty/" />

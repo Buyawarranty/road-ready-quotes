@@ -104,7 +104,7 @@ const WarrantyTransfer = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Helmet>
-          <title>Transfer Confirmed - Buy a Warranty</title>
+          <title>Transfer Confirmed - Panda Protect</title>
         </Helmet>
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-6" />
@@ -123,8 +123,8 @@ const WarrantyTransfer = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Warranty Transfer - Buy a Warranty</title>
-        <meta name="description" content="Transfer your Buy a Warranty vehicle warranty to a new owner for just £19.95. Quick and easy online process." />
+        <title>Warranty Transfer - Panda Protect</title>
+        <meta name="description" content="Transfer your Panda Protect vehicle warranty to a new owner for just £19.95. Quick and easy online process." />
       </Helmet>
 
       {/* Hero */}

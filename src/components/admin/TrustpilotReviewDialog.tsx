@@ -206,7 +206,7 @@ export const TrustpilotReviewDialog = ({
                 <Label>Email Template Preview</Label>
                 <div className="p-4 bg-muted/50 rounded-md text-sm space-y-3 border">
                   <p><strong>Hi {firstName},</strong></p>
-                  <p>We hope you're getting on well since purchasing your warranty with Buy A Warranty.</p>
+                  <p>We hope you're getting on well since purchasing your warranty with Panda Protect.</p>
                   <p>We wanted to check in and hear about your experience buying your warranty with us.</p>
                   <p>If you have a spare moment, we'd really appreciate your honest feedback on Trustpilot...</p>
                   <div className="py-2">

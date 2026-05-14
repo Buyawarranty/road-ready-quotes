@@ -107,7 +107,7 @@ const vauxhallFAQs = [
 // Testimonials - Own branded, no Trustpilot links
 const testimonials = [
   { name: "Gary P.", location: "Liverpool", model: "Vauxhall Corsa", text: "Turbo went on my Corsa at 40,000 miles. £1,400 repair covered in full. Claims process was simple and fast.", rating: 5 },
-  { name: "Michelle S.", location: "Reading", model: "Vauxhall Grandland", text: "My Grandland's automatic gearbox had issues. Buy A Warranty handled everything and paid the garage directly. Brilliant.", rating: 5 },
+  { name: "Michelle S.", location: "Reading", model: "Vauxhall Grandland", text: "My Grandland's automatic gearbox had issues. Panda Protect handled everything and paid the garage directly. Brilliant.", rating: 5 },
   { name: "Peter K.", location: "Glasgow", model: "Vauxhall Mokka-e", text: "Great to find EV cover for my Mokka-e. Electric motor, inverter and charging all covered. Excellent value.", rating: 5 },
   { name: "Julie A.", location: "Leicester", model: "Vauxhall Astra", text: "ECU failure on my Astra — £1,100 claim paid within days. The team were really helpful throughout.", rating: 5 },
   { name: "Rob W.", location: "Bournemouth", model: "Vauxhall Insignia", text: "Fuel injectors failed on my Insignia diesel. £1,300 bill covered by warranty. Would definitely recommend.", rating: 5 },
@@ -207,9 +207,9 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Vauxhall Extended Warranty UK",
     "description": "Comprehensive extended warranty for Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, Corsa-e, Mokka-e. Turbo engines, auto gearbox, EV components covered.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
-    "manufacturer": { "@type": "Organization", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Buy A Warranty" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
     "category": "Vehicle Extended Warranty",
@@ -221,7 +221,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "Service",
     "name": "Vauxhall Extended Warranty Service",
     "alternateName": "Vauxhall Used Car Warranty",
-    "provider": { "@type": "LocalBusiness", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
+    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "description": "Extended warranty coverage for all Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, and EV models. Covers engine, transmission, electrical systems, turbocharger, and more.",
     "serviceType": "Vehicle Extended Warranty",
@@ -246,7 +246,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016.",
@@ -260,7 +260,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "name": "Vauxhall Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Vauxhall with comprehensive extended warranty cover. All models from Corsa to Grandland and EV range. Nationwide UK coverage.",
     "url": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", ".hero-description"] },
   };
 
@@ -297,16 +297,16 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Vauxhall Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Vauxhall Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Vauxhall Extended Warranty UK | From £19/month" />
         <meta name="twitter:description" content="UK's top-rated Vauxhall warranty. Corsa, Astra, Grandland & all models. 8,000+ components. Any UK garage." />
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="ai-content-declaration" content="This page provides information about Vauxhall extended warranty services in the UK. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="revisit-after" content="7 days" />
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
@@ -677,7 +677,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-6 md:gap-10 items-center">
               <div className="flex justify-center">
-                <OptimizedImage src={vauxhallConfidenceCovered} alt="Vauxhall Grandland with BuyAWarranty branding - High mileage Vauxhall warranty coverage" className="w-64 sm:w-80 md:w-96 lg:w-[28rem] h-auto object-contain" width={448} height={300} />
+                <OptimizedImage src={vauxhallConfidenceCovered} alt="Vauxhall Grandland with Panda Protect branding - High mileage Vauxhall warranty coverage" className="w-64 sm:w-80 md:w-96 lg:w-[28rem] h-auto object-contain" width={448} height={300} />
               </div>
               <div className="text-center lg:text-left">
                 <div className="text-green-600 text-xs md:text-sm font-semibold uppercase tracking-wide mb-3 md:mb-4">

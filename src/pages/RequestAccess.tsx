@@ -105,7 +105,7 @@ const RequestAccess = () => {
           </div>
           <CardTitle className="text-2xl">Request Admin Access</CardTitle>
           <CardDescription>
-            Submit your details to request access to the BuyaWarranty admin dashboard.
+            Submit your details to request access to the Panda Protect admin dashboard.
             Your request will be reviewed by our team.
           </CardDescription>
         </CardHeader>

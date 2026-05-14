@@ -1048,7 +1048,7 @@ const CustomerDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <SEOHead 
-          title="Customer Dashboard | BuyAWarranty Account Portal"
+          title="Customer Dashboard | Panda Protect Account Portal"
           description="Access your warranty policies, download documents, manage your account details, and get support for your vehicle warranty coverage."
           keywords="customer dashboard, warranty portal, policy documents, account management, vehicle warranty"
         />
@@ -1062,7 +1062,7 @@ const CustomerDashboard = () => {
               >
                 <img 
                   src="/lovable-uploads/baw_logo_new_2025_copy_2-2.png" 
-                  alt="BuyAWarranty" 
+                  alt="Panda Protect" 
                   className="h-7 sm:h-9 w-auto"
                 />
               </button>
@@ -1256,7 +1256,7 @@ const CustomerDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <SEOHead 
-        title="Customer Dashboard | BuyAWarranty Account Portal"
+        title="Customer Dashboard | Panda Protect Account Portal"
         description="Manage your warranty policies, download documents, and access your account details."
         keywords="customer dashboard, warranty management, policy documents"
       />
@@ -1266,7 +1266,7 @@ const CustomerDashboard = () => {
             <div className="flex items-center">
               <img 
                 src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
-                alt="BuyAWarranty" 
+                alt="Panda Protect" 
                 className="h-6 sm:h-8 w-auto mr-3 sm:mr-4"
               />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Customer Dashboard</h1>

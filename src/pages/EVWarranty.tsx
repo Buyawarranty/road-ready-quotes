@@ -55,7 +55,7 @@ const EVWarranty = () => {
     const organizationSchema = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -73,7 +73,7 @@ const EVWarranty = () => {
       "description": "Comprehensive extended warranty for electric, hybrid and PHEV vehicles with flexible payment options",
       "brand": {
         "@type": "Brand",
-        "name": "Buy A Warranty"
+        "name": "Panda Protect"
       },
       "offers": {
         "@type": "AggregateOffer",
@@ -161,7 +161,7 @@ const EVWarranty = () => {
   return (
     <>
       <SEOHead
-        title="EV Extended Warranty UK | Electric & Hybrid Car Cover | Buy A Warranty"
+        title="EV Extended Warranty UK | Electric & Hybrid Car Cover | Panda Protect"
         description="Protect your electric or hybrid car from costly repairs with affordable UK EV extended warranty plans. Cover for battery systems, motors & electronics. Get instant quotes online."
         keywords="EV warranty UK, electric car warranty, hybrid warranty UK, PHEV warranty, electric vehicle extended warranty, used EV warranty, EV battery warranty, affordable EV cover, electric car insurance UK"
         canonical="https://buyawarranty.co.uk/ev-warranty/"
@@ -195,7 +195,7 @@ const EVWarranty = () => {
                 Protect Your Electric Vehicle with Specialist UK Cover
               </p>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Buy A Warranty provides comprehensive electric and hybrid car warranty cover for UK drivers. Protect your EV or hybrid from costly repairs to batteries, motors, and drivetrains with flexible, affordable plans.
+                Panda Protect provides comprehensive electric and hybrid car warranty cover for UK drivers. Protect your EV or hybrid from costly repairs to batteries, motors, and drivetrains with flexible, affordable plans.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button 
@@ -276,7 +276,7 @@ const EVWarranty = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why Choose Buy A Warranty for EV Cover
+              Why Choose Panda Protect for EV Cover
             </h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -414,7 +414,7 @@ const EVWarranty = () => {
               </div>
               <div className="bg-card p-6 rounded-lg border">
                 <div className="text-4xl font-bold text-primary mb-2">from £39</div>
-                <p className="text-muted-foreground">Average Buy A Warranty monthly plan</p>
+                <p className="text-muted-foreground">Average Panda Protect monthly plan</p>
               </div>
             </div>
           </div>
@@ -538,7 +538,7 @@ const EVWarranty = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Why UK Drivers Trust Buy A Warranty
+              Why UK Drivers Trust Panda Protect
             </h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
@@ -655,7 +655,7 @@ const EVWarranty = () => {
                   a: "It takes only a few minutes to get started. Simply enter your registration number to receive an instant online quote, choose your plan, and complete your purchase. Your cover begins immediately upon payment, giving you protection without delay."
                 },
                 {
-                  q: "What makes Buy A Warranty one of the best EV warranty providers in the UK?",
+                  q: "What makes Panda Protect one of the best EV warranty providers in the UK?",
                   a: "We're specialists in electric and hybrid vehicle protection, offering transparent pricing, flexible payment plans, and dedicated customer support. Thousands of satisfied UK drivers trust us for our clear terms, quick claims process, and genuine understanding of EV technology."
                 },
                 {
@@ -671,7 +671,7 @@ const EVWarranty = () => {
                   a: "No warranty covers natural battery degradation or normal range reduction over time. However, our cover includes mechanical or electrical failure of the battery or its control modules."
                 },
                 {
-                  q: "Can I extend my manufacturer's EV warranty with Buy A Warranty?",
+                  q: "Can I extend my manufacturer's EV warranty with Panda Protect?",
                   a: "Yes, you can extend coverage once your manufacturer warranty expires. Our plans act as post-manufacturer protection, covering all major systems and giving you continued peace of mind beyond the initial dealer cover."
                 }
               ].map((faq, index) => (
@@ -709,7 +709,7 @@ const EVWarranty = () => {
               Get Your EV Warranty Quote Now
             </Button>
             <p className="text-sm text-muted-foreground italic">
-              Buy A Warranty - protecting the future of UK driving with smarter, affordable cover for electric and hybrid vehicles.
+              Panda Protect - protecting the future of UK driving with smarter, affordable cover for electric and hybrid vehicles.
             </p>
           </div>
         </section>

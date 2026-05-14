@@ -41,7 +41,7 @@ export const DealerPublicHeader: React.FC = () => {
             >
               <OptimizedImage
                 src={buyawarrantyLogo}
-                alt="Buy a Warranty Dealer Portal"
+                alt="Panda Protect Dealer Portal"
                 className="h-6 sm:h-8 w-auto object-contain"
                 priority={true}
                 width={240}

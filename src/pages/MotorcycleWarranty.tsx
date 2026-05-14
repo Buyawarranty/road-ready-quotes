@@ -102,7 +102,7 @@ const MotorcycleWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Motorcycle Extended Warranty - Buy A Warranty"
+        name="Motorcycle Extended Warranty - Panda Protect"
         description="Comprehensive extended warranty coverage for motorcycles in the UK. Protect your bike from expensive mechanical and electrical failures with flexible plans starting from £20/month."
         url="https://buyawarranty.co.uk/motorcycle-warranty/"
         lastReviewed={new Date().toISOString()}
@@ -114,7 +114,7 @@ const MotorcycleWarranty = () => {
         name="Motorcycle Extended Warranty"
         description="Comprehensive extended warranty coverage for motorcycles including engine, gearbox, electrical systems, ECU, fuel injection, braking, suspension and more. Available for used bikes up to 150,000 miles."
         price="20.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Motorcycle Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
@@ -136,7 +136,7 @@ const MotorcycleWarranty = () => {
           <div className="flex items-center justify-between h-16 sm:h-20">
             <div className="flex items-center">
               <Link to="/">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             
@@ -178,7 +178,7 @@ const MotorcycleWarranty = () => {
                     <Link to="/" className="hover:opacity-80 transition-opacity">
                       <img 
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                        alt="Buy a Warranty" 
+                        alt="Panda Protect" 
                         className="h-8 w-auto"
                       />
                     </Link>
@@ -274,7 +274,7 @@ const MotorcycleWarranty = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Riders Choose Buy A Warranty
+                Why Riders Choose Panda Protect
               </h2>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

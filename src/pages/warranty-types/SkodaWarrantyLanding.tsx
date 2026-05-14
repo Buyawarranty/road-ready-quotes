@@ -194,7 +194,7 @@ const testimonials = [
     name: "Sarah M.",
     location: "Leeds",
     model: "Kodiaq",
-    text: "My Kodiaq needed a new turbo outside the manufacturer warranty. Buy A Warranty handled the claim without any fuss and paid the garage directly. Highly recommend.",
+    text: "My Kodiaq needed a new turbo outside the manufacturer warranty. Panda Protect handled the claim without any fuss and paid the garage directly. Highly recommend.",
     rating: 5
   },
   {
@@ -383,10 +383,10 @@ const SkodaWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Škoda Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Škoda models including Octavia, Superb, Kodiaq, Karoq, Kamiq, Fabia, Scala, Enyaq iV and Yeti. Covers engine, DSG gearbox, turbo, electrical systems, EV drivetrain components. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -404,7 +404,7 @@ const SkodaWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/skoda-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
@@ -439,7 +439,7 @@ const SkodaWarrantyLanding: React.FC = () => {
     "alternateName": "Škoda Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£22-£75/month",
@@ -482,7 +482,7 @@ const SkodaWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
@@ -499,7 +499,7 @@ const SkodaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": "https://buyawarranty.co.uk/#localbusiness",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "description": "UK's leading Škoda extended warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
@@ -570,8 +570,8 @@ const SkodaWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Škoda Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Škoda Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
 
         {/* Twitter Card */}
@@ -582,9 +582,9 @@ const SkodaWarrantyLanding: React.FC = () => {
 
         {/* AI & Bot directives */}
         <meta name="ai-content-declaration" content="This page provides genuine Škoda extended warranty information for UK vehicle owners" />
-        <meta name="ai-summary" content="Buy A Warranty offers Škoda extended warranties from £22/month covering 8,000+ components for all models 2012-2026 including Octavia, Superb, Kodiaq, Karoq, Kamiq, Fabia, Scala, Enyaq iV. DSG gearbox and mechatronics covered. UK-based claims team, any VAT-registered garage, 24/7 roadside assistance. Full EV and PHEV component coverage." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="ai-summary" content="Panda Protect offers Škoda extended warranties from £22/month covering 8,000+ components for all models 2012-2026 including Octavia, Superb, Kodiaq, Karoq, Kamiq, Fabia, Scala, Enyaq iV. DSG gearbox and mechatronics covered. UK-based claims team, any VAT-registered garage, 24/7 roadside assistance. Full EV and PHEV component coverage." />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
         <meta name="bingbot" content="index, follow" />

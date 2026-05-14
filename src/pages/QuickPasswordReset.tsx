@@ -41,7 +41,7 @@ const QuickPasswordReset = () => {
         <CardHeader className="text-center">
           <img 
             src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
-            alt="BuyAWarranty" 
+            alt="Panda Protect" 
             className="h-12 w-auto mx-auto mb-4"
           />
           <CardTitle>Admin Password Reset</CardTitle>

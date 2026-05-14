@@ -1,4 +1,4 @@
-// BuyAWarranty Permissions System - Helper Functions
+// Panda Protect Permissions System - Helper Functions
 
 import { PermissionPolicy, MaskLevel, TabPermission } from './types';
 

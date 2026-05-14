@@ -118,7 +118,7 @@ const Terms = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <SEOHead 
-        title="Terms & Conditions | Buy A Warranty - Vehicle Warranty Terms"
+        title="Terms & Conditions | Panda Protect - Vehicle Warranty Terms"
         description="Read our comprehensive terms and conditions for vehicle warranty coverage."
         keywords="terms and conditions, warranty terms, vehicle warranty"
         canonical={`${window.location.origin}/terms`}

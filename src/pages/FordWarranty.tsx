@@ -80,7 +80,7 @@ const FordWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Ford Extended Warranty - Buy A Warranty"
+        name="Ford Extended Warranty - Panda Protect"
         description="Used Ford extended warranty with nationwide approved repairs. Covers major components and diagnostics. Get a quick online quote and drive with confidence."
         url="https://buyawarranty.co.uk/car-extended-warranty/ford/"
         lastReviewed={new Date().toISOString()}
@@ -92,7 +92,7 @@ const FordWarranty = () => {
         name="Ford Extended Warranty"
         description="Comprehensive extended warranty coverage for Ford vehicles including engine, gearbox, turbo, electrical systems, ECU, and fuel injection systems."
         price="550.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"

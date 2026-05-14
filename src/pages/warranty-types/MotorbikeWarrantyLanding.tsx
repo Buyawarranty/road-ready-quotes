@@ -338,7 +338,7 @@ const testimonials = [
     name: "Dave H.",
     location: "Manchester",
     model: "Ducati Monster",
-    text: "Finding warranty cover for an Italian bike was tricky until I found Buy A Warranty. Clutch issue sorted, no quibbles. Very reasonable price too.",
+    text: "Finding warranty cover for an Italian bike was tricky until I found Panda Protect. Clutch issue sorted, no quibbles. Very reasonable price too.",
     rating: 5
   }
 ];
@@ -517,10 +517,10 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Motorcycle Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all motorcycle makes and models including Honda, Yamaha, Kawasaki, Suzuki, Triumph, BMW Motorrad, Ducati, KTM, Harley-Davidson, Royal Enfield and Aprilia. Covers engine, gearbox, electrics, braking systems and more. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
@@ -532,7 +532,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "18", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
     },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
@@ -554,7 +554,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "alternateName": "Motorbike Warranty UK",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£18-£75/month",
@@ -597,7 +597,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended vehicle warranty provider. Protecting vehicles since 2016.",
@@ -612,7 +612,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "name": "Motorcycle Extended Warranty UK - Get Instant Quote",
     "description": "Protect your motorcycle with comprehensive extended warranty cover. All UK makes and models covered. Engine, gearbox, electrics, braking & more. Nationwide UK coverage. Get your instant quote in 60 seconds.",
     "url": "https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": { "@type": "Thing", "name": "Motorcycle Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Honda" },
@@ -662,8 +662,8 @@ const MotorbikeWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Motorcycle Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Motorcycle Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         <meta name="twitter:card" content="summary_large_image" />
@@ -672,8 +672,8 @@ const MotorbikeWarrantyLanding: React.FC = () => {
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about motorcycle extended warranty services in the UK. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />

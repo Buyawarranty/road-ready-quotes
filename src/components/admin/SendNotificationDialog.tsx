@@ -62,8 +62,8 @@ export const SendNotificationDialog = ({
 
       // Send email notification using direct content
       const emailSubject = isImportant 
-        ? '🔔 Important Update from Buy A Warranty'
-        : 'Update from Buy A Warranty';
+        ? '🔔 Important Update from Panda Protect'
+        : 'Update from Panda Protect';
 
       const htmlContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -78,7 +78,7 @@ export const SendNotificationDialog = ({
           <p style="color: #333; font-size: 16px;">If you have any questions, please don't hesitate to contact us.</p>
           <p style="color: #333; font-size: 16px; margin-top: 30px;">
             Best regards,<br>
-            <strong>Buy A Warranty Team</strong>
+            <strong>Panda Protect Team</strong>
           </p>
         </div>
       `;

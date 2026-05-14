@@ -188,7 +188,7 @@ export const EmailCapturePopup: React.FC<EmailCapturePopupProps> = ({
               <div className="mb-4">
                 <img 
                   src="/lovable-uploads/baw-logo-new-2025.png" 
-                  alt="BuyAWarranty" 
+                  alt="Panda Protect" 
                   className="h-8 mx-auto"
                 />
               </div>

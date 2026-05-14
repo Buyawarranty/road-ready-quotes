@@ -509,7 +509,7 @@ const FAQ = () => {
         {
           id: 'cancel-warranty',
           question: 'How do I cancel my warranty?',
-          answer: 'You have 14 days to cancel your warranty. We understand that circumstances may change, and you may no longer require the warranty purchased from Buyawarranty.co.uk. If you wish to cancel your warranty, please reach out to us at support@buyawarranty.co.uk or call us on 0330 229 5045.'
+          answer: 'You have 14 days to cancel your warranty. We understand that circumstances may change, and you may no longer require the warranty purchased from Panda Protect. If you wish to cancel your warranty, please reach out to us at support@buyawarranty.co.uk or call us on 0330 229 5045.'
         },
         {
           id: 'transferable',
@@ -680,7 +680,7 @@ const FAQ = () => {
   return (
     <>
       <SEOHead 
-        title="FAQ's - Frequently Asked Questions | BuyAWarranty.co.uk"
+        title="FAQ's - Frequently Asked Questions | Panda Protect.co.uk"
         description="Find answers to common questions about car warranties, claims, coverage, and more. Get help with warranty plans, repairs, and customer support."
         keywords="car warranty FAQ, warranty questions, car insurance claims, vehicle warranty coverage, warranty help"
         canonical="https://buyawarranty.co.uk/faq/"
@@ -850,16 +850,16 @@ const FAQ = () => {
                 {/* Savings Section - Hidden on Mobile */}
                 {!searchTerm && (
                   <div className="hidden md:block bg-gradient-to-br from-orange-50/50 to-white rounded-lg border border-orange-100 p-5 mt-6">
-                    <h3 className="font-semibold text-base text-brand-dark-text mb-3">Save Money with an Extended Car Warranty from Buyawarranty.co.uk</h3>
+                    <h3 className="font-semibold text-base text-brand-dark-text mb-3">Save Money with an Extended Car Warranty from Panda Protect</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                      Protect your vehicle and your wallet with our trusted UK car warranty plans. Here's why thousands of drivers choose Buyawarranty:
+                      Protect your vehicle and your wallet with our trusted UK car warranty plans. Here's why thousands of drivers choose Panda Protect:
                     </p>
                     
                     <div className="space-y-3">
                       <div>
                         <h4 className="font-medium text-sm text-brand-dark-text mb-1">Save Money on Repairs</h4>
                         <p className="text-muted-foreground text-sm">
-                          Avoid unexpected garage bills. With Buyawarranty, our extended car warranty can save you thousands compared to paying for major repairs out of pocket.
+                          Avoid unexpected garage bills. With Panda Protect, our extended car warranty can save you thousands compared to paying for major repairs out of pocket.
                         </p>
                       </div>
                       
@@ -873,7 +873,7 @@ const FAQ = () => {
                       <div>
                         <h4 className="font-medium text-sm text-brand-dark-text mb-1">Comprehensive UK Coverage</h4>
                         <p className="text-muted-foreground text-sm">
-                          From engine to electrics, Buyawarranty.co.uk offers plans that cover the essentials that matter most.
+                          From engine to electrics, Panda Protect offers plans that cover the essentials that matter most.
                         </p>
                       </div>
                       
@@ -887,7 +887,7 @@ const FAQ = () => {
                       <div>
                         <h4 className="font-medium text-sm text-brand-dark-text mb-1">Trusted by UK Drivers</h4>
                         <p className="text-muted-foreground text-sm">
-                          Join thousands who rely on Buyawarranty.co.uk for reliable, affordable cover.
+                          Join thousands who rely on Panda Protect for reliable, affordable cover.
                         </p>
                       </div>
                     </div>

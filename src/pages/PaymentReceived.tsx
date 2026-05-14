@@ -15,7 +15,7 @@ const PaymentReceived = () => {
   return (
     <>
       <Helmet>
-        <title>Payment Received | Buy a Warranty</title>
+        <title>Payment Received | Panda Protect</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       

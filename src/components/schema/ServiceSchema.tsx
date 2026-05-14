@@ -18,7 +18,7 @@ interface ServiceSchemaProps {
 export const ServiceSchema = ({
   name,
   description,
-  provider = 'Buy A Warranty',
+  provider = 'Panda Protect',
   serviceType = 'Extended Warranty Service',
   areaServed = 'United Kingdom',
   url = 'https://buyawarranty.co.uk',

@@ -205,7 +205,7 @@ const testimonials = [
     name: "Claire H.",
     location: "Leeds",
     model: "Ford Kuga",
-    text: "The PowerShift gearbox on my Kuga developed a fault. Buy A Warranty handled the whole claim without any fuss. Back on the road in three days.",
+    text: "The PowerShift gearbox on my Kuga developed a fault. Panda Protect handled the whole claim without any fuss. Back on the road in three days.",
     rating: 5
   },
   {
@@ -394,10 +394,10 @@ const FordWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Ford Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Ford models including Fiesta, Focus, Kuga, Puma, Mondeo, Ranger, Transit, and Mustang Mach-E. Covers engine, EcoBoost turbo, gearbox, electrical systems, and more. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -415,7 +415,7 @@ const FordWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/ford-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
@@ -450,7 +450,7 @@ const FordWarrantyLanding: React.FC = () => {
     "alternateName": "Ford Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£85/month",
@@ -493,7 +493,7 @@ const FordWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
@@ -505,7 +505,7 @@ const FordWarrantyLanding: React.FC = () => {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "url": "https://buyawarranty.co.uk",
     "telephone": "+44-800-917-9270",
@@ -538,7 +538,7 @@ const FordWarrantyLanding: React.FC = () => {
     "name": "Ford Extended Warranty UK - Fiesta, Focus, Kuga, Puma, Ranger Cover",
     "description": "Protect your Ford with comprehensive extended warranty cover. All models from Fiesta to Mustang Mach-E. Nationwide UK coverage, approved garages, unlimited claims.",
     "url": "https://buyawarranty.co.uk/warranty-types/ford-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": { "@type": "Thing", "name": "Ford Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Ford" },
@@ -586,8 +586,8 @@ const FordWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Ford Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Ford Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         <meta name="twitter:card" content="summary_large_image" />
@@ -596,9 +596,9 @@ const FordWarrantyLanding: React.FC = () => {
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Ford extended warranty services in the UK, covering Fiesta, Focus, Kuga, Puma, Mondeo, Ranger, Transit, and Mustang Mach-E models. Human-authored and fact-checked." />
-        <meta name="ai-summary" content="Buy A Warranty offers comprehensive Ford extended warranty plans in the UK from £19/month. Coverage includes EcoBoost engines, PowerShift gearboxes, SYNC infotainment, electrical, hybrid and EV components for all Ford models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="ai-summary" content="Panda Protect offers comprehensive Ford extended warranty plans in the UK from £19/month. Coverage includes EcoBoost engines, PowerShift gearboxes, SYNC infotainment, electrical, hybrid and EV components for all Ford models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
@@ -1012,7 +1012,7 @@ const FordWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end pt-16">
                 <OptimizedImage 
                   src={fordKugaWarranty}
-                  alt="Ford Kuga SUV front view - Why Ford drivers choose Buy A Warranty for extended warranty cover"
+                  alt="Ford Kuga SUV front view - Why Ford drivers choose Panda Protect for extended warranty cover"
                   className="w-full max-w-[442px] h-auto object-contain"
                   width={800}
                   height={600}

@@ -218,9 +218,9 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
           <div ref={printRef} className="letter-container">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
-              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
+              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
               <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
-                <p style={{ fontWeight: '600' }}>Buy A Warranty Ltd</p>
+                <p style={{ fontWeight: '600' }}>Panda Protect Ltd</p>
                 <p>Warranty House, 62 Berkhamsted Ave</p>
                 <p>Wembley, HA9 6DT</p>
                 <p>Company No: 10314863</p>
@@ -251,7 +251,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
 
             <p style={{ marginBottom: '8px', fontSize: '11px' }}>Dear {policy.customerName.split(' ')[0]},</p>
             <p style={{ marginBottom: '12px', color: '#333', fontSize: '11px' }}>
-              Thank you for choosing Buyawarranty to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
+              Thank you for choosing Panda Protect to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
             </p>
 
             {/* Cover at a Glance */}
@@ -360,7 +360,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
 
             <div style={{ marginTop: '16px', fontSize: '11px' }}>
               <p style={{ margin: '1px 0' }}>Warm regards,</p>
-              <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Buyawarranty Team</p>
+              <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Panda Protect Team</p>
             </div>
 
             {/* Contact Footer */}
@@ -380,7 +380,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
             </div>
 
             <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: `1px solid ${c.border}`, fontSize: '8px', color: c.legal, textAlign: 'center' }}>
-              Buy A Warranty Ltd is registered in England &amp; Wales. Company No: 10314863.
+              Panda Protect Ltd is registered in England &amp; Wales. Company No: 10314863.
               Registered Address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.
             </div>
           </div>

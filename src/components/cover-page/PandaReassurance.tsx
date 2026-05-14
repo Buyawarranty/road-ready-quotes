@@ -19,7 +19,7 @@ const PandaReassurance: React.FC<PandaReassuranceProps> = ({ onSeeHowCoverWorks 
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
-              Why choose Buyawarranty
+              Why choose Panda Protect
             </h2>
             <div className="space-y-4 mb-8">
               {points.map((point, i) => (

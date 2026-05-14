@@ -162,7 +162,7 @@ export const DiscountPopup: React.FC<DiscountPopupProps> = ({ isOpen, onClose })
               <div className="mb-4">
                 <img 
                   src="/lovable-uploads/d30b22f7-d176-417c-b227-abdfc0fd84cf.png" 
-                  alt="BuyaWarranty" 
+                  alt="Panda Protect" 
                   className="h-8 mx-auto"
                 />
               </div>

@@ -120,7 +120,7 @@ const MercedesWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Mercedes-Benz Extended Warranty UK | Buy A Warranty"
+        name="Mercedes-Benz Extended Warranty UK | Panda Protect"
         description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 150,000 miles. Fast claims & wide garages."
         url="https://buyawarranty.co.uk/warranty-types/mercedes/"
         lastReviewed={new Date().toISOString()}
@@ -132,7 +132,7 @@ const MercedesWarranty = () => {
         name="Mercedes-Benz Extended Warranty"
         description="Comprehensive extended warranty coverage for Mercedes-Benz vehicles including engine, gearbox, electrical systems, ECU, MBUX infotainment, hybrid and AMG models. Covers C-Class, E-Class, A-Class, GLC, GLE and more."
         price="24.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="InStock"
@@ -142,7 +142,7 @@ const MercedesWarranty = () => {
       <ServiceSchema
         name="Mercedes-Benz Extended Warranty Service"
         description="Professional extended warranty service for Mercedes-Benz vehicles. Covers mechanical and electrical failures including engine, gearbox, MBUX, 4MATIC, 9G-TRONIC and AMG components."
-        provider="Buy A Warranty"
+        provider="Panda Protect"
         serviceType="Extended Vehicle Warranty"
         areaServed="United Kingdom"
         url="https://buyawarranty.co.uk/warranty-types/mercedes/"
@@ -180,7 +180,7 @@ const MercedesWarranty = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <Link to="/" className="hover:opacity-80 transition-opacity">
-                  <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
+                  <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
                 </Link>
               </div>
               
@@ -222,7 +222,7 @@ const MercedesWarranty = () => {
                       <Link to="/" className="hover:opacity-80 transition-opacity">
                         <img 
                           src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                          alt="Buy a Warranty Logo"
+                          alt="Panda Protect Logo"
                           className="h-8 w-auto"
                         />
                       </Link>

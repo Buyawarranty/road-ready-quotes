@@ -195,7 +195,7 @@ const testimonials = [
     name: "Lisa H.",
     location: "Cardiff",
     model: "Nissan Juke",
-    text: "The turbo on my Juke DIG-T went at 45,000 miles. Buy A Warranty handled the claim within 48 hours and paid the garage directly. No hassle at all.",
+    text: "The turbo on my Juke DIG-T went at 45,000 miles. Panda Protect handled the claim within 48 hours and paid the garage directly. No hassle at all.",
     rating: 5
   },
   {
@@ -387,11 +387,11 @@ const NissanWarrantyLanding: React.FC = () => {
     "description": "Comprehensive extended warranty coverage for all Nissan models including Qashqai, Juke, X-Trail, Leaf, Ariya, Micra, Note, Navara. Covers engine, CVT gearbox, transmission, electrical systems, and more. Nationwide UK coverage with any VAT-registered garage.",
     "brand": {
       "@type": "Brand",
-      "name": "Buy A Warranty"
+      "name": "Panda Protect"
     },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -411,7 +411,7 @@ const NissanWarrantyLanding: React.FC = () => {
       "url": "https://buyawarranty.co.uk/warranty-types/nissan-warranty/",
       "seller": {
         "@type": "Organization",
-        "name": "Buy A Warranty"
+        "name": "Panda Protect"
       },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -457,7 +457,7 @@ const NissanWarrantyLanding: React.FC = () => {
     "alternateName": "Nissan Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-330-229-5040",
       "priceRange": "£20-£60/month",
@@ -518,7 +518,7 @@ const NissanWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
@@ -541,7 +541,7 @@ const NissanWarrantyLanding: React.FC = () => {
     "url": "https://buyawarranty.co.uk/warranty-types/nissan-warranty/",
     "isPartOf": {
       "@type": "WebSite",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk"
     },
     "about": { "@type": "Thing", "name": "Nissan Extended Warranty" },
@@ -576,7 +576,7 @@ const NissanWarrantyLanding: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Nissan Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>Nissan Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your Nissan with comprehensive extended warranty cover. All models from Qashqai to Leaf and Ariya covered. Engine, CVT gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £20/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Nissan extended warranty, Nissan used car warranty, Nissan warranty UK, Nissan warranty cost, Nissan warranty quote, Nissan Qashqai warranty, Nissan Juke warranty, Nissan Leaf warranty, Nissan X-Trail warranty, Nissan CVT warranty, used Nissan warranty, second hand Nissan warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/nissan-warranty/" />
@@ -599,8 +599,8 @@ const NissanWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Nissan Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Nissan Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         {/* Twitter Card */}
@@ -611,8 +611,8 @@ const NissanWarrantyLanding: React.FC = () => {
         
         {/* AI Search Engine Optimization */}
         <meta name="ai-content-declaration" content="This page provides information about Nissan extended warranty services in the UK. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
@@ -1064,7 +1064,7 @@ const NissanWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end">
                 <OptimizedImage 
                   src={nissanJukeWarranty}
-                  alt="Nissan Qashqai SUV - Why Nissan owners choose Buy A Warranty for extended warranty cover"
+                  alt="Nissan Qashqai SUV - Why Nissan owners choose Panda Protect for extended warranty cover"
                   className="w-[480px] h-auto object-contain"
                   width={800}
                   height={600}

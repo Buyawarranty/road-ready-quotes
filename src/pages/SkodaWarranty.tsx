@@ -56,7 +56,7 @@ const SkodaWarranty = () => {
     },
     {
       question: "Does Škoda offer extended warranties?",
-      answer: "The manufacturer offers its own plans, but many drivers choose independent specialists like Buy A Warranty for broader cover, flexible pricing and the ability to use any VAT-registered garage."
+      answer: "The manufacturer offers its own plans, but many drivers choose independent specialists like Panda Protect for broader cover, flexible pricing and the ability to use any VAT-registered garage."
     },
     {
       question: "How much should I expect to pay for an extended warranty?",
@@ -86,7 +86,7 @@ const SkodaWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Škoda Extended Warranty - Buy A Warranty"
+        name="Škoda Extended Warranty - Panda Protect"
         description="Protect your Škoda with comprehensive extended warranty cover for new and used models. Get instant quotes, flexible plans and protection from costly repairs."
         url="https://buyawarranty.co.uk/car-extended-warranty/skoda/"
         lastReviewed={new Date().toISOString()}
@@ -98,7 +98,7 @@ const SkodaWarranty = () => {
         name="Škoda Extended Warranty"
         description="Comprehensive extended warranty coverage for Škoda vehicles including engine, gearbox, electrical systems, ECU, hybrid and EV components."
         price="380.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
@@ -127,7 +127,7 @@ const SkodaWarranty = () => {
                 A Škoda extended warranty protects your car once the factory warranty ends. It covers mechanical and electrical failures, pays for parts, labour and diagnostics, and helps you avoid costly repair bills. You can choose flexible cover for new, used and high-mileage Škoda models, matched to your car's age and mileage.
               </p>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Škoda vehicles are known for reliability, yet modern engines, electronics and hybrid systems can still be expensive to repair. Whether you drive an Octavia, Superb, Kodiaq, Karoq, Fabia, Scala, Enyaq iV or Kamiq, extended cover gives long-term peace of mind. Buy A Warranty also protects high-mileage cars with cover available up to 150,000 miles.
+                Škoda vehicles are known for reliability, yet modern engines, electronics and hybrid systems can still be expensive to repair. Whether you drive an Octavia, Superb, Kodiaq, Karoq, Fabia, Scala, Enyaq iV or Kamiq, extended cover gives long-term peace of mind. Panda Protect also protects high-mileage cars with cover available up to 150,000 miles.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button onClick={navigateToQuoteForm} size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">

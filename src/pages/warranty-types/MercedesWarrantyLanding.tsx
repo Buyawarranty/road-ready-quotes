@@ -211,7 +211,7 @@ const testimonials = [
     name: "Michael S.",
     location: "Manchester",
     model: "Mercedes E350",
-    text: "I was sceptical about third-party warranties but Buy A Warranty proved me wrong. Gearbox issue fixed, £2,200 claim paid without any hassle.",
+    text: "I was sceptical about third-party warranties but Panda Protect proved me wrong. Gearbox issue fixed, £2,200 claim paid without any hassle.",
     rating: 5
   },
   {
@@ -396,11 +396,11 @@ const MercedesWarrantyLanding: React.FC = () => {
     "description": "Comprehensive extended warranty coverage for all Mercedes-Benz models including A-Class, B-Class, C-Class, E-Class, S-Class, GLA, GLB, GLC, GLE, GLS, G-Class, EQA, EQB, EQC, EQE, and EQS. Covers engine, gearbox, transmission, electrical systems, and more. Nationwide UK coverage with any VAT-registered garage.",
     "brand": {
       "@type": "Brand",
-      "name": "Buy A Warranty"
+      "name": "Panda Protect"
     },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -420,7 +420,7 @@ const MercedesWarrantyLanding: React.FC = () => {
       "url": "https://buyawarranty.co.uk/warranty-types/mercedes-warranty/",
       "seller": {
         "@type": "Organization",
-        "name": "Buy A Warranty"
+        "name": "Panda Protect"
       },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -466,7 +466,7 @@ const MercedesWarrantyLanding: React.FC = () => {
     "alternateName": "Mercedes-Benz Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£29-£95/month",
@@ -552,7 +552,7 @@ const MercedesWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
@@ -578,7 +578,7 @@ const MercedesWarrantyLanding: React.FC = () => {
     "url": "https://buyawarranty.co.uk/warranty-types/mercedes-warranty/",
     "isPartOf": {
       "@type": "WebSite",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk"
     },
     "about": {
@@ -632,7 +632,7 @@ const MercedesWarrantyLanding: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Mercedes-Benz Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>Mercedes-Benz Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your Mercedes-Benz with comprehensive extended warranty cover. All models from A-Class to S-Class and EQ Series covered. Engine, gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £19/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Mercedes extended warranty, Mercedes-Benz used car warranty, Mercedes warranty UK, Mercedes warranty cost, Mercedes warranty quote, Mercedes C-Class warranty, Mercedes GLC warranty, Mercedes EQC warranty, Mercedes E-Class warranty, Mercedes S-Class warranty, Mercedes electric warranty, Mercedes hybrid warranty, used Mercedes warranty, second hand Mercedes warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/mercedes-warranty/" />
@@ -655,8 +655,8 @@ const MercedesWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Mercedes-Benz Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Mercedes-Benz Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         {/* Twitter Card */}
@@ -667,8 +667,8 @@ const MercedesWarrantyLanding: React.FC = () => {
         
         {/* AI Search Engine Optimization */}
         <meta name="ai-content-declaration" content="This page provides information about Mercedes-Benz extended warranty services in the UK. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
@@ -1052,11 +1052,11 @@ const MercedesWarrantyLanding: React.FC = () => {
                 ))}
               </div>
               
-              {/* Mercedes with Buy A Warranty branding */}
+              {/* Mercedes with Panda Protect branding */}
               <div className="hidden lg:flex justify-center items-start pt-16">
                 <OptimizedImage 
                   src={mercedesWhyChooseUs}
-                  alt="Mercedes-Benz with Buy A Warranty logo - Extended warranty coverage UK"
+                  alt="Mercedes-Benz with Panda Protect logo - Extended warranty coverage UK"
                   className="w-full max-w-[380px] h-auto object-contain"
                   width={600}
                   height={400}
@@ -1137,7 +1137,7 @@ const MercedesWarrantyLanding: React.FC = () => {
               <div className="flex justify-center">
                 <OptimizedImage 
                   src={mercedesHighMileage}
-                  alt="Mercedes-Benz Vito with BuyAWarranty branding - High mileage Mercedes-Benz warranty coverage"
+                  alt="Mercedes-Benz Vito with Panda Protect branding - High mileage Mercedes-Benz warranty coverage"
                   className="w-64 sm:w-80 md:w-96 lg:w-[28rem] h-auto object-contain"
                   width={448}
                   height={300}

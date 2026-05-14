@@ -12,7 +12,7 @@ const CoverTestimonial: React.FC = () => {
             ))}
           </div>
           <blockquote className="text-lg md:text-xl text-foreground italic mb-4 leading-relaxed">
-            "My BMW needed a new water pump. The garage quoted £780. Buyawarranty approved
+            "My BMW needed a new water pump. The garage quoted £780. Panda Protect approved
             the repair and I paid nothing. It was fast and easy."
           </blockquote>
           <p className="font-semibold text-foreground">Matt, Leeds</p>

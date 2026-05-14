@@ -343,7 +343,7 @@ const CarExtendedWarranty: React.FC = () => {
       <OrganizationSchema type="InsuranceAgency" />
       <ReviewSchema />
       <WebPageSchema
-        name="Car Extended Warranty UK - Buy A Warranty"
+        name="Car Extended Warranty UK - Panda Protect"
         description="Comprehensive extended car warranty coverage for used and new vehicles in the UK. Protect your car from unexpected repair costs with flexible plans starting from £19/month."
         url="https://buyawarranty.co.uk/car-extended-warranty/"
         specialty="Car Extended Warranty, Used Car Warranty, Vehicle Warranty Protection"
@@ -354,7 +354,7 @@ const CarExtendedWarranty: React.FC = () => {
         description="Comprehensive car warranty coverage protecting your vehicle from unexpected mechanical and electrical failures. Choose from multiple coverage levels to suit your needs."
         price="19.00"
         priceCurrency="GBP"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Extended Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
       />
@@ -387,7 +387,7 @@ const CarExtendedWarranty: React.FC = () => {
             </p>
 
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed px-2">
-              Every driver knows that moment - the dashboard light flickers on, the car makes an unusual sound, and your heart sinks. Repair bills in the UK are rising fast, with even small faults now costing hundreds of pounds. When the manufacturer's warranty expires, the financial risk shifts to you - and that's where a Car Extended Warranty from Buy A Warranty steps in.
+              Every driver knows that moment - the dashboard light flickers on, the car makes an unusual sound, and your heart sinks. Repair bills in the UK are rising fast, with even small faults now costing hundreds of pounds. When the manufacturer's warranty expires, the financial risk shifts to you - and that's where a Car Extended Warranty from Panda Protect steps in.
             </p>
 
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed px-2">
@@ -548,7 +548,7 @@ const CarExtendedWarranty: React.FC = () => {
                     <tr className="bg-primary text-white">
                       <th scope="col" className="p-3 text-left border-2 border-gray-400">Feature</th>
                       <th scope="col" className="p-3 text-left border-2 border-gray-400">Manufacturer Warranty</th>
-                      <th scope="col" className="p-3 text-left border-2 border-gray-400">Buy A Warranty (Extended)</th>
+                      <th scope="col" className="p-3 text-left border-2 border-gray-400">Panda Protect (Extended)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -621,7 +621,7 @@ const CarExtendedWarranty: React.FC = () => {
                       </li>
                     </ul>
                     <p className="text-gray-700 mb-4">
-                      With Buy A Warranty, those costs can be covered, saving you from financial strain. We pay garages directly, so you're never left out of pocket waiting for reimbursement. You can also choose a repairer of your choice and claimback expenses once the garage has been verified.
+                      With Panda Protect, those costs can be covered, saving you from financial strain. We pay garages directly, so you're never left out of pocket waiting for reimbursement. You can also choose a repairer of your choice and claimback expenses once the garage has been verified.
                     </p>
                     <p className="text-lg font-semibold text-primary italic">
                       Expect performance, not problems. Our warranty keeps you covered, so you can enjoy the ride.
@@ -1041,7 +1041,7 @@ const CarExtendedWarranty: React.FC = () => {
               <figure className="relative text-center order-1 lg:order-2">
                 <img 
                   src={phoneCarImg} 
-                  alt="Buy a Warranty mobile app showing instant car warranty quote with vehicle in background - get covered in 60 seconds" 
+                  alt="Panda Protect mobile app showing instant car warranty quote with vehicle in background - get covered in 60 seconds" 
                   className="w-full h-auto max-w-sm md:max-w-lg mx-auto object-contain"
                   loading="lazy"
                   width="600"
@@ -1086,12 +1086,12 @@ const CarExtendedWarranty: React.FC = () => {
         </div>
       </section>
 
-      {/* Why Choose Buy A Warranty */}
+      {/* Why Choose Panda Protect */}
       <section className="py-16 bg-white" aria-labelledby="why-choose-us">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <h2 id="why-choose-us" className="text-3xl md:text-4xl font-bold text-center mb-12">
-              Why Choose Buy A Warranty?
+              Why Choose Panda Protect?
             </h2>
 
             <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
@@ -1132,7 +1132,7 @@ const CarExtendedWarranty: React.FC = () => {
               <figure className="relative text-center order-1 lg:order-2">
                 <img 
                   src={pandaEvImg} 
-                  alt="Buy a Warranty panda mascot with electric vehicle representing EV and hybrid car warranty coverage in the UK" 
+                  alt="Panda Protect panda mascot with electric vehicle representing EV and hybrid car warranty coverage in the UK" 
                   className="w-full h-auto max-w-sm md:max-w-lg mx-auto object-contain"
                   loading="lazy"
                   width="600"
@@ -1166,7 +1166,7 @@ const CarExtendedWarranty: React.FC = () => {
                 </div>
                 <p className="font-bold mb-2">I was honestly nervous about taking out a car warranty</p>
                 <p className="text-gray-700 mb-4">
-                  I was honestly nervous about taking out a car warranty – I thought it would be full of hidden costs and fine print. But Buy a Warranty has been a complete game changer. My car needed a repair that would have cost me over £1,200, and they covered the whole thing, parts, labour, even breakdown recovery.
+                  I was honestly nervous about taking out a car warranty – I thought it would be full of hidden costs and fine print. But Panda Protect has been a complete game changer. My car needed a repair that would have cost me over £1,200, and they covered the whole thing, parts, labour, even breakdown recovery.
                 </p>
                 <p className="text-gray-700 mb-4">
                   The sign-up process took less than a minute on my phone, and I love that the plans are flexible! Definitely recommend!
@@ -1182,7 +1182,7 @@ const CarExtendedWarranty: React.FC = () => {
                 </div>
                 <p className="font-bold mb-2">"Didn't expect it to be this easy"</p>
                 <p className="text-gray-700 mb-4">
-                  "I've always been sceptical about car warranties, but Buy a Warranty proved me wrong. When my alternator failed, I was dreading the cost - turns out it would've been over £600. But they sorted it all, no fuss. The claim was approved in under two hours and the garage was paid directly. I didn't pay a penny. Brilliant service!"
+                  "I've always been sceptical about car warranties, but Panda Protect proved me wrong. When my alternator failed, I was dreading the cost - turns out it would've been over £600. But they sorted it all, no fuss. The claim was approved in under two hours and the garage was paid directly. I didn't pay a penny. Brilliant service!"
                 </p>
                 <p className="font-semibold text-gray-800">Aisha, Birmingham</p>
               </div>
@@ -1195,7 +1195,7 @@ const CarExtendedWarranty: React.FC = () => {
                 </div>
                 <p className="font-bold mb-2">"Saved me just in time"</p>
                 <p className="text-gray-700 mb-4">
-                  "My timing belt snapped out of nowhere, and I thought I'd be out of pocket by at least £1800. Thankfully, I had a Buy a Warranty plan. They covered the repair, and even helped me find a local garage. I genuinely didn't expect it to be this smooth."
+                  "My timing belt snapped out of nowhere, and I thought I'd be out of pocket by at least £1800. Thankfully, I had a Panda Protect plan. They covered the repair, and even helped me find a local garage. I genuinely didn't expect it to be this smooth."
                 </p>
                 <p className="font-semibold text-gray-800">Mark, Bristol</p>
               </div>

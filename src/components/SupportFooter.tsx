@@ -19,7 +19,7 @@ const SupportFooter = () => {
           <div className="flex items-center order-2 lg:order-1">
             <img 
               src="/lovable-uploads/ce43a78c-28ec-400b-8a16-1e98b15e0185.png" 
-              alt="Buy a Warranty" 
+              alt="Panda Protect" 
               className="h-8 sm:h-12 lg:h-16 xl:h-20 w-auto"
             />
           </div>

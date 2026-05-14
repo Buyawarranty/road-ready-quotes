@@ -342,7 +342,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex flex-col">
       <SEOHead 
-        title="Sign In | BuyAWarranty Customer Portal"
+        title="Sign In | Panda Protect Customer Portal"
         description="Access your warranty account or create a new one. Manage your policies, view documents, and get support for your vehicle warranty."
         keywords="sign in, login, customer portal, warranty account, vehicle warranty"
       />
@@ -354,7 +354,7 @@ const Auth = () => {
             {/* Logo */}
             <div className="flex items-center">
               <a href="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-6 sm:h-8 w-auto" />
               </a>
             </div>
             
@@ -404,7 +404,7 @@ const Auth = () => {
                     <a href="/" className="hover:opacity-80 transition-opacity">
                       <img 
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                        alt="Buy a Warranty" 
+                        alt="Panda Protect" 
                         className="h-8 w-auto"
                       />
                     </a>
@@ -483,7 +483,7 @@ const Auth = () => {
           <CardHeader className="text-center pb-6">
             <img 
               src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
-              alt="BuyAWarranty" 
+              alt="Panda Protect" 
               className="h-12 w-auto mx-auto mb-4"
             />
             <CardTitle className="text-xl md:text-2xl">Welcome</CardTitle>

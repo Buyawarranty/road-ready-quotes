@@ -48,7 +48,7 @@ const StickyNavigation: React.FC = () => {
               <a href="/" onClick={handleLogoClick} className="hover:opacity-80 transition-opacity cursor-pointer">
                 <OptimizedImage 
                   src={buyawarrantyLogo} 
-                  alt="Buy a Warranty Logo - Affordable Car Warranty UK" 
+                  alt="Panda Protect Logo - Affordable Car Warranty UK" 
                   className="h-6 sm:h-8 w-auto object-contain"
                   priority={true}
                   width={240}

@@ -76,7 +76,7 @@ const AudiWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Audi Extended Warranty - Buy A Warranty"
+        name="Audi Extended Warranty - Panda Protect"
         description="Protect your Audi from costly repairs with an extended warranty. Covers engine, gearbox, electrics and more. Used & high-mileage Audis accepted. Get instant quotes."
         url="https://buyawarranty.co.uk/car-extended-warranty/audi/"
         lastReviewed={new Date().toISOString()}
@@ -88,7 +88,7 @@ const AudiWarranty = () => {
         name="Audi Extended Warranty"
         description="Comprehensive extended warranty coverage for Audi vehicles including engine, gearbox, electrical systems, ECU, hybrid and EV components."
         price="350.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"

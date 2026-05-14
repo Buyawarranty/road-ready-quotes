@@ -163,7 +163,7 @@ const BlogArticle = () => {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Buy a Warranty",
+      "name": "Panda Protect",
       "logo": {
         "@type": "ImageObject",
         "url": "https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png"
