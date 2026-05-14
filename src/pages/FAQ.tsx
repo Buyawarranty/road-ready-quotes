@@ -178,7 +178,6 @@ const FAQ = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <DealerPublicHeader />
             {part}
           </a>
         );
@@ -689,6 +688,7 @@ const FAQ = () => {
       />
       <FAQSchema faqs={faqSchemaData} />
       
+      <DealerPublicHeader />
       <div className="min-h-screen bg-gray-50">
         {/* Header Section */}
         <section className="bg-white shadow-sm">
