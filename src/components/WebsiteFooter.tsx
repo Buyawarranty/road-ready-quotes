@@ -59,11 +59,11 @@ const WebsiteFooter = () => {
                 Call us: 0330 229 5040
               </a>
               <a 
-                href="mailto:support@buyawarranty.co.uk" 
+                href="mailto:support@pandaprotect.co.uk" 
                 className="flex items-center text-sm font-semibold text-[#eb4b00] hover:text-[#d63f00] transition-colors"
               >
                 <Mail className="w-4 h-4 mr-1.5" />
-                support@buyawarranty.co.uk
+                support@pandaprotect.co.uk
               </a>
               <a 
                 href="https://wa.me/message/SPQPJ6O3UBF5B1" 
