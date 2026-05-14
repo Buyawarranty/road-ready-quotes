@@ -7,6 +7,7 @@ import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
 import pandaSavings from '@/assets/panda-savings.png';
 import pandaHappyCar from '@/assets/panda-happy-car.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const PrivacyPolicy = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -21,84 +22,7 @@ const PrivacyPolicy = () => {
       />
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16">
-          <div className="flex items-center justify-between h-full">
-            {/* Logo */}
-            <div className="flex items-center">
-              <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img 
-                  src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                  alt="Panda Protect" 
-                  className="h-6 sm:h-8 w-auto"
-                />
-              </Link>
-            </div>
-
-            {/* Navigation - Hidden on mobile */}
-            <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
-              <Link to="/what-is-covered" className="text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base">What's Covered</Link>
-              <Link to="/make-a-claim" className="text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base">Make a Claim</Link>
-              <Link to="/faq" className="text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base">FAQs</Link>
-              <Link to="/contact-us" className="text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base">Contact Us</Link>
-            </nav>
-
-            {/* Desktop CTA Buttons - Show on desktop */}
-            <div className="hidden lg:flex items-center space-x-3">
-              <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
-                <button className="bg-[#25D366] text-white border-[#25D366] hover:bg-[#1da851] hover:border-[#1da851] px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                  WhatsApp Us
-                </button>
-              </a>
-              <Link to="/">
-                <button className="bg-primary text-white hover:bg-primary/90 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                  Get my quote
-                </button>
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2 min-w-[48px] min-h-[48px]"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-12 w-12" /> : <Menu className="h-12 w-12" />}
-            </button>
-          </div>
-
-          {/* Mobile menu */}
-          {isMenuOpen && (
-            <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
-              <div className="flex flex-col p-4 space-y-4">
-                <Link to="/what-is-covered" className="text-gray-700 hover:text-gray-900 font-medium py-2">
-                  What's Covered
-                </Link>
-                <Link to="/make-a-claim" className="text-gray-700 hover:text-gray-900 font-medium py-2">
-                  Make a Claim
-                </Link>
-                <Link to="/faq" className="text-gray-700 hover:text-gray-900 font-medium py-2">
-                  FAQs
-                </Link>
-                <Link to="/contact-us" className="text-gray-700 hover:text-gray-900 font-medium py-2">
-                  Contact Us
-                </Link>
-                <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">
-                  <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
-                    <button className="w-full bg-[#25D366] text-white px-4 py-2 rounded-md text-sm font-medium">
-                      WhatsApp Us
-                    </button>
-                  </a>
-                  <Link to="/" className="w-full">
-                    <button className="w-full bg-primary text-white px-4 py-2 rounded-md text-sm font-medium">
-                      Get my quote
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          )}
-        </nav>
-      </header>
+      <DealerPublicHeader />
 
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">

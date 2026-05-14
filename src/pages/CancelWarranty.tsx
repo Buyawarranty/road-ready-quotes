@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import {
   Mail, Phone, Clock, Pause, ArrowRightLeft, TrendingUp,
   CheckCircle, Info, Gift, MessageCircle, Heart, Car, Wrench,
@@ -213,16 +214,7 @@ const CancelWarranty = () => {
 
       <div className="min-h-screen bg-white">
         {/* Header */}
-        <header className="py-14 px-6 border-b border-[#E6E6E6]">
-          <div className="max-w-[720px] mx-auto text-center">
-            <h1 className="text-3xl lg:text-4xl font-bold text-[#000] mb-3">
-              Cancellation Rights
-            </h1>
-            <p className="text-lg text-[#333]">
-              We understand plans change. Here's everything you need to know.
-            </p>
-          </div>
-        </header>
+        <DealerPublicHeader />
 
         <main className="max-w-[720px] mx-auto px-6 py-12 space-y-12">
 
