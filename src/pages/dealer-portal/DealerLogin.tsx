@@ -232,11 +232,11 @@ const DealerLogin = () => {
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] bg-white/10 backdrop-blur px-2.5 py-1 rounded uppercase mb-4">
                 For Motor Trade Dealers
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold leading-tight mb-3">
+              <h2 className="text-2xl sm:text-3xl font-bold leading-tight mb-3" style={{ color: '#ffffff' }}>
                 Sell more cars with extended warranties from{' '}
-                <span className="text-orange-300">20p a day</span>
+                <span style={{ color: '#fdba74' }}>20p a day</span>
               </h2>
-              <p className="text-white/80 mb-7">
+              <p className="mb-7" style={{ color: 'rgba(255,255,255,0.8)' }}>
                 Join hundreds of UK dealers boosting margins with Panda Protect. Quote, sell and manage warranties from one simple portal.
               </p>
 
@@ -247,8 +247,8 @@ const DealerLogin = () => {
                       <Icon className="w-5 h-5 text-orange-300" />
                     </div>
                     <div>
-                      <p className="font-semibold">{title}</p>
-                      <p className="text-sm text-white/70">{body}</p>
+                      <p className="font-semibold" style={{ color: '#ffffff' }}>{title}</p>
+                      <p className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{body}</p>
                     </div>
                   </li>
                 ))}
