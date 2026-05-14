@@ -128,7 +128,7 @@ const WebsiteFooter = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Email Support:</p>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-[#eb4b00] font-bold hover:underline">support@buyawarranty.co.uk</a>
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-[#eb4b00] font-bold hover:underline">support@pandaprotect.co.uk</a>
                 </div>
               </div>
             </div>
