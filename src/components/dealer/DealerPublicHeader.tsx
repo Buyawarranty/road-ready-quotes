@@ -11,10 +11,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Home', to: '/dealer-portal/' },
-  { label: 'Why Us', to: '/dealer-portal/#why-us' },
-  { label: 'Resources', to: '/dealer-portal/#resources' },
-  { label: 'Contact', to: '/dealer-portal/#contact' },
+  { label: 'Dealer Home', to: '/dealer-portal/' },
+  { label: "What's Covered", to: '/what-is-covered/' },
+  { label: 'Make a Claim', to: '/make-a-claim/' },
+  { label: 'FAQs', to: '/faq/' },
+  { label: 'Contact Us', to: '/contact-us/' },
 ];
 
 export const DealerPublicHeader: React.FC = () => {
