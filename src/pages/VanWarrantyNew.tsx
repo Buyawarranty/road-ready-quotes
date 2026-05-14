@@ -17,6 +17,7 @@ import vanHero from '@/assets/van-warranty-hero.png';
 import vanFast from '@/assets/van-warranty-fast.png';
 import vanCoverage from '@/assets/van-warranty-coverage.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const VanWarrantyNew = () => {
   const navigate = useNavigate();
   const [showRegForm, setShowRegForm] = useState(false);
@@ -69,6 +70,7 @@ const VanWarrantyNew = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Van Extended Warranty | Used Van Cover up to 150,000 Miles"
         description="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."

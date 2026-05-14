@@ -6,12 +6,14 @@ import pandaService from '@/assets/panda-service.png';
 import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
 import pandaSavings from '@/assets/panda-savings.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const CookiePolicy = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+      <DealerPublicHeader />
       <SEOHead 
         title="Cookie Policy | Panda Protect UK"
         description="Learn about how Panda Protect uses cookies and similar technologies on our website. Understand your privacy and cookie preferences."

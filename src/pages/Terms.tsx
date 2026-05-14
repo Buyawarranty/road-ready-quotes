@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const Terms = () => {
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -117,6 +118,7 @@ const Terms = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <DealerPublicHeader />
       <SEOHead 
         title="Terms & Conditions | Panda Protect - Vehicle Warranty Terms"
         description="Read our comprehensive terms and conditions for vehicle warranty coverage."

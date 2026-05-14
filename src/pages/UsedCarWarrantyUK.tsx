@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomepageAlt from '@/components/HomepageAlt';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface VehicleData {
   registration: string;
   make: string;
@@ -24,6 +25,7 @@ const UsedCarWarrantyUK = () => {
 
   return (
     <div>
+      <DealerPublicHeader />
       <HomepageAlt onRegistrationSubmit={handleRegistrationSubmit} />
     </div>
   );

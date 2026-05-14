@@ -7,12 +7,14 @@ import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
 import pandaSavings from '@/assets/panda-savings.png';
 import pandaHappyCar from '@/assets/panda-happy-car.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const Complaints = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+      <DealerPublicHeader />
       <SEOHead 
         title="Complaints Procedure | Panda Protect UK"
         description="Learn about our complaints procedure and how we resolve customer concerns quickly and fairly. We are committed to providing excellent customer service."

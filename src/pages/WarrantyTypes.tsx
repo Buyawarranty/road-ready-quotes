@@ -18,6 +18,7 @@ import motorcycleImg from '@/assets/warranty-types-motorcycle.jpg';
 import hybridImg from '@/assets/warranty-types-hybrid.jpg';
 import phevImg from '@/assets/warranty-types-phev.jpg';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface DynamicLandingPage {
   id: string;
   slug: string;
@@ -137,6 +138,7 @@ const WarrantyTypes: React.FC = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <Helmet>
         <title>Warranty Types | Vehicle Warranty Options | Panda Protect</title>
         <meta name="description" content="Discover all our warranty types in one place. From BMW to vans, find tailored cover for your vehicle. Explore car, van, electric and brand-specific warranties." />

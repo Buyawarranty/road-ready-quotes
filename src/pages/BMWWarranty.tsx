@@ -19,6 +19,7 @@ import bmwHeroImage from '@/assets/Bmw-extended-used-car-warranty.png';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const BMWWarranty: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -75,6 +76,7 @@ const BMWWarranty: React.FC = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="BMW Car Extended Warranty | Used BMW Cover & Instant Quotes"
         description="Protect your BMW from costly repairs with an extended BMW warranty. Instant quotes, UK garages, flexible payment plans, and cover for used BMWs up to 150,000 miles."

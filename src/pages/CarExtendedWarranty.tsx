@@ -34,6 +34,7 @@ import TrustCallbackPanel from '@/components/TrustCallbackPanel';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 interface DynamicLandingPage {
   id: string;
   slug: string;
@@ -331,6 +332,7 @@ const CarExtendedWarranty: React.FC = () => {
 
   return (
     <div className="min-h-screen">
+      <DealerPublicHeader />
       <SEOHead
         title="Car Extended Warranty UK | Used Car Cover from £19/mo"
         description="Protect your used or new car from costly repairs with affordable extended warranty cover in the UK. Instant quotes online. Prices start from just £19/month."

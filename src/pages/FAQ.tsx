@@ -12,6 +12,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import trustpilotBadge from '@/assets/trustpilot-badge.png';
 import TrustpilotMicroStarWidget from '@/components/TrustpilotMicroStarWidget';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const FAQ = () => {
   const navigate = useNavigate();
   
@@ -177,6 +178,7 @@ const FAQ = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
+            <DealerPublicHeader />
             {part}
           </a>
         );

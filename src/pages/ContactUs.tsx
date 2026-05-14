@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import TrustpilotMicroStarWidget from '@/components/TrustpilotMicroStarWidget';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const ContactUs = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -216,6 +217,7 @@ const ContactUs = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Contact Us - Panda Protect"
         description="Get in touch with our customer service team via email, WhatsApp, or phone. We're here to help with all your warranty needs."

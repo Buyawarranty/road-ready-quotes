@@ -16,6 +16,7 @@ import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import companyRegistration from '@/assets/company-registration-footer.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const BuyCarWarranty: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ const BuyCarWarranty: React.FC = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Buy a Car Warranty Online - Trusted UK Cover for All Budgets | Panda Protect"
         description="Compare car warranty quotes and get extended cover for your vehicle. Best car warranty UK options for used cars, low monthly costs, and trusted protection. Get a quote today."
