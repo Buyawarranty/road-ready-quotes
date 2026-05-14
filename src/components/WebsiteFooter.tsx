@@ -59,11 +59,11 @@ const WebsiteFooter = () => {
                 Call us: 0330 229 5040
               </a>
               <a 
-                href="mailto:support@buyawarranty.co.uk" 
+                href="mailto:support@pandaprotect.co.uk" 
                 className="flex items-center text-sm font-semibold text-[#eb4b00] hover:text-[#d63f00] transition-colors"
               >
                 <Mail className="w-4 h-4 mr-1.5" />
-                support@buyawarranty.co.uk
+                support@pandaprotect.co.uk
               </a>
               <a 
                 href="https://wa.me/message/SPQPJ6O3UBF5B1" 
@@ -83,8 +83,7 @@ const WebsiteFooter = () => {
               <h3 className="text-lg font-bold text-gray-900 mb-6">Quick Links</h3>
               <ul className="space-y-3 text-gray-600">
                 <li><a href="/" className="hover:text-[#eb4b00] transition-colors">Home</a></li>
-                <li><a href="/discount-promo-offers/" className="hover:text-[#eb4b00] transition-colors">Discounts & Offers</a></li>
-                <li><a href="/customer-dashboard/" className="hover:text-[#eb4b00] transition-colors font-semibold">Customer Login</a></li>
+                <li><a href="/dealer-portal/login" className="hover:text-[#eb4b00] transition-colors font-semibold">Trade Login</a></li>
                 <li><a href="/make-a-claim/" className="hover:text-[#eb4b00] transition-colors">Make a Claim</a></li>
                 <li><a href="/contact-us/" className="hover:text-[#eb4b00] transition-colors">Contact Us</a></li>
                 <li><a href="/buy-a-used-car-warranty-reliable-warranties/" className="hover:text-[#eb4b00] transition-colors">Car Warranty</a></li>
@@ -106,7 +105,7 @@ const WebsiteFooter = () => {
                 <li><a href="/complaints/" className="hover:text-[#eb4b00] transition-colors">Complaints Procedure</a></li>
                 <li><a href="/thewarrantyhub/" className="hover:text-[#eb4b00] transition-colors">Warranty Hub</a></li>
                 <li><a href="/used-car-warranty-uk/" className="hover:text-[#eb4b00] transition-colors">Used Car Warranty UK</a></li>
-                <li><a href="/cancel-warranty" className="hover:text-[#eb4b00] transition-colors">Cancel your warranty</a></li>
+                <li><a href="/cancel-warranty" className="hover:text-[#eb4b00] transition-colors">Cancel a warranty</a></li>
               </ul>
             </div>
 
@@ -129,7 +128,7 @@ const WebsiteFooter = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Email Support:</p>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-[#eb4b00] font-bold hover:underline">support@buyawarranty.co.uk</a>
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-[#eb4b00] font-bold hover:underline">support@pandaprotect.co.uk</a>
                 </div>
               </div>
             </div>
