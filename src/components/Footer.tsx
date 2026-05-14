@@ -108,7 +108,7 @@ const Footer = () => {
 
           {/* Bottom section */}
           <div className="mt-8 pt-4 border-t border-white/10 text-center text-sm text-gray-300">
-            <p>&copy; {new Date().getFullYear()} Panda Protect. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Panda pro. All rights reserved.</p>
           </div>
         </div>
       </footer>
