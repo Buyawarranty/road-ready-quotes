@@ -9,7 +9,8 @@ const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-
 
 const WebsiteFooter = () => {
   const location = useLocation();
-  const hideCtaSection = pagesWithOwnCTA.includes(location.pathname);
+  const isDealerRoute = location.pathname === '/' || location.pathname.startsWith('/dealer-portal') || location.pathname.startsWith('/home');
+  const hideCtaSection = pagesWithOwnCTA.includes(location.pathname) || isDealerRoute;
 
   return (
     <div className="relative">
