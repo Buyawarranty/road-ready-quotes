@@ -132,7 +132,7 @@ const CancelWarranty = () => {
   if (isStaySuccess) {
     return (
       <>
-        <SEOHead title="Welcome Back! - Buy a Warranty" description="Thank you for staying with us" />
+        <SEOHead title="Welcome Back! - Panda Protect" description="Thank you for staying with us" />
         <div className="min-h-screen bg-white py-16 px-6">
           <div className="max-w-[720px] mx-auto bg-[#f0faf4] border-2 border-[#009A44] rounded-lg p-8 text-center">
             <div className="text-6xl mb-4">🎉</div>
@@ -153,7 +153,7 @@ const CancelWarranty = () => {
   if (isSuccess) {
     return (
       <>
-        <SEOHead title="Request Received - Buy a Warranty" description="Your cancellation request has been received" />
+        <SEOHead title="Request Received - Panda Protect" description="Your cancellation request has been received" />
         <div className="min-h-screen bg-white py-16 px-6">
           <div className="max-w-[720px] mx-auto space-y-6">
             <div className="bg-[#f0faf4] border-2 border-[#009A44] rounded-xl p-8">
@@ -206,7 +206,7 @@ const CancelWarranty = () => {
   return (
     <>
       <SEOHead
-        title="Cancel Your Warranty | BuyAWarranty"
+        title="Cancel Your Warranty | Panda Protect"
         description="Cancel your used car warranty easily. Understand your cooling off rights, refund process and alternative options."
         keywords="cancel warranty, warranty cancellation, cooling off period, refund policy"
       />

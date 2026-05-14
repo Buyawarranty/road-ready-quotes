@@ -14,9 +14,9 @@ const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <SEOHead 
-        title="Privacy Policy | Buy A Warranty UK"
-        description="Learn how Buy A Warranty protects your privacy and handles your personal data. Understand your rights under UK GDPR and how we use your information."
-        keywords="privacy policy, data protection, Buy A Warranty, GDPR, personal data, privacy rights"
+        title="Privacy Policy | Panda Protect UK"
+        description="Learn how Panda Protect protects your privacy and handles your personal data. Understand your rights under UK GDPR and how we use your information."
+        keywords="privacy policy, data protection, Panda Protect, GDPR, personal data, privacy rights"
         canonical="https://buyawarranty.co.uk/privacy"
       />
 
@@ -29,7 +29,7 @@ const PrivacyPolicy = () => {
               <Link to="/" className="hover:opacity-80 transition-opacity">
                 <img 
                   src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                  alt="Buy a Warranty" 
+                  alt="Panda Protect" 
                   className="h-6 sm:h-8 w-auto"
                 />
               </Link>
@@ -138,7 +138,7 @@ const PrivacyPolicy = () => {
             />
             <div>
               <p className="text-lg text-gray-700 leading-relaxed">
-                Buy A Warranty ("we", "us", or "our") is committed to protecting your privacy. This policy outlines how we collect, use, and safeguard your personal data when you visit our website{' '}
+                Panda Protect ("we", "us", or "our") is committed to protecting your privacy. This policy outlines how we collect, use, and safeguard your personal data when you visit our website{' '}
                 <a href="https://buyawarranty.co.uk" className="text-[#eb4b00] hover:underline">
                   https://buyawarranty.co.uk
                 </a>{' '}
@@ -155,7 +155,7 @@ const PrivacyPolicy = () => {
             1. Who We Are
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed">
-            Buy A Warranty is a UK-based provider of vehicle warranty products. We act as the data controller for the personal information you provide to us.
+            Panda Protect is a UK-based provider of vehicle warranty products. We act as the data controller for the personal information you provide to us.
           </p>
         </section>
 

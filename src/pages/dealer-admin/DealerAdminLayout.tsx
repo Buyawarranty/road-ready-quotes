@@ -142,7 +142,7 @@ const DealerAdminLayout: React.FC = () => {
     <div className="min-h-screen flex bg-muted/20 w-full">
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="px-5 py-5 border-b border-border">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Buy A Warranty</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Panda Protect</p>
           <h2 className="text-base font-bold text-foreground">Dealer Admin</h2>
         </div>
         <nav className="flex-1 p-3 space-y-3 overflow-y-auto">

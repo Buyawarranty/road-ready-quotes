@@ -81,7 +81,7 @@ const HyundaiWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Hyundai Extended Warranty - Buy A Warranty"
+        name="Hyundai Extended Warranty - Panda Protect"
         description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
         url="https://buyawarranty.co.uk/car-extended-warranty/hyundai/"
         lastReviewed={new Date().toISOString()}
@@ -93,7 +93,7 @@ const HyundaiWarranty = () => {
         name="Hyundai Extended Warranty"
         description="Comprehensive extended warranty coverage for Hyundai vehicles including engine, gearbox, electrical systems, ECU, hybrid and EV components."
         price="300.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"

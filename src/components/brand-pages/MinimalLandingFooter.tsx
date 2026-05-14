@@ -17,7 +17,7 @@ const MinimalLandingFooter: React.FC = () => {
             </a>
           </div>
           <p className="text-gray-500 text-xs">
-            © {new Date().getFullYear()} Buy A Warranty. All rights reserved.
+            © {new Date().getFullYear()} Panda Protect. All rights reserved.
           </p>
         </div>
       </div>

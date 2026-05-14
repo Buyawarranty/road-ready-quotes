@@ -83,7 +83,7 @@ const DealerSignup = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <SEOHead title="Dealer Signup | BuyAWarranty" description="Create your dealer account in 60 seconds." />
+      <SEOHead title="Dealer Signup | Panda Protect" description="Create your dealer account in 60 seconds." />
       <DealerPublicHeader />
 
       <div className="flex-1 flex items-center justify-center px-4 py-12 bg-[#fff8ef]">
@@ -92,7 +92,7 @@ const DealerSignup = () => {
             <CardContent className="p-8 sm:p-10 text-center">
               <img
                 src={pandaThumbsUp}
-                alt="BuyAWarranty panda mascot"
+                alt="Panda Protect panda mascot"
                 className="w-32 h-auto mx-auto mb-4 drop-shadow-lg"
               />
               <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-bold tracking-wide mb-4">
@@ -145,12 +145,12 @@ const DealerSignup = () => {
           <Card className="w-full max-w-md bg-white border-2 border-gray-200 shadow-xl relative">
             <img
               src={pandaThumbsUp}
-              alt="BuyAWarranty panda mascot"
+              alt="Panda Protect panda mascot"
               className="hidden sm:block w-28 h-auto absolute -top-16 -right-10 drop-shadow-lg pointer-events-none"
             />
             <CardHeader className="text-center">
               <Link to="/dealer-portal/" className="inline-block mb-4">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 mx-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-8 mx-auto" />
               </Link>
               <span className="inline-block text-xs font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded mb-2 tracking-wider">DEALER PORTAL</span>
               <CardTitle className="text-2xl font-black text-gray-900">Create Dealer Account</CardTitle>

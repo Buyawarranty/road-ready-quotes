@@ -217,7 +217,7 @@ const ContactUs = () => {
   return (
     <>
       <SEOHead
-        title="Contact Us - Buy a Warranty"
+        title="Contact Us - Panda Protect"
         description="Get in touch with our customer service team via email, WhatsApp, or phone. We're here to help with all your warranty needs."
         keywords="contact us, customer service, warranty support, help, contact"
       />

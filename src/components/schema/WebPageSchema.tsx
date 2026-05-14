@@ -27,11 +27,11 @@ export const WebPageSchema = ({
       "lastReviewed": lastReviewed,
       "reviewedBy": {
         "@type": "Organization",
-        "name": "Buy A Warranty"
+        "name": "Panda Protect"
       },
       "mainEntity": {
         "@type": "LocalBusiness",
-        "name": "Buy A Warranty",
+        "name": "Panda Protect",
         "description": "Active UK car warranty provider since 2016",
         "foundingDate": "2016",
         "knowsAbout": specialty,
@@ -44,7 +44,7 @@ export const WebPageSchema = ({
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Buy A Warranty",
+        "name": "Panda Protect",
         "legalName": "BUY A WARRANTY LIMITED",
         "url": "https://buyawarranty.co.uk"
       }

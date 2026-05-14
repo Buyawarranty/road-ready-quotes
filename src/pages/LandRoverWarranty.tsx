@@ -106,7 +106,7 @@ const LandRoverWarranty: React.FC = () => {
         description="Comprehensive Land Rover warranty covering mechanical and electrical failures for Defender, Range Rover, Discovery, Evoque and Velar models from 2012 to 2026."
         price="19.00"
         priceCurrency="GBP"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Land Rover Extended Warranty & Vehicle Protection"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="InStock"
@@ -149,7 +149,7 @@ const LandRoverWarranty: React.FC = () => {
                 <img
                   {...getResponsiveImageProps({
                     src: heroImg,
-                    alt: "Range Rover Sport with extended warranty coverage from Buy A Warranty UK",
+                    alt: "Range Rover Sport with extended warranty coverage from Panda Protect UK",
                     width: 600,
                     height: 408,
                     loading: 'eager',

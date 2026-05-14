@@ -20,7 +20,7 @@ interface SEOHeadProps {
 }
 
 export const SEOHead = ({
-  title = "Car Warranty UK | Instant Quotes | Buy A Warranty",
+  title = "Car Warranty UK | Instant Quotes | Panda Protect",
   description = "Get instant car warranty quotes in 60 seconds. UK's trusted warranty provider with 5-star reviews. Flexible plans from £20/month. 14-day money back guarantee. Use code SAVE10NOW for 10% off.",
   keywords = "car warranty UK, vehicle warranty, used car warranty, extended car warranty, warranty prices UK, cheap car warranty, best car warranty, van warranty, EV warranty, motorbike warranty",
   ogTitle,
@@ -28,13 +28,13 @@ export const SEOHead = ({
   ogImage = "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
   ogImageWidth = "1200",
   ogImageHeight = "630",
-  ogImageAlt = "Buy A Warranty - UK Car Warranty Provider",
+  ogImageAlt = "Panda Protect - UK Car Warranty Provider",
   canonical,
   geoRegion = 'GB',
   geoPlacename = 'United Kingdom',
   geoPosition,
   ICBM: icbm,
-  author = 'Buy A Warranty',
+  author = 'Panda Protect',
   publisher = 'BUY A WARRANTY LIMITED'
 }: SEOHeadProps) => {
   const canonicalUrl = canonical || `https://buyawarranty.co.uk${window.location.pathname}`;
@@ -61,7 +61,7 @@ export const SEOHead = ({
       <meta property="og:image:alt" content={ogImageAlt} />
       <meta property="og:type" content="website" />
       <meta property="og:locale" content="en_GB" />
-      <meta property="og:site_name" content="Buy A Warranty" />
+      <meta property="og:site_name" content="Panda Protect" />
       <meta property="og:url" content={canonicalUrl} />
 
       {/* Twitter Card */}

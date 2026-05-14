@@ -195,7 +195,7 @@ const testimonials = [
     name: "Claire H.",
     location: "Leeds",
     model: "Honda Civic",
-    text: "The turbo on my 1.5T Civic failed unexpectedly. Buy A Warranty handled the whole claim without any fuss. Back on the road in three days.",
+    text: "The turbo on my 1.5T Civic failed unexpectedly. Panda Protect handled the whole claim without any fuss. Back on the road in three days.",
     rating: 5
   },
   {
@@ -385,10 +385,10 @@ const HondaWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "Honda Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Honda models including Civic, Jazz, CR-V, HR-V, ZR-V, Accord, Honda e, and e:Ny1. Covers engine, gearbox, transmission, electrical systems, and more. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -406,7 +406,7 @@ const HondaWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/honda-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
@@ -441,7 +441,7 @@ const HondaWarrantyLanding: React.FC = () => {
     "alternateName": "Honda Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£85/month",
@@ -484,7 +484,7 @@ const HondaWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
@@ -496,7 +496,7 @@ const HondaWarrantyLanding: React.FC = () => {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "url": "https://buyawarranty.co.uk",
     "telephone": "+44-800-917-9270",
@@ -529,7 +529,7 @@ const HondaWarrantyLanding: React.FC = () => {
     "name": "Honda Extended Warranty UK - Civic, CR-V, Jazz, HR-V, ZR-V Cover",
     "description": "Protect your Honda with comprehensive extended warranty cover. All models from Civic to CR-V and Honda e. Nationwide UK coverage, approved garages, unlimited claims.",
     "url": "https://buyawarranty.co.uk/warranty-types/honda-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": { "@type": "Thing", "name": "Honda Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Honda" },
@@ -577,8 +577,8 @@ const HondaWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Honda Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="Honda Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         <meta name="twitter:card" content="summary_large_image" />
@@ -587,9 +587,9 @@ const HondaWarrantyLanding: React.FC = () => {
         <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Honda extended warranty services in the UK, covering Civic, CR-V, Jazz, HR-V, ZR-V, Accord, Honda e, and e:Ny1 models. Human-authored and fact-checked." />
-        <meta name="ai-summary" content="Buy A Warranty offers comprehensive Honda extended warranty plans in the UK from £19/month. Coverage includes engine, gearbox, electrical, hybrid and EV components for all Honda models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="ai-summary" content="Panda Protect offers comprehensive Honda extended warranty plans in the UK from £19/month. Coverage includes engine, gearbox, electrical, hybrid and EV components for all Honda models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
@@ -992,7 +992,7 @@ const HondaWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end pt-16">
                 <OptimizedImage 
                   src={hondaCrvWarranty}
-                   alt="Honda CR-V front view - Why Honda CR-V owners choose Buy A Warranty for extended warranty cover"
+                   alt="Honda CR-V front view - Why Honda CR-V owners choose Panda Protect for extended warranty cover"
                   className="w-[400px] h-auto object-contain"
                   width={400}
                   height={300}

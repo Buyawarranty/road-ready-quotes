@@ -1,4 +1,4 @@
-// BuyAWarranty Permissions System - Types
+// Panda Protect Permissions System - Types
 // UK English throughout
 
 export type MaskLevel = 'none' | 'partial' | 'full';

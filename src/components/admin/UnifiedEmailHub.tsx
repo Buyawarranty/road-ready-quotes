@@ -388,7 +388,7 @@ const UnifiedEmailHub = () => {
         vehicleReg: ''
       };
       
-      let processedSubject = selectedTemplate.subject || 'Message from Buy A Warranty';
+      let processedSubject = selectedTemplate.subject || 'Message from Panda Protect';
       for (const [key, value] of Object.entries(sendVars)) {
         processedSubject = processedSubject.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
       }
@@ -1626,7 +1626,7 @@ const UnifiedEmailHub = () => {
                           policyNumber: '', planType: '', vehicleReg: ''
                         };
                         
-                        let bulkSubject = selectedTemplate.subject || 'Message from Buy A Warranty';
+                        let bulkSubject = selectedTemplate.subject || 'Message from Panda Protect';
                         for (const [key, value] of Object.entries(bulkVars)) {
                           bulkSubject = bulkSubject.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
                         }

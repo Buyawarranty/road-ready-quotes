@@ -82,7 +82,7 @@ const Blog = () => {
     "url": "https://buyawarranty.co.uk/thewarrantyhub",
     "publisher": {
       "@type": "Organization",
-      "name": "Buy a Warranty",
+      "name": "Panda Protect",
       "logo": {
         "@type": "ImageObject",
         "url": "https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png"
@@ -169,7 +169,7 @@ const Blog = () => {
               <div className="flex justify-center">
                 <img 
                   src={warrantyCarImage} 
-                  alt="Buy a Warranty UK - Professional car warranty service" 
+                  alt="Panda Protect UK - Professional car warranty service" 
                   className="w-full max-w-lg h-auto object-contain"
                 />
               </div>
@@ -595,7 +595,7 @@ const Blog = () => {
                         Get Protected Today
                       </h2>
                       <p className="text-xl opacity-90 leading-relaxed">
-                        Join thousands of satisfied UK drivers who trust Buy a Warranty for comprehensive vehicle protection.
+                        Join thousands of satisfied UK drivers who trust Panda Protect for comprehensive vehicle protection.
                       </p>
                       <div className="space-y-4 pt-4">
                         <div className="flex items-center gap-3">

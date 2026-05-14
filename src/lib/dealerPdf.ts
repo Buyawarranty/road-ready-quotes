@@ -37,7 +37,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
   doc.text('INVOICE', 14, 18);
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text('Buy A Warranty Limited', 196, 14, { align: 'right' });
+  doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.text('support@buyawarranty.co.uk', 196, 20, { align: 'right' });
 
@@ -103,7 +103,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
   doc.text('WARRANTY SCHEDULE', 14, 18);
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text('Buy A Warranty Limited', 196, 14, { align: 'right' });
+  doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
 
   doc.setTextColor(40, 40, 40);
   doc.setFontSize(11);

@@ -84,7 +84,7 @@ const VolkswagenWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Volkswagen Extended Warranty - Buy A Warranty"
+        name="Volkswagen Extended Warranty - Panda Protect"
         description="Protect your Volkswagen from costly repair bills with our extended warranty. Engine, gearbox, electrics and more covered. Get an instant online quote for any VW."
         url="https://buyawarranty.co.uk/car-extended-warranty/volkswagen/"
         lastReviewed={new Date().toISOString()}
@@ -96,7 +96,7 @@ const VolkswagenWarranty = () => {
         name="Volkswagen Extended Warranty"
         description="Comprehensive extended warranty coverage for Volkswagen vehicles including engine, DSG gearbox, electrical systems, turbocharger, hybrid and EV components."
         price="350.00"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Insurance & Warranty"
         image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
@@ -119,7 +119,7 @@ const VolkswagenWarranty = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect Logo - Affordable Car Warranty UK" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             
@@ -161,7 +161,7 @@ const VolkswagenWarranty = () => {
                     <Link to="/" className="hover:opacity-80 transition-opacity">
                       <img 
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                        alt="Buy a Warranty Logo"
+                        alt="Panda Protect Logo"
                         className="h-8 w-auto"
                       />
                     </Link>

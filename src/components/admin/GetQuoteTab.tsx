@@ -2939,7 +2939,7 @@ Questions? Call 0330 229 5040`;
                         </Button>
                         <Button 
                           onClick={() => {
-                            const message = `Hi ${customerName?.split(' ')[0] || 'there'},\n\nYour warranty quote for ${vehicleData?.make} ${vehicleData?.model} (${vehicleData?.regNumber}) is ready!\n\n💰 £${currentPrice.monthlyPrice}/month via Bumper\n💳 £${currentPrice.payInFullPrice || Math.floor(currentPrice.totalPrice * 0.9)} pay in full (10% off)\n\n🔗 Complete your purchase: ${quoteLink}\n\nBuyawarranty Customer Care\n📞 0330 229 5040`;
+                            const message = `Hi ${customerName?.split(' ')[0] || 'there'},\n\nYour warranty quote for ${vehicleData?.make} ${vehicleData?.model} (${vehicleData?.regNumber}) is ready!\n\n💰 £${currentPrice.monthlyPrice}/month via Bumper\n💳 £${currentPrice.payInFullPrice || Math.floor(currentPrice.totalPrice * 0.9)} pay in full (10% off)\n\n🔗 Complete your purchase: ${quoteLink}\n\nPanda Protect Customer Care\n📞 0330 229 5040`;
                             const encodedMessage = encodeURIComponent(message);
                             window.open(`https://api.whatsapp.com/send?text=${encodedMessage}`, '_blank');
                           }}
@@ -3165,7 +3165,7 @@ Questions? Call 0330 229 5040`;
                     <div className="p-4 bg-white">
                       {/* Email Header Preview */}
                       <div className="text-center mb-6">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" className="h-12 mx-auto mb-4" />
+                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" className="h-12 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-gray-900">
                           Here's your {vehicleData?.make} {vehicleData?.model} warranty quote
                         </h2>

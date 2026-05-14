@@ -64,7 +64,7 @@ const JaguarWarranty = () => {
     },
     {
       question: "Who provides the Jaguar extended warranty?",
-      answer: "You can choose independent warranty specialists like Buy A Warranty, who offer comprehensive protection for mechanical and electrical failures and allow repairs at any VAT-registered garage nationwide. This gives you flexible, reliable cover beyond Jaguar's original manufacturer warranty."
+      answer: "You can choose independent warranty specialists like Panda Protect, who offer comprehensive protection for mechanical and electrical failures and allow repairs at any VAT-registered garage nationwide. This gives you flexible, reliable cover beyond Jaguar's original manufacturer warranty."
     }
   ];
 
@@ -80,7 +80,7 @@ const JaguarWarranty = () => {
       <OrganizationSchema type="InsuranceAgency" />
       
       <WebPageSchema
-        name="Jaguar Extended Warranty - Buy A Warranty"
+        name="Jaguar Extended Warranty - Panda Protect"
         description="Protect your Jaguar with comprehensive extended warranty cover for new and used models. Get instant online quotes, flexible plans and protection from costly repairs."
         url="https://buyawarranty.co.uk/car-extended-warranty/jaguar/"
         lastReviewed={new Date().toISOString()}
@@ -92,7 +92,7 @@ const JaguarWarranty = () => {
         name="Jaguar Extended Warranty"
         description="Comprehensive extended warranty cover for Jaguar vehicles including F-Type, F-Pace, XE, XF, and I-Pace models"
         price="From £30"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Car Warranty"
         image={jaguarHeroImage}
         availability="InStock"

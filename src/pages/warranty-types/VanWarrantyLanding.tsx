@@ -248,7 +248,7 @@ const testimonials = [
     name: "Chris M.",
     location: "Bridgend",
     model: "Ford Transit",
-    boldLine: "Buy A Warranty approved the £2,100 claim same day.",
+    boldLine: "Panda Protect approved the £2,100 claim same day.",
     text: "Turbo went on my Transit at 87,000 miles. Absolutely fantastic service.",
     rating: 5
   },
@@ -445,10 +445,10 @@ const VanWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "UK van warranty — platinum complete cover",
     "description": "Comprehensive extended warranty for UK commercial vans. Covers engine, turbo, gearbox, DPF, EGR, electrics and more. Ford Transit, Mercedes Sprinter, VW Transporter, Vauxhall Vivaro and all major makes. Claim limits from £1,000 to £5,000. Zero excess available. From £19/month.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -466,7 +466,7 @@ const VanWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/vans-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
@@ -520,7 +520,7 @@ const VanWarrantyLanding: React.FC = () => {
     "name": "Van extended warranty service",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£95/month",
@@ -534,7 +534,7 @@ const VanWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended vehicle warranty provider.",
@@ -549,7 +549,7 @@ const VanWarrantyLanding: React.FC = () => {
     "name": "Van warranty UK — instant quote",
     "description": "Protect your commercial van with comprehensive extended warranty cover. All major makes covered. From £19/month.",
     "url": "https://buyawarranty.co.uk/warranty-types/vans-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
     "about": { "@type": "Thing", "name": "Van Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Ford" },
@@ -584,7 +584,7 @@ const VanWarrantyLanding: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Van warranty UK | From £19/mo | Buy A Warranty</title>
+        <title>Van warranty UK | From £19/mo | Panda Protect</title>
         <meta name="description" content="Keep your business moving with comprehensive van warranty cover. Ford Transit, Mercedes Sprinter, VW Transporter & all major makes. Engine, turbo, gearbox, DPF covered. Claim limits up to £5,000. Zero excess available. Same-day cover. Free 30-second quote." />
         <meta name="keywords" content="van warranty UK, commercial van warranty, Ford Transit warranty, Mercedes Sprinter warranty, VW Transporter warranty, Vauxhall Vivaro warranty, van extended warranty, used van warranty, van breakdown cover, courier van warranty, trade van warranty, high mileage van warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/vans-warranty/" />
@@ -603,7 +603,7 @@ const VanWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
         
         <meta name="twitter:card" content="summary_large_image" />
@@ -611,7 +611,7 @@ const VanWarrantyLanding: React.FC = () => {
         <meta name="twitter:description" content="Keep your van on the road with comprehensive warranty cover. All major makes. Same-day cover. Free instant quote." />
         
         <meta name="ai-content-declaration" content="UK commercial van warranty information. Human-authored and fact-checked." />
-        <meta name="author" content="Buy A Warranty" />
+        <meta name="author" content="Panda Protect" />
         <meta name="audience" content="Commercial van owners, couriers, tradespeople, fleet managers" />
         
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
@@ -715,7 +715,7 @@ const VanWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage
                     src={vanHeroImage}
-                    alt="UK van warranty — Miles the Buy A Warranty panda mascot with Ford Transit Custom and Volkswagen Transporter"
+                    alt="UK van warranty — Miles the Panda Protect panda mascot with Ford Transit Custom and Volkswagen Transporter"
                     className="w-full h-auto max-w-md mx-auto object-contain"
                     priority={true}
                     width={600}
@@ -1102,7 +1102,7 @@ const VanWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end">
                 <OptimizedImage 
                   src={fordTransitVan}
-                  alt="UK van warranty — Vauxhall Combo with Buy A Warranty branding"
+                  alt="UK van warranty — Vauxhall Combo with Panda Protect branding"
                   className="w-[400px] h-auto object-contain"
                   width={400}
                   height={300}

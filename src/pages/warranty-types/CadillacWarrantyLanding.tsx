@@ -123,14 +123,14 @@ const CadillacWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { document.getElementById('hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty for all ${brandName} models including Escalade, CT5, XT5, and XT4.`, "brand": { "@type": "Brand", "name": "Buy A Warranty" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty for all ${brandName} models including Escalade, CT5, XT5, and XT4.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })) };
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }] };
 
   return (
     <>
       <Helmet>
-        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content={`Protect your ${brandName} with comprehensive extended warranty cover. Escalade, CT5, XT5, XT4 covered. Engine, transmission, air suspension & more. Nationwide UK coverage. From £${startingPrice}/month.`} />
         <meta name="keywords" content="Cadillac extended warranty, Cadillac warranty UK, Cadillac Escalade warranty, Cadillac CT5 warranty, Cadillac XT5 warranty, used Cadillac warranty" />
         <link rel="canonical" href={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />

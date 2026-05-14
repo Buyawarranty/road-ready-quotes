@@ -138,7 +138,7 @@ const WebsiteFooter = () => {
             <div>
               <h3 className="text-lg font-bold text-gray-900 mb-6">Get fast, affordable cover tailored to your needs</h3>
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                Buyawarranty.co.uk - Get fast, affordable cover tailored to your car, van, SUV or motorbike. 'Buy-a-warranty' vehicle warranty plans are designed to suit your driving needs - with simple online quotes, flexible options, and reliable protection. If your vehicle is under 15 years old and has fewer than 150,000 miles, you're eligible for comprehensive warranty cover with Buyawarranty today.
+                Panda Protect - Get fast, affordable cover tailored to your car, van, SUV or motorbike. 'Panda Protect' vehicle warranty plans are designed to suit your driving needs - with simple online quotes, flexible options, and reliable protection. If your vehicle is under 15 years old and has fewer than 150,000 miles, you're eligible for comprehensive warranty cover with Panda Protect today.
               </p>
             </div>
           </div>
@@ -146,10 +146,10 @@ const WebsiteFooter = () => {
           {/* Copyright & Company Details */}
           <div className="text-center pt-8 border-t border-gray-200 mt-8">
             <p className="text-sm text-gray-600 max-w-4xl mx-auto">
-              © Buy a Warranty. All rights reserved.
+              © Panda Protect. All rights reserved.
             </p>
             <p className="text-sm text-gray-600 mt-2 max-w-4xl mx-auto">
-              Buyawarranty.co.uk is a trading name of Buy A Warranty Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863 Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
+              Panda Protect is a trading name of Panda Protect Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863 Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
             </p>
           </div>
         </div>

@@ -117,7 +117,7 @@ const WarrantyTypes: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Vehicle Warranty Types",
-    "description": "Explore all vehicle warranty options from Buy A Warranty",
+    "description": "Explore all vehicle warranty options from Panda Protect",
     "numberOfItems": dynamicPages.length + defaultCategories.length,
     "itemListElement": [
       ...defaultCategories.map((cat, index) => ({
@@ -138,7 +138,7 @@ const WarrantyTypes: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Warranty Types | Vehicle Warranty Options | Buy A Warranty</title>
+        <title>Warranty Types | Vehicle Warranty Options | Panda Protect</title>
         <meta name="description" content="Discover all our warranty types in one place. From BMW to vans, find tailored cover for your vehicle. Explore car, van, electric and brand-specific warranties." />
         <meta name="keywords" content="warranty types, car warranty, van warranty, BMW warranty, Audi warranty, Mercedes warranty, vehicle warranty, extended warranty" />
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types" />
@@ -330,7 +330,7 @@ const WarrantyTypes: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 id="why-choose" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Why Choose Buy A Warranty?
+                Why Choose Panda Protect?
               </h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Trusted by thousands of UK drivers with comprehensive protection and fast claims

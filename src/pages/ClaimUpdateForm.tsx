@@ -41,7 +41,7 @@ const ClaimUpdateForm = () => {
       if (fetchError || !data) {
         setError('This link is invalid or has expired.');
       } else if (new Date(data.expires_at) < new Date()) {
-        setError('This link has expired. Please contact Buy a Warranty for a new link.');
+        setError('This link has expired. Please contact Panda Protect for a new link.');
       } else if (data.is_responded) {
         setError('An update has already been submitted for this claim. Thank you!');
       } else {
@@ -131,7 +131,7 @@ const ClaimUpdateForm = () => {
           <CardContent className="pt-10 pb-10">
             <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-slate-800 mb-2">Update Submitted</h2>
-            <p className="text-slate-600">Thank you for your update. The Buy a Warranty team has been notified and will review your submission.</p>
+            <p className="text-slate-600">Thank you for your update. The Panda Protect team has been notified and will review your submission.</p>
           </CardContent>
         </Card>
       </div>
@@ -161,7 +161,7 @@ const ClaimUpdateForm = () => {
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Shield className="h-6 w-6 text-[#1e3a5f]" />
-            <span className="text-xl font-bold text-[#1e3a5f]">Buy a Warranty</span>
+            <span className="text-xl font-bold text-[#1e3a5f]">Panda Protect</span>
           </div>
           <p className="text-slate-500 text-sm">Claims Update Portal</p>
         </div>
@@ -281,7 +281,7 @@ const ClaimUpdateForm = () => {
         </Card>
 
         <p className="text-center text-xs text-slate-400 mt-6">
-          © {new Date().getFullYear()} Buy a Warranty. All rights reserved.
+          © {new Date().getFullYear()} Panda Protect. All rights reserved.
         </p>
       </div>
     </div>

@@ -161,7 +161,7 @@ const StripePayment: React.FC = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Secure Payment | BuyAWarranty</title>
+        <title>Secure Payment | Panda Protect</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 

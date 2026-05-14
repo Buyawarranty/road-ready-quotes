@@ -13,9 +13,9 @@ const CookiePolicy = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <SEOHead 
-        title="Cookie Policy | Buy A Warranty UK"
-        description="Learn about how Buy A Warranty uses cookies and similar technologies on our website. Understand your privacy and cookie preferences."
-        keywords="cookie policy, privacy, Buy A Warranty, cookies, website tracking, data protection"
+        title="Cookie Policy | Panda Protect UK"
+        description="Learn about how Panda Protect uses cookies and similar technologies on our website. Understand your privacy and cookie preferences."
+        keywords="cookie policy, privacy, Panda Protect, cookies, website tracking, data protection"
         canonical="https://buyawarranty.co.uk/cookies"
       />
 
@@ -64,7 +64,7 @@ const CookiePolicy = () => {
             />
             <div>
               <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                This Cookie Policy explains how Buy A Warranty ("we", "us", or "our") uses cookies and similar technologies on our website{' '}
+                This Cookie Policy explains how Panda Protect ("we", "us", or "our") uses cookies and similar technologies on our website{' '}
                 <a href="https://buyawarranty.co.uk" className="text-[#eb4b00] hover:underline">
                   https://buyawarranty.co.uk
                 </a>. By continuing to use our website, you consent to the use of cookies as described in this policy.

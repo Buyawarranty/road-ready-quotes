@@ -14,9 +14,9 @@ const Complaints = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <SEOHead 
-        title="Complaints Procedure | Buy A Warranty UK"
+        title="Complaints Procedure | Panda Protect UK"
         description="Learn about our complaints procedure and how we resolve customer concerns quickly and fairly. We are committed to providing excellent customer service."
-        keywords="complaints procedure, customer service, Buy A Warranty, complaint resolution, fair treatment"
+        keywords="complaints procedure, customer service, Panda Protect, complaint resolution, fair treatment"
         canonical="https://buyawarranty.co.uk/complaints"
       />
 
@@ -46,7 +46,7 @@ const Complaints = () => {
               Complaints Procedure
             </h1>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              At Buy A Warranty, we are committed to providing excellent customer service. If you are dissatisfied with any aspect of our service or products, we want to hear from you so we can resolve the issue promptly and fairly.
+              At Panda Protect, we are committed to providing excellent customer service. If you are dissatisfied with any aspect of our service or products, we want to hear from you so we can resolve the issue promptly and fairly.
             </p>
           </div>
         </div>

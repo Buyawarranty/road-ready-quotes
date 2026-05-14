@@ -85,7 +85,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
   const [robotsDirective, setRobotsDirective] = useState('index, follow');
   
   // Local Business Schema
-  const [localBusinessName, setLocalBusinessName] = useState('Buy A Warranty');
+  const [localBusinessName, setLocalBusinessName] = useState('Panda Protect');
   const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295040');
   const [localBusinessEmail, setLocalBusinessEmail] = useState('support@buyawarranty.co.uk');
 
@@ -159,7 +159,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
       setIncludeBreadcrumbSchema(data.include_breadcrumb_schema);
       setIsIndexable(data.is_indexable);
       setRobotsDirective(data.robots_directive || 'index, follow');
-      setLocalBusinessName(data.local_business_name || 'Buy A Warranty');
+      setLocalBusinessName(data.local_business_name || 'Panda Protect');
       setLocalBusinessPhone(data.local_business_phone || '+443302295040');
       setLocalBusinessEmail(data.local_business_email || 'support@buyawarranty.co.uk');
       

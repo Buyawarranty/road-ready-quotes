@@ -231,7 +231,7 @@ export const StripePaymentForm: React.FC<StripePaymentFormProps> = ({
             onChange={handlePaymentElementChange}
             options={{
               layout: 'tabs',
-              business: { name: 'BuyAWarranty' },
+              business: { name: 'Panda Protect' },
               // Primary payment methods: Card first, then PayPal
               // Apple/Google Pay handled by ExpressCheckoutElement above
               // Revolut Pay explicitly hidden via CSS for cleaner UX

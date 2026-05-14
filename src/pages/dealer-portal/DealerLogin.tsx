@@ -99,11 +99,11 @@ const DealerLogin = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <DealerPublicHeader />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-      <SEOHead title="Dealer Login | BuyAWarranty" description="Sign in to your dealer portal." />
+      <SEOHead title="Dealer Login | Panda Protect" description="Sign in to your dealer portal." />
       <Card className="w-full max-w-md bg-white border-gray-200">
         <CardHeader className="text-center">
           <Link to="/dealer-portal/" className="inline-block mb-4">
-            <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 mx-auto " />
+            <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-8 mx-auto " />
           </Link>
           <span className="inline-block text-xs font-semibold text-orange-500 bg-orange-100 px-2 py-0.5 rounded mb-2">DEALER PORTAL</span>
           <CardTitle className="text-2xl font-bold text-gray-900">Dealer Login</CardTitle>

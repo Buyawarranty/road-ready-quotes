@@ -92,7 +92,7 @@ const faqs = [
 
 const testimonials = [
   { name: "Claire P.", location: "Brighton", model: "Smart ForTwo", text: "My ForTwo needed a new gearbox actuator. Would have cost over £1,200 but my warranty covered everything. Brilliant service.", rating: 5 },
-  { name: "Tom H.", location: "London", model: "Smart EQ ForTwo", text: "Finding warranty cover for my electric Smart was hard until I found Buy A Warranty. They cover all the EV components and the price is great.", rating: 5 },
+  { name: "Tom H.", location: "London", model: "Smart EQ ForTwo", text: "Finding warranty cover for my electric Smart was hard until I found Panda Protect. They cover all the EV components and the price is great.", rating: 5 },
   { name: "Rachel S.", location: "Manchester", model: "Smart ForFour", text: "ECU issue sorted within days, £900 claim paid without hassle. The peace of mind is worth every penny.", rating: 5 },
   { name: "Mark D.", location: "Bristol", model: "Smart #1", text: "Great to find a warranty provider that covers the new Smart models. Professional service from start to finish.", rating: 5 }
 ];
@@ -179,14 +179,14 @@ const SmartWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { const hero = document.getElementById('hero-section'); if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty coverage for all ${brandName} models including ForTwo, ForFour, EQ ForTwo, EQ ForFour, #1, and #3. Covers engine, gearbox, transmission, electrical systems, and more. Nationwide UK coverage.`, "brand": { "@type": "Brand", "name": "Buy A Warranty" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty coverage for all ${brandName} models including ForTwo, ForFour, EQ ForTwo, EQ ForFour, #1, and #3. Covers engine, gearbox, transmission, electrical systems, and more. Nationwide UK coverage.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs.map(faq => ({ "@type": "Question", "name": faq.question, "acceptedAnswer": { "@type": "Answer", "text": faq.answer } })) };
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }] };
 
   return (
     <>
       <Helmet>
-        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content={`Protect your ${brandName} with comprehensive extended warranty cover. All models covered including ForTwo, ForFour, and electric EQ models. Engine, gearbox, electrics & more. Nationwide UK coverage. Prices from £${startingPrice}/month.`} />
         <meta name="keywords" content={`${brandName} extended warranty, ${brandName} used car warranty, ${brandName} warranty UK, ${brandName} warranty cost, ${brandName} ForTwo warranty, ${brandName} EQ warranty, used ${brandName} warranty`} />
         <link rel="canonical" href={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />

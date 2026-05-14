@@ -187,9 +187,9 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
           <div ref={printRef} className="page">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '3px solid #eb4b00', marginBottom: '20px' }}>
-              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" style={{ height: '42px' }} />
+              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '42px' }} />
               <div style={{ textAlign: 'right', fontSize: '10px', color: '#666', lineHeight: '1.6' }}>
-                <div style={{ fontWeight: '600' }}>Buy A Warranty Ltd</div>
+                <div style={{ fontWeight: '600' }}>Panda Protect Ltd</div>
                 <div>Warranty House, 62 Berkhamsted Ave</div>
                 <div>Wembley, HA9 6DT</div>
                 <div>Company No: 10314863</div>
@@ -326,7 +326,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
 
             {/* Legal */}
             <div style={{ marginTop: '20px', paddingTop: '10px', borderTop: '1px solid #e2e8f0', fontSize: '9px', color: '#94a3b8', textAlign: 'center' }}>
-              Buy A Warranty Ltd is registered in England & Wales. Company No: 10314863. Registered Address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.
+              Panda Protect Ltd is registered in England & Wales. Company No: 10314863. Registered Address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.
             </div>
           </div>
         </div>

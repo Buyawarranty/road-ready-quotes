@@ -17,7 +17,7 @@ const getStripe = () => {
   return stripePromise;
 };
 
-// Stripe Elements appearance configuration - BuyAWarranty brand themed
+// Stripe Elements appearance configuration - Panda Protect brand themed
 const appearance = {
   theme: 'stripe' as const,
   variables: {

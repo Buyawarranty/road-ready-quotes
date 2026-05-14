@@ -235,7 +235,7 @@ const PaymentFallback = () => {
           <div className="mb-6">
             <img 
               src="/lovable-uploads/bb0fa2d5-1f65-4892-bf89-bacc1ee33384.png" 
-              alt="Buy a Warranty Logo" 
+              alt="Panda Protect Logo" 
               className="h-12 mx-auto mb-6"
             />
           </div>

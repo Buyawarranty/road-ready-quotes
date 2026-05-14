@@ -17,7 +17,7 @@ export const ProductSchema = ({
   description,
   price,
   priceCurrency = 'GBP',
-  brand = 'Buy A Warranty',
+  brand = 'Panda Protect',
   category = 'Vehicle Warranty',
   image = 'https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png',
   availability = 'InStock',
@@ -51,7 +51,7 @@ export const ProductSchema = ({
           "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
           "seller": {
             "@type": "Organization",
-            "name": "Buy A Warranty"
+            "name": "Panda Protect"
           }
         }
       }),

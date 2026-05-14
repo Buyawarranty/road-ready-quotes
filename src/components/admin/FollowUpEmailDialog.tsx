@@ -57,7 +57,7 @@ If you'd like to complete your purchase or have any questions, just reply to thi
 We're here to help!
 
 Best regards,
-Buy A Warranty Team
+Panda Protect Team
 www.buyawarranty.co.uk`;
 };
 
@@ -75,7 +75,7 @@ export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({
   const [open, setOpen] = useState(false);
   const [toEmail, setToEmail] = useState(customerEmail);
   const [subject, setSubject] = useState(
-    `Still interested in protecting your ${vehicleMake || 'vehicle'}? – Buy A Warranty`
+    `Still interested in protecting your ${vehicleMake || 'vehicle'}? – Panda Protect`
   );
   const [content, setContent] = useState(
     generateEmailTemplate(customerName, vehicleReg, vehicleMake, vehicleModel, planName, totalPrice)

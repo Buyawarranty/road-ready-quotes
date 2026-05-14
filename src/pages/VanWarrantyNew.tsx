@@ -95,7 +95,7 @@ const VanWarrantyNew = () => {
         description="Comprehensive extended warranty for new and used vans up to 150,000 miles. Covers mechanical and electrical breakdowns with flexible UK-wide protection."
         price="69"
         priceCurrency="GBP"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Van Warranty & Commercial Vehicle Insurance"
         image="https://buyawarranty.co.uk/van-warranty-product.jpg"
         availability="InStock"

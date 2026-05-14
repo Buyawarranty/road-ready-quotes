@@ -18,7 +18,7 @@ const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead 
-        title="Page Not Found | BuyAWarranty"
+        title="Page Not Found | Panda Protect"
         description="The page you're looking for doesn't exist. Return to our car warranty homepage to find the perfect coverage for your vehicle."
         keywords="404, page not found, car warranty, vehicle warranty"
       />

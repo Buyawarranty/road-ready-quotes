@@ -221,7 +221,7 @@ const SECTIONS: ScriptSection[] = [
 
 const generatePrintHtml = () => `
 <!DOCTYPE html>
-<html><head><title>Buy a Warranty - Sales Cheat Sheet</title>
+<html><head><title>Panda Protect - Sales Cheat Sheet</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; color: #1a1a1a; font-size: 13px; line-height: 1.6; }
@@ -285,7 +285,7 @@ export const SalesScriptCard: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'BuyAWarranty_Sales_Cheat_Sheet.txt';
+    a.download = 'Panda Protect_Sales_Cheat_Sheet.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

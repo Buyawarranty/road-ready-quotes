@@ -165,7 +165,7 @@ export const CommissionTimesheetForm: React.FC<Props> = ({ agent, customerDeals 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="company">Company / Individual Name</Label>
-            <Input id="company" placeholder="e.g. Buy A Warranty Ltd" value={companyName} onChange={e => setCompanyName(e.target.value)} />
+            <Input id="company" placeholder="e.g. Panda Protect Ltd" value={companyName} onChange={e => setCompanyName(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="dealRate">Commission Rate Per Deal (£)</Label>

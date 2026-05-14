@@ -60,7 +60,7 @@ const MotorbikeWarranty = () => {
             {/* Logo */}
             <div className="flex items-center">
               <Link to="/">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             
@@ -110,7 +110,7 @@ const MotorbikeWarranty = () => {
                     <Link to="/" className="hover:opacity-80 transition-opacity">
                       <img 
                         src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-                        alt="Buy a Warranty" 
+                        alt="Panda Protect" 
                         className="h-8 w-auto"
                       />
                     </Link>
@@ -247,7 +247,7 @@ const MotorbikeWarranty = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Motorcycle Owners Choose Buy A Warranty
+                Why Motorcycle Owners Choose Panda Protect
               </h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
                 The best motorbike warranty UK riders trust for comprehensive protection
@@ -636,7 +636,7 @@ const MotorbikeWarranty = () => {
           <div className="container mx-auto px-4">
             <img 
               src={companyRegistration} 
-              alt="Buy A Warranty Company Registration" 
+              alt="Panda Protect Company Registration" 
               className="mx-auto h-12 opacity-60"
             />
           </div>

@@ -50,7 +50,7 @@ const MobileNavigation: React.FC = () => {
               >
                   <OptimizedImage 
                     src={buyawarrantyLogo} 
-                    alt="Buy a Warranty Logo"
+                    alt="Panda Protect Logo"
                     className="h-8 w-auto object-contain"
                     priority={false}
                     width={240}

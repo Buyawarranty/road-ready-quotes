@@ -37,7 +37,7 @@ export const ReviewSchema = ({ reviews }: ReviewSchemaProps) => {
     const schema = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "review": defaultReviews.map(review => ({
         "@type": "Review",
         "author": {

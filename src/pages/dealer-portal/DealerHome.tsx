@@ -38,7 +38,7 @@ const DealerHome = () => {
     serviceType: 'Dealer Extended Warranty Programme',
     provider: {
       '@type': 'Organization',
-      name: 'Buy A Warranty',
+      name: 'Panda Protect',
       url: 'https://buyawarranty.co.uk',
     },
     areaServed: 'GB',
@@ -116,7 +116,7 @@ const DealerHome = () => {
             <div className="relative hidden lg:flex items-center justify-center">
               <OptimizedImage
                 src={pandaMechanicImage}
-                alt="Dealer extended warranty programme – Buy A Warranty trusted UK partner"
+                alt="Dealer extended warranty programme – Panda Protect trusted UK partner"
                 className="w-full max-w-[420px] h-auto object-contain"
                 priority
                 width={420}

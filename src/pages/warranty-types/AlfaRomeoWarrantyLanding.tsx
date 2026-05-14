@@ -49,7 +49,7 @@ const testimonials = [
   { name: "Marco P.", location: "London", model: "Alfa Romeo Giulia", text: "Turbo replacement covered in full — would have been £2,800. Excellent service and fast approval.", rating: 5 },
   { name: "Hannah K.", location: "Manchester", model: "Alfa Romeo Stelvio", text: "Gearbox issue sorted within days. £2,200 claim paid with no hassle whatsoever.", rating: 5 },
   { name: "David R.", location: "Edinburgh", model: "Alfa Romeo Giulietta", text: "ECU failure covered completely. Without the warranty I'd have been looking at £1,500.", rating: 5 },
-  { name: "Sarah T.", location: "Bristol", model: "Alfa Romeo 4C", text: "Finding specialist cover for my 4C was difficult until Buy A Warranty. Great price and comprehensive cover.", rating: 5 }
+  { name: "Sarah T.", location: "Bristol", model: "Alfa Romeo 4C", text: "Finding specialist cover for my 4C was difficult until Panda Protect. Great price and comprehensive cover.", rating: 5 }
 ];
 
 const repairs = [
@@ -118,14 +118,14 @@ const AlfaRomeoWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { document.getElementById('hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive warranty for all ${brandName} models including Giulia, Stelvio, Giulietta, Tonale, and 4C.`, "brand": { "@type": "Brand", "name": "Buy A Warranty" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive warranty for all ${brandName} models including Giulia, Stelvio, Giulietta, Tonale, and 4C.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })) };
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }] };
 
   return (
     <>
       <Helmet>
-        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Buy A Warranty</title>
+        <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content={`Protect your ${brandName} with comprehensive extended warranty. Giulia, Stelvio, Giulietta, Tonale, 4C covered. Engine, gearbox, electrics & more. From £${startingPrice}/month.`} />
         <meta name="keywords" content="Alfa Romeo warranty, Alfa Romeo extended warranty UK, Alfa Romeo Giulia warranty, Alfa Romeo Stelvio warranty, Alfa Romeo Giulietta warranty, used Alfa Romeo warranty" />
         <link rel="canonical" href={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />

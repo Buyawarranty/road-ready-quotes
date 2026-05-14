@@ -53,10 +53,10 @@ const teslaFAQs = [
 ];
 
 const testimonials = [
-  { name: "Alex R.", location: "London", model: "Tesla Model 3", text: "My Model 3's drive unit developed a whine at 68,000 miles. Would have cost over £4,500 at Tesla but Buy A Warranty covered everything. Sorted within a week. Brilliant.", rating: 5 },
+  { name: "Alex R.", location: "London", model: "Tesla Model 3", text: "My Model 3's drive unit developed a whine at 68,000 miles. Would have cost over £4,500 at Tesla but Panda Protect covered everything. Sorted within a week. Brilliant.", rating: 5 },
   { name: "Sophie L.", location: "Bristol", model: "Tesla Model Y", text: "The air suspension compressor on my Model Y failed. The claims team were incredibly helpful and had it repaired within four days. £2,200 claim paid without any fuss.", rating: 5 },
   { name: "Daniel W.", location: "Manchester", model: "Tesla Model S", text: "Finding proper warranty cover for an older Model S was difficult until I found these guys. They understand EV components and the price is very fair for the cover you get.", rating: 5 },
-  { name: "Karen B.", location: "Edinburgh", model: "Tesla Model 3", text: "On-board charger failed on my Model 3 — couldn't charge at home. Buy A Warranty authorised the repair same day and paid the garage directly. Absolutely recommend.", rating: 5 }
+  { name: "Karen B.", location: "Edinburgh", model: "Tesla Model 3", text: "On-board charger failed on my Model 3 — couldn't charge at home. Panda Protect authorised the repair same day and paid the garage directly. Absolutely recommend.", rating: 5 }
 ];
 
 const TeslaWarrantyLanding: React.FC = () => {
@@ -125,11 +125,11 @@ const TeslaWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { document.getElementById('hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": "Tesla Extended Warranty UK", "description": "Comprehensive extended warranty coverage for all Tesla models sold in the UK including Model 3, Model Y, Model S, and Model X. Covers electric drive unit, power electronics, on-board charger, suspension, and electrical systems. Nationwide UK coverage.", "brand": { "@type": "Brand", "name": "Buy A Warranty" }, "manufacturer": { "@type": "Organization", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/tesla-warranty/", "seller": { "@type": "Organization", "name": "Buy A Warranty" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" }, "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i+1)*7*24*60*60*1000).toISOString().split('T')[0] })), "category": "Vehicle Extended Warranty", "audience": { "@type": "Audience", "audienceType": "Tesla vehicle owners in the United Kingdom" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": "Tesla Extended Warranty UK", "description": "Comprehensive extended warranty coverage for all Tesla models sold in the UK including Model 3, Model Y, Model S, and Model X. Covers electric drive unit, power electronics, on-board charger, suspension, and electrical systems. Nationwide UK coverage.", "brand": { "@type": "Brand", "name": "Panda Protect" }, "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/tesla-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" }, "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i+1)*7*24*60*60*1000).toISOString().split('T')[0] })), "category": "Vehicle Extended Warranty", "audience": { "@type": "Audience", "audienceType": "Tesla vehicle owners in the United Kingdom" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": teslaFAQs.map(faq => ({ "@type": "Question", "name": faq.question, "acceptedAnswer": { "@type": "Answer", "text": faq.answer } })) };
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [ { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": "Tesla Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/tesla-warranty/" } ] };
   const howToSchema = { "@context": "https://schema.org", "@type": "HowTo", "name": "How to get a Tesla extended warranty quote", "description": "Get an instant Tesla extended warranty quote in 60 seconds", "totalTime": "PT1M", "step": [ { "@type": "HowToStep", "position": 1, "name": "Enter registration", "text": "Enter your Tesla registration number" }, { "@type": "HowToStep", "position": 2, "name": "Select mileage", "text": "Choose your mileage range" }, { "@type": "HowToStep", "position": 3, "name": "Get instant quote", "text": "Receive your personalised Tesla warranty quote" } ] };
-  const localBusinessSchema = { "@context": "https://schema.org", "@type": "LocalBusiness", "name": "Buy A Warranty", "url": "https://buyawarranty.co.uk", "telephone": "+44-800-917-9270", "email": "support@buyawarranty.co.uk", "priceRange": "£19-£85/month", "address": { "@type": "PostalAddress", "streetAddress": "124 City Road", "addressLocality": "London", "postalCode": "EC1V 2NX", "addressCountry": "GB" }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
+  const localBusinessSchema = { "@context": "https://schema.org", "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "telephone": "+44-800-917-9270", "email": "support@buyawarranty.co.uk", "priceRange": "£19-£85/month", "address": { "@type": "PostalAddress", "streetAddress": "124 City Road", "addressLocality": "London", "postalCode": "EC1V 2NX", "addressCountry": "GB" }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
 
   return (
     <>
@@ -140,17 +140,17 @@ const TeslaWarrantyLanding: React.FC = () => {
         <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/tesla-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="geo.region" content="GB" /><meta name="geo.placename" content="United Kingdom" /><meta httpEquiv="content-language" content="en-GB" />
-        <meta property="og:title" content="Tesla warranty UK — Model 3, Y, S, X covered from £19/mo | Buy A Warranty" />
+        <meta property="og:title" content="Tesla warranty UK — Model 3, Y, S, X covered from £19/mo | Panda Protect" />
         <meta property="og:description" content="Comprehensive Tesla warranty for Model 3, Model Y, Model S and Model X. Drive unit, electronics, suspension covered. Nationwide UK coverage from £19/month." />
         <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/tesla-warranty/" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
-        <meta property="og:site_name" content="Buy A Warranty" /><meta property="og:locale" content="en_GB" />
+        <meta property="og:site_name" content="Panda Protect" /><meta property="og:locale" content="en_GB" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Tesla warranty UK — Model 3, Y, S, X covered from £19/mo" />
         <meta name="twitter:description" content="Protect your Tesla with comprehensive extended warranty. All EV components covered. Nationwide UK coverage." />
         <meta name="ai-content-declaration" content="This content is human-authored, fact-checked, and regularly updated" />
-        <meta name="ai-summary" content="Buy A Warranty offers Tesla extended warranty plans in the UK from £19/month covering Model 3, Model Y, Model S, and Model X. Coverage includes drive unit, power electronics, on-board charger, suspension, and electrical systems. Use any VAT-registered garage nationwide." />
+        <meta name="ai-summary" content="Panda Protect offers Tesla extended warranty plans in the UK from £19/month covering Model 3, Model Y, Model S, and Model X. Coverage includes drive unit, power electronics, on-board charger, suspension, and electrical systems. Use any VAT-registered garage nationwide." />
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
@@ -276,7 +276,7 @@ const TeslaWarrantyLanding: React.FC = () => {
                   <div key={i} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100"><div className="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center flex-shrink-0"><b.icon className="w-5 h-5 md:w-6 md:h-6 text-brand-orange" /></div><div><h3 className="text-base md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1">{b.title}</h3><p className="text-gray-600 text-xs md:text-sm">{b.desc}</p></div></div>
                 ))}
               </div>
-              <div className="hidden lg:flex justify-center items-end pt-16"><OptimizedImage src={teslaModelXTestimonials} alt="Tesla Model X front view - Why Tesla owners choose Buy A Warranty" className="max-w-[220px] xl:max-w-[260px] h-auto object-contain" width={1024} height={768} /></div>
+              <div className="hidden lg:flex justify-center items-end pt-16"><OptimizedImage src={teslaModelXTestimonials} alt="Tesla Model X front view - Why Tesla owners choose Panda Protect" className="max-w-[220px] xl:max-w-[260px] h-auto object-contain" width={1024} height={768} /></div>
             </div>
           </div>
         </section>
@@ -385,7 +385,7 @@ const TeslaWarrantyLanding: React.FC = () => {
                   </div>
                 ))}
               </div>
-              <div className="hidden lg:flex justify-center"><OptimizedImage src={teslaModelXTestimonials} alt="Tesla Model X front view - Tesla owners trust Buy A Warranty" className="max-w-[200px] xl:max-w-[240px] h-auto object-contain" width={240} height={180} /></div>
+              <div className="hidden lg:flex justify-center"><OptimizedImage src={teslaModelXTestimonials} alt="Tesla Model X front view - Tesla owners trust Panda Protect" className="max-w-[200px] xl:max-w-[240px] h-auto object-contain" width={240} height={180} /></div>
             </div>
           </div>
         </section>

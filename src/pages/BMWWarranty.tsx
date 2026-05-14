@@ -96,7 +96,7 @@ const BMWWarranty: React.FC = () => {
         name="BMW Extended Warranty"
         description="Comprehensive warranty coverage for BMW vehicles"
         price="35"
-        brand="Buy A Warranty"
+        brand="Panda Protect"
         category="Vehicle Warranty"
         image="https://buyawarranty.co.uk/logo.png"
         availability="https://schema.org/InStock"

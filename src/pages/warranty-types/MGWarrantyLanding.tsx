@@ -194,7 +194,7 @@ const testimonials = [
     name: "Rachel K.",
     location: "Bristol",
     model: "MG HS",
-    text: "The automatic gearbox on my HS developed a fault outside the manufacturer warranty. Buy A Warranty handled the whole claim without any hassle. Really impressed.",
+    text: "The automatic gearbox on my HS developed a fault outside the manufacturer warranty. Panda Protect handled the whole claim without any hassle. Really impressed.",
     rating: 5
   },
   {
@@ -383,10 +383,10 @@ const MGWarrantyLanding: React.FC = () => {
     "@type": "Product",
     "name": "MG Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all MG models including ZS, HS, MG 4, MG 5 EV, ZS EV, MG3, and Cyberster. Covers engine, turbo, gearbox, electrical systems, EV drivetrain components. Nationwide UK coverage with any VAT-registered garage.",
-    "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+    "brand": { "@type": "Brand", "name": "Panda Protect" },
     "manufacturer": {
       "@type": "Organization",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
@@ -404,7 +404,7 @@ const MGWarrantyLanding: React.FC = () => {
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "url": "https://buyawarranty.co.uk/warranty-types/mg-warranty/",
-      "seller": { "@type": "Organization", "name": "Buy A Warranty" },
+      "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
         "@type": "UnitPriceSpecification",
@@ -439,7 +439,7 @@ const MGWarrantyLanding: React.FC = () => {
     "alternateName": "MG Used Car Warranty",
     "provider": {
       "@type": "LocalBusiness",
-      "name": "Buy A Warranty",
+      "name": "Panda Protect",
       "url": "https://buyawarranty.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£24-£85/month",
@@ -482,7 +482,7 @@ const MGWarrantyLanding: React.FC = () => {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
@@ -499,7 +499,7 @@ const MGWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": "https://buyawarranty.co.uk/#localbusiness",
-    "name": "Buy A Warranty",
+    "name": "Panda Protect",
     "description": "UK's leading MG extended warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
     "url": "https://buyawarranty.co.uk",
     "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
@@ -576,8 +576,8 @@ const MGWarrantyLanding: React.FC = () => {
         <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="MG Extended Warranty UK - Buy A Warranty" />
-        <meta property="og:site_name" content="Buy A Warranty" />
+        <meta property="og:image:alt" content="MG Extended Warranty UK - Panda Protect" />
+        <meta property="og:site_name" content="Panda Protect" />
         <meta property="og:locale" content="en_GB" />
 
         {/* Twitter Card */}
@@ -588,9 +588,9 @@ const MGWarrantyLanding: React.FC = () => {
 
         {/* AI & Bot directives */}
         <meta name="ai-content-declaration" content="This page provides genuine MG extended warranty information for UK vehicle owners" />
-        <meta name="ai-summary" content="Buy A Warranty offers MG extended warranties from £24/month covering 8,000+ components for all models 2012-2026 including ZS, HS, MG 4, MG 5 EV, ZS EV, MG3, and Cyberster. UK-based claims team, any VAT-registered garage, 24/7 roadside assistance. Full EV and PHEV component coverage." />
-        <meta name="author" content="Buy A Warranty" />
-        <meta name="publisher" content="Buy A Warranty" />
+        <meta name="ai-summary" content="Panda Protect offers MG extended warranties from £24/month covering 8,000+ components for all models 2012-2026 including ZS, HS, MG 4, MG 5 EV, ZS EV, MG3, and Cyberster. UK-based claims team, any VAT-registered garage, 24/7 roadside assistance. Full EV and PHEV component coverage." />
+        <meta name="author" content="Panda Protect" />
+        <meta name="publisher" content="Panda Protect" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
         <meta name="bingbot" content="index, follow" />

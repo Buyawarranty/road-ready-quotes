@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 // Logo path as string URL (not ES6 import from public folder)
-const buyAWarrantyLogo = '/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png';
+const pandaProtectLogo = '/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png';
 
 interface CarJourneyProgressProps {
   currentStep: number;

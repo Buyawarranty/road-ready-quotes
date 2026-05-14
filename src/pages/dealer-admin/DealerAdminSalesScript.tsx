@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Phone, MessageSquare, Lightbulb, ThumbsUp, Copy } from "lucide-react";
 import { toast } from "sonner";
 
-const opener = `Hi, this is [Your Name] calling from Buy A Warranty regarding the dealer warranty enquiry you submitted. Have I caught you at a good time?`;
+const opener = `Hi, this is [Your Name] calling from Panda Protect regarding the dealer warranty enquiry you submitted. Have I caught you at a good time?`;
 
 const discoveryQuestions = [
   "What type of vehicles do you typically sell?",

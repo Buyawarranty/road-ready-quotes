@@ -43,7 +43,7 @@ const Footer = () => {
               <a href="/" className="hover:opacity-80 transition-opacity">
                 <img 
                   src="/lovable-uploads/ce43a78c-28ec-400b-8a16-1e98b15e0185.png" 
-                  alt="Buy a Warranty" 
+                  alt="Panda Protect" 
                   className="h-16 w-auto"
                 />
               </a>
@@ -108,7 +108,7 @@ const Footer = () => {
 
           {/* Bottom section */}
           <div className="mt-8 pt-4 border-t border-white/10 text-center text-sm text-gray-300">
-            <p>&copy; {new Date().getFullYear()} Buy a Warranty. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Panda Protect. All rights reserved.</p>
           </div>
         </div>
       </footer>
