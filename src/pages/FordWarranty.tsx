@@ -16,6 +16,7 @@ import { trackButtonClick } from '@/utils/analytics';
 import fordFocusImage from '@/assets/ford-focus-transparent.png';
 import fordPumaImage from '@/assets/ford-puma-transparent.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const FordWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -70,6 +71,7 @@ const FordWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Ford Car Extended Warranty | New, Used & High-Mileage Cover"
         description="Used Ford extended warranty with nationwide approved repairs. Covers major components and diagnostics. Get a quick online quote and drive with confidence."

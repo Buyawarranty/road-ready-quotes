@@ -20,6 +20,7 @@ import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import mercedesHeroImage from '@/assets/mercedes-hero.png';
 import mercedesVanImage from '@/assets/mercedes-van.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const MercedesWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -102,6 +103,7 @@ const MercedesWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Mercedes-Benz Extended Warranty UK | Used Car Cover from £24/month"
         description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 150,000 miles. 4.7★ Trustpilot. Fast claims. Use code SAVE10NOW for 10% off."

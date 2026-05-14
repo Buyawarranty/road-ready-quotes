@@ -17,6 +17,7 @@ import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import audiHeroImage from '@/assets/audi-hero.png';
 import audiCarImage from '@/assets/audi-car.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const AudiWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -66,6 +67,7 @@ const AudiWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Audi Car Extended Warranty | Used & New Audi Cover UK"
         description="Protect your Audi from costly repairs with an extended warranty. Covers engine, gearbox, electrics and more. Used & high-mileage Audis accepted. Get instant quotes."

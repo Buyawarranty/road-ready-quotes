@@ -21,6 +21,7 @@ import jaguarFTypeImage from '@/assets/jaguar-ftype.png';
 import jaguarIPaceImage from '@/assets/jaguar-ipace.png';
 import StickyNavigation from '@/components/StickyNavigation';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const JaguarWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -70,6 +71,7 @@ const JaguarWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Jaguar Car Extended Warranty | Cover for New & Used Models"
         description="Protect your Jaguar with comprehensive extended warranty cover for new and used models. Get instant online quotes, flexible plans and protection from costly repairs."

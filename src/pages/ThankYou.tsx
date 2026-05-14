@@ -23,6 +23,7 @@ import { ShareAndSaveSection } from '@/components/thankYou/ShareAndSaveSection';
 import { TrustSecurityFooter } from '@/components/thankYou/TrustSecurityFooter';
 import { FeedbackSection } from '@/components/thankYou/FeedbackSection';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 // Extend Window interface for gtag
 declare global {
   interface Window {
@@ -580,6 +581,7 @@ const ThankYou = () => {
 
   return (
     <div className="bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
+      <DealerPublicHeader />
       <SEOHead 
         title="Thank You! Your Warranty is Active | Buy-A-Warranty"
         description="Your car warranty purchase is complete. Your policy is now active and documents are on their way to your inbox."

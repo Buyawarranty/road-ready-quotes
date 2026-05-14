@@ -17,6 +17,7 @@ import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import hyundaiHeroImage from '@/assets/kona-kia-extended-used-car-warranty.png';
 
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const HyundaiWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -71,6 +72,7 @@ const HyundaiWarranty = () => {
 
   return (
     <>
+      <DealerPublicHeader />
       <SEOHead
         title="Hyundai Extended Warranty | Used Hyundai Cover & Instant Quotes"
         description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
