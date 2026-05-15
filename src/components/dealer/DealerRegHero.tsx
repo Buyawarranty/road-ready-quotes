@@ -51,7 +51,7 @@ export const DealerRegHero: React.FC = () => {
     } else {
       // Logged in → start the multi-step dealer journey
       localStorage.removeItem(PENDING_REG_KEY);
-      navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`);
+      navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
     }
   };
 

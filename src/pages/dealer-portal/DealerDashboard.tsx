@@ -63,7 +63,7 @@ const DealerDashboard = () => {
     e.preventDefault();
     const cleaned = reg.trim().toUpperCase();
     if (!cleaned) return;
-    navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`);
+    navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
   };
 
   const quickActions = [
@@ -71,7 +71,7 @@ const DealerDashboard = () => {
       label: 'Start full quote',
       desc: 'Guided vehicle, customer & checkout flow',
       icon: Sparkles,
-      onClick: () => navigate('/dealer-portal/quote/vehicle'),
+      onClick: () => navigate('/dealer-portal/quote/pricing'),
       tone: 'primary' as const,
     },
     {
