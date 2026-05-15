@@ -278,8 +278,8 @@ const AudiWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -294,7 +294,7 @@ const AudiWarrantyLanding: React.FC = () => {
       "price": "25",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/audi-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/audi-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -332,7 +332,7 @@ const AudiWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£25-£95/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB", "addressRegion": "United Kingdom" },
@@ -362,7 +362,7 @@ const AudiWarrantyLanding: React.FC = () => {
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "3 Year Audi Extended Warranty" } }
       ]
     },
-    "termsOfService": "https://buyawarranty.co.uk/terms-and-conditions/"
+    "termsOfService": "https://pandaprotect.co.uk/terms-and-conditions/"
   };
 
   const faqSchema = {
@@ -379,9 +379,9 @@ const AudiWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Audi Extended Warranty UK", "item": "https://buyawarranty.co.uk/warranty-types/audi-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Audi Extended Warranty UK", "item": "https://pandaprotect.co.uk/warranty-types/audi-warranty/" }
     ]
   };
 
@@ -389,11 +389,11 @@ const AudiWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider covering Audi, BMW, Mercedes-Benz and all major brands. Protecting vehicles nationwide since 2016.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -402,11 +402,11 @@ const AudiWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Audi Extended Warranty UK — Used Audi Warranty Cover from £25/mo | Panda Protect",
     "description": "Protect your used Audi with a comprehensive extended warranty. Covering all models from A3 to Q8 and e-tron across England, Scotland, Wales and Northern Ireland. S tronic, quattro, TFSI/TDI and EV components covered. Use any VAT-registered garage. Instant quote in 60 seconds.",
-    "url": "https://buyawarranty.co.uk/warranty-types/audi-warranty/",
+    "url": "https://pandaprotect.co.uk/warranty-types/audi-warranty/",
     "datePublished": "2024-01-15",
     "dateModified": new Date().toISOString().split('T')[0],
     "inLanguage": "en-GB",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": [
       { "@type": "Thing", "name": "Audi Extended Warranty" },
       { "@type": "Thing", "name": "Used Car Warranty UK" },
@@ -426,7 +426,7 @@ const AudiWarrantyLanding: React.FC = () => {
     "potentialAction": {
       "@type": "Action",
       "name": "Get Audi Warranty Quote",
-      "target": "https://buyawarranty.co.uk/warranty-types/audi-warranty/"
+      "target": "https://pandaprotect.co.uk/warranty-types/audi-warranty/"
     }
   };
 
@@ -466,7 +466,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <title>Audi Extended Warranty UK | Used Audi Warranty Cover from £25/mo</title>
         <meta name="description" content="Get a used Audi extended warranty from £25/month. Covers A3, A4, A5, A6, Q3, Q5, Q7, Q8, TT and e-tron. S tronic gearbox, quattro drivetrain, TFSI/TDI engines and EV components included. Any VAT-registered garage across England, Scotland, Wales and Northern Ireland. Instant online quote in 60 seconds." />
         <meta name="keywords" content="Audi extended warranty, Audi used car warranty, Audi warranty UK, Audi warranty cost, Audi A4 warranty, Audi Q5 warranty, Audi e-tron warranty, Audi A3 warranty, Audi Q7 warranty, Audi S tronic warranty, used Audi warranty, second hand Audi warranty, Audi aftermarket warranty, Audi warranty cover, Audi breakdown cover, Audi mechanical warranty, Audi warranty quote online" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/audi-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/audi-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -482,9 +482,9 @@ const AudiWarrantyLanding: React.FC = () => {
         {/* Open Graph — unique to this page */}
         <meta property="og:title" content="Used Audi Extended Warranty UK — A3 to Q8 & e-tron Cover | Panda Protect" />
         <meta property="og:description" content="Protect your used Audi from unexpected repair bills. S tronic, quattro, TFSI/TDI and EV components covered. Use any garage in England, Scotland, Wales or Northern Ireland. Plans from £25/mo — get your instant quote now." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/audi-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/audi-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Audi extended warranty UK — affordable used Audi warranty cover from Panda Protect" />
@@ -495,7 +495,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Used Audi Extended Warranty UK — Cover from £25/mo" />
         <meta name="twitter:description" content="All Audi models covered including A3, A4, Q5, Q7, e-tron. S tronic, quattro, TFSI/TDI and EV components. Any UK garage. Instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="twitter:image:alt" content="Panda Protect — Audi extended warranty cover UK" />
         
         {/* AI search engine discoverability */}
@@ -611,7 +611,7 @@ const AudiWarrantyLanding: React.FC = () => {
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

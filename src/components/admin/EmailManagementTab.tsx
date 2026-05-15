@@ -80,7 +80,7 @@ const EmailManagementTab = () => {
     name: '',
     subject: '',
     template_type: '',
-    from_email: 'info@buyawarranty.co.uk',
+    from_email: 'info@pandaprotect.co.uk',
     greeting: '',
     content: '',
     is_active: true
@@ -443,8 +443,8 @@ const EmailManagementTab = () => {
     const sampleVariables = {
       customerFirstName: 'John',
       expiryDate: '31st December 2024',
-      portalUrl: 'https://portal.buyawarranty.co.uk',
-      renewalUrl: 'https://buyawarranty.co.uk/renew'
+      portalUrl: 'https://portal.pandaprotect.co.uk',
+      renewalUrl: 'https://pandaprotect.co.uk/renew'
     };
 
     let content = selectedTemplate.content.content || '';
@@ -973,7 +973,7 @@ const EmailManagementTab = () => {
             name: '',
             subject: '',
             template_type: '',
-            from_email: 'info@buyawarranty.co.uk',
+            from_email: 'info@pandaprotect.co.uk',
             greeting: '',
             content: '',
             is_active: true
@@ -1038,9 +1038,9 @@ const EmailManagementTab = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="info@buyawarranty.co.uk">info@buyawarranty.co.uk</SelectItem>
-                    <SelectItem value="claims@buyawarranty.co.uk">claims@buyawarranty.co.uk</SelectItem>
-                    <SelectItem value="sales@buyawarranty.co.uk">sales@buyawarranty.co.uk</SelectItem>
+                    <SelectItem value="info@pandaprotect.co.uk">info@pandaprotect.co.uk</SelectItem>
+                    <SelectItem value="claims@pandaprotect.co.uk">claims@pandaprotect.co.uk</SelectItem>
+                    <SelectItem value="sales@pandaprotect.co.uk">sales@pandaprotect.co.uk</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

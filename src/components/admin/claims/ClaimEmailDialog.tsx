@@ -125,7 +125,7 @@ export const ClaimEmailDialog: React.FC<ClaimEmailDialogProps> = ({
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
-  const [recipientEmail, setRecipientEmail] = useState('claims@buyawarranty.co.uk');
+  const [recipientEmail, setRecipientEmail] = useState('claims@pandaprotect.co.uk');
 
   const replacePlaceholders = (text: string) => {
     const daysOpen = Math.floor((new Date().getTime() - new Date(claim.created_at).getTime()) / (1000 * 60 * 60 * 24));
@@ -171,7 +171,7 @@ export const ClaimEmailDialog: React.FC<ClaimEmailDialogProps> = ({
           communication_type: 'email',
           subject: subject,
           message: body,
-          sender_email: user?.email || 'admin@buyawarranty.co.uk',
+          sender_email: user?.email || 'admin@pandaprotect.co.uk',
           recipient_email: recipientEmail,
           sent_by: user?.id,
           metadata: { template: selectedTemplate },

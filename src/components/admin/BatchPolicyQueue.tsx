@@ -510,7 +510,7 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
 
   return `<div class="letter-page">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid ${col.borderAccent};margin-bottom:14px">
-      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="BAW" style="height:40px;${isBW ? 'filter:grayscale(100%)' : ''}" />
+      <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="BAW" style="height:40px;${isBW ? 'filter:grayscale(100%)' : ''}" />
       <div style="text-align:right;font-size:9px;color:#666;line-height:1.4">
         <p style="font-weight:600">Panda Protect Ltd</p><p>Warranty House, 62 Berkhamsted Ave</p><p>Wembley, HA9 6DT</p><p>Company No: 10314863</p>
       </div>
@@ -578,14 +578,14 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
     <div style="background:${col.accountBg};border:1px solid ${col.accountBorder};border-radius:6px;padding:10px 14px;margin-bottom:14px">
       <h4 style="color:${col.accountHeading};font-size:12px;margin-bottom:4px;font-weight:700">Your Account &amp; Policy Documents</h4>
       <p style="font-size:10.5px;color:#333;margin:2px 0">Access your documents online:</p>
-      <p style="font-size:11px;color:${col.contactValue};margin:6px 0;font-weight:700">https://buyawarranty.co.uk/customer-dashboard/</p>
+      <p style="font-size:11px;color:${col.contactValue};margin:6px 0;font-weight:700">https://pandaprotect.co.uk/customer-dashboard/</p>
       <p style="font-size:10.5px;color:#333;margin:4px 0"><strong>Email:</strong> ${c.email}</p>
     </div>
     <div style="margin-top:16px;font-size:11px"><p style="margin:1px 0">Warm regards,</p><p style="margin:10px 0 1px;font-weight:600">The Panda Protect Team</p></div>
     <div style="margin-top:18px;padding-top:10px;border-top:2px solid ${col.border};display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:10px">
       <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Sales</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 5040</div></div>
       <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Claims</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 5045</div></div>
-      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Support</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">support@buyawarranty.co.uk</div></div>
+      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Support</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">support@pandaprotect.co.uk</div></div>
     </div>
     <div style="margin-top:12px;padding-top:8px;border-top:1px solid ${col.border};font-size:8px;color:${col.legal};text-align:center">Panda Protect Ltd — Company No: 10314863 — Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT</div>
   </div>`;

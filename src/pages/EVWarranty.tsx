@@ -57,8 +57,8 @@ const EVWarranty = () => {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-20-XXXX-XXXX",
@@ -166,10 +166,10 @@ const EVWarranty = () => {
         title="EV Extended Warranty UK | Electric & Hybrid Car Cover | Panda Protect"
         description="Protect your electric or hybrid car from costly repairs with affordable UK EV extended warranty plans. Cover for battery systems, motors & electronics. Get instant quotes online."
         keywords="EV warranty UK, electric car warranty, hybrid warranty UK, PHEV warranty, electric vehicle extended warranty, used EV warranty, EV battery warranty, affordable EV cover, electric car insurance UK"
-        canonical="https://buyawarranty.co.uk/ev-warranty/"
+        canonical="https://pandaprotect.co.uk/ev-warranty/"
         ogTitle="EV Extended Warranty UK | Electric & Hybrid Car Cover"
         ogDescription="Protect your electric or hybrid car from costly repairs with affordable UK EV extended warranty plans. Cover for battery systems, motors & electronics."
-        ogImage="https://buyawarranty.co.uk/ev-warranty-og.jpg"
+        ogImage="https://pandaprotect.co.uk/ev-warranty-og.jpg"
         geoRegion="GB"
         geoPlacename="United Kingdom"
         geoPosition="54.5;-4.5"
@@ -178,8 +178,8 @@ const EVWarranty = () => {
 
       <BreadcrumbSchema 
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "EV Warranty", url: "https://buyawarranty.co.uk/ev-warranty/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "EV Warranty", url: "https://pandaprotect.co.uk/ev-warranty/" }
         ]}
       />
 

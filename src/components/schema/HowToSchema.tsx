@@ -25,7 +25,7 @@ export const HowToSchema = ({
   steps,
   totalTime = 'PT5M',
   estimatedCost,
-  image = 'https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png'
+  image = 'https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png'
 }: HowToSchemaProps) => {
   useEffect(() => {
     const schema = {

@@ -13,12 +13,12 @@ export const TrustSecurityFooter: React.FC = () => {
           </h3>
           <p className="text-sm text-muted-foreground">
             <a 
-              href="https://www.buyawarranty.co.uk" 
+              href="https://www.pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-primary hover:underline font-semibold"
             >
-              buyawarranty.co.uk
+              pandaprotect.co.uk
             </a>
           </p>
         </div>
@@ -36,10 +36,10 @@ export const TrustSecurityFooter: React.FC = () => {
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 <a 
-                  href="mailto:claims@buyawarranty.co.uk"
+                  href="mailto:claims@pandaprotect.co.uk"
                   className="hover:text-foreground"
                 >
-                  claims@buyawarranty.co.uk
+                  claims@pandaprotect.co.uk
                 </a>
               </p>
             </div>
@@ -57,10 +57,10 @@ export const TrustSecurityFooter: React.FC = () => {
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 <a 
-                  href="mailto:support@buyawarranty.co.uk"
+                  href="mailto:support@pandaprotect.co.uk"
                   className="hover:text-foreground"
                 >
-                  support@buyawarranty.co.uk
+                  support@pandaprotect.co.uk
                 </a>
               </p>
             </div>

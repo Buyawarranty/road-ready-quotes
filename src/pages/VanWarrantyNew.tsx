@@ -64,8 +64,8 @@ const VanWarrantyNew = () => {
   ];
 
   const breadcrumbItems = [
-    { name: 'Home', url: 'https://buyawarranty.co.uk/' },
-    { name: 'Van Warranty', url: 'https://buyawarranty.co.uk/van-warranty/' }
+    { name: 'Home', url: 'https://pandaprotect.co.uk/' },
+    { name: 'Van Warranty', url: 'https://pandaprotect.co.uk/van-warranty/' }
   ];
 
   return (
@@ -75,10 +75,10 @@ const VanWarrantyNew = () => {
         title="Van Extended Warranty | Used Van Cover up to 150,000 Miles"
         description="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
         keywords="van warranty UK, van extended warranty, used van warranty, commercial van warranty, high mileage van warranty, van breakdown cover, UK van warranty, new van warranty, van warranty companies"
-        canonical="https://buyawarranty.co.uk/van-warranty/"
+        canonical="https://pandaprotect.co.uk/van-warranty/"
         ogTitle="Van Extended Warranty | Used Van Cover up to 150,000 Miles"
         ogDescription="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
-        ogImage="https://buyawarranty.co.uk/van-warranty-og.jpg"
+        ogImage="https://pandaprotect.co.uk/van-warranty-og.jpg"
         geoRegion="GB"
         geoPlacename="United Kingdom"
         geoPosition="54.5;-4.5"
@@ -88,7 +88,7 @@ const VanWarrantyNew = () => {
       <WebPageSchema
         name="Van Extended Warranty UK | Trusted Van Cover"
         description="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used commercial vans from costly repairs with flexible, affordable UK warranty plans. Instant quotes available."
-        url="https://buyawarranty.co.uk/van-warranty/"
+        url="https://pandaprotect.co.uk/van-warranty/"
         specialty="Van Warranty & Commercial Vehicle Protection"
       />
       <FAQSchema faqs={vanWarrantyFAQs} />
@@ -99,7 +99,7 @@ const VanWarrantyNew = () => {
         priceCurrency="GBP"
         brand="Panda Protect"
         category="Van Warranty & Commercial Vehicle Insurance"
-        image="https://buyawarranty.co.uk/van-warranty-product.jpg"
+        image="https://pandaprotect.co.uk/van-warranty-product.jpg"
         availability="InStock"
         areaServed="GB"
       />

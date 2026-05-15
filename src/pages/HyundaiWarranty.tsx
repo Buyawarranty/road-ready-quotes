@@ -77,7 +77,7 @@ const HyundaiWarranty = () => {
         title="Hyundai Extended Warranty | Used Hyundai Cover & Instant Quotes"
         description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
         keywords="hyundai extended warranty, hyundai warranty UK, used hyundai warranty, hyundai ioniq warranty, hyundai tucson warranty, hyundai kona warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/hyundai/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/hyundai/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -85,9 +85,9 @@ const HyundaiWarranty = () => {
       <WebPageSchema
         name="Hyundai Extended Warranty - Panda Protect"
         description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
-        url="https://buyawarranty.co.uk/car-extended-warranty/hyundai/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/hyundai/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Hyundai Extended Warranties"
       />
       
@@ -97,7 +97,7 @@ const HyundaiWarranty = () => {
         price="300.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -106,9 +106,9 @@ const HyundaiWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Hyundai Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/hyundai/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Hyundai Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/hyundai/" }
         ]}
       />
 
@@ -185,7 +185,7 @@ const HyundaiWarranty = () => {
             </h2>
             <div className="flex justify-center mb-6">
               <a 
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"
@@ -428,7 +428,7 @@ const HyundaiWarranty = () => {
             </h2>
             <div className="flex justify-center mb-8">
               <a 
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="transition-opacity hover:opacity-80"

@@ -5,7 +5,7 @@
   
   # Redirect www to non-www with 301 permanent redirect
   RewriteCond %{HTTP_HOST} ^www\.buyawarranty\.co\.uk$ [NC]
-  RewriteRule ^(.*)$ https://buyawarranty.co.uk/$1 [R=301,L]
+  RewriteRule ^(.*)$ https://pandaprotect.co.uk/$1 [R=301,L]
   
   # Redirect broken /home page to homepage
   RewriteRule ^home/?$ / [R=301,L]

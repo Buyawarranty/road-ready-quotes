@@ -388,7 +388,7 @@ Additional Information: ${formData.additionalInfo}
               <p className="text-lg text-gray-700 mb-8 font-medium">Choose your preferred way to contact us:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <a 
-                  href="mailto:claims@buyawarranty.co.uk"
+                  href="mailto:claims@pandaprotect.co.uk"
                   className="group block p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-100 hover:border-orange-300 hover:-translate-y-1"
                 >
                   <div className="flex items-center gap-4 mb-4">
@@ -400,7 +400,7 @@ Additional Information: ${formData.additionalInfo}
                       <p className="text-sm text-gray-500">Send us your claim details</p>
                     </div>
                   </div>
-                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">claims@buyawarranty.co.uk</p>
+                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">claims@pandaprotect.co.uk</p>
                   <p className="text-sm text-green-600 font-medium mt-3">We respond as quickly as possible during working hours.</p>
                 </a>
 

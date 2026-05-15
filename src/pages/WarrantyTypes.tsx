@@ -125,13 +125,13 @@ const WarrantyTypes: React.FC = () => {
         "@type": "ListItem",
         "position": index + 1,
         "name": cat.brand_name,
-        "url": `https://buyawarranty.co.uk/${cat.slug}`
+        "url": `https://pandaprotect.co.uk/${cat.slug}`
       })),
       ...dynamicPages.map((page, index) => ({
         "@type": "ListItem",
         "position": defaultCategories.length + index + 1,
         "name": page.brand_name,
-        "url": `https://buyawarranty.co.uk/${page.slug}`
+        "url": `https://pandaprotect.co.uk/${page.slug}`
       }))
     ]
   };
@@ -143,7 +143,7 @@ const WarrantyTypes: React.FC = () => {
         <title>Warranty Types | Vehicle Warranty Options | Panda Protect</title>
         <meta name="description" content="Discover all our warranty types in one place. From BMW to vans, find tailored cover for your vehicle. Explore car, van, electric and brand-specific warranties." />
         <meta name="keywords" content="warranty types, car warranty, van warranty, BMW warranty, Audi warranty, Mercedes warranty, vehicle warranty, extended warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types" />
         <meta property="og:title" content="Warranty Types | All Vehicle Warranty Options" />
         <meta property="og:description" content="Discover all our warranty types in one place. From BMW to vans, find tailored cover for your vehicle." />
         <meta property="og:type" content="website" />
@@ -997,7 +997,7 @@ const WarrantyTypes: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center">
               <a 
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 hover:opacity-80 transition-opacity"

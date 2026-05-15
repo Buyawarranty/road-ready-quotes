@@ -87,7 +87,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
   // Local Business Schema
   const [localBusinessName, setLocalBusinessName] = useState('Panda Protect');
   const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295040');
-  const [localBusinessEmail, setLocalBusinessEmail] = useState('support@buyawarranty.co.uk');
+  const [localBusinessEmail, setLocalBusinessEmail] = useState('support@pandaprotect.co.uk');
 
   useEffect(() => {
     if (pageId) {
@@ -161,7 +161,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
       setRobotsDirective(data.robots_directive || 'index, follow');
       setLocalBusinessName(data.local_business_name || 'Panda Protect');
       setLocalBusinessPhone(data.local_business_phone || '+443302295040');
-      setLocalBusinessEmail(data.local_business_email || 'support@buyawarranty.co.uk');
+      setLocalBusinessEmail(data.local_business_email || 'support@pandaprotect.co.uk');
       
       // Parse hero content
       const heroContent = (data.hero_content as any) || {};
@@ -575,7 +575,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
                     {metaTitle || 'Page Title Here'}
                   </p>
                   <p className="text-green-700 text-sm">
-                    buyawarranty.co.uk/{slug}/
+                    pandaprotect.co.uk/{slug}/
                   </p>
                   <p className="text-gray-600 text-sm line-clamp-2">
                     {metaDescription || 'Meta description will appear here...'}

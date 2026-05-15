@@ -19,7 +19,7 @@ export const ProductSchema = ({
   priceCurrency = 'GBP',
   brand = 'Panda Protect',
   category = 'Vehicle Warranty',
-  image = 'https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png',
+  image = 'https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png',
   availability = 'InStock',
   areaServed = 'GB'
 }: ProductSchemaProps) => {
@@ -47,7 +47,7 @@ export const ProductSchema = ({
           "price": price,
           "priceCurrency": priceCurrency,
           "availability": availability === 'InStock' ? "https://schema.org/InStock" : `https://schema.org/${availability}`,
-          "url": "https://buyawarranty.co.uk",
+          "url": "https://pandaprotect.co.uk",
           "priceValidUntil": new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
           "seller": {
             "@type": "Organization",

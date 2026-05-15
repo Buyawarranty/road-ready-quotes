@@ -19,7 +19,7 @@ const Complaints = () => {
         title="Complaints Procedure | Panda Protect UK"
         description="Learn about our complaints procedure and how we resolve customer concerns quickly and fairly. We are committed to providing excellent customer service."
         keywords="complaints procedure, customer service, Panda Protect, complaint resolution, fair treatment"
-        canonical="https://buyawarranty.co.uk/complaints"
+        canonical="https://pandaprotect.co.uk/complaints"
       />
 
       {/* Back Button */}
@@ -80,8 +80,8 @@ const Complaints = () => {
                     <Mail className="w-5 h-5 text-blue-600 mr-2" />
                     Email Us
                   </h3>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-[#eb4b00] hover:underline font-medium">
-                    support@buyawarranty.co.uk
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-[#eb4b00] hover:underline font-medium">
+                    support@pandaprotect.co.uk
                   </a>
                 </div>
                 <div className="bg-green-50 p-6 rounded-lg">
@@ -221,8 +221,8 @@ const Complaints = () => {
                 <p className="flex items-center">
                   <Mail className="w-5 h-5 mr-3" />
                   <span className="font-medium mr-2">Email:</span>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-orange-300 hover:text-orange-200 transition-colors">
-                    support@buyawarranty.co.uk
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-orange-300 hover:text-orange-200 transition-colors">
+                    support@pandaprotect.co.uk
                   </a>
                 </p>
                 <p className="flex items-center">

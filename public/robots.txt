@@ -45,7 +45,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://buyawarranty.co.uk/sitemap.xml
+Sitemap: https://pandaprotect.co.uk/sitemap.xml
 
 # Crawl-delay for politeness
 Crawl-delay: 1

@@ -80,13 +80,13 @@ const Blog = () => {
     "@type": "Blog",
     "name": "The Warranty Hub",
     "description": "Expert car warranty advice, vehicle maintenance tips, and driving guides for UK motorists",
-    "url": "https://buyawarranty.co.uk/thewarrantyhub",
+    "url": "https://pandaprotect.co.uk/thewarrantyhub",
     "publisher": {
       "@type": "Organization",
       "name": "Panda Protect",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png"
+        "url": "https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png"
       }
     }
   };
@@ -98,7 +98,7 @@ const Blog = () => {
         title="Best Car Warranty UK | Expert Vehicle Protection Advice & Tips"
         description="Get expert advice on car warranties across the UK. Compare car and van warranties in Manchester, Birmingham, London & nationwide. Affordable cover and peace of mind today."
         keywords="best car warranty UK, UK car warranty advice, car warranty Manchester, vehicle warranty Birmingham, van warranty London, car protection plans UK, affordable car cover UK, driving tips UK, car maintenance UK, used car warranty UK"
-        canonical="https://buyawarranty.co.uk/thewarrantyhub"
+        canonical="https://pandaprotect.co.uk/thewarrantyhub"
         ogImage={pandaHeroImage}
       />
       

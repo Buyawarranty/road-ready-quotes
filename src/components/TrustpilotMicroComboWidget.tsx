@@ -20,7 +20,7 @@ const TrustpilotMicroComboWidget: React.FC<{ className?: string }> = ({ classNam
       data-style-width="100%"
       data-token="e64ec9bd-7fd7-450c-a0d0-dceef5f14b5e"
     >
-      <a href="https://www.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener">
+      <a href="https://www.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener">
         Trustpilot
       </a>
     </div>

@@ -399,8 +399,8 @@ const KiaWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -415,7 +415,7 @@ const KiaWarrantyLanding: React.FC = () => {
       "price": "24",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/kia-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/kia-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -452,7 +452,7 @@ const KiaWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£24-£85/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -485,9 +485,9 @@ const KiaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Kia Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/kia-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Kia Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/kia-warranty/" }
     ]
   };
 
@@ -495,11 +495,11 @@ const KiaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -507,10 +507,10 @@ const KiaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Panda Protect",
-    "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "url": "https://buyawarranty.co.uk",
+    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
     "telephone": "+44-800-917-9270",
-    "email": "support@buyawarranty.co.uk",
+    "email": "support@pandaprotect.co.uk",
     "priceRange": "£24-£85/month",
     "address": {
       "@type": "PostalAddress",
@@ -529,7 +529,7 @@ const KiaWarrantyLanding: React.FC = () => {
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "09:00", "closes": "18:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "13:00" }
     ],
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" }
   };
 
@@ -538,8 +538,8 @@ const KiaWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Kia Extended Warranty UK - Sportage, Ceed, Niro, Sorento, EV6 Cover",
     "description": "Protect your Kia with comprehensive extended warranty cover. All models from Picanto to EV9. Nationwide UK coverage, approved garages, unlimited claims.",
-    "url": "https://buyawarranty.co.uk/warranty-types/kia-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/kia-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Kia Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Kia" },
@@ -569,7 +569,7 @@ const KiaWarrantyLanding: React.FC = () => {
         <title>Kia Extended Warranty UK | Sportage, Ceed, Niro, Sorento, EV6 from £24/mo</title>
         <meta name="description" content="Protect your Kia Sportage, Ceed, Niro, Sorento, Picanto, Rio, EV6 or EV9 with comprehensive extended warranty cover. GDi engines, DCT gearboxes, electrics and hybrid/EV components covered. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £24/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Kia extended warranty, Kia used car warranty, Kia warranty UK, Kia warranty cost, Kia warranty quote, Kia Sportage warranty, Kia Ceed warranty, Kia Niro warranty, Kia Sorento warranty, Kia EV6 warranty, Kia EV9 warranty, Kia Picanto warranty, used Kia warranty, second hand Kia warranty, Kia hybrid warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/kia-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/kia-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -582,9 +582,9 @@ const KiaWarrantyLanding: React.FC = () => {
         
         <meta property="og:title" content="Kia Warranty UK | Sportage, Ceed, Niro, Sorento, EV6 from £24/mo" />
         <meta property="og:description" content="Comprehensive Kia warranty coverage for Sportage, Ceed, Niro, Sorento, Picanto, Rio, EV6 and EV9. GDi engines, gearbox, electrics and more. Nationwide UK coverage with any VAT-registered garage." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/kia-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/kia-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Kia Extended Warranty UK - Panda Protect" />
@@ -594,7 +594,7 @@ const KiaWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Kia Warranty UK | Sportage, Ceed, Niro, Sorento, EV6 from £24/mo" />
         <meta name="twitter:description" content="Protect your Kia Sportage, Ceed, Niro, Sorento with comprehensive extended warranty. EV and hybrid models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Kia extended warranty services in the UK, covering Sportage, Ceed, Niro, Sorento, Picanto, Rio, Stonic, EV6, and EV9 models. Human-authored and fact-checked." />
         <meta name="ai-summary" content="Panda Protect offers comprehensive Kia extended warranty plans in the UK from £24/month. Coverage includes GDi/T-GDi engines, DCT gearboxes, Kia Connect infotainment, electrical, hybrid and EV components for all Kia models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
@@ -704,7 +704,7 @@ const KiaWarrantyLanding: React.FC = () => {
                   />
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

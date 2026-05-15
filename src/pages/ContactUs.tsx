@@ -267,7 +267,7 @@ const ContactUs = () => {
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/60 font-bold">Dealer email</p>
-                <a href="mailto:dealers@buyawarranty.co.uk" className="text-lg font-bold hover:text-orange-400 break-all">dealers@buyawarranty.co.uk</a>
+                <a href="mailto:dealers@pandaprotect.co.uk" className="text-lg font-bold hover:text-orange-400 break-all">dealers@pandaprotect.co.uk</a>
                 <p className="text-sm text-white/70">Programme enquiries &amp; partnerships</p>
               </div>
             </div>

@@ -12,7 +12,7 @@ const AdminLoginDebug = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('info@buyawarranty.co.uk');
+  const [email, setEmail] = useState('info@pandaprotect.co.uk');
   const [password, setPassword] = useState('h3WfIIijI195');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,7 +24,7 @@ const AdminLoginDebug = () => {
       const { data, error } = await supabase.functions.invoke('set-admin-password', {
         body: {
           userId: 'bc7f1690-2bad-454c-9c9c-700677bb957b',
-          email: 'info@buyawarranty.co.uk',
+          email: 'info@pandaprotect.co.uk',
           password: password
         }
       });

@@ -79,7 +79,7 @@ const VolkswagenWarranty = () => {
         title="Volkswagen Extended Warranty | Affordable VW Car Cover UK"
         description="Protect your Volkswagen from costly repair bills with our extended warranty. Engine, gearbox, electrics and more covered. Get an instant online quote for any VW."
         keywords="volkswagen extended warranty, vw warranty UK, volkswagen warranty cost, vw golf warranty, vw tiguan warranty, vw passat warranty, vw transporter warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/volkswagen/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/volkswagen/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -87,9 +87,9 @@ const VolkswagenWarranty = () => {
       <WebPageSchema
         name="Volkswagen Extended Warranty - Panda Protect"
         description="Protect your Volkswagen from costly repair bills with our extended warranty. Engine, gearbox, electrics and more covered. Get an instant online quote for any VW."
-        url="https://buyawarranty.co.uk/car-extended-warranty/volkswagen/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/volkswagen/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Volkswagen Extended Warranties"
       />
       
@@ -99,7 +99,7 @@ const VolkswagenWarranty = () => {
         price="350.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -108,9 +108,9 @@ const VolkswagenWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Volkswagen Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/volkswagen/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Volkswagen Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/volkswagen/" }
         ]}
       />
 

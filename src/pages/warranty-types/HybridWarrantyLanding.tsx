@@ -524,8 +524,8 @@ const HybridWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
@@ -534,7 +534,7 @@ const HybridWarrantyLanding: React.FC = () => {
       "price": "19",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/hybrid-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/hybrid-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
@@ -559,7 +559,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-330-229-5040",
       "priceRange": "£19-£99/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -592,9 +592,9 @@ const HybridWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Hybrid vehicle warranty", "item": "https://buyawarranty.co.uk/warranty-types/hybrid-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Hybrid vehicle warranty", "item": "https://pandaprotect.co.uk/warranty-types/hybrid-warranty/" }
     ]
   };
 
@@ -602,14 +602,14 @@ const HybridWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "legalName": "BUY A WARRANTY LIMITED",
     "description": "UK's trusted extended vehicle warranty provider since 2016. Specialist in hybrid, electric, car, van, and motorbike warranty cover. Rated Excellent on Trustpilot.",
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "knowsAbout": ["Hybrid Car Warranty", "PHEV Warranty", "EV Warranty", "Used Car Warranty", "Van Warranty", "Extended Vehicle Warranty"],
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -618,10 +618,10 @@ const HybridWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Hybrid Car Warranty UK From £19/mo — Toyota, BMW, Kia, Volvo & 100+ Models",
     "description": "Get specialist hybrid vehicle warranty cover in the UK. We protect electric motors, inverters, battery management systems, and 1,000+ components on Toyota, Honda, Kia, Hyundai, BMW, Volvo, Mercedes, Lexus, Audi, Ford, VW, Nissan, Land Rover and more. HEV, PHEV and mild hybrid. Unlimited claims, any garage, from £19/month.",
-    "url": "https://buyawarranty.co.uk/warranty-types/hybrid-warranty/",
+    "url": "https://pandaprotect.co.uk/warranty-types/hybrid-warranty/",
     "dateModified": new Date().toISOString().split('T')[0],
     "inLanguage": "en-GB",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": [
       { "@type": "Thing", "name": "Hybrid Vehicle Extended Warranty" },
       { "@type": "Thing", "name": "Plug-in Hybrid Car Warranty" },
@@ -660,7 +660,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "@type": "HowTo",
     "name": "How to get a hybrid car warranty quote in the UK",
     "description": "Get an instant hybrid vehicle warranty quote in 60 seconds — covers Toyota, BMW, Kia, Volvo, Mercedes, Honda & 100+ hybrid models",
-    "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "totalTime": "PT1M",
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter registration", "text": "Enter your hybrid vehicle registration number to look up your vehicle details automatically" },
@@ -675,7 +675,7 @@ const HybridWarrantyLanding: React.FC = () => {
         <title>Hybrid Car Warranty UK From £19/mo | Toyota, BMW, Kia & More</title>
         <meta name="description" content="Get a hybrid vehicle warranty from £19/month. We cover Toyota Prius, RAV4 Hybrid, Kia Niro, BMW 330e, Volvo XC60 Recharge & 100+ hybrid models. Inverters, electric motors, battery management & 1,000+ parts. Unlimited claims at any UK garage. Quote in 60 seconds — 14-day money-back guarantee." />
         <meta name="keywords" content="hybrid car warranty UK, hybrid vehicle warranty, plug-in hybrid warranty, PHEV warranty UK, Toyota hybrid warranty, Honda hybrid warranty, Kia Niro warranty, Hyundai hybrid warranty, BMW 330e warranty, Volvo hybrid warranty, Lexus hybrid warranty, hybrid powertrain cover, hybrid battery warranty UK, used hybrid warranty, second hand hybrid warranty, hybrid extended warranty, hybrid motor warranty, inverter warranty, e-CVT warranty, mild hybrid warranty, self charging hybrid warranty, hybrid car breakdown cover, cheap hybrid warranty UK, best hybrid warranty UK, hybrid warranty near me" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/hybrid-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/hybrid-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large" />
@@ -702,15 +702,15 @@ const HybridWarrantyLanding: React.FC = () => {
 
         {/* AI search engine discoverability — ChatGPT, Gemini, Claude, Copilot */}
         <meta name="ai-content-declaration" content="Human-authored, fact-checked, and regularly updated. This page provides accurate hybrid vehicle warranty pricing, coverage details, and eligibility criteria for UK hybrid car owners as of 2026." />
-        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at buyawarranty.co.uk. Claims line: 0330 229 5040." />
+        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at pandaprotect.co.uk. Claims line: 0330 229 5040." />
         <meta name="ai-purpose" content="To help UK hybrid vehicle owners find affordable extended warranty protection for their HEV, PHEV, or mild hybrid car" />
 
         {/* Open Graph — unique, keyword-rich, click-worthy */}
         <meta property="og:title" content="Hybrid Car Warranty From £19/mo — Toyota, BMW, Kia, Volvo & 100+ Models Covered" />
         <meta property="og:description" content="UK's specialist hybrid warranty. Covers electric motors, inverters, battery management & 1,000+ parts on any HEV, PHEV or mild hybrid. Unlimited claims, any garage, no excess options. Instant quote in 60 seconds." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/hybrid-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/hybrid-warranty/" />
         <meta property="og:type" content="product" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Panda Protect hybrid vehicle warranty — covers Toyota, BMW, Kia, Volvo and 100+ UK hybrid models from £19 per month" />
@@ -725,7 +725,7 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta name="twitter:creator" content="@buyawarranty" />
         <meta name="twitter:title" content="Hybrid Car Warranty UK — From £19/mo | 100+ Models Covered" />
         <meta name="twitter:description" content="Specialist hybrid warranty for Toyota, BMW, Kia, Volvo & more. Electric motors, inverters, battery systems covered. Unlimited claims, any UK garage. Quote in 60 seconds." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="twitter:image:alt" content="Hybrid Vehicle Warranty UK — Panda Protect — From £19 per month" />
 
         {/* Facebook/Meta domain verification compatibility */}
@@ -834,7 +834,7 @@ const HybridWarrantyLanding: React.FC = () => {
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"
@@ -1145,7 +1145,7 @@ const HybridWarrantyLanding: React.FC = () => {
               </h2>
               {/* Trustpilot Badge */}
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-white border-2 border-gray-200 rounded-xl px-5 py-3 hover:border-green-400 transition-colors shadow-sm mt-4 mb-4"
@@ -1395,7 +1395,7 @@ const HybridWarrantyLanding: React.FC = () => {
 
             <div className="text-center mt-8">
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 text-sm font-semibold text-gray-700 hover:text-[#00b67a] transition-colors"

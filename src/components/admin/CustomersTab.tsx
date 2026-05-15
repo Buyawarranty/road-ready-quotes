@@ -2443,7 +2443,7 @@ export const CustomersTab = ({
         const customerEmails = emailLogs?.filter(log => log.recipient_email === customer.email) || [];
         statuses[customer.email] = {
           portal_signup: customerEmails.some(log => 
-            log.subject?.toLowerCase().includes('welcome to buyawarranty.co.uk') &&
+            log.subject?.toLowerCase().includes('welcome to pandaprotect.co.uk') &&
             log.subject?.toLowerCase().includes('get you started')
           ),
           policy_documents: customerEmails.some(log => 
@@ -3615,7 +3615,7 @@ export const CustomersTab = ({
                                             <div>
                                               <Label className="text-sm font-medium text-gray-700">Customer Dashboard URL</Label>
                                               <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded block mt-1">
-                                                https://buyawarranty.co.uk/customer-dashboard
+                                                https://pandaprotect.co.uk/customer-dashboard
                                               </code>
                                             </div>
                                             
@@ -3641,7 +3641,7 @@ export const CustomersTab = ({
                                             onClick={() => {
                                               const credentials = `Customer Dashboard Login Details
 
-Dashboard URL: https://buyawarranty.co.uk/customer-dashboard
+Dashboard URL: https://pandaprotect.co.uk/customer-dashboard
 Username: ${customerCredentials.email}
 Password: ${customerCredentials.password}
 

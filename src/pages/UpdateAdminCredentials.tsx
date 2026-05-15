@@ -48,14 +48,14 @@ const UpdateAdminCredentials = () => {
             <Shield className="h-12 w-12 mx-auto mb-4 text-orange-500" />
             <CardTitle>Update Admin Credentials</CardTitle>
             <CardDescription>
-              Update admin email to info@buyawarranty.co.uk
+              Update admin email to info@pandaprotect.co.uk
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
               <p className="font-semibold mb-2">This will:</p>
               <ul className="list-disc list-inside space-y-1 text-gray-700">
-                <li>Change admin email to: info@buyawarranty.co.uk</li>
+                <li>Change admin email to: info@pandaprotect.co.uk</li>
                 <li>Set password to: PasswordLogin123-</li>
                 <li>Ensure admin role is assigned</li>
               </ul>

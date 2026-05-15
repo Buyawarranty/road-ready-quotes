@@ -407,7 +407,7 @@ const HowToPaySection: React.FC<HowToPaySectionProps> = ({
           <span>256-bit encryption</span>
         </div>
         <a 
-          href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+          href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
           target="_blank" 
           rel="noopener noreferrer"
           className="flex items-center gap-2 text-sm text-gray-600 hover:text-foreground transition-colors"

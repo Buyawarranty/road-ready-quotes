@@ -189,7 +189,7 @@ const DynamicLandingPage: React.FC = () => {
     return <NotFound />;
   }
 
-  const canonicalUrl = `https://buyawarranty.co.uk/${page.slug}/`;
+  const canonicalUrl = `https://pandaprotect.co.uk/${page.slug}/`;
 
   // Handle registration form submission - navigate to homepage step 2
   // Uses saveWithTimestamp to match Index.tsx state restoration logic
@@ -226,7 +226,7 @@ const DynamicLandingPage: React.FC = () => {
         keywords={page.focus_keyword || undefined}
         ogTitle={page.og_title || page.meta_title}
         ogDescription={page.og_description || page.meta_description}
-        ogImage={page.og_image_url || 'https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png'}
+        ogImage={page.og_image_url || 'https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png'}
         canonical={canonicalUrl}
         geoRegion="GB"
         geoPlacename="United Kingdom"
@@ -244,7 +244,7 @@ const DynamicLandingPage: React.FC = () => {
         <LocalBusinessSchema
           name={page.local_business_name || 'Panda Protect'}
           telephone={page.local_business_phone || '0330 229 5040'}
-          email={page.local_business_email || 'support@buyawarranty.co.uk'}
+          email={page.local_business_email || 'support@pandaprotect.co.uk'}
           address={page.local_business_address || {
             streetAddress: '71-75 Shelton Street',
             addressLocality: 'London',
@@ -273,7 +273,7 @@ const DynamicLandingPage: React.FC = () => {
           price="35"
           brand="Panda Protect"
           category="Vehicle Warranty"
-          image="https://buyawarranty.co.uk/logo.png"
+          image="https://pandaprotect.co.uk/logo.png"
           availability="https://schema.org/InStock"
           areaServed="GB"
         />
@@ -281,7 +281,7 @@ const DynamicLandingPage: React.FC = () => {
       {page.include_breadcrumb_schema && (
         <BreadcrumbSchema 
           items={[
-            { name: "Home", url: "https://buyawarranty.co.uk/" },
+            { name: "Home", url: "https://pandaprotect.co.uk/" },
             { name: `${page.brand_name} Warranty`, url: canonicalUrl }
           ]}
         />

@@ -13,7 +13,7 @@ const QuickPasswordReset = () => {
       const { data, error } = await supabase.functions.invoke('set-admin-password', {
         body: {
           userId: '97474b70-dd93-4007-a8f8-11e96670e194',
-          email: 'info@buyawarranty.co.uk',
+          email: 'info@pandaprotect.co.uk',
           password: 'PasswordLogin123-'
         }
       });
@@ -46,7 +46,7 @@ const QuickPasswordReset = () => {
           />
           <CardTitle>Admin Password Reset</CardTitle>
           <CardDescription>
-            Setting password for info@buyawarranty.co.uk
+            Setting password for info@pandaprotect.co.uk
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -76,7 +76,7 @@ const QuickPasswordReset = () => {
                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                   <div className="text-green-600 font-semibold mb-2">Password Set Successfully!</div>
                   <div className="space-y-1 text-sm">
-                    <div><strong>Email:</strong> info@buyawarranty.co.uk</div>
+                    <div><strong>Email:</strong> info@pandaprotect.co.uk</div>
                     <div><strong>Password:</strong> PasswordLogin123-</div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-green-200">

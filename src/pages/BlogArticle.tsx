@@ -167,14 +167,14 @@ const BlogArticle = () => {
       "name": "Panda Protect",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png"
+        "url": "https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png"
       }
     },
     "wordCount": post.content?.raw?.split(/\s+/).length || 0,
     "timeRequired": `PT${post.read_time_minutes}M`,
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": post.canonical_url || `https://buyawarranty.co.uk/thewarrantyhub/${post.slug}`
+      "@id": post.canonical_url || `https://pandaprotect.co.uk/thewarrantyhub/${post.slug}`
     }
   };
 
@@ -189,7 +189,7 @@ const BlogArticle = () => {
         title={post.seo_title || `${post.title} | The Warranty Hub`}
         description={post.seo_description || post.excerpt || ''}
         keywords={(post.seo_keywords || []).join(', ')}
-        canonical={post.canonical_url || `https://buyawarranty.co.uk/thewarrantyhub/${post.slug}`}
+        canonical={post.canonical_url || `https://pandaprotect.co.uk/thewarrantyhub/${post.slug}`}
         ogImage={post.featured_image_url || undefined}
       />
       
@@ -197,9 +197,9 @@ const BlogArticle = () => {
       <OrganizationSchema type="Organization" />
       <BreadcrumbSchema 
         items={[
-          { name: 'Home', url: 'https://buyawarranty.co.uk/' },
-          { name: 'The Warranty Hub', url: 'https://buyawarranty.co.uk/thewarrantyhub/' },
-          { name: post.title, url: `https://buyawarranty.co.uk/thewarrantyhub/${post.slug}/` }
+          { name: 'Home', url: 'https://pandaprotect.co.uk/' },
+          { name: 'The Warranty Hub', url: 'https://pandaprotect.co.uk/thewarrantyhub/' },
+          { name: post.title, url: `https://pandaprotect.co.uk/thewarrantyhub/${post.slug}/` }
         ]}
       />
       

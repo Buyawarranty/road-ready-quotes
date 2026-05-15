@@ -389,7 +389,7 @@ export const PageAnalyticsTab: React.FC = () => {
                           <div className="flex items-center gap-1.5">
                             <span className="truncate">{page.path}</span>
                             <a
-                              href={`https://buyawarranty.co.uk${page.path}`}
+                              href={`https://pandaprotect.co.uk${page.path}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex-shrink-0 text-gray-400 hover:text-orange-500"

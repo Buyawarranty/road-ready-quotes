@@ -37,21 +37,21 @@ export const PreviewTools = () => {
       title: 'Complete Guide to Car Warranties in 2025',
       description: 'Everything you need to know about choosing the right warranty for your vehicle. Expert tips and recommendations.',
       image: '/public/lovable-uploads/warranty-guide.jpg',
-      url: 'buyawarranty.co.uk/blog/car-warranties-guide-2025'
+      url: 'pandaprotect.co.uk/blog/car-warranties-guide-2025'
     },
     {
       platform: 'Twitter',
       title: 'Complete Guide to Car Warranties in 2025',
       description: 'Everything you need to know about choosing the right warranty for your vehicle. Expert tips and recommendations.',
       image: '/public/lovable-uploads/warranty-guide.jpg',
-      url: 'buyawarranty.co.uk/blog/car-warranties-guide-2025'
+      url: 'pandaprotect.co.uk/blog/car-warranties-guide-2025'
     },
     {
       platform: 'LinkedIn',
       title: 'Complete Guide to Car Warranties in 2025',
       description: 'Everything you need to know about choosing the right warranty for your vehicle. Expert tips and recommendations.',
       image: '/public/lovable-uploads/warranty-guide.jpg',
-      url: 'buyawarranty.co.uk/blog/car-warranties-guide-2025'
+      url: 'pandaprotect.co.uk/blog/car-warranties-guide-2025'
     }
   ];
 

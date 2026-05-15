@@ -11,9 +11,9 @@ const MinimalLandingFooter: React.FC = () => {
               <Phone className="w-4 h-4" />
               0330 229 5040
             </a>
-            <a href="mailto:support@buyawarranty.co.uk" className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="mailto:support@pandaprotect.co.uk" className="flex items-center gap-1.5 text-gray-600 hover:text-gray-900 transition-colors">
               <Mail className="w-4 h-4" />
-              support@buyawarranty.co.uk
+              support@pandaprotect.co.uk
             </a>
           </div>
           <p className="text-gray-500 text-xs">

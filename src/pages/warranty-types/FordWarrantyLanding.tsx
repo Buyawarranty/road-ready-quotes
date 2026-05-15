@@ -398,8 +398,8 @@ const FordWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -414,7 +414,7 @@ const FordWarrantyLanding: React.FC = () => {
       "price": "24",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/ford-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/ford-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -451,7 +451,7 @@ const FordWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£85/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -484,9 +484,9 @@ const FordWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Ford Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/ford-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Ford Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/ford-warranty/" }
     ]
   };
 
@@ -494,11 +494,11 @@ const FordWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -506,10 +506,10 @@ const FordWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Panda Protect",
-    "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "url": "https://buyawarranty.co.uk",
+    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
     "telephone": "+44-800-917-9270",
-    "email": "support@buyawarranty.co.uk",
+    "email": "support@pandaprotect.co.uk",
     "priceRange": "£19-£85/month",
     "address": {
       "@type": "PostalAddress",
@@ -528,7 +528,7 @@ const FordWarrantyLanding: React.FC = () => {
       { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "09:00", "closes": "18:00" },
       { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "13:00" }
     ],
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" }
   };
 
@@ -537,8 +537,8 @@ const FordWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Ford Extended Warranty UK - Fiesta, Focus, Kuga, Puma, Ranger Cover",
     "description": "Protect your Ford with comprehensive extended warranty cover. All models from Fiesta to Mustang Mach-E. Nationwide UK coverage, approved garages, unlimited claims.",
-    "url": "https://buyawarranty.co.uk/warranty-types/ford-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/ford-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Ford Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Ford" },
@@ -568,7 +568,7 @@ const FordWarrantyLanding: React.FC = () => {
         <title>Ford Extended Warranty UK | Fiesta, Focus, Kuga, Puma, Ranger from £19/mo</title>
         <meta name="description" content="Protect your Ford Fiesta, Focus, Kuga, Puma, Ranger, Transit or Mustang Mach-E with comprehensive extended warranty cover. EcoBoost engines, PowerShift gearboxes, electrics and hybrid components covered. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £19/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Ford extended warranty, Ford used car warranty, Ford warranty UK, Ford warranty cost, Ford warranty quote, Ford Fiesta warranty, Ford Focus warranty, Ford Kuga warranty, Ford Puma warranty, Ford Ranger warranty, Ford Transit warranty, Ford EcoBoost warranty, used Ford warranty, second hand Ford warranty, Ford Mustang Mach-E warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/ford-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/ford-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -581,9 +581,9 @@ const FordWarrantyLanding: React.FC = () => {
         
         <meta property="og:title" content="Ford Warranty UK | Fiesta, Focus, Kuga, Puma, Ranger, Mach-E from £19/mo" />
         <meta property="og:description" content="Comprehensive Ford warranty coverage for Fiesta, Focus, Kuga, Puma, Ranger, Transit and Mustang Mach-E. EcoBoost engines, gearbox, electrics and more. Nationwide UK coverage with any VAT-registered garage." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/ford-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/ford-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Ford Extended Warranty UK - Panda Protect" />
@@ -593,7 +593,7 @@ const FordWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Ford Warranty UK | Fiesta, Focus, Kuga, Puma, Ranger from £19/mo" />
         <meta name="twitter:description" content="Protect your Ford Fiesta, Focus, Kuga, Puma, Ranger with comprehensive extended warranty. EV and hybrid models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Ford extended warranty services in the UK, covering Fiesta, Focus, Kuga, Puma, Mondeo, Ranger, Transit, and Mustang Mach-E models. Human-authored and fact-checked." />
         <meta name="ai-summary" content="Panda Protect offers comprehensive Ford extended warranty plans in the UK from £19/month. Coverage includes EcoBoost engines, PowerShift gearboxes, SYNC infotainment, electrical, hybrid and EV components for all Ford models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />
@@ -703,7 +703,7 @@ const FordWarrantyLanding: React.FC = () => {
                   />
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

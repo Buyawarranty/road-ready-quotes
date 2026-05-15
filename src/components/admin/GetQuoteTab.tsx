@@ -1167,7 +1167,7 @@ Cover: ${months} months + ${bonus} FREE
 Claim Limit: £${displayClaimLimit.toLocaleString()}
 
 Complete your purchase here:
-${quoteLink || 'https://buyawarranty.co.uk'}
+${quoteLink || 'https://pandaprotect.co.uk'}
 
 Questions? Call 0330 229 5040`;
 
@@ -3165,7 +3165,7 @@ Questions? Call 0330 229 5040`;
                     <div className="p-4 bg-white">
                       {/* Email Header Preview */}
                       <div className="text-center mb-6">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" className="h-12 mx-auto mb-4" />
+                        <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" className="h-12 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-gray-900">
                           Here's your {vehicleData?.make} {vehicleData?.model} warranty quote
                         </h2>

@@ -30,7 +30,7 @@ const DealerHome = () => {
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
   const pageDescription =
     'Boost dealer profits today. Offer extended warranties from 20p a day, sign up in 60 seconds and start earning with the UK\'s trusted dealer warranty partner.';
-  const canonical = 'https://buyawarranty.co.uk/dealer-portal/';
+  const canonical = 'https://pandaprotect.co.uk/dealer-portal/';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -39,7 +39,7 @@ const DealerHome = () => {
     provider: {
       '@type': 'Organization',
       name: 'Panda Protect',
-      url: 'https://buyawarranty.co.uk',
+      url: 'https://pandaprotect.co.uk',
     },
     areaServed: 'GB',
     audience: { '@type': 'BusinessAudience', audienceType: 'Motor Trade Dealers' },
@@ -343,11 +343,11 @@ const DealerHome = () => {
               0330 229 5045
             </a>
             <a
-              href="mailto:dealers@buyawarranty.co.uk"
+              href="mailto:dealers@pandaprotect.co.uk"
               className="flex items-center gap-2 text-white hover:text-white/80 font-medium text-lg"
             >
               <Mail size={20} />
-              dealers@buyawarranty.co.uk
+              dealers@pandaprotect.co.uk
             </a>
           </div>
 

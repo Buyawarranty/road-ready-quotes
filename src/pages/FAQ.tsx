@@ -221,7 +221,7 @@ const FAQ = () => {
         {
           id: 'car-issue',
           question: 'What should I do if my car has an issue?',
-          answer: 'If your car experiences a problem, please contact our Claims Team at 0330 229 5045. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form at www.buyawarranty.co.uk/make-a-claim',
+          answer: 'If your car experiences a problem, please contact our Claims Team at 0330 229 5045. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form at www.pandaprotect.co.uk/make-a-claim',
           popular: true
         },
         {
@@ -290,32 +290,32 @@ const FAQ = () => {
         {
           id: 'components-covered',
           question: 'What components are covered?',
-          answer: 'Our warranty covers a wide range of parts and systems, including:\n\n✅ All mechanical and electrical parts\n ✅ Labour costs included\n ✅ Engine, gearbox, drivetrain, turbocharger\n ✅ Fuel systems, cooling, exhaust, brakes, suspension, steering\n ✅ Air conditioning, electrical systems, ECUs, sensors, lighting\n ✅ Multimedia, driver assistance, safety systems\n ✅ Hybrid & PHEV: hybrid drive motors, batteries, inverters, regenerative braking, high-voltage components\n ✅ Electric vehicles: drive motors, high-voltage battery, inverters, chargers, thermal systems\n ✅ Motorcycles: engine/motor, gearbox, ECUs, electrical systems, suspension, brakes, cooling, lighting, instrumentation\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Our warranty covers a wide range of parts and systems, including:\n\n✅ All mechanical and electrical parts\n ✅ Labour costs included\n ✅ Engine, gearbox, drivetrain, turbocharger\n ✅ Fuel systems, cooling, exhaust, brakes, suspension, steering\n ✅ Air conditioning, electrical systems, ECUs, sensors, lighting\n ✅ Multimedia, driver assistance, safety systems\n ✅ Hybrid & PHEV: hybrid drive motors, batteries, inverters, regenerative braking, high-voltage components\n ✅ Electric vehicles: drive motors, high-voltage battery, inverters, chargers, thermal systems\n ✅ Motorcycles: engine/motor, gearbox, ECUs, electrical systems, suspension, brakes, cooling, lighting, instrumentation\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'petrol-diesel-parts',
           question: 'What parts are covered for my petrol or diesel car or van?',
-          answer: 'Our warranty covers a wide range of important parts and systems. Here are just some of the components included:\n✅ Engine & internal components (pistons, valves, camshafts, timing chains, seals, gaskets)\n ✅ Gearbox / transmission systems (manual, automatic, DSG, CVT, dual-clutch, transfer boxes)\n ✅ Drivetrain & clutch assemblies (flywheel, driveshafts, differentials)\n ✅ Turbocharger & supercharger units\n ✅ Fuel delivery systems (tanks, pumps, injectors, fuel rails, fuel control electronics)\n ✅ Cooling & heating systems (radiators, thermostats, water pumps, cooling fans, heater matrix)\n ✅ Exhaust & emissions systems (catalytic converters, DPFs, OPFs, EGR valves, NOx)\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Our warranty covers a wide range of important parts and systems. Here are just some of the components included:\n✅ Engine & internal components (pistons, valves, camshafts, timing chains, seals, gaskets)\n ✅ Gearbox / transmission systems (manual, automatic, DSG, CVT, dual-clutch, transfer boxes)\n ✅ Drivetrain & clutch assemblies (flywheel, driveshafts, differentials)\n ✅ Turbocharger & supercharger units\n ✅ Fuel delivery systems (tanks, pumps, injectors, fuel rails, fuel control electronics)\n ✅ Cooling & heating systems (radiators, thermostats, water pumps, cooling fans, heater matrix)\n ✅ Exhaust & emissions systems (catalytic converters, DPFs, OPFs, EGR valves, NOx)\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'hybrid-phev-parts',
           question: 'What parts are covered for Hybrid & PHEV Vehicle?',
-          answer: 'Our warranty covers a wide range of important hybrid and plug-in hybrid components, including:\n✅ All petrol/diesel engine parts and labour\n ✅ Hybrid drive motors & ECUs\n ✅ Hybrid battery failure\n ✅ Power control units, inverters & DC-DC converters\n ✅ Regenerative braking systems\n ✅ High-voltage cables & connectors\n ✅ Cooling systems for hybrid components\n ✅ Charging ports & on-board charging modules\n ✅ Hybrid transmission components\n ✅ Braking systems (ABS, calipers, cylinders, master cylinders)\n ✅ Suspension & steering systems (shocks, struts, steering racks, power/electric steering pumps, electronic suspension)\n ✅ Air conditioning & climate control systems\n ✅ Electrical components & charging systems (alternators, starter motors, wiring looms, connectors, relays)\n ✅ Electronic control units (ECUs) & sensors (engine management, ABS, traction control, emissions sensors)\n ✅ Lighting & ignition systems (headlights, indicators, ignition coils, switches, control modules)\n ✅ Factory-fitted multimedia & infotainment systems (screens, sat nav, audio, digital displays)\n ✅ Driver assistance systems (adaptive cruise control, lane assist, steering assist, parking sensors, reversing cameras)\n ✅ Safety systems (airbags, seatbelts, pretensioners, safety restraint modules)\n ✅ And more…\nFor the full list of covered parts and all the details, please visit our \'What\'s covered\' page.\n\nFor full details, please see our \'What\'s covered\' section. https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Our warranty covers a wide range of important hybrid and plug-in hybrid components, including:\n✅ All petrol/diesel engine parts and labour\n ✅ Hybrid drive motors & ECUs\n ✅ Hybrid battery failure\n ✅ Power control units, inverters & DC-DC converters\n ✅ Regenerative braking systems\n ✅ High-voltage cables & connectors\n ✅ Cooling systems for hybrid components\n ✅ Charging ports & on-board charging modules\n ✅ Hybrid transmission components\n ✅ Braking systems (ABS, calipers, cylinders, master cylinders)\n ✅ Suspension & steering systems (shocks, struts, steering racks, power/electric steering pumps, electronic suspension)\n ✅ Air conditioning & climate control systems\n ✅ Electrical components & charging systems (alternators, starter motors, wiring looms, connectors, relays)\n ✅ Electronic control units (ECUs) & sensors (engine management, ABS, traction control, emissions sensors)\n ✅ Lighting & ignition systems (headlights, indicators, ignition coils, switches, control modules)\n ✅ Factory-fitted multimedia & infotainment systems (screens, sat nav, audio, digital displays)\n ✅ Driver assistance systems (adaptive cruise control, lane assist, steering assist, parking sensors, reversing cameras)\n ✅ Safety systems (airbags, seatbelts, pretensioners, safety restraint modules)\n ✅ And more…\nFor the full list of covered parts and all the details, please visit our \'What\'s covered\' page.\n\nFor full details, please see our \'What\'s covered\' section. https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'electric-vehicle-parts',
           question: 'What\'s covered for Electric Vehicles (EVs)?',
-          answer: 'Our warranty covers a wide range of essential EV components. Here are just some of the parts included:\n\n✅ EV drive motors & reduction gear\n ✅ EV transmission & reduction gearbox assemblies\n ✅ High-voltage battery failure\n ✅ Power control units & inverters\n ✅ On-board charger (OBC) & charging ports\n ✅ DC-DC converters\n ✅ Thermal management systems\n ✅ High-voltage cables & connectors\n ✅ EV-specific control electronics\n ✅ Regenerative braking system components\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Our warranty covers a wide range of essential EV components. Here are just some of the parts included:\n\n✅ EV drive motors & reduction gear\n ✅ EV transmission & reduction gearbox assemblies\n ✅ High-voltage battery failure\n ✅ Power control units & inverters\n ✅ On-board charger (OBC) & charging ports\n ✅ DC-DC converters\n ✅ Thermal management systems\n ✅ High-voltage cables & connectors\n ✅ EV-specific control electronics\n ✅ Regenerative braking system components\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'motorbike-parts',
           question: 'What parts are covered for my motorbike?',
-          answer: 'Our warranty covers a wide range of key motorcycle components. Here are just some of the parts included:\n✅ Engine / motor & drivetrain components\n ✅ Gearbox / transmission systems\n ✅ ECUs, sensors & control modules\n ✅ Electrical systems & wiring\n ✅ High-voltage battery failure (hybrid & EV)\n ✅ Suspension & steering systems\n ✅ Braking systems\n ✅ Cooling & thermal systems\n ✅ Lighting & ignition systems\n ✅ Instrumentation & rider controls\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Our warranty covers a wide range of key motorcycle components. Here are just some of the parts included:\n✅ Engine / motor & drivetrain components\n ✅ Gearbox / transmission systems\n ✅ ECUs, sensors & control modules\n ✅ Electrical systems & wiring\n ✅ High-voltage battery failure (hybrid & EV)\n ✅ Suspension & steering systems\n ✅ Braking systems\n ✅ Cooling & thermal systems\n ✅ Lighting & ignition systems\n ✅ Instrumentation & rider controls\n ✅ And more…\n\nFor full details, please see our \'What\'s covered\' section. https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'optional-extras',
           question: 'What optional extras do you offer?',
-          answer: 'Here\'s your list with brief descriptions for each benefit:\n\n* Vehicle rental – Get a courtesy vehicle while your car is being repaired, so you\'re never left stranded.\n* Wear & tear cover – Protection for certain parts that fail due to normal use, not just sudden breakdowns.\n* Tyre replacement cover – Covers the cost of replacing tyres damaged by punctures or road hazards.\n* European repair cover – Enjoy warranty protection even when driving in Europe.\n* Breakdown recovery – Roadside recovery claim-back to get you moving again if your car breaks down.\n* Transferable warranty – If you sell your car, you can transfer the remaining warranty to the new owner.\n\nFor full details on what\'s included, visit our https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Here\'s your list with brief descriptions for each benefit:\n\n* Vehicle rental – Get a courtesy vehicle while your car is being repaired, so you\'re never left stranded.\n* Wear & tear cover – Protection for certain parts that fail due to normal use, not just sudden breakdowns.\n* Tyre replacement cover – Covers the cost of replacing tyres damaged by punctures or road hazards.\n* European repair cover – Enjoy warranty protection even when driving in Europe.\n* Breakdown recovery – Roadside recovery claim-back to get you moving again if your car breaks down.\n* Transferable warranty – If you sell your car, you can transfer the remaining warranty to the new owner.\n\nFor full details on what\'s included, visit our https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'what-not-covered',
@@ -325,7 +325,7 @@ const FAQ = () => {
         {
           id: 'what-covered',
           question: 'What does your warranty cover?',
-          answer: 'Our plans cover a wide range of parts – from the engine and gearbox to electrical systems and more. We offer the most comprehensive warranty plan for our customers to ensure that you get the most cover.\n\nFor full details on what\'s included, visit our https://buyawarranty.co.uk/what-is-covered',
+          answer: 'Our plans cover a wide range of parts – from the engine and gearbox to electrical systems and more. We offer the most comprehensive warranty plan for our customers to ensure that you get the most cover.\n\nFor full details on what\'s included, visit our https://pandaprotect.co.uk/what-is-covered',
           popular: true
         },
         {
@@ -361,7 +361,7 @@ const FAQ = () => {
         {
           id: 'increase-claim-limit-for-claim',
           question: 'Can I increase my claim limit for a claim?',
-          answer: 'If you decide you want a higher claim limit. You can call 0330 229 5040 or email support@buyawarranty.co.uk to upgrade. The higher limit will apply to any future approved claims after the upgrade is confirmed.'
+          answer: 'If you decide you want a higher claim limit. You can call 0330 229 5040 or email support@pandaprotect.co.uk to upgrade. The higher limit will apply to any future approved claims after the upgrade is confirmed.'
         },
         {
           id: 'unlimited-repairs',
@@ -376,7 +376,7 @@ const FAQ = () => {
         {
           id: 'high-performance-cover',
           question: 'Can I get cover for a high performance or high end vehicle?',
-          answer: 'Some vehicles like Range Rover, BMW M/7 Series, Audi RS, Mercedes-AMG, Porsche, Jaguar, and Maserati may not be eligible due to specialist parts and higher repair costs. Please check our vehicle eligibility guide at: https://buyawarranty.co.uk/what-is-covered'
+          answer: 'Some vehicles like Range Rover, BMW M/7 Series, Audi RS, Mercedes-AMG, Porsche, Jaguar, and Maserati may not be eligible due to specialist parts and higher repair costs. Please check our vehicle eligibility guide at: https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'high-performance-purchased',
@@ -386,7 +386,7 @@ const FAQ = () => {
         {
           id: 'check-vehicle-qualifies',
           question: 'How do I check if my vehicle qualifies before buying?',
-          answer: 'If you\'re unsure, please check our vehicle eligibility guide at: https://buyawarranty.co.uk/what-is-covered'
+          answer: 'If you\'re unsure, please check our vehicle eligibility guide at: https://pandaprotect.co.uk/what-is-covered'
         },
         {
           id: 'car-too-old',
@@ -510,7 +510,7 @@ const FAQ = () => {
         {
           id: 'cancel-warranty',
           question: 'How do I cancel my warranty?',
-          answer: 'You have 14 days to cancel your warranty. We understand that circumstances may change, and you may no longer require the warranty purchased from Panda Protect. If you wish to cancel your warranty, please reach out to us at support@buyawarranty.co.uk or call us on 0330 229 5045.'
+          answer: 'You have 14 days to cancel your warranty. We understand that circumstances may change, and you may no longer require the warranty purchased from Panda Protect. If you wish to cancel your warranty, please reach out to us at support@pandaprotect.co.uk or call us on 0330 229 5045.'
         },
         {
           id: 'transferable',
@@ -520,12 +520,12 @@ const FAQ = () => {
         {
           id: 'transfer-warranty-new-vehicle',
           question: 'Can I transfer my warranty to another vehicle?',
-          answer: 'Got a new car or selling your car? Your warranty plan may be transferred with a small fee if a replacement vehicle is of a vehicle type that we provide warranty for i.e most vehicles. You may check eligibility by entering the registration plate into our homepage. Please email support@buyawarranty.co.uk to transfer your warranty or choose the option from the pricing page when you purchase your warranty.'
+          answer: 'Got a new car or selling your car? Your warranty plan may be transferred with a small fee if a replacement vehicle is of a vehicle type that we provide warranty for i.e most vehicles. You may check eligibility by entering the registration plate into our homepage. Please email support@pandaprotect.co.uk to transfer your warranty or choose the option from the pricing page when you purchase your warranty.'
         },
         {
           id: 'cancel-warranty-detailed',
           question: 'Can I cancel my warranty?',
-          answer: 'You have 14 days to cancel your warranty for a full refund for FREE (if no repairs have been made). After this period, our standard easy to follow cancellation policy applies. Simply visit https://buyawarranty.co.uk/cancel-warranty/'
+          answer: 'You have 14 days to cancel your warranty for a full refund for FREE (if no repairs have been made). After this period, our standard easy to follow cancellation policy applies. Simply visit https://pandaprotect.co.uk/cancel-warranty/'
         }
       ]
      },
@@ -536,7 +536,7 @@ const FAQ = () => {
         {
           id: 'how-contact-you',
           question: 'How can I contact you?',
-          answer: 'Get in touch – we\'re here to help with any questions or support you need.\n\n✔️ Customer Sales and Support\n\n • Email: support@buyawarranty.co.uk\n • Phone: 0330 229 5040\n • Monday to Friday, 9am – 5:30pm\n\n✔️ Claims and Repairs\n • Email: claims@buyawarranty.co.uk\n • Phone: 0330 229 5045\n • Monday to Friday, 9am – 5:30pm\n\nFriendly support whenever you need us!'
+          answer: 'Get in touch – we\'re here to help with any questions or support you need.\n\n✔️ Customer Sales and Support\n\n • Email: support@pandaprotect.co.uk\n • Phone: 0330 229 5040\n • Monday to Friday, 9am – 5:30pm\n\n✔️ Claims and Repairs\n • Email: claims@pandaprotect.co.uk\n • Phone: 0330 229 5045\n • Monday to Friday, 9am – 5:30pm\n\nFriendly support whenever you need us!'
         }
       ]
     }
@@ -593,7 +593,7 @@ const FAQ = () => {
         - Fast claim processing (within 90 minutes of approval)
         - Direct payment to garages or reimbursement
         - Claims team: 0330 229 5045 (Mon-Fri 09:00-17:30)
-        - Support email: support@buyawarranty.co.uk
+        - Support email: support@pandaprotect.co.uk
         
         Coverage Details:
         - All mechanical and electrical parts
@@ -646,7 +646,7 @@ const FAQ = () => {
       } else if (lowerQuery.includes('garage') || lowerQuery.includes('mechanic')) {
         response = 'You can use your preferred garage for repairs as long as they\'re VAT registered. You can choose a main dealer, but may need to cover the price difference compared to an independent garage. We can also recommend trusted repair centres in our network.';
       } else if (lowerQuery.includes('cancel') || lowerQuery.includes('refund')) {
-        response = 'You have 14 days to cancel your warranty for a full refund (if no repairs have been made). After this period, our standard cancellation policy applies. Contact us at support@buyawarranty.co.uk or call 0330 229 5045 for cancellation requests.';
+        response = 'You have 14 days to cancel your warranty for a full refund (if no repairs have been made). After this period, our standard cancellation policy applies. Contact us at support@pandaprotect.co.uk or call 0330 229 5045 for cancellation requests.';
       } else if (lowerQuery.includes('transfer') || lowerQuery.includes('sell') || lowerQuery.includes('new owner')) {
         response = 'Yes, the warranty is transferable to a new owner when you sell your vehicle privately. This adds value to your car and is a great selling point. There is a £30 fee for transferring the warranty. Contact us to arrange the transfer.';
       } else if (lowerQuery.includes('age') || lowerQuery.includes('old') || lowerQuery.includes('mileage') || lowerQuery.includes('eligible')) {
@@ -656,13 +656,13 @@ const FAQ = () => {
       } else if (lowerQuery.includes('service') || lowerQuery.includes('maintenance') || lowerQuery.includes('mot')) {
         response = 'Yes, you need to keep up with regular servicing to maintain your warranty validity. Follow the manufacturer\'s service schedule and keep your receipts. Routine maintenance isn\'t covered unless you add our Wear & Tear cover add-on.';
       } else {
-        response = `I couldn't find a specific FAQ for "${query}", but I can help! Our comprehensive warranty covers mechanical and electrical parts for cars, vans, and motorcycles. For specific questions, please contact our team at 0330 229 5045 or support@buyawarranty.co.uk. You can also browse our detailed FAQ categories above for more information.`;
+        response = `I couldn't find a specific FAQ for "${query}", but I can help! Our comprehensive warranty covers mechanical and electrical parts for cars, vans, and motorcycles. For specific questions, please contact our team at 0330 229 5045 or support@pandaprotect.co.uk. You can also browse our detailed FAQ categories above for more information.`;
       }
 
       setAiAnswer(response);
     } catch (error) {
       console.error('Error generating AI answer:', error);
-      setAiAnswer(`I couldn't find a specific answer for "${query}" in our FAQ. For personalized assistance, please contact our support team at 0330 229 5045 or support@buyawarranty.co.uk. You can also browse our FAQ categories above for related information.`);
+      setAiAnswer(`I couldn't find a specific answer for "${query}" in our FAQ. For personalized assistance, please contact our support team at 0330 229 5045 or support@pandaprotect.co.uk. You can also browse our FAQ categories above for related information.`);
     } finally {
       setIsLoadingAI(false);
     }
@@ -684,7 +684,7 @@ const FAQ = () => {
         title="FAQ's - Frequently Asked Questions | Panda Protect.co.uk"
         description="Find answers to common questions about car warranties, claims, coverage, and more. Get help with warranty plans, repairs, and customer support."
         keywords="car warranty FAQ, warranty questions, car insurance claims, vehicle warranty coverage, warranty help"
-        canonical="https://buyawarranty.co.uk/faq/"
+        canonical="https://pandaprotect.co.uk/faq/"
       />
       <FAQSchema faqs={faqSchemaData} />
       
@@ -994,8 +994,8 @@ const FAQ = () => {
                             0330 229 5045
                           </a>{' '}
                           or{' '}
-                          <a href="mailto:support@buyawarranty.co.uk" className="font-medium hover:underline">
-                            support@buyawarranty.co.uk
+                          <a href="mailto:support@pandaprotect.co.uk" className="font-medium hover:underline">
+                            support@pandaprotect.co.uk
                           </a>
                         </p>
                       </div>
@@ -1110,8 +1110,8 @@ const FAQ = () => {
                         <p className="font-semibold text-brand-dark-text">
                           Email Us
                         </p>
-                        <a href="mailto:support@buyawarranty.co.uk" className="text-primary hover:underline">
-                          support@buyawarranty.co.uk
+                        <a href="mailto:support@pandaprotect.co.uk" className="text-primary hover:underline">
+                          support@pandaprotect.co.uk
                         </a>
                       </div>
                     </div>
@@ -1132,10 +1132,10 @@ const FAQ = () => {
                   We take complaints very seriously. Our UK-based team will look into it properly. 
                   Please email us at{' '}
                   <a 
-                    href="mailto:info@buyawarranty.co.uk" 
+                    href="mailto:info@pandaprotect.co.uk" 
                     className="text-primary hover:text-primary/80 transition-colors underline"
                   >
-                    info@buyawarranty.co.uk
+                    info@pandaprotect.co.uk
                   </a>
                 </p>
               </section>

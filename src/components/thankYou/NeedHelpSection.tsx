@@ -5,11 +5,11 @@ import { Mail, HelpCircle } from 'lucide-react';
 
 export const NeedHelpSection: React.FC = () => {
   const handleContactSupport = () => {
-    window.open('https://buyawarranty.co.uk/contact-us/', '_blank');
+    window.open('https://pandaprotect.co.uk/contact-us/', '_blank');
   };
 
   const handleFAQClick = () => {
-    window.open('https://www.buyawarranty.co.uk/faq', '_blank');
+    window.open('https://www.pandaprotect.co.uk/faq', '_blank');
   };
 
   return (

@@ -76,7 +76,7 @@ const JaguarWarranty = () => {
         title="Jaguar Car Extended Warranty | Cover for New & Used Models"
         description="Protect your Jaguar with comprehensive extended warranty cover for new and used models. Get instant online quotes, flexible plans and protection from costly repairs."
         keywords="jaguar extended warranty, jaguar warranty UK, used jaguar warranty, jaguar xe warranty, jaguar xf warranty, jaguar f-pace warranty, jaguar i-pace warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/jaguar/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/jaguar/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -84,9 +84,9 @@ const JaguarWarranty = () => {
       <WebPageSchema
         name="Jaguar Extended Warranty - Panda Protect"
         description="Protect your Jaguar with comprehensive extended warranty cover for new and used models. Get instant online quotes, flexible plans and protection from costly repairs."
-        url="https://buyawarranty.co.uk/car-extended-warranty/jaguar/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/jaguar/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/what-is-covered/"
+        significantLink="https://pandaprotect.co.uk/what-is-covered/"
         specialty="Jaguar Extended Warranty Insurance"
       />
 
@@ -105,9 +105,9 @@ const JaguarWarranty = () => {
 
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Jaguar Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/jaguar/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Jaguar Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/jaguar/" }
         ]}
       />
 

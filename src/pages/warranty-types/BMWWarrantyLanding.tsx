@@ -401,8 +401,8 @@ const BMWWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -417,7 +417,7 @@ const BMWWarrantyLanding: React.FC = () => {
       "price": "29",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/bmw-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/bmw-warranty/",
       "seller": {
         "@type": "Organization",
         "name": "Panda Protect"
@@ -467,7 +467,7 @@ const BMWWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£29-£95/month",
       "address": {
@@ -531,19 +531,19 @@ const BMWWarrantyLanding: React.FC = () => {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://buyawarranty.co.uk/"
+        "item": "https://pandaprotect.co.uk/"
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Warranty Types",
-        "item": "https://buyawarranty.co.uk/warranty-types/"
+        "item": "https://pandaprotect.co.uk/warranty-types/"
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": "BMW Extended Warranty",
-        "item": "https://buyawarranty.co.uk/warranty-types/bmw-warranty/"
+        "item": "https://pandaprotect.co.uk/warranty-types/bmw-warranty/"
       }
     ]
   };
@@ -553,12 +553,12 @@ const BMWWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
     "sameAs": [
-      "https://uk.trustpilot.com/review/buyawarranty.co.uk"
+      "https://uk.trustpilot.com/review/pandaprotect.co.uk"
     ],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -575,11 +575,11 @@ const BMWWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "BMW Extended Warranty UK - Get Instant Quote",
     "description": "Protect your BMW with comprehensive extended warranty cover. All models from 1 Series to X7 and i Series. Nationwide UK coverage, approved garages, unlimited claims. Get your instant quote in 60 seconds.",
-    "url": "https://buyawarranty.co.uk/warranty-types/bmw-warranty/",
+    "url": "https://pandaprotect.co.uk/warranty-types/bmw-warranty/",
     "isPartOf": {
       "@type": "WebSite",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk"
+      "url": "https://pandaprotect.co.uk"
     },
     "about": {
       "@type": "Thing",
@@ -635,7 +635,7 @@ const BMWWarrantyLanding: React.FC = () => {
         <title>BMW Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your BMW with comprehensive extended warranty cover. All models from 1 Series to X7 and i Series covered. Engine, gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £29/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="BMW extended warranty, BMW used car warranty, BMW warranty UK, BMW warranty cost, BMW warranty quote, BMW 3 Series warranty, BMW X5 warranty, BMW i4 warranty, BMW X3 warranty, BMW 5 Series warranty, BMW electric warranty, BMW hybrid warranty, used BMW warranty, second hand BMW warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/bmw-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/bmw-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -650,9 +650,9 @@ const BMWWarrantyLanding: React.FC = () => {
         {/* Open Graph */}
         <meta property="og:title" content="BMW Extended Warranty UK | Instant Quotes from £29/month" />
         <meta property="og:description" content="Comprehensive BMW warranty coverage. Engine, gearbox, electrics & more. All models covered including hybrid and electric. Nationwide UK coverage with any garage. Get your instant quote now." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/bmw-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/bmw-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="BMW Extended Warranty UK - Panda Protect" />
@@ -663,7 +663,7 @@ const BMWWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="BMW Extended Warranty UK | From £29/month" />
         <meta name="twitter:description" content="Protect your BMW with comprehensive extended warranty. All models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         {/* AI Search Engine Optimization */}
         <meta name="ai-content-declaration" content="This page provides information about BMW extended warranty services in the UK. Human-authored and fact-checked." />
@@ -769,7 +769,7 @@ const BMWWarrantyLanding: React.FC = () => {
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

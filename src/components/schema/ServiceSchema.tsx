@@ -21,8 +21,8 @@ export const ServiceSchema = ({
   provider = 'Panda Protect',
   serviceType = 'Extended Warranty Service',
   areaServed = 'United Kingdom',
-  url = 'https://buyawarranty.co.uk',
-  image = 'https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png',
+  url = 'https://pandaprotect.co.uk',
+  image = 'https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png',
   priceRange = '££',
   aggregateRating = { ratingValue: '4.7', reviewCount: '30' }
 }: ServiceSchemaProps) => {
@@ -35,7 +35,7 @@ export const ServiceSchema = ({
       "provider": {
         "@type": "Organization",
         "name": provider,
-        "url": "https://buyawarranty.co.uk",
+        "url": "https://pandaprotect.co.uk",
         "logo": image
       },
       "serviceType": serviceType,
@@ -80,10 +80,10 @@ export const ServiceSchema = ({
         "bestRating": "5",
         "worstRating": "1"
       },
-      "termsOfService": "https://buyawarranty.co.uk/terms-conditions/",
+      "termsOfService": "https://pandaprotect.co.uk/terms-conditions/",
       "availableChannel": {
         "@type": "ServiceChannel",
-        "serviceUrl": "https://buyawarranty.co.uk",
+        "serviceUrl": "https://pandaprotect.co.uk",
         "servicePhone": "+44 330 229 5040",
         "serviceSmsNumber": "+44 7700 900123"
       }

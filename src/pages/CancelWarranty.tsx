@@ -56,7 +56,7 @@ const CancelWarranty = () => {
       toast({ title: "Great news!", description: "Your warranty will remain active." });
       window.location.href = '/';
     } catch {
-      toast({ title: "Request Failed", description: "Please contact support@buyawarranty.co.uk", variant: "destructive" });
+      toast({ title: "Request Failed", description: "Please contact support@pandaprotect.co.uk", variant: "destructive" });
     } finally {
       setIsCancellingRequest(false);
     }
@@ -119,7 +119,7 @@ const CancelWarranty = () => {
       });
       handleStaySuccess();
     } catch {
-      toast({ title: "Request Failed", description: "Please contact support@buyawarranty.co.uk", variant: "destructive" });
+      toast({ title: "Request Failed", description: "Please contact support@pandaprotect.co.uk", variant: "destructive" });
     } finally {
       setIsStaying(false);
     }
@@ -641,8 +641,8 @@ const CancelWarranty = () => {
             <h3 className="text-lg font-bold text-[#000] mb-2">Need Help?</h3>
             <p className="text-[#333] mb-4">Our friendly team is here to assist.</p>
             <div className="flex flex-wrap gap-4 justify-center">
-              <a href="mailto:support@buyawarranty.co.uk" className="flex items-center gap-2 text-[#FF7A00] hover:underline font-medium">
-                <Mail className="w-4 h-4" /> support@buyawarranty.co.uk
+              <a href="mailto:support@pandaprotect.co.uk" className="flex items-center gap-2 text-[#FF7A00] hover:underline font-medium">
+                <Mail className="w-4 h-4" /> support@pandaprotect.co.uk
               </a>
               <a href="tel:03302295045" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
                 <Phone className="w-4 h-4" /> 0330 229 5045

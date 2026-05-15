@@ -36,7 +36,7 @@ export const TestTrustpilotEmail = () => {
         referenceId,
         orderDate: new Date().toISOString(),
         productName,
-        productUrl: 'https://buyawarranty.co.uk'
+        productUrl: 'https://pandaprotect.co.uk'
       });
 
       setResult({

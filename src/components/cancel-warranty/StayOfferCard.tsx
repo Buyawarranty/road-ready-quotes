@@ -57,7 +57,7 @@ const StayOfferCard: React.FC<StayOfferCardProps> = ({ onStaySuccess }) => {
       console.error('Stay request error:', error);
       toast({
         title: "Request Failed",
-        description: "Please contact us directly at support@buyawarranty.co.uk",
+        description: "Please contact us directly at support@pandaprotect.co.uk",
         variant: "destructive",
       });
     } finally {

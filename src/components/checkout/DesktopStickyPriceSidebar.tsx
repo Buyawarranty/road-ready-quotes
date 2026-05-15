@@ -185,7 +185,7 @@ const DesktopStickyPriceSidebar: React.FC<DesktopStickyPriceSidebarProps> = ({
               256-bit SSL encryption
             </p>
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-xs text-gray-600 hover:text-[#1a1a1a]"

@@ -449,8 +449,8 @@ const VanWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -465,7 +465,7 @@ const VanWarrantyLanding: React.FC = () => {
       "price": "19",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/vans-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/vans-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -508,9 +508,9 @@ const VanWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Van warranty", "item": "https://buyawarranty.co.uk/warranty-types/vans-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Van warranty", "item": "https://pandaprotect.co.uk/warranty-types/vans-warranty/" }
     ]
   };
 
@@ -521,7 +521,7 @@ const VanWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£95/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -535,11 +535,11 @@ const VanWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended vehicle warranty provider.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -548,8 +548,8 @@ const VanWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Van warranty UK — instant quote",
     "description": "Protect your commercial van with comprehensive extended warranty cover. All major makes covered. From £19/month.",
-    "url": "https://buyawarranty.co.uk/warranty-types/vans-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/vans-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Van Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Ford" },
@@ -587,7 +587,7 @@ const VanWarrantyLanding: React.FC = () => {
         <title>Van warranty UK | From £19/mo | Panda Protect</title>
         <meta name="description" content="Keep your business moving with comprehensive van warranty cover. Ford Transit, Mercedes Sprinter, VW Transporter & all major makes. Engine, turbo, gearbox, DPF covered. Claim limits up to £5,000. Zero excess available. Same-day cover. Free 30-second quote." />
         <meta name="keywords" content="van warranty UK, commercial van warranty, Ford Transit warranty, Mercedes Sprinter warranty, VW Transporter warranty, Vauxhall Vivaro warranty, van extended warranty, used van warranty, van breakdown cover, courier van warranty, trade van warranty, high mileage van warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/vans-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/vans-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         
         <meta name="geo.region" content="GB" />
@@ -598,9 +598,9 @@ const VanWarrantyLanding: React.FC = () => {
         
         <meta property="og:title" content="Van warranty UK | Keep your business moving | From £19/mo" />
         <meta property="og:description" content="Comprehensive van warranty. Engine, turbo, gearbox, DPF & more. All major makes covered. Nationwide UK. Same-day cover. Get your free quote." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/vans-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/vans-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Panda Protect" />
@@ -724,7 +724,7 @@ const VanWarrantyLanding: React.FC = () => {
                   />
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"
@@ -1068,7 +1068,7 @@ const VanWarrantyLanding: React.FC = () => {
                 Why van owners choose us
               </h2>
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-white border-2 border-gray-200 rounded-xl px-5 py-3 hover:border-green-400 transition-colors shadow-sm mt-4 mb-4"
@@ -1318,7 +1318,7 @@ const VanWarrantyLanding: React.FC = () => {
             {/* Trustpilot link + CTA */}
             <div className="text-center mt-8 space-y-4">
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 text-sm font-semibold text-gray-700 hover:text-[#00b67a] transition-colors"

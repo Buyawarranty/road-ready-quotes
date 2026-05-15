@@ -80,7 +80,7 @@ const SkodaWarranty = () => {
         title="Škoda Car Extended Warranty | Cover for New & Used Models"
         description="Protect your Škoda with comprehensive extended warranty cover for new and used models. Get instant quotes, flexible plans and protection from costly repairs."
         keywords="skoda extended warranty, skoda warranty UK, used skoda warranty, skoda octavia warranty, skoda superb warranty, skoda kodiaq warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/skoda/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/skoda/"
         ogTitle="Škoda Extended Warranty for New and Used Models"
         ogDescription="Get reliable Škoda extended warranty cover for mechanical and electrical failures. Fast online quotes and flexible plans for all Škoda models."
       />
@@ -90,9 +90,9 @@ const SkodaWarranty = () => {
       <WebPageSchema
         name="Škoda Extended Warranty - Panda Protect"
         description="Protect your Škoda with comprehensive extended warranty cover for new and used models. Get instant quotes, flexible plans and protection from costly repairs."
-        url="https://buyawarranty.co.uk/car-extended-warranty/skoda/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/skoda/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Škoda Extended Warranties"
       />
       
@@ -102,7 +102,7 @@ const SkodaWarranty = () => {
         price="380.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -111,9 +111,9 @@ const SkodaWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Škoda Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/skoda/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Škoda Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/skoda/" }
         ]}
       />
 

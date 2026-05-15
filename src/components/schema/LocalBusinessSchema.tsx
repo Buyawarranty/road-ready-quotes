@@ -24,7 +24,7 @@ interface LocalBusinessSchemaProps {
 export const LocalBusinessSchema = ({
   name = 'Panda Protect',
   telephone = '+443302295040',
-  email = 'support@buyawarranty.co.uk',
+  email = 'support@pandaprotect.co.uk',
   address = {
     streetAddress: 'United Kingdom',
     addressLocality: 'London',
@@ -39,7 +39,7 @@ export const LocalBusinessSchema = ({
   openingHours = 'Mo-Fr 09:00-17:30',
   priceRange = '££',
   areaServed = 'GB',
-  url = 'https://buyawarranty.co.uk'
+  url = 'https://pandaprotect.co.uk'
 }: LocalBusinessSchemaProps) => {
   useEffect(() => {
     const schema = {
@@ -49,8 +49,8 @@ export const LocalBusinessSchema = ({
       "name": name,
       "description": "UK's leading car warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
       "url": url,
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-      "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "telephone": telephone,
       "email": email,
       "address": {
@@ -81,7 +81,7 @@ export const LocalBusinessSchema = ({
       },
       "hasMap": "https://www.google.com/maps/place/United+Kingdom",
       "sameAs": [
-        "https://uk.trustpilot.com/review/buyawarranty.co.uk"
+        "https://uk.trustpilot.com/review/pandaprotect.co.uk"
       ],
       "aggregateRating": {
         "@type": "AggregateRating",

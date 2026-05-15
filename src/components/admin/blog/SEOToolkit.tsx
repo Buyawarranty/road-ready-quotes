@@ -178,7 +178,7 @@ export const SEOToolkit = () => {
           <div>
             <label className="block text-sm font-medium mb-2">URL Slug</label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">buyawarranty.co.uk/blog/</span>
+              <span className="text-sm text-gray-500">pandaprotect.co.uk/blog/</span>
               <Input
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
@@ -199,7 +199,7 @@ export const SEOToolkit = () => {
                 {metaTitle || 'Your Page Title Here'}
               </h3>
               <p className="text-green-600 text-sm">
-                buyawarranty.co.uk/blog/{slug || 'your-url-slug'}
+                pandaprotect.co.uk/blog/{slug || 'your-url-slug'}
               </p>
               <p className="text-gray-700 text-sm mt-1">
                 {metaDescription || 'Your meta description will appear here. Make it compelling to improve click-through rates.'}

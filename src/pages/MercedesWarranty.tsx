@@ -82,22 +82,22 @@ const MercedesWarranty = () => {
     {
       name: "Diagnose the Issue",
       text: "Take your Mercedes to any Mercedes-Benz dealership or approved independent specialist. The technician will identify the fault using Mercedes diagnostic equipment and provide an estimate.",
-      url: "https://buyawarranty.co.uk/make-a-claim/"
+      url: "https://pandaprotect.co.uk/make-a-claim/"
     },
     {
       name: "Contact Us for Authorisation",
       text: "Call our UK-based claims team on 0330 229 5040. We'll review the diagnosis for your Mercedes and authorise the repair quickly, typically within 2 hours.",
-      url: "https://buyawarranty.co.uk/make-a-claim/"
+      url: "https://pandaprotect.co.uk/make-a-claim/"
     },
     {
       name: "Get Your Mercedes Repaired",
       text: "Once authorised, the garage completes the repair using genuine Mercedes-Benz or OE-quality parts. You only pay any applicable excess.",
-      url: "https://buyawarranty.co.uk/make-a-claim/"
+      url: "https://pandaprotect.co.uk/make-a-claim/"
     },
     {
       name: "We Pay the Garage Directly",
       text: "We settle the invoice directly with the garage. No upfront costs, no claim forms, no waiting for reimbursement. Drive away in your repaired Mercedes.",
-      url: "https://buyawarranty.co.uk/make-a-claim/"
+      url: "https://pandaprotect.co.uk/make-a-claim/"
     }
   ];
 
@@ -110,8 +110,8 @@ const MercedesWarranty = () => {
         keywords="mercedes extended warranty, mercedes warranty UK, used mercedes warranty, mercedes c class warranty, mercedes e class warranty, mercedes amg warranty, mercedes benz warranty, mercedes used car warranty, mercedes high mileage warranty"
         ogTitle="Mercedes-Benz Extended Warranty | Protect Your Mercedes from £24/month"
         ogDescription="UK's trusted Mercedes extended warranty. Covers engine, gearbox, MBUX, electrics & more. High-mileage cover up to 150,000 miles. 14-day money back guarantee."
-        ogImage="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
-        canonical="https://buyawarranty.co.uk/warranty-types/mercedes/"
+        ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        canonical="https://pandaprotect.co.uk/warranty-types/mercedes/"
         geoRegion="GB"
         geoPlacename="United Kingdom"
         geoPosition="51.5074;-0.1278"
@@ -124,9 +124,9 @@ const MercedesWarranty = () => {
       <WebPageSchema
         name="Mercedes-Benz Extended Warranty UK | Panda Protect"
         description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 150,000 miles. Fast claims & wide garages."
-        url="https://buyawarranty.co.uk/warranty-types/mercedes/"
+        url="https://pandaprotect.co.uk/warranty-types/mercedes/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Mercedes-Benz Extended Warranties, AMG Warranty, MBUX Cover, Mercedes EQ Warranty"
       />
       
@@ -136,7 +136,7 @@ const MercedesWarranty = () => {
         price="24.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="InStock"
         areaServed="United Kingdom"
       />
@@ -147,7 +147,7 @@ const MercedesWarranty = () => {
         provider="Panda Protect"
         serviceType="Extended Vehicle Warranty"
         areaServed="United Kingdom"
-        url="https://buyawarranty.co.uk/warranty-types/mercedes/"
+        url="https://pandaprotect.co.uk/warranty-types/mercedes/"
         priceRange="££"
       />
       
@@ -155,9 +155,9 @@ const MercedesWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: 'Home', url: 'https://buyawarranty.co.uk/' },
-          { name: 'Warranty Types', url: 'https://buyawarranty.co.uk/warranty-types/' },
-          { name: 'Mercedes-Benz Warranty', url: 'https://buyawarranty.co.uk/warranty-types/mercedes/' }
+          { name: 'Home', url: 'https://pandaprotect.co.uk/' },
+          { name: 'Warranty Types', url: 'https://pandaprotect.co.uk/warranty-types/' },
+          { name: 'Mercedes-Benz Warranty', url: 'https://pandaprotect.co.uk/warranty-types/mercedes/' }
         ]}
       />
       

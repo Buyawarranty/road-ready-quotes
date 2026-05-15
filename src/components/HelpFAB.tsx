@@ -84,7 +84,7 @@ const HelpFAB: React.FC = () => {
             </a>
             
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"

@@ -24,11 +24,11 @@ const NewFooter = () => {
             </a>
             
             <a 
-              href="mailto:support@buyawarranty.co.uk" 
+              href="mailto:support@pandaprotect.co.uk" 
               className="flex items-center gap-2 text-white hover:text-white/80 transition-colors font-medium"
             >
               <Mail size={18} className="text-white" />
-              <span className="text-white">Email us: support@buyawarranty.co.uk</span>
+              <span className="text-white">Email us: support@pandaprotect.co.uk</span>
             </a>
 
             <Link 

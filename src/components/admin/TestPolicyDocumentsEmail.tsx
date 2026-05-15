@@ -18,7 +18,7 @@ export const TestPolicyDocumentsEmail = () => {
       
       const { data, error } = await supabase.functions.invoke('send-policy-documents', {
         body: {
-          recipientEmail: 'info@buyawarranty.co.uk',
+          recipientEmail: 'info@pandaprotect.co.uk',
           variables: {
             planType: 'Premium Car Plan',
             customerName: 'Test Customer',
@@ -43,7 +43,7 @@ export const TestPolicyDocumentsEmail = () => {
         console.log('Policy documents test successful:', data);
         toast({
           title: "Test Email Sent!",
-          description: "Policy documents email sent to info@buyawarranty.co.uk",
+          description: "Policy documents email sent to info@pandaprotect.co.uk",
         });
         setResult({ success: true, data });
       }
@@ -68,14 +68,14 @@ export const TestPolicyDocumentsEmail = () => {
           Test Policy Documents Email
         </CardTitle>
         <CardDescription>
-          Send a test policy documents email to info@buyawarranty.co.uk with sample data
+          Send a test policy documents email to info@pandaprotect.co.uk with sample data
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
           <h4 className="font-medium text-blue-900 mb-2">Test Data:</h4>
           <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Email: info@buyawarranty.co.uk</li>
+            <li>• Email: info@pandaprotect.co.uk</li>
             <li>• Plan: Premium Car Plan</li>
             <li>• Customer: Test Customer</li>
             <li>• Policy: BAW-2009-400123</li>
@@ -98,7 +98,7 @@ export const TestPolicyDocumentsEmail = () => {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-green-800 font-medium">✅ Test email sent successfully!</p>
                 <p className="text-sm text-green-700 mt-2">
-                  Check info@buyawarranty.co.uk for the policy documents email with updated styling and attachments.
+                  Check info@pandaprotect.co.uk for the policy documents email with updated styling and attachments.
                 </p>
               </div>
             ) : (

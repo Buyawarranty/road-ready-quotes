@@ -61,9 +61,9 @@ const LandRoverWarranty: React.FC = () => {
   ];
 
   const breadcrumbItems = [
-    { name: 'Home', url: 'https://buyawarranty.co.uk/' },
-    { name: 'Car Extended Warranty', url: 'https://buyawarranty.co.uk/car-extended-warranty/' },
-    { name: 'Land Rover Warranty', url: 'https://buyawarranty.co.uk/car-extended-warranty/land-rover/' }
+    { name: 'Home', url: 'https://pandaprotect.co.uk/' },
+    { name: 'Car Extended Warranty', url: 'https://pandaprotect.co.uk/car-extended-warranty/' },
+    { name: 'Land Rover Warranty', url: 'https://pandaprotect.co.uk/car-extended-warranty/land-rover/' }
   ];
 
   const landRoverModels = [
@@ -86,10 +86,10 @@ const LandRoverWarranty: React.FC = () => {
         title="Land Rover Extended Warranty UK | Cover All Models 2012–2026"
         description="Protect your Land Rover with an affordable extended warranty. Cover for Defender, Range Rover, Discovery & Evoque. Instant quotes, 150,000-mile limit, flexible UK plans from £20/month."
         keywords="Land Rover warranty, Range Rover warranty, Defender warranty, Discovery warranty, Land Rover extended warranty UK, Range Rover Sport warranty, Evoque warranty, Velar warranty, used Land Rover warranty, Land Rover car warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/land-rover/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/land-rover/"
         ogTitle="Land Rover Extended Warranty UK | Defender, Range Rover & Discovery Cover"
         ogDescription="Affordable extended warranty for all Land Rover models 2012–2026. Instant quotes, flexible plans, 150,000-mile limit. Protect your Defender, Range Rover, Discovery or Evoque today."
-        ogImage="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         geoRegion="GB"
         geoPlacename="United Kingdom"
         geoPosition="54.5;-4.5"
@@ -99,7 +99,7 @@ const LandRoverWarranty: React.FC = () => {
       <WebPageSchema
         name="Land Rover Extended Warranty UK | All Models Covered"
         description="Comprehensive extended warranty for Land Rover and Range Rover vehicles in the UK. Protect your Defender, Discovery, Evoque, Velar, or Range Rover Sport from unexpected repair costs with flexible plans."
-        url="https://buyawarranty.co.uk/car-extended-warranty/land-rover/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/land-rover/"
         specialty="Land Rover Extended Warranty, Range Rover Warranty, Defender Warranty, Discovery Warranty"
       />
       <FAQSchema faqs={faqItems} />
@@ -110,7 +110,7 @@ const LandRoverWarranty: React.FC = () => {
         priceCurrency="GBP"
         brand="Panda Protect"
         category="Land Rover Extended Warranty & Vehicle Protection"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="InStock"
         areaServed="GB"
       />

@@ -18,7 +18,7 @@ const CookiePolicy = () => {
         title="Cookie Policy | Panda Protect UK"
         description="Learn about how Panda Protect uses cookies and similar technologies on our website. Understand your privacy and cookie preferences."
         keywords="cookie policy, privacy, Panda Protect, cookies, website tracking, data protection"
-        canonical="https://buyawarranty.co.uk/cookies"
+        canonical="https://pandaprotect.co.uk/cookies"
       />
 
       {/* Back Button */}
@@ -67,8 +67,8 @@ const CookiePolicy = () => {
             <div>
               <p className="text-lg text-gray-700 leading-relaxed mb-4">
                 This Cookie Policy explains how Panda Protect ("we", "us", or "our") uses cookies and similar technologies on our website{' '}
-                <a href="https://buyawarranty.co.uk" className="text-[#eb4b00] hover:underline">
-                  https://buyawarranty.co.uk
+                <a href="https://pandaprotect.co.uk" className="text-[#eb4b00] hover:underline">
+                  https://pandaprotect.co.uk
                 </a>. By continuing to use our website, you consent to the use of cookies as described in this policy.
               </p>
               <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
@@ -206,8 +206,8 @@ const CookiePolicy = () => {
                 </p>
                 <p className="flex items-center">
                   <span className="font-medium mr-2">Email:</span>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-orange-300 hover:text-orange-200 transition-colors">
-                    support@buyawarranty.co.uk
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-orange-300 hover:text-orange-200 transition-colors">
+                    support@pandaprotect.co.uk
                   </a>
                 </p>
               </div>

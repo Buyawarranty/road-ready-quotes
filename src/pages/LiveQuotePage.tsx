@@ -596,7 +596,7 @@ export default function LiveQuotePage() {
               <div className="text-sm text-gray-500 space-y-1">
                 <p>Need urgent help? Contact us:</p>
                 <p className="font-medium">0330 229 5045</p>
-                <p>support@buyawarranty.co.uk</p>
+                <p>support@pandaprotect.co.uk</p>
               </div>
             </CardContent>
           </Card>
@@ -636,7 +636,7 @@ export default function LiveQuotePage() {
               <div className="text-sm text-gray-500 space-y-1">
                 <p>Need help? Contact us:</p>
                 <p className="font-medium">0330 229 5045</p>
-                <p>support@buyawarranty.co.uk</p>
+                <p>support@pandaprotect.co.uk</p>
               </div>
             </CardContent>
           </Card>

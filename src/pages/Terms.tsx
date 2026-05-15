@@ -197,8 +197,8 @@ const Terms = () => {
             <div className="text-center">
               <Mail className="w-8 h-8 text-brand-orange mx-auto mb-4" />
               <h4 className="text-xl font-bold text-gray-900 mb-4">Email Support</h4>
-              <a href="mailto:support@buyawarranty.co.uk" className="text-lg font-semibold text-brand-orange hover:text-orange-600 transition-colors">
-                support@buyawarranty.co.uk
+              <a href="mailto:support@pandaprotect.co.uk" className="text-lg font-semibold text-brand-orange hover:text-orange-600 transition-colors">
+                support@pandaprotect.co.uk
               </a>
             </div>
           </div>

@@ -76,7 +76,7 @@ const DesktopStickyBar: React.FC<DesktopStickyBarProps> = ({
           {/* SECTION 1: Trust & Reassurance */}
           <div className="flex flex-col items-center justify-center px-4 lg:px-6 py-3 border-r border-gray-100 min-w-fit">
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="hover:opacity-80 transition-opacity"

@@ -844,7 +844,7 @@ const CustomerDashboard = () => {
     try {
       const { error } = await supabase.functions.invoke('send-email', {
         body: {
-          to: 'support@buyawarranty.co.uk',
+          to: 'support@pandaprotect.co.uk',
           subject: `Support Request: ${supportSubject}`,
           html: `
             <h3>Support Request from Customer</h3>
@@ -1243,8 +1243,8 @@ const CustomerDashboard = () => {
             {/* Support Contact */}
             <p className="text-center text-sm text-gray-500 mt-6">
               Need help? Contact us at{' '}
-              <a href="mailto:support@buyawarranty.co.uk" className="text-orange-500 hover:text-orange-600 font-medium">
-                support@buyawarranty.co.uk
+              <a href="mailto:support@pandaprotect.co.uk" className="text-orange-500 hover:text-orange-600 font-medium">
+                support@pandaprotect.co.uk
               </a>
             </p>
           </div>
@@ -2197,7 +2197,7 @@ const CustomerDashboard = () => {
                         <Mail className="h-5 w-5 text-blue-600" />
                         <div>
                           <p className="font-medium">Email Support</p>
-                          <p className="text-sm text-gray-600">support@buyawarranty.co.uk</p>
+                          <p className="text-sm text-gray-600">support@pandaprotect.co.uk</p>
                           <p className="text-xs text-gray-500">Response within 24 hours</p>
                         </div>
                       </div>
@@ -2217,7 +2217,7 @@ const CustomerDashboard = () => {
                         <Mail className="h-5 w-5 text-green-600" />
                         <div>
                           <p className="font-medium">Claims Email</p>
-                          <p className="text-sm text-gray-600">claims@buyawarranty.co.uk</p>
+                          <p className="text-sm text-gray-600">claims@pandaprotect.co.uk</p>
                           <p className="text-xs text-gray-500">For warranty claims and repairs</p>
                         </div>
                       </div>

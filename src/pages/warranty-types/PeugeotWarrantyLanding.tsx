@@ -208,8 +208,8 @@ const PeugeotWarrantyLanding: React.FC = () => {
     "name": "Peugeot Extended Warranty UK",
     "description": "Comprehensive extended warranty for Peugeot models including 208, 308, 3008, 5008, 508, e-208, e-2008. PureTech engines, EAT8 gearbox, EV components covered.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/peugeot-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/peugeot-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
     "category": "Vehicle Extended Warranty",
@@ -221,7 +221,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
     "@type": "Service",
     "name": "Peugeot Extended Warranty Service",
     "alternateName": "Peugeot Used Car Warranty",
-    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
+    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "description": "Extended warranty coverage for all Peugeot models including 208, 308, 3008, 5008, 508, and EV models. Covers PureTech engine, EAT8 transmission, electrical systems, and more.",
     "serviceType": "Vehicle Extended Warranty",
@@ -237,9 +237,9 @@ const PeugeotWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Peugeot Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/peugeot-warranty/" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Peugeot Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/peugeot-warranty/" },
     ],
   };
 
@@ -247,8 +247,8 @@ const PeugeotWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016.",
     "foundingDate": "2016",
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" },
@@ -259,8 +259,8 @@ const PeugeotWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Peugeot Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Peugeot with comprehensive extended warranty cover. All models from 208 to 5008 and EV range. Nationwide UK coverage.",
-    "url": "https://buyawarranty.co.uk/warranty-types/peugeot-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/peugeot-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", ".hero-description"] },
   };
 
@@ -283,7 +283,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
         <title>Peugeot Extended Warranty UK | 208, 3008, 5008 Cover from £19/mo</title>
         <meta name="description" content="Peugeot extended warranty from £19/month. Cover 208, 308, 3008, 5008, 508, e-208, e-2008 & all models. PureTech & EAT8 covered. Any UK garage. Instant quote." />
         <meta name="keywords" content="peugeot extended warranty, peugeot warranty UK, peugeot 3008 warranty, peugeot 208 warranty, peugeot puretech warranty, peugeot electric warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/peugeot-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/peugeot-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="geo.region" content="GB" />
@@ -292,9 +292,9 @@ const PeugeotWarrantyLanding: React.FC = () => {
         <meta httpEquiv="content-language" content="en-GB" />
         <meta property="og:title" content="Peugeot Extended Warranty UK | Instant Quotes from £19/month" />
         <meta property="og:description" content="Comprehensive Peugeot warranty coverage. PureTech engine, EAT8 gearbox, electrics & more. All models covered including EV. Any UK garage." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/peugeot-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/peugeot-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Peugeot Extended Warranty UK - Panda Protect" />
@@ -303,7 +303,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Peugeot Extended Warranty UK | From £19/month" />
         <meta name="twitter:description" content="UK's top-rated Peugeot warranty. 208, 3008, 5008 & all models. PureTech & EAT8 covered. 8,000+ components. Any garage." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="ai-content-declaration" content="This page provides information about Peugeot extended warranty services in the UK. Human-authored and fact-checked." />
         <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="Panda Protect" />
@@ -363,7 +363,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage src={peugeot3008Hero} alt="Peugeot 3008 front view - Peugeot extended warranty UK coverage" className="w-full max-w-md mx-auto h-auto object-contain" priority width={651} height={500} />
                   <div className="absolute top-4 right-4">
-                    <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                    <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                       <OptimizedImage src={trustpilotExcellent} alt="Trustpilot Excellent Rating" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} />
                     </a>
                   </div>
