@@ -170,7 +170,7 @@ const DealerDashboard = () => {
                 >
                   <div
                     className={`h-10 w-10 rounded-lg flex items-center justify-center mb-3 ${
-                      isPrimary ? 'bg-gray-900/10 text-gray-900' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-100'
+                      isPrimary ? 'bg-yellow-300 text-orange-700' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-100'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
