@@ -27,6 +27,16 @@ import pandaMechanicImage from '@/assets/panda-mechanic-car.png';
  * SEO targets: dealer extended warranties, motor trade warranty, dealer programme UK.
  */
 const DealerHome = () => {
+  const navigate = useNavigate();
+  const [reg, setReg] = useState('');
+
+  const handleRegSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = reg.trim().toUpperCase().replace(/\s+/g, ' ');
+    if (!cleaned) return;
+    navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`);
+  };
+
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
   const pageDescription =
     'Boost dealer profits today. Offer extended warranties from 20p a day, sign up in 60 seconds and start earning with the UK\'s trusted dealer warranty partner.';
