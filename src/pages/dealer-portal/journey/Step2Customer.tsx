@@ -105,7 +105,7 @@ const Step2Customer: React.FC = () => {
       step={2}
       title="Customer details"
       subtitle="Add the end customer's details now, or send them later via WhatsApp / email."
-      backTo="/dealer-portal/quote/vehicle"
+      backTo="/dealer-portal/quote/pricing"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Mode toggle */}
