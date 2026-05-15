@@ -58,6 +58,24 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motMileage]);
 
+  // Pick up reg passed from home/dashboard via ?reg= or localStorage
+  useEffect(() => {
+    if (reg) return;
+    const url = new URL(window.location.href);
+    const fromUrl = url.searchParams.get('reg');
+    const fromStorage = localStorage.getItem('dealerPendingReg');
+    const initial = fromUrl || fromStorage;
+    if (initial) {
+      const upper = initial.toUpperCase();
+      setReg(upper);
+      localStorage.removeItem('dealerPendingReg');
+      performLookup(upper);
+    } else if (vehicle?.reg && !vehicle.make) {
+      performLookup(vehicle.reg);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const performLookup = async (regToLookup: string) => {
     const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
     if (!cleaned || cleaned.length < 4 || cleaned === lastLookedUp) return;
