@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Loader2, ChevronLeft, ChevronRight, Check, Search } from 'lucide-react';
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS, EXCESS_OPTIONS, LABOUR_OPTIONS, PARTS_OPTIONS, TERM_OPTIONS,
@@ -8,6 +9,9 @@ import {
 } from '@/lib/traderPricingDefaults';
 import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useMotMileage } from '@/hooks/useMotMileage';
 
 export interface TraderSelection {
   term: TraderTerm;
