@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Check,
@@ -27,6 +27,16 @@ import pandaMechanicImage from '@/assets/panda-mechanic-car.png';
  * SEO targets: dealer extended warranties, motor trade warranty, dealer programme UK.
  */
 const DealerHome = () => {
+  const navigate = useNavigate();
+  const [reg, setReg] = useState('');
+
+  const handleRegSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = reg.trim().toUpperCase().replace(/\s+/g, ' ');
+    if (!cleaned) return;
+    navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`);
+  };
+
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
   const pageDescription =
     'Boost dealer profits today. Offer extended warranties from 20p a day, sign up in 60 seconds and start earning with the UK\'s trusted dealer warranty partner.';
@@ -81,6 +91,42 @@ const DealerHome = () => {
                 Join the UK's trusted dealer warranty partner. Sign up in 60 seconds, sell more cars
                 and earn extra revenue on every vehicle with our motor trade warranty programme.
               </p>
+
+              {/* UK plate reg lookup → DVLA via Step1Vehicle */}
+              <form onSubmit={handleRegSubmit} className="space-y-3" aria-label="Vehicle registration lookup">
+                <label htmlFor="hero-reg" className="block text-sm font-semibold text-gray-700">
+                  Get an instant trade quote — enter a registration
+                </label>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex flex-1 items-stretch rounded-lg overflow-hidden shadow-md ring-1 ring-yellow-500 focus-within:ring-2 focus-within:ring-orange-500">
+                    <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-3 sm:px-4 py-2 select-none">
+                      <span className="text-base leading-none" aria-hidden>🇬🇧</span>
+                      <span className="text-[10px] font-bold tracking-wider mt-1">UK</span>
+                    </div>
+                    <input
+                      id="hero-reg"
+                      type="text"
+                      autoComplete="off"
+                      maxLength={10}
+                      value={reg}
+                      onChange={(e) => setReg(e.target.value.toUpperCase())}
+                      placeholder="ENTER REG"
+                      aria-label="Vehicle registration"
+                      className="flex-1 min-w-0 bg-yellow-400 text-gray-900 placeholder:text-gray-700/70 font-extrabold tracking-[0.18em] text-2xl sm:text-3xl uppercase px-4 py-4 outline-none border-0"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-7 py-4 text-base rounded-lg transition-colors whitespace-nowrap"
+                  >
+                    Get quote
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Vehicle details auto-fill from the DVLA — no typing needed.
+                </p>
+              </form>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Link
