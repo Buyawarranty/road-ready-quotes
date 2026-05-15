@@ -33,7 +33,7 @@ const Step2Customer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!vehicle) navigate('/dealer-portal/quote/vehicle', { replace: true });
+    if (!vehicle) navigate('/dealer-portal/quote/pricing', { replace: true });
   }, [vehicle, navigate]);
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
