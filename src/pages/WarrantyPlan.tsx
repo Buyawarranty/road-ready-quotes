@@ -1680,7 +1680,7 @@ const WarrantyPlan = () => {
                     <div>
                       <h4 className="font-bold text-gray-900 mb-4">Email Request</h4>
                       <p className="text-gray-600 mb-2">Email us to make a transfer:</p>
-                      <p className="font-medium text-orange-500">support@buyawarranty.co.uk</p>
+                      <p className="font-medium text-orange-500">support@pandaprotect.co.uk</p>
                       <p className="text-gray-600 mt-2">Subject: Transfer of ownership</p>
                       
                       <h5 className="font-bold text-gray-900 mt-4 mb-2">Transfer fee</h5>
@@ -1693,7 +1693,7 @@ const WarrantyPlan = () => {
                       </p>
                       <p className="text-gray-600">
                         For assistance please email: 
-                        <span className="font-medium text-orange-500 ml-1">support@buyawarranty.co.uk</span> with transfer details.
+                        <span className="font-medium text-orange-500 ml-1">support@pandaprotect.co.uk</span> with transfer details.
                       </p>
                     </div>
                   </div>
@@ -1724,9 +1724,9 @@ const WarrantyPlan = () => {
                     <h4 className="font-bold text-gray-900 mb-4">Vehicle Diagnosis</h4>
                     <p className="text-gray-600 mb-4">Book your vehicle with a local independent repair agent for a complete diagnosis of the issue.</p>
                     <h5 className="font-semibold text-gray-900 mb-2">Contact Before Repairs</h5>
-                    <p className="text-gray-600 mb-4">Once diagnosis is complete, but before any repairs begin, your repairer must contact our team for authorisation on our claims line or via email claims@buyawarranty.co.uk.</p>
+                    <p className="text-gray-600 mb-4">Once diagnosis is complete, but before any repairs begin, your repairer must contact our team for authorisation on our claims line or via email claims@pandaprotect.co.uk.</p>
                     <h5 className="font-semibold text-gray-900 mb-2">Visit Our Claims Section</h5>
-                    <p className="text-gray-600">Begin the process by visiting our dedicated claims section online at www.buyawarranty.co.uk/make-a-claim.</p>
+                    <p className="text-gray-600">Begin the process by visiting our dedicated claims section online at www.pandaprotect.co.uk/make-a-claim.</p>
                   </div>
                   
                   <div className="text-center">
@@ -1799,7 +1799,7 @@ const WarrantyPlan = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Email:</p>
-                <p className="text-blue-200">claims@buyawarranty.co.uk</p>
+                <p className="text-blue-200">claims@pandaprotect.co.uk</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Customer service:</p>
@@ -1811,7 +1811,7 @@ const WarrantyPlan = () => {
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Website:</p>
-                <p className="text-blue-200">www.buyawarranty.co.uk</p>
+                <p className="text-blue-200">www.pandaprotect.co.uk</p>
               </div>
             </div>
             

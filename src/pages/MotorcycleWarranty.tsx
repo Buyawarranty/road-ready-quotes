@@ -96,7 +96,7 @@ const MotorcycleWarranty = () => {
         title="Motorcycle Extended Warranty | Protect Used & Older Motorbikes"
         description="Cover repair costs on used or older motorcycles with our extended warranty. Full protection, flexible plans and instant online quotes. Keep your bike on the road."
         keywords="motorcycle extended warranty, motorcycle warranty UK, motorbike warranty, used motorcycle warranty, motorcycle repair cover, bike warranty, motorcycle protection plan"
-        canonical="https://buyawarranty.co.uk/motorcycle-warranty/"
+        canonical="https://pandaprotect.co.uk/motorcycle-warranty/"
       />
       
       {/* Schema.org Structured Data for GEO/AI Search Optimization */}
@@ -105,9 +105,9 @@ const MotorcycleWarranty = () => {
       <WebPageSchema
         name="Motorcycle Extended Warranty - Panda Protect"
         description="Comprehensive extended warranty coverage for motorcycles in the UK. Protect your bike from expensive mechanical and electrical failures with flexible plans starting from £20/month."
-        url="https://buyawarranty.co.uk/motorcycle-warranty/"
+        url="https://pandaprotect.co.uk/motorcycle-warranty/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Motorcycle Extended Warranties"
       />
       
@@ -117,7 +117,7 @@ const MotorcycleWarranty = () => {
         price="20.00"
         brand="Panda Protect"
         category="Motorcycle Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -126,8 +126,8 @@ const MotorcycleWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Motorcycle Warranty", url: "https://buyawarranty.co.uk/motorcycle-warranty/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Motorcycle Warranty", url: "https://pandaprotect.co.uk/motorcycle-warranty/" }
         ]}
       />
 
@@ -522,9 +522,9 @@ const MotorcycleWarranty = () => {
                   <span className="font-semibold text-white">Call us: 0330 229 5040</span>
                 </a>
                 <span className="hidden sm:inline text-white">|</span>
-                <a href="mailto:support@buyawarranty.co.uk" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-white">
+                <a href="mailto:support@pandaprotect.co.uk" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-white">
                   <Mail className="w-5 h-5 text-white" />
-                  <span className="font-semibold text-white">Email us: support@buyawarranty.co.uk</span>
+                  <span className="font-semibold text-white">Email us: support@pandaprotect.co.uk</span>
                 </a>
               </div>
               <p className="text-xl font-bold mt-4 text-white">Drive Smarter</p>

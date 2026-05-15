@@ -155,7 +155,7 @@ const QuoteLookup: React.FC<QuoteLookupProps> = ({ onQuoteFound }) => {
               <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
               <div className="text-sm text-gray-600">
                 <p className="font-medium text-gray-900 mb-1">Can't find your quote?</p>
-                <p>Check your email for the Quote ID, or contact our support team at info@buyawarranty.co.uk</p>
+                <p>Check your email for the Quote ID, or contact our support team at info@pandaprotect.co.uk</p>
               </div>
             </div>
           </div>

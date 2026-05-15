@@ -584,7 +584,7 @@ const WarrantyDurationStep: React.FC<WarrantyDurationStepProps> = ({
                     className="w-full font-semibold text-base py-3.5 bg-white border border-gray-300 text-black hover:bg-gray-50"
                     onClick={(e) => {
                       e.stopPropagation();
-                      const mailto = `mailto:?subject=Car Warranty Quote - ${vehicleData?.regNumber || 'Vehicle'}&body=I'd like to share this warranty quote with you:%0D%0A%0D%0APlan: Platinum Complete Plan%0D%0ADuration: ${option.title}%0D%0AMonthly Payment: £${option.monthlyPrice}%0D%0ATotal Cost: £${option.totalPrice}%0D%0A%0D%0AGet your own quote at: https://buyawarranty.co.uk`;
+                      const mailto = `mailto:?subject=Car Warranty Quote - ${vehicleData?.regNumber || 'Vehicle'}&body=I'd like to share this warranty quote with you:%0D%0A%0D%0APlan: Platinum Complete Plan%0D%0ADuration: ${option.title}%0D%0AMonthly Payment: £${option.monthlyPrice}%0D%0ATotal Cost: £${option.totalPrice}%0D%0A%0D%0AGet your own quote at: https://pandaprotect.co.uk`;
                       window.location.href = mailto;
                     }}
                   >

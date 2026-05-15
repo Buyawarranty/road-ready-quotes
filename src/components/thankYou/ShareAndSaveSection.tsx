@@ -57,7 +57,7 @@ export const ShareAndSaveSection: React.FC<ShareAndSaveSectionProps> = ({
   };
 
   const handleTrustpilotClick = () => {
-    window.open('https://uk.trustpilot.com/review/buyawarranty.co.uk', '_blank');
+    window.open('https://uk.trustpilot.com/review/pandaprotect.co.uk', '_blank');
   };
 
   return (

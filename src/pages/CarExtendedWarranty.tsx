@@ -294,7 +294,7 @@ const CarExtendedWarranty: React.FC = () => {
   const customFAQs = [
     {
       question: "What exactly is covered by our platinum major mechanical and electrical plan?",
-      answer: "It includes critical, major and minor components such as the engine, gearbox, differential, electricals and fuel system - parts most likely to cause high repair bills. See full details at https://buyawarranty.co.uk/what-is-covered/"
+      answer: "It includes critical, major and minor components such as the engine, gearbox, differential, electricals and fuel system - parts most likely to cause high repair bills. See full details at https://pandaprotect.co.uk/what-is-covered/"
     },
     {
       question: "Can I use my preferred garage for repairs?",
@@ -326,7 +326,7 @@ const CarExtendedWarranty: React.FC = () => {
     },
     {
       question: "Can I cancel my warranty?",
-      answer: "You have 14 days to cancel your warranty for a full refund for FREE (if no repairs have been made). After this period, our standard easy to follow cancellation policy applies. Simply visit https://buyawarranty.co.uk/cancel-warranty/"
+      answer: "You have 14 days to cancel your warranty for a full refund for FREE (if no repairs have been made). After this period, our standard easy to follow cancellation policy applies. Simply visit https://pandaprotect.co.uk/cancel-warranty/"
     }
   ];
 
@@ -337,7 +337,7 @@ const CarExtendedWarranty: React.FC = () => {
         title="Car Extended Warranty UK | Used Car Cover from £19/mo"
         description="Protect your used or new car from costly repairs with affordable extended warranty cover in the UK. Instant quotes online. Prices start from just £19/month."
         keywords="car extended warranty UK, extended car warranty, used car warranty, car warranty cover, vehicle warranty UK, warranty protection"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/"
         ogTitle="Car Extended Warranty UK | Used Car Cover from £19/mo"
         ogDescription="Protect your used or new car from costly repairs with affordable extended warranty cover in the UK. Instant quotes online. Prices start from just £19/month."
       />
@@ -347,7 +347,7 @@ const CarExtendedWarranty: React.FC = () => {
       <WebPageSchema
         name="Car Extended Warranty UK - Panda Protect"
         description="Comprehensive extended car warranty coverage for used and new vehicles in the UK. Protect your car from unexpected repair costs with flexible plans starting from £19/month."
-        url="https://buyawarranty.co.uk/car-extended-warranty/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/"
         specialty="Car Extended Warranty, Used Car Warranty, Vehicle Warranty Protection"
       />
       <FAQSchema faqs={customFAQs} />
@@ -358,12 +358,12 @@ const CarExtendedWarranty: React.FC = () => {
         priceCurrency="GBP"
         brand="Panda Protect"
         category="Extended Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
       />
       <BreadcrumbSchema 
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" }
         ]} 
       />
 
@@ -458,7 +458,7 @@ const CarExtendedWarranty: React.FC = () => {
                     {/* Trustpilot Logo positioned to the right */}
                     <div className="absolute top-4 right-4 z-10">
                       <a 
-                        href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                        href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="hover:opacity-80 transition-opacity"

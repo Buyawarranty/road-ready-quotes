@@ -387,8 +387,8 @@ const MGWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -403,7 +403,7 @@ const MGWarrantyLanding: React.FC = () => {
       "price": "24",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/mg-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/mg-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": {
@@ -440,7 +440,7 @@ const MGWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£24-£85/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -473,9 +473,9 @@ const MGWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "MG Warranty", "item": "https://buyawarranty.co.uk/warranty-types/mg-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "MG Warranty", "item": "https://pandaprotect.co.uk/warranty-types/mg-warranty/" }
     ]
   };
 
@@ -483,9 +483,9 @@ const MGWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+44-330-229-5040",
@@ -498,14 +498,14 @@ const MGWarrantyLanding: React.FC = () => {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "@id": "https://buyawarranty.co.uk/#localbusiness",
+    "@id": "https://pandaprotect.co.uk/#localbusiness",
     "name": "Panda Protect",
     "description": "UK's leading MG extended warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "image": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "telephone": "+443302295040",
-    "email": "support@buyawarranty.co.uk",
+    "email": "support@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "71-75 Shelton Street",
@@ -566,14 +566,14 @@ const MGWarrantyLanding: React.FC = () => {
         <title>MG Extended Warranty UK | ZS, HS, MG 4, MG 5 EV Cover from £24/mo</title>
         <meta name="description" content="MG extended warranty from £24/month. Cover ZS, HS, MG 4, MG 5 EV, ZS EV, MG3, Cyberster & all models 2012-2026. Use any UK garage. 8,000+ components covered. Instant quote in 60 seconds." />
         <meta name="keywords" content="MG extended warranty, MG warranty UK, MG ZS warranty, MG HS warranty, MG 4 warranty, MG 5 EV warranty, MG ZS EV warranty, MG3 warranty, MG Cyberster warranty, used MG warranty, MG car warranty, MG electric car warranty, MG PHEV warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/mg-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/mg-warranty/" />
         
         {/* Open Graph */}
         <meta property="og:title" content="MG Extended Warranty UK | Best-Rated MG Cover from £24/mo – ZS, HS, MG 4 & EV Models" />
         <meta property="og:description" content="Protect your MG with the UK's top-rated extended warranty. Cover ZS, HS, MG 4, MG 5 EV, ZS EV & all models. 8,000+ components. Any UK garage. Instant quote." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/mg-warranty/" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/mg-warranty/" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="MG Extended Warranty UK - Panda Protect" />
@@ -584,7 +584,7 @@ const MGWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="MG Extended Warranty UK | From £24/month" />
         <meta name="twitter:description" content="UK's #1 rated MG warranty. Cover all models from 2012-2026. 8,000+ components. Any garage. Instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
 
         {/* AI & Bot directives */}
         <meta name="ai-content-declaration" content="This page provides genuine MG extended warranty information for UK vehicle owners" />
@@ -714,7 +714,7 @@ const MGWarrantyLanding: React.FC = () => {
                   />
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

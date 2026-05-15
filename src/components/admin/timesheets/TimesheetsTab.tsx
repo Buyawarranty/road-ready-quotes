@@ -124,7 +124,7 @@ export function TimesheetsTab() {
       });
 
       if (error) throw error;
-      toast.success('Timesheet emailed to accounts@buyawarranty.co.uk');
+      toast.success('Timesheet emailed to accounts@pandaprotect.co.uk');
     } catch (err) {
       console.error('Error sending timesheet email:', err);
       toast.error('Failed to send timesheet email');

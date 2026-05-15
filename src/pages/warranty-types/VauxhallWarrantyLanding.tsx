@@ -208,8 +208,8 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "name": "Vauxhall Extended Warranty UK",
     "description": "Comprehensive extended warranty for Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, Corsa-e, Mokka-e. Turbo engines, auto gearbox, EV components covered.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
     "category": "Vehicle Extended Warranty",
@@ -221,7 +221,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "Service",
     "name": "Vauxhall Extended Warranty Service",
     "alternateName": "Vauxhall Used Car Warranty",
-    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
+    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "description": "Extended warranty coverage for all Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, and EV models. Covers engine, transmission, electrical systems, turbocharger, and more.",
     "serviceType": "Vehicle Extended Warranty",
@@ -237,9 +237,9 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Vauxhall Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/" },
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Vauxhall Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/" },
     ],
   };
 
@@ -247,8 +247,8 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016.",
     "foundingDate": "2016",
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" },
@@ -259,8 +259,8 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Vauxhall Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Vauxhall with comprehensive extended warranty cover. All models from Corsa to Grandland and EV range. Nationwide UK coverage.",
-    "url": "https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", ".hero-description"] },
   };
 
@@ -283,7 +283,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <title>Vauxhall Extended Warranty UK | Corsa, Astra, Grandland Cover from £19/mo</title>
         <meta name="description" content="Vauxhall extended warranty from £19/month. Cover Corsa, Astra, Grandland, Mokka, Insignia, Corsa-e & all models. Any UK garage. 8,000+ components. Instant quote." />
         <meta name="keywords" content="vauxhall extended warranty, vauxhall warranty UK, vauxhall corsa warranty, vauxhall astra warranty, vauxhall grandland warranty, vauxhall mokka warranty, vauxhall electric warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="geo.region" content="GB" />
@@ -292,9 +292,9 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <meta httpEquiv="content-language" content="en-GB" />
         <meta property="og:title" content="Vauxhall Extended Warranty UK | Instant Quotes from £19/month" />
         <meta property="og:description" content="Comprehensive Vauxhall warranty coverage. Engine, gearbox, electrics & more. All models covered including EV. Any UK garage." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/vauxhall-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Vauxhall Extended Warranty UK - Panda Protect" />
@@ -303,7 +303,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Vauxhall Extended Warranty UK | From £19/month" />
         <meta name="twitter:description" content="UK's top-rated Vauxhall warranty. Corsa, Astra, Grandland & all models. 8,000+ components. Any UK garage." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="ai-content-declaration" content="This page provides information about Vauxhall extended warranty services in the UK. Human-authored and fact-checked." />
         <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="Panda Protect" />
@@ -363,7 +363,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage src={vauxhallCorsaHero} alt="Vauxhall Corsa front view - Vauxhall extended warranty UK coverage" className="w-full max-w-md mx-auto h-auto object-contain" priority width={651} height={500} />
                   <div className="absolute top-4 right-4">
-                    <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                    <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                       <OptimizedImage src={trustpilotExcellent} alt="Trustpilot Excellent Rating" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} />
                     </a>
                   </div>

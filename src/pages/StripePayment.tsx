@@ -348,7 +348,7 @@ const StripePayment: React.FC = () => {
                 <span className="text-sm text-muted-foreground">
                   Excellent on{' '}
                   <a 
-                    href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                    href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="underline hover:text-foreground"

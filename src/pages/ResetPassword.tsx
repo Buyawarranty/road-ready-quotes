@@ -13,7 +13,7 @@ const ResetPassword = () => {
       const { data, error } = await supabase.functions.invoke('reset-admin-password', {
         body: {
           userId: '97474b70-dd93-4007-a8f8-11e96670e194',
-          email: 'info@buyawarranty.co.uk'
+          email: 'info@pandaprotect.co.uk'
         }
       });
 
@@ -40,7 +40,7 @@ const ResetPassword = () => {
           />
           <CardTitle>Reset Admin Password</CardTitle>
           <CardDescription>
-            Reset password for info@buyawarranty.co.uk
+            Reset password for info@pandaprotect.co.uk
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -49,7 +49,7 @@ const ResetPassword = () => {
             disabled={loading}
             className="w-full"
           >
-            {loading ? 'Resetting...' : 'Reset Password for info@buyawarranty.co.uk'}
+            {loading ? 'Resetting...' : 'Reset Password for info@pandaprotect.co.uk'}
           </Button>
           
           {result && (
@@ -61,7 +61,7 @@ const ResetPassword = () => {
               ) : (
                 <div className="space-y-2">
                   <div className="text-green-600 font-semibold">Password Reset Successful!</div>
-                  <div><strong>Email:</strong> info@buyawarranty.co.uk</div>
+                  <div><strong>Email:</strong> info@pandaprotect.co.uk</div>
                   <div><strong>New Password:</strong> {result.temporaryPassword}</div>
                   <div className="text-sm text-gray-600 mt-2">
                     You can now login to the admin dashboard with these credentials.

@@ -1312,7 +1312,7 @@ const Index = () => {
           "Complete your car warranty purchase with our secure checkout. Review your selected plan and enter your details for instant approval."
         }
         keywords="car warranty, vehicle warranty, UK warranty, car insurance, breakdown cover, warranty prices, vehicle protection, extended warranty"
-        canonical="https://buyawarranty.co.uk/"
+        canonical="https://pandaprotect.co.uk/"
       />
       
       {/* Schema.org Structured Data for AI Search & SEO */}
@@ -1321,7 +1321,7 @@ const Index = () => {
       <WebPageSchema 
         name="Car Warranty UK | Instant Quotes"
         description="Leading UK car warranty provider since 2016 with 4.7-star Trustpilot rating. Get instant quotes for comprehensive vehicle protection."
-        url="https://buyawarranty.co.uk/"
+        url="https://pandaprotect.co.uk/"
       />
       <FAQSchema faqs={defaultWarrantyFAQs} />
       <ProductSchema 
@@ -1332,16 +1332,16 @@ const Index = () => {
       />
       <BreadcrumbSchema 
         items={[
-          { name: 'HOME PAGE', url: 'https://buyawarranty.co.uk/' },
-          { name: 'MAKE A CLAIM', url: 'https://buyawarranty.co.uk/make-a-claim/' },
-          { name: "WHAT'S COVERED", url: 'https://buyawarranty.co.uk/what-is-covered/' },
-          { name: "FAQ'S", url: 'https://buyawarranty.co.uk/faq/' },
-          { name: 'LOGIN', url: 'https://buyawarranty.co.uk/customer-dashboard/' },
-          { name: 'CAR WARRANTY', url: 'https://buyawarranty.co.uk/buy-a-used-car-warranty-reliable-warranties/' },
-          { name: 'VAN WARRANTY', url: 'https://buyawarranty.co.uk/van-warranty/' },
-          { name: 'EV WARRANTY', url: 'https://buyawarranty.co.uk/ev-warranty/' },
-          { name: 'MOTOR CYCLE WARRANTY', url: 'https://buyawarranty.co.uk/motorcycle-warranty/' },
-          { name: 'WARRANTY TYPES', url: 'https://buyawarranty.co.uk/warranty-types/' },
+          { name: 'HOME PAGE', url: 'https://pandaprotect.co.uk/' },
+          { name: 'MAKE A CLAIM', url: 'https://pandaprotect.co.uk/make-a-claim/' },
+          { name: "WHAT'S COVERED", url: 'https://pandaprotect.co.uk/what-is-covered/' },
+          { name: "FAQ'S", url: 'https://pandaprotect.co.uk/faq/' },
+          { name: 'LOGIN', url: 'https://pandaprotect.co.uk/customer-dashboard/' },
+          { name: 'CAR WARRANTY', url: 'https://pandaprotect.co.uk/buy-a-used-car-warranty-reliable-warranties/' },
+          { name: 'VAN WARRANTY', url: 'https://pandaprotect.co.uk/van-warranty/' },
+          { name: 'EV WARRANTY', url: 'https://pandaprotect.co.uk/ev-warranty/' },
+          { name: 'MOTOR CYCLE WARRANTY', url: 'https://pandaprotect.co.uk/motorcycle-warranty/' },
+          { name: 'WARRANTY TYPES', url: 'https://pandaprotect.co.uk/warranty-types/' },
         ]}
       />
       

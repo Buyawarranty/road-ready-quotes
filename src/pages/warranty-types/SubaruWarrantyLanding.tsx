@@ -149,9 +149,9 @@ const SubaruWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { const hero = document.getElementById('hero-section'); if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty coverage for all ${brandName} models including Forester, Outback, XV, Impreza, WRX, and BRZ. Covers boxer engine, AWD system, gearbox, electrical systems, and more. Nationwide UK coverage.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty coverage for all ${brandName} models including Forester, Outback, XV, Impreza, WRX, and BRZ. Covers boxer engine, AWD system, gearbox, electrical systems, and more. Nationwide UK coverage.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": `https://pandaprotect.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs.map(faq => ({ "@type": "Question", "name": faq.question, "acceptedAnswer": { "@type": "Answer", "text": faq.answer } })) };
-  const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }] };
+  const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://pandaprotect.co.uk/warranty-types/${brandSlug}/` }] };
 
   return (
     <>
@@ -159,13 +159,13 @@ const SubaruWarrantyLanding: React.FC = () => {
         <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content={`Protect your ${brandName} with comprehensive extended warranty cover. All models covered including Forester, Outback, XV, Impreza, WRX, and BRZ. Boxer engine, AWD, gearbox & more. Nationwide UK coverage. Prices from £${startingPrice}/month.`} />
         <meta name="keywords" content={`${brandName} extended warranty, ${brandName} used car warranty, ${brandName} warranty UK, ${brandName} warranty cost, ${brandName} Forester warranty, ${brandName} Outback warranty, used ${brandName} warranty`} />
-        <link rel="canonical" href={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />
+        <link rel="canonical" href={`https://pandaprotect.co.uk/warranty-types/${brandSlug}/`} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="geo.region" content="GB" />
         <meta httpEquiv="content-language" content="en-GB" />
         <meta property="og:title" content={`${brandName} Extended Warranty UK | Instant Quotes from £${startingPrice}/month`} />
         <meta property="og:description" content={`Comprehensive ${brandName} warranty coverage. Boxer engine, AWD, gearbox & more. All models covered. Nationwide UK coverage.`} />
-        <meta property="og:url" content={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />
+        <meta property="og:url" content={`https://pandaprotect.co.uk/warranty-types/${brandSlug}/`} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_GB" />
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
@@ -200,7 +200,7 @@ const SubaruWarrantyLanding: React.FC = () => {
               <div className="relative">
                 <OptimizedImage src={heroImage} alt={`${brandName} extended warranty UK - Professional ${brandName} warranty coverage`} className="w-full h-auto" priority={true} width={651} height={434} />
                 <div className="absolute top-4 right-4">
-                  <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                  <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                     <OptimizedImage src={trustpilotExcellent} alt="Trustpilot Excellent Rating" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} />
                   </a>
                 </div>

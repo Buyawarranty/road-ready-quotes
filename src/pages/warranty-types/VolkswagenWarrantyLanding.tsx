@@ -398,8 +398,8 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
@@ -408,7 +408,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
       "price": "19",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/volkswagen-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "itemCondition": "https://schema.org/NewCondition",
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
@@ -433,7 +433,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£19-£85/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -466,9 +466,9 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Volkswagen Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Volkswagen Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/volkswagen-warranty/" }
     ]
   };
 
@@ -476,11 +476,11 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -489,8 +489,8 @@ const VolkswagenWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Volkswagen Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Volkswagen with comprehensive extended warranty cover. All models from Polo to Touareg and ID. Series. Nationwide UK coverage, approved garages, unlimited claims. Get your instant quote in 60 seconds.",
-    "url": "https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/volkswagen-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Volkswagen Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Volkswagen" },
@@ -520,7 +520,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
         <title>Volkswagen Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your Volkswagen with comprehensive extended warranty cover. All models from Polo to Touareg and ID. Series covered. Engine, DSG gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £19/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Volkswagen extended warranty, VW used car warranty, VW warranty UK, Volkswagen warranty cost, VW warranty quote, VW Golf warranty, VW Tiguan warranty, VW ID.4 warranty, VW Polo warranty, VW Passat warranty, VW electric warranty, VW hybrid warranty, used VW warranty, second hand Volkswagen warranty, VW DSG warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/volkswagen-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -533,9 +533,9 @@ const VolkswagenWarrantyLanding: React.FC = () => {
         
         <meta property="og:title" content="Volkswagen Extended Warranty UK | Instant Quotes from £19/month" />
         <meta property="og:description" content="Comprehensive VW warranty coverage. Engine, DSG gearbox, electrics & more. All models covered including hybrid and electric. Nationwide UK coverage with any garage. Get your instant quote now." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/volkswagen-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/volkswagen-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Volkswagen Extended Warranty UK - Panda Protect" />
@@ -545,7 +545,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Volkswagen Extended Warranty UK | From £19/month" />
         <meta name="twitter:description" content="Protect your VW with comprehensive extended warranty. All models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Volkswagen extended warranty services in the UK. Human-authored and fact-checked." />
         <meta name="author" content="Panda Protect" />
@@ -640,7 +640,7 @@ const VolkswagenWarrantyLanding: React.FC = () => {
                   />
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

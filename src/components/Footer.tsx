@@ -24,11 +24,11 @@ const Footer = () => {
               </a>
               
               <a 
-                href="mailto:info@buyawarranty.co.uk" 
+                href="mailto:info@pandaprotect.co.uk" 
                 className="flex items-center gap-2 text-[#eb4b00] hover:text-orange-400 transition-colors font-medium text-lg"
               >
                 <Mail size={20} />
-                Email us: info@buyawarranty.co.uk
+                Email us: info@pandaprotect.co.uk
               </a>
             </div>
           </div>

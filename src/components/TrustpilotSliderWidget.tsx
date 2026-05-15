@@ -22,7 +22,7 @@ const TrustpilotSliderWidget: React.FC<{ className?: string }> = ({ className = 
       data-stars="4,5"
       data-review-languages="en"
     >
-      <a href="https://www.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener">
+      <a href="https://www.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener">
         Trustpilot
       </a>
     </div>

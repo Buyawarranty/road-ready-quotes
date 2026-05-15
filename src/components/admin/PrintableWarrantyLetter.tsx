@@ -218,7 +218,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
           <div ref={printRef} className="letter-container">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
-              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
+              <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
               <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
                 <p style={{ fontWeight: '600' }}>Panda Protect Ltd</p>
                 <p>Warranty House, 62 Berkhamsted Ave</p>
@@ -339,7 +339,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
             <div style={{ background: c.accountBg, border: `1px solid ${c.accountBorder}`, borderRadius: '6px', padding: '10px 14px', marginBottom: '14px' }}>
               <h4 style={{ color: c.accountHeading, fontSize: '12px', marginBottom: '4px', fontWeight: '700' }}>Your Account &amp; Policy Documents</h4>
               <p style={{ fontSize: '10.5px', color: '#333', margin: '2px 0' }}>Your warranty policy documents are also available online. You can access them at any time by visiting:</p>
-              <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://buyawarranty.co.uk/customer-dashboard/</p>
+              <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://pandaprotect.co.uk/customer-dashboard/</p>
               <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}>Simply click the <strong>Login</strong> option at the top of the homepage, or go directly to the link above. Use your registered email to sign in:</p>
               {policy.customerEmail && (
                 <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}><strong>Email:</strong> {policy.customerEmail}</p>
@@ -375,7 +375,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Customer Support</div>
-                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@buyawarranty.co.uk</div>
+                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@pandaprotect.co.uk</div>
               </div>
             </div>
 

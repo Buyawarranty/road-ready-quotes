@@ -187,7 +187,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
           <div ref={printRef} className="page">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '3px solid #eb4b00', marginBottom: '20px' }}>
-              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '42px' }} />
+              <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '42px' }} />
               <div style={{ textAlign: 'right', fontSize: '10px', color: '#666', lineHeight: '1.6' }}>
                 <div style={{ fontWeight: '600' }}>Panda Protect Ltd</div>
                 <div>Warranty House, 62 Berkhamsted Ave</div>
@@ -300,7 +300,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
             {/* Your Account */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '14px 16px', marginBottom: '18px', fontSize: '11px', color: '#333' }}>
               <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e3a5f', marginBottom: '6px' }}>Your Account & Policy Documents</div>
-              <p style={{ marginBottom: '6px' }}>Log in to your dashboard at <strong>buyawarranty.co.uk/customer-dashboard</strong> to:</p>
+              <p style={{ marginBottom: '6px' }}>Log in to your dashboard at <strong>pandaprotect.co.uk/customer-dashboard</strong> to:</p>
               <ul style={{ paddingLeft: '18px', margin: 0 }}>
                 <li>View your warranty plan & download T&Cs</li>
                 <li>Check your vehicle details & manage contact info</li>
@@ -320,7 +320,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
               </div>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Support</div>
-                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>support@buyawarranty.co.uk</div>
+                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>support@pandaprotect.co.uk</div>
               </div>
             </div>
 

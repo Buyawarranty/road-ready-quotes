@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 export const WhatHappensNext: React.FC = () => {
   const handlePortalClick = () => {
     // This will be implemented based on your customer portal URL
-    window.open('https://www.buyawarranty.co.uk/customer-portal', '_blank');
+    window.open('https://www.pandaprotect.co.uk/customer-portal', '_blank');
   };
 
   return (

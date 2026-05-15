@@ -332,8 +332,8 @@ const CitroenWarrantyLanding: React.FC = () => {
     "name": "Citroën Extended Warranty UK",
     "description": "Comprehensive extended warranty coverage for all Citroën models including C3, C4, C5 Aircross, Berlingo, ë-C4 and more. Covers engine, gearbox, electrical systems, turbocharger, and more. Nationwide UK coverage.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB" } },
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/citroen-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB" } },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/citroen-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month" } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
     "category": "Vehicle Extended Warranty",
@@ -342,9 +342,9 @@ const CitroenWarrantyLanding: React.FC = () => {
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": citroenFAQs.map(faq => ({ "@type": "Question", "name": faq.question, "acceptedAnswer": { "@type": "Answer", "text": faq.answer } })) };
 
   const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-    { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-    { "@type": "ListItem", "position": 3, "name": "Citroën Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/citroen-warranty/" }
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+    { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+    { "@type": "ListItem", "position": 3, "name": "Citroën Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/citroen-warranty/" }
   ]};
 
   const howToSchema = { "@context": "https://schema.org", "@type": "HowTo", "name": "How to get a Citroën extended warranty quote", "description": "Get an instant Citroën extended warranty quote in 60 seconds", "totalTime": "PT1M", "step": [
@@ -359,13 +359,13 @@ const CitroenWarrantyLanding: React.FC = () => {
         <title>Citroën Extended Warranty UK | From £19/mo | Panda Protect</title>
         <meta name="description" content="Protect your Citroën with comprehensive extended warranty cover. All models from C3 to C5 Aircross and ë-C4 covered. Engine, gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage. Prices from £19/month." />
         <meta name="keywords" content="Citroën extended warranty, Citroën used car warranty, Citroën warranty UK, Citroën warranty cost, Citroën C3 warranty, Citroën C4 warranty, Citroën C5 Aircross warranty, Citroën Berlingo warranty, Citroën electric warranty, used Citroën warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/citroen-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/citroen-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="geo.region" content="GB" />
         <meta httpEquiv="content-language" content="en-GB" />
         <meta property="og:title" content="Citroën Extended Warranty UK | From £19/month" />
         <meta property="og:description" content="Comprehensive Citroën warranty coverage. Engine, gearbox, electrics & more. All models covered including hybrid and electric. Nationwide UK coverage." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/citroen-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/citroen-warranty/" />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_GB" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -422,7 +422,7 @@ const CitroenWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage src={citroenHeroImage} alt="Citroën C3 front view - Citroën extended warranty UK coverage" className="w-full max-w-sm mx-auto h-auto object-contain" priority={true} width={1024} height={768} />
                   <div className="absolute top-4 right-4">
-                    <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+                    <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                       <OptimizedImage src={trustpilotExcellent} alt="Trustpilot excellent rating" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} />
                     </a>
                   </div>

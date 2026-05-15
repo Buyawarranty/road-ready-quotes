@@ -81,7 +81,7 @@ const BMWWarranty: React.FC = () => {
         title="BMW Car Extended Warranty | Used BMW Cover & Instant Quotes"
         description="Protect your BMW from costly repairs with an extended BMW warranty. Instant quotes, UK garages, flexible payment plans, and cover for used BMWs up to 150,000 miles."
         keywords="BMW warranty, BMW extended warranty, used BMW warranty, BMW car warranty UK, BMW warranty cost, BMW mechanical warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/bmw/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/bmw/"
         geoRegion="GB"
         geoPlacename="United Kingdom"
       />
@@ -91,7 +91,7 @@ const BMWWarranty: React.FC = () => {
       <WebPageSchema 
         name="BMW Extended Warranty - Affordable Cover with Fast Claims"
         description="Comprehensive BMW warranty coverage for all models. Protect your BMW from expensive repairs with our extended warranty plans."
-        url="https://buyawarranty.co.uk/car-extended-warranty/bmw/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/bmw/"
       />
       <FAQSchema faqs={bmwFAQs} />
       <ProductSchema
@@ -100,15 +100,15 @@ const BMWWarranty: React.FC = () => {
         price="35"
         brand="Panda Protect"
         category="Vehicle Warranty"
-        image="https://buyawarranty.co.uk/logo.png"
+        image="https://pandaprotect.co.uk/logo.png"
         availability="https://schema.org/InStock"
         areaServed="GB"
       />
       <BreadcrumbSchema 
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "BMW Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/bmw/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "BMW Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/bmw/" }
         ]}
       />
 
@@ -459,7 +459,7 @@ const BMWWarranty: React.FC = () => {
           </h2>
           <div className="flex justify-center mb-6">
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="transition-opacity hover:opacity-80"
@@ -544,7 +544,7 @@ const BMWWarranty: React.FC = () => {
           </h2>
           <div className="flex justify-center mb-6">
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="transition-opacity hover:opacity-80"

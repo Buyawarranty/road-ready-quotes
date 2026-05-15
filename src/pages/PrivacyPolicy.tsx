@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
         title="Privacy Policy | Panda Protect UK"
         description="Learn how Panda Protect protects your privacy and handles your personal data. Understand your rights under UK GDPR and how we use your information."
         keywords="privacy policy, data protection, Panda Protect, GDPR, personal data, privacy rights"
-        canonical="https://buyawarranty.co.uk/privacy"
+        canonical="https://pandaprotect.co.uk/privacy"
       />
 
       {/* Header */}
@@ -63,8 +63,8 @@ const PrivacyPolicy = () => {
             <div>
               <p className="text-lg text-gray-700 leading-relaxed">
                 Panda Protect ("we", "us", or "our") is committed to protecting your privacy. This policy outlines how we collect, use, and safeguard your personal data when you visit our website{' '}
-                <a href="https://buyawarranty.co.uk" className="text-[#eb4b00] hover:underline">
-                  https://buyawarranty.co.uk
+                <a href="https://pandaprotect.co.uk" className="text-[#eb4b00] hover:underline">
+                  https://pandaprotect.co.uk
                 </a>{' '}
                 or interact with our services.
               </p>
@@ -325,8 +325,8 @@ const PrivacyPolicy = () => {
                 <p className="flex items-center text-white">
                   <Mail className="w-5 h-5 mr-3 text-white" />
                   <span className="font-medium mr-2 text-white">Email:</span>
-                  <a href="mailto:support@buyawarranty.co.uk" className="text-white hover:text-gray-200 transition-colors">
-                    support@buyawarranty.co.uk
+                  <a href="mailto:support@pandaprotect.co.uk" className="text-white hover:text-gray-200 transition-colors">
+                    support@pandaprotect.co.uk
                   </a>
                 </p>
               </div>

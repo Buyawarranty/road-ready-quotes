@@ -76,7 +76,7 @@ const FordWarranty = () => {
         title="Ford Car Extended Warranty | New, Used & High-Mileage Cover"
         description="Used Ford extended warranty with nationwide approved repairs. Covers major components and diagnostics. Get a quick online quote and drive with confidence."
         keywords="ford extended warranty, ford warranty UK, used ford warranty, ford fiesta warranty, ford focus warranty, ford puma warranty, ford kuga warranty, ford transit warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/ford/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/ford/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -84,9 +84,9 @@ const FordWarranty = () => {
       <WebPageSchema
         name="Ford Extended Warranty - Panda Protect"
         description="Used Ford extended warranty with nationwide approved repairs. Covers major components and diagnostics. Get a quick online quote and drive with confidence."
-        url="https://buyawarranty.co.uk/car-extended-warranty/ford/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/ford/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Ford Extended Warranties"
       />
       
@@ -96,7 +96,7 @@ const FordWarranty = () => {
         price="550.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -105,9 +105,9 @@ const FordWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Ford Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/ford/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Ford Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/ford/" }
         ]}
       />
 

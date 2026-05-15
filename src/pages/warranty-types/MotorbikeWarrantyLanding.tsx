@@ -521,8 +521,8 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
@@ -531,7 +531,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
       "price": "18",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/motorbike-motorcycle-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "18", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
     },
@@ -555,7 +555,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-800-917-9270",
       "priceRange": "£18-£75/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
@@ -588,9 +588,9 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Motorcycle Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Motorcycle Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/motorbike-motorcycle-warranty/" }
     ]
   };
 
@@ -598,11 +598,11 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended vehicle warranty provider. Protecting vehicles since 2016.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-800-917-9270", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -611,8 +611,8 @@ const MotorbikeWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Motorcycle Extended Warranty UK - Get Instant Quote",
     "description": "Protect your motorcycle with comprehensive extended warranty cover. All UK makes and models covered. Engine, gearbox, electrics, braking & more. Nationwide UK coverage. Get your instant quote in 60 seconds.",
-    "url": "https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/",
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "url": "https://pandaprotect.co.uk/warranty-types/motorbike-motorcycle-warranty/",
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Motorcycle Extended Warranty" },
     "mentions": [
       { "@type": "Brand", "name": "Honda" },
@@ -644,7 +644,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
         <title>Motorcycle Extended Warranty UK | Motorbike Warranty | Get Instant Quote</title>
         <meta name="description" content="Protect your motorcycle with comprehensive extended warranty cover. All UK makes from Honda, Yamaha, Kawasaki, Triumph, BMW, Ducati & more. Engine, gearbox, electrics covered. From £18/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="motorcycle extended warranty, motorbike warranty UK, motorcycle warranty cost, Honda warranty, Yamaha warranty, Kawasaki warranty, Triumph warranty, BMW motorcycle warranty, Ducati warranty, KTM warranty, Harley-Davidson warranty, used motorcycle warranty, motorbike warranty quote" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/motorbike-motorcycle-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -657,9 +657,9 @@ const MotorbikeWarrantyLanding: React.FC = () => {
         
         <meta property="og:title" content="Motorcycle Extended Warranty UK | From £18/month" />
         <meta property="og:description" content="Comprehensive motorcycle warranty coverage. Engine, gearbox, electrics & more. All makes covered. Nationwide UK coverage with any garage. Get your instant quote now." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/motorbike-motorcycle-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/motorbike-motorcycle-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Motorcycle Extended Warranty UK - Panda Protect" />
@@ -669,7 +669,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Motorcycle Extended Warranty UK | From £18/month" />
         <meta name="twitter:description" content="Protect your motorcycle with comprehensive extended warranty. All makes covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about motorcycle extended warranty services in the UK. Human-authored and fact-checked." />
         <meta name="author" content="Panda Protect" />
@@ -777,7 +777,7 @@ const MotorbikeWarrantyLanding: React.FC = () => {
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

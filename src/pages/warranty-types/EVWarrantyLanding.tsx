@@ -506,8 +506,8 @@ const EVWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
@@ -516,7 +516,7 @@ const EVWarrantyLanding: React.FC = () => {
       "price": "29",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/ev-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/ev-warranty/",
       "seller": { "@type": "Organization", "name": "Panda Protect" },
       "priceSpecification": { "@type": "UnitPriceSpecification", "price": "29", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 }
     },
@@ -545,9 +545,9 @@ const EVWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Electric vehicle warranty", "item": "https://buyawarranty.co.uk/warranty-types/ev-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Electric vehicle warranty", "item": "https://pandaprotect.co.uk/warranty-types/ev-warranty/" }
     ]
   };
 
@@ -555,11 +555,11 @@ const EVWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended vehicle warranty provider. Protecting cars, vans, electric vehicles, and motorcycles.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
@@ -568,14 +568,14 @@ const EVWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Electric Vehicle Warranty UK — Specialist EV Cover",
     "description": "Protect your electric vehicle with comprehensive extended warranty cover. Tesla, Nissan Leaf, BMW i-series, Hyundai Ioniq, Kia EV6, VW ID range and 20+ EV manufacturers covered. Nationwide UK coverage.",
-    "url": "https://buyawarranty.co.uk/warranty-types/ev-warranty/",
+    "url": "https://pandaprotect.co.uk/warranty-types/ev-warranty/",
     "lastReviewed": new Date().toISOString().split('T')[0],
     "reviewedBy": { "@type": "Organization", "name": "Panda Protect" },
-    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "isPartOf": { "@type": "WebSite", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "about": { "@type": "Thing", "name": "Electric Vehicle Extended Warranty" },
     "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", ".faq-question"] },
-    "significantLink": "https://www.trustpilot.com/review/buyawarranty.co.uk",
-    "publisher": { "@type": "Organization", "name": "Panda Protect", "legalName": "BUY A WARRANTY LIMITED", "url": "https://buyawarranty.co.uk" }
+    "significantLink": "https://www.trustpilot.com/review/pandaprotect.co.uk",
+    "publisher": { "@type": "Organization", "name": "Panda Protect", "legalName": "BUY A WARRANTY LIMITED", "url": "https://pandaprotect.co.uk" }
   };
 
   const localBusinessSchema = {
@@ -583,9 +583,9 @@ const EVWarrantyLanding: React.FC = () => {
     "@type": "LocalBusiness",
     "name": "Panda Protect",
     "description": "UK's specialist electric vehicle warranty provider. Protecting EVs, cars, vans and motorcycles since 2016.",
-    "url": "https://buyawarranty.co.uk",
+    "url": "https://pandaprotect.co.uk",
     "telephone": "+44-330-229-5040",
-    "email": "support@buyawarranty.co.uk",
+    "email": "support@pandaprotect.co.uk",
     "foundingDate": "2016",
     "priceRange": "£19-£99/month",
     "address": { "@type": "PostalAddress", "streetAddress": "71-75 Shelton Street", "addressLocality": "London", "addressRegion": "Greater London", "postalCode": "WC2H 9JQ", "addressCountry": "GB" },
@@ -601,10 +601,10 @@ const EVWarrantyLanding: React.FC = () => {
     "@type": "Service",
     "name": "Electric Vehicle Extended Warranty",
     "description": "Comprehensive extended warranty protection for electric vehicles in the UK. Covers electric motors, inverters, on-board chargers, battery management systems, DC-DC converters, heat pumps, and 1,000+ EV-specific components.",
-    "provider": { "@type": "Organization", "name": "Panda Protect", "url": "https://buyawarranty.co.uk" },
+    "provider": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk" },
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "serviceType": "Electric Vehicle Extended Warranty",
-    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "availability": "https://schema.org/InStock", "url": "https://buyawarranty.co.uk/warranty-types/ev-warranty/" },
+    "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/ev-warranty/" },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "EV Warranty Plans",
@@ -622,7 +622,7 @@ const EVWarrantyLanding: React.FC = () => {
         <title>Electric Vehicle Warranty UK | EV Cover from £19/mo | Panda Protect</title>
         <meta name="description" content="UK's specialist electric vehicle warranty. Covers Tesla, Nissan Leaf, BMW i-series, Hyundai Ioniq, Kia EV6, VW ID range, MG4, Polestar & 20+ EV makes. Electric motors, inverters, on-board chargers, battery management systems & 1,000+ components. Unlimited claims, any VAT-registered garage. Instant quote in 60 seconds. Plans from £19/month with 14-day money-back guarantee." />
         <meta name="keywords" content="electric vehicle warranty UK, EV warranty, Tesla warranty UK, Nissan Leaf warranty, BMW i3 warranty, BMW iX warranty, Hyundai Ioniq 5 warranty, Kia EV6 warranty, VW ID.3 warranty, VW ID.4 warranty, electric car warranty, EV extended warranty, hybrid vehicle warranty, plug-in hybrid warranty, electric motor warranty, battery management system warranty, on-board charger warranty, inverter warranty, used EV warranty, second hand electric car warranty UK, MG4 warranty, Polestar warranty, BYD warranty, Jaguar I-PACE warranty, Porsche Taycan warranty, EV breakdown cover, electric car repair warranty, EV component cover" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/ev-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/ev-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large" />
@@ -651,9 +651,9 @@ const EVWarrantyLanding: React.FC = () => {
         {/* Open Graph - unique to this page */}
         <meta property="og:title" content="Electric Vehicle Warranty UK — Specialist EV Cover from £19/mo | Panda Protect" />
         <meta property="og:description" content="Protect your Tesla, Nissan, BMW, Hyundai, Kia, VW or any EV with UK's specialist electric vehicle warranty. Motors, inverters, chargers & 1,000+ components covered. Unlimited claims, any garage. Instant quote in 60 seconds." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/ev-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/ev-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Panda Protect - UK Electric Vehicle Warranty Provider - EV Cover from £19 per month" />
@@ -665,7 +665,7 @@ const EVWarrantyLanding: React.FC = () => {
         <meta name="twitter:site" content="@buyawarranty" />
         <meta name="twitter:title" content="Electric Vehicle Warranty UK — Specialist EV Cover from £19/mo" />
         <meta name="twitter:description" content="Protect your EV with UK's specialist warranty. Tesla, Nissan, BMW, Hyundai, Kia, VW & 20+ makes covered. Motors, inverters, chargers included. Unlimited claims, any garage. Instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta name="twitter:image:alt" content="Panda Protect - UK Electric Vehicle Warranty Provider" />
 
         {/* Structured Data */}
@@ -772,7 +772,7 @@ const EVWarrantyLanding: React.FC = () => {
                   {/* Trustpilot badge */}
                   <div className="absolute top-4 right-4">
                     <a
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"
@@ -1073,7 +1073,7 @@ const EVWarrantyLanding: React.FC = () => {
               </h2>
               {/* Trustpilot badge */}
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 bg-white border-2 border-gray-200 rounded-xl px-5 py-3 hover:border-green-400 transition-colors shadow-sm mt-4 mb-4"
@@ -1254,7 +1254,7 @@ const EVWarrantyLanding: React.FC = () => {
 
             <div className="text-center mt-8">
               <a
-                href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 text-sm font-semibold text-gray-700 hover:text-[#00b67a] transition-colors"

@@ -20,7 +20,7 @@ const TrustpilotMicroStarWidget: React.FC<{ className?: string }> = ({ className
       data-style-width="100%"
       data-token="6fd1e186-8398-4079-b009-a2d6ea21d627"
     >
-      <a href="https://www.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener">
+      <a href="https://www.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener">
         Trustpilot
       </a>
     </div>

@@ -80,7 +80,7 @@ const StickyFooter: React.FC<StickyFooterProps> = ({
           {/* Left Section - Trustpilot */}
           <div className="flex flex-col items-start gap-1 min-w-[160px]">
             <a 
-              href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+              href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex flex-col items-start gap-0.5 hover:opacity-80 transition-opacity"

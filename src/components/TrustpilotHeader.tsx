@@ -39,7 +39,7 @@ const TrustpilotHeader: React.FC<TrustpilotHeaderProps> = ({ className = "" }) =
         data-token="e64ec9bd-7fd7-450c-a0d0-dceef5f14b5e"
       >
         <a
-          href="https://www.trustpilot.com/review/buyawarranty.co.uk"
+          href="https://www.trustpilot.com/review/pandaprotect.co.uk"
           target="_blank"
           rel="noopener noreferrer"
         >

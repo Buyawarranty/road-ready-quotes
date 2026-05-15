@@ -62,8 +62,8 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
         "@context": "https://schema.org",
         "@type": "Organization",
         "name": "Panda Protect",
-        "url": "https://buyawarranty.co.uk",
-        "logo": "https://buyawarranty.co.uk/logo.png",
+        "url": "https://pandaprotect.co.uk",
+        "logo": "https://pandaprotect.co.uk/logo.png",
         "telephone": page.local_business_phone,
         "email": page.local_business_email
       });
@@ -127,8 +127,8 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-          { "@type": "ListItem", "position": 2, "name": `${page.brand_name} Warranty`, "item": `https://buyawarranty.co.uk/${page.slug}/` }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+          { "@type": "ListItem", "position": 2, "name": `${page.brand_name} Warranty`, "item": `https://pandaprotect.co.uk/${page.slug}/` }
         ]
       });
     }
@@ -278,7 +278,7 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
                     {page.meta_title}
                   </p>
                   <p className="text-green-700 text-sm">
-                    buyawarranty.co.uk/{page.slug}/
+                    pandaprotect.co.uk/{page.slug}/
                   </p>
                   <p className="text-gray-600 text-sm">
                     {page.meta_description}
@@ -297,7 +297,7 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
                       </div>
                     )}
                     <div className="p-3">
-                      <p className="text-xs text-gray-500 uppercase">buyawarranty.co.uk</p>
+                      <p className="text-xs text-gray-500 uppercase">pandaprotect.co.uk</p>
                       <p className="font-semibold">{page.og_title || page.meta_title}</p>
                       <p className="text-gray-600 text-sm line-clamp-2">
                         {page.og_description || page.meta_description}

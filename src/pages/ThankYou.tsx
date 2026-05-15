@@ -574,7 +574,7 @@ const ThankYou = () => {
 
   const handleReturnHome = () => {
     trackButtonClick('return_home', { page: 'thank_you' });
-    window.location.href = 'https://www.buyawarranty.co.uk';
+    window.location.href = 'https://www.pandaprotect.co.uk';
   };
 
   // Customer data already extracted at the top of component

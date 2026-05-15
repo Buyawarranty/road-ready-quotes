@@ -392,8 +392,8 @@ const NissanWarrantyLanding: React.FC = () => {
     "manufacturer": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
-      "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "url": "https://pandaprotect.co.uk",
+      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-330-229-5040",
@@ -408,7 +408,7 @@ const NissanWarrantyLanding: React.FC = () => {
       "price": "20",
       "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
-      "url": "https://buyawarranty.co.uk/warranty-types/nissan-warranty/",
+      "url": "https://pandaprotect.co.uk/warranty-types/nissan-warranty/",
       "seller": {
         "@type": "Organization",
         "name": "Panda Protect"
@@ -458,7 +458,7 @@ const NissanWarrantyLanding: React.FC = () => {
     "provider": {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk",
+      "url": "https://pandaprotect.co.uk",
       "telephone": "+44-330-229-5040",
       "priceRange": "£20-£60/month",
       "address": {
@@ -509,9 +509,9 @@ const NissanWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" },
-      { "@type": "ListItem", "position": 3, "name": "Nissan Extended Warranty", "item": "https://buyawarranty.co.uk/warranty-types/nissan-warranty/" }
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+      { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" },
+      { "@type": "ListItem", "position": 3, "name": "Nissan Extended Warranty", "item": "https://pandaprotect.co.uk/warranty-types/nissan-warranty/" }
     ]
   };
 
@@ -519,11 +519,11 @@ const NissanWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
-    "sameAs": ["https://uk.trustpilot.com/review/buyawarranty.co.uk"],
+    "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+44-330-229-5040",
@@ -538,11 +538,11 @@ const NissanWarrantyLanding: React.FC = () => {
     "@type": "WebPage",
     "name": "Nissan Extended Warranty UK - Get Instant Quote",
     "description": "Protect your Nissan with comprehensive extended warranty cover. All models from Qashqai to Leaf and Ariya. Nationwide UK coverage, approved garages, unlimited claims. Get your instant quote in 60 seconds.",
-    "url": "https://buyawarranty.co.uk/warranty-types/nissan-warranty/",
+    "url": "https://pandaprotect.co.uk/warranty-types/nissan-warranty/",
     "isPartOf": {
       "@type": "WebSite",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk"
+      "url": "https://pandaprotect.co.uk"
     },
     "about": { "@type": "Thing", "name": "Nissan Extended Warranty" },
     "mentions": [
@@ -579,7 +579,7 @@ const NissanWarrantyLanding: React.FC = () => {
         <title>Nissan Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content="Protect your Nissan with comprehensive extended warranty cover. All models from Qashqai to Leaf and Ariya covered. Engine, CVT gearbox, electrics & more. Nationwide UK coverage, any VAT-registered garage, unlimited claims. Prices from £20/month. Get your instant quote in 60 seconds." />
         <meta name="keywords" content="Nissan extended warranty, Nissan used car warranty, Nissan warranty UK, Nissan warranty cost, Nissan warranty quote, Nissan Qashqai warranty, Nissan Juke warranty, Nissan Leaf warranty, Nissan X-Trail warranty, Nissan CVT warranty, used Nissan warranty, second hand Nissan warranty" />
-        <link rel="canonical" href="https://buyawarranty.co.uk/warranty-types/nissan-warranty/" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/warranty-types/nissan-warranty/" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="bingbot" content="index, follow" />
@@ -594,9 +594,9 @@ const NissanWarrantyLanding: React.FC = () => {
         {/* Open Graph */}
         <meta property="og:title" content="Nissan Extended Warranty UK | Instant Quotes from £20/month" />
         <meta property="og:description" content="Comprehensive Nissan warranty coverage. Engine, CVT gearbox, electrics & more. All models covered including EV. Nationwide UK coverage with any garage. Get your instant quote now." />
-        <meta property="og:url" content="https://buyawarranty.co.uk/warranty-types/nissan-warranty/" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/nissan-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Nissan Extended Warranty UK - Panda Protect" />
@@ -607,7 +607,7 @@ const NissanWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Nissan Extended Warranty UK | From £20/month" />
         <meta name="twitter:description" content="Protect your Nissan with comprehensive extended warranty. All models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
         
         {/* AI Search Engine Optimization */}
         <meta name="ai-content-declaration" content="This page provides information about Nissan extended warranty services in the UK. Human-authored and fact-checked." />
@@ -713,7 +713,7 @@ const NissanWarrantyLanding: React.FC = () => {
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
                     <a 
-                      href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                      href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="hover:opacity-80 transition-opacity"

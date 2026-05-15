@@ -102,7 +102,7 @@ const UnifiedEmailHub = () => {
     name: '',
     subject: '',
     template_type: '',
-    from_email: 'info@buyawarranty.co.uk',
+    from_email: 'info@pandaprotect.co.uk',
     greeting: '',
     content: '',
     is_active: true
@@ -693,7 +693,7 @@ const UnifiedEmailHub = () => {
         </div>
         <Button onClick={() => {
           setSelectedTemplate(null);
-          setFormData({ name: '', subject: '', template_type: '', from_email: 'support@buyawarranty.co.uk', greeting: '', content: '', is_active: true });
+          setFormData({ name: '', subject: '', template_type: '', from_email: 'support@pandaprotect.co.uk', greeting: '', content: '', is_active: true });
           setIsEditing(true);
         }}>
           <Plus className="w-4 h-4 mr-2" />

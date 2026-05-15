@@ -123,9 +123,9 @@ const MitsubishiWarrantyLanding: React.FC = () => {
 
   const scrollToQuoteForm = () => { document.getElementById('hero-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty for all ${brandName} models including Outlander, Eclipse Cross, ASX, and L200.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
+  const productSchema = { "@context": "https://schema.org", "@type": "Product", "name": `${brandName} Extended Warranty UK`, "description": `Comprehensive extended warranty for all ${brandName} models including Outlander, Eclipse Cross, ASX, and L200.`, "brand": { "@type": "Brand", "name": "Panda Protect" }, "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": startingPrice, "availability": "https://schema.org/InStock", "url": `https://pandaprotect.co.uk/warranty-types/${brandSlug}/` }, "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847" } };
   const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })) };
-  const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://buyawarranty.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://buyawarranty.co.uk/warranty-types/${brandSlug}/` }] };
+  const breadcrumbSchema = { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" }, { "@type": "ListItem", "position": 2, "name": "Warranty Types", "item": "https://pandaprotect.co.uk/warranty-types/" }, { "@type": "ListItem", "position": 3, "name": `${brandName} Extended Warranty`, "item": `https://pandaprotect.co.uk/warranty-types/${brandSlug}/` }] };
 
   return (
     <>
@@ -133,12 +133,12 @@ const MitsubishiWarrantyLanding: React.FC = () => {
         <title>{brandName} Extended Warranty UK | Get Your Instant Quote | Panda Protect</title>
         <meta name="description" content={`Protect your ${brandName} with comprehensive extended warranty cover. Outlander, Eclipse Cross, ASX, L200 covered. Engine, 4WD, PHEV & more. Nationwide UK coverage. From £${startingPrice}/month.`} />
         <meta name="keywords" content="Mitsubishi extended warranty, Mitsubishi warranty UK, Mitsubishi Outlander warranty, Mitsubishi L200 warranty, Mitsubishi Eclipse Cross warranty, Outlander PHEV warranty" />
-        <link rel="canonical" href={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />
+        <link rel="canonical" href={`https://pandaprotect.co.uk/warranty-types/${brandSlug}/`} />
         <meta name="robots" content="index, follow" />
         <meta name="geo.region" content="GB" />
         <meta httpEquiv="content-language" content="en-GB" />
         <meta property="og:title" content={`${brandName} Extended Warranty UK | From £${startingPrice}/month`} />
-        <meta property="og:url" content={`https://buyawarranty.co.uk/warranty-types/${brandSlug}/`} />
+        <meta property="og:url" content={`https://pandaprotect.co.uk/warranty-types/${brandSlug}/`} />
         <meta property="og:type" content="website" />
         <meta property="og:locale" content="en_GB" />
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
@@ -169,7 +169,7 @@ const MitsubishiWarrantyLanding: React.FC = () => {
               </div>
               <div className="relative">
                 <OptimizedImage src={heroImage} alt={`${brandName} extended warranty UK`} className="w-full h-auto" priority={true} width={651} height={434} />
-                <div className="absolute top-4 right-4"><a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" rel="noopener noreferrer"><OptimizedImage src={trustpilotExcellent} alt="Trustpilot Excellent" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} /></a></div>
+                <div className="absolute top-4 right-4"><a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" rel="noopener noreferrer"><OptimizedImage src={trustpilotExcellent} alt="Trustpilot Excellent" className="h-auto w-28 sm:w-36 object-contain" width={144} height={61} /></a></div>
                 <div className="flex flex-col items-center gap-4 mt-6">
                   <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-6 flex-wrap">
                     <div className="flex items-center space-x-1.5"><Car className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" /><span className="font-medium text-gray-700 text-xs sm:text-sm lg:text-base">SUVs</span></div>

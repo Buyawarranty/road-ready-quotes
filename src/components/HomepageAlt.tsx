@@ -450,11 +450,11 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
             </a>
             
             <a 
-              href="mailto:support@buyawarranty.co.uk" 
+              href="mailto:support@pandaprotect.co.uk" 
               className="flex items-center gap-2 text-white hover:text-white/80 transition-colors font-medium text-lg"
             >
               <Mail size={20} />
-              Email us: support@buyawarranty.co.uk
+              Email us: support@pandaprotect.co.uk
             </a>
 
             <a 

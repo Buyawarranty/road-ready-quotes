@@ -39,7 +39,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
   doc.setFontSize(10);
   doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
   doc.setFont('helvetica', 'normal');
-  doc.text('support@buyawarranty.co.uk', 196, 20, { align: 'right' });
+  doc.text('support@pandaprotect.co.uk', 196, 20, { align: 'right' });
 
   // Meta
   doc.setTextColor(40, 40, 40);
@@ -135,7 +135,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
   doc.setFontSize(9);
   doc.setTextColor(120, 120, 120);
   doc.text(
-    'This document confirms cover under the plan above. Full Terms & Conditions available at buyawarranty.co.uk/warranty-plan',
+    'This document confirms cover under the plan above. Full Terms & Conditions available at pandaprotect.co.uk/warranty-plan',
     14,
     finalY + 14,
     { maxWidth: 182 },

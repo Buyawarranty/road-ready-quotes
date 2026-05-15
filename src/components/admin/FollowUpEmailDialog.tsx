@@ -58,7 +58,7 @@ We're here to help!
 
 Best regards,
 Panda Protect Team
-www.buyawarranty.co.uk`;
+www.pandaprotect.co.uk`;
 };
 
 export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({

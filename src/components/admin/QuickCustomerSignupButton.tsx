@@ -158,7 +158,7 @@ export const QuickCustomerSignupButton: React.FC<QuickCustomerSignupButtonProps>
 
     const credentials = `Customer Dashboard Login Details
 
-Dashboard URL: https://buyawarranty.co.uk/customer-dashboard
+Dashboard URL: https://pandaprotect.co.uk/customer-dashboard
 Email: ${generatedCredentials.email}
 Password: ${generatedCredentials.password}
 

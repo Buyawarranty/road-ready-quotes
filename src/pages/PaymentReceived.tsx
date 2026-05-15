@@ -107,11 +107,11 @@ const PaymentReceived = () => {
                   Call Us
                 </a>
                 <a 
-                  href="mailto:info@buyawarranty.co.uk" 
+                  href="mailto:info@pandaprotect.co.uk" 
                   className="flex items-center gap-2 text-primary hover:underline"
                 >
                   <Mail className="w-4 h-4" />
-                  info@buyawarranty.co.uk
+                  info@pandaprotect.co.uk
                 </a>
               </div>
             </CardContent>

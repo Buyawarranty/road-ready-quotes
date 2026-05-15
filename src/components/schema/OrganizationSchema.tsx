@@ -11,8 +11,8 @@ export const OrganizationSchema = ({ type = 'LocalBusiness' }: OrganizationSchem
       "@type": "Organization",
       "name": "Panda Protect",
       "alternateName": "Car Warranty Uk",
-      "url": "https://buyawarranty.co.uk/",
-      "logo": "https://buyawarranty.co.uk/extended_warranty_uk-car-trustworthy-reviews.png",
+      "url": "https://pandaprotect.co.uk/",
+      "logo": "https://pandaprotect.co.uk/extended_warranty_uk-car-trustworthy-reviews.png",
       "contactPoint": [
         {
           "@type": "ContactPoint",
@@ -29,7 +29,7 @@ export const OrganizationSchema = ({ type = 'LocalBusiness' }: OrganizationSchem
           "availableLanguage": "en"
         }
       ],
-      "sameAs": "trustpilot.com/review/buyawarranty.co.uk/"
+      "sameAs": "trustpilot.com/review/pandaprotect.co.uk/"
     };
 
     const scriptId = 'organization-schema';

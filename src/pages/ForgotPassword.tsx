@@ -193,8 +193,8 @@ const ForgotPassword: React.FC = () => {
             {/* Support Contact */}
             <p className="text-center text-sm text-gray-500 mt-6">
               Need help? Contact us at{' '}
-              <a href="mailto:support@buyawarranty.co.uk" className="text-orange-500 hover:text-orange-600 font-medium">
-                support@buyawarranty.co.uk
+              <a href="mailto:support@pandaprotect.co.uk" className="text-orange-500 hover:text-orange-600 font-medium">
+                support@pandaprotect.co.uk
               </a>
             </p>
           </div>

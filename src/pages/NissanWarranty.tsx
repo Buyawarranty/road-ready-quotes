@@ -81,7 +81,7 @@ const NissanWarranty = () => {
         title="Nissan Extended Warranty | Cover for Used and New Nissans"
         description="Protect your Nissan from costly repairs with comprehensive extended warranty cover. Includes engine, gearbox, electrics and more. Get an instant online quote today."
         keywords="nissan extended warranty, nissan warranty UK, used nissan warranty, nissan qashqai warranty, nissan juke warranty, nissan leaf warranty, nissan micra warranty, nissan x trail warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/nissan/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/nissan/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -89,7 +89,7 @@ const NissanWarranty = () => {
       <WebPageSchema
         name="Nissan Extended Warranty - Panda Protect"
         description="Protect your Nissan from costly repairs with comprehensive extended warranty cover. Includes engine, gearbox, electrics and more. Get an instant online quote today."
-        url="https://buyawarranty.co.uk/car-extended-warranty/nissan/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/nissan/"
         lastReviewed={new Date().toISOString()}
         specialty="Nissan Extended Warranty, Nissan Car Warranty, Used Nissan Warranty"
       />
@@ -100,7 +100,7 @@ const NissanWarranty = () => {
         price="350.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -109,9 +109,9 @@ const NissanWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Nissan Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/nissan/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Nissan Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/nissan/" }
         ]}
       />
 

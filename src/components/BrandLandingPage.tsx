@@ -115,9 +115,9 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
     "@type": "LocalBusiness",
     "name": "Panda Protect",
     "description": `${brandName} extended warranty specialists in the UK`,
-    "url": "https://buyawarranty.co.uk",
+    "url": "https://pandaprotect.co.uk",
     "telephone": "+44-330-229-5040",
-    "email": "info@buyawarranty.co.uk",
+    "email": "info@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Suite A, Cavendish House, 233-235 High Street",
@@ -435,7 +435,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
         <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content={heroImageUrl || "https://buyawarranty.co.uk/extended_warranty_uk-car-trustworthy-reviews.png"} />
+        <meta property="og:image" content={heroImageUrl || "https://pandaprotect.co.uk/extended_warranty_uk-car-trustworthy-reviews.png"} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={metaTitle} />
         <meta name="twitter:description" content={metaDescription} />
@@ -585,7 +585,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
                 {/* Trustpilot Logo positioned to the right */}
                 <div className="absolute top-4 right-4 z-10">
                   <a 
-                    href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                    href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="hover:opacity-80 transition-opacity"
@@ -780,7 +780,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
                 {/* Trustpilot Logo */}
                 <div className="mt-6 flex justify-center">
                   <a 
-                    href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                    href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block hover:opacity-80 transition-opacity"
@@ -891,7 +891,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
                 {/* Trustpilot Section */}
                 <div className="py-4">
                   <a 
-                    href="https://uk.trustpilot.com/review/buyawarranty.co.uk"
+                    href="https://uk.trustpilot.com/review/pandaprotect.co.uk"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block hover:opacity-80 transition-opacity"

@@ -72,7 +72,7 @@ const AudiWarranty = () => {
         title="Audi Car Extended Warranty | Used & New Audi Cover UK"
         description="Protect your Audi from costly repairs with an extended warranty. Covers engine, gearbox, electrics and more. Used & high-mileage Audis accepted. Get instant quotes."
         keywords="audi extended warranty, audi warranty UK, used audi warranty, audi a3 warranty, audi a4 warranty, audi q5 warranty"
-        canonical="https://buyawarranty.co.uk/car-extended-warranty/audi/"
+        canonical="https://pandaprotect.co.uk/car-extended-warranty/audi/"
       />
       
       <OrganizationSchema type="InsuranceAgency" />
@@ -80,9 +80,9 @@ const AudiWarranty = () => {
       <WebPageSchema
         name="Audi Extended Warranty - Panda Protect"
         description="Protect your Audi from costly repairs with an extended warranty. Covers engine, gearbox, electrics and more. Used & high-mileage Audis accepted. Get instant quotes."
-        url="https://buyawarranty.co.uk/car-extended-warranty/audi/"
+        url="https://pandaprotect.co.uk/car-extended-warranty/audi/"
         lastReviewed={new Date().toISOString()}
-        significantLink="https://buyawarranty.co.uk/"
+        significantLink="https://pandaprotect.co.uk/"
         specialty="Audi Extended Warranties"
       />
       
@@ -92,7 +92,7 @@ const AudiWarranty = () => {
         price="350.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />
@@ -101,9 +101,9 @@ const AudiWarranty = () => {
       
       <BreadcrumbSchema
         items={[
-          { name: "Home", url: "https://buyawarranty.co.uk/" },
-          { name: "Car Extended Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/" },
-          { name: "Audi Warranty", url: "https://buyawarranty.co.uk/car-extended-warranty/audi/" }
+          { name: "Home", url: "https://pandaprotect.co.uk/" },
+          { name: "Car Extended Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/" },
+          { name: "Audi Warranty", url: "https://pandaprotect.co.uk/car-extended-warranty/audi/" }
         ]}
       />
 

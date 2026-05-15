@@ -14,7 +14,7 @@ export const WebPageSchema = ({
   description, 
   url,
   lastReviewed = new Date().toISOString().split('T')[0],
-  significantLink = "https://www.trustpilot.com/review/buyawarranty.co.uk",
+  significantLink = "https://www.trustpilot.com/review/pandaprotect.co.uk",
   specialty = "Car Warranty, Vehicle Warranty, Extended Warranty"
 }: WebPageSchemaProps) => {
   useEffect(() => {
@@ -46,7 +46,7 @@ export const WebPageSchema = ({
         "@type": "Organization",
         "name": "Panda Protect",
         "legalName": "BUY A WARRANTY LIMITED",
-        "url": "https://buyawarranty.co.uk"
+        "url": "https://pandaprotect.co.uk"
       }
     };
 

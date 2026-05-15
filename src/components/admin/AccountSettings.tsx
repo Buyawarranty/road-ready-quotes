@@ -39,7 +39,7 @@ const AccountSettings = () => {
       } else {
         toast.success('Password updated successfully');
         
-        // Send notification email to info@buyawarranty.co.uk
+        // Send notification email to info@pandaprotect.co.uk
         try {
           await supabase.functions.invoke('notify-admin-credential-change', {
             body: {

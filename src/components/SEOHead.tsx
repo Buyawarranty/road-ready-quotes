@@ -25,7 +25,7 @@ export const SEOHead = ({
   keywords = "car warranty UK, vehicle warranty, used car warranty, extended car warranty, warranty prices UK, cheap car warranty, best car warranty, van warranty, EV warranty, motorbike warranty",
   ogTitle,
   ogDescription,
-  ogImage = "https://buyawarranty.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+  ogImage = "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
   ogImageWidth = "1200",
   ogImageHeight = "630",
   ogImageAlt = "Panda Protect - UK Car Warranty Provider",
@@ -37,7 +37,7 @@ export const SEOHead = ({
   author = 'Panda Protect',
   publisher = 'BUY A WARRANTY LIMITED'
 }: SEOHeadProps) => {
-  const canonicalUrl = canonical || `https://buyawarranty.co.uk${window.location.pathname}`;
+  const canonicalUrl = canonical || `https://pandaprotect.co.uk${window.location.pathname}`;
 
   return (
     <Helmet>

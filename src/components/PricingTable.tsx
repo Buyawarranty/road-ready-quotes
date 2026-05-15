@@ -2798,7 +2798,7 @@ const PricingTable: React.FC<PricingTableProps> = ({
                         <div className="flex items-center justify-center gap-4 py-2 border-t border-gray-100">
                           {/* Trustpilot */}
                           <a 
-                            href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                            href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="hover:opacity-80 transition-opacity"
@@ -2843,7 +2843,7 @@ const PricingTable: React.FC<PricingTableProps> = ({
                       {/* SECTION 1: Trust & Reassurance */}
                       <div className="flex flex-col items-center justify-center px-3 lg:px-6 py-4 border-r border-gray-100 min-w-fit">
                         <a 
-                          href="https://uk.trustpilot.com/review/buyawarranty.co.uk" 
+                          href="https://uk.trustpilot.com/review/pandaprotect.co.uk" 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="hover:opacity-80 transition-opacity"

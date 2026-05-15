@@ -103,11 +103,11 @@ const DiscountsOffers: React.FC = () => {
     "@type": "OfferCatalog",
     "name": "Panda Protect Discount Codes & Offers 2026",
     "description": "Active discount codes, promo codes and special offers for vehicle warranty plans from Panda Protect UK. Save on car, van, EV and motorbike warranties.",
-    "url": "https://buyawarranty.co.uk/discount-promo-offers/",
+    "url": "https://pandaprotect.co.uk/discount-promo-offers/",
     "provider": {
       "@type": "Organization",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk"
+      "url": "https://pandaprotect.co.uk"
     },
     "itemListElement": codes.map((code, i) => ({
       "@type": "Offer",
@@ -126,12 +126,12 @@ const DiscountsOffers: React.FC = () => {
     "@type": "LocalBusiness",
     "name": "Panda Protect",
     "alternateName": "Panda Protect",
-    "url": "https://buyawarranty.co.uk",
-    "logo": "https://buyawarranty.co.uk/lovable-uploads/buyawarranty-logo.webp",
-    "image": "https://buyawarranty.co.uk/lovable-uploads/buyawarranty-logo.webp",
+    "url": "https://pandaprotect.co.uk",
+    "logo": "https://pandaprotect.co.uk/lovable-uploads/buyawarranty-logo.webp",
+    "image": "https://pandaprotect.co.uk/lovable-uploads/buyawarranty-logo.webp",
     "description": "UK's trusted vehicle warranty provider offering comprehensive mechanical and electrical protection for cars, vans, EVs and motorbikes. Discount codes and special offers available.",
     "telephone": "+443302295040",
-    "email": "support@buyawarranty.co.uk",
+    "email": "support@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Warranty House, 62 Berkhamsted Ave",
@@ -165,7 +165,7 @@ const DiscountsOffers: React.FC = () => {
       "name": "United Kingdom"
     },
     "sameAs": [
-      "https://www.trustpilot.com/review/buyawarranty.co.uk"
+      "https://www.trustpilot.com/review/pandaprotect.co.uk"
     ]
   };
 
@@ -175,11 +175,11 @@ const DiscountsOffers: React.FC = () => {
     "@type": "WebPage",
     "name": "Panda Protect Discount Codes & Promo Offers 2026",
     "description": "Find active Panda Protect discount codes and promo offers. Save on car, van, EV and motorbike warranty plans. Codes updated regularly.",
-    "url": "https://buyawarranty.co.uk/discount-promo-offers/",
+    "url": "https://pandaprotect.co.uk/discount-promo-offers/",
     "isPartOf": {
       "@type": "WebSite",
       "name": "Panda Protect",
-      "url": "https://buyawarranty.co.uk"
+      "url": "https://pandaprotect.co.uk"
     },
     "about": {
       "@type": "Thing",
@@ -197,8 +197,8 @@ const DiscountsOffers: React.FC = () => {
     "breadcrumb": {
       "@type": "BreadcrumbList",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://buyawarranty.co.uk/" },
-        { "@type": "ListItem", "position": 2, "name": "Discount & Promo Offers", "item": "https://buyawarranty.co.uk/discount-promo-offers/" }
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://pandaprotect.co.uk/" },
+        { "@type": "ListItem", "position": 2, "name": "Discount & Promo Offers", "item": "https://pandaprotect.co.uk/discount-promo-offers/" }
       ]
     }
   };
@@ -210,7 +210,7 @@ const DiscountsOffers: React.FC = () => {
         title="Panda Protect Discount Codes & Promo Codes 2026 | Save on Car Warranties UK"
         description="Active Panda Protect promo codes & discount codes for 2026. Save up to £50 on car, van, EV & motorbike warranties. Copy a promo code and apply at checkout — limited availability."
         keywords="buy a warranty discount code, buyawarranty promo code, car warranty promo code UK, buy a warranty voucher code, vehicle warranty discount code, warranty coupon code, buy a warranty offers, car warranty deal UK, buyawarranty discount, warranty promo code 2026, car warranty discount, promo code car warranty"
-        canonical="https://buyawarranty.co.uk/discount-promo-offers/"
+        canonical="https://pandaprotect.co.uk/discount-promo-offers/"
       />
 
       {/* JSON-LD Structured Data */}
