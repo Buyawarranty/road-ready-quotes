@@ -20,9 +20,8 @@ const Step4Checkout: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!vehicle) navigate('/dealer-portal/quote/vehicle', { replace: true });
+    if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
-    else if (!plan) navigate('/dealer-portal/quote/pricing', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
   if (!vehicle || !customer || !plan || !dealer) return null;
