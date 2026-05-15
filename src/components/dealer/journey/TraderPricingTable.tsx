@@ -43,7 +43,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   const [term, setTerm] = useState<TraderTerm>(12);
   const [excess, setExcess] = useState<TraderExcess>(50);
-  const [labour, setLabour] = useState<TraderLabour>(60);
+  const [labour, setLabour] = useState<TraderLabour>(70);
   const [parts, setParts] = useState<TraderParts>('age_mileage');
   const [claim, setClaim] = useState<TraderClaim>(1000);
   const [dealerView, setDealerView] = useState<boolean>(true);
