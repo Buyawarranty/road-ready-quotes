@@ -58,20 +58,20 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motMileage]);
 
-  // Pick up reg passed from home/dashboard via ?reg= or localStorage
+  // Pick up reg passed from home/dashboard via ?reg= or localStorage,
+  // OR rehydrated from journey context — and always run DVLA lookup if make is missing.
   useEffect(() => {
-    if (reg) return;
     const url = new URL(window.location.href);
     const fromUrl = url.searchParams.get('reg');
     const fromStorage = localStorage.getItem('dealerPendingReg');
-    const initial = fromUrl || fromStorage;
-    if (initial) {
-      const upper = initial.toUpperCase();
-      setReg(upper);
-      localStorage.removeItem('dealerPendingReg');
+    const initial = fromUrl || fromStorage || vehicle?.reg || reg;
+    if (!initial) return;
+    const upper = initial.toUpperCase();
+    if (!reg) setReg(upper);
+    if (fromStorage) localStorage.removeItem('dealerPendingReg');
+    // Always lookup if we don't yet have make/model populated for this reg.
+    if (!vehicle?.make || vehicle?.reg?.toUpperCase() !== upper.replace(/\s+/g, '')) {
       performLookup(upper);
-    } else if (vehicle?.reg && !vehicle.make) {
-      performLookup(vehicle.reg);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
