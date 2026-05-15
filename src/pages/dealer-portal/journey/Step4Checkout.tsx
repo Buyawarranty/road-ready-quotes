@@ -160,7 +160,7 @@ const Step4Checkout: React.FC = () => {
           <div className="flex items-center justify-between pt-2">
             <Button
               variant="outline"
-              onClick={() => navigate('/dealer-portal/quote/pricing')}
+              onClick={() => navigate('/dealer-portal/quote/customer')}
               className="rounded-full bg-gray-900 text-white hover:bg-gray-800 hover:text-white border-gray-900 px-5"
               disabled={submitting}
             >
