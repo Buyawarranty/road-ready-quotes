@@ -70,7 +70,7 @@ const Step2Customer: React.FC = () => {
       town: 'To be confirmed',
       postcode: 'TBC',
     });
-    navigate('/dealer-portal/quote/pricing');
+    navigate('/dealer-portal/quote/checkout');
   };
 
   const inputClass = 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500';
