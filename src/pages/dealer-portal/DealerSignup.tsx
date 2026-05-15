@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
-import { CheckCircle2, Phone, Clock } from 'lucide-react';
+import {
+  CheckCircle2, Phone, Clock, ArrowLeft, Zap, Rocket, User, Mail, Building2, Lock, ArrowRight, ShieldCheck,
+} from 'lucide-react';
 import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
 
 const DealerSignup = () => {
@@ -29,7 +30,6 @@ const DealerSignup = () => {
       return;
     }
 
-    // Block free/personal email providers — dealers must use an official dealership domain
     const personalDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com', 'icloud.com', 'aol.com', 'msn.com', 'protonmail.com', 'gmx.com', 'mail.com', 'yandex.com'];
     const emailDomain = form.email.split('@')[1]?.toLowerCase();
     if (!emailDomain || personalDomains.includes(emailDomain)) {
@@ -67,11 +67,7 @@ const DealerSignup = () => {
           phone: form.phone || null,
           company_name: form.company_name,
         });
-
-        if (dealerError) {
-          console.error('Dealer profile error:', dealerError);
-        }
-
+        if (dealerError) console.error('Dealer profile error:', dealerError);
         setSubmitted(true);
       }
     } catch (error: any) {
@@ -81,20 +77,20 @@ const DealerSignup = () => {
     }
   };
 
+  const fieldWrap = 'relative';
+  const iconClass = 'absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400';
+  const inputClass = 'w-full bg-gray-100 border border-gray-200 rounded-xl pl-12 pr-4 h-14 text-base text-gray-900 placeholder:text-gray-500 font-medium focus:outline-none focus:ring-2 focus:ring-orange-400 focus:bg-white transition';
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <SEOHead title="Dealer Signup | Panda Protect" description="Create your dealer account in 60 seconds." />
       <DealerPublicHeader />
 
-      <div className="flex-1 flex items-center justify-center px-4 py-12 bg-[#fff8ef]">
+      <div className="flex-1 px-4 py-10 sm:py-14">
         {submitted ? (
-          <Card className="w-full max-w-xl bg-white border-2 border-orange-200 shadow-xl">
+          <Card className="w-full max-w-xl mx-auto bg-white border-2 border-orange-200 shadow-xl">
             <CardContent className="p-8 sm:p-10 text-center">
-              <img
-                src={pandaThumbsUp}
-                alt="Panda Protect panda mascot"
-                className="w-32 h-auto mx-auto mb-4 drop-shadow-lg"
-              />
+              <img src={pandaThumbsUp} alt="Panda Protect" className="w-32 h-auto mx-auto mb-4 drop-shadow-lg" />
               <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-bold tracking-wide mb-4">
                 <CheckCircle2 className="h-3.5 w-3.5" /> APPLICATION RECEIVED
               </div>
@@ -105,7 +101,6 @@ const DealerSignup = () => {
                 Your dealer application is in. Our team will review and approve your account within{' '}
                 <strong className="text-gray-900">1–2 working days</strong>. We'll email you as soon as you're set up.
               </p>
-
               <div className="bg-[#fff8ef] border border-orange-200 rounded-2xl p-5 mb-6 text-left">
                 <div className="flex items-start gap-3 mb-3">
                   <Clock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
@@ -118,83 +113,124 @@ const DealerSignup = () => {
                   <Phone className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-bold text-gray-900 text-sm">Need it faster? Give us a call</p>
-                    <a
-                      href="tel:03302295045"
-                      className="text-lg font-black text-orange-600 hover:text-orange-700 tracking-tight"
-                    >
-                      0330 229 5045
-                    </a>
+                    <a href="tel:03302295045" className="text-lg font-black text-orange-600 hover:text-orange-700 tracking-tight">0330 229 5045</a>
                     <p className="text-xs text-gray-600 mt-0.5">Mon–Fri, 9am–5:30pm</p>
                   </div>
                 </div>
               </div>
-
               <div className="flex gap-3 flex-wrap justify-center">
-                <Link to="/dealer-portal/">
-                  <Button variant="outline" className="border-gray-300">Back to Home</Button>
-                </Link>
-                <Link to="/dealer-portal/login">
-                  <Button className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold">
-                    Go to Sign In
-                  </Button>
-                </Link>
+                <Link to="/dealer-portal/"><Button variant="outline" className="border-gray-300">Back to Home</Button></Link>
+                <Link to="/dealer-portal/login"><Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold">Go to Sign In</Button></Link>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <Card className="w-full max-w-md bg-white border-2 border-gray-200 shadow-xl relative">
-            <img
-              src={pandaThumbsUp}
-              alt="Panda Protect panda mascot"
-              className="hidden sm:block w-28 h-auto absolute -top-16 -right-10 drop-shadow-lg pointer-events-none"
-            />
-            <CardHeader className="text-center">
-              <Link to="/dealer-portal/" className="inline-block mb-4">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-8 mx-auto" />
-              </Link>
-              <span className="inline-block text-xs font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded mb-2 tracking-wider">DEALER PORTAL</span>
-              <CardTitle className="text-2xl font-black text-gray-900">Create Dealer Account</CardTitle>
-              <CardDescription className="text-gray-600">Get started in 60 seconds</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Full Name *</label>
-                  <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Smith" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
+          <div className="w-full max-w-2xl mx-auto">
+            {/* Heading */}
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="bg-orange-500 rounded-full p-2.5 shadow-md">
+                  <Rocket className="h-5 w-5 text-white" />
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Email *</label>
-                  <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="dealer@example.com" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
+                <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+                  Become a Panda Protect dealer
+                </h1>
+              </div>
+              <div className="flex items-center justify-center gap-3 mt-3">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold rounded-full px-3 py-1.5 transition"
+                >
+                  <ArrowLeft className="h-4 w-4" /> Back
+                </button>
+                <div className="inline-flex items-center gap-1.5 text-gray-700 text-sm font-medium">
+                  <Zap className="h-4 w-4 text-orange-500" />
+                  Set up your account in 60 seconds
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Phone</label>
-                  <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="07700 900000" className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Company Name *</label>
-                  <Input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} placeholder="ABC Motors Ltd" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-700">Password *</label>
-                  <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" required className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-600" />
-                </div>
-                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold" disabled={loading}>
-                  {loading ? 'Creating Account...' : 'Create Account'}
-                </Button>
-              </form>
+              </div>
+            </div>
 
-              <div className="mt-5 p-3 bg-[#fff8ef] border border-orange-200 rounded-lg text-xs text-gray-700 text-center">
-                Accounts are reviewed and approved within <strong>1–2 working days</strong>.
-                <br />
-                Need it sooner? Call <a href="tel:03302295045" className="font-bold text-orange-600">0330 229 5045</a>
+            {/* Form card */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-base font-bold text-gray-900 mb-2">Your full name</label>
+                <div className={fieldWrap}>
+                  <User className={iconClass} />
+                  <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. John Smith" className={inputClass} required />
+                </div>
               </div>
 
-              <p className="text-center text-sm text-gray-600 mt-6">
+              <div>
+                <label className="block text-base font-bold text-gray-900 mb-2">Dealership email</label>
+                <div className={fieldWrap}>
+                  <Mail className={iconClass} />
+                  <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="e.g. you@yourdealership.co.uk" className={inputClass} required />
+                </div>
+                <p className="text-xs text-gray-500 mt-1.5">Use your official dealership email — personal Gmail / Yahoo are not accepted.</p>
+              </div>
+
+              <div>
+                <label className="block text-base font-bold text-gray-900 mb-2">Mobile number</label>
+                <div className={fieldWrap}>
+                  <Phone className={iconClass} />
+                  <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="UK mobile number" className={inputClass} />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-base font-bold text-gray-900 mb-2">Company name</label>
+                <div className={fieldWrap}>
+                  <Building2 className={iconClass} />
+                  <input value={form.company_name} onChange={(e) => setForm({ ...form, company_name: e.target.value })} placeholder="e.g. ABC Motors Ltd" className={inputClass} required />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-base font-bold text-gray-900 mb-2">Choose a password</label>
+                <div className={fieldWrap}>
+                  <Lock className={iconClass} />
+                  <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" className={inputClass} required />
+                </div>
+                <p className="text-xs text-gray-500 mt-1.5">Unlock dealer pricing, instant quotes & customer warranties.</p>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-16 bg-orange-500 hover:bg-orange-600 text-white text-lg font-black rounded-2xl shadow-lg shadow-orange-500/20 transition"
+              >
+                {loading ? 'Creating account...' : (
+                  <span className="inline-flex items-center gap-2">Create my dealer account <ArrowRight className="h-5 w-5" /></span>
+                )}
+              </Button>
+
+              <div className="flex items-center justify-center gap-6 flex-wrap pt-2 text-sm text-gray-700">
+                <div className="inline-flex items-center gap-1.5"><Rocket className="h-4 w-4 text-orange-500" /> Instant setup</div>
+                <div className="inline-flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-orange-500" /> Approved in 1–2 days</div>
+                <div className="inline-flex items-center gap-1.5"><Zap className="h-4 w-4 text-orange-500" /> No obligation</div>
+              </div>
+
+              <p className="text-center text-sm text-gray-700">
+                🔒 We never share your details. <span className="font-semibold text-gray-900">100% privacy guaranteed</span>
+              </p>
+
+              <p className="text-center text-sm text-gray-600 pt-2">
                 Already have an account?{' '}
                 <Link to="/dealer-portal/login" className="text-orange-600 hover:underline font-bold">Sign in</Link>
               </p>
-            </CardContent>
-          </Card>
+            </form>
+
+            {/* Footer help strip */}
+            <div className="mt-10 pt-6 border-t border-gray-200 text-center">
+              <p className="font-bold text-gray-900 mb-2">Need advice? We're here to help.</p>
+              <div className="flex items-center justify-center gap-6 flex-wrap">
+                <a href="tel:03302295045" className="inline-flex items-center gap-2 text-orange-600 font-bold">
+                  <Phone className="h-4 w-4" /> 0330 229 5045
+                </a>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
