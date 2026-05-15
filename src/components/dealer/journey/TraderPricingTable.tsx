@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Check } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS, EXCESS_OPTIONS, LABOUR_OPTIONS, PARTS_OPTIONS, TERM_OPTIONS,
   TraderClaim, TraderExcess, TraderLabour, TraderParts, TraderTerm, formatClaim,
 } from '@/lib/traderPricingDefaults';
 import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
+import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 
 export interface TraderSelection {
   term: TraderTerm;
@@ -26,14 +26,28 @@ interface Props {
   onBack?: () => void;
 }
 
+const COVER_SUMMARY =
+  'Braking System, Casings, Clutch, Electrics, ECUs, Engine, Flywheels, Drive Plates, Fuel System, Gearbox, Oil Seals & Gaskets, Steering Column, Suspension, Transmission, Turbocharger (Ref Document for full covered items)';
+
+const ADD_ONS = [
+  'Air-Conditioning', 'Handbrake', 'Suspension', 'Radio/ Sat-Nav',
+  'Emissions', 'Wear & Tear', 'Hybrid Battery Cover',
+];
+
+const termLabel = (t: TraderTerm) =>
+  t === 3 ? '3 mths' : t === 6 ? '6+1 mths' : t === 12 ? '12+12 mths' : t === 24 ? '24+12 mths' : '36+12 mths';
+
 const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
+  const { vehicle } = useDealerJourney();
+
   const [term, setTerm] = useState<TraderTerm>(12);
-  const [excess, setExcess] = useState<TraderExcess>(75);
-  const [labour, setLabour] = useState<TraderLabour>(70);
+  const [excess, setExcess] = useState<TraderExcess>(50);
+  const [labour, setLabour] = useState<TraderLabour>(60);
   const [parts, setParts] = useState<TraderParts>('age_mileage');
   const [claim, setClaim] = useState<TraderClaim>(1000);
   const [dealerView, setDealerView] = useState<boolean>(true);
+  const [addOns, setAddOns] = useState<Record<string, boolean>>({});
 
   const effectiveConfig = useMemo(() => {
     if (!config) return config;
@@ -62,7 +76,22 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
     );
   }
 
-  const Row = <T extends string | number>({
+  // -- small atoms ----------------------------------------------------------
+  const SegBtn = <T extends string | number>({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex-1 px-3 py-2 text-sm font-semibold border transition-colors first:rounded-l-md last:rounded-r-md -ml-px first:ml-0 ${
+        active
+          ? 'bg-yellow-300 text-gray-900 border-yellow-400 z-10 relative'
+          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+      }`}
+    >
+      {children}
+    </button>
+  );
+
+  const SegGroup = <T extends string | number>({
     label, options, value, onChange, format,
   }: {
     label: string;
@@ -72,150 +101,207 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
     format?: (v: T) => string;
   }) => (
     <div>
-      <p className="text-xs uppercase tracking-wide text-gray-500 mb-2 font-semibold">{label}</p>
-      <div className="flex flex-wrap gap-2">
-        {options.map((o) => {
-          const active = value === o;
-          return (
-            <button
-              key={String(o)}
-              type="button"
-              onClick={() => onChange(o)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
-                active
-                  ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-orange-300'
-              }`}
-            >
-              {format ? format(o) : String(o)}
-            </button>
-          );
-        })}
+      <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 text-center">{label}</p>
+      <div className="flex">
+        {options.map((o) => (
+          <SegBtn key={String(o)} active={value === o} onClick={() => onChange(o)}>
+            {format ? format(o) : String(o)}
+          </SegBtn>
+        ))}
       </div>
     </div>
   );
 
   return (
     <div className="space-y-6">
-      {/* Price view toggle: Retail (no dealer discount) vs Dealer (discounted) */}
-      <div className="flex items-center justify-end gap-3">
-        <span className={`text-xs font-semibold ${!dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Retail price</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={dealerView}
-          onClick={() => setDealerView((v) => !v)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            dealerView ? 'bg-orange-500' : 'bg-gray-300'
-          }`}
-        >
-          <span
-            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-              dealerView ? 'translate-x-6' : 'translate-x-1'
-            }`}
-          />
-        </button>
-        <span className={`text-xs font-semibold ${dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Dealer price</span>
-      </div>
+      {/* VEHICLE DETAILS */}
+      <section>
+        <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">Vehicle Details</h2>
+        <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-5 sm:gap-8 items-start">
+            <div className="space-y-3">
+              <div className="aspect-[4/3] bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-300 text-xs">
+                Vehicle
+              </div>
+              <div className="flex items-stretch rounded-md overflow-hidden border border-gray-300 shadow-sm">
+                <div className="bg-blue-700 text-yellow-300 text-[10px] font-bold flex items-center justify-center px-2">GB</div>
+                <div className="bg-yellow-300 flex-1 text-center font-bold text-base sm:text-lg tracking-widest py-2 text-gray-900">
+                  {vehicle?.reg || '—'}
+                </div>
+              </div>
+            </div>
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm">
+              {[
+                ['Manufacturer', vehicle?.make],
+                ['Model', vehicle?.model],
+                ['Year', vehicle?.year],
+                ['Fuel', vehicle?.fuel_type],
+                ['Transmission', vehicle?.transmission],
+                ['Mileage', vehicle?.mileage],
+              ].map(([k, v]) => (
+                <div key={k as string} className="flex justify-between gap-3 border-b border-dashed border-gray-200 py-1">
+                  <dt className="text-gray-500 uppercase tracking-wide text-[11px] font-semibold self-center">{k}</dt>
+                  <dd className="text-gray-900 font-semibold text-right truncate">{v || '—'}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </section>
 
-      <Card className="border-orange-200">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+      {/* PRODUCT SELECTION */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">Product Selection</h2>
+          {/* Retail / Dealer toggle */}
+          <div className="flex items-center gap-3">
+            <span className={`text-xs font-semibold ${!dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Retail</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={dealerView}
+              onClick={() => setDealerView((v) => !v)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${dealerView ? 'bg-orange-500' : 'bg-gray-300'}`}
+            >
+              <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${dealerView ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+            <span className={`text-xs font-semibold ${dealerView ? 'text-gray-900' : 'text-gray-400'}`}>Dealer</span>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          {/* Gold banner */}
+          <div className="bg-yellow-300 px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 whitespace-nowrap">
+              GOLD <span className="font-bold">(£{result.gross.toFixed(2)})</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-gray-800/90 leading-snug">{COVER_SUMMARY}</p>
+          </div>
+
+          <div className="p-5 sm:p-6 space-y-7">
+            {/* Term tiles */}
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-orange-600 font-semibold">
-                {dealerView ? 'Trader plan · dealer price' : 'Trader plan · retail price'}
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-3">
+                What terms would you like? <span className="ml-2 text-gray-400 normal-case font-normal tracking-normal">Promo: extra months for free</span>
               </p>
-              <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
-                Gold (£{result.gross.toFixed(2)}) <Check className="h-5 w-5 text-orange-500" />
-              </CardTitle>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {allTermPrices.map(({ term: t, gross }) => {
+                  const active = term === t;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTerm(t)}
+                      className={`px-3 py-3 rounded-lg text-center border-2 transition-all ${
+                        active
+                          ? 'bg-yellow-300 border-yellow-400 shadow-sm'
+                          : 'bg-white border-gray-200 hover:border-orange-300'
+                      }`}
+                    >
+                      <div className="text-lg font-bold text-gray-900">£{gross.toFixed(2)}</div>
+                      <div className="text-[11px] text-gray-600 mt-0.5">{termLabel(t)}</div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-gray-500">{term}-month cover</p>
-              <p className="text-3xl font-bold text-gray-900">£{result.gross.toFixed(2)}</p>
-              <p className="text-xs text-gray-500">£{result.exVat.toFixed(2)} ex VAT · £{result.monthlyEquivalent.toFixed(2)}/mo equiv.</p>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2 font-semibold">
-              What terms would you like? <span className="text-gray-400 normal-case font-normal">Promo: we're giving extra months for free</span>
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-              {allTermPrices.map(({ term: t, gross }) => {
-                const active = term === t;
-                const label = t === 6 ? '6+1' : t === 12 ? '12+12' : t === 24 ? '24+12' : t === 36 ? '36+12' : `${t}`;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTerm(t)}
-                    className={`px-3 py-3 rounded-lg text-sm font-semibold border transition-colors text-left ${
-                      active
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
-                        : 'bg-white text-gray-800 border-gray-200 hover:border-orange-300'
-                    }`}
-                  >
-                    <div className="text-base">£{gross.toFixed(2)}</div>
-                    <div className={`text-xs ${active ? 'text-white/90' : 'text-gray-500'}`}>{label} mths</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-          <Row label="Repair excess" options={EXCESS_OPTIONS} value={excess} onChange={(v) => setExcess(v as TraderExcess)} format={(v) => `£${v}`} />
-          <Row label="Labour rate" options={LABOUR_OPTIONS} value={labour} onChange={(v) => setLabour(v as TraderLabour)} format={(v) => `£${v}/hr`} />
-          <Row label="Claim limit" options={CLAIM_OPTIONS} value={claim} onChange={(v) => setClaim(v as TraderClaim)} format={(v) => formatClaim(Number(v))} />
-          <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500 mb-2 font-semibold">Parts contribution</p>
-            <div className="flex flex-wrap gap-2">
-              {PARTS_OPTIONS.map((o) => {
-                const active = parts === o.key;
-                return (
-                  <button
-                    key={o.key}
-                    type="button"
-                    onClick={() => setParts(o.key)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
-                      active
-                        ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
-                        : 'bg-white text-gray-700 border-gray-200 hover:border-orange-300'
-                    }`}
-                  >
-                    {o.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm text-gray-700">Price breakdown</CardTitle></CardHeader>
-        <CardContent className="space-y-1 text-sm">
-          {result.breakdown.map((b) => (
-            <div key={b.label} className="flex justify-between text-gray-600">
-              <span>{b.label}</span>
-              <span className="font-mono">{b.value}</span>
+            {/* Tailored items - 4 columns */}
+            <div>
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-3">Your tailored items</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+                <SegGroup
+                  label="Excess"
+                  options={EXCESS_OPTIONS}
+                  value={excess}
+                  onChange={(v) => setExcess(v as TraderExcess)}
+                  format={(v) => `£${v}`}
+                />
+                <SegGroup
+                  label="Labour rates"
+                  options={LABOUR_OPTIONS}
+                  value={labour}
+                  onChange={(v) => setLabour(v as TraderLabour)}
+                  format={(v) => `£${v}`}
+                />
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 text-center">Parts &amp; Labour</p>
+                  <div className="flex">
+                    {PARTS_OPTIONS.map((o) => {
+                      const active = parts === o.key;
+                      return (
+                        <button
+                          key={o.key}
+                          type="button"
+                          onClick={() => setParts(o.key)}
+                          className={`flex-1 px-3 py-2 text-sm font-semibold border transition-colors first:rounded-l-md last:rounded-r-md -ml-px first:ml-0 ${
+                            active
+                              ? 'bg-yellow-300 text-gray-900 border-yellow-400 z-10 relative'
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {o.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <SegGroup
+                  label="Repair reimbursement limit"
+                  options={CLAIM_OPTIONS}
+                  value={claim}
+                  onChange={(v) => setClaim(v as TraderClaim)}
+                  format={(v) => formatClaim(Number(v))}
+                />
+              </div>
             </div>
-          ))}
-          <div className="flex justify-between pt-2 border-t mt-2 text-gray-900 font-semibold">
-            <span>Ex VAT</span><span>£{result.exVat.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>VAT @ 20%</span><span>£{result.vat.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-lg font-bold text-gray-900 pt-1 border-t mt-1">
-            <span>Total (inc VAT)</span><span>£{result.gross.toFixed(2)}</span>
-          </div>
-        </CardContent>
-      </Card>
 
-      <div className="flex gap-3 justify-end">
-        {onBack && <Button variant="outline" onClick={onBack}>Back</Button>}
+            {/* Optional add-ons */}
+            <div>
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-3">Optional add-ons</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-2">
+                {ADD_ONS.map((name) => {
+                  const checked = !!addOns[name];
+                  return (
+                    <label key={name} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none">
+                      <span
+                        onClick={() => setAddOns((prev) => ({ ...prev, [name]: !checked }))}
+                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                          checked ? 'bg-orange-500 border-orange-500' : 'bg-white border-gray-400'
+                        }`}
+                      >
+                        {checked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                      </span>
+                      <span>{name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Total + nav bar */}
+      <div className="bg-white border border-gray-200 rounded-xl px-5 sm:px-6 py-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:justify-between">
+        {onBack ? (
+          <Button
+            variant="outline"
+            onClick={onBack}
+            className="rounded-full bg-gray-900 text-white hover:bg-gray-800 hover:text-white border-gray-900 px-5"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" /> Back
+          </Button>
+        ) : <span />}
+
+        <div className="text-center sm:text-right order-first sm:order-none">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-bold">Total</div>
+          <div className="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">£{result.gross.toFixed(2)}</div>
+          <div className="text-[11px] text-gray-500">£{result.exVat.toFixed(2)} ex VAT · VAT @ 20% £{result.vat.toFixed(2)}</div>
+        </div>
+
         <Button
-          className="bg-orange-500 hover:bg-orange-600 text-white"
+          className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6"
           onClick={() =>
             onContinue({
               term, excess, labour, parts, claim,
@@ -224,7 +310,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             })
           }
         >
-          Continue to checkout
+          Next <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
     </div>
