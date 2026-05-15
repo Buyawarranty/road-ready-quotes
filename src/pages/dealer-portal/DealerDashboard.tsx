@@ -231,9 +231,9 @@ const DealerDashboard = () => {
                         <td className="py-3 text-right text-gray-900 font-semibold">£{Number(o.final_amount || 0).toFixed(2)}</td>
                         <td className="py-3 pl-4">
                           {o.payment_status === 'invoice_pending' ? (
-                            <Badge className="bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-100">Awaiting invoice</Badge>
+                            <Badge className="bg-yellow-100 text-orange-700 border border-yellow-300 hover:bg-yellow-100">Awaiting invoice</Badge>
                           ) : o.status === 'active' ? (
-                            <Badge className="bg-green-100 text-green-700 border border-green-200 hover:bg-green-100">Active</Badge>
+                            <Badge className="bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-100">Active</Badge>
                           ) : (
                             <Badge className="bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-100">{o.status || 'Pending'}</Badge>
                           )}
