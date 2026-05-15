@@ -61,10 +61,10 @@ const Step1Vehicle: React.FC = () => {
     setError(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('dvla-vehicle-lookup', {
-        body: { registration: cleaned },
+        body: { registrationNumber: cleaned, skipAgeCheck: true },
       });
       if (fnError) throw fnError;
-      if (!data || !data.make) {
+      if (!data || (!data.make && !data.found)) {
         toast({
           title: 'Vehicle not found',
           description: 'We could not find this registration. Please enter details manually.',
