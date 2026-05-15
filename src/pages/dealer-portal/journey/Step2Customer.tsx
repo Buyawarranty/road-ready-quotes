@@ -52,7 +52,7 @@ const Step2Customer: React.FC = () => {
         return;
       }
       setCustomer(form);
-      navigate('/dealer-portal/quote/pricing');
+      navigate('/dealer-portal/quote/checkout');
       return;
     }
 
