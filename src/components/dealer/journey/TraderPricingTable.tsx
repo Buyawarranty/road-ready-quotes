@@ -43,7 +43,68 @@ const termLabel = (t: TraderTerm) =>
 
 const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
-  const { vehicle } = useDealerJourney();
+  const { vehicle, setVehicle } = useDealerJourney();
+  const { toast } = useToast();
+
+  const [reg, setReg] = useState(vehicle?.reg || '');
+  const [mileage, setMileage] = useState(vehicle?.mileage || '');
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [lastLookedUp, setLastLookedUp] = useState<string | null>(null);
+  const lookupTimer = useRef<number | null>(null);
+  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+
+  useEffect(() => {
+    if (motMileage && !mileage) setMileage(String(motMileage));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motMileage]);
+
+  const performLookup = async (regToLookup: string) => {
+    const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
+    if (!cleaned || cleaned.length < 4 || cleaned === lastLookedUp) return;
+    setLastLookedUp(cleaned);
+    setIsLookingUp(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dvla-vehicle-lookup', {
+        body: { registrationNumber: cleaned, skipAgeCheck: true },
+      });
+      if (error) throw error;
+      if (!data || (!data.make && !data.found)) {
+        toast({ title: 'Vehicle not found', description: 'Please check the registration and try again.' });
+        return;
+      }
+      setVehicle({
+        reg: cleaned,
+        make: data.make || '',
+        model: data.model || '',
+        year: data.yearOfManufacture ? String(data.yearOfManufacture) : '',
+        fuel_type: data.fuelType || '',
+        transmission: data.transmission || '',
+        mileage: mileage || '',
+      });
+    } catch (err) {
+      console.error('DVLA lookup failed:', err);
+      toast({ title: 'Lookup failed', description: 'Please try again or continue manually.', variant: 'destructive' });
+    } finally {
+      setIsLookingUp(false);
+    }
+  };
+
+  const handleRegChange = (value: string) => {
+    const upper = value.toUpperCase();
+    setReg(upper);
+    if (lookupTimer.current) window.clearTimeout(lookupTimer.current);
+    const cleaned = upper.replace(/\s+/g, '');
+    if (cleaned.length >= 5 && cleaned.length <= 8) {
+      lookupTimer.current = window.setTimeout(() => performLookup(upper), 600);
+    }
+  };
+
+  useEffect(() => {
+    if (vehicle?.reg && mileage !== vehicle.mileage) {
+      setVehicle({ ...vehicle, mileage });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mileage]);
 
   const [term, setTerm] = useState<TraderTerm>(12);
   const [excess, setExcess] = useState<TraderExcess>(50);
