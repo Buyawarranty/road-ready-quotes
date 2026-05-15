@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Loader2, ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Loader2, ChevronLeft, ChevronRight, Check, Search } from 'lucide-react';
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS, EXCESS_OPTIONS, LABOUR_OPTIONS, PARTS_OPTIONS, TERM_OPTIONS,
@@ -8,6 +9,9 @@ import {
 } from '@/lib/traderPricingDefaults';
 import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useMotMileage } from '@/hooks/useMotMileage';
 
 export interface TraderSelection {
   term: TraderTerm;
@@ -39,7 +43,86 @@ const termLabel = (t: TraderTerm) =>
 
 const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
-  const { vehicle } = useDealerJourney();
+  const { vehicle, setVehicle } = useDealerJourney();
+  const { toast } = useToast();
+
+  const [reg, setReg] = useState(vehicle?.reg || '');
+  const [mileage, setMileage] = useState(vehicle?.mileage || '');
+  const [isLookingUp, setIsLookingUp] = useState(false);
+  const [lastLookedUp, setLastLookedUp] = useState<string | null>(null);
+  const lookupTimer = useRef<number | null>(null);
+  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+
+  useEffect(() => {
+    if (motMileage && !mileage) setMileage(String(motMileage));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motMileage]);
+
+  // Pick up reg passed from home/dashboard via ?reg= or localStorage
+  useEffect(() => {
+    if (reg) return;
+    const url = new URL(window.location.href);
+    const fromUrl = url.searchParams.get('reg');
+    const fromStorage = localStorage.getItem('dealerPendingReg');
+    const initial = fromUrl || fromStorage;
+    if (initial) {
+      const upper = initial.toUpperCase();
+      setReg(upper);
+      localStorage.removeItem('dealerPendingReg');
+      performLookup(upper);
+    } else if (vehicle?.reg && !vehicle.make) {
+      performLookup(vehicle.reg);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const performLookup = async (regToLookup: string) => {
+    const cleaned = regToLookup.replace(/\s+/g, '').toUpperCase();
+    if (!cleaned || cleaned.length < 4 || cleaned === lastLookedUp) return;
+    setLastLookedUp(cleaned);
+    setIsLookingUp(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dvla-vehicle-lookup', {
+        body: { registrationNumber: cleaned, skipAgeCheck: true },
+      });
+      if (error) throw error;
+      if (!data || (!data.make && !data.found)) {
+        toast({ title: 'Vehicle not found', description: 'Please check the registration and try again.' });
+        return;
+      }
+      setVehicle({
+        reg: cleaned,
+        make: data.make || '',
+        model: data.model || '',
+        year: data.yearOfManufacture ? String(data.yearOfManufacture) : '',
+        fuel_type: data.fuelType || '',
+        transmission: data.transmission || '',
+        mileage: mileage || '',
+      });
+    } catch (err) {
+      console.error('DVLA lookup failed:', err);
+      toast({ title: 'Lookup failed', description: 'Please try again or continue manually.', variant: 'destructive' });
+    } finally {
+      setIsLookingUp(false);
+    }
+  };
+
+  const handleRegChange = (value: string) => {
+    const upper = value.toUpperCase();
+    setReg(upper);
+    if (lookupTimer.current) window.clearTimeout(lookupTimer.current);
+    const cleaned = upper.replace(/\s+/g, '');
+    if (cleaned.length >= 5 && cleaned.length <= 8) {
+      lookupTimer.current = window.setTimeout(() => performLookup(upper), 600);
+    }
+  };
+
+  useEffect(() => {
+    if (vehicle?.reg && mileage !== vehicle.mileage) {
+      setVehicle({ ...vehicle, mileage });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mileage]);
 
   const [term, setTerm] = useState<TraderTerm>(12);
   const [excess, setExcess] = useState<TraderExcess>(50);
@@ -117,35 +200,62 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
       {/* VEHICLE DETAILS */}
       <section>
         <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold mb-3">Vehicle Details</h2>
-        <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-5 sm:gap-8 items-start">
-            <div className="space-y-3">
-              <div className="aspect-[4/3] bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-300 text-xs">
-                Vehicle
-              </div>
-              <div className="flex items-stretch rounded-md overflow-hidden border border-gray-300 shadow-sm">
-                <div className="bg-blue-700 text-yellow-300 text-[10px] font-bold flex items-center justify-center px-2">GB</div>
-                <div className="bg-yellow-300 flex-1 text-center font-bold text-base sm:text-lg tracking-widest py-2 text-gray-900">
-                  {vehicle?.reg || '—'}
+        <div className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 space-y-5">
+          {/* Reg input */}
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
+            <div>
+              <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">
+                Vehicle registration
+              </label>
+              <div className="flex items-stretch rounded-md overflow-hidden border-2 border-gray-900 shadow-sm">
+                <div className="bg-blue-700 text-yellow-300 text-xs font-bold flex items-center justify-center px-3">GB</div>
+                <input
+                  value={reg}
+                  onChange={(e) => handleRegChange(e.target.value)}
+                  onBlur={() => reg && performLookup(reg)}
+                  placeholder="ENTER REG"
+                  maxLength={10}
+                  className="bg-yellow-300 flex-1 text-center font-black text-xl sm:text-2xl tracking-widest py-3 text-gray-900 placeholder:text-gray-900/40 outline-none uppercase"
+                />
+                <div className="bg-yellow-300 px-3 flex items-center">
+                  {isLookingUp ? (
+                    <Loader2 className="h-5 w-5 animate-spin text-gray-900" />
+                  ) : (
+                    <Search className="h-5 w-5 text-gray-900/60" />
+                  )}
                 </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Make, model, year and fuel auto-fill from DVLA.</p>
+            </div>
+            <div>
+              <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">Mileage</label>
+              <div className="relative">
+                <Input
+                  value={mileage}
+                  onChange={(e) => setMileage(e.target.value.replace(/[^\d]/g, ''))}
+                  placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'}
+                  className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500 pr-10"
+                />
+                {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
               </div>
             </div>
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 text-sm">
-              {[
-                ['Manufacturer', vehicle?.make],
-                ['Model', vehicle?.model],
-                ['Year', vehicle?.year],
-                ['Fuel', vehicle?.fuel_type],
-                ['Transmission', vehicle?.transmission],
-                ['Mileage', vehicle?.mileage],
-              ].map(([k, v]) => (
-                <div key={k as string} className="flex justify-between gap-3 border-b border-dashed border-gray-200 py-1">
-                  <dt className="text-gray-500 uppercase tracking-wide text-[11px] font-semibold self-center">{k}</dt>
-                  <dd className="text-gray-900 font-semibold text-right truncate">{v || '—'}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
+
+          {/* Auto-filled details */}
+          <dl className="grid grid-cols-2 sm:grid-cols-5 gap-x-6 gap-y-2 text-sm border-t border-gray-100 pt-4">
+            {[
+              ['Manufacturer', vehicle?.make],
+              ['Model', vehicle?.model],
+              ['Year', vehicle?.year],
+              ['Fuel', vehicle?.fuel_type],
+              ['Transmission', vehicle?.transmission],
+            ].map(([k, v]) => (
+              <div key={k as string} className="flex flex-col border-b border-dashed border-gray-200 py-1">
+                <dt className="text-gray-500 uppercase tracking-wide text-[10px] font-semibold">{k}</dt>
+                <dd className="text-gray-900 font-semibold truncate">{v || '—'}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 

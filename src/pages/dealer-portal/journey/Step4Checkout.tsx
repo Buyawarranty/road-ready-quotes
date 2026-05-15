@@ -20,9 +20,8 @@ const Step4Checkout: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!vehicle) navigate('/dealer-portal/quote/vehicle', { replace: true });
+    if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
-    else if (!plan) navigate('/dealer-portal/quote/pricing', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
   if (!vehicle || !customer || !plan || !dealer) return null;
@@ -161,7 +160,7 @@ const Step4Checkout: React.FC = () => {
           <div className="flex items-center justify-between pt-2">
             <Button
               variant="outline"
-              onClick={() => navigate('/dealer-portal/quote/pricing')}
+              onClick={() => navigate('/dealer-portal/quote/customer')}
               className="rounded-full bg-gray-900 text-white hover:bg-gray-800 hover:text-white border-gray-900 px-5"
               disabled={submitting}
             >

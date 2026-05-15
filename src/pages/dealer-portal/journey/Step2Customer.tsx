@@ -33,7 +33,7 @@ const Step2Customer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!vehicle) navigate('/dealer-portal/quote/vehicle', { replace: true });
+    if (!vehicle) navigate('/dealer-portal/quote/pricing', { replace: true });
   }, [vehicle, navigate]);
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
@@ -52,7 +52,7 @@ const Step2Customer: React.FC = () => {
         return;
       }
       setCustomer(form);
-      navigate('/dealer-portal/quote/pricing');
+      navigate('/dealer-portal/quote/checkout');
       return;
     }
 
@@ -70,7 +70,7 @@ const Step2Customer: React.FC = () => {
       town: 'To be confirmed',
       postcode: 'TBC',
     });
-    navigate('/dealer-portal/quote/pricing');
+    navigate('/dealer-portal/quote/checkout');
   };
 
   const inputClass = 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500';
@@ -105,7 +105,7 @@ const Step2Customer: React.FC = () => {
       step={2}
       title="Customer details"
       subtitle="Add the end customer's details now, or send them later via WhatsApp / email."
-      backTo="/dealer-portal/quote/vehicle"
+      backTo="/dealer-portal/quote/pricing"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Mode toggle */}

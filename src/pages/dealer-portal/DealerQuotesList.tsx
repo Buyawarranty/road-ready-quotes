@@ -11,7 +11,7 @@ import { Plus, Search, Trash2, Camera, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STEP_PATHS: Record<number, string> = {
-  1: '/dealer-portal/quote/vehicle',
+  1: '/dealer-portal/quote/pricing',
   2: '/dealer-portal/quote/customer',
   3: '/dealer-portal/quote/pricing',
   4: '/dealer-portal/quote/checkout',
@@ -106,7 +106,7 @@ const DealerQuotesList = () => {
 
   const handleNewQuote = () => {
     reset();
-    navigate('/dealer-portal/quote/vehicle');
+    navigate('/dealer-portal/quote/pricing');
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();

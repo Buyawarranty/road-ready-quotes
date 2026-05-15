@@ -1,25 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import TraderPricingTable, { TraderSelection } from '@/components/dealer/journey/TraderPricingTable';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
-  const { vehicle, customer, setPlan, discount_pct } = useDealerJourney();
-
-  useEffect(() => {
-    if (!vehicle) navigate('/dealer-portal/quote/vehicle', { replace: true });
-    else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
-  }, [vehicle, customer, navigate]);
-
-  if (!vehicle || !customer) return null;
+  const { vehicle, setPlan, discount_pct } = useDealerJourney();
+  const { toast } = useToast();
 
   const handleContinue = (sel: TraderSelection) => {
+    if (!vehicle?.reg) {
+      toast({ title: 'Vehicle required', description: 'Enter the vehicle registration to continue.', variant: 'destructive' });
+      return;
+    }
     const retail = sel.gross;
     const dealer = +(retail * (1 - (discount_pct || 0) / 100)).toFixed(2);
-    // Map non-retail terms onto the existing context union (3/12/24/36).
-    // 6m falls back to 12 for legacy fields, but selected_options is the source of truth.
     const ctxMonths: 3 | 12 | 24 | 36 =
       sel.term === 3 ? 3 : sel.term === 24 ? 24 : sel.term === 36 ? 36 : 12;
     setPlan({
@@ -39,12 +36,17 @@ const Step3Pricing: React.FC = () => {
         monthly_equiv: sel.monthlyEquivalent,
       },
     } as any);
-    navigate('/dealer-portal/quote/checkout');
+    navigate('/dealer-portal/quote/customer');
   };
 
   return (
-    <DealerJourneyLayout step={3} title="Choose your trader plan" subtitle="Single Gold tier — adjust options to match the deal." backTo="/dealer-portal/quote/customer">
-      <TraderPricingTable onContinue={handleContinue} onBack={() => navigate('/dealer-portal/quote/customer')} />
+    <DealerJourneyLayout
+      step={1}
+      title="Vehicle & cover"
+      subtitle="Enter the registration to auto-fill details, then build your cover."
+      backTo="/dealer-portal/dashboard"
+    >
+      <TraderPricingTable onContinue={handleContinue} onBack={() => navigate('/dealer-portal/dashboard')} />
     </DealerJourneyLayout>
   );
 };
