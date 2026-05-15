@@ -98,17 +98,17 @@ const DealerDashboard = () => {
     <DealerLayout>
       <div className="space-y-6">
         {/* Hero / Reg lookup */}
-        <Card className="bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border-0 text-white overflow-hidden">
+        <Card className="bg-gradient-to-br from-yellow-300 via-yellow-200 to-orange-200 border border-orange-200 overflow-hidden">
           <CardContent className="p-6 lg:p-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="space-y-2 max-w-xl">
-                <p className="text-xs font-bold tracking-[0.2em] text-orange-400">
+                <p className="text-xs font-bold tracking-[0.2em] text-orange-600">
                   DEALER DASHBOARD
                 </p>
-                <h1 className="text-2xl lg:text-3xl font-bold leading-tight">
+                <h1 className="text-2xl lg:text-3xl font-bold leading-tight text-gray-900">
                   Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}
                 </h1>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-700">
                   {dealer?.company_name || 'Issue a warranty in under 60 seconds — start with a registration.'}
                 </p>
               </div>
@@ -118,19 +118,19 @@ const DealerDashboard = () => {
                 className="flex flex-col sm:flex-row items-stretch gap-2 w-full lg:w-auto lg:min-w-[420px]"
               >
                 <div className="relative flex-1">
-                  <Car className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-yellow-500" />
+                  <Car className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-orange-500" />
                   <Input
                     value={reg}
                     onChange={(e) => setReg(e.target.value.toUpperCase())}
                     placeholder="ENTER REG"
                     aria-label="Vehicle registration"
-                    className="h-12 pl-10 bg-yellow-400 border-2 border-yellow-500 text-gray-900 placeholder:text-gray-700 font-bold tracking-widest text-lg uppercase focus-visible:ring-orange-400"
+                    className="h-12 pl-10 bg-white border-2 border-orange-300 text-gray-900 placeholder:text-gray-500 font-bold tracking-widest text-lg uppercase focus-visible:ring-orange-400"
                     maxLength={10}
                   />
                 </div>
                 <Button
                   type="submit"
-                  className="h-12 bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wide px-6"
+                  className="h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wide px-6"
                 >
                   Get quote <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -170,7 +170,7 @@ const DealerDashboard = () => {
                 >
                   <div
                     className={`h-10 w-10 rounded-lg flex items-center justify-center mb-3 ${
-                      isPrimary ? 'bg-gray-900/10 text-gray-900' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-100'
+                      isPrimary ? 'bg-yellow-300 text-orange-700' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-100'
                     }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -231,9 +231,9 @@ const DealerDashboard = () => {
                         <td className="py-3 text-right text-gray-900 font-semibold">£{Number(o.final_amount || 0).toFixed(2)}</td>
                         <td className="py-3 pl-4">
                           {o.payment_status === 'invoice_pending' ? (
-                            <Badge className="bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-100">Awaiting invoice</Badge>
+                            <Badge className="bg-yellow-100 text-orange-700 border border-yellow-300 hover:bg-yellow-100">Awaiting invoice</Badge>
                           ) : o.status === 'active' ? (
-                            <Badge className="bg-green-100 text-green-700 border border-green-200 hover:bg-green-100">Active</Badge>
+                            <Badge className="bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-100">Active</Badge>
                           ) : (
                             <Badge className="bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-100">{o.status || 'Pending'}</Badge>
                           )}
