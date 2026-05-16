@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Headphones,
   ShieldCheck,
@@ -18,7 +19,13 @@ import {
   Phone,
   MapPin,
   Info,
+  Clock,
+  MessageCircle,
+  HeartHandshake,
 } from 'lucide-react';
+
+type CustomerMode = 'now' | 'later' | 'collect';
+type Channel = 'whatsapp' | 'email';
 
 type DurationYears = 1 | 2 | 3;
 
@@ -60,6 +67,9 @@ const ClaimHandlingPage: React.FC = () => {
     town: '',
     postcode: '',
   });
+  const [customerMode, setCustomerMode] = useState<CustomerMode>('now');
+  const [channel, setChannel] = useState<Channel>('whatsapp');
+  const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
