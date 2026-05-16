@@ -307,28 +307,28 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           })}
         </ol>
 
-        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-4">
+        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Headphones className="h-4 w-4 text-gray-500" />
             <p className="text-sm font-semibold text-gray-900">Need help?</p>
           </div>
-          <p className="text-xs text-gray-500 mb-3">Our team are here to support you.</p>
+          <p className="text-xs text-gray-500 mb-4 leading-relaxed">Our team are here to support you.</p>
           <Button variant="outline" size="sm" className="w-full">Contact Support</Button>
         </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Heading */}
         <div>
-          <h1 className="text-xl font-bold text-gray-900">1. Vehicle &amp; Protection</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
+          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
             Enter the vehicle details and choose how you'd like to be supported.
           </p>
         </div>
 
         {/* Vehicle Card */}
-        <section className="bg-white border border-gray-200 rounded-xl p-4 sm:p-5">
+        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
           {editingVehicle || !vehicle?.make ? (
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
               <div>
