@@ -98,24 +98,54 @@ const ClaimHandlingPage: React.FC = () => {
 
   const handleContinue = () => {
     setError(null);
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.postcode.trim()) {
-      setError('Please complete the customer name, email, phone and postcode.');
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      setError('Enter a valid email address.');
-      return;
-    }
 
-    setCustomer({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      address_line1: form.address_line1 || 'To be confirmed',
-      address_line2: `[Claim Handling Only — dealer pays claim payouts]`,
-      town: form.town || 'To be confirmed',
-      postcode: form.postcode.toUpperCase(),
-    });
+    const dealerName = dealer?.company_name || dealer?.name || 'Dealer';
+    const placeholderEmail = dealer?.email || 'pending@dealer.local';
+
+    if (customerMode === 'now') {
+      if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.postcode.trim()) {
+        setError('Please complete the customer name, email, phone and postcode.');
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+        setError('Enter a valid email address.');
+        return;
+      }
+      setCustomer({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address_line1: form.address_line1 || 'To be confirmed',
+        address_line2: `[Claim Handling Only — dealer pays claim payouts]`,
+        town: form.town || 'To be confirmed',
+        postcode: form.postcode.toUpperCase(),
+      });
+    } else if (customerMode === 'later') {
+      const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'Email';
+      setCustomer({
+        name: 'Pending customer details',
+        email: placeholderEmail,
+        phone: '',
+        address_line1: 'To be confirmed',
+        address_line2: `[Pending: ${dealerName} to send details via ${channelLabel}]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
+        town: 'To be confirmed',
+        postcode: 'TBC',
+      });
+    } else {
+      if (!form.name.trim() || !form.phone.trim()) {
+        setError('We need at least the customer name and phone so we can contact them.');
+        return;
+      }
+      setCustomer({
+        name: form.name,
+        email: form.email || placeholderEmail,
+        phone: form.phone,
+        address_line1: 'To be collected by Buyawarranty',
+        address_line2: `[Buyawarranty to collect details from customer]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
+        town: 'To be confirmed',
+        postcode: 'TBC',
+      });
+    }
 
     const term: 12 | 24 | 36 = duration === 1 ? 12 : duration === 2 ? 24 : 36;
     setPlan({
