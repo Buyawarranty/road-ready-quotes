@@ -563,20 +563,22 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
                 {showWarrantyDetails ? 'Hide details' : 'Show details'}
               </button>
               {showWarrantyDetails && (
-                <ul className="mt-3 space-y-1.5">
-                  {WARRANTY_FEATURES.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
-                      <Check className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" strokeWidth={3} />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <ul className="mt-3 space-y-1.5">
+                    {WARRANTY_FEATURES.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
+                        <Check className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" strokeWidth={3} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-1 rounded">
+                      <Star className="h-3 w-3 fill-orange-500 text-orange-500" /> Most popular choice
+                    </span>
+                  </div>
+                </>
               )}
-              <div className="mt-4">
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-1 rounded">
-                  <Star className="h-3 w-3 fill-orange-500 text-orange-500" /> Most popular choice
-                </span>
-              </div>
             </button>
           </div>
         </section>
