@@ -80,44 +80,20 @@ const DealerHome = () => {
 
       <DealerPublicHeader />
 
-      {/* Sub-header strip: tagline + value props */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="border-l-4 border-[#eb4b00] pl-4">
-              <div className="text-base font-bold text-gray-900">Trader Warranty Solutions</div>
-              <div className="text-sm text-gray-600">Built for dealerships. Backed by experience.</div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
-              {[
-                { icon: Shield, title: 'Increase Revenue', body: 'High-margin warranty products' },
-                { icon: Clock, title: 'Quick & Easy', body: 'Quote in seconds, issue in minutes' },
-                { icon: Users, title: 'Dealer Focused', body: 'Tools and support that work for you' },
-              ].map(({ icon: Icon, title, body }) => (
-                <div key={title} className="flex items-start gap-3">
-                  <Icon className="w-6 h-6 text-[#eb4b00] flex-shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-bold text-gray-900 leading-tight">{title}</div>
-                    <div className="text-xs text-gray-600 leading-snug">{body}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Hero */}
-      <section className="bg-white py-10 lg:py-16">
+      <section className="bg-white pt-10 pb-12 lg:pt-14 lg:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
+              <div className="text-xs sm:text-sm font-bold tracking-[0.2em] text-[#eb4b00] uppercase">
+                Trader Warranty Solutions
+              </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
                 <span className="text-gray-900">Sell more warranties.</span>
                 <br />
                 <span className="text-[#eb4b00]">Grow your business.</span>
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-xl">
                 Instant quotes. Flexible cover. Fast issuance. Everything you need to protect your customers and boost your bottom line.
               </p>
 
@@ -156,54 +132,85 @@ const DealerHome = () => {
               </div>
             </div>
 
-            {/* Dashboard mockup */}
-            <div className="hidden lg:flex items-center justify-center">
-              <div className="w-full max-w-xl rounded-2xl border border-gray-200 shadow-2xl overflow-hidden bg-white">
+            {/* Dashboard mockup + Panda */}
+            <div className="hidden lg:block relative">
+              <div className="w-full rounded-2xl border border-gray-200 shadow-2xl overflow-hidden bg-white">
                 <div className="flex">
-                  <div className="bg-[#0f1729] text-gray-300 p-4 space-y-2 text-xs w-32">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div className="bg-[#0f1729] text-gray-300 p-3 space-y-1 text-[11px] w-32 flex-shrink-0">
+                    <div className="flex items-center gap-2 mb-3 px-1">
                       <div className="w-6 h-6 rounded-md bg-[#eb4b00] flex items-center justify-center text-white text-[10px] font-black">P</div>
                     </div>
                     {['Dashboard', 'Quotes', 'Policies', 'Customers', 'Claims', 'Reports', 'Marketing', 'Settings', 'Support'].map((it, i) => (
                       <div key={it} className={`px-2 py-1.5 rounded ${i === 0 ? 'bg-white/10 text-white font-semibold' : ''}`}>{it}</div>
                     ))}
                   </div>
-                  <div className="flex-1 p-4 bg-gray-50">
-                    <div className="text-sm font-bold text-gray-900 mb-3">Dashboard</div>
+                  <div className="flex-1 p-3 bg-gray-50 min-w-0">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-sm font-bold text-gray-900">Dashboard</div>
+                      <div className="text-[9px] px-2 py-1 rounded border border-gray-200 bg-white text-gray-600">1 – 31 May 2024</div>
+                    </div>
                     <div className="grid grid-cols-4 gap-2 mb-3">
                       {[
-                        { l: 'Quotes Today', v: '24' },
-                        { l: 'Policies Sold', v: '18' },
-                        { l: 'Revenue', v: '£4,320' },
-                        { l: 'Conversion', v: '75%' },
+                        { l: 'Quotes Today', v: '32', d: '↑ 24%' },
+                        { l: 'Policies Sold', v: '21', d: '↑ 18%' },
+                        { l: 'Revenue', v: '£5,620', d: '↑ 22%' },
+                        { l: 'Conversion Rate', v: '66%', d: '↑ 9%' },
                       ].map((s) => (
                         <div key={s.l} className="bg-white rounded-md p-2 border border-gray-100">
-                          <div className="text-[9px] text-gray-500">{s.l}</div>
-                          <div className="text-sm font-bold text-gray-900">{s.v}</div>
+                          <div className="text-[8px] text-gray-500 leading-tight">{s.l}</div>
+                          <div className="text-sm font-bold text-gray-900 mt-0.5">{s.v}</div>
+                          <div className="text-[8px] text-green-600 font-semibold mt-0.5">{s.d} vs yesterday</div>
                         </div>
                       ))}
                     </div>
-                    <div className="bg-white rounded-md p-3 border border-gray-100">
-                      <div className="text-[10px] font-bold text-gray-900 mb-2">Recent Quotes</div>
-                      <div className="space-y-1.5">
-                        {[
-                          ['AB12 CDE', 'BMW 320d', '£499'],
-                          ['EF21 GHI', 'Audi A4', '£425'],
-                          ['GJ71 KLM', 'VW Golf', '£399'],
-                          ['MN19 OPQ', 'Ford Focus', '£349'],
-                        ].map((r) => (
-                          <div key={r[0]} className="grid grid-cols-4 text-[9px] text-gray-700 items-center gap-1">
-                            <div className="font-semibold">{r[0]}</div>
-                            <div>{r[1]}</div>
-                            <div>{r[2]}</div>
-                            <div className="justify-self-end px-2 py-0.5 bg-[#eb4b00] text-white rounded text-[8px] font-bold">View</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2 bg-white rounded-md p-2 border border-gray-100">
+                        <div className="text-[10px] font-bold text-gray-900 mb-2">Recent Quotes</div>
+                        <div className="space-y-1">
+                          {[
+                            ['AB12 CDE', 'BMW 320d', '£499', 'Gold'],
+                            ['EF21 GHI', 'Audi A4', '£425', 'Silver'],
+                            ['GJ71 KLM', 'VW Golf', '£399', 'Silver'],
+                            ['MN19 OPQ', 'Ford Focus', '£349', 'Bronze'],
+                            ['RS18 TUV', 'Mercedes C200', '£599', 'Gold'],
+                          ].map((r) => (
+                            <div key={r[0]} className="grid grid-cols-4 text-[8px] text-gray-700 items-center gap-1">
+                              <div className="font-semibold">{r[0]}</div>
+                              <div>{r[1]}</div>
+                              <div>{r[2]}</div>
+                              <div className="justify-self-end text-[#eb4b00] font-semibold">Quote Sent</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="text-[8px] text-[#eb4b00] font-semibold mt-2">View all quotes →</div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="bg-white rounded-md p-2 border border-gray-100">
+                          <div className="text-[10px] font-bold text-gray-900 mb-1.5">Quick Quote</div>
+                          <div className="text-[8px] text-gray-500 mb-0.5">Registration</div>
+                          <div className="bg-yellow-400 rounded text-center text-[9px] font-black text-gray-900 py-1 mb-1.5">ENTER REG</div>
+                          <div className="text-[8px] text-gray-500 mb-0.5">Mileage</div>
+                          <div className="bg-white border border-gray-200 rounded text-[8px] text-gray-400 px-1.5 py-1 mb-1.5">Enter mileage</div>
+                          <div className="bg-[#eb4b00] text-white text-[8px] font-bold rounded text-center py-1">Get Quote →</div>
+                        </div>
+                        <div className="bg-white rounded-md p-2 border border-gray-100">
+                          <div className="text-[10px] font-bold text-gray-900 mb-1.5">Top Cover Levels</div>
+                          <div className="space-y-1 text-[8px] text-gray-700">
+                            <div className="flex justify-between"><span>● Gold</span><span className="font-semibold">45%</span></div>
+                            <div className="flex justify-between"><span className="text-gray-400">● Silver</span><span className="font-semibold">35%</span></div>
+                            <div className="flex justify-between"><span className="text-[#eb4b00]">● Bronze</span><span className="font-semibold">20%</span></div>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+              <img
+                src={pandaMechanicImage}
+                alt="Panda mascot"
+                className="hidden xl:block absolute -right-6 -bottom-4 w-40 pointer-events-none select-none"
+              />
             </div>
           </div>
 
