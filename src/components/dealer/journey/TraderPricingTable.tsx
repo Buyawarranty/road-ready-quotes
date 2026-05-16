@@ -273,7 +273,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_320px] gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 lg:gap-8">
       {/* LEFT STEPPER */}
       <aside className="hidden lg:block">
         <div>
