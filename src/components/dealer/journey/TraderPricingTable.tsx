@@ -521,8 +521,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('warranty')}
-              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all ${
-                support === 'warranty' ? 'border-orange-500 shadow-sm' : 'border-gray-200 hover:border-gray-300'
+              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+                support === 'warranty' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className="flex items-start gap-3">
