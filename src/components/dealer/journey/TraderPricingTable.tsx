@@ -318,7 +318,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Heading */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
@@ -430,7 +430,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('claim')}
-              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
                 support === 'claim' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
@@ -495,7 +495,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('warranty')}
-              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
                 support === 'warranty' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
