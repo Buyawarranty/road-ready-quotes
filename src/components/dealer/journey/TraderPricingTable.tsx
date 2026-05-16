@@ -51,10 +51,11 @@ interface Props {
   onBack?: () => void;
 }
 
-const SUPPORT_STEPS = [
-  { n: 1, label: 'Vehicle & Protection' },
-  { n: 2, label: 'Customer Details' },
-  { n: 3, label: 'Checkout' },
+const JOURNEY_STEPS = [
+  { n: 1, label: 'Enter Reg Plate' },
+  { n: 2, label: 'Receive Quote' },
+  { n: 3, label: 'Choose Your Plan' },
+  { n: 4, label: 'Review & Pay' },
 ];
 
 const CLAIM_FEATURES = [
