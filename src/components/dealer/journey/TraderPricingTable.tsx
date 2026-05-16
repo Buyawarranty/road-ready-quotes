@@ -275,60 +275,23 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-      {/* LEFT STEPPER */}
-      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
-        <div>
-          <h2 className="text-lg font-bold text-gray-900 tracking-tight">New Warranty Quote</h2>
-          <p className="text-xs text-gray-500 mt-1.5">Create a quote in minutes</p>
-        </div>
-        <ol className="mt-8 space-y-1">
-          {SUPPORT_STEPS.map((s, idx) => {
-            const active = idx === 0;
-            return (
-              <li key={s.n} className="flex items-start gap-3 relative">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                      active ? 'bg-orange-500 text-white' : 'bg-white border border-gray-300 text-gray-500'
-                    }`}
-                  >
-                    {s.n}
-                  </div>
-                  {idx < SUPPORT_STEPS.length - 1 && <div className="w-px h-8 bg-gray-200 my-1" />}
-                </div>
-                <span
-                  className={`text-sm mt-1 ${
-                    active ? 'text-gray-900 font-semibold' : 'text-gray-500'
-                  }`}
-                >
-                  {s.label}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
+    <div className="max-w-6xl mx-auto">
+      {/* Top animated car progress bar */}
+      <div className="bg-white border border-gray-200 rounded-xl px-4 sm:px-6 pb-3 mb-4 shadow-sm">
+        <CarProgressBar steps={JOURNEY_STEPS} currentStep={3} />
+      </div>
 
-        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Headphones className="h-4 w-4 text-gray-500" />
-            <p className="text-sm font-semibold text-gray-900">Need help?</p>
-          </div>
-          <p className="text-xs text-gray-500 mb-4 leading-relaxed">Our team are here to support you.</p>
-          <Button variant="outline" size="sm" className="w-full">Contact Support</Button>
-        </div>
-      </aside>
+      {/* Compact heading */}
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h1 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+          Build your warranty
+        </h1>
+        <p className="hidden sm:block text-xs text-gray-500">
+          Tailor cover, terms and add-ons in one place.
+        </p>
+      </div>
 
-      {/* MAIN CONTENT */}
-      <div className="space-y-6">
-        {/* Heading */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
-          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
-            Enter the vehicle details and choose how you'd like to be supported.
-          </p>
-        </div>
-
+      <div className="space-y-3">
         {/* Vehicle Card */}
         <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           {editingVehicle || !vehicle?.make ? (
