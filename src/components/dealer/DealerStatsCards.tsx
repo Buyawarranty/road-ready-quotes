@@ -1,22 +1,22 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText, Shield, TrendingUp } from 'lucide-react';
+import { FileText, Shield, AlertCircle } from 'lucide-react';
 
 interface DealerStatsCardsProps {
   totalQuotes: number;
   activeWarranties: number;
-  conversionRate: number;
+  activeClaims: number;
 }
 
 export const DealerStatsCards: React.FC<DealerStatsCardsProps> = ({
   totalQuotes,
   activeWarranties,
-  conversionRate,
+  activeClaims,
 }) => {
   const stats = [
     { label: 'Total Quotes', value: totalQuotes, icon: FileText, color: 'text-blue-400', bg: 'bg-blue-500/10' },
     { label: 'Active Warranties', value: activeWarranties, icon: Shield, color: 'text-green-400', bg: 'bg-green-500/10' },
-    { label: 'Conversion Rate', value: `${conversionRate.toFixed(1)}%`, icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-100' },
+    { label: 'Active claims', value: activeClaims, icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-100' },
   ];
 
   return (

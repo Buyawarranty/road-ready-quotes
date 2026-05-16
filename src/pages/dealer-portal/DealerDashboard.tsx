@@ -56,8 +56,26 @@ const DealerDashboard = () => {
 
   const totalQuotes = quotes.length;
   const activeWarranties = dealerOrders.filter((o: any) => o.status === 'active').length;
-  const totalOrders = dealerOrders.length;
-  const conversionRate = totalQuotes > 0 ? (totalOrders / totalQuotes) * 100 : 0;
+
+  const dealerRegs = dealerOrders
+    .map((o: any) => (o.registration_plate || '').toString().replace(/\s+/g, '').toUpperCase())
+    .filter(Boolean);
+
+  const { data: activeClaimsData = [] } = useQuery({
+    queryKey: ['dealer-active-claims', dealer?.id, dealerRegs.join(',')],
+    queryFn: async () => {
+      if (!dealer?.id || dealerRegs.length === 0) return [];
+      const { data } = await supabase
+        .from('claims_submissions')
+        .select('id, status, vehicle_registration')
+        .in('status', ['new', 'in_review', 'pending', 'open', 'in_progress', 'approved']);
+      return (data || []).filter((c: any) =>
+        dealerRegs.includes((c.vehicle_registration || '').toString().replace(/\s+/g, '').toUpperCase())
+      );
+    },
+    enabled: !!dealer?.id && dealerRegs.length > 0,
+  });
+  const activeClaims = activeClaimsData.length;
 
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,7 +161,7 @@ const DealerDashboard = () => {
         <DealerStatsCards
           totalQuotes={totalQuotes}
           activeWarranties={activeWarranties}
-          conversionRate={conversionRate}
+          activeClaims={activeClaims}
         />
 
         {/* Quick actions grid */}
