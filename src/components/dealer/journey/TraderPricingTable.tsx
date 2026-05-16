@@ -273,7 +273,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 lg:gap-12">
+    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
       {/* LEFT STEPPER */}
       <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
         <div>
@@ -318,7 +318,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
       </aside>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Heading */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
@@ -328,7 +328,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </div>
 
         {/* Vehicle Card */}
-        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
+        <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           {editingVehicle || !vehicle?.make ? (
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
               <div>
@@ -430,7 +430,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('claim')}
-              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
                 support === 'claim' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
@@ -495,7 +495,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('warranty')}
-              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
                 support === 'warranty' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
@@ -558,7 +558,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Customize Your Warranty */}
-        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
+        <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           <div className="flex items-start justify-between gap-4 mb-1">
             <div>
               <h3 className="text-base font-bold text-gray-900 tracking-tight">
@@ -699,7 +699,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Bottom nav bar */}
-        <div className="sticky bottom-4 z-30 bg-white border border-gray-200 rounded-xl px-5 sm:px-6 py-4 flex items-center justify-between gap-4 shadow-lg">
+        <div className="sticky bottom-4 z-30 bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-between gap-4 shadow-lg">
           {onBack ? (
             <Button variant="ghost" onClick={onBack} className="text-gray-700">
               ← Back
