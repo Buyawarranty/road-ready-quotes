@@ -161,7 +161,7 @@ const DealerDashboard = () => {
         <DealerStatsCards
           totalQuotes={totalQuotes}
           activeWarranties={activeWarranties}
-          conversionRate={conversionRate}
+          activeClaims={activeClaims}
         />
 
         {/* Quick actions grid */}
