@@ -498,21 +498,23 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
                 {showClaimDetails ? 'Hide details' : 'Show details'}
               </button>
               {showClaimDetails && (
-                <ul className="mt-3 space-y-1.5">
-                  {CLAIM_FEATURES.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
-                      <Check className="h-3.5 w-3.5 text-orange-500 mt-0.5 shrink-0" strokeWidth={3} />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <ul className="mt-3 space-y-1.5">
+                    {CLAIM_FEATURES.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
+                        <Check className="h-3.5 w-3.5 text-orange-500 mt-0.5 shrink-0" strokeWidth={3} />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-4 bg-blue-50 border border-blue-100 rounded-md p-3 flex items-start gap-2">
+                    <Info className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-blue-900 leading-snug">
+                      You remain responsible for payment of any approved claim costs.
+                    </p>
+                  </div>
+                </>
               )}
-              <div className="mt-4 bg-blue-50 border border-blue-100 rounded-md p-3 flex items-start gap-2">
-                <Info className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
-                <p className="text-[11px] text-blue-900 leading-snug">
-                  You remain responsible for payment of any approved claim costs.
-                </p>
-              </div>
             </button>
 
             {/* Warranty Cover */}
