@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -105,6 +106,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
   const { vehicle, setVehicle } = useDealerJourney();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [reg, setReg] = useState(vehicle?.reg || '');
   const [mileage, setMileage] = useState(vehicle?.mileage || '');
@@ -395,7 +397,14 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <div className="flex-1 grid grid-cols-2 gap-2 min-w-[260px]">
               <button
                 type="button"
-                onClick={() => setSupport('claim')}
+                onClick={() => {
+                  setSupport('claim');
+                  if (vehicle?.reg) {
+                    navigate('/dealer-portal/quote/claim-handling');
+                  } else {
+                    toast({ title: 'Enter a registration first', description: 'Add the vehicle reg to continue.' });
+                  }
+                }}
                 className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 transition-all text-left ${
                   support === 'claim' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
                 }`}
