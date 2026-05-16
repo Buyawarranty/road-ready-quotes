@@ -176,6 +176,7 @@ const DealerJourneyStep2 = lazy(() => import("./pages/dealer-portal/journey/Step
 const DealerJourneyStep3 = lazy(() => import("./pages/dealer-portal/journey/Step3Pricing"));
 const DealerJourneyStep4 = lazy(() => import("./pages/dealer-portal/journey/Step4Checkout"));
 const DealerJourneyStep5 = lazy(() => import("./pages/dealer-portal/journey/Step5Confirmation"));
+const DealerClaimHandling = lazy(() => import("./pages/dealer-portal/journey/ClaimHandling"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
 // Dealer Admin (super_admin / admin)
@@ -422,6 +423,7 @@ const App = () => {
                     <Route path="/dealer-portal/quote/pricing" element={<DealerJourneyProvider><DealerJourneyStep3 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/confirmation" element={<DealerJourneyProvider><DealerJourneyStep5 /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/quote/claim-handling" element={<DealerJourneyProvider><DealerClaimHandling /></DealerJourneyProvider>} />
 
                     {/* Dealer Admin (super_admin / admin only) */}
                     <Route path="/dealer-admin" element={<DealerAdminLayout />}>
