@@ -273,14 +273,14 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 lg:gap-12">
       {/* LEFT STEPPER */}
-      <aside className="hidden lg:block">
+      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">New Warranty Quote</h2>
-          <p className="text-xs text-gray-500 mt-1">Create a quote in minutes</p>
+          <h2 className="text-lg font-bold text-gray-900 tracking-tight">New Warranty Quote</h2>
+          <p className="text-xs text-gray-500 mt-1.5">Create a quote in minutes</p>
         </div>
-        <ol className="mt-6 space-y-1">
+        <ol className="mt-8 space-y-1">
           {SUPPORT_STEPS.map((s, idx) => {
             const active = idx === 0;
             return (
@@ -307,28 +307,28 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           })}
         </ol>
 
-        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-4">
+        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
           <div className="flex items-center gap-2 mb-2">
             <Headphones className="h-4 w-4 text-gray-500" />
             <p className="text-sm font-semibold text-gray-900">Need help?</p>
           </div>
-          <p className="text-xs text-gray-500 mb-3">Our team are here to support you.</p>
+          <p className="text-xs text-gray-500 mb-4 leading-relaxed">Our team are here to support you.</p>
           <Button variant="outline" size="sm" className="w-full">Contact Support</Button>
         </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Heading */}
         <div>
-          <h1 className="text-xl font-bold text-gray-900">1. Vehicle &amp; Protection</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
+          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
             Enter the vehicle details and choose how you'd like to be supported.
           </p>
         </div>
 
         {/* Vehicle Card */}
-        <section className="bg-white border border-gray-200 rounded-xl p-4 sm:p-5">
+        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
           {editingVehicle || !vehicle?.make ? (
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
               <div>
@@ -418,10 +418,10 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
         {/* Choose Your Support Option */}
         <section>
-          <div className="flex items-end justify-between mb-3 flex-wrap gap-3">
+          <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
             <div>
-              <h2 className="text-base font-bold text-gray-900">Choose Your Support Option</h2>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Choose Your Support Option</h2>
+              <p className="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">
                 Choose how you'd like us to support your dealership when a claim arises.
               </p>
             </div>
@@ -451,13 +451,13 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Claim Handling */}
             <button
               type="button"
               onClick={() => setSupport('claim')}
-              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all ${
-                support === 'claim' ? 'border-orange-500 shadow-sm' : 'border-gray-200 hover:border-gray-300'
+              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+                support === 'claim' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className="flex items-start gap-3">
@@ -521,8 +521,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             <button
               type="button"
               onClick={() => setSupport('warranty')}
-              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all ${
-                support === 'warranty' ? 'border-orange-500 shadow-sm' : 'border-gray-200 hover:border-gray-300'
+              className={`relative text-left bg-white border-2 rounded-xl p-6 transition-all shadow-sm hover:shadow ${
+                support === 'warranty' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className="flex items-start gap-3">
@@ -584,21 +584,21 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Customize Your Warranty */}
-        <section className="bg-white border border-gray-200 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-1">
+        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-start justify-between gap-4 mb-1">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-base font-bold text-gray-900 tracking-tight">
                 Customize Your Warranty{' '}
                 <span className="text-xs font-medium text-gray-500">(Included with Warranty Cover)</span>
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                 Tailor the cover to suit your needs. These options are included in the monthly price.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setShowCustomize((v) => !v)}
-              className="text-xs text-blue-600 font-semibold flex items-center gap-1"
+              className="text-xs text-blue-600 font-semibold flex items-center gap-1 shrink-0 mt-1"
             >
               {showCustomize ? 'Hide' : 'Show'}
               <ChevronUp className={`h-3 w-3 transition-transform ${showCustomize ? '' : 'rotate-180'}`} />
@@ -700,24 +700,24 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Bottom nav bar */}
-        <div className="bg-white border border-gray-200 rounded-xl px-5 py-3 flex items-center justify-between">
+        <div className="sticky bottom-4 z-30 bg-white border border-gray-200 rounded-xl px-5 sm:px-6 py-4 flex items-center justify-between gap-4 shadow-lg">
           {onBack ? (
             <Button variant="ghost" onClick={onBack} className="text-gray-700">
               ← Back
             </Button>
           ) : <span />}
           <div className="text-center">
-            <div className="text-xs text-gray-500 font-semibold">
+            <div className="text-[11px] uppercase tracking-wider text-gray-500 font-bold">
               Total ({dealerView ? 'wholesale' : 'retail'})
             </div>
-            <div className="text-xl font-extrabold text-gray-900 leading-tight">
+            <div className="text-xl font-extrabold text-gray-900 leading-tight mt-0.5">
               £{activeMonthlyExVat.toFixed(2)}
               <span className="text-xs text-gray-500 font-medium"> ex VAT / month</span>
             </div>
-            <div className="text-[11px] text-gray-500">£{activeGross.toFixed(2)} inc VAT / month</div>
+            <div className="text-[11px] text-gray-500 mt-0.5">£{activeGross.toFixed(2)} inc VAT / month</div>
           </div>
           <Button
-            className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-6"
+            className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-6 h-11"
             onClick={() =>
               onContinue({
                 term,
