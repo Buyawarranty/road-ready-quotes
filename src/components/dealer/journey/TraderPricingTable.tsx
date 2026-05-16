@@ -289,14 +289,62 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
       </div>
 
       {/* Compact heading */}
-      <div className="mb-3 flex items-baseline justify-between gap-3">
+      <div className="mb-3">
         <h1 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
           Build your warranty
         </h1>
-        <p className="hidden sm:block text-xs text-gray-500">
-          Tailor cover, terms and add-ons in one place.
+        <p className="text-xs text-gray-500 mt-0.5">
+          Choose which type of warranty you'd like to offer your customer.
         </p>
       </div>
+
+      {/* Warranty type selector — primary choice */}
+      <section className="bg-white border border-gray-200 rounded-xl p-3 mb-3 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setSupport('claim');
+              if (vehicle?.reg) {
+                navigate('/dealer-portal/quote/claim-handling');
+              } else {
+                toast({ title: 'Enter a registration first', description: 'Add the vehicle reg to continue.' });
+              }
+            }}
+            className={`flex items-center justify-between gap-2 px-4 py-3 rounded-lg border-2 transition-all text-left ${
+              support === 'claim' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Headphones className="h-5 w-5 text-orange-600 shrink-0" />
+              <div className="min-w-0">
+                <div className="text-sm font-bold text-gray-900 truncate">Claim Handling</div>
+                <div className="text-[10px] text-gray-500">You set the terms · Dealer pays payouts</div>
+              </div>
+            </div>
+            <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSupport('warranty')}
+            className={`flex items-center justify-between gap-2 px-4 py-3 rounded-lg border-2 transition-all text-left ${
+              support === 'warranty' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <ShieldCheck className="h-5 w-5 text-blue-700 shrink-0" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-bold text-gray-900 truncate">Warranty Cover</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Popular</span>
+                </div>
+                <div className="text-[10px] text-gray-500">Full cover · We handle claims & payouts</div>
+              </div>
+            </div>
+            <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap">£{warrantyResult.gross.toFixed(2)}/m</span>
+          </button>
+        </div>
+      </section>
 
       <div className="space-y-3">
         {/* Vehicle Card */}
@@ -386,51 +434,6 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
               </dl>
             </div>
           )}
-        </section>
-
-        {/* Compact Support Option Selector */}
-        <section className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div className="text-[11px] uppercase tracking-wider text-gray-500 font-bold shrink-0">
-              Support option
-            </div>
-            <div className="flex-1 grid grid-cols-2 gap-2 min-w-[260px]">
-              <button
-                type="button"
-                onClick={() => {
-                  setSupport('claim');
-                  if (vehicle?.reg) {
-                    navigate('/dealer-portal/quote/claim-handling');
-                  } else {
-                    toast({ title: 'Enter a registration first', description: 'Add the vehicle reg to continue.' });
-                  }
-                }}
-                className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 transition-all text-left ${
-                  support === 'claim' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Headphones className="h-4 w-4 text-orange-600 shrink-0" />
-                  <span className="text-xs font-bold text-gray-900 truncate">Claim Handling</span>
-                </div>
-                <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setSupport('warranty')}
-                className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 transition-all text-left ${
-                  support === 'warranty' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <ShieldCheck className="h-4 w-4 text-blue-700 shrink-0" />
-                  <span className="text-xs font-bold text-gray-900 truncate">Warranty Cover</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Popular</span>
-                </div>
-                <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap">£{warrantyResult.gross.toFixed(2)}/m</span>
-              </button>
-            </div>
-          </div>
         </section>
 
         {/* Customize Your Warranty — primary focus of the page */}
