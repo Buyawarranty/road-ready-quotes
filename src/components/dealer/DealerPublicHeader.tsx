@@ -22,12 +22,6 @@ export const DealerPublicHeader: React.FC = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate('/dealer-portal/');
-    window.scrollTo(0, 0);
-  };
-
   return (
     <header className="bg-white shadow-sm py-1 sm:py-2 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,13 +29,12 @@ export const DealerPublicHeader: React.FC = () => {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <a
-              href="/dealer-portal/"
-              onClick={handleLogoClick}
+              href="/"
               className="hover:opacity-80 transition-opacity cursor-pointer flex items-center gap-2"
             >
               <OptimizedImage
                 src={buyawarrantyLogo}
-                alt="Panda Protect Dealer Portal"
+                alt="Buyawarranty"
                 className="h-6 sm:h-8 w-auto object-contain"
                 priority={true}
                 width={240}
