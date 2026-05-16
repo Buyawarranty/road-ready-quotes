@@ -584,21 +584,21 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Customize Your Warranty */}
-        <section className="bg-white border border-gray-200 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-1">
+        <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-start justify-between gap-4 mb-1">
             <div>
-              <h3 className="text-sm font-bold text-gray-900">
+              <h3 className="text-base font-bold text-gray-900 tracking-tight">
                 Customize Your Warranty{' '}
                 <span className="text-xs font-medium text-gray-500">(Included with Warranty Cover)</span>
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                 Tailor the cover to suit your needs. These options are included in the monthly price.
               </p>
             </div>
             <button
               type="button"
               onClick={() => setShowCustomize((v) => !v)}
-              className="text-xs text-blue-600 font-semibold flex items-center gap-1"
+              className="text-xs text-blue-600 font-semibold flex items-center gap-1 shrink-0 mt-1"
             >
               {showCustomize ? 'Hide' : 'Show'}
               <ChevronUp className={`h-3 w-3 transition-transform ${showCustomize ? '' : 'rotate-180'}`} />
