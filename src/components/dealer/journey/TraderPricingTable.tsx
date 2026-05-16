@@ -325,10 +325,10 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-sm sm:text-base font-bold text-gray-900">Warranty Cover</span>
+                <span className="text-sm sm:text-base font-bold text-gray-900">Fully Covered Warranty</span>
                 <span className="text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Popular</span>
               </div>
-              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Full cover · We handle claims & payouts</div>
+              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">All-inclusive · We handle claims & pay repairs</div>
             </div>
           </div>
           <span className="text-sm sm:text-base font-extrabold text-gray-900 whitespace-nowrap">£{warrantyResult.gross.toFixed(2)}/m</span>
