@@ -197,6 +197,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const [showClaimDetails, setShowClaimDetails] = useState(false);
   const [showWarrantyDetails, setShowWarrantyDetails] = useState(false);
   const [showCustomize, setShowCustomize] = useState(true);
+  const [customerPrice, setCustomerPrice] = useState<string>('');
+  const [customerPriceTouched, setCustomerPriceTouched] = useState(false);
 
   const effectiveConfig = useMemo(() => {
     if (!config) return config;
