@@ -53,9 +53,7 @@ interface Props {
 const SUPPORT_STEPS = [
   { n: 1, label: 'Vehicle & Protection' },
   { n: 2, label: 'Customer Details' },
-  { n: 3, label: 'Plan Options' },
-  { n: 4, label: 'Checkout' },
-  { n: 5, label: 'Confirmation' },
+  { n: 3, label: 'Checkout' },
 ];
 
 const CLAIM_FEATURES = [
@@ -275,7 +273,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr_320px] gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 lg:gap-8">
       {/* LEFT STEPPER */}
       <aside className="hidden lg:block">
         <div>
@@ -735,140 +733,6 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </div>
       </div>
 
-      {/* RIGHT QUOTE SUMMARY */}
-      <aside className="space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-gray-900">Quote Summary</h3>
-            <button
-              type="button"
-              onClick={() => setEditingVehicle(true)}
-              className="text-xs text-blue-600 font-semibold hover:underline"
-            >
-              Edit
-            </button>
-          </div>
-
-          {vehicle?.make ? (
-            <div className="flex items-start gap-3">
-              <div className="w-14 h-12 rounded bg-gray-100 flex items-center justify-center text-[9px] text-gray-400 font-semibold shrink-0">
-                CAR
-              </div>
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-gray-900 uppercase">
-                  {vehicle?.make} {vehicle?.model}
-                </div>
-                <div className="text-[11px] text-gray-600">
-                  {vehicle?.year} • {vehicle?.fuel_type || '—'} • {vehicle?.transmission || '—'}
-                </div>
-                <div className="inline-flex items-stretch rounded-sm overflow-hidden border border-gray-900">
-                  <div className="bg-blue-700 text-yellow-300 text-[8px] font-bold flex items-center px-1">GB</div>
-                  <div className="bg-yellow-300 text-gray-900 font-black tracking-widest text-[11px] px-1.5 py-0.5">
-                    {vehicle?.reg}
-                  </div>
-                </div>
-                <div className="text-[11px] text-gray-600">
-                  {mileage ? `${Number(mileage).toLocaleString()} miles` : '— miles'}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-xs text-gray-500">Enter a registration to see your quote.</p>
-          )}
-
-          <div className="border border-gray-200 rounded-lg p-3 space-y-2">
-            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Your Selections</div>
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="text-xs font-semibold text-gray-900">
-                  {support === 'claim' ? 'Claim Handling Service' : 'Warranty Cover'}
-                </div>
-                <span className="inline-block text-[9px] font-bold uppercase tracking-wide bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded mt-0.5">
-                  {support === 'claim' ? 'Essential' : 'Comprehensive'}
-                </span>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-bold text-gray-900">£{activeGross.toFixed(2)}</div>
-                <div className="text-[10px] text-gray-500">/month</div>
-                <div className="text-[10px] text-gray-400">({dealerView ? 'wholesale' : 'retail'})</div>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Cover Term</span>
-              <span className="font-semibold text-gray-900">{termLabel(term)}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="text-[11px] font-bold text-gray-700">
-              Price Breakdown{' '}
-              <span className="text-gray-400 font-normal">({dealerView ? 'Wholesale' : 'Retail'})</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Monthly Payment</span>
-              <span className="font-semibold text-gray-900">£{activeMonthlyExVat.toFixed(2)}</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Setup Fee</span>
-              <span className="font-semibold text-gray-900">£0.00</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">VAT (20%)</span>
-              <span className="font-semibold text-gray-900">£{activeVat.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-100 pt-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-bold text-gray-900">Total Monthly</div>
-                <div className="text-[10px] text-gray-500">(excl. VAT)</div>
-              </div>
-              <div className="text-2xl font-extrabold text-gray-900">£{activeMonthlyExVat.toFixed(2)}</div>
-            </div>
-            <div className="flex items-center justify-between text-xs mt-1">
-              <span className="text-gray-500">Total (incl. VAT)</span>
-              <span className="font-semibold text-gray-900">£{activeGross.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-            onClick={() =>
-              onContinue({
-                term,
-                excess,
-                labour,
-                parts,
-                claim,
-                exVat: activeExVat,
-                gross: activeGross,
-                vat: activeVat,
-                monthlyEquivalent: activeGross,
-              })
-            }
-          >
-            Continue to Customer <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-          <p className="text-[11px] text-gray-500 text-center -mt-1">Next: Customer Details</p>
-        </div>
-
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2">
-          <Eye className="h-4 w-4 text-blue-700 mt-0.5 shrink-0" />
-          <div className="text-xs">
-            <p className="text-blue-900">
-              You're viewing <span className="font-bold">{dealerView ? 'Wholesale (Trade)' : 'Customer (Retail)'}</span> prices
-            </p>
-            <button
-              type="button"
-              onClick={() => setDealerView((v) => !v)}
-              className="text-blue-700 font-semibold hover:underline"
-            >
-              Switch to {dealerView ? 'Customer (Retail)' : 'Wholesale (Trade)'} view
-            </button>
-          </div>
-        </div>
-      </aside>
     </div>
   );
 };
