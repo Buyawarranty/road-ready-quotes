@@ -418,10 +418,10 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
         {/* Choose Your Support Option */}
         <section>
-          <div className="flex items-end justify-between mb-3 flex-wrap gap-3">
+          <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
             <div>
-              <h2 className="text-base font-bold text-gray-900">Choose Your Support Option</h2>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Choose Your Support Option</h2>
+              <p className="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">
                 Choose how you'd like us to support your dealership when a claim arises.
               </p>
             </div>
@@ -451,7 +451,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Claim Handling */}
             <button
               type="button"
