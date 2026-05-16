@@ -273,14 +273,14 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-6 lg:gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 lg:gap-12">
       {/* LEFT STEPPER */}
-      <aside className="hidden lg:block">
+      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
         <div>
-          <h2 className="text-lg font-bold text-gray-900">New Warranty Quote</h2>
-          <p className="text-xs text-gray-500 mt-1">Create a quote in minutes</p>
+          <h2 className="text-lg font-bold text-gray-900 tracking-tight">New Warranty Quote</h2>
+          <p className="text-xs text-gray-500 mt-1.5">Create a quote in minutes</p>
         </div>
-        <ol className="mt-6 space-y-1">
+        <ol className="mt-8 space-y-1">
           {SUPPORT_STEPS.map((s, idx) => {
             const active = idx === 0;
             return (
