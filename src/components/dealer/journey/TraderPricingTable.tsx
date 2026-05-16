@@ -184,8 +184,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const [dealerView, setDealerView] = useState<boolean>(true); // true = Wholesale (Trade)
   const [support, setSupport] = useState<SupportOption>('claim');
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
-  const [showClaimDetails, setShowClaimDetails] = useState(true);
-  const [showWarrantyDetails, setShowWarrantyDetails] = useState(true);
+  const [showClaimDetails, setShowClaimDetails] = useState(false);
+  const [showWarrantyDetails, setShowWarrantyDetails] = useState(false);
   const [showCustomize, setShowCustomize] = useState(true);
 
   const effectiveConfig = useMemo(() => {
