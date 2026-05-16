@@ -53,9 +53,7 @@ interface Props {
 const SUPPORT_STEPS = [
   { n: 1, label: 'Vehicle & Protection' },
   { n: 2, label: 'Customer Details' },
-  { n: 3, label: 'Plan Options' },
-  { n: 4, label: 'Checkout' },
-  { n: 5, label: 'Confirmation' },
+  { n: 3, label: 'Checkout' },
 ];
 
 const CLAIM_FEATURES = [
