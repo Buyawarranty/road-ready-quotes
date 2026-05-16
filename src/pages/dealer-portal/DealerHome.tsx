@@ -274,6 +274,87 @@ const DealerHome = () => {
         </div>
       </section>
 
+      {/* Two services we offer */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 max-w-3xl mx-auto">
+            <div className="text-xs font-bold tracking-[0.2em] text-[#eb4b00] uppercase mb-3">
+              Two ways to work with us
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+              Pick the service that fits your business
+            </h2>
+            <p className="text-lg text-gray-600">
+              Whether you want a fully insured warranty or just expert claims handling — we've got
+              you covered.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Full Warranty */}
+            <Link
+              to="/dealer-portal/full-warranty"
+              className="group relative bg-white rounded-2xl border-2 border-gray-200 hover:border-[#eb4b00] hover:shadow-xl p-7 transition-all"
+            >
+              <div className="absolute -top-3 left-6 inline-flex items-center gap-1.5 bg-[#eb4b00] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
+                <Award className="w-3 h-3" /> Most popular
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-blue-700" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Full Warranty Cover</h3>
+              <p className="text-sm text-[#eb4b00] font-semibold mb-3">We handle claims AND pay the repairs</p>
+              <p className="text-gray-600 mb-5 leading-relaxed">
+                A fully insured extended warranty for your customers. Zero risk to your dealership —
+                we cover every approved repair payout.
+              </p>
+              <ul className="space-y-2 mb-6">
+                {['All parts, labour & VAT included', 'Nationwide UK repair network', '24/7 claims for your customers'].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
+                    <Check className="w-4 h-4 text-green-600 shrink-0" strokeWidth={3} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="inline-flex items-center gap-2 text-[#eb4b00] font-bold group-hover:gap-3 transition-all">
+                Learn more & sign up <ArrowRight className="w-4 h-4" />
+              </div>
+            </Link>
+
+            {/* Claims Handling */}
+            <Link
+              to="/dealer-portal/claims-handling"
+              className="group relative bg-white rounded-2xl border-2 border-gray-200 hover:border-[#eb4b00] hover:shadow-xl p-7 transition-all"
+            >
+              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center mb-4">
+                <Headphones className="w-6 h-6 text-[#eb4b00]" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Claims Handling Only</h3>
+              <p className="text-sm text-[#eb4b00] font-semibold mb-3">We handle claims · You fund the repairs</p>
+              <p className="text-gray-600 mb-5 leading-relaxed">
+                Run your own dealer-paid warranty. You keep full control of pricing and terms —
+                we look after every customer call.
+              </p>
+              <ul className="space-y-2 mb-6">
+                {['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1.20/month per policy'].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
+                    <Check className="w-4 h-4 text-green-600 shrink-0" strokeWidth={3} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <div className="inline-flex items-center gap-2 text-[#eb4b00] font-bold group-hover:gap-3 transition-all">
+                Learn more & sign up <ArrowRight className="w-4 h-4" />
+              </div>
+            </Link>
+          </div>
+
+          <p className="text-center text-sm text-gray-500 mt-6">
+            Not sure which fits? <Link to="/dealer-portal/signup" className="text-[#eb4b00] font-semibold hover:underline">Talk to our dealer team →</Link>
+          </p>
+        </div>
+      </section>
+
       {/* Why Us */}
       <section id="why-us" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

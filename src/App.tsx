@@ -177,6 +177,8 @@ const DealerJourneyStep3 = lazy(() => import("./pages/dealer-portal/journey/Step
 const DealerJourneyStep4 = lazy(() => import("./pages/dealer-portal/journey/Step4Checkout"));
 const DealerJourneyStep5 = lazy(() => import("./pages/dealer-portal/journey/Step5Confirmation"));
 const DealerClaimHandling = lazy(() => import("./pages/dealer-portal/journey/ClaimHandling"));
+const FullWarrantyService = lazy(() => import("./pages/dealer-portal/FullWarrantyService"));
+const ClaimsHandlingService = lazy(() => import("./pages/dealer-portal/ClaimsHandlingService"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
 // Dealer Admin (super_admin / admin)
@@ -410,6 +412,8 @@ const App = () => {
                     {/* Dealer Portal */}
                     <Route path="/dealer-portal" element={<DealerHome />} />
                     <Route path="/dealer-portal/" element={<DealerHome />} />
+                    <Route path="/dealer-portal/full-warranty" element={<FullWarrantyService />} />
+                    <Route path="/dealer-portal/claims-handling" element={<ClaimsHandlingService />} />
                     <Route path="/dealer-portal/signup" element={<DealerSignup />} />
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     <Route path="/dealer-portal/dashboard" element={<DealerDashboard />} />
