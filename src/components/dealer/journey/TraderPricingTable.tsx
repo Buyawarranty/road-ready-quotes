@@ -419,16 +419,18 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           </div>
         </section>
 
-        {/* Customize Your Warranty */}
-        <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-start justify-between gap-4 mb-1">
+        {/* Customize Your Warranty — primary focus of the page */}
+        <section className="bg-white border-2 border-orange-200 rounded-2xl p-5 sm:p-7 shadow-md ring-1 ring-orange-100/60">
+          <div className="flex items-start justify-between gap-4 mb-2">
             <div>
-              <h3 className="text-base font-bold text-gray-900 tracking-tight">
-                Customize Your Warranty{' '}
-                <span className="text-xs font-medium text-gray-500">(Included with Warranty Cover)</span>
-              </h3>
-              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                Tailor the cover to suit your needs. These options are included in the monthly price.
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded mb-2">
+                Step 3 · Build your cover
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
+                Customize your warranty
+              </h2>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed max-w-2xl">
+                Tailor the cover to suit your customer. All options below are included in the monthly price.
               </p>
             </div>
             <button
