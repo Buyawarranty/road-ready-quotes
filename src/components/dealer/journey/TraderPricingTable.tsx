@@ -7,9 +7,10 @@ import {
   Search,
   Check,
   ArrowRight,
+  ArrowLeft,
   Headphones,
   ShieldCheck,
-  ChevronUp,
+  Sparkles,
   Info,
   Eye,
   Star,
@@ -100,7 +101,7 @@ const termLabel = (t: TraderTerm) =>
     ? '24+12 months'
     : '36+12 months';
 
-type SupportOption = 'claim' | 'warranty';
+type SupportOption = 'claim' | 'warranty' | null;
 
 const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
@@ -191,7 +192,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const [parts, setParts] = useState<TraderParts>('age_mileage');
   const [claim, setClaim] = useState<TraderClaim>(1000);
   const [dealerView, setDealerView] = useState<boolean>(true); // true = Wholesale (Trade)
-  const [support, setSupport] = useState<SupportOption>('claim');
+  const [support, setSupport] = useState<SupportOption>(null);
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
   const [showClaimDetails, setShowClaimDetails] = useState(false);
   const [showWarrantyDetails, setShowWarrantyDetails] = useState(false);
