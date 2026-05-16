@@ -700,24 +700,24 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
         </section>
 
         {/* Bottom nav bar */}
-        <div className="bg-white border border-gray-200 rounded-xl px-5 py-3 flex items-center justify-between">
+        <div className="sticky bottom-4 z-30 bg-white border border-gray-200 rounded-xl px-5 sm:px-6 py-4 flex items-center justify-between gap-4 shadow-lg">
           {onBack ? (
             <Button variant="ghost" onClick={onBack} className="text-gray-700">
               ← Back
             </Button>
           ) : <span />}
           <div className="text-center">
-            <div className="text-xs text-gray-500 font-semibold">
+            <div className="text-[11px] uppercase tracking-wider text-gray-500 font-bold">
               Total ({dealerView ? 'wholesale' : 'retail'})
             </div>
-            <div className="text-xl font-extrabold text-gray-900 leading-tight">
+            <div className="text-xl font-extrabold text-gray-900 leading-tight mt-0.5">
               £{activeMonthlyExVat.toFixed(2)}
               <span className="text-xs text-gray-500 font-medium"> ex VAT / month</span>
             </div>
-            <div className="text-[11px] text-gray-500">£{activeGross.toFixed(2)} inc VAT / month</div>
+            <div className="text-[11px] text-gray-500 mt-0.5">£{activeGross.toFixed(2)} inc VAT / month</div>
           </div>
           <Button
-            className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-6"
+            className="rounded-md bg-orange-500 hover:bg-orange-600 text-white px-6 h-11"
             onClick={() =>
               onContinue({
                 term,
