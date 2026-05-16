@@ -36,7 +36,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/dealer-portal/dashboard', label: 'HOME', icon: Home },
+  { to: '/', label: 'HOME', icon: Home },
   {
     to: '/dealer-portal/quote/pricing',
     label: 'NEW QUOTE',
