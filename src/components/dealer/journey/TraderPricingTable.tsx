@@ -579,6 +579,31 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             </button>
           </div>
 
+          <div className="mt-4 flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] text-gray-500 font-semibold mr-1">View prices as:</span>
+            <div className="inline-flex rounded-md overflow-hidden border border-gray-300">
+              <button
+                type="button"
+                onClick={() => setDealerView(true)}
+                className={`text-xs font-semibold px-3 py-1.5 ${
+                  dealerView ? 'bg-blue-50 text-blue-700' : 'bg-white text-gray-600'
+                }`}
+              >
+                Wholesale (Trade)
+              </button>
+              <button
+                type="button"
+                onClick={() => setDealerView(false)}
+                className={`text-xs font-semibold px-3 py-1.5 border-l border-gray-300 ${
+                  !dealerView ? 'bg-blue-50 text-blue-700' : 'bg-white text-gray-600'
+                }`}
+              >
+                Customer (Retail)
+              </button>
+            </div>
+            <Info className="h-3.5 w-3.5 text-gray-400" />
+          </div>
+
           {showCustomize && (
             <div className="mt-5 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
