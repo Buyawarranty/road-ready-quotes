@@ -495,6 +495,46 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
               </div>
             </div>
 
+            {dealerView && (
+              <div className="mb-5 rounded-xl border border-orange-200 bg-orange-50/50 p-3">
+                <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> Quick select · Default warranty presets
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: '1 Year', term: 12 as TraderTerm },
+                    { label: '2 Year', term: 24 as TraderTerm },
+                    { label: '3 Year', term: 36 as TraderTerm },
+                  ].map((p) => {
+                    const active = term === p.term;
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => {
+                          setTerm(p.term);
+                          setExcess(50);
+                          setLabour(70);
+                          setParts('age_mileage');
+                          setClaim(1000);
+                        }}
+                        className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                          active
+                            ? 'bg-orange-500 border-orange-500 text-white shadow'
+                            : 'bg-white border-orange-200 text-gray-900 hover:border-orange-400'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-gray-500 mt-2">
+                  One-click defaults — pick a term and we'll set sensible excess, labour & claim limit.
+                </p>
+              </div>
+            )}
+
             <div className="space-y-5">
               <SegGroup
                 label="Excess"
