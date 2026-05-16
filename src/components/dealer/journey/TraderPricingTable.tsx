@@ -306,8 +306,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
               <Headphones className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-sm sm:text-base font-bold text-gray-900">Claim Handling</div>
-              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">You set the terms · Dealer pays payouts</div>
+              <div className="text-sm sm:text-base font-bold text-gray-900">Dealer-Paid Warranty</div>
+              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">We manage claims · You fund the repairs</div>
             </div>
           </div>
           <span className="text-sm sm:text-base font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
