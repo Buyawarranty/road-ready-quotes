@@ -13,6 +13,7 @@ import {
   Eye,
   Star,
 } from 'lucide-react';
+import CarProgressBar from './CarProgressBar';
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS,
