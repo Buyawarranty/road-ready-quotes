@@ -80,44 +80,20 @@ const DealerHome = () => {
 
       <DealerPublicHeader />
 
-      {/* Sub-header strip: tagline + value props */}
-      <div className="bg-gray-50 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="border-l-4 border-[#eb4b00] pl-4">
-              <div className="text-base font-bold text-gray-900">Trader Warranty Solutions</div>
-              <div className="text-sm text-gray-600">Built for dealerships. Backed by experience.</div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
-              {[
-                { icon: Shield, title: 'Increase Revenue', body: 'High-margin warranty products' },
-                { icon: Clock, title: 'Quick & Easy', body: 'Quote in seconds, issue in minutes' },
-                { icon: Users, title: 'Dealer Focused', body: 'Tools and support that work for you' },
-              ].map(({ icon: Icon, title, body }) => (
-                <div key={title} className="flex items-start gap-3">
-                  <Icon className="w-6 h-6 text-[#eb4b00] flex-shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-bold text-gray-900 leading-tight">{title}</div>
-                    <div className="text-xs text-gray-600 leading-snug">{body}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Hero */}
-      <section className="bg-white py-10 lg:py-16">
+      <section className="bg-white pt-10 pb-12 lg:pt-14 lg:pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
+              <div className="text-xs sm:text-sm font-bold tracking-[0.2em] text-[#eb4b00] uppercase">
+                Trader Warranty Solutions
+              </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
                 <span className="text-gray-900">Sell more warranties.</span>
                 <br />
                 <span className="text-[#eb4b00]">Grow your business.</span>
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-xl">
                 Instant quotes. Flexible cover. Fast issuance. Everything you need to protect your customers and boost your bottom line.
               </p>
 
