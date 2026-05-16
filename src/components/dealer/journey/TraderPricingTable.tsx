@@ -508,7 +508,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
                   </div>
                 </div>
                 <SegGroup
-                  label="Repair reimbursement limit"
+                  label="Claim limit"
                   options={CLAIM_OPTIONS}
                   value={claim}
                   onChange={(v) => setClaim(v as TraderClaim)}
