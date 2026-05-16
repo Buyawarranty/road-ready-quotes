@@ -75,12 +75,17 @@ const WARRANTY_FEATURES = [
 
 const ADD_ONS = [
   'Air-Conditioning',
-  'Handbrake',
-  'Suspension',
-  'Radio/ Sat-Nav',
-  'Emissions',
-  'Wear & Tear',
+  'Turbocharger',
+  'Diagnostic Cover',
+  'Breakdown Recovery',
+  'Vehicle Hire',
+  'European Cover',
+  'EV Battery Cover',
   'Hybrid Battery Cover',
+  'Emissions',
+  'Suspension',
+  'Handbrake',
+  'Radio / Sat-Nav',
 ];
 
 const termLabel = (t: TraderTerm) =>
