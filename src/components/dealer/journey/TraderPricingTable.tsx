@@ -418,37 +418,11 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
         {/* Choose Your Support Option */}
         <section>
-          <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
-            <div>
-              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Choose Your Support Option</h2>
-              <p className="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">
-                Choose how you'd like us to support your dealership when a claim arises.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-gray-500 font-semibold mr-1">View prices as:</span>
-              <div className="inline-flex rounded-md overflow-hidden border border-gray-300">
-                <button
-                  type="button"
-                  onClick={() => setDealerView(true)}
-                  className={`text-xs font-semibold px-3 py-1.5 ${
-                    dealerView ? 'bg-blue-50 text-blue-700' : 'bg-white text-gray-600'
-                  }`}
-                >
-                  Wholesale (Trade)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDealerView(false)}
-                  className={`text-xs font-semibold px-3 py-1.5 border-l border-gray-300 ${
-                    !dealerView ? 'bg-blue-50 text-blue-700' : 'bg-white text-gray-600'
-                  }`}
-                >
-                  Customer (Retail)
-                </button>
-              </div>
-              <Info className="h-3.5 w-3.5 text-gray-400" />
-            </div>
+          <div className="mb-5">
+            <h2 className="text-lg font-bold text-gray-900 tracking-tight">Choose Your Support Option</h2>
+            <p className="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">
+              Choose how you'd like us to support your dealership when a claim arises.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
