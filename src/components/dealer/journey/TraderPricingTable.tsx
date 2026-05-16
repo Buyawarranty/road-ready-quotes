@@ -486,7 +486,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
                   format={(v) => `£${v}`}
                 />
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Parts &amp; Labour</p>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Parts</p>
                   <div className="flex">
                     {PARTS_OPTIONS.map((o) => {
                       const active = parts === o.key;
@@ -508,7 +508,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
                   </div>
                 </div>
                 <SegGroup
-                  label="Repair reimbursement limit"
+                  label="Claim limit"
                   options={CLAIM_OPTIONS}
                   value={claim}
                   onChange={(v) => setClaim(v as TraderClaim)}
