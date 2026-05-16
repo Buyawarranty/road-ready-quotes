@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Headphones,
   ShieldCheck,
@@ -18,7 +19,13 @@ import {
   Phone,
   MapPin,
   Info,
+  Clock,
+  MessageCircle,
+  HeartHandshake,
 } from 'lucide-react';
+
+type CustomerMode = 'now' | 'later' | 'collect';
+type Channel = 'whatsapp' | 'email';
 
 type DurationYears = 1 | 2 | 3;
 
@@ -60,6 +67,9 @@ const ClaimHandlingPage: React.FC = () => {
     town: '',
     postcode: '',
   });
+  const [customerMode, setCustomerMode] = useState<CustomerMode>('now');
+  const [channel, setChannel] = useState<Channel>('whatsapp');
+  const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -88,24 +98,54 @@ const ClaimHandlingPage: React.FC = () => {
 
   const handleContinue = () => {
     setError(null);
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.postcode.trim()) {
-      setError('Please complete the customer name, email, phone and postcode.');
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-      setError('Enter a valid email address.');
-      return;
-    }
 
-    setCustomer({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      address_line1: form.address_line1 || 'To be confirmed',
-      address_line2: `[Claim Handling Only — dealer pays claim payouts]`,
-      town: form.town || 'To be confirmed',
-      postcode: form.postcode.toUpperCase(),
-    });
+    const dealerName = dealer?.company_name || dealer?.name || 'Dealer';
+    const placeholderEmail = dealer?.email || 'pending@dealer.local';
+
+    if (customerMode === 'now') {
+      if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.postcode.trim()) {
+        setError('Please complete the customer name, email, phone and postcode.');
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(form.email)) {
+        setError('Enter a valid email address.');
+        return;
+      }
+      setCustomer({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        address_line1: form.address_line1 || 'To be confirmed',
+        address_line2: `[Claim Handling Only — dealer pays claim payouts]`,
+        town: form.town || 'To be confirmed',
+        postcode: form.postcode.toUpperCase(),
+      });
+    } else if (customerMode === 'later') {
+      const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'Email';
+      setCustomer({
+        name: 'Pending customer details',
+        email: placeholderEmail,
+        phone: '',
+        address_line1: 'To be confirmed',
+        address_line2: `[Pending: ${dealerName} to send details via ${channelLabel}]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
+        town: 'To be confirmed',
+        postcode: 'TBC',
+      });
+    } else {
+      if (!form.name.trim() || !form.phone.trim()) {
+        setError('We need at least the customer name and phone so we can contact them.');
+        return;
+      }
+      setCustomer({
+        name: form.name,
+        email: form.email || placeholderEmail,
+        phone: form.phone,
+        address_line1: 'To be collected by Buyawarranty',
+        address_line2: `[Buyawarranty to collect details from customer]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
+        town: 'To be confirmed',
+        postcode: 'TBC',
+      });
+    }
 
     const term: 12 | 24 | 36 = duration === 1 ? 12 : duration === 2 ? 24 : 36;
     setPlan({
@@ -335,42 +375,162 @@ const ClaimHandlingPage: React.FC = () => {
               <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">
                 Customer details
               </h2>
-              <p className="text-xs text-gray-500 mb-4">The end customer who's covered by this warranty.</p>
+              <p className="text-xs text-gray-500 mb-4">
+                Add details now, send them later, or let us collect them from your customer for you.
+              </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-gray-400" /> Full name *
-                  </label>
-                  <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-gray-400" /> Email *
-                  </label>
-                  <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
-                  </label>
-                  <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-gray-400" /> Postcode *
-                  </label>
-                  <Input value={form.postcode} onChange={(e) => update('postcode', e.target.value.toUpperCase())} className={`uppercase ${inputClass}`} placeholder="SW1A 1AA" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs font-bold text-gray-700 mb-1 block">Address line 1</label>
-                  <Input value={form.address_line1} onChange={(e) => update('address_line1', e.target.value)} className={inputClass} placeholder="123 High Street" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs font-bold text-gray-700 mb-1 block">Town</label>
-                  <Input value={form.town} onChange={(e) => update('town', e.target.value)} className={inputClass} placeholder="London" />
-                </div>
+              {/* Mode tabs */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-5">
+                {([
+                  { key: 'now', icon: User, title: 'Add now', sub: "Fill in the customer's details." },
+                  { key: 'later', icon: Clock, title: 'Send later', sub: 'Share via WhatsApp / email later.' },
+                  { key: 'collect', icon: HeartHandshake, title: 'We collect for you', sub: 'We contact the customer directly.' },
+                ] as const).map(({ key, icon: Icon, title, sub }) => {
+                  const active = customerMode === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setCustomerMode(key)}
+                      className={`text-left rounded-xl border-2 p-3 transition-all ${
+                        active ? 'border-orange-500 bg-orange-50/60 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-300'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                          <Icon className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-gray-900">{title}</p>
+                          <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{sub}</p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
+
+              {customerMode === 'now' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-gray-400" /> Full name *
+                    </label>
+                    <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-gray-400" /> Email *
+                    </label>
+                    <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
+                    </label>
+                    <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-gray-400" /> Postcode *
+                    </label>
+                    <Input value={form.postcode} onChange={(e) => update('postcode', e.target.value.toUpperCase())} className={`uppercase ${inputClass}`} placeholder="SW1A 1AA" />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-bold text-gray-700 mb-1 block">Address line 1</label>
+                    <Input value={form.address_line1} onChange={(e) => update('address_line1', e.target.value)} className={inputClass} placeholder="123 High Street" />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-bold text-gray-700 mb-1 block">Town</label>
+                    <Input value={form.town} onChange={(e) => update('town', e.target.value)} className={inputClass} placeholder="London" />
+                  </div>
+                </div>
+              )}
+
+              {customerMode === 'later' && (
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                    <Info className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
+                    <p className="text-xs text-gray-700">
+                      We'll mark this warranty as <strong>Pending customer details</strong>. You can send the details over later via WhatsApp or email and your team will add them on.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">How will you send them?</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      {([
+                        { key: 'whatsapp', icon: MessageCircle, label: 'WhatsApp' },
+                        { key: 'email', icon: Mail, label: 'Email' },
+                      ] as const).map(({ key, icon: Icon, label }) => {
+                        const active = channel === key;
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => setChannel(key)}
+                            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-semibold text-sm transition-all ${
+                              active ? 'border-orange-500 bg-yellow-300 text-gray-900' : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" /> {label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 block">Quick note (optional)</label>
+                    <Textarea
+                      rows={3}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="e.g. Will send name + address on WhatsApp this afternoon."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {customerMode === 'collect' && (
+                <div className="space-y-4">
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
+                    <HeartHandshake className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+                    <p className="text-xs text-gray-700">
+                      Hand it over to us — our team will contact your customer to collect their full details and confirm the cover. Just give us a name and phone (or email) so we know who to call.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-gray-400" /> Customer name *
+                      </label>
+                      <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
+                      </label>
+                      <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-gray-400" /> Email (optional)
+                      </label>
+                      <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-700 mb-1 block">Best time to call / note (optional)</label>
+                    <Textarea
+                      rows={3}
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="e.g. Call after 5pm, customer collects car on Saturday."
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              )}
 
               {error && <p className="text-sm text-red-600 font-medium mt-3">{error}</p>}
             </section>
