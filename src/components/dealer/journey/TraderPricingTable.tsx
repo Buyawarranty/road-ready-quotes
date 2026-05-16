@@ -197,6 +197,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
   const [showClaimDetails, setShowClaimDetails] = useState(false);
   const [showWarrantyDetails, setShowWarrantyDetails] = useState(false);
   const [showCustomize, setShowCustomize] = useState(true);
+  const [customerPrice, setCustomerPrice] = useState<string>('');
+  const [customerPriceTouched, setCustomerPriceTouched] = useState(false);
 
   const effectiveConfig = useMemo(() => {
     if (!config) return config;
@@ -493,6 +495,46 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
               </div>
             </div>
 
+            {dealerView && (
+              <div className="mb-5 rounded-xl border border-orange-200 bg-orange-50/50 p-3">
+                <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> Quick select · Default warranty presets
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: '1 Year', term: 12 as TraderTerm },
+                    { label: '2 Year', term: 24 as TraderTerm },
+                    { label: '3 Year', term: 36 as TraderTerm },
+                  ].map((p) => {
+                    const active = term === p.term;
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => {
+                          setTerm(p.term);
+                          setExcess(50);
+                          setLabour(70);
+                          setParts('age_mileage');
+                          setClaim(1000);
+                        }}
+                        className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                          active
+                            ? 'bg-orange-500 border-orange-500 text-white shadow'
+                            : 'bg-white border-orange-200 text-gray-900 hover:border-orange-400'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="text-[10px] text-gray-500 mt-2">
+                  One-click defaults — pick a term and we'll set sensible excess, labour & claim limit.
+                </p>
+              </div>
+            )}
+
             <div className="space-y-5">
               <SegGroup
                 label="Excess"
@@ -617,15 +659,56 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
             <div className="border-t border-gray-200 my-4" />
 
-            <div className="flex items-baseline justify-between">
-              <span className="text-xs uppercase tracking-wider font-bold text-gray-500">
-                {dealerView ? 'Wholesale' : 'Retail'}
-              </span>
-              <span className="text-2xl font-extrabold text-gray-900">£{activeMonthlyExVat.toFixed(2)}</span>
-            </div>
-            <p className="text-[11px] text-gray-500 mt-1">
-              ex VAT / month · £{activeGross.toFixed(2)} inc VAT
-            </p>
+            {dealerView ? (
+              <>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs uppercase tracking-wider font-bold text-gray-500">Wholesale</span>
+                  <span className="text-2xl font-extrabold text-gray-900">£{activeMonthlyExVat.toFixed(2)}</span>
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  ex VAT / month · £{activeGross.toFixed(2)} inc VAT — your trade cost
+                </p>
+                {customerPrice && (
+                  <p className="text-[11px] text-orange-600 mt-1 font-semibold">
+                    Customer sees: £{Number(customerPrice).toFixed(2)}/m
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <label className="text-xs uppercase tracking-wider font-bold text-gray-500 flex items-center gap-1.5">
+                  Price to customer
+                  <span className="group relative inline-flex">
+                    <Info className="w-3.5 h-3.5 text-gray-400 cursor-help" />
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block whitespace-nowrap bg-gray-900 text-white text-[10px] rounded px-2 py-1 z-10">
+                      This is the customer price the customer will see
+                    </span>
+                  </span>
+                </label>
+                <div className="mt-1 flex items-center rounded-lg border-2 border-orange-300 bg-white overflow-hidden focus-within:border-orange-500">
+                  <span className="px-3 text-lg font-extrabold text-gray-700">£</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0"
+                    value={customerPrice || (customerPriceTouched ? '' : (activeGross * 1.3).toFixed(2))}
+                    onChange={(e) => {
+                      setCustomerPrice(e.target.value);
+                      setCustomerPriceTouched(true);
+                    }}
+                    placeholder="0.00"
+                    className="flex-1 py-2 text-xl font-extrabold text-gray-900 outline-none bg-transparent"
+                  />
+                  <span className="pr-3 text-xs text-gray-500">/ month</span>
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1">
+                  Wholesale £{activeGross.toFixed(2)}/m · Your margin £
+                  {Math.max(0, (Number(customerPrice) || activeGross * 1.3) - activeGross).toFixed(2)}/m
+                </p>
+              </>
+            )}
+
 
             <Button
               onClick={() =>
