@@ -13,6 +13,7 @@ import {
   Eye,
   Star,
 } from 'lucide-react';
+import CarProgressBar from './CarProgressBar';
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS,
@@ -50,10 +51,11 @@ interface Props {
   onBack?: () => void;
 }
 
-const SUPPORT_STEPS = [
-  { n: 1, label: 'Vehicle & Protection' },
-  { n: 2, label: 'Customer Details' },
-  { n: 3, label: 'Checkout' },
+const JOURNEY_STEPS = [
+  { n: 1, label: 'Enter Reg Plate' },
+  { n: 2, label: 'Receive Quote' },
+  { n: 3, label: 'Choose Your Plan' },
+  { n: 4, label: 'Review & Pay' },
 ];
 
 const CLAIM_FEATURES = [
@@ -273,60 +275,23 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
 
   // -- layout ---------------------------------------------------------------
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
-      {/* LEFT STEPPER */}
-      <aside className="hidden lg:block lg:sticky lg:top-24 lg:self-start">
-        <div>
-          <h2 className="text-lg font-bold text-gray-900 tracking-tight">New Warranty Quote</h2>
-          <p className="text-xs text-gray-500 mt-1.5">Create a quote in minutes</p>
-        </div>
-        <ol className="mt-8 space-y-1">
-          {SUPPORT_STEPS.map((s, idx) => {
-            const active = idx === 0;
-            return (
-              <li key={s.n} className="flex items-start gap-3 relative">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                      active ? 'bg-orange-500 text-white' : 'bg-white border border-gray-300 text-gray-500'
-                    }`}
-                  >
-                    {s.n}
-                  </div>
-                  {idx < SUPPORT_STEPS.length - 1 && <div className="w-px h-8 bg-gray-200 my-1" />}
-                </div>
-                <span
-                  className={`text-sm mt-1 ${
-                    active ? 'text-gray-900 font-semibold' : 'text-gray-500'
-                  }`}
-                >
-                  {s.label}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
+    <div className="max-w-6xl mx-auto">
+      {/* Top animated car progress bar */}
+      <div className="bg-white border border-gray-200 rounded-xl px-4 sm:px-6 pb-3 mb-4 shadow-sm">
+        <CarProgressBar steps={JOURNEY_STEPS} currentStep={3} />
+      </div>
 
-        <div className="mt-10 bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 mb-2">
-            <Headphones className="h-4 w-4 text-gray-500" />
-            <p className="text-sm font-semibold text-gray-900">Need help?</p>
-          </div>
-          <p className="text-xs text-gray-500 mb-4 leading-relaxed">Our team are here to support you.</p>
-          <Button variant="outline" size="sm" className="w-full">Contact Support</Button>
-        </div>
-      </aside>
+      {/* Compact heading */}
+      <div className="mb-3 flex items-baseline justify-between gap-3">
+        <h1 className="text-base sm:text-lg font-bold text-gray-900 tracking-tight">
+          Build your warranty
+        </h1>
+        <p className="hidden sm:block text-xs text-gray-500">
+          Tailor cover, terms and add-ons in one place.
+        </p>
+      </div>
 
-      {/* MAIN CONTENT */}
-      <div className="space-y-6">
-        {/* Heading */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">1. Vehicle &amp; Protection</h1>
-          <p className="text-sm text-gray-500 mt-2 max-w-2xl">
-            Enter the vehicle details and choose how you'd like to be supported.
-          </p>
-        </div>
-
+      <div className="space-y-3">
         {/* Vehicle Card */}
         <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
           {editingVehicle || !vehicle?.make ? (
@@ -416,157 +381,56 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
           )}
         </section>
 
-        {/* Choose Your Support Option */}
-        <section>
-          <div className="mb-5">
-            <h2 className="text-lg font-bold text-gray-900 tracking-tight">Choose Your Support Option</h2>
-            <p className="text-xs text-gray-500 mt-1 max-w-xl leading-relaxed">
-              Choose how you'd like us to support your dealership when a claim arises.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {/* Claim Handling */}
-            <button
-              type="button"
-              onClick={() => setSupport('claim')}
-              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
-                support === 'claim' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 mt-1 shrink-0 flex items-center justify-center ${
-                    support === 'claim' ? 'border-orange-500' : 'border-gray-300'
-                  }`}
-                >
-                  {support === 'claim' && <div className="w-2 h-2 rounded-full bg-orange-500" />}
-                </div>
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                  <Headphones className="h-5 w-5 text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-gray-900">Claim Handling Service</div>
-                  <span className="inline-block text-[10px] font-bold uppercase tracking-wide bg-blue-50 text-blue-700 px-2 py-0.5 rounded mt-1">
-                    Essential
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="text-2xl font-extrabold text-gray-900">
-                  £{CLAIM_FLAT_GROSS.toFixed(2)}
-                  <span className="text-sm font-medium text-gray-500"> / month ({dealerView ? 'wholesale' : 'retail'})</span>
-                </div>
-                <p className="text-xs text-gray-600 mt-1">We handle the claims on your behalf.</p>
-                <p className="text-xs text-gray-600">You pay the claim amount.</p>
-              </div>
+        {/* Compact Support Option Selector */}
+        <section className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="text-[11px] uppercase tracking-wider text-gray-500 font-bold shrink-0">
+              Support option
+            </div>
+            <div className="flex-1 grid grid-cols-2 gap-2 min-w-[260px]">
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowClaimDetails((v) => !v);
-                }}
-                className="text-xs text-blue-600 font-semibold mt-3 flex items-center gap-1"
+                onClick={() => setSupport('claim')}
+                className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 transition-all text-left ${
+                  support === 'claim' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <ChevronUp className={`h-3 w-3 transition-transform ${showClaimDetails ? '' : 'rotate-180'}`} />
-                {showClaimDetails ? 'Hide details' : 'Show details'}
+                <div className="flex items-center gap-2 min-w-0">
+                  <Headphones className="h-4 w-4 text-orange-600 shrink-0" />
+                  <span className="text-xs font-bold text-gray-900 truncate">Claim Handling</span>
+                </div>
+                <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
               </button>
-              {showClaimDetails && (
-                <>
-                  <ul className="mt-3 space-y-1.5">
-                    {CLAIM_FEATURES.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
-                        <Check className="h-3.5 w-3.5 text-orange-500 mt-0.5 shrink-0" strokeWidth={3} />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4 bg-blue-50 border border-blue-100 rounded-md p-3 flex items-start gap-2">
-                    <Info className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" />
-                    <p className="text-[11px] text-blue-900 leading-snug">
-                      You remain responsible for payment of any approved claim costs.
-                    </p>
-                  </div>
-                </>
-              )}
-            </button>
-
-            {/* Warranty Cover */}
-            <button
-              type="button"
-              onClick={() => setSupport('warranty')}
-              className={`relative text-left bg-white border-2 rounded-xl p-5 transition-all shadow-sm hover:shadow ${
-                support === 'warranty' ? 'border-orange-500 shadow-md' : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 mt-1 shrink-0 flex items-center justify-center ${
-                    support === 'warranty' ? 'border-orange-500' : 'border-gray-300'
-                  }`}
-                >
-                  {support === 'warranty' && <div className="w-2 h-2 rounded-full bg-orange-500" />}
-                </div>
-                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="h-5 w-5 text-blue-700" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-bold text-gray-900">Warranty Cover</div>
-                  <span className="inline-block text-[10px] font-bold uppercase tracking-wide bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded mt-1">
-                    Comprehensive
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="text-2xl font-extrabold text-gray-900">
-                  £{warrantyResult.gross.toFixed(2)}
-                  <span className="text-sm font-medium text-gray-500"> / month ({dealerView ? 'wholesale' : 'retail'})</span>
-                </div>
-                <p className="text-xs text-gray-600 mt-1">Full warranty cover underwritten</p>
-                <p className="text-xs text-gray-600">by Panda Protect.</p>
-              </div>
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowWarrantyDetails((v) => !v);
-                }}
-                className="text-xs text-blue-600 font-semibold mt-3 flex items-center gap-1"
+                onClick={() => setSupport('warranty')}
+                className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 transition-all text-left ${
+                  support === 'warranty' ? 'border-orange-500 bg-orange-50/40' : 'border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <ChevronUp className={`h-3 w-3 transition-transform ${showWarrantyDetails ? '' : 'rotate-180'}`} />
-                {showWarrantyDetails ? 'Hide details' : 'Show details'}
+                <div className="flex items-center gap-2 min-w-0">
+                  <ShieldCheck className="h-4 w-4 text-blue-700 shrink-0" />
+                  <span className="text-xs font-bold text-gray-900 truncate">Warranty Cover</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Popular</span>
+                </div>
+                <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap">£{warrantyResult.gross.toFixed(2)}/m</span>
               </button>
-              {showWarrantyDetails && (
-                <>
-                  <ul className="mt-3 space-y-1.5">
-                    {WARRANTY_FEATURES.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-xs text-gray-700">
-                        <Check className="h-3.5 w-3.5 text-blue-600 mt-0.5 shrink-0" strokeWidth={3} />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-1 rounded">
-                      <Star className="h-3 w-3 fill-orange-500 text-orange-500" /> Most popular choice
-                    </span>
-                  </div>
-                </>
-              )}
-            </button>
+            </div>
           </div>
         </section>
 
-        {/* Customize Your Warranty */}
-        <section className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-          <div className="flex items-start justify-between gap-4 mb-1">
+        {/* Customize Your Warranty — primary focus of the page */}
+        <section className="bg-white border-2 border-orange-200 rounded-2xl p-5 sm:p-7 shadow-md ring-1 ring-orange-100/60">
+          <div className="flex items-start justify-between gap-4 mb-2">
             <div>
-              <h3 className="text-base font-bold text-gray-900 tracking-tight">
-                Customize Your Warranty{' '}
-                <span className="text-xs font-medium text-gray-500">(Included with Warranty Cover)</span>
-              </h3>
-              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                Tailor the cover to suit your needs. These options are included in the monthly price.
+              <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.15em] font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded mb-2">
+                Step 3 · Build your cover
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 tracking-tight">
+                Customize your warranty
+              </h2>
+              <p className="text-sm text-gray-600 mt-1 leading-relaxed max-w-2xl">
+                Tailor the cover to suit your customer. All options below are included in the monthly price.
               </p>
             </div>
             <button
