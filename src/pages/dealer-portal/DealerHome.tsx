@@ -80,31 +80,52 @@ const DealerHome = () => {
 
       <DealerPublicHeader />
 
+      {/* Sub-header strip: tagline + value props */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="border-l-4 border-[#eb4b00] pl-4">
+              <div className="text-base font-bold text-gray-900">Trader Warranty Solutions</div>
+              <div className="text-sm text-gray-600">Built for dealerships. Backed by experience.</div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
+              {[
+                { icon: Shield, title: 'Increase Revenue', body: 'High-margin warranty products' },
+                { icon: Clock, title: 'Quick & Easy', body: 'Quote in seconds, issue in minutes' },
+                { icon: Users, title: 'Dealer Focused', body: 'Tools and support that work for you' },
+              ].map(({ icon: Icon, title, body }) => (
+                <div key={title} className="flex items-start gap-3">
+                  <Icon className="w-6 h-6 text-[#eb4b00] flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-sm font-bold text-gray-900 leading-tight">{title}</div>
+                    <div className="text-xs text-gray-600 leading-snug">{body}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero */}
-      <section className="bg-gradient-to-b from-gray-50 to-white py-14 lg:py-20">
+      <section className="bg-white py-10 lg:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
-              <span className="inline-block bg-orange-100 text-[#eb4b00] text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full">
-                For Motor Trade Dealers
-              </span>
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
-                Boost Dealer Profits with{' '}
-                <span className="text-[#eb4b00]">Extended Warranties from 20p a day</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
+                <span className="text-gray-900">Sell more warranties.</span>
+                <br />
+                <span className="text-[#eb4b00]">Grow your business.</span>
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Join the UK's trusted dealer warranty partner. Sign up in 60 seconds, sell more cars
-                and earn extra revenue on every vehicle with our motor trade warranty programme.
+              <p className="text-lg text-gray-600 leading-relaxed max-w-xl">
+                Instant quotes. Flexible cover. Fast issuance. Everything you need to protect your customers and boost your bottom line.
               </p>
 
-              {/* UK plate reg lookup → DVLA via Step1Vehicle */}
-              <form onSubmit={handleRegSubmit} className="space-y-3" aria-label="Vehicle registration lookup">
-                <label htmlFor="hero-reg" className="block text-sm font-semibold text-gray-700">
-                  Get an instant trade quote — enter a registration
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex flex-1 items-stretch rounded-lg overflow-hidden shadow-md ring-1 ring-yellow-500 focus-within:ring-2 focus-within:ring-orange-500">
-                    <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-3 sm:px-4 py-2 select-none">
+              <div className="space-y-3">
+                <div className="text-sm font-bold text-gray-900">Get an instant trade quote</div>
+                <form onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
+                  <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg w-full max-w-xl">
+                    <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-4 select-none">
                       <span className="text-base leading-none" aria-hidden>🇬🇧</span>
                       <span className="text-[10px] font-bold tracking-wider mt-1">UK</span>
                     </div>
@@ -117,62 +138,130 @@ const DealerHome = () => {
                       onChange={(e) => setReg(e.target.value.toUpperCase())}
                       placeholder="ENTER REG"
                       aria-label="Vehicle registration"
-                      className="flex-1 min-w-0 bg-yellow-400 text-gray-900 placeholder:text-gray-700/70 font-extrabold tracking-[0.18em] text-2xl sm:text-3xl uppercase px-4 py-4 outline-none border-0"
+                      className="flex-1 min-w-0 bg-yellow-400 text-gray-900 placeholder:text-gray-700/60 font-extrabold tracking-[0.2em] text-2xl sm:text-3xl uppercase px-4 py-4 outline-none border-0"
                     />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-5 sm:px-7 text-base whitespace-nowrap transition-colors"
+                    >
+                      Get Quote
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-7 py-4 text-base rounded-lg transition-colors whitespace-nowrap"
-                  >
-                    Get quote
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
+                </form>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Lock className="w-4 h-4" />
+                  Secure DVLA lookup – no manual data entry
                 </div>
-                <p className="text-xs text-gray-500">
-                  Vehicle details auto-fill from the DVLA — no typing needed.
-                </p>
-              </form>
-
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link
-                  to="/dealer-portal/signup"
-                  className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-7 py-4 text-base rounded-lg transition-colors"
-                >
-                  Free Dealer Sign-Up – 60 Seconds
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-                <Link
-                  to="/dealer-portal/login"
-                  className="inline-flex items-center justify-center px-7 py-4 text-base font-semibold text-gray-900 border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
-                >
-                  Dealer Login
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-2">
-                {[
-                  'Sign up in 60 seconds',
-                  'Exclusive trade pricing',
-                  'Easy claims, fast payouts',
-                  'Dedicated dealer support',
-                ].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-sm text-gray-700 font-medium">{item}</span>
-                  </div>
-                ))}
               </div>
             </div>
 
-            <div className="relative hidden lg:flex items-center justify-center">
-              <OptimizedImage
-                src={pandaMechanicImage}
-                alt="Dealer extended warranty programme – Panda Protect trusted UK partner"
-                className="w-full max-w-[420px] h-auto object-contain"
-                priority
-                width={420}
-                height={336}
-              />
+            {/* Dashboard mockup */}
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="w-full max-w-xl rounded-2xl border border-gray-200 shadow-2xl overflow-hidden bg-white">
+                <div className="flex">
+                  <div className="bg-[#0f1729] text-gray-300 p-4 space-y-2 text-xs w-32">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-6 h-6 rounded-md bg-[#eb4b00] flex items-center justify-center text-white text-[10px] font-black">P</div>
+                    </div>
+                    {['Dashboard', 'Quotes', 'Policies', 'Customers', 'Claims', 'Reports', 'Marketing', 'Settings', 'Support'].map((it, i) => (
+                      <div key={it} className={`px-2 py-1.5 rounded ${i === 0 ? 'bg-white/10 text-white font-semibold' : ''}`}>{it}</div>
+                    ))}
+                  </div>
+                  <div className="flex-1 p-4 bg-gray-50">
+                    <div className="text-sm font-bold text-gray-900 mb-3">Dashboard</div>
+                    <div className="grid grid-cols-4 gap-2 mb-3">
+                      {[
+                        { l: 'Quotes Today', v: '24' },
+                        { l: 'Policies Sold', v: '18' },
+                        { l: 'Revenue', v: '£4,320' },
+                        { l: 'Conversion', v: '75%' },
+                      ].map((s) => (
+                        <div key={s.l} className="bg-white rounded-md p-2 border border-gray-100">
+                          <div className="text-[9px] text-gray-500">{s.l}</div>
+                          <div className="text-sm font-bold text-gray-900">{s.v}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-white rounded-md p-3 border border-gray-100">
+                      <div className="text-[10px] font-bold text-gray-900 mb-2">Recent Quotes</div>
+                      <div className="space-y-1.5">
+                        {[
+                          ['AB12 CDE', 'BMW 320d', '£499'],
+                          ['EF21 GHI', 'Audi A4', '£425'],
+                          ['GJ71 KLM', 'VW Golf', '£399'],
+                          ['MN19 OPQ', 'Ford Focus', '£349'],
+                        ].map((r) => (
+                          <div key={r[0]} className="grid grid-cols-4 text-[9px] text-gray-700 items-center gap-1">
+                            <div className="font-semibold">{r[0]}</div>
+                            <div>{r[1]}</div>
+                            <div>{r[2]}</div>
+                            <div className="justify-self-end px-2 py-0.5 bg-[#eb4b00] text-white rounded text-[8px] font-bold">View</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature pills */}
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[
+              { icon: PoundIcon, title: 'High Profit Margins', body: 'Competitive rates and great commission' },
+              { icon: Zap, title: 'Fast & Simple', body: 'Quote, issue and manage policies in minutes' },
+              { icon: Shield, title: 'Flexible Products', body: 'A range of levels to suit every customer' },
+              { icon: Headphones, title: 'Dealer Support', body: 'Dedicated account managers' },
+              { icon: BarChart2, title: 'Powerful Tools', body: 'Track performance and grow your sales' },
+            ].map(({ icon: Icon, title, body }) => (
+              <div key={title} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5 text-[#eb4b00]" />
+                </div>
+                <div className="text-sm font-bold text-gray-900 mb-1">{title}</div>
+                <div className="text-xs text-gray-600 leading-snug">{body}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Dealer CTA strip */}
+          <div className="mt-10 bg-[#0f1729] rounded-2xl p-6 lg:p-8">
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[#eb4b00] flex items-center justify-center flex-shrink-0">
+                  <UserCircle2 className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="text-white font-bold">Already a dealer?</div>
+                    <div className="text-white/70 text-sm">Log in to manage quotes, policies and customers.</div>
+                  </div>
+                  <Link
+                    to="/dealer-portal/login"
+                    className="inline-flex items-center justify-center gap-2 border border-white/40 hover:border-white text-white font-semibold px-5 py-3 rounded-lg transition-colors whitespace-nowrap"
+                  >
+                    Dealer Login
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 md:border-l md:border-white/10 md:pl-10">
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="text-white font-bold">Not signed up yet?</div>
+                    <div className="text-white/70 text-sm">Join our dealer network and start selling warranties today.</div>
+                  </div>
+                  <Link
+                    to="/dealer-portal/signup"
+                    className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-5 py-3 rounded-lg transition-colors whitespace-nowrap"
+                  >
+                    Become a Dealer
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
