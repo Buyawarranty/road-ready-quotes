@@ -16,6 +16,11 @@ import {
   Award,
   Users,
   BarChart3,
+  Lock,
+  UserCircle2,
+  PoundSterling as PoundIcon,
+  Headphones,
+  BarChart2,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
