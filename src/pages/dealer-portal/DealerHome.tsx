@@ -214,25 +214,6 @@ const DealerHome = () => {
             </div>
           </div>
 
-          {/* Feature pills */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { icon: PoundIcon, title: 'High Profit Margins', body: 'Competitive rates and great commission' },
-              { icon: Zap, title: 'Fast & Simple', body: 'Quote, issue and manage policies in minutes' },
-              { icon: Shield, title: 'Flexible Products', body: 'A range of levels to suit every customer' },
-              { icon: Headphones, title: 'Dealer Support', body: 'Dedicated account managers' },
-              { icon: BarChart2, title: 'Powerful Tools', body: 'Track performance and grow your sales' },
-            ].map(({ icon: Icon, title, body }) => (
-              <div key={title} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-[#eb4b00]" />
-                </div>
-                <div className="text-sm font-bold text-gray-900 mb-1">{title}</div>
-                <div className="text-xs text-gray-600 leading-snug">{body}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Dealer CTA strip */}
           <div className="mt-10 bg-[#0f1729] rounded-2xl p-6 lg:p-8">
             <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
@@ -270,6 +251,25 @@ const DealerHome = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Feature pills */}
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[
+              { icon: PoundIcon, title: 'High Profit Margins', body: 'Competitive rates and great commission' },
+              { icon: Zap, title: 'Fast & Simple', body: 'Quote, issue and manage policies in minutes' },
+              { icon: Shield, title: 'Flexible Products', body: 'A range of levels to suit every customer' },
+              { icon: Headphones, title: 'Dealer Support', body: 'Dedicated account managers' },
+              { icon: BarChart2, title: 'Powerful Tools', body: 'Track performance and grow your sales' },
+            ].map(({ icon: Icon, title, body }) => (
+              <div key={title} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5 text-[#eb4b00]" />
+                </div>
+                <div className="text-sm font-bold text-gray-900 mb-1">{title}</div>
+                <div className="text-xs text-gray-600 leading-snug">{body}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
