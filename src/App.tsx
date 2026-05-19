@@ -179,6 +179,15 @@ const DealerJourneyStep5 = lazy(() => import("./pages/dealer-portal/journey/Step
 const DealerClaimHandling = lazy(() => import("./pages/dealer-portal/journey/ClaimHandling"));
 const FullWarrantyService = lazy(() => import("./pages/dealer-portal/FullWarrantyService"));
 const ClaimsHandlingService = lazy(() => import("./pages/dealer-portal/ClaimsHandlingService"));
+const FinanceApplicationsList = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationsList"));
+const FinanceApplicationNew = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationNew"));
+const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationDetail"));
+const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
+const DealerAdminFinanceQueue = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceQueue"));
+const DealerAdminFinanceDetail = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceDetail"));
+const DealerAdminFinanceLenders = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceLenders"));
+const DealerAdminFinancePayouts = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinancePayouts"));
+const DealerAdminFinanceRules = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceRules"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
 // Dealer Admin (super_admin / admin)
@@ -428,6 +437,10 @@ const App = () => {
                     <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/confirmation" element={<DealerJourneyProvider><DealerJourneyStep5 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/claim-handling" element={<DealerJourneyProvider><DealerClaimHandling /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/applications" element={<FinanceApplicationsList />} />
+                    <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
+                    <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
+                    <Route path="/dealer-portal/settings/api" element={<DealerApiKeys />} />
 
                     {/* Dealer Admin (super_admin / admin only) */}
                     <Route path="/dealer-admin" element={<DealerAdminLayout />}>
@@ -469,6 +482,11 @@ const App = () => {
                       <Route path="discounts-given" element={<DealerAdminDiscountsGiven />} />
                       <Route path="account" element={<DealerAdminAccount />} />
                       <Route path="trader-pricing" element={<DealerAdminTraderPricing />} />
+                      <Route path="finance" element={<DealerAdminFinanceQueue />} />
+                      <Route path="finance/lenders" element={<DealerAdminFinanceLenders />} />
+                      <Route path="finance/rules" element={<DealerAdminFinanceRules />} />
+                      <Route path="finance/payouts" element={<DealerAdminFinancePayouts />} />
+                      <Route path="finance/:id" element={<DealerAdminFinanceDetail />} />
                     </Route>
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
