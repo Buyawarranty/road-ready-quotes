@@ -44,6 +44,7 @@ const NAV_ITEMS: NavItem[] = [
     matchPaths: ['/dealer-portal/quote/', '/dealer-portal/quotes/create'],
   },
   { to: '/dealer-portal/quotes', label: 'QUOTES', icon: FileText },
+  { to: '/dealer-portal/applications', label: 'FINANCE', icon: FilePlus2, matchPaths: ['/dealer-portal/applications'] },
   { to: '/dealer-portal/warranties', label: 'DEALER PLANS', icon: Shield },
   { to: '/dealer-portal/analytics', label: 'ANALYTICS', icon: BarChart3 },
 ];
