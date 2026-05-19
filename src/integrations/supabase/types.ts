@@ -1147,6 +1147,69 @@ export type Database = {
           },
         ]
       }
+      checkout_struggle_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          amount: number | null
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          details: Json | null
+          device_type: string | null
+          id: string
+          payment_method: string | null
+          plan_name: string | null
+          resolved_at: string | null
+          session_key: string
+          signal_type: string
+          status: string
+          updated_at: string
+          vehicle_reg: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          details?: Json | null
+          device_type?: string | null
+          id?: string
+          payment_method?: string | null
+          plan_name?: string | null
+          resolved_at?: string | null
+          session_key: string
+          signal_type: string
+          status?: string
+          updated_at?: string
+          vehicle_reg?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          amount?: number | null
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          details?: Json | null
+          device_type?: string | null
+          id?: string
+          payment_method?: string | null
+          plan_name?: string | null
+          resolved_at?: string | null
+          session_key?: string
+          signal_type?: string
+          status?: string
+          updated_at?: string
+          vehicle_reg?: string | null
+        }
+        Relationships: []
+      }
       claim_communications: {
         Row: {
           claim_id: string
@@ -2199,6 +2262,7 @@ export type Database = {
           dealer_id: string | null
           deleted_at: string | null
           deleted_by: string | null
+          device_type: string | null
           discount_amount: number | null
           discount_code: string | null
           email: string
@@ -2287,6 +2351,7 @@ export type Database = {
           dealer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          device_type?: string | null
           discount_amount?: number | null
           discount_code?: string | null
           email: string
@@ -2375,6 +2440,7 @@ export type Database = {
           dealer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          device_type?: string | null
           discount_amount?: number | null
           discount_code?: string | null
           email?: string
@@ -6606,6 +6672,51 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_hub_documents: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          file_name: string
+          file_size: number | null
+          id: string
+          is_archived: boolean
+          mime_type: string | null
+          storage_path: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          file_name: string
+          file_size?: number | null
+          id?: string
+          is_archived?: boolean
+          mime_type?: string | null
+          storage_path: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          file_size?: number | null
+          id?: string
+          is_archived?: boolean
+          mime_type?: string | null
+          storage_path?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       staff_timesheets: {
         Row: {
           admin_user_id: string | null
@@ -7796,6 +7907,7 @@ export type Database = {
       is_blog_writer: { Args: { user_id: string }; Returns: boolean }
       is_ip_blocked: { Args: { check_ip: unknown }; Returns: boolean }
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
       log_agent_interaction: {
         Args: { p_event_type?: string }
         Returns: undefined
