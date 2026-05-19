@@ -63,6 +63,15 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
+    label: 'Finance',
+    items: [
+      { to: '/dealer-admin/finance', label: 'Applications', icon: FileText, end: true },
+      { to: '/dealer-admin/finance/lenders', label: 'Lenders', icon: Users },
+      { to: '/dealer-admin/finance/rules', label: 'Underwriting rules', icon: Shield },
+      { to: '/dealer-admin/finance/payouts', label: 'Payouts', icon: Receipt },
+    ],
+  },
+  {
     label: 'Marketing',
     items: [
       { to: '/dealer-admin/marketing-contacts', label: 'Marketing Contacts', icon: Megaphone },
