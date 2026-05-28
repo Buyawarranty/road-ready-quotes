@@ -5781,6 +5781,39 @@ export type Database = {
         }
         Relationships: []
       }
+      marketing_spend: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          id: string
+          month_start: string
+          notes: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          month_start: string
+          notes?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          month_start?: string
+          notes?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       mot_history: {
         Row: {
           co2_emissions: number | null
@@ -6804,6 +6837,8 @@ export type Database = {
           created_at: string
           end_date: string
           id: string
+          manual_actual_attempts: number | null
+          manual_leads_count: number | null
           start_date: string
           target_amount: number
           target_period: string
@@ -6815,6 +6850,8 @@ export type Database = {
           created_at?: string
           end_date: string
           id?: string
+          manual_actual_attempts?: number | null
+          manual_leads_count?: number | null
           start_date: string
           target_amount: number
           target_period: string
@@ -6826,6 +6863,8 @@ export type Database = {
           created_at?: string
           end_date?: string
           id?: string
+          manual_actual_attempts?: number | null
+          manual_leads_count?: number | null
           start_date?: string
           target_amount?: number
           target_period?: string
@@ -8402,6 +8441,13 @@ export type Database = {
       get_column_mask: {
         Args: { p_column: string; p_user_id: string }
         Returns: string
+      }
+      get_mtd_leads_per_agent: {
+        Args: { _agent_ids: string[] }
+        Returns: {
+          assigned_to: string
+          lead_count: number
+        }[]
       }
       get_next_eligible_agent:
         | { Args: { p_distribution_mode?: string }; Returns: string }
