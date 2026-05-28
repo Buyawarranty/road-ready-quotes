@@ -142,9 +142,10 @@ const DealerWidget: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full h-14 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg flex items-center justify-center gap-2 transition-colors"
+              disabled={loading}
+              className="w-full h-14 rounded-lg bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold text-lg flex items-center justify-center gap-2 transition-colors"
             >
-              Get Quote <ArrowRight className="h-5 w-5" />
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (<>{ctaLabel} <ArrowRight className="h-5 w-5" /></>)}
             </button>
 
             <p className="text-xs text-gray-500 flex items-center gap-1">
