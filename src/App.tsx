@@ -499,7 +499,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
-              </main>
+              </ConditionalMain>
               <ConditionalFooter />
             </div>
           </BrowserRouter>
