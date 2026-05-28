@@ -88,8 +88,8 @@ const DealerWidget: React.FC = () => {
   return (
     <div
       ref={rootRef}
-      className={transparent ? 'min-h-0' : 'min-h-screen bg-white'}
-      style={{ padding: compact ? '16px' : '32px 20px' }}
+      className={transparent ? 'min-h-0' : 'bg-white'}
+      style={{ padding: compact ? '16px' : '32px 20px 0' }}
     >
       <Helmet>
         <title>Panda Protect Dealer Hero</title>
