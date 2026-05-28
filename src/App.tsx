@@ -43,6 +43,24 @@ const ConditionalStickyNavigation = () => {
   return <StickyNavigation />;
 };
 
+const ConditionalCookieBanner = () => {
+  const location = useLocation();
+  if (location.pathname.startsWith('/dealer-widget')) return null;
+  return <CookieBanner />;
+};
+
+const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isWidget = location.pathname.startsWith('/dealer-widget');
+  return (
+    <main className={isWidget ? 'flex-1 w-full overflow-x-hidden' : 'flex-1 pb-16 w-full overflow-x-hidden'}>
+      {children}
+    </main>
+  );
+};
+
+
+
 const ConditionalFooter = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -270,11 +288,11 @@ const App = () => {
             <ScrollToTop />
             <PageViewTracker />
             <PageViewLogger />
-            <CookieBanner />
+            <ConditionalCookieBanner />
             <div className="min-h-screen flex flex-col w-full">
               {/* Global StickyNavigation removed — pages now render <DealerPublicHeader /> directly */}
               <ConditionalSeasonalBanner />
-              <main className="flex-1 pb-16 w-full overflow-x-hidden">
+              <ConditionalMain>
                 <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
                   <Routes>
                     <Route path="/" element={<DealerHome />} />
@@ -499,7 +517,7 @@ const App = () => {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
-              </main>
+              </ConditionalMain>
               <ConditionalFooter />
             </div>
           </BrowserRouter>
