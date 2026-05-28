@@ -183,6 +183,7 @@ const FinanceApplicationsList = lazy(() => import("./pages/dealer-portal/applica
 const FinanceApplicationNew = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationNew"));
 const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationDetail"));
 const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
+const DealerWidget = lazy(() => import("./pages/DealerWidget"));
 const DealerAdminFinanceQueue = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceQueue"));
 const DealerAdminFinanceDetail = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceDetail"));
 const DealerAdminFinanceLenders = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceLenders"));
@@ -285,6 +286,8 @@ const App = () => {
                     <Route path="/checkout/payment/" element={<StripePayment />} />
                     <Route path="/cart/" element={<Cart />} />
                     <Route path="/widget/" element={<Widget />} />
+                    <Route path="/dealer-widget" element={<DealerWidget />} />
+                    <Route path="/dealer-widget/" element={<DealerWidget />} />
                     
                     <Route path="/auth/" element={<Auth />} />
                     <Route path="/sales-login/" element={<SalesLogin />} />
