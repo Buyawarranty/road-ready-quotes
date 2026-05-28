@@ -36,6 +36,7 @@ const ConditionalSeasonalBanner = () => {
 const ConditionalStickyNavigation = () => {
   const location = useLocation();
   if (location.pathname.startsWith('/dealer-portal')) return null;
+  if (location.pathname.startsWith('/dealer-widget')) return null;
   // Dealer homepage routes render their own DealerPublicHeader
   const isDealerHomepage = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/home/';
   if (isDealerHomepage) return null;
@@ -49,7 +50,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
