@@ -16,6 +16,18 @@ Panda Protect page:
 | Dealer Login                 | `/dealer-portal/login` |
 | Become a Dealer              | `/dealer-portal/signup` |
 
+## Elementor — full-page embed (no WP header/footer)
+
+1. Create a new page in WordPress.
+2. Open it in Elementor → click the gear icon (Page Settings, bottom-left) →
+   **Page Layout** → choose **Elementor Canvas**. This removes the theme
+   header, footer, and sidebar so only the iframe shows.
+3. Drag in an **HTML** widget and paste the snippet below.
+4. **Important:** the `src` MUST be the absolute Panda Protect URL
+   (`https://road-ready-quotes.lovable.app/dealer-widget…`). A relative path
+   like `/dealer-widget` will resolve against your WordPress domain and
+   trigger your own 404 page.
+
 ## Quick install — Custom HTML block
 
 Paste this into any WordPress page, Elementor HTML widget, or Gutenberg
