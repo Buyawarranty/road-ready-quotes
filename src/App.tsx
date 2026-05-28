@@ -57,6 +57,9 @@ const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
       {children}
     </main>
   );
+};
+
+
 
 const ConditionalFooter = () => {
   const location = useLocation();
