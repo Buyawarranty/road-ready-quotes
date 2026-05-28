@@ -36,6 +36,7 @@ const ConditionalSeasonalBanner = () => {
 const ConditionalStickyNavigation = () => {
   const location = useLocation();
   if (location.pathname.startsWith('/dealer-portal')) return null;
+  if (location.pathname.startsWith('/dealer-widget')) return null;
   // Dealer homepage routes render their own DealerPublicHeader
   const isDealerHomepage = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/home/';
   if (isDealerHomepage) return null;
@@ -49,7 +50,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -183,6 +184,7 @@ const FinanceApplicationsList = lazy(() => import("./pages/dealer-portal/applica
 const FinanceApplicationNew = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationNew"));
 const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationDetail"));
 const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
+const DealerWidget = lazy(() => import("./pages/DealerWidget"));
 const DealerAdminFinanceQueue = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceQueue"));
 const DealerAdminFinanceDetail = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceDetail"));
 const DealerAdminFinanceLenders = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceLenders"));
@@ -285,6 +287,8 @@ const App = () => {
                     <Route path="/checkout/payment/" element={<StripePayment />} />
                     <Route path="/cart/" element={<Cart />} />
                     <Route path="/widget/" element={<Widget />} />
+                    <Route path="/dealer-widget" element={<DealerWidget />} />
+                    <Route path="/dealer-widget/" element={<DealerWidget />} />
                     
                     <Route path="/auth/" element={<Auth />} />
                     <Route path="/sales-login/" element={<SalesLogin />} />
