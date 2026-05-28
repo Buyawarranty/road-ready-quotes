@@ -1,120 +1,62 @@
-# Trade Finance Platform — Full Blueprint
+# Embed Dealer Hero on WordPress
 
-Build a "W2000-style" vehicle finance platform on top of the existing `/dealer-portal` and `/dealer-admin` structure. Traders/dealers submit vehicle purchase + finance applications via a branded portal or REST API; internal staff manage everything from a centralised admin dashboard.
+Goal: drop the "Sell more warranties / Grow your business" hero (with reg input + Dealer Login / Become a Dealer CTAs) onto a WordPress site so every action lands on the correct page inside `road-ready-quotes.lovable.app`.
 
-## Goals
+## Recommended approach: standalone iframe widget
 
-- One branded portal for dealers to submit and track vehicle finance applications.
-- A public REST API mirroring portal capabilities so dealer DMS systems can integrate.
-- A centralised internal admin dashboard for underwriting, decisioning, document review, payouts and reporting.
-- Reuse current auth (`useDealerAuth`), layouts (`DealerLayout`, `DealerAdminLayout`) and design tokens.
+Build a self-contained widget page on this app, then embed it in WordPress with one `<iframe>`. This is the cleanest fit because:
+- WordPress can't run our React/Vite/Tailwind/Supabase auth stack natively.
+- An iframe keeps styling, DVLA lookup, plate validation, and reg → journey routing identical to the main site — no drift.
+- All CTAs already navigate inside this app, so they just need to break out of the iframe to the top window.
 
-## Phased delivery
+We already do this pattern for the consumer quote form (`public/widget.html`, `src/pages/Widget.tsx`, `VehicleWidget.tsx`). We'll add a dealer equivalent.
 
-### Phase 1 — Foundations (data model + auth scopes)
-- New Supabase tables (see Technical section).
-- Extend dealer record with: trading name, FCA number, finance limits, commission tier, status.
-- Add `application_status` enum + state machine.
-- RLS: dealer sees only own applications; admins see all via existing `has_role`.
+## What gets built
 
-### Phase 2 — Dealer Portal: Applications
-- New section `/dealer-portal/applications` (list + filters: status, date, customer, vehicle).
-- Multi-step "New Application" wizard:
-  1. Vehicle (DVLA lookup, derivative, mileage, condition, valuation, HPI flag)
-  2. Customer (personal, address history 3y, employment, income/expenditure, marital, dependants)
-  3. Finance terms (product: HP/PCP/Lease, cash price, deposit, term, balloon/GFV, APR, monthly, commission)
-  4. Supporting documents (proof of ID, address, income, bank statements, V5C, invoice) — Supabase Storage
-  5. Declarations + e-sign + submit
-- Status tracker UI (Submitted → Pre-screen → Underwriting → Approved / Declined / Referred → Documents → Paid out).
-- Messaging thread per application (dealer ↔ underwriter).
-- Payout view (commission earned, pending, paid).
+1. **New route `/dealer-widget`** (`src/pages/DealerWidget.tsx`)
+   - Renders the hero: headline, subcopy, `DealerRegHero` (reg plate + Get Quote), and the two CTA cards (Dealer Login / Become a Dealer).
+   - Transparent background option via `?bg=transparent` so it blends into any WordPress section.
+   - Optional `?theme=light|dark` and `?compact=1` (hide headline, keep just the form) query params.
+   - All internal links use `target="_top"` so clicks escape the iframe and load the full Panda Protect page in the parent tab:
+     - Reg submit (logged out) → `/dealer-portal/login?redirect=/dealer-portal&reg=XX00XXX`
+     - Reg submit (logged in via cookie on our domain) → `/dealer-portal/quote/pricing?reg=...`
+     - Dealer Login → `/dealer-portal/login`
+     - Become a Dealer → `/dealer-portal/signup`
+   - Auto-resize: posts `{ type: 'panda:resize', height }` via `postMessage` on mount + resize so the iframe can grow with content.
 
-### Phase 3 — Admin Dashboard
-New navigation group "Finance" in `DealerAdminLayout`:
-- **Applications queue** — filterable table, SLA timers, assigned underwriter.
-- **Application detail** — full file, decisioning panel (Approve / Decline / Refer with reasons), conditions, counter-offer, document checklist with approve/reject per file, audit log.
-- **Underwriting rules** — editable matrix (LTV, age, mileage, income multiples, postcode risk).
-- **Lenders / Products** — manage panel of lenders, products, rate cards, commission splits.
-- **Payouts** — schedule, mark paid, export remittance CSV.
-- **Compliance** — FCA affordability checks, vulnerability flags, KYC/AML status (Onfido-ready hook).
-- **Reporting** — volume, approval rate, average deal size, dealer leaderboard, commission paid.
+2. **Public loader `public/dealer-widget.html`**
+   - Minimal HTML that mounts the React route in standalone mode (mirrors `public/widget.html`).
+   - Sets permissive `X-Frame-Options` / `Content-Security-Policy frame-ancestors` via `public/_redirects` / `vercel.json` headers so WordPress origins can frame it.
 
-### Phase 4 — Public REST API + Webhooks
-- Versioned API at `/api/v1/*` via Supabase edge functions.
-- Dealer API keys (hashed, scope-limited, rotatable) managed at `/dealer-portal/settings/api`.
-- Endpoints:
-  - `POST /applications` — create
-  - `GET /applications/:id` — status + full record
-  - `GET /applications` — list with filters
-  - `POST /applications/:id/documents` — upload
-  - `POST /applications/:id/messages`
-  - `GET /vehicles/lookup?vrm=...`
-  - `GET /products` — rate cards
-  - `POST /quote` — indicative quote
-- Outbound webhooks on status change (signed with HMAC).
-- OpenAPI 3 spec served at `/api/v1/openapi.json` + Swagger UI page at `/dealer-portal/api-docs`.
+3. **WordPress embed snippet** (documentation only — given to the user to paste into a Custom HTML block, Elementor HTML widget, or `functions.php` shortcode):
+   ```html
+   <iframe
+     src="https://road-ready-quotes.lovable.app/dealer-widget?bg=transparent"
+     style="width:100%;border:0;min-height:780px"
+     loading="lazy"
+     title="Panda Protect dealer quote"
+     allow="clipboard-write"
+   ></iframe>
+   <script>
+     window.addEventListener('message', (e) => {
+       if (e.origin !== 'https://road-ready-quotes.lovable.app') return;
+       if (e.data?.type === 'panda:resize') {
+         document.querySelector('iframe[title="Panda Protect dealer quote"]').style.height = e.data.height + 'px';
+       }
+     });
+   </script>
+   ```
+   Optional shortcode version (`[panda_dealer_hero]`) included in the docs for non-technical editors.
 
-### Phase 5 — Polish & launch
-- Email + in-app notifications (status changes, document requests).
-- Audit log everywhere.
-- Two-factor auth for admin and dealer principals.
-- Sandbox environment toggle for API testing.
-- SEO marketing pages explaining the platform.
+4. **Headers / framing**
+   - Update `vercel.json` (and `public/_redirects` if needed) to send `Content-Security-Policy: frame-ancestors 'self' https://*.<wordpress-domain>` for `/dealer-widget` and `/dealer-widget.html` only — keeps the rest of the app unframable.
 
-## Technical section
+## What we explicitly don't do
+- No shared SSO between WordPress and Panda Protect — clicks navigate the top window to our login/signup, the user signs in here. (True SSO would need an OAuth bridge, well outside this scope.)
+- No WordPress plugin. A copy-paste iframe snippet is enough and is upgrade-safe.
+- No business-logic changes to the dealer journey, auth, or Supabase tables.
 
-### New Supabase tables (high level)
-```text
-finance_applications        application core, status, dealer_id, customer snapshot
-finance_application_vehicle vehicle details linked 1:1
-finance_application_finance product, cash_price, deposit, term, apr, monthly, commission
-finance_application_docs    uploaded files (path in storage, type, status)
-finance_application_events  audit log + state transitions
-finance_application_messages dealer/underwriter thread
-finance_lenders             panel of lenders
-finance_products            product/rate cards per lender
-underwriting_rules          editable rule matrix (jsonb)
-dealer_api_keys             hashed key, scopes, last_used_at
-api_webhook_endpoints       url, secret, events[]
-payouts                     dealer_id, period, amount, status
-```
-All tables RLS-enabled. Helper `has_role(auth.uid(),'admin')` for staff access. Dealer-scoped tables filter on `dealer_id = current dealer`.
-
-### Edge functions
-- `finance-application-submit` (validation, state init, notifications)
-- `finance-application-decision` (admin-only, transitions state, fires webhook)
-- `dvla-vehicle-lookup` (proxy existing integration)
-- `dealer-api-gateway` (validates API key, routes to internal handlers)
-- `webhook-dispatcher` (signed HMAC delivery with retries)
-- `documents-sign-url` (Supabase Storage signed URLs)
-
-### Storage buckets
-- `finance-documents` (private, dealer + admin access via RLS policies on object path `applications/{app_id}/...`)
-
-### Frontend additions
-- `src/pages/dealer-portal/applications/` (List, New wizard steps, Detail, Messages, Payouts)
-- `src/pages/dealer-portal/settings/ApiKeys.tsx`, `ApiDocs.tsx`
-- `src/pages/dealer-admin/finance/` (Queue, Detail, Rules, Lenders, Products, Payouts, Compliance, Reports)
-- Reuse `shadcn` Table, Stepper pattern from existing journey, design tokens.
-
-### State machine
-```text
-draft → submitted → pre_screen → underwriting
-                                  ├─ approved → docs_pending → payout_pending → paid → completed
-                                  ├─ referred → underwriting
-                                  └─ declined (terminal)
-any → withdrawn (terminal)
-```
-
-### Out of scope (phase 1 plan)
-- Actual lender API integrations (Zuto, V12, MotoNovo etc.) — design hooks, do not implement.
-- Native mobile app.
-- In-platform e-signature provider integration (start with checkbox + IP/timestamp; DocuSign hook later).
-
-## Open assumptions
-- Single currency: GBP.
-- UK-only (FCA, DVLA, HPI).
-- Lovable Cloud (Supabase) continues as backend; no new infra.
-- Branding inherits from current dealer portal (orange accent on light surface).
-
-Confirm and I'll start Phase 1 (data model + auth/RLS + admin nav scaffolding).
+## Technical notes
+- Files touched: `src/App.tsx` (lazy route), `src/pages/DealerWidget.tsx` (new), `public/dealer-widget.html` (new, optional — the SPA route alone is usually enough), `vercel.json` (frame-ancestors header), plus a short `docs/WORDPRESS_EMBED.md` with the snippet.
+- Reuse `DealerRegHero`, `useDealerAuth`, and existing routing — no duplicate validation logic.
+- One open question before building: **what WordPress domain(s) should be allowed to frame the widget?** We'll lock `frame-ancestors` to those origins for safety.
