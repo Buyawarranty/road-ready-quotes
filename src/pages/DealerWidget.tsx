@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Lock, UserCircle2 } from 'lucide-react';
+import { ArrowRight, Lock, UserCircle2, Loader2 } from 'lucide-react';
+import { useDealerAuth } from '@/hooks/useDealerAuth';
 
 const UK_PLATE_REGEX = /^(?:[A-Z]{2}[0-9]{2}\s?[A-Z]{3}|[A-Z][0-9]{1,3}\s?[A-Z]{3}|[A-Z]{3}\s?[0-9]{1,3}[A-Z]?|[A-Z]{1,3}\s?[0-9]{1,4})$/i;
+const PENDING_REG_KEY = 'dealerPendingReg';
 const APP_ORIGIN = typeof window !== 'undefined' ? window.location.origin : '';
 
 /**
@@ -19,6 +21,7 @@ const DealerWidget: React.FC = () => {
   const params = new URLSearchParams(window.location.search);
   const transparent = params.get('bg') === 'transparent';
   const compact = params.get('compact') === '1';
+  const { dealer, loading } = useDealerAuth();
 
   const [reg, setReg] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +44,19 @@ const DealerWidget: React.FC = () => {
     };
   }, []);
 
+  // Same origin as the iframe → always exists; navigate the top window so
+  // the user leaves WordPress and lands on the full Panda Protect page.
   const openTop = (path: string) => {
-    const url = `${APP_ORIGIN}${path}`;
-    if (window.top && window.top !== window.self) {
-      window.top.location.href = url;
-    } else {
-      window.location.href = url;
+    const url = `${window.location.origin}${path}`;
+    try {
+      if (window.top && window.top !== window.self) {
+        window.top.location.href = url;
+        return;
+      }
+    } catch {
+      // cross-origin top — fall through
     }
+    window.open(url, '_top');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,14 +71,19 @@ const DealerWidget: React.FC = () => {
       return;
     }
     setError(null);
-    // Always send to login with redirect → if already signed in elsewhere, they'll continue;
-    // otherwise login preserves the reg and forwards into the quote journey.
-    const qs = new URLSearchParams({
-      redirect: '/dealer-portal',
-      reg: cleaned,
-    });
-    openTop(`/dealer-portal/login?${qs.toString()}`);
+
+    // Mirror DealerRegHero behaviour exactly.
+    if (!dealer) {
+      try { localStorage.setItem(PENDING_REG_KEY, cleaned); } catch {}
+      const qs = new URLSearchParams({ redirect: '/dealer-portal', reg: cleaned });
+      openTop(`/dealer-portal/login?${qs.toString()}`);
+    } else {
+      try { localStorage.removeItem(PENDING_REG_KEY); } catch {}
+      openTop(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
+    }
   };
+
+  const ctaLabel = loading ? 'Loading…' : dealer ? 'Get Quote' : 'Sign in / Sign up to continue';
 
   return (
     <div
@@ -128,9 +142,10 @@ const DealerWidget: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full h-14 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg flex items-center justify-center gap-2 transition-colors"
+              disabled={loading}
+              className="w-full h-14 rounded-lg bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white font-bold text-lg flex items-center justify-center gap-2 transition-colors"
             >
-              Get Quote <ArrowRight className="h-5 w-5" />
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : (<>{ctaLabel} <ArrowRight className="h-5 w-5" /></>)}
             </button>
 
             <p className="text-xs text-gray-500 flex items-center gap-1">
