@@ -43,6 +43,21 @@ const ConditionalStickyNavigation = () => {
   return <StickyNavigation />;
 };
 
+const ConditionalCookieBanner = () => {
+  const location = useLocation();
+  if (location.pathname.startsWith('/dealer-widget')) return null;
+  return <CookieBanner />;
+};
+
+const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isWidget = location.pathname.startsWith('/dealer-widget');
+  return (
+    <main className={isWidget ? 'flex-1 w-full overflow-x-hidden' : 'flex-1 pb-16 w-full overflow-x-hidden'}>
+      {children}
+    </main>
+  );
+
 const ConditionalFooter = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
