@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
         .select("id, name, email, company_name, phone")
         .eq("id", dealer_id)
         .maybeSingle();
-      return json({ dealer: data });
+      return json({ dealer: data, mode: isTest ? "test" : "live" });
     }
 
     // ---------- WARRANTIES ----------
