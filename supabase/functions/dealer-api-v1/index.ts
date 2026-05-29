@@ -261,6 +261,72 @@ Deno.serve(async (req) => {
       return json({ customers: data || [], total: count ?? 0, limit, offset });
     }
 
+    // ---------- CLAIMS ----------
+    if (resource === "claims") {
+      if (req.method === "GET" && id) {
+        const { data, error } = await admin
+          .from("dealer_admin_claims")
+          .select("*")
+          .eq("id", id)
+          .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest)
+          .maybeSingle();
+        if (error) return json({ error: error.message }, 400);
+        if (!data) return json({ error: "Not found" }, 404);
+        return json({ claim: data });
+      }
+      if (req.method === "GET") {
+        const limit = Math.min(parseInt(url.searchParams.get("limit") || "50"), 200);
+        const offset = parseInt(url.searchParams.get("offset") || "0");
+        const status = url.searchParams.get("status");
+        let q = admin
+          .from("dealer_admin_claims")
+          .select("*", { count: "exact" })
+          .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest);
+        if (status) q = q.eq("status", status);
+        const { data, error, count } = await q
+          .order("created_at", { ascending: false })
+          .range(offset, offset + limit - 1);
+        if (error) return json({ error: error.message }, 400);
+        return json({ claims: data || [], total: count ?? 0, limit, offset, mode: isTest ? "test" : "live" });
+      }
+      if (req.method === "POST") {
+        const body = await req.json().catch(() => ({}));
+        const required = ["customer_name", "registration_plate", "fault_description"];
+        for (const k of required) {
+          if (!body[k]) return json({ error: `Missing field: ${k}` }, 400);
+        }
+        const reg = String(body.registration_plate);
+        const ref = `CL-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+        const { data, error } = await admin
+          .from("dealer_admin_claims")
+          .insert({
+            dealer_id,
+            is_test: isTest,
+            claim_reference: ref,
+            customer_name: body.customer_name,
+            customer_email: body.customer_email || null,
+            customer_email_normalized: body.customer_email ? String(body.customer_email).toLowerCase().trim() : null,
+            customer_phone: body.customer_phone || null,
+            registration_plate: reg,
+            registration_plate_normalized: reg.toUpperCase().replace(/\s+/g, ""),
+            vehicle_make: body.vehicle_make || null,
+            vehicle_model: body.vehicle_model || null,
+            fault_description: body.fault_description,
+            repair_garage: body.repair_garage || null,
+            repair_estimate: body.repair_estimate ?? null,
+            status: body.status || "new",
+            attachments: body.attachments || [],
+          })
+          .select()
+          .single();
+        if (error) return json({ error: error.message }, 400);
+        if (!isTest) dispatchWebhook(dealer_id, "claim.created", data);
+        return json({ claim: data }, 201);
+      }
+    }
+
     return json(
       {
         error: "Unknown endpoint",
