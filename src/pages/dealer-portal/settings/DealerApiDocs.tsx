@@ -354,6 +354,13 @@ function verify(rawBody, header, secret) {
             Deliveries are logged in the API keys page — you can see status codes and response bodies for the last 20 attempts.
             We treat any 2xx response as a successful delivery.
           </p>
+          <p className="text-sm font-semibold text-gray-700 mt-2">Automatic retries</p>
+          <p className="text-sm text-gray-600">
+            Failed deliveries (non-2xx, timeouts, network errors) are retried automatically with exponential backoff:
+            1 min → 5 min → 15 min → 1 hr → 6 hrs → 24 hrs. After 6 attempts the delivery is marked{' '}
+            <code className="bg-gray-100 px-1 rounded">abandoned</code>. Each retry is logged with{' '}
+            <code className="bg-gray-100 px-1 rounded">X-Panda-Retry: &lt;attempt&gt;</code> so you can detect replays.
+          </p>
         </section>
 
 
