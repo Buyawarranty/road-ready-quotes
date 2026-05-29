@@ -42,12 +42,29 @@ const DealerApiKeys: React.FC = () => {
     enabled: !!dealer?.id,
   });
 
+  const { data: deliveries = [] } = useQuery({
+    queryKey: ['dealer-webhook-deliveries', dealer?.id],
+    queryFn: async () => {
+      if (!dealer?.id) return [];
+      const { data } = await (supabase as any)
+        .from('api_webhook_deliveries')
+        .select('*')
+        .eq('dealer_id', dealer.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      return data || [];
+    },
+    enabled: !!dealer?.id,
+    refetchInterval: 15000,
+  });
+
   const create = async () => {
     if (!dealer?.id || !label) return;
-    const raw = 'lvf_' + crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+    const prefix = mode === 'test' ? 'lvf_test_' : 'lvf_';
+    const raw = prefix + crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
     const key_hash = await sha256(raw);
-    const key_prefix = raw.slice(0, 10);
-    const { error } = await (supabase as any).from('dealer_api_keys').insert({ dealer_id: dealer.id, label, key_hash, key_prefix });
+    const key_prefix = raw.slice(0, mode === 'test' ? 15 : 10);
+    const { error } = await (supabase as any).from('dealer_api_keys').insert({ dealer_id: dealer.id, label, key_hash, key_prefix, mode });
     if (error) return toast.error(error.message);
     setNewKey(raw);
     setLabel('');
