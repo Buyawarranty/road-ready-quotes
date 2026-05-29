@@ -464,6 +464,7 @@ const App = () => {
                     <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
                     <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
                     <Route path="/dealer-portal/settings/api" element={<DealerApiKeys />} />
+                    <Route path="/dealer-portal/api-docs" element={<DealerApiDocs />} />
 
                     {/* Dealer Admin (super_admin / admin only) */}
                     <Route path="/dealer-admin" element={<DealerAdminLayout />}>
