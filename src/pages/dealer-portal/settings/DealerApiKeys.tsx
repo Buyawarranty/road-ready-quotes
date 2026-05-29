@@ -6,7 +6,7 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Copy, Plus, Trash2 } from 'lucide-react';
+import { Copy, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 async function sha256(s: string) {
@@ -88,6 +88,16 @@ const DealerApiKeys: React.FC = () => {
   const removeHook = async (id: string) => {
     await (supabase as any).from('api_webhook_endpoints').delete().eq('id', id);
     qc.invalidateQueries({ queryKey: ['dealer-webhooks'] });
+  };
+
+  const replayDelivery = async (id: string) => {
+    const { error } = await (supabase as any)
+      .from('api_webhook_deliveries')
+      .update({ status: 'failed', next_retry_at: new Date().toISOString(), attempts: 0 })
+      .eq('id', id);
+    if (error) return toast.error(error.message);
+    toast.success('Queued for replay — will fire within ~1 minute');
+    qc.invalidateQueries({ queryKey: ['dealer-webhook-deliveries'] });
   };
 
   return (
@@ -179,11 +189,20 @@ const DealerApiKeys: React.FC = () => {
                 <li key={d.id} className="py-2 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="font-mono text-xs text-gray-700">{d.event_type}</div>
-                    <div className="text-xs text-gray-500">{new Date(d.created_at).toLocaleString()}</div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(d.created_at).toLocaleString()} · attempts: {d.attempts ?? 1}
+                    </div>
                   </div>
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${d.status === 'success' ? 'bg-green-100 text-green-800' : d.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}`}>
-                    {d.status}{d.response_status ? ` · ${d.response_status}` : ''}
-                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded ${d.status === 'success' ? 'bg-green-100 text-green-800' : d.status === 'failed' ? 'bg-red-100 text-red-800' : d.status === 'abandoned' ? 'bg-gray-200 text-gray-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {d.status}{d.response_status ? ` · ${d.response_status}` : ''}
+                    </span>
+                    {(d.status === 'failed' || d.status === 'abandoned') && (
+                      <Button size="sm" variant="outline" onClick={() => replayDelivery(d.id)} title="Replay this delivery">
+                        <RefreshCw className="h-3 w-3 mr-1" /> Replay
+                      </Button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
