@@ -708,6 +708,8 @@ export type Database = {
           event_type: string
           id: string
           last_attempt_at: string | null
+          max_attempts: number
+          next_retry_at: string | null
           payload: Json
           response_body: string | null
           response_status: number | null
@@ -721,6 +723,8 @@ export type Database = {
           event_type: string
           id?: string
           last_attempt_at?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
           payload: Json
           response_body?: string | null
           response_status?: number | null
@@ -734,6 +738,8 @@ export type Database = {
           event_type?: string
           id?: string
           last_attempt_at?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
           payload?: Json
           response_body?: string | null
           response_status?: number | null
@@ -2807,6 +2813,7 @@ export type Database = {
           fault_description: string | null
           id: string
           internal_notes: string | null
+          is_test: boolean
           paid_amount: number | null
           registration_plate: string | null
           registration_plate_normalized: string | null
@@ -2833,6 +2840,7 @@ export type Database = {
           fault_description?: string | null
           id?: string
           internal_notes?: string | null
+          is_test?: boolean
           paid_amount?: number | null
           registration_plate?: string | null
           registration_plate_normalized?: string | null
@@ -2859,6 +2867,7 @@ export type Database = {
           fault_description?: string | null
           id?: string
           internal_notes?: string | null
+          is_test?: boolean
           paid_amount?: number | null
           registration_plate?: string | null
           registration_plate_normalized?: string | null

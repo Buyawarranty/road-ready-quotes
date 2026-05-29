@@ -139,9 +139,10 @@ const DealerApiDocs: React.FC = () => {
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Endpoints</h2>
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="grid grid-cols-3 max-w-md">
+            <TabsList className="grid grid-cols-4 max-w-md">
               <TabsTrigger value="warranties">Warranties</TabsTrigger>
               <TabsTrigger value="quotes">Quotes</TabsTrigger>
+              <TabsTrigger value="claims">Claims</TabsTrigger>
               <TabsTrigger value="customers">Customers</TabsTrigger>
             </TabsList>
 
@@ -213,6 +214,41 @@ const DealerApiDocs: React.FC = () => {
                   price: 199,
                 }}
                 response={{ quote: { id: 'uuid', status: 'draft' } }}
+              />
+            </TabsContent>
+
+            <TabsContent value="claims" className="space-y-4 mt-4">
+              <Endpoint
+                method="GET"
+                path="/claims"
+                title="List claims"
+                description="Returns claims raised against your warranties. Supports ?status= and pagination."
+                response={{ claims: [{ id: 'uuid', claim_reference: 'CL-XXXX-XXXX', customer_name: 'John Smith', registration_plate: 'AB12 CDE', status: 'new' }], total: 12, limit: 50, offset: 0 }}
+              />
+              <Endpoint
+                method="GET"
+                path="/claims/:id"
+                title="Get claim"
+                description="Retrieve a single claim by ID."
+                response={{ claim: { id: 'uuid', claim_reference: 'CL-XXXX-XXXX', status: 'in_review', repair_estimate: 850 } }}
+              />
+              <Endpoint
+                method="POST"
+                path="/claims"
+                title="Submit claim"
+                description="Open a new claim from your DMS. We auto-assign a claim reference and trigger the claim.created webhook."
+                body={{
+                  customer_name: 'John Smith',
+                  customer_email: 'john@example.com',
+                  customer_phone: '07700900000',
+                  registration_plate: 'AB12 CDE',
+                  vehicle_make: 'Ford',
+                  vehicle_model: 'Focus',
+                  fault_description: 'Gearbox grinding in 3rd gear',
+                  repair_garage: 'Smith Motors Ltd',
+                  repair_estimate: 850,
+                }}
+                response={{ claim: { id: 'uuid', claim_reference: 'CL-XXXX-XXXX', status: 'new' } }}
               />
             </TabsContent>
 
@@ -317,6 +353,13 @@ function verify(rawBody, header, secret) {
           <p className="text-sm text-gray-600">
             Deliveries are logged in the API keys page — you can see status codes and response bodies for the last 20 attempts.
             We treat any 2xx response as a successful delivery.
+          </p>
+          <p className="text-sm font-semibold text-gray-700 mt-2">Automatic retries</p>
+          <p className="text-sm text-gray-600">
+            Failed deliveries (non-2xx, timeouts, network errors) are retried automatically with exponential backoff:
+            1 min → 5 min → 15 min → 1 hr → 6 hrs → 24 hrs. After 6 attempts the delivery is marked{' '}
+            <code className="bg-gray-100 px-1 rounded">abandoned</code>. Each retry is logged with{' '}
+            <code className="bg-gray-100 px-1 rounded">X-Panda-Retry: &lt;attempt&gt;</code> so you can detect replays.
           </p>
         </section>
 

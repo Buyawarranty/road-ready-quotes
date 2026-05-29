@@ -12,3 +12,6 @@ verify_jwt = false
 [functions.dealer-webhook-dispatch]
 verify_jwt = false
 
+[functions.dealer-webhook-retry]
+verify_jwt = false
+
