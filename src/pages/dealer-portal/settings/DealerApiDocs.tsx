@@ -139,9 +139,10 @@ const DealerApiDocs: React.FC = () => {
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Endpoints</h2>
           <Tabs value={tab} onValueChange={setTab}>
-            <TabsList className="grid grid-cols-3 max-w-md">
+            <TabsList className="grid grid-cols-4 max-w-md">
               <TabsTrigger value="warranties">Warranties</TabsTrigger>
               <TabsTrigger value="quotes">Quotes</TabsTrigger>
+              <TabsTrigger value="claims">Claims</TabsTrigger>
               <TabsTrigger value="customers">Customers</TabsTrigger>
             </TabsList>
 
