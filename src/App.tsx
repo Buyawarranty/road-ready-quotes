@@ -202,6 +202,7 @@ const FinanceApplicationsList = lazy(() => import("./pages/dealer-portal/applica
 const FinanceApplicationNew = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationNew"));
 const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationDetail"));
 const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
+const DealerApiDocs = lazy(() => import("./pages/dealer-portal/settings/DealerApiDocs"));
 const DealerWidget = lazy(() => import("./pages/DealerWidget"));
 const DealerAdminFinanceQueue = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceQueue"));
 const DealerAdminFinanceDetail = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceDetail"));
