@@ -112,15 +112,26 @@ const DealerApiKeys: React.FC = () => {
               </div>
             </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Input placeholder="Key label (e.g. Production DMS)" value={label} onChange={(e) => setLabel(e.target.value)} />
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as 'live' | 'test')}
+              className="border rounded px-2 py-2 text-sm bg-white"
+            >
+              <option value="live">Live</option>
+              <option value="test">Sandbox</option>
+            </select>
             <Button onClick={create} className="bg-orange-500 hover:bg-orange-600 text-white"><Plus className="h-4 w-4 mr-1" /> Create</Button>
           </div>
           <ul className="divide-y">
             {keys.map((k: any) => (
               <li key={k.id} className="py-2 flex items-center justify-between text-sm">
                 <div>
-                  <div className="font-medium">{k.label}</div>
+                  <div className="font-medium flex items-center gap-2">
+                    {k.label}
+                    {k.mode === 'test' && <span className="text-[10px] font-semibold uppercase bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Sandbox</span>}
+                  </div>
                   <div className="text-xs text-gray-500 font-mono">{k.key_prefix}… · {k.revoked_at ? 'revoked' : 'active'}</div>
                 </div>
                 {!k.revoked_at && <Button size="sm" variant="ghost" onClick={() => revoke(k.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>}
