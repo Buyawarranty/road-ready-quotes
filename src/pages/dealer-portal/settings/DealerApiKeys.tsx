@@ -18,6 +18,7 @@ const DealerApiKeys: React.FC = () => {
   const { dealer } = useDealerAuth();
   const qc = useQueryClient();
   const [label, setLabel] = useState('');
+  const [mode, setMode] = useState<'live' | 'test'>('live');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [newKey, setNewKey] = useState<string | null>(null);
 
