@@ -112,6 +112,7 @@ Deno.serve(async (req) => {
   const auth = await authenticate(req);
   if (!auth.ok) return auth.res;
   const dealer_id = auth.key.dealer_id;
+  const isTest = auth.key.mode === "test";
 
   const url = new URL(req.url);
   const { resource, id } = parsePath(url);
