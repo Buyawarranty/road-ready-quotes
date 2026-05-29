@@ -699,6 +699,56 @@ export type Database = {
           },
         ]
       }
+      api_webhook_deliveries: {
+        Row: {
+          attempts: number
+          created_at: string
+          dealer_id: string
+          endpoint_id: string
+          event_type: string
+          id: string
+          last_attempt_at: string | null
+          payload: Json
+          response_body: string | null
+          response_status: number | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          dealer_id: string
+          endpoint_id: string
+          event_type: string
+          id?: string
+          last_attempt_at?: string | null
+          payload: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          dealer_id?: string
+          endpoint_id?: string
+          event_type?: string
+          id?: string
+          last_attempt_at?: string | null
+          payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_webhook_deliveries_endpoint_id_fkey"
+            columns: ["endpoint_id"]
+            isOneToOne: false
+            referencedRelation: "api_webhook_endpoints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_webhook_endpoints: {
         Row: {
           active: boolean
@@ -3682,6 +3732,7 @@ export type Database = {
           key_prefix: string
           label: string
           last_used_at: string | null
+          mode: string
           revoked_at: string | null
           scopes: string[]
         }
@@ -3693,6 +3744,7 @@ export type Database = {
           key_prefix: string
           label: string
           last_used_at?: string | null
+          mode?: string
           revoked_at?: string | null
           scopes?: string[]
         }
@@ -3704,6 +3756,7 @@ export type Database = {
           key_prefix?: string
           label?: string
           last_used_at?: string | null
+          mode?: string
           revoked_at?: string | null
           scopes?: string[]
         }
@@ -3922,6 +3975,7 @@ export type Database = {
           dealer_price: number | null
           discount_pct: number | null
           id: string
+          is_test: boolean
           mileage: string | null
           paid_at: string | null
           payment_method: string | null
@@ -3950,6 +4004,7 @@ export type Database = {
           dealer_price?: number | null
           discount_pct?: number | null
           id?: string
+          is_test?: boolean
           mileage?: string | null
           paid_at?: string | null
           payment_method?: string | null
@@ -3978,6 +4033,7 @@ export type Database = {
           dealer_price?: number | null
           discount_pct?: number | null
           id?: string
+          is_test?: boolean
           mileage?: string | null
           paid_at?: string | null
           payment_method?: string | null
@@ -4012,6 +4068,7 @@ export type Database = {
           dealer_id: string
           end_date: string
           id: string
+          is_test: boolean
           quote_id: string | null
           start_date: string
           status: string
@@ -4024,6 +4081,7 @@ export type Database = {
           dealer_id: string
           end_date: string
           id?: string
+          is_test?: boolean
           quote_id?: string | null
           start_date: string
           status?: string
@@ -4036,6 +4094,7 @@ export type Database = {
           dealer_id?: string
           end_date?: string
           id?: string
+          is_test?: boolean
           quote_id?: string | null
           start_date?: string
           status?: string
