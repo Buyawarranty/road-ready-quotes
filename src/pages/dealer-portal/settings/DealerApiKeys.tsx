@@ -6,7 +6,7 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Copy, Plus, Trash2 } from 'lucide-react';
+import { Copy, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 async function sha256(s: string) {
