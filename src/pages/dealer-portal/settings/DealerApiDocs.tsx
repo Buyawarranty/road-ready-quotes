@@ -257,6 +257,70 @@ const result = await createWarranty({
 console.log(result.warranty.id);`}</Code>
         </section>
 
+        {/* Sandbox */}
+        <section className="bg-white border rounded-lg p-5 space-y-3">
+          <h2 className="font-semibold text-gray-900">Sandbox mode</h2>
+          <p className="text-sm text-gray-600">
+            Test your integration without affecting production data. In the{' '}
+            <Link to="/dealer-portal/settings/api" className="text-orange-600 underline">API keys page</Link>{' '}
+            choose <b>Sandbox</b> when generating a key — it will be prefixed with{' '}
+            <code className="bg-gray-100 px-1 rounded">lvf_test_</code>.
+          </p>
+          <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <li>Warranties and quotes created with a sandbox key are flagged <code className="bg-gray-100 px-1 rounded">is_test=true</code> and stay isolated from live data.</li>
+            <li>Sandbox requests do <b>not</b> trigger webhooks.</li>
+            <li>List endpoints with a sandbox key only return test records; live keys only return live records.</li>
+            <li>The <code className="bg-gray-100 px-1 rounded">/me</code> response includes a <code className="bg-gray-100 px-1 rounded">mode</code> field so you can confirm which environment you're hitting.</li>
+          </ul>
+        </section>
+
+        {/* Webhooks */}
+        <section className="bg-white border rounded-lg p-5 space-y-3">
+          <h2 className="font-semibold text-gray-900">Webhooks</h2>
+          <p className="text-sm text-gray-600">
+            Register a URL in the <Link to="/dealer-portal/settings/api" className="text-orange-600 underline">API keys page</Link>{' '}
+            and we'll POST a signed JSON payload when events happen on your account.
+          </p>
+          <p className="text-sm font-semibold text-gray-700 mt-2">Event types</p>
+          <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+            <li><code className="bg-gray-100 px-1 rounded">warranty.created</code></li>
+            <li><code className="bg-gray-100 px-1 rounded">warranty.activated</code></li>
+            <li><code className="bg-gray-100 px-1 rounded">warranty.cancelled</code></li>
+            <li><code className="bg-gray-100 px-1 rounded">quote.created</code></li>
+            <li><code className="bg-gray-100 px-1 rounded">quote.updated</code></li>
+            <li><code className="bg-gray-100 px-1 rounded">claim.created</code> / <code className="bg-gray-100 px-1 rounded">claim.updated</code></li>
+          </ul>
+          <p className="text-sm font-semibold text-gray-700 mt-2">Payload</p>
+          <Code>{`POST https://your-site.com/webhooks/panda
+Headers:
+  X-Panda-Event: warranty.created
+  X-Panda-Signature: t=1717000000,v1=<hex-hmac-sha256>
+
+{
+  "event": "warranty.created",
+  "created": 1717000000,
+  "data": { "id": "uuid", "customer_name": "...", "status": "pending", ... }
+}`}</Code>
+          <p className="text-sm font-semibold text-gray-700 mt-2">Verifying the signature</p>
+          <Code>{`import crypto from 'crypto';
+
+function verify(rawBody, header, secret) {
+  const [tPart, sigPart] = header.split(',');
+  const t = tPart.split('=')[1];
+  const v1 = sigPart.split('=')[1];
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(t + '.' + rawBody)
+    .digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
+}`}</Code>
+          <p className="text-sm text-gray-600">
+            Deliveries are logged in the API keys page — you can see status codes and response bodies for the last 20 attempts.
+            We treat any 2xx response as a successful delivery.
+          </p>
+        </section>
+
+
         {/* Help */}
         <section className="bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-lg p-5">
           <h2 className="font-semibold text-gray-900 mb-1">Need help integrating?</h2>
