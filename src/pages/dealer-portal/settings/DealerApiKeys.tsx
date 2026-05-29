@@ -90,6 +90,16 @@ const DealerApiKeys: React.FC = () => {
     qc.invalidateQueries({ queryKey: ['dealer-webhooks'] });
   };
 
+  const replayDelivery = async (id: string) => {
+    const { error } = await (supabase as any)
+      .from('api_webhook_deliveries')
+      .update({ status: 'failed', next_retry_at: new Date().toISOString(), attempts: 0 })
+      .eq('id', id);
+    if (error) return toast.error(error.message);
+    toast.success('Queued for replay — will fire within ~1 minute');
+    qc.invalidateQueries({ queryKey: ['dealer-webhook-deliveries'] });
+  };
+
   return (
     <DealerLayout>
       <div className="space-y-8 max-w-4xl">
