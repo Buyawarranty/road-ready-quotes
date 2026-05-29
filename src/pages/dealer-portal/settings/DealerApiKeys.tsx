@@ -165,6 +165,30 @@ const DealerApiKeys: React.FC = () => {
             {hooks.length === 0 && <li className="py-2 text-sm text-gray-500">No webhooks configured.</li>}
           </ul>
         </section>
+
+        <section className="bg-white border rounded-lg p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Recent webhook deliveries</h2>
+            <span className="text-xs text-gray-500">Auto-refreshes every 15s</span>
+          </div>
+          {deliveries.length === 0 ? (
+            <p className="text-sm text-gray-500">No deliveries yet. Trigger an event (e.g. create a warranty via the API) to see attempts here.</p>
+          ) : (
+            <ul className="divide-y text-sm">
+              {deliveries.map((d: any) => (
+                <li key={d.id} className="py-2 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-mono text-xs text-gray-700">{d.event_type}</div>
+                    <div className="text-xs text-gray-500">{new Date(d.created_at).toLocaleString()}</div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${d.status === 'success' ? 'bg-green-100 text-green-800' : d.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}`}>
+                    {d.status}{d.response_status ? ` · ${d.response_status}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </DealerLayout>
   );
