@@ -78,6 +78,9 @@ const DealerApiKeys: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">API & webhooks</h1>
           <p className="text-sm text-gray-600">Integrate your DMS or in-house system with our finance platform.</p>
+          <a href="/dealer-portal/api-docs" className="inline-block mt-2 text-sm text-orange-600 hover:text-orange-700 underline">
+            View API documentation →
+          </a>
         </div>
 
         <section className="bg-white border rounded-lg p-5 space-y-4">

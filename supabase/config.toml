@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.dealer-stripe-webhook]
 verify_jwt = false
+
+[functions.dealer-api-v1]
+verify_jwt = false
