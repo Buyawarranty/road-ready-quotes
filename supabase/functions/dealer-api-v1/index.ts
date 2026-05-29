@@ -45,6 +45,19 @@ interface AuthedKey {
   id: string;
   dealer_id: string;
   scopes: string[] | null;
+  mode: "live" | "test";
+}
+
+async function dispatchWebhook(dealer_id: string, event_type: string, payload: any) {
+  // fire-and-forget: invoke the dispatcher without awaiting
+  fetch(`${SUPABASE_URL}/functions/v1/dealer-webhook-dispatch`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ dealer_id, event_type, payload }),
+  }).catch(() => {});
 }
 
 async function authenticate(req: Request): Promise<
