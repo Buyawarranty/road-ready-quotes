@@ -8,3 +8,7 @@ verify_jwt = false
 
 [functions.dealer-api-v1]
 verify_jwt = false
+
+[functions.dealer-webhook-dispatch]
+verify_jwt = false
+

@@ -45,6 +45,19 @@ interface AuthedKey {
   id: string;
   dealer_id: string;
   scopes: string[] | null;
+  mode: "live" | "test";
+}
+
+async function dispatchWebhook(dealer_id: string, event_type: string, payload: any) {
+  // fire-and-forget: invoke the dispatcher without awaiting
+  fetch(`${SUPABASE_URL}/functions/v1/dealer-webhook-dispatch`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ dealer_id, event_type, payload }),
+  }).catch(() => {});
 }
 
 async function authenticate(req: Request): Promise<
@@ -69,7 +82,7 @@ async function authenticate(req: Request): Promise<
   const key_hash = await sha256Hex(raw);
   const { data, error } = await admin
     .from("dealer_api_keys")
-    .select("id, dealer_id, scopes, revoked_at")
+    .select("id, dealer_id, scopes, revoked_at, mode")
     .eq("key_hash", key_hash)
     .maybeSingle();
   if (error || !data) return { ok: false, res: json({ error: "Invalid API key" }, 401) };
@@ -99,6 +112,7 @@ Deno.serve(async (req) => {
   const auth = await authenticate(req);
   if (!auth.ok) return auth.res;
   const dealer_id = auth.key.dealer_id;
+  const isTest = auth.key.mode === "test";
 
   const url = new URL(req.url);
   const { resource, id } = parsePath(url);
@@ -111,7 +125,7 @@ Deno.serve(async (req) => {
         .select("id, name, email, company_name, phone")
         .eq("id", dealer_id)
         .maybeSingle();
-      return json({ dealer: data });
+      return json({ dealer: data, mode: isTest ? "test" : "live" });
     }
 
     // ---------- WARRANTIES ----------
@@ -122,6 +136,7 @@ Deno.serve(async (req) => {
           .select("*")
           .eq("id", id)
           .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest)
           .maybeSingle();
         if (error) return json({ error: error.message }, 400);
         if (!data) return json({ error: "Not found" }, 404);
@@ -134,10 +149,11 @@ Deno.serve(async (req) => {
           .from("dealer_warranties")
           .select("*", { count: "exact" })
           .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest)
           .order("created_at", { ascending: false })
           .range(offset, offset + limit - 1);
         if (error) return json({ error: error.message }, 400);
-        return json({ warranties: data || [], total: count ?? 0, limit, offset });
+        return json({ warranties: data || [], total: count ?? 0, limit, offset, mode: isTest ? "test" : "live" });
       }
       if (req.method === "POST") {
         const body = await req.json().catch(() => ({}));
@@ -149,6 +165,7 @@ Deno.serve(async (req) => {
           .from("dealer_warranties")
           .insert({
             dealer_id,
+            is_test: isTest,
             customer_name: body.customer_name,
             customer_email: body.customer_email || null,
             customer_phone: body.customer_phone || null,
@@ -164,6 +181,7 @@ Deno.serve(async (req) => {
           .select()
           .single();
         if (error) return json({ error: error.message }, 400);
+        if (!isTest) dispatchWebhook(dealer_id, "warranty.created", data);
         return json({ warranty: data }, 201);
       }
     }
@@ -176,6 +194,7 @@ Deno.serve(async (req) => {
           .select("*")
           .eq("id", id)
           .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest)
           .maybeSingle();
         if (error) return json({ error: error.message }, 400);
         if (!data) return json({ error: "Not found" }, 404);
@@ -188,10 +207,11 @@ Deno.serve(async (req) => {
           .from("dealer_quotes")
           .select("*", { count: "exact" })
           .eq("dealer_id", dealer_id)
+          .eq("is_test", isTest)
           .order("created_at", { ascending: false })
           .range(offset, offset + limit - 1);
         if (error) return json({ error: error.message }, 400);
-        return json({ quotes: data || [], total: count ?? 0, limit, offset });
+        return json({ quotes: data || [], total: count ?? 0, limit, offset, mode: isTest ? "test" : "live" });
       }
       if (req.method === "POST") {
         const body = await req.json().catch(() => ({}));
@@ -205,6 +225,7 @@ Deno.serve(async (req) => {
           .from("dealer_quotes")
           .insert({
             dealer_id,
+            is_test: isTest,
             customer_name: body.customer_name,
             customer_email: body.customer_email || null,
             customer_phone: body.customer_phone || null,
@@ -220,6 +241,7 @@ Deno.serve(async (req) => {
           .select()
           .single();
         if (error) return json({ error: error.message }, 400);
+        if (!isTest) dispatchWebhook(dealer_id, "quote.created", data);
         return json({ quote: data }, 201);
       }
     }

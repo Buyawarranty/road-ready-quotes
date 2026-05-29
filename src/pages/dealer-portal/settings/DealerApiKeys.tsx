@@ -18,6 +18,7 @@ const DealerApiKeys: React.FC = () => {
   const { dealer } = useDealerAuth();
   const qc = useQueryClient();
   const [label, setLabel] = useState('');
+  const [mode, setMode] = useState<'live' | 'test'>('live');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [newKey, setNewKey] = useState<string | null>(null);
 
@@ -41,12 +42,29 @@ const DealerApiKeys: React.FC = () => {
     enabled: !!dealer?.id,
   });
 
+  const { data: deliveries = [] } = useQuery({
+    queryKey: ['dealer-webhook-deliveries', dealer?.id],
+    queryFn: async () => {
+      if (!dealer?.id) return [];
+      const { data } = await (supabase as any)
+        .from('api_webhook_deliveries')
+        .select('*')
+        .eq('dealer_id', dealer.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      return data || [];
+    },
+    enabled: !!dealer?.id,
+    refetchInterval: 15000,
+  });
+
   const create = async () => {
     if (!dealer?.id || !label) return;
-    const raw = 'lvf_' + crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
+    const prefix = mode === 'test' ? 'lvf_test_' : 'lvf_';
+    const raw = prefix + crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '').slice(0, 16);
     const key_hash = await sha256(raw);
-    const key_prefix = raw.slice(0, 10);
-    const { error } = await (supabase as any).from('dealer_api_keys').insert({ dealer_id: dealer.id, label, key_hash, key_prefix });
+    const key_prefix = raw.slice(0, mode === 'test' ? 15 : 10);
+    const { error } = await (supabase as any).from('dealer_api_keys').insert({ dealer_id: dealer.id, label, key_hash, key_prefix, mode });
     if (error) return toast.error(error.message);
     setNewKey(raw);
     setLabel('');
@@ -94,15 +112,26 @@ const DealerApiKeys: React.FC = () => {
               </div>
             </div>
           )}
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Input placeholder="Key label (e.g. Production DMS)" value={label} onChange={(e) => setLabel(e.target.value)} />
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as 'live' | 'test')}
+              className="border rounded px-2 py-2 text-sm bg-white"
+            >
+              <option value="live">Live</option>
+              <option value="test">Sandbox</option>
+            </select>
             <Button onClick={create} className="bg-orange-500 hover:bg-orange-600 text-white"><Plus className="h-4 w-4 mr-1" /> Create</Button>
           </div>
           <ul className="divide-y">
             {keys.map((k: any) => (
               <li key={k.id} className="py-2 flex items-center justify-between text-sm">
                 <div>
-                  <div className="font-medium">{k.label}</div>
+                  <div className="font-medium flex items-center gap-2">
+                    {k.label}
+                    {k.mode === 'test' && <span className="text-[10px] font-semibold uppercase bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">Sandbox</span>}
+                  </div>
                   <div className="text-xs text-gray-500 font-mono">{k.key_prefix}… · {k.revoked_at ? 'revoked' : 'active'}</div>
                 </div>
                 {!k.revoked_at && <Button size="sm" variant="ghost" onClick={() => revoke(k.id)}><Trash2 className="h-4 w-4 text-red-600" /></Button>}
@@ -135,6 +164,30 @@ const DealerApiKeys: React.FC = () => {
             ))}
             {hooks.length === 0 && <li className="py-2 text-sm text-gray-500">No webhooks configured.</li>}
           </ul>
+        </section>
+
+        <section className="bg-white border rounded-lg p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold">Recent webhook deliveries</h2>
+            <span className="text-xs text-gray-500">Auto-refreshes every 15s</span>
+          </div>
+          {deliveries.length === 0 ? (
+            <p className="text-sm text-gray-500">No deliveries yet. Trigger an event (e.g. create a warranty via the API) to see attempts here.</p>
+          ) : (
+            <ul className="divide-y text-sm">
+              {deliveries.map((d: any) => (
+                <li key={d.id} className="py-2 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-mono text-xs text-gray-700">{d.event_type}</div>
+                    <div className="text-xs text-gray-500">{new Date(d.created_at).toLocaleString()}</div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${d.status === 'success' ? 'bg-green-100 text-green-800' : d.status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}`}>
+                    {d.status}{d.response_status ? ` · ${d.response_status}` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </DealerLayout>
