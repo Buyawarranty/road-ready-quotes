@@ -82,7 +82,7 @@ async function authenticate(req: Request): Promise<
   const key_hash = await sha256Hex(raw);
   const { data, error } = await admin
     .from("dealer_api_keys")
-    .select("id, dealer_id, scopes, revoked_at")
+    .select("id, dealer_id, scopes, revoked_at, mode")
     .eq("key_hash", key_hash)
     .maybeSingle();
   if (error || !data) return { ok: false, res: json({ error: "Invalid API key" }, 401) };
