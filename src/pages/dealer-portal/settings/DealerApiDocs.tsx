@@ -217,6 +217,41 @@ const DealerApiDocs: React.FC = () => {
               />
             </TabsContent>
 
+            <TabsContent value="claims" className="space-y-4 mt-4">
+              <Endpoint
+                method="GET"
+                path="/claims"
+                title="List claims"
+                description="Returns claims raised against your warranties. Supports ?status= and pagination."
+                response={{ claims: [{ id: 'uuid', claim_reference: 'CL-XXXX-XXXX', customer_name: 'John Smith', registration_plate: 'AB12 CDE', status: 'new' }], total: 12, limit: 50, offset: 0 }}
+              />
+              <Endpoint
+                method="GET"
+                path="/claims/:id"
+                title="Get claim"
+                description="Retrieve a single claim by ID."
+                response={{ claim: { id: 'uuid', claim_reference: 'CL-XXXX-XXXX', status: 'in_review', repair_estimate: 850 } }}
+              />
+              <Endpoint
+                method="POST"
+                path="/claims"
+                title="Submit claim"
+                description="Open a new claim from your DMS. We auto-assign a claim reference and trigger the claim.created webhook."
+                body={{
+                  customer_name: 'John Smith',
+                  customer_email: 'john@example.com',
+                  customer_phone: '07700900000',
+                  registration_plate: 'AB12 CDE',
+                  vehicle_make: 'Ford',
+                  vehicle_model: 'Focus',
+                  fault_description: 'Gearbox grinding in 3rd gear',
+                  repair_garage: 'Smith Motors Ltd',
+                  repair_estimate: 850,
+                }}
+                response={{ claim: { id: 'uuid', claim_reference: 'CL-XXXX-XXXX', status: 'new' } }}
+              />
+            </TabsContent>
+
             <TabsContent value="customers" className="space-y-4 mt-4">
               <Endpoint
                 method="GET"
