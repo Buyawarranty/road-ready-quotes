@@ -34,17 +34,15 @@ export const DealerPublicHeader: React.FC = () => {
             >
               <OptimizedImage
                 src={buyawarrantyLogo}
-                alt="Buyawarranty"
-                className="h-6 sm:h-8 w-auto object-contain"
+                alt="Panda Protect"
+                className="h-10 sm:h-14 w-auto object-contain"
                 priority={true}
                 width={240}
-                height={40}
+                height={56}
               />
-              <span className="text-[10px] font-bold tracking-[0.2em] text-orange-500 border border-orange-500/40 px-1.5 py-0.5 rounded-sm">
-                DEALER
-              </span>
             </a>
           </div>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
