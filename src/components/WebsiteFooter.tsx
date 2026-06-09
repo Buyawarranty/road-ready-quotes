@@ -52,11 +52,11 @@ const WebsiteFooter = () => {
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6">
               <a 
-                href="tel:03302295040" 
+                href="tel:03302295045" 
                 className="flex items-center text-sm font-semibold text-[#eb4b00] hover:text-[#d63f00] transition-colors"
               >
                 <Phone className="w-4 h-4 mr-1.5" />
-                Call us: 0330 229 5040
+                Call us: 0330 229 5045
               </a>
               <a 
                 href="mailto:support@pandaprotect.co.uk" 
