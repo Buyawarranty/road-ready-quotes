@@ -2414,6 +2414,11 @@ export type Database = {
           trustpilot_review_requested_at: string | null
           tyre_cover: boolean | null
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
           vehicle_fuel_type: string | null
           vehicle_make: string | null
           vehicle_model: string | null
@@ -2503,6 +2508,11 @@ export type Database = {
           trustpilot_review_requested_at?: string | null
           tyre_cover?: boolean | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           vehicle_fuel_type?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
@@ -2592,6 +2602,11 @@ export type Database = {
           trustpilot_review_requested_at?: string | null
           tyre_cover?: boolean | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
           vehicle_fuel_type?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
@@ -4638,6 +4653,36 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_flags: {
+        Row: {
+          category: string
+          description: string | null
+          enabled: boolean
+          key: string
+          label: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string
+          description?: string | null
+          enabled?: boolean
+          key: string
+          label: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          description?: string | null
+          enabled?: boolean
+          key?: string
+          label?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       finance_application_docs: {
         Row: {
           application_id: string
@@ -5018,6 +5063,45 @@ export type Database = {
           sent_at?: string | null
           status?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      ghl_sync_log: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          email: string | null
+          error: string | null
+          http_status: number | null
+          id: string
+          payload: Json | null
+          response: string | null
+          status: string
+          sync_type: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          email?: string | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          payload?: Json | null
+          response?: string | null
+          status: string
+          sync_type?: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          email?: string | null
+          error?: string | null
+          http_status?: number | null
+          id?: string
+          payload?: Json | null
+          response?: string | null
+          status?: string
+          sync_type?: string
         }
         Relationships: []
       }
@@ -8665,6 +8749,10 @@ export type Database = {
         Returns: boolean
       }
       has_all_leads_permission: { Args: { _user_id: string }; Returns: boolean }
+      has_tab_access: {
+        Args: { _tab: string; _user_id: string }
+        Returns: boolean
+      }
       has_tab_permission: {
         Args: { p_action?: string; p_tab: string; p_user_id: string }
         Returns: boolean
