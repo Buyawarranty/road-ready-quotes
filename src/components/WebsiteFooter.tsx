@@ -131,7 +131,7 @@ const WebsiteFooter = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Sales Enquiries:</p>
-                  <a href="tel:03302295040" className="text-lg font-bold text-[#eb4b00] hover:underline">0330 229 5040</a>
+                  <a href="tel:03302295045" className="text-lg font-bold text-[#eb4b00] hover:underline">0330 229 5045</a>
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Claims Hotline:</p>
