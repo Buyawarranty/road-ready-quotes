@@ -5,7 +5,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 
 // Pages that have their own final CTA section
-const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/'];
+const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/', '/faq/traders'];
 
 const WebsiteFooter = () => {
   const location = useLocation();
