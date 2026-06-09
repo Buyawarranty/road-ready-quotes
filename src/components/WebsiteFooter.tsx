@@ -5,12 +5,14 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 
 // Pages that have their own final CTA section
-const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/', '/faq/traders'];
+const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/', '/faq/traders', '/faq/traders/'];
 
 const WebsiteFooter = () => {
   const location = useLocation();
-  const isDealerRoute = location.pathname === '/' || location.pathname.startsWith('/dealer-portal') || location.pathname.startsWith('/home');
-  const hideCtaSection = pagesWithOwnCTA.includes(location.pathname) || isDealerRoute;
+  const path = location.pathname.replace(/\/+$/, '') || '/';
+  const isDealerRoute = path === '/' || path.startsWith('/dealer-portal') || path.startsWith('/home');
+  const isTradersFaq = path === '/faq/traders';
+  const hideCtaSection = pagesWithOwnCTA.includes(location.pathname) || isTradersFaq || isDealerRoute;
 
   return (
     <div className="relative">
