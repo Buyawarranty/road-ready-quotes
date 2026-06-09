@@ -86,6 +86,7 @@ const ConditionalFooter = () => {
 
 // Lazy load pages
 const FAQ = lazy(() => import("./pages/FAQ"));
+const FAQTraders = lazy(() => import("./pages/FAQTraders"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PaymentReceived = lazy(() => import("./pages/PaymentReceived"));
@@ -300,6 +301,8 @@ const App = () => {
                     <Route path="/home" element={<DealerHome />} />
                     <Route path="/home/" element={<DealerHome />} />
                     <Route path="/faq/" element={<FAQ />} />
+                    <Route path="/faq/traders" element={<FAQTraders />} />
+                    <Route path="/faq/traders/" element={<FAQTraders />} />
                     <Route path="/thank-you/" element={<ThankYou />} />
                     <Route path="/payment-received/" element={<PaymentReceived />} />
                     <Route path="/payment-fallback/" element={<PaymentFallback />} />
