@@ -353,16 +353,16 @@ const FAQTraders: React.FC = () => {
                     <button
                       key={p.id}
                       onClick={() => scrollTo(p.id)}
-                      className={`w-full text-left flex items-start gap-3 px-3 py-3 rounded-lg transition-colors border-l-4 ${
+                      className={`group w-full text-left flex items-start gap-3 px-3 py-3 rounded-lg transition-all duration-200 border-l-4 ${
                         active
-                          ? 'border-orange-500 bg-orange-50 text-slate-900'
-                          : 'border-transparent hover:bg-slate-50 text-slate-700'
+                          ? 'border-orange-500 bg-orange-50 text-slate-900 shadow-sm'
+                          : 'border-transparent text-slate-700 hover:border-orange-400 hover:bg-orange-50/70 hover:text-slate-900 hover:translate-x-0.5'
                       }`}
                     >
-                      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${active ? 'text-orange-600' : 'text-slate-500'}`} />
+                      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 transition-colors ${active ? 'text-orange-600' : 'text-slate-500 group-hover:text-orange-600'}`} />
                       <span>
                         <span className="block font-semibold text-sm leading-tight">{p.title}</span>
-                        <span className="block text-xs text-slate-500 mt-0.5">{p.short}</span>
+                        <span className={`block text-xs mt-0.5 transition-colors ${active ? 'text-slate-600' : 'text-slate-500 group-hover:text-slate-700'}`}>{p.short}</span>
                       </span>
                     </button>
                   );
