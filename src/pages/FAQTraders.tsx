@@ -471,7 +471,7 @@ const FAQTraders: React.FC = () => {
         </div>
       </section>
 
-      <WebsiteFooter />
+      
     </div>
   );
 };
