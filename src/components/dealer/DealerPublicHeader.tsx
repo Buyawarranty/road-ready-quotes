@@ -99,13 +99,14 @@ export const DealerPublicHeader: React.FC = () => {
               Start Today
             </Link>
 
-            {/* Login */}
+            {/* Motor Trade Login - high contrast B2B CTA */}
             <Link
               to="/dealer-portal/login"
-              className="inline-flex items-center gap-1 px-3 xl:px-4 py-2 text-gray-600 hover:text-gray-900 text-sm xl:text-base font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 xl:px-4 py-2 bg-slate-900 text-white text-sm xl:text-base font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap"
+              aria-label="Motor Trade Login for dealer partners"
             >
               <LogIn className="h-4 w-4" />
-              Login
+              Motor Trade Login
             </Link>
           </nav>
 
@@ -160,9 +161,9 @@ export const DealerPublicHeader: React.FC = () => {
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-1.5 py-2 text-sm font-medium text-gray-700"
+                className="inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors"
               >
-                <LogIn className="h-4 w-4" /> Login
+                <LogIn className="h-4 w-4" /> Motor Trade Login
               </Link>
             </div>
           </div>
