@@ -271,17 +271,17 @@ const FAQTraders: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-200 text-xs font-semibold tracking-wide uppercase mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-white text-xs font-semibold tracking-wide uppercase mb-4">
                 For Motor Trade Dealers
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-white">
                 Dealer FAQs &amp; Trade Partner Resources
               </h1>
-              <p className="mt-4 text-base sm:text-lg text-slate-200 max-w-2xl">
+              <p className="mt-4 text-base sm:text-lg text-white max-w-2xl">
                 Everything UK motor trade dealers need to know about onboarding, portal integration, quick claims, fast
                 payouts and commercial cover with Panda Protect.
               </p>
-              <div className="mt-3 text-sm text-slate-300">
+              <div className="mt-3 text-sm text-white">
                 Looking for retail customer FAQs?{' '}
                 <Link to="/faq/" className="underline font-semibold text-white hover:text-orange-200">
                   Switch to consumer FAQs →
