@@ -459,12 +459,12 @@ const App = () => {
                     <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
                     <Route path="/dealer-portal/analytics" element={<DealerAnalytics />} />
                     {/* Dealer multi-step quote journey */}
-                    <Route path="/dealer-portal/quote/vehicle" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/customer" element={<DealerJourneyProvider><DealerJourneyStep2 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/pricing" element={<DealerJourneyProvider><DealerJourneyStep3 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/confirmation" element={<DealerJourneyProvider><DealerJourneyStep5 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/claim-handling" element={<DealerJourneyProvider><DealerClaimHandling /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/quote/vehicle" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/customer" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/pricing" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/checkout" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/confirmation" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/claim-handling" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/applications" element={<FinanceApplicationsList />} />
                     <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
                     <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
