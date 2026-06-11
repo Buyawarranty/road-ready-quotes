@@ -38,8 +38,7 @@ const DealerHome = () => {
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleaned = reg.trim().toUpperCase().replace(/\s+/g, ' ');
-    if (!cleaned) return;
-    navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
+    navigate(`/dealer-portal/coming-soon${cleaned ? `?reg=${encodeURIComponent(cleaned)}` : ''}`);
   };
 
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
