@@ -72,18 +72,11 @@ const DealerWidget: React.FC = () => {
     }
     setError(null);
 
-    // Mirror DealerRegHero behaviour exactly.
-    if (!dealer) {
-      try { localStorage.setItem(PENDING_REG_KEY, cleaned); } catch {}
-      const qs = new URLSearchParams({ redirect: '/dealer-portal', reg: cleaned });
-      openTop(`/dealer-portal/login?${qs.toString()}`);
-    } else {
-      try { localStorage.removeItem(PENDING_REG_KEY); } catch {}
-      openTop(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
-    }
+    try { localStorage.setItem(PENDING_REG_KEY, cleaned); } catch {}
+    openTop(`/dealer-portal/coming-soon?reg=${encodeURIComponent(cleaned)}`);
   };
 
-  const ctaLabel = loading ? 'Loading…' : dealer ? 'Get Quote' : 'Sign in / Sign up to continue';
+  const ctaLabel = loading ? 'Loading…' : 'Register interest';
 
   return (
     <div

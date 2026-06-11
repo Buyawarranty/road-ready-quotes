@@ -39,27 +39,11 @@ export const DealerRegHero: React.FC = () => {
     }
     setError(null);
     const cleaned = reg.trim().toUpperCase();
-
-    if (!dealer) {
-      // Logged out → preserve and redirect to login
-      localStorage.setItem(PENDING_REG_KEY, cleaned);
-      const params = new URLSearchParams({
-        redirect: '/dealer-portal',
-        reg: cleaned,
-      });
-      navigate(`/dealer-portal/login?${params.toString()}`);
-    } else {
-      // Logged in → start the multi-step dealer journey
-      localStorage.removeItem(PENDING_REG_KEY);
-      navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
-    }
+    localStorage.setItem(PENDING_REG_KEY, cleaned);
+    navigate(`/dealer-portal/coming-soon?reg=${encodeURIComponent(cleaned)}`);
   };
 
-  const ctaLabel = loading
-    ? 'Loading...'
-    : dealer
-    ? 'Get Quote'
-    : 'Sign in / Sign up to continue';
+  const ctaLabel = loading ? 'Loading...' : 'Register interest';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 w-full max-w-md mx-auto lg:mx-0" noValidate>
