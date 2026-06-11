@@ -56,7 +56,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) navigate('/dealer-portal/login');
+    if (!loading && !user) navigate('/dealer-portal/coming-soon', { replace: true });
   }, [loading, user, navigate]);
 
   if (loading) {
