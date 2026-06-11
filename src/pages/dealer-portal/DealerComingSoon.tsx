@@ -41,6 +41,19 @@ const DealerComingSoon = () => {
         status: 'new',
       } as any);
       if (error) throw error;
+
+      // Notify the team (non-blocking — UX shouldn't fail if email errors)
+      supabase.functions.invoke('notify-dealer-waitlist', {
+        body: {
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          email: form.email.trim(),
+          phone: form.phone.trim(),
+          dealership: form.dealership.trim(),
+          reg,
+        },
+      }).catch((e) => console.error('notify-dealer-waitlist failed', e));
+
       setSubmitted(true);
       toast.success("You're on the list! We'll be in touch.");
     } catch (err: any) {
