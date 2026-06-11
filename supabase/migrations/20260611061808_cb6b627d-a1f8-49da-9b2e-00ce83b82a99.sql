@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can submit dealer waitlist interest" ON public.dealer_leads FOR INSERT TO anon, authenticated WITH CHECK (source = 'coming_soon_waitlist'); GRANT INSERT ON public.dealer_leads TO anon;
