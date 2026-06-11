@@ -465,6 +465,7 @@ const App = () => {
                     <Route path="/dealer-portal/quote/checkout" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/quote/confirmation" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/quote/claim-handling" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quote/*" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/applications" element={<FinanceApplicationsList />} />
                     <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
                     <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
