@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, Check, ShieldCheck, Wrench, PoundSterling, Headphones, Award, Users } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import DealerFAQSection from '@/components/dealer/DealerFAQSection';
+import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 
 const FullWarrantyService = () => {
   const pageTitle = 'Full Warranty Cover for Dealers | We Pay the Repairs';
