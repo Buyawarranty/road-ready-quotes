@@ -353,11 +353,11 @@ const FAQ = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-brand-dark-text mb-4">
-                Frequently Asked <span className="text-primary">Questions</span>
+                Dealer <span className="text-primary">FAQs</span>
               </h1>
               <p className="text-lg text-brand-dark-text max-w-3xl mx-auto mb-8">
-                Find answers to the most common questions about our warranty services. 
-                Can't find what you're looking for? We're here to help.
+                Answers for UK motor trade dealers — partner programme, dealer portal, claims, Fast Payouts and support.
+                Can't find what you're looking for? Our UK team is here to help.
               </p>
               
               {/* Search Bar with Panda Image */}
