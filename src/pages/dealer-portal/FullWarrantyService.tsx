@@ -101,6 +101,9 @@ const FullWarrantyService = () => {
         </div>
       </section>
 
+      <DealerFAQSection bgClassName="bg-white" />
+      <DealerFAQSchema />
+
       {/* CTA */}
       <section className="py-16 bg-[#0f1729]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">

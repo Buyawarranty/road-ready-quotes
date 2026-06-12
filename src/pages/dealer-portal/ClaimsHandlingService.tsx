@@ -19,6 +19,8 @@ import {
   Users,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import DealerFAQSection from '@/components/dealer/DealerFAQSection';
+import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 
 const ClaimsHandlingService = () => {
   const pageTitle = 'Dealer Warranty Partner UK | Claims Handling for Car Dealers';
@@ -229,6 +231,9 @@ const ClaimsHandlingService = () => {
           </div>
         </div>
       </section>
+
+      <DealerFAQSection bgClassName="bg-gray-50" />
+      <DealerFAQSchema />
 
       {/* CTA */}
       <section className="py-16 bg-[#0f1729]">
