@@ -3,6 +3,8 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowRight, Check, Sparkles, Zap, TrendingUp, ShieldCheck, Clock, Gift } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import DealerFAQSection from '@/components/dealer/DealerFAQSection';
+import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -159,6 +161,12 @@ const DealerComingSoon = () => {
           </div>
         </div>
       </section>
+
+      <DealerFAQSection
+        bgClassName="bg-gray-50"
+        intro="Quick answers for UK motor trade dealers about our partner programme, portal, claims and support."
+      />
+      <DealerFAQSchema />
     </div>
   );
 };
