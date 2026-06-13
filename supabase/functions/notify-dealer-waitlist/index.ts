@@ -79,7 +79,9 @@ serve(async (req) => {
           ${row('Monthly Vehicle Sales', esc(monthly_vehicle_sales))}
           ${row('Current Warranty Provider', esc(current_warranty_provider))}
           ${row('Interested In', esc(interested_in))}
+          ${row('How They Heard About Us', esc(heard_about_us))}
           ${row('Additional Information', esc(additional_information))}
+
         </table>
 
         <div style="text-align:center;margin:28px 0 8px 0;">
