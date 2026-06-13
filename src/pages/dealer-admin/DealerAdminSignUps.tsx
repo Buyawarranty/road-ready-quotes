@@ -25,7 +25,9 @@ interface Signup {
   monthly_vehicle_sales: string | null;
   current_warranty_provider: string | null;
   interested_in: string | null;
+  heard_about_us: string | null;
   additional_information: string | null;
+
   status: Status;
   created_at: string;
   updated_at: string;
