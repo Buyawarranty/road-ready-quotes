@@ -215,6 +215,7 @@ import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
 // Dealer Admin (super_admin / admin)
 const DealerAdminLayout = lazy(() => import("./pages/dealer-admin/DealerAdminLayout"));
+const DealerAdminSignUps = lazy(() => import("./pages/dealer-admin/DealerAdminSignUps"));
 const DealerAdminOverview = lazy(() => import("./pages/dealer-admin/DealerAdminOverview"));
 const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSales"));
 const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
