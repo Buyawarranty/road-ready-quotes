@@ -29,8 +29,11 @@ const initialForm = {
   monthly_vehicle_sales: '',
   current_warranty_provider: '',
   interested_in: '',
+  heard_about_us: '',
+  heard_about_us_other: '',
   additional_information: '',
 };
+
 
 const DealerComingSoon = () => {
   const [form, setForm] = useState(initialForm);
