@@ -25,7 +25,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import pandaMechanicImage from '@/assets/panda-mechanic-car.png';
+import pandaMechanicImage from '@/assets/car-warranty-panda-vehicles.png';
 
 /**
  * Dealer home (/dealer-portal/) — trade-focused landing page.
