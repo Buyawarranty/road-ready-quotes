@@ -88,9 +88,19 @@ const DealerSignup = () => {
 
       <div className="flex-1 px-4 py-10 sm:py-14">
         {submitted ? (
-          <Card className="w-full max-w-xl mx-auto bg-white border-2 border-orange-200 shadow-xl">
+          <Card className="w-full max-w-xl mx-auto bg-white border-2 border-orange-200 shadow-xl animate-scale-in overflow-hidden">
             <CardContent className="p-8 sm:p-10 text-center">
-              <img src={pandaThumbsUp} alt="Panda Protect" className="w-32 h-auto mx-auto mb-4 drop-shadow-lg" />
+              {/* Animated success icon */}
+              <div className="relative w-24 h-24 mx-auto mb-5">
+                <span className="absolute inset-0 rounded-full bg-green-200 animate-ping opacity-60" />
+                <span className="absolute inset-2 rounded-full bg-green-300 animate-ping opacity-40" style={{ animationDelay: '0.3s' }} />
+                <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg">
+                  <CheckCircle2 className="h-14 w-14 text-white" strokeWidth={2.5} />
+                </div>
+              </div>
+
+              <img src={pandaThumbsUp} alt="Panda Protect" className="w-24 h-auto mx-auto mb-3 drop-shadow-lg animate-fade-in" />
+
               <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-bold tracking-wide mb-4">
                 <CheckCircle2 className="h-3.5 w-3.5" /> APPLICATION RECEIVED
               </div>
@@ -100,27 +110,52 @@ const DealerSignup = () => {
               <p className="text-gray-700 leading-relaxed mb-4">
                 Your dealer application has been received.
               </p>
-              <p className="text-gray-700 leading-relaxed mb-4">
+              <p className="text-gray-700 leading-relaxed mb-6">
                 Panda Protect hasn't officially launched yet, but we're getting everything ready behind the scenes. We're hoping to go live within the next couple of months, and as soon as we're ready, you'll be one of the first to know.
               </p>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                Our team will keep your details on file and email you as soon as dealer accounts are available.
-              </p>
+
+              {/* Benefits with green ticks */}
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-5 mb-4 text-left">
+                <p className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                  What you'll get as a launch dealer
+                </p>
+                <ul className="space-y-2.5">
+                  {[
+                    'Priority access the moment we go live',
+                    'Exclusive launch pricing for early partners',
+                    'Free onboarding & dedicated account manager',
+                    'Fast 24-hour claims turnaround',
+                    'Marketing assets to grow your warranty sales',
+                  ].map((b, i) => (
+                    <li
+                      key={b}
+                      className="flex items-start gap-2.5 text-sm text-gray-800 animate-fade-in"
+                      style={{ animationDelay: `${0.1 + i * 0.1}s`, animationFillMode: 'backwards' }}
+                    >
+                      <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+                      <span className="font-medium">{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <div className="bg-[#fff8ef] border border-orange-200 rounded-2xl p-5 mb-4 text-left">
                 <div className="flex items-start gap-3">
                   <Clock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-bold text-gray-900 text-sm">Coming soon</p>
-                    <p className="text-sm text-gray-700">We'll be in touch as soon as Panda Protect launches.</p>
+                    <p className="text-sm text-gray-700">We'll email you the moment dealer accounts go live.</p>
                   </div>
                 </div>
               </div>
+
               <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left">
                 <div className="flex items-start gap-3">
                   <Mail className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                   <div>
                     <p className="font-bold text-gray-900 text-sm">Need to contact us?</p>
-                    <a href="mailto:hello@andyproject.co.dk" className="text-base font-black text-orange-600 hover:text-orange-700 tracking-tight">hello@andyproject.co.dk</a>
+                    <a href="mailto:hello@pandaprotect.co.uk" className="text-base font-black text-orange-600 hover:text-orange-700 tracking-tight">hello@pandaprotect.co.uk</a>
                   </div>
                 </div>
               </div>
