@@ -60,10 +60,6 @@ const DealerComingSoon = () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const heardAboutCombined =
-        form.heard_about_us === 'Other' && form.heard_about_us_other.trim()
-          ? `Other: ${form.heard_about_us_other.trim()}`
-          : form.heard_about_us || null;
       const payload = {
         dealership_name: form.dealership_name.trim() || null,
         contact_name: form.contact_name.trim() || null,
@@ -72,9 +68,10 @@ const DealerComingSoon = () => {
         monthly_vehicle_sales: form.monthly_vehicle_sales || null,
         current_warranty_provider: form.current_warranty_provider || null,
         interested_in: form.interested_in || null,
-        heard_about_us: heardAboutCombined,
+        heard_about_us: form.heard_about_us.trim() || null,
         additional_information: form.additional_information.trim() || null,
       };
+
 
       const { data, error } = await supabase
         .from('trade_warranty_signups')
