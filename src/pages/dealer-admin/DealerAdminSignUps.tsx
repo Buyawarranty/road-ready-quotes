@@ -25,7 +25,9 @@ interface Signup {
   monthly_vehicle_sales: string | null;
   current_warranty_provider: string | null;
   interested_in: string | null;
+  heard_about_us: string | null;
   additional_information: string | null;
+
   status: Status;
   created_at: string;
   updated_at: string;
@@ -82,8 +84,10 @@ const DealerAdminSignUps: React.FC = () => {
       if (!q) return true;
       return [
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
-        r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in, r.additional_information,
+        r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in,
+        r.heard_about_us, r.additional_information,
       ].some((v) => v?.toLowerCase().includes(q));
+
     });
   }, [rows, search, statusFilter]);
 
@@ -112,16 +116,17 @@ const DealerAdminSignUps: React.FC = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
       'Monthly Vehicle Sales', 'Current Warranty Provider', 'Interested In',
-      'Additional Information', 'Status',
+      'Heard About Us', 'Additional Information', 'Status',
     ];
     const lines = filtered.map((r) =>
       [
         format(new Date(r.created_at), 'yyyy-MM-dd HH:mm'),
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
         r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in,
-        r.additional_information, r.status,
+        r.heard_about_us, r.additional_information, r.status,
       ].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')
     );
+
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -302,6 +307,8 @@ const DealerAdminSignUps: React.FC = () => {
                   <DetailRow label="Monthly Vehicle Sales" value={selected.monthly_vehicle_sales} icon={CarIcon} />
                   <DetailRow label="Current Warranty Provider" value={selected.current_warranty_provider} />
                   <DetailRow label="Interested In" value={selected.interested_in?.replace('-', ' ')} />
+                  <DetailRow label="How They Heard About Us" value={selected.heard_about_us} />
+
                 </DetailGrid>
 
                 <div>

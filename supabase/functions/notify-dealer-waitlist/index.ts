@@ -15,8 +15,10 @@ interface Payload {
   monthly_vehicle_sales?: string | null;
   current_warranty_provider?: string | null;
   interested_in?: string | null;
+  heard_about_us?: string | null;
   additional_information?: string | null;
 }
+
 
 const ADMIN_URL_BASE = 'https://pandaprotect.co.uk/dealer-admin/signups';
 
@@ -40,8 +42,9 @@ serve(async (req) => {
       dealership_name, contact_name,
       email_address, phone_number,
       monthly_vehicle_sales, current_warranty_provider,
-      interested_in, additional_information,
+      interested_in, heard_about_us, additional_information,
     } = body || ({} as Payload);
+
 
     if (!email_address || !phone_number) {
       return new Response(JSON.stringify({ error: 'email_address and phone_number required' }), {
@@ -76,7 +79,9 @@ serve(async (req) => {
           ${row('Monthly Vehicle Sales', esc(monthly_vehicle_sales))}
           ${row('Current Warranty Provider', esc(current_warranty_provider))}
           ${row('Interested In', esc(interested_in))}
+          ${row('How They Heard About Us', esc(heard_about_us))}
           ${row('Additional Information', esc(additional_information))}
+
         </table>
 
         <div style="text-align:center;margin:28px 0 8px 0;">
@@ -101,11 +106,12 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Panda Protect <support@buyawarranty.co.uk>',
-        to: ['hello@pandaprotect.co.uk'],
+        to: ['hello@pandaprotect.co.uk', 'info@pandaprotect.co.uk'],
         reply_to: email_address,
         subject,
         html,
       }),
+
     });
 
     if (!res.ok) {

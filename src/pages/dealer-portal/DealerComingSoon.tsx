@@ -29,8 +29,11 @@ const initialForm = {
   monthly_vehicle_sales: '',
   current_warranty_provider: '',
   interested_in: '',
+  heard_about_us: '',
+  heard_about_us_other: '',
   additional_information: '',
 };
+
 
 const DealerComingSoon = () => {
   const [form, setForm] = useState(initialForm);
@@ -57,6 +60,10 @@ const DealerComingSoon = () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
+      const heardAboutCombined =
+        form.heard_about_us === 'Other' && form.heard_about_us_other.trim()
+          ? `Other: ${form.heard_about_us_other.trim()}`
+          : form.heard_about_us || null;
       const payload = {
         dealership_name: form.dealership_name.trim() || null,
         contact_name: form.contact_name.trim() || null,
@@ -65,8 +72,10 @@ const DealerComingSoon = () => {
         monthly_vehicle_sales: form.monthly_vehicle_sales || null,
         current_warranty_provider: form.current_warranty_provider || null,
         interested_in: form.interested_in || null,
+        heard_about_us: heardAboutCombined,
         additional_information: form.additional_information.trim() || null,
       };
+
       const { data, error } = await supabase
         .from('trade_warranty_signups')
         .insert(payload as any)
@@ -223,6 +232,30 @@ const DealerComingSoon = () => {
                         </select>
                       </Field>
                     </div>
+
+                    <Field label="How did you hear about us?">
+                      <select
+                        value={form.heard_about_us}
+                        onChange={(e) => set('heard_about_us', e.target.value)}
+                        className={inputCls}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Website">Website</option>
+                        <option value="AutoTrader">AutoTrader</option>
+                        <option value="Google Search">Google Search</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Word of Mouth">Word of mouth / Referral</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {form.heard_about_us === 'Other' && (
+                        <input
+                          value={form.heard_about_us_other}
+                          onChange={(e) => set('heard_about_us_other', e.target.value)}
+                          placeholder="Please specify"
+                          className={`${inputCls} mt-2`}
+                        />
+                      )}
+                    </Field>
 
 
                     <Field label="Anything else we should know?" hint="(Optional)">
