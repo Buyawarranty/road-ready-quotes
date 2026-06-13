@@ -97,24 +97,30 @@ const DealerSignup = () => {
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-3">
                 Thanks, {form.name.split(' ')[0] || 'partner'}! 🎉
               </h2>
-              <p className="text-gray-700 leading-relaxed mb-6">
-                Your dealer application is in. Our team will review and approve your account within{' '}
-                <strong className="text-gray-900">1–2 working days</strong>. We'll email you as soon as you're set up.
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Your dealer application has been received.
               </p>
-              <div className="bg-[#fff8ef] border border-orange-200 rounded-2xl p-5 mb-6 text-left">
-                <div className="flex items-start gap-3 mb-3">
+              <p className="text-gray-700 leading-relaxed mb-4">
+                Panda Protect hasn't officially launched yet, but we're getting everything ready behind the scenes. We're hoping to go live within the next couple of months, and as soon as we're ready, you'll be one of the first to know.
+              </p>
+              <p className="text-gray-700 leading-relaxed mb-6">
+                Our team will keep your details on file and email you as soon as dealer accounts are available.
+              </p>
+              <div className="bg-[#fff8ef] border border-orange-200 rounded-2xl p-5 mb-4 text-left">
+                <div className="flex items-start gap-3">
                   <Clock className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-bold text-gray-900 text-sm">Approval window</p>
-                    <p className="text-sm text-gray-700">1–2 working days</p>
+                    <p className="font-bold text-gray-900 text-sm">Coming soon</p>
+                    <p className="text-sm text-gray-700">We'll be in touch as soon as Panda Protect launches.</p>
                   </div>
                 </div>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 text-left">
                 <div className="flex items-start gap-3">
-                  <Phone className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
+                  <Mail className="h-5 w-5 text-orange-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-bold text-gray-900 text-sm">Need it faster? Give us a call</p>
-                    <a href="tel:03302295045" className="text-lg font-black text-orange-600 hover:text-orange-700 tracking-tight">0330 229 5045</a>
-                    <p className="text-xs text-gray-600 mt-0.5">Mon–Fri, 9am–5:30pm</p>
+                    <p className="font-bold text-gray-900 text-sm">Need to contact us?</p>
+                    <a href="mailto:hello@andyproject.co.dk" className="text-base font-black text-orange-600 hover:text-orange-700 tracking-tight">hello@andyproject.co.dk</a>
                   </div>
                 </div>
               </div>
