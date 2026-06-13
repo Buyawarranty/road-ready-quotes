@@ -190,8 +190,8 @@ const Terms = () => {
             <div className="text-center">
               <Phone className="w-8 h-8 text-brand-orange mx-auto mb-4" />
               <h4 className="text-xl font-bold text-gray-900 mb-4">Customer Service</h4>
-              <a href="tel:03302295040" className="text-2xl font-bold text-brand-orange hover:text-orange-600 transition-colors">
-                0330 229 5040
+              <a href="tel:03302295045" className="text-2xl font-bold text-brand-orange hover:text-orange-600 transition-colors">
+                0330 229 5045
               </a>
             </div>
             <div className="text-center">

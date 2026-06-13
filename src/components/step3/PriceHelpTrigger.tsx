@@ -43,11 +43,11 @@ const PriceHelpTrigger: React.FC<PriceHelpTriggerProps> = ({ onClick, className 
           <span className="text-gray-700 whitespace-nowrap">
             or call{' '}
             <a
-              href="tel:03302295040"
+              href="tel:03302295045"
               className="font-bold text-gray-900 hover:text-brand-orange underline underline-offset-2 decoration-1 transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
-              0330 229 5040
+              0330 229 5045
             </a>
           </span>
         </div>

@@ -57,7 +57,7 @@ const HomepageFAQ = () => {
     {
       id: 'modified-vehicles',
       question: 'What about modified vehicles?',
-      answer: 'Most body modifications are accepted. Call us on 0330 229 5040 or request a call back using the Call us button in the top navigation bar.'
+      answer: 'Most body modifications are accepted. Call us on 0330 229 5045 or request a call back using the Call us button in the top navigation bar.'
     },
     {
       id: 'claim-limit-choice',

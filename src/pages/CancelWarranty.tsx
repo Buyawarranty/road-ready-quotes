@@ -473,7 +473,7 @@ const CancelWarranty = () => {
             </div>
 
             <p className="text-[#333] text-center mb-5">
-              Message us on <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="text-[#009A44] font-semibold hover:underline">WhatsApp</a> or call <a href="tel:03302295040" className="text-[#009A44] font-semibold hover:underline">0330 229 5040</a> if you would like to continue your cover.
+              Message us on <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="text-[#009A44] font-semibold hover:underline">WhatsApp</a> or call <a href="tel:03302295045" className="text-[#009A44] font-semibold hover:underline">0330 229 5045</a> if you would like to continue your cover.
             </p>
 
             {!showStayForm ? (

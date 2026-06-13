@@ -612,11 +612,11 @@ const QuoteDeliveryStep: React.FC<QuoteDeliveryStepProps> = ({ vehicleData, onNe
           </p>
           <div className="flex items-center justify-center gap-6 sm:gap-8">
             <a 
-              href="tel:03302295040"
+              href="tel:03302295045"
               className="flex items-center gap-2 text-gray-700 text-sm font-medium hover:text-brand-orange transition-colors"
             >
               <Phone className="w-5 h-5 text-brand-orange" />
-              <span>0330 229 5040</span>
+              <span>0330 229 5045</span>
             </a>
             <button 
               onClick={() => setShowCallbackModal(true)}

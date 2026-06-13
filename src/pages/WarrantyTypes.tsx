@@ -200,10 +200,10 @@ const WarrantyTypes: React.FC = () => {
                   <Button 
                     size="lg"
                     variant="outline"
-                    onClick={() => window.location.href = 'tel:03302295040'}
+                    onClick={() => window.location.href = 'tel:03302295045'}
                     className="border-primary text-primary hover:bg-primary hover:text-white font-semibold px-8 py-6 text-lg"
                   >
-                    <Phone className="mr-2 h-5 w-5" /> Call 0330 229 5040
+                    <Phone className="mr-2 h-5 w-5" /> Call 0330 229 5045
                   </Button>
                 </div>
               </div>
@@ -982,11 +982,11 @@ const WarrantyTypes: React.FC = () => {
                 Get your free quote <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <a 
-                href="tel:03302295040"
+                href="tel:03302295045"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 text-lg rounded-lg transition-all border border-white/20"
               >
                 <Phone className="h-5 w-5" />
-                0330 229 5040
+                0330 229 5045
               </a>
             </div>
           </div>

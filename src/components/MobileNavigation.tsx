@@ -105,14 +105,14 @@ const MobileNavigation: React.FC = () => {
                   Mon-Fri 9am to 5:30pm
                 </div>
                 <a 
-                  href="tel:03302295040" 
+                  href="tel:03302295045" 
                   className="flex items-center p-3 rounded-lg hover:bg-gray-50 mb-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Phone className="h-5 w-5 mr-3 text-orange-500" />
                   <div>
                     <div className="font-semibold text-sm">Get a Quote</div>
-                    <div className="text-orange-500 font-semibold">0330 229 5040</div>
+                    <div className="text-orange-500 font-semibold">0330 229 5045</div>
                   </div>
                 </a>
                 <a 

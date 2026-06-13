@@ -139,11 +139,11 @@ const LandRoverWarranty: React.FC = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    onClick={() => window.location.href = 'tel:03302295040'}
+                    onClick={() => window.location.href = 'tel:03302295045'}
                     className="text-lg px-8 py-6"
                   >
                     <Phone className="mr-2 h-5 w-5" />
-                    Call: 0330 229 5040
+                    Call: 0330 229 5045
                   </Button>
                 </div>
               </div>
@@ -561,11 +561,11 @@ const LandRoverWarranty: React.FC = () => {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => window.location.href = 'tel:03302295040'}
+                onClick={() => window.location.href = 'tel:03302295045'}
                 className="text-lg px-8 py-6 bg-white/10 hover:bg-white/20 border-white/30 text-white"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                0330 229 5040
+                0330 229 5045
               </Button>
             </div>
             <p className="text-sm mt-4 opacity-80">Takes less than 60 seconds. No phone calls, no pressure — just instant pricing.</p>

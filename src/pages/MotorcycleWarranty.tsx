@@ -517,9 +517,9 @@ const MotorcycleWarranty = () => {
                 Need help? Our team of warranty experts are here to help.
               </h2>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-lg">
-                <a href="tel:03302295040" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-white">
+                <a href="tel:03302295045" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-white">
                   <Phone className="w-5 h-5 text-white" />
-                  <span className="font-semibold text-white">Call us: 0330 229 5040</span>
+                  <span className="font-semibold text-white">Call us: 0330 229 5045</span>
                 </a>
                 <span className="hidden sm:inline text-white">|</span>
                 <a href="mailto:support@pandaprotect.co.uk" className="flex items-center gap-2 hover:opacity-80 transition-opacity text-white">
@@ -563,7 +563,7 @@ const MotorcycleWarranty = () => {
               <img src={whatsappIconNew} alt="WhatsApp" className="w-12 h-12" />
             </a>
             <a
-              href="tel:03302295040"
+              href="tel:03302295045"
               className="fixed bottom-36 right-4 z-40 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300"
             >
               <Phone className="w-6 h-6" />

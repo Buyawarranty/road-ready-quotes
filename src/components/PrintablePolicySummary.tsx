@@ -312,7 +312,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
             <div style={{ marginTop: '24px', paddingTop: '14px', borderTop: '2px solid #e2e8f0', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '16px', textAlign: 'center' }}>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sales Enquiries</div>
-                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>0330 229 5040</div>
+                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>0330 229 5045</div>
               </div>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Claims Hotline</div>

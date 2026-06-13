@@ -13,10 +13,10 @@ const TrustCallbackPanel: React.FC = () => {
         <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
           <span className="text-gray-600">Speak to an expert:</span>
           <a
-            href="tel:03302295040"
+            href="tel:03302295045"
             className="font-semibold text-gray-900 hover:underline"
           >
-            0330 229 5040
+            0330 229 5045
           </a>
           <span className="text-gray-400">or</span>
           <button

@@ -16,11 +16,11 @@ const NewFooter = () => {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <a 
-              href="tel:03302295040" 
+              href="tel:03302295045" 
               className="flex items-center gap-2 text-white hover:text-white/80 transition-colors font-medium"
             >
               <Phone size={18} className="text-white" />
-              <span className="text-white">Call us: 0330 229 5040</span>
+              <span className="text-white">Call us: 0330 229 5045</span>
             </a>
             
             <a 

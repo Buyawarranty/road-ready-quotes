@@ -25,11 +25,11 @@ const CoverFinalCTA: React.FC = () => {
         </Link>
 
         <a
-          href="tel:03302295040"
+          href="tel:03302295045"
           className="text-white/80 hover:text-white text-sm font-medium inline-flex items-center gap-1.5 mb-8"
         >
           <Phone className="w-4 h-4" />
-          0330 229 5040
+          0330 229 5045
         </a>
 
         <div className="flex items-center justify-center gap-4 text-xs text-white/60">

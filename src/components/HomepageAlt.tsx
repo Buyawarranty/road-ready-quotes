@@ -274,8 +274,8 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
           <p className="text-[15px] text-gray-600 mt-1">
             <Phone className="inline w-4 h-4 mr-1 text-gray-500 -mt-0.5" />
             Speak to an expert:{' '}
-            <a href="tel:03302295040" className="font-semibold text-gray-900 hover:underline">
-              0330 229 5040
+            <a href="tel:03302295045" className="font-semibold text-gray-900 hover:underline">
+              0330 229 5045
             </a>
             <span className="mx-2 text-gray-400">or</span>
             <button
@@ -442,11 +442,11 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <a 
-              href="tel:03302295040" 
+              href="tel:03302295045" 
               className="flex items-center gap-2 text-white hover:text-white/80 transition-colors font-medium text-lg"
             >
               <Phone size={20} />
-              Call us: 0330 229 5040
+              Call us: 0330 229 5045
             </a>
             
             <a 

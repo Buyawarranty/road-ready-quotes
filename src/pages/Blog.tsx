@@ -115,14 +115,14 @@ const Blog = () => {
                   >
                     Register Your Dealership
                   </Button>
-                  <a href="tel:03302295040">
+                  <a href="tel:03302295045">
                     <Button
                       variant="outline"
                       size="lg"
                       className="w-full sm:w-auto border-2 border-gray-300 text-gray-900 hover:bg-gray-50 px-8 py-6 text-lg font-semibold"
                     >
                       <Phone className="w-5 h-5 mr-2" />
-                      0330 229 5040
+                      0330 229 5045
                     </Button>
                   </a>
                 </div>
@@ -267,7 +267,7 @@ const Blog = () => {
                     <span className="text-lg font-medium">or call</span>
                     <div className="h-px w-8 bg-white/50" />
                   </div>
-                  <a href="tel:03302295040" className="text-2xl font-bold hover:underline">0330 229 5040</a>
+                  <a href="tel:03302295045" className="text-2xl font-bold hover:underline">0330 229 5045</a>
                 </div>
               </CardContent>
             </Card>
@@ -346,7 +346,7 @@ const Blog = () => {
                         Register Your Dealership
                       </Button>
                       <div className="mt-4 pt-4 border-t border-white/20">
-                        <a href="tel:03302295040" className="text-lg font-bold hover:underline block">0330 229 5040</a>
+                        <a href="tel:03302295045" className="text-lg font-bold hover:underline block">0330 229 5045</a>
                         <p className="text-xs opacity-75 mt-1">Mon-Fri 9am-5:30pm</p>
                       </div>
                     </CardContent>
@@ -470,7 +470,7 @@ const Blog = () => {
                           </Button>
                           <div className="text-center">
                             <p className="text-gray-600 mb-2">Or speak to our trade team</p>
-                            <a href="tel:03302295040" className="text-3xl font-bold text-primary hover:text-primary/90">0330 229 5040</a>
+                            <a href="tel:03302295045" className="text-3xl font-bold text-primary hover:text-primary/90">0330 229 5045</a>
                             <p className="text-sm text-gray-500 mt-2">Mon-Fri 9am-5:30pm</p>
                           </div>
                         </CardContent>

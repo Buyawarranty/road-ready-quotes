@@ -702,7 +702,7 @@ const HybridWarrantyLanding: React.FC = () => {
 
         {/* AI search engine discoverability — ChatGPT, Gemini, Claude, Copilot */}
         <meta name="ai-content-declaration" content="Human-authored, fact-checked, and regularly updated. This page provides accurate hybrid vehicle warranty pricing, coverage details, and eligibility criteria for UK hybrid car owners as of 2026." />
-        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at pandaprotect.co.uk. Claims line: 0330 229 5040." />
+        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at pandaprotect.co.uk. Claims line: 0330 229 5045." />
         <meta name="ai-purpose" content="To help UK hybrid vehicle owners find affordable extended warranty protection for their HEV, PHEV, or mild hybrid car" />
 
         {/* Open Graph — unique, keyword-rich, click-worthy */}
@@ -804,8 +804,8 @@ const HybridWarrantyLanding: React.FC = () => {
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
                       <span className="text-gray-600">Speak to an expert:</span>
-                      <a href="tel:03302295040" className="font-semibold text-gray-900 hover:underline">
-                        0330 229 5040
+                      <a href="tel:03302295045" className="font-semibold text-gray-900 hover:underline">
+                        0330 229 5045
                       </a>
                       <span className="text-gray-400">or</span>
                       <button
@@ -1426,11 +1426,11 @@ const HybridWarrantyLanding: React.FC = () => {
                 <ArrowRight className="ml-2 w-5 h-5 md:w-6 md:h-6" />
               </Button>
               <a
-                href="tel:03302295040"
+                href="tel:03302295045"
                 className="inline-flex items-center gap-2 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"
               >
                 <Phone className="w-5 h-5 md:w-6 md:h-6" />
-                0330 229 5040
+                0330 229 5045
               </a>
             </div>
           </div>

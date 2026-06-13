@@ -128,11 +128,11 @@ const VanWarrantyNew = () => {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    onClick={() => window.location.href = 'tel:03302295040'}
+                    onClick={() => window.location.href = 'tel:03302295045'}
                     className="text-lg px-8 py-6"
                   >
                     <Phone className="mr-2 h-5 w-5" />
-                    Call: 0330 229 5040
+                    Call: 0330 229 5045
                   </Button>
                 </div>
               </div>
@@ -583,11 +583,11 @@ const VanWarrantyNew = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => window.location.href = 'tel:03302295040'}
+                onClick={() => window.location.href = 'tel:03302295045'}
                 className="text-lg px-8 py-6 bg-white/10 hover:bg-white/20 border-white/30 text-white"
               >
                 <Phone className="mr-2 h-5 w-5" />
-                0330 229 5040
+                0330 229 5045
               </Button>
             </div>
           </div>

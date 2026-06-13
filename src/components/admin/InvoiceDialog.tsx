@@ -45,7 +45,7 @@ const COMPANY_INFO = {
   name: 'Panda Protect',
   website: 'www.pandaprotect.co.uk',
   email: 'support@pandaprotect.co.uk',
-  phone: '0330 229 5040',
+  phone: '0330 229 5045',
   address: ['Panda Protect', 'Online', 'United Kingdom'],
   logoUrl: 'https://pandaprotect.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png'
 };

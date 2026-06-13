@@ -407,10 +407,10 @@ const CarExtendedWarranty: React.FC = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                onClick={() => window.location.href = 'tel:03302295040'}
+                onClick={() => window.location.href = 'tel:03302295045'}
                 className="border-primary text-primary hover:bg-primary hover:text-white text-base sm:text-lg w-full sm:w-auto"
               >
-                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Call 0330 229 5040
+                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Call 0330 229 5045
               </Button>
             </div>
 
@@ -1304,10 +1304,10 @@ const CarExtendedWarranty: React.FC = () => {
               </Button>
               <Button 
                 size="lg"
-                onClick={() => window.location.href = 'tel:03302295040'}
+                onClick={() => window.location.href = 'tel:03302295045'}
                 className="bg-black text-white hover:bg-black/90"
               >
-                <Phone className="mr-2 h-5 w-5" /> Call 0330 229 5040
+                <Phone className="mr-2 h-5 w-5" /> Call 0330 229 5045
               </Button>
             </div>
 
@@ -1337,7 +1337,7 @@ const CarExtendedWarranty: React.FC = () => {
             <MessageCircle className="h-10 w-10" />
           </a>
           <a 
-            href="tel:03302295040"
+            href="tel:03302295045"
             className="bg-[#1e40af] text-white p-4 rounded-full shadow-lg hover:bg-[#1e40af]/90 transition-all hover:scale-110"
           >
             <Phone className="h-6 w-6" />
@@ -1358,7 +1358,7 @@ const CarExtendedWarranty: React.FC = () => {
               <MessageCircle className="mr-2 h-5 w-5" /> WhatsApp
             </Button>
           </a>
-          <a href="tel:03302295040" className="flex-1">
+          <a href="tel:03302295045" className="flex-1">
             <Button className="w-full bg-[#1e40af] text-white hover:bg-[#1e40af]/90">
               <Phone className="mr-2 h-5 w-5" /> Call Us
             </Button>
