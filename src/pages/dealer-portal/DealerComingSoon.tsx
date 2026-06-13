@@ -233,29 +233,23 @@ const DealerComingSoon = () => {
                       </Field>
                     </div>
 
-                    <Field label="How did you hear about us?">
-                      <select
+                    <Field
+                      label="Where do you sell vehicles?"
+                      required
+                      hint="(Link to verify your business)"
+                    >
+                      <input
+                        type="url"
                         value={form.heard_about_us}
                         onChange={(e) => set('heard_about_us', e.target.value)}
+                        placeholder="e.g. https://www.autotrader.co.uk/dealers/... or your website URL"
                         className={inputCls}
-                      >
-                        <option value="">Select an option</option>
-                        <option value="Website">Website</option>
-                        <option value="AutoTrader">AutoTrader</option>
-                        <option value="Google Search">Google Search</option>
-                        <option value="Social Media">Social Media</option>
-                        <option value="Word of Mouth">Word of mouth / Referral</option>
-                        <option value="Other">Other</option>
-                      </select>
-                      {form.heard_about_us === 'Other' && (
-                        <input
-                          value={form.heard_about_us_other}
-                          onChange={(e) => set('heard_about_us_other', e.target.value)}
-                          placeholder="Please specify"
-                          className={`${inputCls} mt-2`}
-                        />
-                      )}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Paste your dealership website, AutoTrader / Motors.co.uk / eBay Motors listing page, or social shop URL.
+                      </p>
                     </Field>
+
 
 
                     <Field label="Anything else we should know?" hint="(Optional)">
