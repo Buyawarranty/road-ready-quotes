@@ -86,6 +86,7 @@ const ConditionalFooter = () => {
 
 // Lazy load pages
 const FAQ = lazy(() => import("./pages/FAQ"));
+const TradeOnlyPage = lazy(() => import("./pages/TradeOnlyPage"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
