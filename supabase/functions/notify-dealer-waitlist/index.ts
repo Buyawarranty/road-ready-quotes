@@ -106,11 +106,12 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Panda Protect <support@buyawarranty.co.uk>',
-        to: ['hello@pandaprotect.co.uk'],
+        to: ['hello@pandaprotect.co.uk', 'info@pandaprotect.co.uk'],
         reply_to: email_address,
         subject,
         html,
       }),
+
     });
 
     if (!res.ok) {
