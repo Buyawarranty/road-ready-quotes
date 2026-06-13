@@ -7961,6 +7961,7 @@ export type Database = {
           current_warranty_provider: string | null
           dealership_name: string | null
           email_address: string
+          heard_about_us: string | null
           id: string
           interested_in: string | null
           monthly_vehicle_sales: string | null
@@ -7975,6 +7976,7 @@ export type Database = {
           current_warranty_provider?: string | null
           dealership_name?: string | null
           email_address: string
+          heard_about_us?: string | null
           id?: string
           interested_in?: string | null
           monthly_vehicle_sales?: string | null
@@ -7989,6 +7991,7 @@ export type Database = {
           current_warranty_provider?: string | null
           dealership_name?: string | null
           email_address?: string
+          heard_about_us?: string | null
           id?: string
           interested_in?: string | null
           monthly_vehicle_sales?: string | null
