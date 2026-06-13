@@ -116,16 +116,17 @@ const DealerAdminSignUps: React.FC = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
       'Monthly Vehicle Sales', 'Current Warranty Provider', 'Interested In',
-      'Additional Information', 'Status',
+      'Heard About Us', 'Additional Information', 'Status',
     ];
     const lines = filtered.map((r) =>
       [
         format(new Date(r.created_at), 'yyyy-MM-dd HH:mm'),
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
         r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in,
-        r.additional_information, r.status,
+        r.heard_about_us, r.additional_information, r.status,
       ].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')
     );
+
     const csv = [headers.join(','), ...lines].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
