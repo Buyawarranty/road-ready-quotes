@@ -28,7 +28,7 @@ const initialForm = {
   phone_number: '',
   monthly_vehicle_sales: '',
   current_warranty_provider: '',
-  interested_in: 'dealer-paid',
+  interested_in: '',
   additional_information: '',
 };
 
