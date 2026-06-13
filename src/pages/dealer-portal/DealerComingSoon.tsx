@@ -1,60 +1,87 @@
 import React, { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowRight, Check, Sparkles, Zap, TrendingUp, ShieldCheck } from 'lucide-react';
+import {
+  ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
+  ShieldQuestion, Sparkles, Lock,
+} from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-const quickBenefits = [
-  { icon: Zap, text: 'Instant quotes & issuance' },
-  { icon: TrendingUp, text: '£180+ extra margin per sale' },
-  { icon: ShieldCheck, text: 'We handle every claim' },
+// UK phone — accepts 07xxxxxxxxx, 02..., +44..., spaces/dashes allowed
+const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const benefits = [
+  { icon: TrendingUp, title: 'Increase profit per vehicle sale', text: 'Add high-margin warranty cover to every deal.' },
+  { icon: Users, title: 'Simple dealer onboarding', text: 'Quick and easy to set up — we handle the rest.' },
+  { icon: ShieldCheck, title: 'Flexible cover options', text: 'Dealer-paid, fully covered, or both — your choice.' },
+  { icon: Headphones, title: 'Dedicated UK claims support', text: 'Real humans, real support, when you need it.' },
 ];
 
+const initialForm = {
+  dealership_name: '',
+  contact_name: '',
+  email_address: '',
+  phone_number: '',
+  monthly_vehicle_sales: '',
+  current_warranty_provider: '',
+  interested_in: 'dealer-paid',
+  additional_information: '',
+};
+
 const DealerComingSoon = () => {
-  const [params] = useSearchParams();
-  const reg = (params.get('reg') || '').toUpperCase();
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', dealership: '' });
+  const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; phone?: string }>({});
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.email || !form.firstName) {
-      toast.error('Please add your name and email.');
-      return;
+  const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const validate = () => {
+    const e: typeof errors = {};
+    if (!form.email_address.trim() || !EMAIL_RE.test(form.email_address.trim())) {
+      e.email = 'Please enter a valid email address.';
     }
+    if (!form.phone_number.trim() || !UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) {
+      e.phone = 'Please enter a valid UK phone number.';
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const onSubmit = async (ev: React.FormEvent) => {
+    ev.preventDefault();
+    if (!validate()) return;
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('dealer_leads').insert({
-        first_name: form.firstName.trim(),
-        last_name: form.lastName.trim() || null,
-        email: form.email.trim(),
-        phone: form.phone.trim() || null,
-        registration_plate: reg || null,
-        notes: form.dealership ? `Dealership: ${form.dealership.trim()}` : null,
-        source: 'coming_soon_waitlist',
-        status: 'new',
-      } as any);
+      const payload = {
+        dealership_name: form.dealership_name.trim() || null,
+        contact_name: form.contact_name.trim() || null,
+        email_address: form.email_address.trim(),
+        phone_number: form.phone_number.trim(),
+        monthly_vehicle_sales: form.monthly_vehicle_sales || null,
+        current_warranty_provider: form.current_warranty_provider || null,
+        interested_in: form.interested_in || null,
+        additional_information: form.additional_information.trim() || null,
+      };
+      const { data, error } = await supabase
+        .from('trade_warranty_signups')
+        .insert(payload as any)
+        .select('id, created_at')
+        .single();
       if (error) throw error;
 
-      // Notify the team (non-blocking — UX shouldn't fail if email errors)
+      // Notify the team (non-blocking)
       supabase.functions.invoke('notify-dealer-waitlist', {
-        body: {
-          firstName: form.firstName.trim(),
-          lastName: form.lastName.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim(),
-          dealership: form.dealership.trim(),
-          reg,
-        },
+        body: { ...payload, id: data?.id, created_at: data?.created_at },
       }).catch((e) => console.error('notify-dealer-waitlist failed', e));
 
       setSubmitted(true);
-      toast.success("You're on the list! We'll be in touch.");
+      setForm(initialForm);
+      toast.success('Thank you for registering your interest. A member of our team will contact you shortly.');
     } catch (err: any) {
       toast.error(err?.message || 'Something went wrong. Please try again.');
     } finally {
@@ -63,105 +90,194 @@ const DealerComingSoon = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50">
       <Helmet>
-        <title>Dealer Programme – Coming Soon | Join the Waitlist</title>
-        <meta name="description" content="Our dealer warranty programme is launching soon. Join the founding-dealer waitlist for exclusive pricing, priority access and free onboarding." />
+        <title>Register Your Interest – Trade Warranty | Panda Protect</title>
+        <meta name="description" content="Register your interest in our new Trade Warranty solution for UK motor trade dealers. Be first to offer flexible cover and unlock extra revenue." />
         <meta name="robots" content="noindex" />
       </Helmet>
 
       <DealerPublicHeader />
 
-      {/* Above the fold: pitch + form in a single screen */}
-      <section className="flex-1 flex items-center">
-        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-          <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center">
-            {/* Left: pitch (compact) */}
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#eb4b00]/10 text-[#eb4b00] text-xs font-bold tracking-wider uppercase">
-                <Sparkles className="w-3.5 h-3.5" /> Launching Soon
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.05] tracking-tight text-gray-900">
-                Something <span className="text-[#eb4b00]">big</span> is coming for dealers.
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 lg:p-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Left */}
+            <div>
+              <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-4">
+                Coming Soon
+              </span>
+              <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.1] tracking-tight text-gray-900">
+                Register Your Interest<br />in Trade Warranty
               </h1>
-              <p className="text-base text-gray-600 leading-relaxed max-w-xl">
-                We're putting the finishing touches on the UK's most dealer-friendly warranty programme.
-                {reg ? (
-                  <> Your reg <span className="font-bold text-gray-900">{reg}</span> is saved — we'll quote you the moment we go live.</>
-                ) : (
-                  <> Join the waitlist for founding-dealer perks and priority access.</>
-                )}
+              <p className="text-gray-600 mt-4 leading-relaxed">
+                Be first to offer our new trade warranty solution to your customers and unlock extra revenue for your dealership.
               </p>
 
-              <ul className="space-y-2 pt-1">
-                {quickBenefits.map(({ icon: Icon, text }) => (
-                  <li key={text} className="flex items-center gap-3 text-sm text-gray-800">
-                    <span className="w-7 h-7 rounded-md bg-[#eb4b00]/10 text-[#eb4b00] inline-flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-4 h-4" />
+              <ul className="mt-7 space-y-5">
+                {benefits.map(({ icon: Icon, title, text }) => (
+                  <li key={title} className="flex gap-4">
+                    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5" />
                     </span>
-                    <span className="font-medium">{text}</span>
+                    <div>
+                      <div className="font-bold text-gray-900">{title}</div>
+                      <div className="text-sm text-gray-600 mt-0.5">{text}</div>
+                    </div>
                   </li>
                 ))}
               </ul>
 
-              <p className="text-xs text-gray-500 pt-2">
-                Founding-dealer perks · Free onboarding · Skip the launch queue
-              </p>
+              {/* What happens next */}
+              <div className="mt-8 rounded-xl bg-gray-50 border border-gray-200 p-5">
+                <div className="font-bold text-gray-900 mb-4">What happens next</div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
+                    { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
+                    { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
+                  ].map((s) => (
+                    <div key={s.n} className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
+                        <span className="text-sm font-bold text-gray-900">{s.t}</span>
+                      </div>
+                      <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Right: form */}
+            {/* Right — Form */}
             <div>
-              <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 p-5 sm:p-6">
+              <div className="bg-white">
+                <h2 className="text-lg font-bold text-gray-900">Tell us a bit about your dealership</h2>
+
                 {submitted ? (
-                  <div className="text-center py-8 space-y-3">
-                    <div className="w-14 h-14 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
+                  <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-6 text-center space-y-3">
+                    <div className="w-14 h-14 rounded-full bg-green-100 text-green-700 mx-auto flex items-center justify-center">
                       <Check className="w-7 h-7" />
                     </div>
-                    <h2 className="text-xl font-black text-gray-900">You're on the list!</h2>
-                    <p className="text-sm text-gray-600">We'll email you the moment we launch — with your founding-dealer offer.</p>
-                    <Link to="/dealer-portal" className="inline-flex items-center gap-2 text-[#eb4b00] font-bold hover:underline text-sm">
-                      Back to home <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    <h3 className="text-lg font-black text-gray-900">Thank you for registering your interest.</h3>
+                    <p className="text-sm text-gray-700">A member of our team will contact you shortly.</p>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      className="text-sm font-semibold text-[#eb4b00] hover:underline"
+                    >
+                      Register another interest
+                    </button>
                   </div>
                 ) : (
-                  <>
-                    <h2 className="text-xl sm:text-2xl font-black text-gray-900">Join the founding-dealer waitlist</h2>
-                    <p className="text-xs text-gray-600 mt-1">Free to join. No commitment. Limited spots.</p>
+                  <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Dealership Name">
+                        <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
+                          placeholder="Enter dealership name" className={inputCls} />
+                      </Field>
+                      <Field label="Contact Name">
+                        <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
+                          placeholder="Enter your full name" className={inputCls} />
+                      </Field>
+                    </div>
 
-                    <form onSubmit={onSubmit} className="mt-4 space-y-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <input required placeholder="First name" value={form.firstName}
-                          onChange={(e) => setForm({ ...form, firstName: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm" />
-                        <input placeholder="Last name" value={form.lastName}
-                          onChange={(e) => setForm({ ...form, lastName: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm" />
-                      </div>
-                      <input required type="email" placeholder="Work email" value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm" />
-                      <div className="grid grid-cols-2 gap-2">
-                        <input type="tel" placeholder="Phone (optional)" value={form.phone}
-                          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm" />
-                        <input placeholder="Dealership" value={form.dealership}
-                          onChange={(e) => setForm({ ...form, dealership: e.target.value })}
-                          className="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm" />
-                      </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Email Address" required error={errors.email}>
+                        <input type="email" required value={form.email_address}
+                          onChange={(e) => set('email_address', e.target.value)}
+                          placeholder="Enter email address"
+                          className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
+                      </Field>
+                      <Field label="Phone Number" required error={errors.phone}>
+                        <input type="tel" required value={form.phone_number}
+                          onChange={(e) => set('phone_number', e.target.value)}
+                          placeholder="Enter phone number"
+                          className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
+                      </Field>
+                    </div>
 
-                      <button type="submit" disabled={submitting}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3 rounded-lg text-sm transition-colors">
-                        {submitting ? 'Saving your spot…' : (<>Reserve my founding spot <ArrowRight className="w-4 h-4" /></>)}
-                      </button>
-                      <p className="text-[11px] text-gray-500 text-center">
-                        We'll only email you about the dealer programme launch. Unsubscribe anytime.
-                      </p>
-                    </form>
-                  </>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Monthly vehicle sales">
+                        <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
+                          className={inputCls}>
+                          <option value="">Select range</option>
+                          <option value="1-10">1 – 10</option>
+                          <option value="11-25">11 – 25</option>
+                          <option value="26-50">26 – 50</option>
+                          <option value="51-100">51 – 100</option>
+                          <option value="100+">100+</option>
+                        </select>
+                      </Field>
+                      <Field label="Current warranty provider">
+                        <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
+                          className={inputCls}>
+                          <option value="">Select provider</option>
+                          <option value="None">None</option>
+                          <option value="Warrantywise">Warrantywise</option>
+                          <option value="WMS">WMS</option>
+                          <option value="MotorEasy">MotorEasy</option>
+                          <option value="AutoProtect">AutoProtect</option>
+                          <option value="In-house">In-house</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </Field>
+                    </div>
+
+                    <Field label="Interested in">
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { v: 'dealer-paid', l: 'Dealer-paid' },
+                          { v: 'fully-covered', l: 'Fully covered' },
+                          { v: 'both', l: 'Both' },
+                        ].map((opt) => {
+                          const active = form.interested_in === opt.v;
+                          return (
+                            <button type="button" key={opt.v}
+                              onClick={() => set('interested_in', opt.v)}
+                              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
+                                active ? 'border-[#eb4b00] bg-orange-50 text-gray-900' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                              }`}>
+                              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${active ? 'border-[#eb4b00]' : 'border-gray-400'}`}>
+                                {active && <span className="w-2 h-2 rounded-full bg-[#eb4b00]" />}
+                              </span>
+                              {opt.l}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </Field>
+
+                    <Field label="Anything else we should know?" hint="(Optional)">
+                      <textarea rows={3} value={form.additional_information}
+                        onChange={(e) => set('additional_information', e.target.value)}
+                        placeholder="Add any additional information…"
+                        className={`${inputCls} resize-none`} />
+                    </Field>
+
+                    <button type="submit" disabled={submitting}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base transition-colors">
+                      {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
+                    </button>
+
+                    <p className="text-center text-xs text-gray-500">
+                      No obligation · Takes less than 30 seconds
+                    </p>
+                    <p className="flex items-center justify-center gap-1.5 text-center text-xs text-gray-500">
+                      <Lock className="w-3 h-3" /> We'll only contact you about Trade Warranty.
+                    </p>
+                  </form>
                 )}
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer mini-trust strip */}
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <TrustItem icon={ShieldCheck} title="No obligation" text="Register with zero commitment." />
+          <TrustItem icon={Sparkles} title="Early access for dealers" text="Be first in line for exclusive access." />
+          <TrustItem icon={ShieldQuestion} title="Built for UK motor trade" text="Designed around your business." />
         </div>
       </section>
 
@@ -173,5 +289,32 @@ const DealerComingSoon = () => {
     </div>
   );
 };
+
+const inputCls =
+  'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-white text-gray-900 placeholder:text-gray-400';
+
+const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?: string; children: React.ReactNode }> =
+  ({ label, required, hint, error, children }) => (
+    <label className="block">
+      <div className="flex items-center gap-1 mb-1.5">
+        <span className="text-sm font-semibold text-gray-800">{label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}</span>
+        {hint && <span className="text-xs text-gray-500">{hint}</span>}
+      </div>
+      {children}
+      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+    </label>
+  );
+
+const TrustItem: React.FC<{ icon: React.ComponentType<any>; title: string; text: string }> = ({ icon: Icon, title, text }) => (
+  <div className="flex items-center gap-3">
+    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+      <Icon className="w-5 h-5" />
+    </span>
+    <div>
+      <div className="font-bold text-gray-900 text-sm">{title}</div>
+      <div className="text-xs text-gray-600">{text}</div>
+    </div>
+  </div>
+);
 
 export default DealerComingSoon;
