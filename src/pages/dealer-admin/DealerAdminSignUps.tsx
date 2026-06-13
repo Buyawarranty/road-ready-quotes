@@ -116,7 +116,7 @@ const DealerAdminSignUps: React.FC = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
       'Monthly Vehicle Sales', 'Current Warranty Provider', 'Interested In',
-      'Heard About Us', 'Additional Information', 'Status',
+      'Where They Sell Vehicles', 'Additional Information', 'Status',
     ];
     const lines = filtered.map((r) =>
       [
@@ -307,7 +307,12 @@ const DealerAdminSignUps: React.FC = () => {
                   <DetailRow label="Monthly Vehicle Sales" value={selected.monthly_vehicle_sales} icon={CarIcon} />
                   <DetailRow label="Current Warranty Provider" value={selected.current_warranty_provider} />
                   <DetailRow label="Interested In" value={selected.interested_in?.replace('-', ' ')} />
-                  <DetailRow label="How They Heard About Us" value={selected.heard_about_us} />
+                  <DetailRow
+                    label="Where They Sell Vehicles"
+                    value={selected.heard_about_us}
+                    href={selected.heard_about_us && /^https?:\/\//i.test(selected.heard_about_us) ? selected.heard_about_us : undefined}
+                  />
+
 
                 </DetailGrid>
 
