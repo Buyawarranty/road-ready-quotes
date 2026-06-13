@@ -116,7 +116,7 @@ const DealerAdminSignUps: React.FC = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
       'Monthly Vehicle Sales', 'Current Warranty Provider', 'Interested In',
-      'Heard About Us', 'Additional Information', 'Status',
+      'Where They Sell Vehicles', 'Additional Information', 'Status',
     ];
     const lines = filtered.map((r) =>
       [
