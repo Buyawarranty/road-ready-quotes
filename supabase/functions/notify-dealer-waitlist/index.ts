@@ -15,8 +15,10 @@ interface Payload {
   monthly_vehicle_sales?: string | null;
   current_warranty_provider?: string | null;
   interested_in?: string | null;
+  heard_about_us?: string | null;
   additional_information?: string | null;
 }
+
 
 const ADMIN_URL_BASE = 'https://pandaprotect.co.uk/dealer-admin/signups';
 
