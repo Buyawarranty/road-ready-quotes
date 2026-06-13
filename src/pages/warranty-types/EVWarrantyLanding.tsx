@@ -508,7 +508,7 @@ const EVWarrantyLanding: React.FC = () => {
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
       "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
+      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
       "@type": "Offer",
@@ -560,7 +560,7 @@ const EVWarrantyLanding: React.FC = () => {
     "description": "UK's trusted extended vehicle warranty provider. Protecting cars, vans, electric vehicles, and motorcycles.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
-    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
+    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
   const webPageSchema = {
@@ -584,7 +584,7 @@ const EVWarrantyLanding: React.FC = () => {
     "name": "Panda Protect",
     "description": "UK's specialist electric vehicle warranty provider. Protecting EVs, cars, vans and motorcycles since 2016.",
     "url": "https://pandaprotect.co.uk",
-    "telephone": "+44-330-229-5040",
+    "telephone": "+44-330-229-5045",
     "email": "support@pandaprotect.co.uk",
     "foundingDate": "2016",
     "priceRange": "£19-£99/month",

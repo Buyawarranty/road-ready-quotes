@@ -208,7 +208,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "name": "Vauxhall Extended Warranty UK",
     "description": "Comprehensive extended warranty for Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, Corsa-e, Mokka-e. Turbo engines, auto gearbox, EV components covered.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
     "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
@@ -221,7 +221,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "Service",
     "name": "Vauxhall Extended Warranty Service",
     "alternateName": "Vauxhall Used Car Warranty",
-    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "telephone": "+44-330-229-5040", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
+    "provider": { "@type": "LocalBusiness", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "telephone": "+44-330-229-5045", "priceRange": "£19-£60/month", "address": { "@type": "PostalAddress", "addressCountry": "GB" } },
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
     "description": "Extended warranty coverage for all Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, and EV models. Covers engine, transmission, electrical systems, turbocharger, and more.",
     "serviceType": "Vehicle Extended Warranty",
@@ -251,7 +251,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016.",
     "foundingDate": "2016",
-    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" },
+    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" },
   };
 
   const webPageSchema = {

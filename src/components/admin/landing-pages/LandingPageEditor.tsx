@@ -86,7 +86,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
   
   // Local Business Schema
   const [localBusinessName, setLocalBusinessName] = useState('Panda Protect');
-  const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295040');
+  const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295045');
   const [localBusinessEmail, setLocalBusinessEmail] = useState('support@pandaprotect.co.uk');
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
       setIsIndexable(data.is_indexable);
       setRobotsDirective(data.robots_directive || 'index, follow');
       setLocalBusinessName(data.local_business_name || 'Panda Protect');
-      setLocalBusinessPhone(data.local_business_phone || '+443302295040');
+      setLocalBusinessPhone(data.local_business_phone || '+443302295045');
       setLocalBusinessEmail(data.local_business_email || 'support@pandaprotect.co.uk');
       
       // Parse hero content

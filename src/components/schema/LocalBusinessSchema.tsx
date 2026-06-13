@@ -23,7 +23,7 @@ interface LocalBusinessSchemaProps {
 
 export const LocalBusinessSchema = ({
   name = 'Panda Protect',
-  telephone = '+443302295040',
+  telephone = '+443302295045',
   email = 'support@pandaprotect.co.uk',
   address = {
     streetAddress: 'United Kingdom',

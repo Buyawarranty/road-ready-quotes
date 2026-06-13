@@ -526,7 +526,7 @@ const HybridWarrantyLanding: React.FC = () => {
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
       "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
+      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
       "@type": "Offer",
@@ -560,7 +560,7 @@ const HybridWarrantyLanding: React.FC = () => {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "telephone": "+44-330-229-5040",
+      "telephone": "+44-330-229-5045",
       "priceRange": "£19-£99/month",
       "address": { "@type": "PostalAddress", "addressCountry": "GB" }
     },
@@ -610,7 +610,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "knowsAbout": ["Hybrid Car Warranty", "PHEV Warranty", "EV Warranty", "Used Car Warranty", "Van Warranty", "Extended Vehicle Warranty"],
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
-    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5040", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
+    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
   const webPageSchema = {

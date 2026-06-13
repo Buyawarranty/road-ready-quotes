@@ -690,7 +690,7 @@ const VanWarrantyLanding: React.FC = () => {
                       </a>
                       <span className="text-gray-400">·</span>
                       <a
-                        href="https://wa.me/443302295040"
+                        href="https://wa.me/443302295045"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-green-600 hover:underline font-medium inline-flex items-center gap-1"
@@ -1411,7 +1411,7 @@ const VanWarrantyLanding: React.FC = () => {
                 </a>
                 <span className="text-white/50">·</span>
                 <a
-                  href="https://wa.me/443302295040"
+                  href="https://wa.me/443302295045"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"

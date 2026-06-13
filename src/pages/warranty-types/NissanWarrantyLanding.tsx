@@ -396,7 +396,7 @@ const NissanWarrantyLanding: React.FC = () => {
       "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
       "contactPoint": {
         "@type": "ContactPoint",
-        "telephone": "+44-330-229-5040",
+        "telephone": "+44-330-229-5045",
         "contactType": "customer service",
         "availableLanguage": "English",
         "areaServed": "GB"
@@ -459,7 +459,7 @@ const NissanWarrantyLanding: React.FC = () => {
       "@type": "LocalBusiness",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "telephone": "+44-330-229-5040",
+      "telephone": "+44-330-229-5045",
       "priceRange": "£20-£60/month",
       "address": {
         "@type": "PostalAddress",
@@ -526,7 +526,7 @@ const NissanWarrantyLanding: React.FC = () => {
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+44-330-229-5040",
+      "telephone": "+44-330-229-5045",
       "contactType": "customer service",
       "areaServed": "GB",
       "availableLanguage": "English"
