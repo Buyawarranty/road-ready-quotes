@@ -42,8 +42,9 @@ serve(async (req) => {
       dealership_name, contact_name,
       email_address, phone_number,
       monthly_vehicle_sales, current_warranty_provider,
-      interested_in, additional_information,
+      interested_in, heard_about_us, additional_information,
     } = body || ({} as Payload);
+
 
     if (!email_address || !phone_number) {
       return new Response(JSON.stringify({ error: 'email_address and phone_number required' }), {
