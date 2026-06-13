@@ -233,6 +233,30 @@ const DealerComingSoon = () => {
                       </Field>
                     </div>
 
+                    <Field label="How did you hear about us?">
+                      <select
+                        value={form.heard_about_us}
+                        onChange={(e) => set('heard_about_us', e.target.value)}
+                        className={inputCls}
+                      >
+                        <option value="">Select an option</option>
+                        <option value="Website">Website</option>
+                        <option value="AutoTrader">AutoTrader</option>
+                        <option value="Google Search">Google Search</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Word of Mouth">Word of mouth / Referral</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {form.heard_about_us === 'Other' && (
+                        <input
+                          value={form.heard_about_us_other}
+                          onChange={(e) => set('heard_about_us_other', e.target.value)}
+                          placeholder="Please specify"
+                          className={`${inputCls} mt-2`}
+                        />
+                      )}
+                    </Field>
+
 
                     <Field label="Anything else we should know?" hint="(Optional)">
                       <textarea rows={3} value={form.additional_information}
