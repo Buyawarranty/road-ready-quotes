@@ -138,7 +138,7 @@ const PriceHelpPanel: React.FC<PriceHelpPanelProps> = ({
       setRequestSuccess(true);
     } catch (err) {
       console.error('Request submit error:', err);
-      toast({ title: "Something went wrong", description: "Please try again or call us on 0330 229 5040", variant: "destructive" });
+      toast({ title: "Something went wrong", description: "Please try again or call us on 0330 229 5045", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -281,11 +281,11 @@ const PriceHelpPanel: React.FC<PriceHelpPanelProps> = ({
       <div className="border-t border-gray-100 pt-4">
         <p className="text-sm text-gray-600 text-center mb-2">Don't want to wait? Ring us now</p>
         <a
-          href="tel:03302295040"
+          href="tel:03302295045"
           className="flex items-center justify-center gap-2 w-full h-12 rounded-xl border-2 border-brand-orange/30 bg-brand-orange/5 hover:bg-brand-orange/10 text-brand-orange font-bold text-base transition-colors"
         >
           <Phone className="w-4 h-4" />
-          0330 229 5040
+          0330 229 5045
         </a>
       </div>
 

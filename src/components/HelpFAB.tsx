@@ -38,7 +38,7 @@ const HelpFAB: React.FC = () => {
             <p className="text-xs text-gray-500 font-medium mb-2 px-1">Need help? We're here for you</p>
             
             <a 
-              href="tel:03302295040"
+              href="tel:03302295045"
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
               onClick={() => setIsExpanded(false)}
             >
@@ -47,7 +47,7 @@ const HelpFAB: React.FC = () => {
               </div>
               <div>
                 <p className="font-semibold text-gray-900 text-sm">Call Us</p>
-                <p className="text-xs text-gray-500">0330 229 5040</p>
+                <p className="text-xs text-gray-500">0330 229 5045</p>
               </div>
             </a>
             

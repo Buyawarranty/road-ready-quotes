@@ -752,8 +752,8 @@ const FAQ = () => {
                         <p className="font-semibold text-brand-dark-text">
                           Call Us
                         </p>
-                        <a href="tel:03302295040" className="text-primary hover:underline">
-                          Phone: 0330 229 5040
+                        <a href="tel:03302295045" className="text-primary hover:underline">
+                          Phone: 0330 229 5045
                         </a>
                         <span className="text-brand-dark-text"> | </span>
                         <a href="tel:03302295045" className="text-primary hover:underline">

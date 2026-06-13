@@ -488,9 +488,9 @@ const HomepageLandingTemplate: React.FC<HomepageLandingTemplateProps> = ({
               asChild
               className="border-white text-white hover:bg-white/10"
             >
-              <a href="tel:03302295040">
+              <a href="tel:03302295045">
                 <Phone className="mr-2 h-5 w-5" />
-                Call 0330 229 5040
+                Call 0330 229 5045
               </a>
             </Button>
           </div>

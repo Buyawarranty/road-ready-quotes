@@ -488,7 +488,7 @@ const MGWarrantyLanding: React.FC = () => {
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+44-330-229-5040",
+      "telephone": "+44-330-229-5045",
       "contactType": "customer service",
       "areaServed": "GB",
       "availableLanguage": "English"
@@ -504,7 +504,7 @@ const MGWarrantyLanding: React.FC = () => {
     "url": "https://pandaprotect.co.uk",
     "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
     "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "telephone": "+443302295040",
+    "telephone": "+443302295045",
     "email": "support@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",

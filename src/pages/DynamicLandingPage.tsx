@@ -243,7 +243,7 @@ const DynamicLandingPage: React.FC = () => {
       {page.include_local_business_schema && (
         <LocalBusinessSchema
           name={page.local_business_name || 'Panda Protect'}
-          telephone={page.local_business_phone || '0330 229 5040'}
+          telephone={page.local_business_phone || '0330 229 5045'}
           email={page.local_business_email || 'support@pandaprotect.co.uk'}
           address={page.local_business_address || {
             streetAddress: '71-75 Shelton Street',

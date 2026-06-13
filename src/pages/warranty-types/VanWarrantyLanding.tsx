@@ -182,7 +182,7 @@ const vanFAQs = [
   },
   {
     question: "What about modified vans?",
-    answer: "Most body modifications are accepted — racking, ply-lining, sign-writing, and similar fitments are fine. Give us a ring on 0330 229 5040 if you're unsure about a specific modification."
+    answer: "Most body modifications are accepted — racking, ply-lining, sign-writing, and similar fitments are fine. Give us a ring on 0330 229 5045 if you're unsure about a specific modification."
   },
   {
     question: "Do I need a full service history?",
@@ -685,12 +685,12 @@ const VanWarrantyLanding: React.FC = () => {
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
                       <span className="text-gray-600">Speak to an expert:</span>
-                      <a href="tel:03302295040" className="font-semibold text-gray-900 hover:underline">
-                        0330 229 5040
+                      <a href="tel:03302295045" className="font-semibold text-gray-900 hover:underline">
+                        0330 229 5045
                       </a>
                       <span className="text-gray-400">·</span>
                       <a
-                        href="https://wa.me/443302295040"
+                        href="https://wa.me/443302295045"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-green-600 hover:underline font-medium inline-flex items-center gap-1"
@@ -1403,15 +1403,15 @@ const VanWarrantyLanding: React.FC = () => {
               </Button>
               <div className="flex items-center gap-3">
                 <a
-                  href="tel:03302295040"
+                  href="tel:03302295045"
                   className="inline-flex items-center gap-2 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"
                 >
                   <Phone className="w-5 h-5 md:w-6 md:h-6" />
-                  0330 229 5040
+                  0330 229 5045
                 </a>
                 <span className="text-white/50">·</span>
                 <a
-                  href="https://wa.me/443302295040"
+                  href="https://wa.me/443302295045"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"

@@ -200,8 +200,8 @@ const CookiePolicy = () => {
               <div className="space-y-3">
                 <p className="flex items-center">
                   <span className="font-medium mr-2">Phone:</span>
-                  <a href="tel:03302295040" className="text-orange-300 hover:text-orange-200 transition-colors">
-                    0330 229 5040
+                  <a href="tel:03302295045" className="text-orange-300 hover:text-orange-200 transition-colors">
+                    0330 229 5045
                   </a>
                 </p>
                 <p className="flex items-center">

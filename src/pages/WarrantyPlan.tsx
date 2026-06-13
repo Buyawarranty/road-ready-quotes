@@ -216,7 +216,7 @@ const WarrantyPlan = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <p className="font-semibold text-foreground">Customer Service</p>
-                    <p className="text-2xl font-bold text-primary">0330 229 5040</p>
+                    <p className="text-2xl font-bold text-primary">0330 229 5045</p>
                   </div>
                   <div className="space-y-2">
                     <p className="font-semibold text-foreground">Claims Line</p>
@@ -1803,7 +1803,7 @@ const WarrantyPlan = () => {
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Customer service:</p>
-                <p className="text-blue-200">0330 229 5040</p>
+                <p className="text-blue-200">0330 229 5045</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Claims line:</p>

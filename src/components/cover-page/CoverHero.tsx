@@ -29,11 +29,11 @@ const CoverHero: React.FC = () => {
           <p className="text-muted-foreground text-sm flex items-center gap-2">
             Prefer to talk?{' '}
             <a
-              href="tel:03302295040"
+              href="tel:03302295045"
               className="text-primary font-semibold hover:underline inline-flex items-center gap-1"
             >
               <Phone className="w-3.5 h-3.5" />
-              Call 0330 229 5040
+              Call 0330 229 5045
             </a>
           </p>
         </div>

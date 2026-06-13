@@ -433,7 +433,7 @@ const SkodaWarranty = () => {
             />
           </a>
           <a
-            href="tel:03302295040"
+            href="tel:03302295045"
             className="w-14 h-14 rounded-full bg-primary shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
             aria-label="Call us"
           >

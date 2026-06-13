@@ -89,8 +89,8 @@ const Complaints = () => {
                     <Phone className="w-5 h-5 text-green-600 mr-2" />
                     Call Us
                   </h3>
-                  <a href="tel:03302295040" className="text-[#eb4b00] hover:underline font-medium">
-                    0330 229 5040
+                  <a href="tel:03302295045" className="text-[#eb4b00] hover:underline font-medium">
+                    0330 229 5045
                   </a>
                   <p className="text-sm text-gray-600 mt-1">(Monday to Friday, 9am–5pm)</p>
                 </div>
@@ -214,8 +214,8 @@ const Complaints = () => {
                 <p className="flex items-center">
                   <Phone className="w-5 h-5 mr-3" />
                   <span className="font-medium mr-2">Phone:</span>
-                  <a href="tel:03302295040" className="text-orange-300 hover:text-orange-200 transition-colors">
-                    0330 229 5040
+                  <a href="tel:03302295045" className="text-orange-300 hover:text-orange-200 transition-colors">
+                    0330 229 5045
                   </a>
                 </p>
                 <p className="flex items-center">

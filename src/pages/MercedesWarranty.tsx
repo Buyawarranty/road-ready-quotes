@@ -86,7 +86,7 @@ const MercedesWarranty = () => {
     },
     {
       name: "Contact Us for Authorisation",
-      text: "Call our UK-based claims team on 0330 229 5040. We'll review the diagnosis for your Mercedes and authorise the repair quickly, typically within 2 hours.",
+      text: "Call our UK-based claims team on 0330 229 5045. We'll review the diagnosis for your Mercedes and authorise the repair quickly, typically within 2 hours.",
       url: "https://pandaprotect.co.uk/make-a-claim/"
     },
     {
