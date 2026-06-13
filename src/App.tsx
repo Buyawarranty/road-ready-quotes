@@ -453,22 +453,17 @@ const App = () => {
                     <Route path="/dealer-portal/claims-handling" element={<ClaimsHandlingService />} />
                     <Route path="/dealer-portal/signup" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
-                    <Route path="/dealer-portal/dashboard" element={<DealerDashboard />} />
-                    <Route path="/dealer-portal/quotes/create" element={<DealerCreateQuote />} />
-                    <Route path="/dealer-portal/quotes" element={<DealerJourneyProvider><DealerQuotesList /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
-                    <Route path="/dealer-portal/analytics" element={<DealerAnalytics />} />
+                    {/* Portal not live yet — funnel all dealer app routes to the interest/signup form */}
+                    <Route path="/dealer-portal/dashboard" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quotes/create" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/quotes" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/warranties" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/analytics" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     {/* Dealer multi-step quote journey */}
-                    <Route path="/dealer-portal/quote/vehicle" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/quote/customer" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/quote/pricing" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/quote/checkout" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/quote/confirmation" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/quote/claim-handling" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/quote/*" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
-                    <Route path="/dealer-portal/applications" element={<FinanceApplicationsList />} />
-                    <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
-                    <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
+                    <Route path="/dealer-portal/applications" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/applications/new" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/applications/:id" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
                     <Route path="/dealer-portal/settings/api" element={<DealerApiKeys />} />
                     <Route path="/dealer-portal/api-docs" element={<DealerApiDocs />} />
 
