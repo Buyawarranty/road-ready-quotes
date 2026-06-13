@@ -84,8 +84,10 @@ const DealerAdminSignUps: React.FC = () => {
       if (!q) return true;
       return [
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
-        r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in, r.additional_information,
+        r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in,
+        r.heard_about_us, r.additional_information,
       ].some((v) => v?.toLowerCase().includes(q));
+
     });
   }, [rows, search, statusFilter]);
 
