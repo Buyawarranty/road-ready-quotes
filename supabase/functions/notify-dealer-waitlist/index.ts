@@ -79,8 +79,9 @@ serve(async (req) => {
           ${row('Monthly Vehicle Sales', esc(monthly_vehicle_sales))}
           ${row('Current Warranty Provider', esc(current_warranty_provider))}
           ${row('Interested In', esc(interested_in))}
-          ${row('How They Heard About Us', esc(heard_about_us))}
+          ${row('Where They Sell Vehicles', heard_about_us && /^https?:\/\//i.test(heard_about_us) ? `<a href="${esc(heard_about_us)}" target="_blank" style="color:#eb4b00;text-decoration:none;">${esc(heard_about_us)}</a>` : esc(heard_about_us))}
           ${row('Additional Information', esc(additional_information))}
+
 
         </table>
 
