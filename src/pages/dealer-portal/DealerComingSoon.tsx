@@ -224,29 +224,6 @@ const DealerComingSoon = () => {
                       </Field>
                     </div>
 
-                    <Field label="Interested in">
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { v: 'dealer-paid', l: 'Dealer-paid' },
-                          { v: 'fully-covered', l: 'Fully covered' },
-                          { v: 'both', l: 'Both' },
-                        ].map((opt) => {
-                          const active = form.interested_in === opt.v;
-                          return (
-                            <button type="button" key={opt.v}
-                              onClick={() => set('interested_in', opt.v)}
-                              className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
-                                active ? 'border-[#eb4b00] bg-orange-50 text-gray-900' : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                              }`}>
-                              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${active ? 'border-[#eb4b00]' : 'border-gray-400'}`}>
-                                {active && <span className="w-2 h-2 rounded-full bg-[#eb4b00]" />}
-                              </span>
-                              {opt.l}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </Field>
 
                     <Field label="Anything else we should know?" hint="(Optional)">
                       <textarea rows={3} value={form.additional_information}
