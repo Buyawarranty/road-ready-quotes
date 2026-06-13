@@ -471,6 +471,7 @@ const App = () => {
                     {/* Dealer Admin (super_admin / admin only) */}
                     <Route path="/dealer-admin" element={<DealerAdminLayout />}>
                       <Route index element={<DealerAdminOverview />} />
+                      <Route path="signups" element={<DealerAdminSignUps />} />
                       <Route path="sign-ups" element={<DealerAdminSignUps />} />
                       <Route path="sales" element={<DealerAdminSales />} />
                       <Route path="dealers" element={<DealerAdminDealers />} />

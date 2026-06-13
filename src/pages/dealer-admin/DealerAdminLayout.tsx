@@ -21,7 +21,7 @@ const navGroups: NavGroup[] = [
     label: 'Dashboard',
     items: [
       { to: '/dealer-admin', label: 'Overview', icon: LayoutDashboard, end: true },
-      { to: '/dealer-admin/sign-ups', label: 'Sign-Ups', icon: UserPlus },
+      { to: '/dealer-admin/signups', label: 'Signups', icon: UserPlus },
       { to: '/dealer-admin/analytics', label: 'Analytics', icon: BarChart3 },
       { to: '/dealer-admin/page-analytics', label: 'Page Analytics', icon: Eye },
       { to: '/dealer-admin/marketing-analytics', label: 'Marketing Analytics', icon: Target },
