@@ -307,6 +307,8 @@ const DealerAdminSignUps: React.FC = () => {
                   <DetailRow label="Monthly Vehicle Sales" value={selected.monthly_vehicle_sales} icon={CarIcon} />
                   <DetailRow label="Current Warranty Provider" value={selected.current_warranty_provider} />
                   <DetailRow label="Interested In" value={selected.interested_in?.replace('-', ' ')} />
+                  <DetailRow label="How They Heard About Us" value={selected.heard_about_us} />
+
                 </DetailGrid>
 
                 <div>
