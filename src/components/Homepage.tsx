@@ -20,7 +20,6 @@ import TrustpilotMicroStarWidget from './TrustpilotMicroStarWidget';
 import RequestCallbackModal from './modals/RequestCallbackModal';
 
 // Lazy load heavy components to reduce initial bundle size
-const HomepageFAQ = lazy(() => import('./HomepageFAQ'));
 const VideoSection = lazy(() => import('./homepage/VideoSection'));
 const AdditionalCoverSection = lazy(() => import('./homepage/AdditionalCoverSection'));
 const WarrantyBenefitsSection = lazy(() => import('./homepage/WarrantyBenefitsSection'));
@@ -924,12 +923,6 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
         </Suspense>
       </LazySection>
 
-      {/* FAQ Section - Lazy Loaded */}
-      <LazySection>
-        <Suspense fallback={<div className="py-12 md:py-20 min-h-[400px]" />}>
-          <HomepageFAQ />
-        </Suspense>
-      </LazySection>
 
 
 

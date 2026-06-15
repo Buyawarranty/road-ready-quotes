@@ -58,12 +58,6 @@ const Footer = () => {
                 Home
               </a>
               <a 
-                href="/faq" 
-                className="text-white hover:text-[#eb4b00] transition-colors font-medium"
-              >
-                Frequently Asked Questions
-              </a>
-              <a 
                 href="/contact-us" 
                 className="text-white hover:text-[#eb4b00] transition-colors font-medium"
               >
