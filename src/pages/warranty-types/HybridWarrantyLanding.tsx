@@ -17,7 +17,7 @@ import BluePersistentCallback from '@/components/brand-pages/BluePersistentCallb
 import MinimalLandingFooter from '@/components/brand-pages/MinimalLandingFooter';
 
 // Lazy load heavy components
-const HomepageFAQ = lazy(() => import('@/components/HomepageFAQ'));
+
 const VehicleCoverageSection = lazy(() => import('@/components/homepage/VehicleCoverageSection'));
 const CoverClaritySection = lazy(() => import('@/components/homepage/CoverClaritySection'));
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));

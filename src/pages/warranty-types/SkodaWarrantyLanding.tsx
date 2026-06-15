@@ -18,7 +18,7 @@ import MinimalLandingFooter from '@/components/brand-pages/MinimalLandingFooter'
 import BrandRepairCosts from '@/components/brand-pages/BrandRepairCosts';
 
 // Lazy load heavy components
-const HomepageFAQ = lazy(() => import('@/components/HomepageFAQ'));
+
 const VehicleCoverageSection = lazy(() => import('@/components/homepage/VehicleCoverageSection'));
 const CoverClaritySection = lazy(() => import('@/components/homepage/CoverClaritySection'));
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));
