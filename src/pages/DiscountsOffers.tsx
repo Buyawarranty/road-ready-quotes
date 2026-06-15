@@ -4,7 +4,6 @@ import { ArrowRight, Tag, Clock, Copy, Check, Shield, Star, Percent, ChevronDown
 import { Link, useNavigate } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
 import TrustpilotMicroComboWidget from '@/components/TrustpilotMicroComboWidget';
-import HomepageFAQ from '@/components/HomepageFAQ';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -441,8 +440,6 @@ const DiscountsOffers: React.FC = () => {
         </div>
       </section>
 
-      {/* FAQ */}
-      <HomepageFAQ />
 
       {/* Select Offer Modal */}
       {showSelectModal && (
