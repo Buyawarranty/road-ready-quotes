@@ -76,13 +76,6 @@ const MobileNavigation: React.FC = () => {
                 Make a Claim
               </Link>
               <Link 
-                to="/faq/" 
-                className="text-lg font-medium text-gray-700 hover:text-gray-900 py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                FAQs
-              </Link>
-              <Link 
                 to="/contact-us/" 
                 className="text-lg font-medium text-gray-700 hover:text-gray-900 py-2"
                 onClick={() => setIsMobileMenuOpen(false)}

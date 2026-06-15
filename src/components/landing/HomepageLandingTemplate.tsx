@@ -10,7 +10,6 @@ import { trackButtonClick, trackQuoteRequest } from '@/utils/analytics';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 
 // Lazy load heavy sections
-const HomepageFAQ = lazy(() => import('@/components/HomepageFAQ'));
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));
 const WarrantyBenefitsSection = lazy(() => import('@/components/homepage/WarrantyBenefitsSection'));
 const CoverClaritySection = lazy(() => import('@/components/homepage/CoverClaritySection'));
@@ -440,10 +439,6 @@ const HomepageLandingTemplate: React.FC<HomepageLandingTemplateProps> = ({
         </section>
       )}
 
-      {/* Homepage FAQ - Reuse component */}
-      <Suspense fallback={<div className="py-16 animate-pulse" />}>
-        <HomepageFAQ />
-      </Suspense>
 
       {/* Internal Links Section */}
       {internalLinks && internalLinks.length > 0 && (

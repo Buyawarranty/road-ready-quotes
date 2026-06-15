@@ -17,7 +17,7 @@ import MinimalLandingFooter from '@/components/brand-pages/MinimalLandingFooter'
 import TrustCallbackPanel from '@/components/TrustCallbackPanel';
 
 // Lazy load heavy components
-const HomepageFAQ = lazy(() => import('@/components/HomepageFAQ'));
+
 const VehicleCoverageSection = lazy(() => import('@/components/homepage/VehicleCoverageSection'));
 const CoverClaritySection = lazy(() => import('@/components/homepage/CoverClaritySection'));
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));

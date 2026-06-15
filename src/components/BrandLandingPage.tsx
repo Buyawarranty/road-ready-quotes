@@ -17,7 +17,6 @@ import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 
 // Lazy load heavy components to reduce initial bundle size
-const HomepageFAQ = lazy(() => import('./HomepageFAQ'));
 const VideoSection = lazy(() => import('./homepage/VideoSection'));
 const AdditionalCoverSection = lazy(() => import('./homepage/AdditionalCoverSection'));
 const WarrantyBenefitsSection = lazy(() => import('./homepage/WarrantyBenefitsSection'));
@@ -995,12 +994,6 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
           </Suspense>
         </LazySection>
 
-        {/* FAQ Section - Lazy Loaded */}
-        <LazySection>
-          <Suspense fallback={<div className="py-12 md:py-20 min-h-[400px]" />}>
-            <HomepageFAQ />
-          </Suspense>
-        </LazySection>
 
         {/* Landing Page Directory - Dynamic Brand Warranties */}
         <LazySection>
