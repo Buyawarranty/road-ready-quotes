@@ -164,24 +164,24 @@ const DealerComingSoon = () => {
                 ) : (
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Dealership Name">
+                      <Field label="Dealership Name" tip="Your trading name as customers see it">
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
                           placeholder="Enter dealership name" className={inputCls} />
                       </Field>
-                      <Field label="Contact Name">
+                      <Field label="Contact Name" tip="Full name of the person we should speak to">
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
                           placeholder="Enter your full name" className={inputCls} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email Address" required error={errors.email}>
+                      <Field label="Email Address" required error={errors.email} tip="We'll send your confirmation here">
                         <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
                           placeholder="Enter email address"
                           className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Phone Number" required error={errors.phone}>
+                      <Field label="Phone Number" required error={errors.phone} tip="UK mobile or landline, e.g. 07123 456789">
                         <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
                           placeholder="Enter phone number"
@@ -190,7 +190,7 @@ const DealerComingSoon = () => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Monthly vehicle sales">
+                      <Field label="Monthly vehicle sales" tip="Helps us tailor your package">
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
                           className={inputCls}>
                           <option value="">Select range</option>
@@ -201,7 +201,7 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
-                      <Field label="Current warranty provider">
+                      <Field label="Current warranty provider" tip="Select 'None' if you don't currently offer warranties">
                         <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
                           className={inputCls}>
                           <option value="">Select provider</option>
@@ -221,6 +221,7 @@ const DealerComingSoon = () => {
                       required
                       hint="(Link to verify your business)"
                       error={errors.website_url}
+                      tip="Must start with https://, http:// or www."
                     >
                       <input
                         type="text"
@@ -236,9 +237,7 @@ const DealerComingSoon = () => {
                       </p>
                     </Field>
 
-
-
-                    <Field label="Anything else we should know?" hint="(Optional)">
+                    <Field label="Anything else we should know?" hint="(Optional)" tip="Mention specific vehicles, volumes or requirements">
                       <textarea rows={3} value={form.additional_information}
                         onChange={(e) => set('additional_information', e.target.value)}
                         placeholder="Add any additional information…"
