@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
   ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
-  ShieldQuestion, Sparkles, Lock,
+  Lock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
@@ -135,25 +135,7 @@ const DealerComingSoon = () => {
                 ))}
               </ul>
 
-              {/* What happens next */}
-              <div className="mt-8 rounded-xl bg-gray-50 border border-gray-200 p-5">
-                <div className="font-bold text-gray-900 mb-4">What happens next</div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
-                    { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
-                    { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
-                  ].map((s) => (
-                    <div key={s.n} className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
-                        <span className="text-sm font-bold text-gray-900">{s.t}</span>
-                      </div>
-                      <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Benefits list ends above */}
             </div>
 
             {/* Right — Form */}
@@ -277,11 +259,24 @@ const DealerComingSoon = () => {
           </div>
         </div>
 
-        {/* Footer mini-trust strip */}
-        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TrustItem icon={ShieldCheck} title="No obligation" text="Register with zero commitment." />
-          <TrustItem icon={Sparkles} title="Early access for dealers" text="Be first in line for exclusive access." />
-          <TrustItem icon={ShieldQuestion} title="Built for UK motor trade" text="Designed around your business." />
+        {/* What happens next */}
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+          <div className="font-bold text-gray-900 mb-4">What happens next</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
+              { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
+              { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
+            ].map((s) => (
+              <div key={s.n} className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
+                  <span className="text-sm font-bold text-gray-900">{s.t}</span>
+                </div>
+                <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -309,16 +304,5 @@ const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?
     </label>
   );
 
-const TrustItem: React.FC<{ icon: React.ComponentType<any>; title: string; text: string }> = ({ icon: Icon, title, text }) => (
-  <div className="flex items-center gap-3">
-    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
-      <Icon className="w-5 h-5" />
-    </span>
-    <div>
-      <div className="font-bold text-gray-900 text-sm">{title}</div>
-      <div className="text-xs text-gray-600">{text}</div>
-    </div>
-  </div>
-);
 
 export default DealerComingSoon;
