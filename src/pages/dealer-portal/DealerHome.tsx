@@ -206,7 +206,7 @@ const DealerHome = () => {
                 </div>
               </div>
               <img
-                src={pandaMechanicImage}
+                src={pandaMechanicImage.url}
                 alt="Panda mascot"
                 className="hidden xl:block absolute -right-6 -bottom-4 w-40 pointer-events-none select-none"
               />
