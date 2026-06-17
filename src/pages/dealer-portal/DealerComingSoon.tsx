@@ -13,7 +13,8 @@ import { toast } from 'sonner';
 // UK phone — accepts 07xxxxxxxxx, 02..., +44..., spaces/dashes allowed
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const URL_RE = /^https?:\/\/.+/i;
+// Accept https://, http://, or www. prefixed URLs with at least one dot in the host
+const URL_RE = /^(https?:\/\/|www\.)[^\s.]+\.[^\s]+$/i;
 
 const benefits = [
   { icon: TrendingUp, title: 'Increase profit per vehicle sale', text: 'Add high-margin warranty cover to every deal.' },
