@@ -135,25 +135,7 @@ const DealerComingSoon = () => {
                 ))}
               </ul>
 
-              {/* What happens next */}
-              <div className="mt-8 rounded-xl bg-gray-50 border border-gray-200 p-5">
-                <div className="font-bold text-gray-900 mb-4">What happens next</div>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
-                    { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
-                    { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
-                  ].map((s) => (
-                    <div key={s.n} className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
-                        <span className="text-sm font-bold text-gray-900">{s.t}</span>
-                      </div>
-                      <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Benefits list ends above */}
             </div>
 
             {/* Right — Form */}
@@ -277,11 +259,24 @@ const DealerComingSoon = () => {
           </div>
         </div>
 
-        {/* Footer mini-trust strip */}
-        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TrustItem icon={ShieldCheck} title="No obligation" text="Register with zero commitment." />
-          <TrustItem icon={Sparkles} title="Early access for dealers" text="Be first in line for exclusive access." />
-          <TrustItem icon={ShieldQuestion} title="Built for UK motor trade" text="Designed around your business." />
+        {/* What happens next */}
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5">
+          <div className="font-bold text-gray-900 mb-4">What happens next</div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
+              { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
+              { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
+            ].map((s) => (
+              <div key={s.n} className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
+                  <span className="text-sm font-bold text-gray-900">{s.t}</span>
+                </div>
+                <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
