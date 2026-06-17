@@ -292,7 +292,7 @@ const DealerComingSoon = () => {
 };
 
 const inputCls =
-  'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-white text-gray-900 placeholder:text-gray-400';
+  'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-gray-100 text-gray-900 placeholder:text-gray-500';
 
 const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?: string; children: React.ReactNode }> =
   ({ label, required, hint, error, children }) => (
