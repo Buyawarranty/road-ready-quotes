@@ -353,6 +353,11 @@ const Field: React.FC<{
 }> = ({ label, required, hint, valid, touched, error, children }) => {
   const showTick = valid && touched;
   const showError = error && touched;
+  const child = React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement, {
+        className: `${(children as React.ReactElement).props.className || ''}${showTick ? ' pr-10' : ''}`,
+      })
+    : children;
   return (
     <label className="block">
       <div className="flex items-center gap-1 mb-1.5">
@@ -360,10 +365,10 @@ const Field: React.FC<{
         {hint && <span className="text-xs text-gray-500">{hint}</span>}
       </div>
       <div className="relative">
-        {children}
+        {child}
         {showTick && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
-            <Check className="w-4 h-4" />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+            <Check className="w-3 h-3 text-white" strokeWidth={3} />
           </span>
         )}
       </div>
