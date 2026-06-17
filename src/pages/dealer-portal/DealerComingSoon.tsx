@@ -295,14 +295,15 @@ const DealerComingSoon = () => {
 const inputCls =
   'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-gray-100 text-gray-900 placeholder:text-gray-500';
 
-const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?: string; children: React.ReactNode }> =
-  ({ label, required, hint, error, children }) => (
+const Field: React.FC<{ label: string; required?: boolean; hint?: string; tip?: string; error?: string; children: React.ReactNode }> =
+  ({ label, required, hint, tip, error, children }) => (
     <label className="block">
       <div className="flex items-center gap-1 mb-1.5">
         <span className="text-sm font-semibold text-gray-800">{label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}</span>
         {hint && <span className="text-xs text-gray-500">{hint}</span>}
       </div>
       {children}
+      {tip && <p className="text-xs text-gray-400 mt-1">{tip}</p>}
       {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
     </label>
   );
