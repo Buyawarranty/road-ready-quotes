@@ -25,7 +25,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import pandaMechanicImage from '@/assets/car-warranty-panda-vehicles.png';
+import pandaMechanicImage from '@/assets/panda-waving.png.asset.json';
 
 /**
  * Dealer home (/dealer-portal/) — trade-focused landing page.
@@ -206,7 +206,7 @@ const DealerHome = () => {
                 </div>
               </div>
               <img
-                src={pandaMechanicImage}
+                src={pandaMechanicImage.url}
                 alt="Panda mascot"
                 className="hidden xl:block absolute -right-6 -bottom-4 w-40 pointer-events-none select-none"
               />
