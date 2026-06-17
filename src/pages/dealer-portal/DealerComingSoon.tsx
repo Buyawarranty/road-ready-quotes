@@ -53,12 +53,38 @@ const DealerComingSoon = () => {
     phone_number: false, monthly_vehicle_sales: false,
     current_warranty_provider: false, website_url: false, additional_information: false,
   });
+  const [blurValidity, setBlurValidity] = useState<Record<FormKey, boolean>>({
+    dealership_name: false, contact_name: false, email_address: false,
+    phone_number: false, monthly_vehicle_sales: false,
+    current_warranty_provider: false, website_url: false, additional_information: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
-  const set = (k: FormKey, v: string) => setForm((f) => ({ ...f, [k]: v }));
-  const touch = (k: FormKey) => setTouched((t) => ({ ...t, [k]: true }));
+  const set = (k: FormKey, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (k === 'email_address') setErrors((e) => ({ ...e, email: undefined }));
+    if (k === 'phone_number') setErrors((e) => ({ ...e, phone: undefined }));
+    if (k === 'website_url') setErrors((e) => ({ ...e, website_url: undefined }));
+  };
+
+  const handleBlur = (k: FormKey) => {
+    setTouched((t) => ({ ...t, [k]: true }));
+    setBlurValidity((b) => ({ ...b, [k]: isFieldValid(form, k) }));
+    if (k === 'email_address') {
+      const err = getFieldError('email');
+      setErrors((e) => ({ ...e, email: err }));
+    }
+    if (k === 'phone_number') {
+      const err = getFieldError('phone');
+      setErrors((e) => ({ ...e, phone: err }));
+    }
+    if (k === 'website_url') {
+      const err = getFieldError('website_url');
+      setErrors((e) => ({ ...e, website_url: err }));
+    }
+  };
 
   const getFieldError = useCallback((key: 'email' | 'phone' | 'website_url'): string | undefined => {
     if (key === 'email') {
@@ -124,6 +150,11 @@ const DealerComingSoon = () => {
       setSubmitted(true);
       setForm(initialForm);
       setTouched({
+        dealership_name: false, contact_name: false, email_address: false,
+        phone_number: false, monthly_vehicle_sales: false,
+        current_warranty_provider: false, website_url: false, additional_information: false,
+      });
+      setBlurValidity({
         dealership_name: false, contact_name: false, email_address: false,
         phone_number: false, monthly_vehicle_sales: false,
         current_warranty_provider: false, website_url: false, additional_information: false,
@@ -202,39 +233,39 @@ const DealerComingSoon = () => {
                 ) : (
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Dealership Name" valid={isFieldValid(form, 'dealership_name')} touched={touched.dealership_name}>
+                      <Field label="Dealership Name" valid={blurValidity.dealership_name} touched={touched.dealership_name}>
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
-                          onBlur={() => touch('dealership_name')}
+                          onBlur={() => handleBlur('dealership_name')}
                           placeholder="Enter dealership name" className={inputCls} />
                       </Field>
-                      <Field label="Contact Name" valid={isFieldValid(form, 'contact_name')} touched={touched.contact_name}>
+                      <Field label="Contact Name" valid={blurValidity.contact_name} touched={touched.contact_name}>
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
-                          onBlur={() => touch('contact_name')}
+                          onBlur={() => handleBlur('contact_name')}
                           placeholder="Enter your full name" className={inputCls} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email Address" required valid={isFieldValid(form, 'email_address')} touched={touched.email_address} error={errors.email}>
+                      <Field label="Email Address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email}>
                         <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
-                          onBlur={() => touch('email_address')}
+                          onBlur={() => handleBlur('email_address')}
                           placeholder="Enter email address"
                           className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Phone Number" required valid={isFieldValid(form, 'phone_number')} touched={touched.phone_number} error={errors.phone}>
+                      <Field label="Phone Number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone}>
                         <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
-                          onBlur={() => touch('phone_number')}
+                          onBlur={() => handleBlur('phone_number')}
                           placeholder="Enter phone number"
                           className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Monthly vehicle sales" valid={isFieldValid(form, 'monthly_vehicle_sales')} touched={touched.monthly_vehicle_sales}>
+                      <Field label="Monthly vehicle sales" valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
-                          onBlur={() => touch('monthly_vehicle_sales')}
+                          onBlur={() => handleBlur('monthly_vehicle_sales')}
                           className={inputCls}>
                           <option value="">Select range</option>
                           <option value="1-10">1 – 10</option>
@@ -244,9 +275,9 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
-                      <Field label="Current warranty provider" valid={isFieldValid(form, 'current_warranty_provider')} touched={touched.current_warranty_provider}>
+                      <Field label="Current warranty provider" valid={blurValidity.current_warranty_provider} touched={touched.current_warranty_provider}>
                         <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
-                          onBlur={() => touch('current_warranty_provider')}
+                          onBlur={() => handleBlur('current_warranty_provider')}
                           className={inputCls}>
                           <option value="">Select provider</option>
                           <option value="None">None</option>
@@ -264,7 +295,7 @@ const DealerComingSoon = () => {
                       label="Where do you sell vehicles?"
                       required
                       hint="(Link to verify your business)"
-                      valid={isFieldValid(form, 'website_url')}
+                      valid={blurValidity.website_url}
                       touched={touched.website_url}
                       error={errors.website_url}
                     >
@@ -274,7 +305,7 @@ const DealerComingSoon = () => {
                         required
                         value={form.website_url}
                         onChange={(e) => set('website_url', e.target.value)}
-                        onBlur={() => touch('website_url')}
+                        onBlur={() => handleBlur('website_url')}
                         placeholder="e.g. https://www.autotrader.co.uk/... or www.yourdealership.co.uk"
                         className={`${inputCls} ${errors.website_url ? 'border-red-400' : ''}`}
                       />
@@ -283,10 +314,10 @@ const DealerComingSoon = () => {
                       </p>
                     </Field>
 
-                    <Field label="Anything else we should know?" hint="(Optional)" valid={isFieldValid(form, 'additional_information')} touched={touched.additional_information}>
+                    <Field label="Anything else we should know?" hint="(Optional)" valid={blurValidity.additional_information} touched={touched.additional_information}>
                       <textarea rows={3} value={form.additional_information}
                         onChange={(e) => set('additional_information', e.target.value)}
-                        onBlur={() => touch('additional_information')}
+                        onBlur={() => handleBlur('additional_information')}
                         placeholder="Add any additional information…"
                         className={`${inputCls} resize-none`} />
                     </Field>
