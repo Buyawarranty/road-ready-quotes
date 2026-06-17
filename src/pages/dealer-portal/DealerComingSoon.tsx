@@ -52,7 +52,7 @@ const DealerComingSoon = () => {
       e.phone = 'Please enter a valid UK phone number.';
     }
     if (!form.website_url.trim() || !URL_RE.test(form.website_url.trim())) {
-      e.website_url = 'Please enter a valid URL (e.g. https://…).';
+      e.website_url = 'Please enter a valid URL (e.g. https://example.com or www.example.com).';
     }
     setErrors(e);
     return Object.keys(e).length === 0;
