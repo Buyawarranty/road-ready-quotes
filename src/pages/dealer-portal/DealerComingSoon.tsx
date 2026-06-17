@@ -53,12 +53,38 @@ const DealerComingSoon = () => {
     phone_number: false, monthly_vehicle_sales: false,
     current_warranty_provider: false, website_url: false, additional_information: false,
   });
+  const [blurValidity, setBlurValidity] = useState<Record<FormKey, boolean>>({
+    dealership_name: false, contact_name: false, email_address: false,
+    phone_number: false, monthly_vehicle_sales: false,
+    current_warranty_provider: false, website_url: false, additional_information: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
 
-  const set = (k: FormKey, v: string) => setForm((f) => ({ ...f, [k]: v }));
-  const touch = (k: FormKey) => setTouched((t) => ({ ...t, [k]: true }));
+  const set = (k: FormKey, v: string) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    if (k === 'email_address') setErrors((e) => ({ ...e, email: undefined }));
+    if (k === 'phone_number') setErrors((e) => ({ ...e, phone: undefined }));
+    if (k === 'website_url') setErrors((e) => ({ ...e, website_url: undefined }));
+  };
+
+  const handleBlur = (k: FormKey) => {
+    setTouched((t) => ({ ...t, [k]: true }));
+    setBlurValidity((b) => ({ ...b, [k]: isFieldValid(form, k) }));
+    if (k === 'email_address') {
+      const err = getFieldError('email');
+      setErrors((e) => ({ ...e, email: err }));
+    }
+    if (k === 'phone_number') {
+      const err = getFieldError('phone');
+      setErrors((e) => ({ ...e, phone: err }));
+    }
+    if (k === 'website_url') {
+      const err = getFieldError('website_url');
+      setErrors((e) => ({ ...e, website_url: err }));
+    }
+  };
 
   const getFieldError = useCallback((key: 'email' | 'phone' | 'website_url'): string | undefined => {
     if (key === 'email') {
