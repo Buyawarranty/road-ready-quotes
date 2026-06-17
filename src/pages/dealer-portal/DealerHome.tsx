@@ -41,9 +41,9 @@ const DealerHome = () => {
     navigate(`/dealer-portal/coming-soon${cleaned ? `?reg=${encodeURIComponent(cleaned)}` : ''}`);
   };
 
-  const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
+  const pageTitle = 'Dealer Warranty Portal UK | Panda Protect';
   const pageDescription =
-    'Boost dealer profits today. Offer extended warranties from 20p a day, sign up in 60 seconds and start earning with the UK\'s trusted dealer warranty partner.';
+    'Access the Panda Protect dealer warranty portal for trade warranty registration, quote tools, claims support and dealer account management.';
   const canonical = 'https://pandaprotect.co.uk/dealer-portal/';
 
   const jsonLd = {
