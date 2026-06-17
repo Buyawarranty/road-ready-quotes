@@ -98,8 +98,8 @@ const DealerComingSoon = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50">
       <Helmet>
-        <title>Register Your Interest – Trade Warranty | Panda Protect</title>
-        <meta name="description" content="Register your interest in our new Trade Warranty solution for UK motor trade dealers. Be first to offer flexible cover and unlock extra revenue." />
+        <title>Dealer Portal Registration | Panda Protect</title>
+        <meta name="description" content="Register interest in Panda Protect dealer portal access for warranty management, trade account setup and motor dealer support tools." />
         <meta name="robots" content="noindex" />
       </Helmet>
 

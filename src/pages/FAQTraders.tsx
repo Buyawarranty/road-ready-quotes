@@ -283,9 +283,9 @@ const FAQTraders: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEOHead
-        title="Motor Trade Dealer FAQs | Panda Protect"
-        description="Motor trade dealer FAQs covering account setup, dealer portal integration with AutoTrader, quick claims, fast payouts, warranty variants and UK dealer support."
-        canonical="https://pandaprotect.co.uk/faq/traders"
+        title="Motor Trade Warranty FAQs | Panda Protect"
+        description="Answers for motor dealers on warranty onboarding, dealer portal access, policy registration, claims handling and trade warranty programme support."
+        canonical="https://pandaprotect.co.uk/faq/traders/"
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
