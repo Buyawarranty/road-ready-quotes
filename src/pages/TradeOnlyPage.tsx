@@ -195,20 +195,143 @@ function copyForPath(pathname: string): RouteCopy {
   return DEFAULT_COPY;
 }
 
+type MetaCopy = { title: string; description: string };
+
+const META_BY_PATH: Record<string, MetaCopy> = {
+  '/what-is-covered': {
+    title: 'Dealer Warranty Cover Explained | Panda Protect',
+    description:
+      'See what dealer vehicle warranty cover can include, from mechanical and electrical components to key exclusions, claim rules and policy terms.',
+  },
+  '/claims': {
+    title: 'Dealer Warranty Claims Management | Panda Protect',
+    description:
+      'Support dealership customers with a clear warranty claims process, repair authorisation guidance and trade-focused claims management from Panda Protect.',
+  },
+  '/make-a-claim': {
+    title: 'Make a Dealer Warranty Claim | Panda Protect',
+    description:
+      'Start a dealer vehicle warranty claim online and get guidance on repair details, documents, approvals and next steps for covered vehicles.',
+  },
+  '/cancel-warranty': {
+    title: 'Dealer Warranty Cancellation Guide | Panda Protect',
+    description:
+      'Clear cancellation information for dealer-issued warranties, including eligibility, required details, refunds and policy administration steps.',
+  },
+  '/warranty-transfer': {
+    title: 'Transfer Dealer Vehicle Warranty | Panda Protect',
+    description:
+      'Learn how eligible dealer vehicle warranties can be transferred to a new keeper, supporting resale value and continuity of warranty cover.',
+  },
+  '/contact-us': {
+    title: 'Contact Dealer Warranty Support | Panda Protect',
+    description:
+      'Contact Panda Protect for dealer warranty support, trade partner enquiries, claims assistance, portal access and warranty administration help.',
+  },
+  '/complaints': {
+    title: 'Dealer Warranty Complaints Process | Panda Protect',
+    description:
+      'Raise or manage a dealer warranty complaint with Panda Protect through a clear process for issue tracking, response handling and resolution.',
+  },
+  '/faq': {
+    title: 'Dealer Warranty FAQs and Policy Help | Panda Protect',
+    description:
+      'Find dealer warranty FAQs covering cover levels, warranty documents, claims steps, transfers, cancellations and support for motor trade partners.',
+  },
+  '/warranty-plan': {
+    title: 'Dealer Warranty Plans UK | Panda Protect',
+    description:
+      'Compare dealer warranty plans for used vehicles, vans, EVs and motorcycles with trade-focused cover levels and clear claims support.',
+  },
+  '/buy-a-used-car-warranty-reliable-warranties': {
+    title: 'Used Car Dealer Warranty Solutions | Panda Protect',
+    description:
+      'Warranty solutions for used car dealers who want to offer customers added protection, stronger confidence and a supported claims journey.',
+  },
+  '/discount-promo-offers': {
+    title: 'Dealer Warranty Offers and Trade Pricing | Panda Protect',
+    description:
+      'View trade warranty offers, dealer pricing information and promotional support designed for motor dealers and dealership warranty programmes.',
+  },
+  '/van-warranty': {
+    title: 'Dealer Van Warranty Solutions UK | Panda Protect',
+    description:
+      'Dealer van warranty solutions for motor trade partners selling used vans, helping protect customers from eligible mechanical repair costs.',
+  },
+  '/ev-warranty': {
+    title: 'Dealer EV Warranty Solutions UK | Panda Protect',
+    description:
+      'Trade EV warranty solutions for dealers selling electric and hybrid vehicles, with cover guidance, policy support and claims handling.',
+  },
+  '/motorbike-repair-warranty-uk-warranties': {
+    title: 'Motorbike Dealer Warranty Products | Panda Protect',
+    description:
+      'Motorbike dealer warranty products for trade partners selling motorcycles, with repair cover options and claims support for eligible vehicles.',
+  },
+  '/motorcycle-warranty': {
+    title: 'Dealer Motorcycle Warranty UK | Panda Protect',
+    description:
+      'Dealer motorcycle warranty solutions for UK motor trade partners, helping support customer confidence after motorcycle and motorbike sales.',
+  },
+  '/car-extended-warranty': {
+    title: 'Dealer Extended Car Warranty UK | Panda Protect',
+    description:
+      'Extended car warranty products for dealers who want to offer customers longer protection on eligible used vehicles and supported repairs.',
+  },
+  '/used-car-warranty-uk': {
+    title: 'Used Car Dealer Warranty UK | Panda Protect',
+    description:
+      'Used car dealer warranty solutions for UK dealerships, built to support customer confidence, aftersales revenue and efficient claims handling.',
+  },
+  '/warranty-types': {
+    title: 'Dealer Warranty Product Types | Panda Protect',
+    description:
+      'Explain dealer warranty product types, cover levels and vehicle protection options for motor trade partners and dealership customers.',
+  },
+};
+
+const BRAND_META: Record<string, MetaCopy> = {
+  '/car-extended-warranty/': {
+    title: 'Brand-Specific Dealer Warranty Cover | Panda Protect',
+    description:
+      'Create brand-specific dealer warranty landing pages for eligible used vehicles, supporting search visibility and trade warranty enquiries.',
+  },
+  '/warranty-types/': {
+    title: 'Dealer Warranty Types by Brand | Panda Protect',
+    description:
+      'Target brand-specific dealer warranty searches with cover information, claims guidance and vehicle warranty options for used vehicle stock.',
+  },
+};
+
+function metaForPath(pathname: string, fallback: RouteCopy): MetaCopy {
+  const cleaned = pathname.replace(/\/+$/, '') || '/';
+  if (META_BY_PATH[cleaned]) return META_BY_PATH[cleaned];
+  for (const prefix of Object.keys(BRAND_META)) {
+    if (cleaned.startsWith(prefix) && cleaned !== prefix.replace(/\/$/, '')) {
+      return BRAND_META[prefix];
+    }
+  }
+  return {
+    title: `${fallback.title} | Panda Protect`,
+    description: fallback.intro.slice(0, 155),
+  };
+}
+
 const TradeOnlyPage: React.FC = () => {
   const { pathname } = useLocation();
   const copy = copyForPath(pathname);
+  const meta = metaForPath(pathname, copy);
 
   const canonical = `https://pandaprotect.co.uk${pathname.endsWith('/') ? pathname : pathname + '/'}`;
 
   return (
     <>
       <Helmet>
-        <title>{`${copy.title} | Panda Protect`}</title>
-        <meta name="description" content={copy.intro.slice(0, 155)} />
+        <title>{meta.title}</title>
+        <meta name="description" content={meta.description} />
         <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={`${copy.title} | Panda Protect`} />
-        <meta property="og:description" content={copy.intro.slice(0, 155)} />
+        <meta property="og:title" content={meta.title} />
+        <meta property="og:description" content={meta.description} />
         <meta property="og:url" content={canonical} />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
