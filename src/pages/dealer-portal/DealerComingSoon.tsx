@@ -13,7 +13,8 @@ import { toast } from 'sonner';
 // UK phone — accepts 07xxxxxxxxx, 02..., +44..., spaces/dashes allowed
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const URL_RE = /^https?:\/\/.+/i;
+// Accept https://, http://, or www. prefixed URLs with at least one dot in the host
+const URL_RE = /^(https?:\/\/|www\.)[^\s.]+\.[^\s]+$/i;
 
 const benefits = [
   { icon: TrendingUp, title: 'Increase profit per vehicle sale', text: 'Add high-margin warranty cover to every deal.' },
@@ -51,7 +52,7 @@ const DealerComingSoon = () => {
       e.phone = 'Please enter a valid UK phone number.';
     }
     if (!form.website_url.trim() || !URL_RE.test(form.website_url.trim())) {
-      e.website_url = 'Please enter a valid URL (e.g. https://…).';
+      e.website_url = 'Please enter a valid URL (e.g. https://example.com or www.example.com).';
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -220,11 +221,12 @@ const DealerComingSoon = () => {
                       error={errors.website_url}
                     >
                       <input
-                        type="url"
+                        type="text"
+                        inputMode="url"
                         required
                         value={form.website_url}
                         onChange={(e) => set('website_url', e.target.value)}
-                        placeholder="e.g. https://www.autotrader.co.uk/dealers/... or your website URL"
+                        placeholder="e.g. https://www.autotrader.co.uk/... or www.yourdealership.co.uk"
                         className={`${inputCls} ${errors.website_url ? 'border-red-400' : ''}`}
                       />
                       <p className="text-xs text-gray-500 mt-1">
