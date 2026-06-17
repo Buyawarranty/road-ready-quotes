@@ -28,9 +28,7 @@ const initialForm = {
   phone_number: '',
   monthly_vehicle_sales: '',
   current_warranty_provider: '',
-  interested_in: '',
-  heard_about_us: '',
-  heard_about_us_other: '',
+  website_url: '',
   additional_information: '',
 };
 
