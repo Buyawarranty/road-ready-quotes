@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
-  ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
-  ShieldQuestion, Sparkles, Lock,
+  ArrowRight, Check, TrendingUp, Users, Headphones,
+  Lock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
@@ -304,16 +304,5 @@ const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?
     </label>
   );
 
-const TrustItem: React.FC<{ icon: React.ComponentType<any>; title: string; text: string }> = ({ icon: Icon, title, text }) => (
-  <div className="flex items-center gap-3">
-    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
-      <Icon className="w-5 h-5" />
-    </span>
-    <div>
-      <div className="font-bold text-gray-900 text-sm">{title}</div>
-      <div className="text-xs text-gray-600">{text}</div>
-    </div>
-  </div>
-);
 
 export default DealerComingSoon;
