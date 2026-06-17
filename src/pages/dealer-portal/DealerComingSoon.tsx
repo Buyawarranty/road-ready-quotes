@@ -145,12 +145,14 @@ const DealerComingSoon = () => {
                 <h2 className="text-lg font-bold text-gray-900">Tell us a bit about your dealership</h2>
 
                 {submitted ? (
-                  <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-6 text-center space-y-3">
-                    <div className="w-14 h-14 rounded-full bg-green-100 text-green-700 mx-auto flex items-center justify-center">
-                      <Check className="w-7 h-7" />
+                  <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-8 text-center space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
+                      <Check className="w-8 h-8" />
                     </div>
-                    <h3 className="text-lg font-black text-gray-900">Thank you for registering your interest.</h3>
-                    <p className="text-sm text-gray-700">A member of our team will contact you shortly.</p>
+                    <h3 className="text-xl font-black text-gray-900">Thank you — form received</h3>
+                    <p className="text-sm text-gray-700 max-w-sm mx-auto leading-relaxed">
+                      Your interest is registered. Once Trade Warranty goes live, our team will be in touch to set up your account.
+                    </p>
                     <button
                       type="button"
                       onClick={() => setSubmitted(false)}
