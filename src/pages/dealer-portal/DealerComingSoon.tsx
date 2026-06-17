@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 // UK phone — accepts 07xxxxxxxxx, 02..., +44..., spaces/dashes allowed
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_RE = /^https?:\/\/.+/i;
 
 const benefits = [
   { icon: TrendingUp, title: 'Increase profit per vehicle sale', text: 'Add high-margin warranty cover to every deal.' },
@@ -28,9 +29,7 @@ const initialForm = {
   phone_number: '',
   monthly_vehicle_sales: '',
   current_warranty_provider: '',
-  interested_in: '',
-  heard_about_us: '',
-  heard_about_us_other: '',
+  website_url: '',
   additional_information: '',
 };
 
@@ -39,7 +38,7 @@ const DealerComingSoon = () => {
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; phone?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; phone?: string; website_url?: string }>({});
 
   const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -50,6 +49,9 @@ const DealerComingSoon = () => {
     }
     if (!form.phone_number.trim() || !UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) {
       e.phone = 'Please enter a valid UK phone number.';
+    }
+    if (!form.website_url.trim() || !URL_RE.test(form.website_url.trim())) {
+      e.website_url = 'Please enter a valid URL (e.g. https://…).';
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -67,8 +69,7 @@ const DealerComingSoon = () => {
         phone_number: form.phone_number.trim(),
         monthly_vehicle_sales: form.monthly_vehicle_sales || null,
         current_warranty_provider: form.current_warranty_provider || null,
-        interested_in: form.interested_in || null,
-        heard_about_us: form.heard_about_us.trim() || null,
+        heard_about_us: form.website_url.trim() || null,
         additional_information: form.additional_information.trim() || null,
       };
 
@@ -234,13 +235,15 @@ const DealerComingSoon = () => {
                       label="Where do you sell vehicles?"
                       required
                       hint="(Link to verify your business)"
+                      error={errors.website_url}
                     >
                       <input
                         type="url"
-                        value={form.heard_about_us}
-                        onChange={(e) => set('heard_about_us', e.target.value)}
+                        required
+                        value={form.website_url}
+                        onChange={(e) => set('website_url', e.target.value)}
                         placeholder="e.g. https://www.autotrader.co.uk/dealers/... or your website URL"
-                        className={inputCls}
+                        className={`${inputCls} ${errors.website_url ? 'border-red-400' : ''}`}
                       />
                       <p className="text-xs text-gray-500 mt-1">
                         Paste your dealership website, AutoTrader / Motors.co.uk / eBay Motors listing page, or social shop URL.
