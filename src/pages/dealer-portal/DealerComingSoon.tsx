@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
-  ArrowRight, Check, TrendingUp, Users, Headphones,
+  ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
   Lock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
