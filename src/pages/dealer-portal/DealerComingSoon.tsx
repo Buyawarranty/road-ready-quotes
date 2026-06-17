@@ -154,6 +154,11 @@ const DealerComingSoon = () => {
         phone_number: false, monthly_vehicle_sales: false,
         current_warranty_provider: false, website_url: false, additional_information: false,
       });
+      setBlurValidity({
+        dealership_name: false, contact_name: false, email_address: false,
+        phone_number: false, monthly_vehicle_sales: false,
+        current_warranty_provider: false, website_url: false, additional_information: false,
+      });
       setErrors({});
       toast.success('Thank you for registering your interest. A member of our team will contact you shortly.');
     } catch (err: any) {
