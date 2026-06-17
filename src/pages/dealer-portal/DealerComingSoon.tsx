@@ -386,7 +386,7 @@ const Field: React.FC<{
   const showError = error && touched;
   const child = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement, {
-        className: `${(children as React.ReactElement).props.className || ''}${showTick ? ' pr-10' : ''}`,
+        className: `${(children as React.ReactElement).props.className || ''}${showTick ? ' pr-12' : ''}`,
       })
     : children;
   return (
@@ -398,11 +398,12 @@ const Field: React.FC<{
       <div className="relative">
         {child}
         {showTick && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+          <span className="absolute right-3 top-3 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-sm pointer-events-none">
             <Check className="w-3 h-3 text-white" strokeWidth={3} />
           </span>
         )}
       </div>
+
       {showError && (
         <div className="mt-1.5 flex items-start gap-1.5 rounded-md bg-red-50 border border-red-200 px-2 py-1.5">
           <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
