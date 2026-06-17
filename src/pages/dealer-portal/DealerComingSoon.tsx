@@ -221,11 +221,12 @@ const DealerComingSoon = () => {
                       error={errors.website_url}
                     >
                       <input
-                        type="url"
+                        type="text"
+                        inputMode="url"
                         required
                         value={form.website_url}
                         onChange={(e) => set('website_url', e.target.value)}
-                        placeholder="e.g. https://www.autotrader.co.uk/dealers/... or your website URL"
+                        placeholder="e.g. https://www.autotrader.co.uk/... or www.yourdealership.co.uk"
                         className={`${inputCls} ${errors.website_url ? 'border-red-400' : ''}`}
                       />
                       <p className="text-xs text-gray-500 mt-1">
