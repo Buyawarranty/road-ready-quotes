@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import {
   ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
-  Lock,
+  Lock, AlertCircle,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
@@ -34,32 +34,68 @@ const initialForm = {
   additional_information: '',
 };
 
+type FormKey = keyof typeof initialForm;
+type Errors = Partial<Record<'email' | 'phone' | 'website_url', string>>;
+
+const isFieldValid = (form: typeof initialForm, key: FormKey): boolean => {
+  const v = form[key].trim();
+  if (!v) return false;
+  if (key === 'email_address') return EMAIL_RE.test(v);
+  if (key === 'phone_number') return UK_PHONE_RE.test(v.replace(/\s+/g, ' '));
+  if (key === 'website_url') return URL_RE.test(v);
+  return true;
+};
 
 const DealerComingSoon = () => {
   const [form, setForm] = useState(initialForm);
+  const [touched, setTouched] = useState<Record<FormKey, boolean>>({
+    dealership_name: false, contact_name: false, email_address: false,
+    phone_number: false, monthly_vehicle_sales: false,
+    current_warranty_provider: false, website_url: false, additional_information: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; phone?: string; website_url?: string }>({});
+  const [errors, setErrors] = useState<Errors>({});
 
-  const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const set = (k: FormKey, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const touch = (k: FormKey) => setTouched((t) => ({ ...t, [k]: true }));
 
-  const validate = () => {
-    const e: typeof errors = {};
-    if (!form.email_address.trim() || !EMAIL_RE.test(form.email_address.trim())) {
-      e.email = 'Please enter a valid email address.';
+  const getFieldError = useCallback((key: 'email' | 'phone' | 'website_url'): string | undefined => {
+    if (key === 'email') {
+      if (!form.email_address.trim()) return 'Email address is required.';
+      if (!EMAIL_RE.test(form.email_address.trim())) return 'Please enter a valid email address.';
     }
-    if (!form.phone_number.trim() || !UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) {
-      e.phone = 'Please enter a valid UK phone number.';
+    if (key === 'phone') {
+      if (!form.phone_number.trim()) return 'Phone number is required.';
+      if (!UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) return 'Please enter a valid UK phone number.';
     }
-    if (!form.website_url.trim() || !URL_RE.test(form.website_url.trim())) {
-      e.website_url = 'Please enter a valid URL (e.g. https://example.com or www.example.com).';
+    if (key === 'website_url') {
+      if (!form.website_url.trim()) return 'A website or listing URL is required.';
+      if (!URL_RE.test(form.website_url.trim())) return 'Please enter a valid URL starting with https://, http:// or www.';
     }
+    return undefined;
+  }, [form]);
+
+  const validate = useCallback((): boolean => {
+    const e: Errors = {};
+    const emailErr = getFieldError('email');
+    const phoneErr = getFieldError('phone');
+    const urlErr = getFieldError('website_url');
+    if (emailErr) e.email = emailErr;
+    if (phoneErr) e.phone = phoneErr;
+    if (urlErr) e.website_url = urlErr;
     setErrors(e);
     return Object.keys(e).length === 0;
-  };
+  }, [getFieldError]);
 
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    // Mark all as touched so errors show
+    setTouched({
+      dealership_name: true, contact_name: true, email_address: true,
+      phone_number: true, monthly_vehicle_sales: true,
+      current_warranty_provider: true, website_url: true, additional_information: true,
+    });
     if (!validate()) return;
     setSubmitting(true);
     try {
@@ -74,7 +110,6 @@ const DealerComingSoon = () => {
         additional_information: form.additional_information.trim() || null,
       };
 
-
       const { data, error } = await supabase
         .from('trade_warranty_signups')
         .insert(payload as any)
@@ -82,13 +117,18 @@ const DealerComingSoon = () => {
         .single();
       if (error) throw error;
 
-      // Notify the team (non-blocking)
       supabase.functions.invoke('notify-dealer-waitlist', {
         body: { ...payload, id: data?.id, created_at: data?.created_at },
       }).catch((e) => console.error('notify-dealer-waitlist failed', e));
 
       setSubmitted(true);
       setForm(initialForm);
+      setTouched({
+        dealership_name: false, contact_name: false, email_address: false,
+        phone_number: false, monthly_vehicle_sales: false,
+        current_warranty_provider: false, website_url: false, additional_information: false,
+      });
+      setErrors({});
       toast.success('Thank you for registering your interest. A member of our team will contact you shortly.');
     } catch (err: any) {
       toast.error(err?.message || 'Something went wrong. Please try again.');
@@ -135,8 +175,6 @@ const DealerComingSoon = () => {
                   </li>
                 ))}
               </ul>
-
-              {/* Benefits list ends above */}
             </div>
 
             {/* Right — Form */}
@@ -164,34 +202,39 @@ const DealerComingSoon = () => {
                 ) : (
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Dealership Name" tip="Your trading name as customers see it">
+                      <Field label="Dealership Name" valid={isFieldValid(form, 'dealership_name')} touched={touched.dealership_name}>
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
+                          onBlur={() => touch('dealership_name')}
                           placeholder="Enter dealership name" className={inputCls} />
                       </Field>
-                      <Field label="Contact Name" tip="Full name of the person we should speak to">
+                      <Field label="Contact Name" valid={isFieldValid(form, 'contact_name')} touched={touched.contact_name}>
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
+                          onBlur={() => touch('contact_name')}
                           placeholder="Enter your full name" className={inputCls} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email Address" required error={errors.email} tip="We'll send your confirmation here">
+                      <Field label="Email Address" required valid={isFieldValid(form, 'email_address')} touched={touched.email_address} error={errors.email}>
                         <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
+                          onBlur={() => touch('email_address')}
                           placeholder="Enter email address"
                           className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Phone Number" required error={errors.phone} tip="UK mobile or landline, e.g. 07123 456789">
+                      <Field label="Phone Number" required valid={isFieldValid(form, 'phone_number')} touched={touched.phone_number} error={errors.phone}>
                         <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
+                          onBlur={() => touch('phone_number')}
                           placeholder="Enter phone number"
                           className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Monthly vehicle sales" tip="Helps us tailor your package">
+                      <Field label="Monthly vehicle sales" valid={isFieldValid(form, 'monthly_vehicle_sales')} touched={touched.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
+                          onBlur={() => touch('monthly_vehicle_sales')}
                           className={inputCls}>
                           <option value="">Select range</option>
                           <option value="1-10">1 – 10</option>
@@ -201,8 +244,9 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
-                      <Field label="Current warranty provider" tip="Select 'None' if you don't currently offer warranties">
+                      <Field label="Current warranty provider" valid={isFieldValid(form, 'current_warranty_provider')} touched={touched.current_warranty_provider}>
                         <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
+                          onBlur={() => touch('current_warranty_provider')}
                           className={inputCls}>
                           <option value="">Select provider</option>
                           <option value="None">None</option>
@@ -220,8 +264,9 @@ const DealerComingSoon = () => {
                       label="Where do you sell vehicles?"
                       required
                       hint="(Link to verify your business)"
+                      valid={isFieldValid(form, 'website_url')}
+                      touched={touched.website_url}
                       error={errors.website_url}
-                      tip="Must start with https://, http:// or www."
                     >
                       <input
                         type="text"
@@ -229,6 +274,7 @@ const DealerComingSoon = () => {
                         required
                         value={form.website_url}
                         onChange={(e) => set('website_url', e.target.value)}
+                        onBlur={() => touch('website_url')}
                         placeholder="e.g. https://www.autotrader.co.uk/... or www.yourdealership.co.uk"
                         className={`${inputCls} ${errors.website_url ? 'border-red-400' : ''}`}
                       />
@@ -237,9 +283,10 @@ const DealerComingSoon = () => {
                       </p>
                     </Field>
 
-                    <Field label="Anything else we should know?" hint="(Optional)" tip="Mention specific vehicles, volumes or requirements">
+                    <Field label="Anything else we should know?" hint="(Optional)" valid={isFieldValid(form, 'additional_information')} touched={touched.additional_information}>
                       <textarea rows={3} value={form.additional_information}
                         onChange={(e) => set('additional_information', e.target.value)}
+                        onBlur={() => touch('additional_information')}
                         placeholder="Add any additional information…"
                         className={`${inputCls} resize-none`} />
                     </Field>
@@ -295,18 +342,39 @@ const DealerComingSoon = () => {
 const inputCls =
   'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-gray-100 text-gray-900 placeholder:text-gray-500';
 
-const Field: React.FC<{ label: string; required?: boolean; hint?: string; tip?: string; error?: string; children: React.ReactNode }> =
-  ({ label, required, hint, tip, error, children }) => (
+const Field: React.FC<{
+  label: string;
+  required?: boolean;
+  hint?: string;
+  valid?: boolean;
+  touched?: boolean;
+  error?: string;
+  children: React.ReactNode;
+}> = ({ label, required, hint, valid, touched, error, children }) => {
+  const showTick = valid && touched;
+  const showError = error && touched;
+  return (
     <label className="block">
       <div className="flex items-center gap-1 mb-1.5">
         <span className="text-sm font-semibold text-gray-800">{label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}</span>
         {hint && <span className="text-xs text-gray-500">{hint}</span>}
       </div>
-      {children}
-      {tip && <p className="text-xs text-gray-400 mt-1">{tip}</p>}
-      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
+      <div className="relative">
+        {children}
+        {showTick && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+            <Check className="w-4 h-4" />
+          </span>
+        )}
+      </div>
+      {showError && (
+        <div className="mt-1.5 flex items-start gap-1.5 rounded-md bg-red-50 border border-red-200 px-2 py-1.5">
+          <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-red-700 leading-snug">{error}</p>
+        </div>
+      )}
     </label>
   );
-
+};
 
 export default DealerComingSoon;
