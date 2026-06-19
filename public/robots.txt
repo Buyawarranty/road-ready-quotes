@@ -44,6 +44,39 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Block dealer-admin, auth, checkout, cart, quote-token and password-reset URLs from SEO targeting
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin-dashboard
+Disallow: /admin-conversion-fire
+Disallow: /dealer-admin
+Disallow: /dealer-portal/login
+Disallow: /dealer-portal/dashboard
+Disallow: /dealer-portal/quotes
+Disallow: /dealer-portal/warranties
+Disallow: /dealer-portal/applications
+Disallow: /dealer-portal/analytics
+Disallow: /dealer-portal/settings
+Disallow: /customer-dashboard
+Disallow: /auth
+Disallow: /auth/
+Disallow: /sales-login
+Disallow: /request-access
+Disallow: /setup-admin
+Disallow: /update-admin
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /password-reset
+Disallow: /quick-reset
+Disallow: /cart
+Disallow: /cart/
+Disallow: /checkout
+Disallow: /checkout/
+Disallow: /quote/
+Disallow: /claim-update/
+Disallow: /payment-received
+Disallow: /payment-fallback
+
 # Sitemap
 Sitemap: https://pandaprotect.co.uk/sitemap.xml
 
