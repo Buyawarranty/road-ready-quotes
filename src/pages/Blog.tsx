@@ -82,8 +82,8 @@ const Blog = () => {
     <>
       <DealerPublicHeader />
       <SEOHead
-        title="The Warranty Hub | Trade Warranties for UK Dealers"
-        description="Trade warranty advice for UK motor dealers — dealer-paid and customer-paid plans, forecourt protection strategy, and claims insight from Panda Protect."
+        title="Motor Trade Warranty Hub | Panda Protect"
+        description="Read motor trade warranty insights, dealer aftersales ideas, claims guidance and vehicle protection content for UK dealerships."
         keywords="trade warranty UK, dealer warranty, motor trade warranty, forecourt warranty, used car dealer warranty, dealer-paid warranty, trade cover, dealer protection plans"
         canonical="https://pandaprotect.co.uk/thewarrantyhub"
         ogImage={pandaHeroImage}
