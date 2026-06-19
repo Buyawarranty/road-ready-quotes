@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ExternalLink } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 
 const faqs = [
   {
@@ -78,16 +77,6 @@ const CoverMiniFAQ: React.FC<CoverMiniFAQProps> = ({ onAskQuestion }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-          <Link
-            to="/faq/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline text-sm font-semibold inline-flex items-center gap-1"
-          >
-            View all FAQs
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
-          <span className="text-muted-foreground hidden sm:inline">·</span>
           <button
             onClick={onAskQuestion}
             className="text-primary hover:underline text-sm font-medium"

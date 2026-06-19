@@ -238,9 +238,6 @@ const Complaints = () => {
                 <Link to="/contact-us" className="block text-blue-200 hover:text-white transition-colors">
                   Contact Us Page
                 </Link>
-                <Link to="/faq" className="block text-blue-200 hover:text-white transition-colors">
-                  Frequently Asked Questions
-                </Link>
                 <Link to="/terms" className="block text-blue-200 hover:text-white transition-colors">
                   Terms & Conditions
                 </Link>

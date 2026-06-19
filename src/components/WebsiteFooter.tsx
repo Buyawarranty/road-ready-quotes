@@ -120,11 +120,6 @@ const WebsiteFooter = () => {
                   <p className="font-semibold text-gray-900 mb-1">FAQs</p>
                   <ul className="space-y-1">
                     <li>
-                      <a href="/faq/" className="text-[#eb4b00] hover:text-[#d63f00] transition-colors font-semibold">
-                        FAQs for Customers
-                      </a>
-                    </li>
-                    <li>
                       <a href="/faq/traders" className="text-[#eb4b00] hover:text-[#d63f00] transition-colors font-semibold">
                         FAQs for Trade Dealers
                       </a>

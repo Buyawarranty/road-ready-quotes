@@ -733,10 +733,6 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
                       onClick={() => setInternalLinks([...internalLinks, { text: 'Make a Claim', url: '/make-a-claim/' }])}>
                       + Make a Claim
                     </Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-blue-100"
-                      onClick={() => setInternalLinks([...internalLinks, { text: 'FAQ', url: '/faq/' }])}>
-                      + FAQ
-                    </Badge>
                   </div>
                 </div>
               </div>
