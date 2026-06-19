@@ -13,7 +13,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', to: '/' },
   { label: 'Why Us', to: '/warranty-plan' },
-  { label: 'Resources', to: '/faq' },
+  { label: 'Resources', to: '/faq/traders' },
   { label: 'Contact', to: '/contact-us' },
 ];
 

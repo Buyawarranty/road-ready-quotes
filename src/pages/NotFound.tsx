@@ -53,12 +53,6 @@ const NotFound = () => {
             >
               Return to Homepage
             </a>
-            <a
-              href="/faq/"
-              className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8 w-full sm:w-auto"
-            >
-              Visit FAQ
-            </a>
           </div>
 
           <div className="pt-8 border-t border-border">

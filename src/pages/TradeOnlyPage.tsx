@@ -144,12 +144,6 @@ const ROUTE_COPY: Record<string, RouteCopy> = {
     intro:
       'From city runarounds to performance, vans, EVs, hybrids and motorbikes — Panda Protect tailors cover to the stock your forecourt sells. Sign up to see the cover schedule per vehicle type.',
   },
-  '/faq': {
-    title: 'Dealer FAQ',
-    subtitle: 'Common questions from motor trade dealers.',
-    intro:
-      'Quick answers for dealers thinking about joining the Panda Protect programme. For anything specific to your business, email hello@pandaprotect.co.uk.',
-  },
 };
 
 const BENEFITS = [
@@ -232,11 +226,6 @@ const META_BY_PATH: Record<string, MetaCopy> = {
     title: 'Dealer Warranty Complaints Process | Panda Protect',
     description:
       'Raise or manage a dealer warranty complaint with Panda Protect through a clear process for issue tracking, response handling and resolution.',
-  },
-  '/faq': {
-    title: 'Dealer Warranty FAQs and Policy Help | Panda Protect',
-    description:
-      'Find dealer warranty FAQs covering cover levels, warranty documents, claims steps, transfers, cancellations and support for motor trade partners.',
   },
   '/warranty-plan': {
     title: 'Dealer Warranty Plans UK | Panda Protect',

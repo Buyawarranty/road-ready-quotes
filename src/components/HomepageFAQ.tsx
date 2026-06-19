@@ -160,20 +160,6 @@ const HomepageFAQ = () => {
           </div>
         </div>
 
-        {/* View All FAQs Button */}
-        <div className="text-center mt-12">
-          <Link to="/faq/">
-            <Button 
-              size="lg"
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 py-3 text-lg font-semibold"
-            >
-              View All FAQs
-            </Button>
-          </Link>
-          <p className="text-sm text-gray-600 mt-3">
-            Have more questions? Check out our comprehensive FAQ page for detailed answers.
-          </p>
-        </div>
       </div>
     </section>
   );

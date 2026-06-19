@@ -306,12 +306,6 @@ const FAQTraders: React.FC = () => {
                 Everything UK motor trade dealers need to know about onboarding, portal integration, quick claims, fast
                 payouts and commercial cover with Panda Protect.
               </p>
-              <div className="mt-3 text-sm text-white">
-                Looking for retail customer FAQs?{' '}
-                <Link to="/faq/" className="underline font-semibold text-white hover:text-orange-200">
-                  Switch to consumer FAQs →
-                </Link>
-              </div>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
