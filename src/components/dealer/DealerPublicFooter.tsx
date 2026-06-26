@@ -132,7 +132,7 @@ const DealerPublicFooter: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/10 text-center text-xs text-white/80 leading-relaxed">
+        <div className="mt-10 pt-6 border-t border-white/10 text-center text-xs text-[#a8b4d0] leading-relaxed">
           <p className="max-w-4xl mx-auto">
             Panda Protect is a trading name of B4U Warranty Limited. Registered in the United Kingdom under company number 10314683. Registered address: Warranty House, 62 Berkshire Ave, Wembley, HA9 0QT, England.
           </p>
