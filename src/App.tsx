@@ -77,7 +77,7 @@ const ConditionalFooter = () => {
   const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget');
   
   // Dealer public landing pages render their own footer
-  const isDealerLanding = location.pathname === '/dealer-portal/coming-soon';
+  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
