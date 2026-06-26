@@ -163,37 +163,59 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
               </Link>
             ))}
             <div className="pt-2 flex flex-col gap-2 px-3">
-              <a
-                href="tel:03302295045"
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-orange-500"
-              >
-                <Phone className="h-4 w-4" /> Call Us · 0330 229 5045
-              </a>
-              <a
-                href="https://wa.me/message/SPQPJ6O3UBF5B1"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-              >
-                WhatsApp Us
-              </a>
-              <Link
-                to="/dealer-portal/signup"
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-              >
-                Start Today
-              </Link>
+              {!minimal && (
+                <>
+                  <a
+                    href="tel:03302295045"
+                    onClick={() => setMobileOpen(false)}
+                    className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-orange-500"
+                  >
+                    <Phone className="h-4 w-4" /> Call Us · 0330 229 5045
+                  </a>
+                  <a
+                    href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+                  >
+                    WhatsApp Us
+                  </a>
+                  <Link
+                    to="/dealer-portal/signup"
+                    onClick={() => setMobileOpen(false)}
+                    className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+                  >
+                    Start Today
+                  </Link>
+                </>
+              )}
+              {minimal && ctaTargetId && (
+                <a
+                  href={`#${ctaTargetId}`}
+                  onClick={(e) => {
+                    setMobileOpen(false);
+                    const el = document.getElementById(ctaTargetId);
+                    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                  }}
+                  className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+                >
+                  Register Interest
+                </a>
+              )}
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors"
+                className={
+                  minimal
+                    ? 'inline-flex items-center justify-center text-sm font-semibold text-slate-700 underline-offset-4 hover:underline py-2'
+                    : 'inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors'
+                }
               >
-                <LogIn className="h-4 w-4" /> Motor Trade Login
+                {minimal ? 'Dealer Login' : (<><LogIn className="h-4 w-4" /> Motor Trade Login</>)}
               </Link>
             </div>
+
           </div>
         )}
       </div>
