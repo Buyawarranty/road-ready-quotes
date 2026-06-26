@@ -12,6 +12,7 @@ import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import qashqaiHero from '@/assets/qashqai-hero.webp.asset.json';
+import phevId3 from '@/assets/phev-id3.png.asset.json';
 
 const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
@@ -377,6 +378,14 @@ const DealerComingSoon = () => {
                   </li>
                 ))}
               </ul>
+              <img
+                src={phevId3.url}
+                alt="White Volkswagen ID.3 electric hatchback — EVs are covered by Panda Protect trade warranties"
+                className="w-full max-w-[320px] object-contain mt-8"
+                width={640}
+                height={360}
+                loading="lazy"
+              />
             </div>
 
             {/* FAQ */}
