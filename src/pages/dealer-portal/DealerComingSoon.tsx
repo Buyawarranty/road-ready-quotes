@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, Headphones, ShieldCheck, ClipboardList, Phone,
-  AlertCircle,
+  AlertCircle, Clock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
@@ -13,13 +13,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import qashqaiHero from '@/assets/qashqai-hero.webp.asset.json';
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
+// UK mobiles (07xxx, 11 digits) and landlines (01/02/03, 10–11 digits)
 const isValidUKPhone = (raw: string): boolean => {
   const cleaned = raw.replace(/[\s\-()]/g, '');
-  if (!/^(\+?44|0)\d{9,11}$/.test(cleaned)) return false;
-  const digits = cleaned.replace(/^\+?44/, '0').replace(/\D/g, '');
-  return digits.length >= 10 && digits.length <= 11;
+  const normalised = cleaned.replace(/^(\+?44)/, '0');
+  if (!/^0\d{9,10}$/.test(normalised)) return false;
+  if (!/^0[1237]/.test(normalised)) return false;
+  if (normalised.startsWith('07') && normalised.length !== 11) return false;
+  return true;
 };
 
 const heroBenefits = [
@@ -42,7 +45,11 @@ const howItWorks = [
   { icon: ShieldCheck, n: 3, title: 'Start selling', text: 'Get access to warranty options, documents and ongoing support.' },
 ];
 
-const formTrust = ['No obligation', 'Takes less than 30 seconds', 'UK dealer support'];
+const formTrust: { icon: React.ComponentType<{ className?: string }>; label: string }[] = [
+  { icon: ShieldCheck, label: 'No obligation' },
+  { icon: Clock, label: 'Takes less than 30 seconds' },
+  { icon: Headphones, label: 'UK dealer support' },
+];
 
 const initialForm = {
   dealership_name: '',
@@ -278,10 +285,11 @@ const DealerComingSoon = () => {
                           className={`${inputCls} ${errors.phone_number && touched.phone_number ? 'border-red-400' : ''}`} />
                       </Field>
 
-                      <Field label="Monthly vehicle sales" required valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
+                      <Field label="Monthly vehicle sales" required selectField valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
                           onBlur={() => handleBlur('monthly_vehicle_sales')}
-                          className={`${inputCls} ${errors.monthly_vehicle_sales && touched.monthly_vehicle_sales ? 'border-red-400' : ''}`}>
+                          className={`${inputCls} pr-16 appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[length:14px] ${errors.monthly_vehicle_sales && touched.monthly_vehicle_sales ? 'border-red-400' : ''}`}
+                          style={{ backgroundImage: "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3e%3cpath d='M5.25 7.5L10 12.25 14.75 7.5z'/%3e%3c/svg%3e\")" }}>
                           <option value="">Select your range</option>
                           <option value="1-10">1 – 10</option>
                           <option value="11-25">11 – 25</option>
@@ -297,10 +305,10 @@ const DealerComingSoon = () => {
                       </button>
 
                       <div className="grid grid-cols-3 gap-2 text-center text-[11px] text-gray-600 mt-1">
-                        {formTrust.map((t) => (
-                          <div key={t} className="flex items-center justify-center gap-1">
-                            <Check className="w-3.5 h-3.5 text-green-600 flex-shrink-0" strokeWidth={3} />
-                            <span>{t}</span>
+                        {formTrust.map(({ icon: Icon, label }) => (
+                          <div key={label} className="flex items-center justify-center gap-1.5">
+                            <Icon className="w-3.5 h-3.5 text-[#eb4b00] flex-shrink-0" />
+                            <span>{label}</span>
                           </div>
                         ))}
                       </div>
@@ -434,13 +442,14 @@ const Field: React.FC<{
   valid?: boolean;
   touched?: boolean;
   error?: string;
+  selectField?: boolean;
   children: React.ReactNode;
-}> = ({ label, required, hint, valid, touched, error, children }) => {
+}> = ({ label, required, hint, valid, touched, error, selectField, children }) => {
   const showTick = valid && touched && !error;
   const showError = error && touched;
   const child = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement, {
-        className: `${(children as React.ReactElement).props.className || ''}${showTick ? ' pr-12' : ''}`,
+        className: `${(children as React.ReactElement).props.className || ''}${showTick && !selectField ? ' pr-12' : ''}`,
       })
     : children;
   return (
@@ -452,7 +461,7 @@ const Field: React.FC<{
       <div className="relative">
         {child}
         {showTick && (
-          <span className="absolute right-3 top-3 pointer-events-none text-green-500">
+          <span className={`absolute ${selectField ? 'right-9' : 'right-3'} top-3 pointer-events-none text-green-500`}>
             <Check className="w-5 h-5" strokeWidth={3} />
           </span>
         )}
