@@ -35,15 +35,49 @@ const initialForm = {
 };
 
 type FormKey = keyof typeof initialForm;
-type Errors = Partial<Record<'email' | 'phone' | 'website_url', string>>;
+type ErrorKey = 'dealership_name' | 'contact_name' | 'email_address' | 'phone_number' | 'monthly_vehicle_sales' | 'current_warranty_provider' | 'website_url';
+type Errors = Partial<Record<ErrorKey, string>>;
+
+const VALIDATABLE_KEYS: ErrorKey[] = [
+  'dealership_name', 'contact_name', 'email_address', 'phone_number',
+  'monthly_vehicle_sales', 'current_warranty_provider', 'website_url',
+];
+
+const getFieldErrorFor = (form: typeof initialForm, key: ErrorKey): string | undefined => {
+  const v = form[key].trim();
+  switch (key) {
+    case 'dealership_name':
+      if (!v) return 'Dealership name is required.';
+      if (v.length < 2) return 'Please enter your dealership name.';
+      return;
+    case 'contact_name':
+      if (!v) return 'Contact name is required.';
+      if (v.length < 2) return 'Please enter your full name.';
+      return;
+    case 'email_address':
+      if (!v) return 'Email address is required.';
+      if (!EMAIL_RE.test(v)) return 'Please enter a valid email address.';
+      return;
+    case 'phone_number':
+      if (!v) return 'Phone number is required.';
+      if (!UK_PHONE_RE.test(v.replace(/\s+/g, ' '))) return 'Please enter a valid UK phone number.';
+      return;
+    case 'monthly_vehicle_sales':
+      if (!v) return 'Please select your monthly vehicle sales.';
+      return;
+    case 'current_warranty_provider':
+      if (!v) return 'Please select your current warranty provider.';
+      return;
+    case 'website_url':
+      if (!v) return 'A website or listing URL is required.';
+      if (!URL_RE.test(v)) return 'Please enter a valid URL starting with https://, http:// or www.';
+      return;
+  }
+};
 
 const isFieldValid = (form: typeof initialForm, key: FormKey): boolean => {
-  const v = form[key].trim();
-  if (!v) return false;
-  if (key === 'email_address') return EMAIL_RE.test(v);
-  if (key === 'phone_number') return UK_PHONE_RE.test(v.replace(/\s+/g, ' '));
-  if (key === 'website_url') return URL_RE.test(v);
-  return true;
+  if (key === 'additional_information') return false;
+  return !getFieldErrorFor(form, key as ErrorKey);
 };
 
 const DealerComingSoon = () => {
@@ -64,55 +98,29 @@ const DealerComingSoon = () => {
 
   const set = (k: FormKey, v: string) => {
     setForm((f) => ({ ...f, [k]: v }));
-    if (k === 'email_address') setErrors((e) => ({ ...e, email: undefined }));
-    if (k === 'phone_number') setErrors((e) => ({ ...e, phone: undefined }));
-    if (k === 'website_url') setErrors((e) => ({ ...e, website_url: undefined }));
+    if (k !== 'additional_information') {
+      setErrors((e) => ({ ...e, [k as ErrorKey]: undefined }));
+    }
   };
 
   const handleBlur = (k: FormKey) => {
     setTouched((t) => ({ ...t, [k]: true }));
     setBlurValidity((b) => ({ ...b, [k]: isFieldValid(form, k) }));
-    if (k === 'email_address') {
-      const err = getFieldError('email');
-      setErrors((e) => ({ ...e, email: err }));
-    }
-    if (k === 'phone_number') {
-      const err = getFieldError('phone');
-      setErrors((e) => ({ ...e, phone: err }));
-    }
-    if (k === 'website_url') {
-      const err = getFieldError('website_url');
-      setErrors((e) => ({ ...e, website_url: err }));
+    if (k !== 'additional_information') {
+      const err = getFieldErrorFor(form, k as ErrorKey);
+      setErrors((e) => ({ ...e, [k as ErrorKey]: err }));
     }
   };
 
-  const getFieldError = useCallback((key: 'email' | 'phone' | 'website_url'): string | undefined => {
-    if (key === 'email') {
-      if (!form.email_address.trim()) return 'Email address is required.';
-      if (!EMAIL_RE.test(form.email_address.trim())) return 'Please enter a valid email address.';
-    }
-    if (key === 'phone') {
-      if (!form.phone_number.trim()) return 'Phone number is required.';
-      if (!UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) return 'Please enter a valid UK phone number.';
-    }
-    if (key === 'website_url') {
-      if (!form.website_url.trim()) return 'A website or listing URL is required.';
-      if (!URL_RE.test(form.website_url.trim())) return 'Please enter a valid URL starting with https://, http:// or www.';
-    }
-    return undefined;
-  }, [form]);
-
   const validate = useCallback((): boolean => {
     const e: Errors = {};
-    const emailErr = getFieldError('email');
-    const phoneErr = getFieldError('phone');
-    const urlErr = getFieldError('website_url');
-    if (emailErr) e.email = emailErr;
-    if (phoneErr) e.phone = phoneErr;
-    if (urlErr) e.website_url = urlErr;
+    VALIDATABLE_KEYS.forEach((k) => {
+      const err = getFieldErrorFor(form, k);
+      if (err) e[k] = err;
+    });
     setErrors(e);
     return Object.keys(e).length === 0;
-  }, [getFieldError]);
+  }, [form]);
 
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
