@@ -65,6 +65,15 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
               </Link>
             ))}
 
+            {/* Phone + CTA always visible on desktop */}
+            <a
+              href="tel:03302295045"
+              className="hidden md:flex items-center gap-1.5 text-[#0f1b3d] font-semibold text-sm xl:text-base hover:text-[#eb4b00] transition-colors whitespace-nowrap"
+            >
+              <Phone className="h-4 w-4 text-[#eb4b00]" />
+              0330 229 5045
+            </a>
+
             {!minimal && (
               <>
                 {/* Call Us Hover Card */}
@@ -119,7 +128,7 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
                 }}
                 className="inline-flex items-center px-4 xl:px-5 py-2 bg-[#eb4b00] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
               >
-                Register Interest
+                Request Dealer Access
               </a>
             )}
 
@@ -163,15 +172,16 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
               </Link>
             ))}
             <div className="pt-2 flex flex-col gap-2 px-3">
+              <a
+                href="tel:03302295045"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-[#eb4b00]"
+              >
+                <Phone className="h-4 w-4" /> 0330 229 5045
+              </a>
+
               {!minimal && (
                 <>
-                  <a
-                    href="tel:03302295045"
-                    onClick={() => setMobileOpen(false)}
-                    className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-orange-500"
-                  >
-                    <Phone className="h-4 w-4" /> Call Us · 0330 229 5045
-                  </a>
                   <a
                     href="https://wa.me/message/SPQPJ6O3UBF5B1"
                     target="_blank"
@@ -200,7 +210,7 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
                   }}
                   className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
                 >
-                  Register Interest
+                  Request Dealer Access
                 </a>
               )}
               <Link

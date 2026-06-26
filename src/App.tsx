@@ -52,8 +52,14 @@ const ConditionalCookieBanner = () => {
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isWidget = location.pathname.startsWith('/dealer-widget');
+  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
+  const mainClass = isWidget
+    ? 'flex-1 w-full overflow-x-hidden'
+    : isDealerLanding
+    ? 'flex-1 w-full overflow-x-hidden'
+    : 'flex-1 pb-16 w-full overflow-x-hidden';
   return (
-    <main className={isWidget ? 'flex-1 w-full overflow-x-hidden' : 'flex-1 pb-16 w-full overflow-x-hidden'}>
+    <main className={mainClass}>
       {children}
     </main>
   );
@@ -70,6 +76,9 @@ const ConditionalFooter = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget');
   
+  // Dealer public landing pages render their own footer
+  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
+  
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
   
@@ -80,7 +89,7 @@ const ConditionalFooter = () => {
   // Also check for any step that begins with these numbers
   const isCheckoutStep = step && /^[2-6]/.test(step);
   
-  if (isCheckoutStep || isAdminRoute || isBrandLanding || isQuotePage || isDealerDashboard) return null;
+  if (isCheckoutStep || isAdminRoute || isBrandLanding || isQuotePage || isDealerDashboard || isDealerLanding) return null;
   return <WebsiteFooter />;
 };
 
