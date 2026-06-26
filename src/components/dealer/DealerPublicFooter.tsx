@@ -37,8 +37,8 @@ const DealerPublicFooter: React.FC = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 lg:gap-12">
           {/* Link columns */}
-          <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-4">Quick Links</h3>
+              <div className="col-span-1">
+            <h3 className="text-sm font-bold text-white mb-4">Quick Links</h3>
             <ul className="space-y-2.5">
               {footerLinks.quick.map((l) => (
                 <li key={l.label}>
