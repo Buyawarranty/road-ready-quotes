@@ -192,7 +192,7 @@ const DealerComingSoon = () => {
                 Early dealer access now open
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08] tracking-tight text-[#0f1b3d]">
-                Offer Trade Warranties Without the Admin
+                Offer Trade Warranties Without the Paperwork
               </h1>
               <p className="text-gray-600 mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
