@@ -35,15 +35,49 @@ const initialForm = {
 };
 
 type FormKey = keyof typeof initialForm;
-type Errors = Partial<Record<'email' | 'phone' | 'website_url', string>>;
+type ErrorKey = 'dealership_name' | 'contact_name' | 'email_address' | 'phone_number' | 'monthly_vehicle_sales' | 'current_warranty_provider' | 'website_url';
+type Errors = Partial<Record<ErrorKey, string>>;
+
+const VALIDATABLE_KEYS: ErrorKey[] = [
+  'dealership_name', 'contact_name', 'email_address', 'phone_number',
+  'monthly_vehicle_sales', 'current_warranty_provider', 'website_url',
+];
+
+const getFieldErrorFor = (form: typeof initialForm, key: ErrorKey): string | undefined => {
+  const v = form[key].trim();
+  switch (key) {
+    case 'dealership_name':
+      if (!v) return 'Dealership name is required.';
+      if (v.length < 2) return 'Please enter your dealership name.';
+      return;
+    case 'contact_name':
+      if (!v) return 'Contact name is required.';
+      if (v.length < 2) return 'Please enter your full name.';
+      return;
+    case 'email_address':
+      if (!v) return 'Email address is required.';
+      if (!EMAIL_RE.test(v)) return 'Please enter a valid email address.';
+      return;
+    case 'phone_number':
+      if (!v) return 'Phone number is required.';
+      if (!UK_PHONE_RE.test(v.replace(/\s+/g, ' '))) return 'Please enter a valid UK phone number.';
+      return;
+    case 'monthly_vehicle_sales':
+      if (!v) return 'Please select your monthly vehicle sales.';
+      return;
+    case 'current_warranty_provider':
+      if (!v) return 'Please select your current warranty provider.';
+      return;
+    case 'website_url':
+      if (!v) return 'A website or listing URL is required.';
+      if (!URL_RE.test(v)) return 'Please enter a valid URL starting with https://, http:// or www.';
+      return;
+  }
+};
 
 const isFieldValid = (form: typeof initialForm, key: FormKey): boolean => {
-  const v = form[key].trim();
-  if (!v) return false;
-  if (key === 'email_address') return EMAIL_RE.test(v);
-  if (key === 'phone_number') return UK_PHONE_RE.test(v.replace(/\s+/g, ' '));
-  if (key === 'website_url') return URL_RE.test(v);
-  return true;
+  if (key === 'additional_information') return false;
+  return !getFieldErrorFor(form, key as ErrorKey);
 };
 
 const DealerComingSoon = () => {
@@ -64,55 +98,29 @@ const DealerComingSoon = () => {
 
   const set = (k: FormKey, v: string) => {
     setForm((f) => ({ ...f, [k]: v }));
-    if (k === 'email_address') setErrors((e) => ({ ...e, email: undefined }));
-    if (k === 'phone_number') setErrors((e) => ({ ...e, phone: undefined }));
-    if (k === 'website_url') setErrors((e) => ({ ...e, website_url: undefined }));
+    if (k !== 'additional_information') {
+      setErrors((e) => ({ ...e, [k as ErrorKey]: undefined }));
+    }
   };
 
   const handleBlur = (k: FormKey) => {
     setTouched((t) => ({ ...t, [k]: true }));
     setBlurValidity((b) => ({ ...b, [k]: isFieldValid(form, k) }));
-    if (k === 'email_address') {
-      const err = getFieldError('email');
-      setErrors((e) => ({ ...e, email: err }));
-    }
-    if (k === 'phone_number') {
-      const err = getFieldError('phone');
-      setErrors((e) => ({ ...e, phone: err }));
-    }
-    if (k === 'website_url') {
-      const err = getFieldError('website_url');
-      setErrors((e) => ({ ...e, website_url: err }));
+    if (k !== 'additional_information') {
+      const err = getFieldErrorFor(form, k as ErrorKey);
+      setErrors((e) => ({ ...e, [k as ErrorKey]: err }));
     }
   };
 
-  const getFieldError = useCallback((key: 'email' | 'phone' | 'website_url'): string | undefined => {
-    if (key === 'email') {
-      if (!form.email_address.trim()) return 'Email address is required.';
-      if (!EMAIL_RE.test(form.email_address.trim())) return 'Please enter a valid email address.';
-    }
-    if (key === 'phone') {
-      if (!form.phone_number.trim()) return 'Phone number is required.';
-      if (!UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) return 'Please enter a valid UK phone number.';
-    }
-    if (key === 'website_url') {
-      if (!form.website_url.trim()) return 'A website or listing URL is required.';
-      if (!URL_RE.test(form.website_url.trim())) return 'Please enter a valid URL starting with https://, http:// or www.';
-    }
-    return undefined;
-  }, [form]);
-
   const validate = useCallback((): boolean => {
     const e: Errors = {};
-    const emailErr = getFieldError('email');
-    const phoneErr = getFieldError('phone');
-    const urlErr = getFieldError('website_url');
-    if (emailErr) e.email = emailErr;
-    if (phoneErr) e.phone = phoneErr;
-    if (urlErr) e.website_url = urlErr;
+    VALIDATABLE_KEYS.forEach((k) => {
+      const err = getFieldErrorFor(form, k);
+      if (err) e[k] = err;
+    });
     setErrors(e);
     return Object.keys(e).length === 0;
-  }, [getFieldError]);
+  }, [form]);
 
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
@@ -233,40 +241,42 @@ const DealerComingSoon = () => {
                 ) : (
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Dealership Name" valid={blurValidity.dealership_name} touched={touched.dealership_name}>
+                      <Field label="Dealership Name" required valid={blurValidity.dealership_name} touched={touched.dealership_name} error={errors.dealership_name}>
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
                           onBlur={() => handleBlur('dealership_name')}
-                          placeholder="Enter dealership name" className={inputCls} />
+                          placeholder="Enter dealership name"
+                          className={`${inputCls} ${errors.dealership_name ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Contact Name" valid={blurValidity.contact_name} touched={touched.contact_name}>
+                      <Field label="Contact Name" required valid={blurValidity.contact_name} touched={touched.contact_name} error={errors.contact_name}>
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
                           onBlur={() => handleBlur('contact_name')}
-                          placeholder="Enter your full name" className={inputCls} />
+                          placeholder="Enter your full name"
+                          className={`${inputCls} ${errors.contact_name ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email Address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email}>
+                      <Field label="Email Address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email_address}>
                         <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
                           onBlur={() => handleBlur('email_address')}
                           placeholder="Enter email address"
-                          className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
+                          className={`${inputCls} ${errors.email_address ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Phone Number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone}>
+                      <Field label="Phone Number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone_number}>
                         <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
                           onBlur={() => handleBlur('phone_number')}
                           placeholder="Enter phone number"
-                          className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
+                          className={`${inputCls} ${errors.phone_number ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Monthly vehicle sales" valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales}>
+                      <Field label="Monthly vehicle sales" required valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
                           onBlur={() => handleBlur('monthly_vehicle_sales')}
-                          className={inputCls}>
+                          className={`${inputCls} ${errors.monthly_vehicle_sales ? 'border-red-400' : ''}`}>
                           <option value="">Select range</option>
                           <option value="1-10">1 – 10</option>
                           <option value="11-25">11 – 25</option>
@@ -275,10 +285,10 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
-                      <Field label="Current warranty provider" valid={blurValidity.current_warranty_provider} touched={touched.current_warranty_provider}>
+                      <Field label="Current warranty provider" required valid={blurValidity.current_warranty_provider} touched={touched.current_warranty_provider} error={errors.current_warranty_provider}>
                         <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
                           onBlur={() => handleBlur('current_warranty_provider')}
-                          className={inputCls}>
+                          className={`${inputCls} ${errors.current_warranty_provider ? 'border-red-400' : ''}`}>
                           <option value="">Select provider</option>
                           <option value="None">None</option>
                           <option value="Warrantywise">Warrantywise</option>
@@ -290,6 +300,7 @@ const DealerComingSoon = () => {
                         </select>
                       </Field>
                     </div>
+
 
                     <Field
                       label="Where do you sell vehicles?"
