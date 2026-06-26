@@ -81,12 +81,14 @@ const DealerFAQSection: React.FC<DealerFAQSectionProps> = ({
     return (
       <section className={`py-14 ${bgClassName}`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-              {heading ?? 'Common questions from dealers'}
-            </h2>
-            {intro && <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">{intro}</p>}
-          </div>
+          {(heading || intro) && (
+            <div className="text-center mb-10">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+                {heading ?? 'Common questions from dealers'}
+              </h2>
+              {intro && <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">{intro}</p>}
+            </div>
+          )}
           <div className="grid lg:grid-cols-2 gap-4">
             <div className="space-y-4">{left.map(renderItem)}</div>
             <div className="space-y-4">{right.map(renderItem)}</div>
