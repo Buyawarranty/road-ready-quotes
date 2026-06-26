@@ -217,7 +217,7 @@ const DealerComingSoon = () => {
                 <img
                   src={qashqaiHero.url}
                   alt="Nissan Qashqai SUV — the kind of vehicle your customers can protect with a Panda Protect trade warranty"
-                  className="w-full max-w-md object-contain"
+                  className="w-full max-w-[270px] object-contain"
                   width={640}
                   height={360}
                   loading="eager"
