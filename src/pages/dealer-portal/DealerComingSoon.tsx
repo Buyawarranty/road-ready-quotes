@@ -45,7 +45,11 @@ const howItWorks = [
   { icon: ShieldCheck, n: 3, title: 'Start selling', text: 'Get access to warranty options, documents and ongoing support.' },
 ];
 
-const formTrust = ['No obligation', 'Takes less than 30 seconds', 'UK dealer support'];
+const formTrust: { icon: React.ComponentType<{ className?: string }>; label: string }[] = [
+  { icon: ShieldCheck, label: 'No obligation' },
+  { icon: Clock, label: 'Takes less than 30 seconds' },
+  { icon: Headphones, label: 'UK dealer support' },
+];
 
 const initialForm = {
   dealership_name: '',
