@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, Headphones, ShieldCheck, ClipboardList, Phone,
-  AlertCircle,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
@@ -11,6 +10,7 @@ import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import qashqaiHero from '@/assets/qashqai-hero.webp.asset.json';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
