@@ -10,6 +10,7 @@ import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import carImage from '@/assets/a-class-dealer-hero.webp.asset.json';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -168,7 +169,7 @@ const DealerComingSoon = () => {
                 Early dealer access now open
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08] tracking-tight text-[#0f1b3d]">
-                Offer Trade Warranty to Your Customers — We Handle the Paperwork
+                Offer Trade Warranties to Your Customers — We Handle the Paperwork
               </h1>
               <p className="text-gray-600 mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Panda Protect helps UK motor trade dealers sell flexible warranties, handle claims, and give customers extra confidence.
@@ -195,6 +196,17 @@ const DealerComingSoon = () => {
                 <a href="tel:03302295045" className="inline-flex items-center gap-2 text-slate-700 font-semibold hover:text-slate-900">
                   <Phone className="w-4 h-4" /> Speak to our team · 0330 229 5045
                 </a>
+              </div>
+
+              <div className="mt-10 max-w-xl">
+                <img
+                  src={carImage.url}
+                  alt="Mercedes-Benz A-Class — example of a vehicle eligible for Panda Protect trade warranty"
+                  className="w-full h-auto object-contain"
+                  loading="lazy"
+                  width="600"
+                  height="340"
+                />
               </div>
             </div>
 
