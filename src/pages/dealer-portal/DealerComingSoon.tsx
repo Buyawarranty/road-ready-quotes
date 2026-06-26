@@ -285,10 +285,11 @@ const DealerComingSoon = () => {
                           className={`${inputCls} ${errors.phone_number && touched.phone_number ? 'border-red-400' : ''}`} />
                       </Field>
 
-                      <Field label="Monthly vehicle sales" required valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
+                      <Field label="Monthly vehicle sales" required selectField valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
                           onBlur={() => handleBlur('monthly_vehicle_sales')}
-                          className={`${inputCls} ${errors.monthly_vehicle_sales && touched.monthly_vehicle_sales ? 'border-red-400' : ''}`}>
+                          className={`${inputCls} pr-16 appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[length:14px] ${errors.monthly_vehicle_sales && touched.monthly_vehicle_sales ? 'border-red-400' : ''}`}
+                          style={{ backgroundImage: "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3e%3cpath d='M5.25 7.5L10 12.25 14.75 7.5z'/%3e%3c/svg%3e\")" }}>
                           <option value="">Select your range</option>
                           <option value="1-10">1 – 10</option>
                           <option value="11-25">11 – 25</option>
