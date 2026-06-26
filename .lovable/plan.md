@@ -1,78 +1,112 @@
+# Dealer Coming Soon — Conversion Redesign
 
-## Goal
+Scoped to `/dealer-portal/coming-soon` and its surrounding chrome. No backend/schema changes. Form still writes to `trade_warranty_signups` and triggers the existing notification email.
 
-Rewrite every public marketing/landing route currently selling **retail** car warranties (BuyAWarranty, "60p a day", consumer family copy) into **trade dealership** warranty pages under the **Panda Protect** brand. URLs stay the same. Admin, sales tooling, checkout backend, customer dashboard, and edge functions are untouched.
+## 1. Hero (above the fold)
 
-## Scope — pages to rewrite in place
+`src/pages/dealer-portal/DealerComingSoon.tsx`
 
-**Core**
-- `/` and `/home` — Index page → Panda Protect trade home
-- `/faq/` and `/faq/traders/` — Trade FAQ (merge content)
-- `/what-is-covered/` — Trade warranty cover (mechanical/electrical, labour rates, claim limits as sold to dealers)
-- `/claims/` and `/make-a-claim/` — Dealer claims handling flow
-- `/cancel-warranty` — Trade-policy cancellation (dealer-initiated)
-- `/warranty-transfer/` — Inter-dealer / dealer→retail customer transfer
-- `/contact-us/` — Trade contact: hello@pandaprotect.co.uk, dealer support phone
-- `/complaints/` — Trade complaints procedure
-- `/discount-promo-offers/` — Dealer-tier / volume offers (or hide)
-- `/warranty-plan/` — Trade plan overview
+- Replace big "Coming Soon" headline with:
+  - Eyebrow (small, orange): `Early dealer access now open`
+  - H1 (navy): `Offer Trade Warranty to Your Customers — Without the Admin`
+  - Sub: `Panda Protect helps UK motor trade dealers sell flexible warranties, handle claims, and give customers extra confidence.`
+- Remove the left-column benefit grid + "what happens next" stack. Replace with a single, calm 3-item benefit list:
+  1. Increase profit per vehicle
+  2. No claims admin — handled by Panda Protect
+  3. Flexible cover — cars, vans, EVs, motorcycles
+- Right column: form card only (see §2).
 
-**Vehicle landings**
-- `/van-warranty/` — Van stock warranties for dealers
-- `/ev-warranty/` — EV trade warranty for forecourts
-- `/motorbike-repair-warranty-uk-warranties/`, `/motorcycle-warranty/` — Motorbike dealer warranties
-- `/car-extended-warranty/` — Extended cover dealers can offer
-- `/used-car-warranty-uk/`, `/buy-a-used-car-warranty-reliable-warranties/` — Forecourt used-car cover
+## 2. Form — shorter & calmer
 
-**Brand landings under `/warranty-types/`**
-- `/warranty-types/` index + all 20+ `/warranty-types/:brand/` pages — rewrite hero/intro/CTA to dealer-focused; keep brand-specific cover detail but reframe ("offer your [Brand] stock with…").
+Same component, fewer visible fields.
 
-## Out of scope (will NOT change in this pass)
+Visible fields (step 1):
+- Dealership name (required)
+- Contact name (required)
+- Email (required)
+- Phone (required)
+- Monthly vehicle sales (required)
 
-- Checkout funnel: `/checkout/payment`, `/cart`, `/quote/:token`, `/widget`
-- Customer dashboard, admin, dealer admin, dealer portal internal pages
-- Edge functions, database schema, Stripe products, pricing logic
-- Brand assets (logos, images) — text/copy only
-- Email templates, SMS, sales script
-- `/thewarrantyhub/*` (already rebranded)
+Hidden / removed from step 1:
+- Current warranty provider → remove from initial form (kept in DB column, sent empty)
+- Where do you sell vehicles? → remove from initial form
+- Anything else → remove from initial form
 
-## Approach
+Copy:
+- Card title: `Get early dealer access`
+- Sub: `Leave your details and our trade team will contact you within 1 working day.`
+- Button: `Request Dealer Access`
+- Microcopy under button: `No obligation. Takes less than 30 seconds. We'll only contact you about Trade Warranty.`
 
-1. **Shared trade copy module** — create `src/content/trade-copy.ts` with:
-   - Brand: `Panda Protect`, support email `hello@pandaprotect.co.uk`, dealer phone `0330 229 5040`
-   - Standard trade value props (margin protection, FCA-aligned, fast claims, white-label, no comeback costs)
-   - Standard CTAs all pointing to `/dealer-portal/signup` (primary) and `/dealer-portal/coming-soon` (secondary)
-   - Trust badges / dealer-focused copy blocks
-2. **Per-page rewrite** — for each route listed above:
-   - Swap hero headline/subheadline to trade angle
-   - Replace retail CTAs (Get Quote, Buy Now, "From 60p a day") with dealer signup CTA
-   - Remove consumer trust signals (Trustpilot reviews from end customers stay — they're brand asset)
-   - Update `<Helmet>` / `SEOHead` title + description + canonical to trade keywords
-   - Update JSON-LD `Product`/`Service` schema → `Service` audience=Dealer
-   - Swap header/footer to `DealerPublicHeader` / dealer footer (same pattern as `/thewarrantyhub`)
-3. **Sitewide head** — update `index.html` `<title>`, meta description, and Organization JSON-LD to Panda Protect trade.
-4. **Internal links** — sweep public pages and rewrite hard-coded retail CTAs (`/cart`, `/quote/...`, `Get Quote` buttons) to `/dealer-portal/signup`.
+Validation:
+- Keep blur-only validation (already in place). Confirm no errors render before blur or submit.
+- Phone regex: widen to accept `+44`, leading `0`, spaces, dashes, parentheses. Strip non-digits before length check; require 10–13 digits.
 
-## Things you should know before I start
+Trust row under the button:
+- `No obligation · Takes <30s · UK motor trade support · Claims handled by Panda Protect`
 
-- **Conversion risk**: any live Google Ads or organic traffic landing on these URLs is currently retail-intent. Rewriting in place will tank retail conversions immediately. Confirm that's acceptable.
-- **Checkout still exists**: `/cart`, `/checkout/payment`, `/quote/:token` will continue to work for any links already in the wild (emails, old quotes). I won't break them — just won't link to them from public pages anymore.
-- **Brand pages**: 20+ `/warranty-types/:brand/` pages share a template. I'll rewrite the template + per-brand copy strings; if some brands need bespoke trade angles, flag them.
-- **No image regeneration** — I'll use existing assets. Hero imagery is currently consumer-feel; we can swap later.
-- **SEO loss**: existing rankings on "car warranty" consumer terms will drop. New trade-focused titles will need time to rank.
+## 3. "What happens next" — single clean row
 
-## Execution
+Below the hero, full width, light grey background:
+```
+1. Register          2. Quick call            3. Start selling
+Tell us about        Our trade team           Get access to warranty
+your dealership.     confirms your needs.     options and support.
+```
+Numbered orange circles, navy titles, grey body. No card borders.
 
-Given size (~30 files, many large), I'll batch in 4 PRs of edits:
-1. Shared trade copy module + index.html sitewide head + home (`/`, `/home`)
-2. Vehicle landings (van, EV, motorbike, used car, car extended) + warranty-types index/template
-3. Brand pages (`/warranty-types/:brand`)
-4. Support pages (faq, what-is-covered, claims, cancel, transfer, contact, complaints, discounts, warranty-plan)
+## 4. Navigation simplification
 
-After each batch I'll pause for you to spot-check before continuing.
+`src/components/dealer/DealerPublicHeader.tsx` (only on dealer-portal routes; do not touch the consumer header).
 
-## Confirm before I start
+- Keep: Home, Why Us, Resources, Contact
+- Primary button: `Register Interest` (scrolls to form)
+- Secondary text link: `Dealer Login`
+- Move `Call Us` / `WhatsApp` out of the top nav into a small sticky support strip at the bottom on mobile, or a single inline "Need help? Call 0330…" line in the footer area of the hero.
 
-1. Go ahead and tank retail SEO/ads on these URLs? (Y/N)
-2. All public CTAs route to `/dealer-portal/signup` — correct? (Y/N)
-3. Keep existing images for now, swap later? (Y/N)
+## 5. FAQ — lighter & shorter
+
+`src/components/dealer/DealerFAQSection.tsx`
+
+- New prop `compact?: boolean` and `limit?: number`.
+- When compact: render a single column (or 2-col) of the 5 selected FAQs only, with a `View all FAQs` link to `/faq/traders`.
+- Selected FAQs:
+  1. Do I need to process the warranty myself?
+  2. What happens if there is a warranty claim?
+  3. Is warranty support included for dealerships?
+  4. When will I receive the warranty documents?
+  5. Who do I contact for warranty support?
+- Styling: keep current white card + orange left border (already updated). Remove the per-category orange uppercase headings in compact mode. Single soft heading: `Common questions from dealers`.
+- Move the FAQ further down the page (after benefits + how it works), not directly after the form.
+
+## 6. Page order on DealerComingSoon
+
+```
+Header (simplified)
+Hero (form right, 3 benefits left)
+What happens next (3 steps)
+Why dealers choose Panda Protect (3 detail cards — moved from old left column)
+Compact FAQ (5 items + View all)
+Final CTA strip → scrolls to form
+Footer
+```
+
+## 7. Visual hierarchy cleanup
+
+- Use orange only for: primary CTA, eyebrow text, FAQ left accent, step numbers.
+- Replace orange backgrounds on secondary blocks with `bg-gray-50` / white.
+- Reduce border usage on benefit cards — use spacing + soft shadow instead.
+
+## Technical notes
+
+- No DB migration. The removed form fields are simply not collected in step 1; columns remain nullable in `trade_warranty_signups`.
+- Submission payload sends empty strings for the dropped fields to preserve the existing edge function contract.
+- Nav changes are scoped to `DealerPublicHeader` only.
+- FAQ `compact` mode is additive; existing usages on `FullWarrantyService` and `ClaimsHandlingService` keep current behaviour.
+- All copy lives inline in the components (no i18n layer in this project).
+
+## Out of scope
+
+- Backend/edge function changes
+- Adding new trust logos / Trustpilot widgets (none provided)
+- Redesigning the customer-side homepage
