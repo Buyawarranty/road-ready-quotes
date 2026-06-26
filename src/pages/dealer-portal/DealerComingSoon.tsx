@@ -442,13 +442,14 @@ const Field: React.FC<{
   valid?: boolean;
   touched?: boolean;
   error?: string;
+  selectField?: boolean;
   children: React.ReactNode;
-}> = ({ label, required, hint, valid, touched, error, children }) => {
+}> = ({ label, required, hint, valid, touched, error, selectField, children }) => {
   const showTick = valid && touched && !error;
   const showError = error && touched;
   const child = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement, {
-        className: `${(children as React.ReactElement).props.className || ''}${showTick ? ' pr-12' : ''}`,
+        className: `${(children as React.ReactElement).props.className || ''}${showTick && !selectField ? ' pr-12' : ''}`,
       })
     : children;
   return (
@@ -460,7 +461,7 @@ const Field: React.FC<{
       <div className="relative">
         {child}
         {showTick && (
-          <span className="absolute right-3 top-3 pointer-events-none text-green-500">
+          <span className={`absolute ${selectField ? 'right-9' : 'right-3'} top-3 pointer-events-none text-green-500`}>
             <Check className="w-5 h-5" strokeWidth={3} />
           </span>
         )}
