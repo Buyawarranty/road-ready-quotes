@@ -52,7 +52,7 @@ const ConditionalCookieBanner = () => {
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isWidget = location.pathname.startsWith('/dealer-widget');
-  const isDealerLanding = location.pathname === '/dealer-portal/coming-soon';
+  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
   const mainClass = isWidget
     ? 'flex-1 w-full overflow-x-hidden'
     : isDealerLanding
