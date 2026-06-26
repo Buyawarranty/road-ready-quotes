@@ -88,29 +88,6 @@ const blankBoolMap = (): Record<FormKey, boolean> => ({
   phone_number: false, monthly_vehicle_sales: false,
 });
 
-const TrustpilotBadge = () => (
-  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4].map((i) => (
-        <svg key={i} className="w-5 h-5 text-[#00b67a]" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
-      <svg className="w-5 h-5 text-[#00b67a]" viewBox="0 0 24 24" fill="currentColor">
-        <defs>
-          <linearGradient id="halfStar" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="50%" stopColor="#00b67a" />
-            <stop offset="50%" stopColor="#d4d4d4" />
-          </linearGradient>
-        </defs>
-        <path fill="url(#halfStar)" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    </div>
-    <div className="text-sm text-gray-700">
-      <span className="font-bold text-[#0f1b3d]">4.8/5</span> on Trustpilot
-    </div>
-  </div>
-);
 
 const DealerComingSoon = () => {
   const [form, setForm] = useState(initialForm);
@@ -208,7 +185,7 @@ const DealerComingSoon = () => {
                 Early dealer access now open
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08] tracking-tight text-[#0f1b3d]">
-                Offer Trade Warranty Without the Admin
+                Offer Trade Warranties Without the Admin
               </h1>
               <p className="text-gray-600 mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
@@ -230,7 +207,14 @@ const DealerComingSoon = () => {
 
               <div className="mt-8">
                 <div className="text-sm font-semibold text-[#0f1b3d] mb-2">Trusted by UK motor trade professionals</div>
-                <TrustpilotBadge />
+                <img
+                  src={qashqaiHero.url}
+                  alt="Nissan Qashqai SUV — the kind of vehicle your customers can protect with a Panda Protect trade warranty"
+                  className="w-full max-w-md object-contain"
+                  width={640}
+                  height={360}
+                  loading="eager"
+                />
               </div>
             </div>
 
