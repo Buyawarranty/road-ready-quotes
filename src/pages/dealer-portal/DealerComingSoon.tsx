@@ -168,7 +168,7 @@ const DealerComingSoon = () => {
                 Early dealer access now open
               </span>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08] tracking-tight text-[#0f1b3d]">
-                Offer Trade Warranty to Your Customers — Without the Admin
+                Offer Trade Warranty to Your Customers — We Handle the Paperwork
               </h1>
               <p className="text-gray-600 mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Panda Protect helps UK motor trade dealers sell flexible warranties, handle claims, and give customers extra confidence.
