@@ -53,7 +53,7 @@ const DealerPublicFooter: React.FC = () => {
           </div>
 
           <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-4">Warranty</h3>
+            <h3 className="text-sm font-bold text-white mb-4">Warranty</h3>
             <ul className="space-y-2.5">
               {footerLinks.warranty.map((l) => (
                 <li key={l.label}>
@@ -64,7 +64,7 @@ const DealerPublicFooter: React.FC = () => {
           </div>
 
           <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-4">Support</h3>
+            <h3 className="text-sm font-bold text-white mb-4">Support</h3>
             <ul className="space-y-2.5">
               {footerLinks.support.map((l) => (
                 <li key={l.label}>
@@ -79,7 +79,7 @@ const DealerPublicFooter: React.FC = () => {
           </div>
 
           <div className="col-span-1">
-            <h3 className="text-sm font-bold mb-4">Company</h3>
+            <h3 className="text-sm font-bold text-white mb-4">Company</h3>
             <ul className="space-y-2.5">
               {footerLinks.company.map((l) => (
                 <li key={l.label}>
