@@ -17,7 +17,16 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Contact', to: '/contact-us' },
 ];
 
-export const DealerPublicHeader: React.FC = () => {
+interface DealerPublicHeaderProps {
+  /** When 'minimal', shows only nav + Register Interest + Dealer Login. Hides Call/WhatsApp/Start Today. */
+  variant?: 'full' | 'minimal';
+  /** Optional scroll target id for the primary CTA in minimal mode. */
+  ctaTargetId?: string;
+}
+
+export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant = 'full', ctaTargetId }) => {
+  const minimal = variant === 'minimal';
+
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
