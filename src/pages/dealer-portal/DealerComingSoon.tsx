@@ -241,40 +241,42 @@ const DealerComingSoon = () => {
                 ) : (
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Dealership Name" valid={blurValidity.dealership_name} touched={touched.dealership_name}>
+                      <Field label="Dealership Name" required valid={blurValidity.dealership_name} touched={touched.dealership_name} error={errors.dealership_name}>
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
                           onBlur={() => handleBlur('dealership_name')}
-                          placeholder="Enter dealership name" className={inputCls} />
+                          placeholder="Enter dealership name"
+                          className={`${inputCls} ${errors.dealership_name ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Contact Name" valid={blurValidity.contact_name} touched={touched.contact_name}>
+                      <Field label="Contact Name" required valid={blurValidity.contact_name} touched={touched.contact_name} error={errors.contact_name}>
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
                           onBlur={() => handleBlur('contact_name')}
-                          placeholder="Enter your full name" className={inputCls} />
+                          placeholder="Enter your full name"
+                          className={`${inputCls} ${errors.contact_name ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Email Address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email}>
+                      <Field label="Email Address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email_address}>
                         <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
                           onBlur={() => handleBlur('email_address')}
                           placeholder="Enter email address"
-                          className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
+                          className={`${inputCls} ${errors.email_address ? 'border-red-400' : ''}`} />
                       </Field>
-                      <Field label="Phone Number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone}>
+                      <Field label="Phone Number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone_number}>
                         <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
                           onBlur={() => handleBlur('phone_number')}
                           placeholder="Enter phone number"
-                          className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
+                          className={`${inputCls} ${errors.phone_number ? 'border-red-400' : ''}`} />
                       </Field>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Field label="Monthly vehicle sales" valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales}>
+                      <Field label="Monthly vehicle sales" required valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
                           onBlur={() => handleBlur('monthly_vehicle_sales')}
-                          className={inputCls}>
+                          className={`${inputCls} ${errors.monthly_vehicle_sales ? 'border-red-400' : ''}`}>
                           <option value="">Select range</option>
                           <option value="1-10">1 – 10</option>
                           <option value="11-25">11 – 25</option>
@@ -283,10 +285,10 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
-                      <Field label="Current warranty provider" valid={blurValidity.current_warranty_provider} touched={touched.current_warranty_provider}>
+                      <Field label="Current warranty provider" required valid={blurValidity.current_warranty_provider} touched={touched.current_warranty_provider} error={errors.current_warranty_provider}>
                         <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
                           onBlur={() => handleBlur('current_warranty_provider')}
-                          className={inputCls}>
+                          className={`${inputCls} ${errors.current_warranty_provider ? 'border-red-400' : ''}`}>
                           <option value="">Select provider</option>
                           <option value="None">None</option>
                           <option value="Warrantywise">Warrantywise</option>
@@ -298,6 +300,7 @@ const DealerComingSoon = () => {
                         </select>
                       </Field>
                     </div>
+
 
                     <Field
                       label="Where do you sell vehicles?"
