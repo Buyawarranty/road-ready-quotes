@@ -99,7 +99,7 @@ const DealerHome = () => {
               <div className="space-y-3">
                 <div className="text-sm font-bold text-gray-900">Get an instant trade quote</div>
                 <form onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
-                  <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg w-full max-w-xl">
+                  <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg border-2 border-black w-full max-w-xl">
                     <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-4 select-none">
                       <span className="text-base leading-none" aria-hidden>🇬🇧</span>
                       <span className="text-[10px] font-bold tracking-wider mt-1">UK</span>
