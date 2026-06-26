@@ -415,8 +415,8 @@ const Field: React.FC<{
       <div className="relative">
         {child}
         {showTick && (
-          <span className="absolute right-3 top-3 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-sm pointer-events-none">
-            <Check className="w-3 h-3 text-white" strokeWidth={3} />
+          <span className="absolute right-3 top-3 pointer-events-none text-green-500">
+            <Check className="w-5 h-5" strokeWidth={3} />
           </span>
         )}
       </div>
