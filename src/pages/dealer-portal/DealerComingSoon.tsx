@@ -104,6 +104,7 @@ const DealerComingSoon = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
+  const phoneValidLive = isFieldValid(form, 'phone_number');
 
   const set = (k: FormKey, v: string) => {
     setForm((f) => ({ ...f, [k]: v }));
@@ -277,7 +278,7 @@ const DealerComingSoon = () => {
                           className={`${inputCls} ${errors.email_address && touched.email_address ? 'border-red-400' : ''}`} />
                       </Field>
 
-                      <Field label="Phone number" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone_number}>
+                      <Field label="Phone number" required valid={phoneValidLive} touched={touched.phone_number || phoneValidLive} error={errors.phone_number}>
                         <input type="text" inputMode="tel" autoComplete="tel" maxLength={20}
                           value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
