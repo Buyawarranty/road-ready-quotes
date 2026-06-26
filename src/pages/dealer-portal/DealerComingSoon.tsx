@@ -304,10 +304,10 @@ const DealerComingSoon = () => {
                       </button>
 
                       <div className="grid grid-cols-3 gap-2 text-center text-[11px] text-gray-600 mt-1">
-                        {formTrust.map((t) => (
-                          <div key={t} className="flex items-center justify-center gap-1">
-                            <Check className="w-3.5 h-3.5 text-green-600 flex-shrink-0" strokeWidth={3} />
-                            <span>{t}</span>
+                        {formTrust.map(({ icon: Icon, label }) => (
+                          <div key={label} className="flex items-center justify-center gap-1.5">
+                            <Icon className="w-3.5 h-3.5 text-[#eb4b00] flex-shrink-0" />
+                            <span>{label}</span>
                           </div>
                         ))}
                       </div>
