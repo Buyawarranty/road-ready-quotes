@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, Headphones, ShieldCheck, ClipboardList, Phone,
-  AlertCircle,
+  AlertCircle, Clock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
@@ -13,13 +13,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import qashqaiHero from '@/assets/qashqai-hero.webp.asset.json';
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
+// UK mobiles (07xxx, 11 digits) and landlines (01/02/03, 10–11 digits)
 const isValidUKPhone = (raw: string): boolean => {
   const cleaned = raw.replace(/[\s\-()]/g, '');
-  if (!/^(\+?44|0)\d{9,11}$/.test(cleaned)) return false;
-  const digits = cleaned.replace(/^\+?44/, '0').replace(/\D/g, '');
-  return digits.length >= 10 && digits.length <= 11;
+  const normalised = cleaned.replace(/^(\+?44)/, '0');
+  if (!/^0\d{9,10}$/.test(normalised)) return false;
+  if (!/^0[1237]/.test(normalised)) return false;
+  if (normalised.startsWith('07') && normalised.length !== 11) return false;
+  return true;
 };
 
 const heroBenefits = [
