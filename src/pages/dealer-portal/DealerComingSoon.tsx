@@ -242,14 +242,16 @@ const DealerComingSoon = () => {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Field label="Email" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email_address}>
-                          <input type="email" value={form.email_address}
+                          <input type="text" inputMode="email" autoComplete="email" maxLength={255}
+                            value={form.email_address}
                             onChange={(e) => set('email_address', e.target.value)}
                             onBlur={() => handleBlur('email_address')}
                             placeholder="you@dealership.co.uk"
                             className={`${inputCls} ${errors.email_address && touched.email_address ? 'border-red-400' : ''}`} />
                         </Field>
                         <Field label="Phone" required valid={blurValidity.phone_number} touched={touched.phone_number} error={errors.phone_number}>
-                          <input type="tel" value={form.phone_number}
+                          <input type="text" inputMode="tel" autoComplete="tel" maxLength={20}
+                            value={form.phone_number}
                             onChange={(e) => set('phone_number', e.target.value)}
                             onBlur={() => handleBlur('phone_number')}
                             placeholder="07123 456 789"
