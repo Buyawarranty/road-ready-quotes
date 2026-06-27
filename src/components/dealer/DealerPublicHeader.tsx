@@ -13,20 +13,11 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', to: '/' },
   { label: 'Why Us', to: '/warranty-plan' },
-  { label: 'Resources', to: '/faq/traders' },
+  { label: 'Resources', to: '/faq' },
   { label: 'Contact', to: '/contact-us' },
 ];
 
-interface DealerPublicHeaderProps {
-  /** When 'minimal', shows only nav + Register Interest + Dealer Login. Hides Call/WhatsApp/Start Today. */
-  variant?: 'full' | 'minimal';
-  /** Optional scroll target id for the primary CTA in minimal mode. */
-  ctaTargetId?: string;
-}
-
-export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant = 'full', ctaTargetId }) => {
-  const minimal = variant === 'minimal';
-
+export const DealerPublicHeader: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -65,86 +56,58 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
               </Link>
             ))}
 
-            {/* Phone + CTA always visible on desktop */}
+            {/* Call Us Hover Card */}
+            <HoverCard openDelay={0} closeDelay={200}>
+              <HoverCardTrigger asChild>
+                <button className="text-orange-500 hover:text-orange-600 font-semibold text-sm xl:text-base p-2 h-auto flex items-center gap-1 bg-transparent border-none cursor-pointer">
+                  <Phone className="h-4 w-4 text-orange-500" />
+                  Call Us
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent align="end" className="w-72 p-4 bg-white border shadow-lg z-50">
+                <div className="space-y-3">
+                  <div className="text-left text-base font-medium text-gray-600 mb-4 flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-gray-600" />
+                    Mon-Fri 9am to 5:30pm
+                  </div>
+                  <a href="tel:03302295045" className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <Phone className="h-5 w-5 mr-3 text-orange-500" />
+                    <div>
+                      <div className="font-semibold text-base text-black">Dealer Support</div>
+                      <div className="text-orange-500 font-semibold text-base">0330 229 5045</div>
+                    </div>
+                  </a>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+
+            {/* WhatsApp Us */}
             <a
-              href="tel:03302295045"
-              className="hidden md:flex items-center gap-1.5 text-[#0f1b3d] font-semibold text-sm xl:text-base hover:text-[#eb4b00] transition-colors whitespace-nowrap"
+              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#25D366] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#20BA5A] transition-colors whitespace-nowrap"
             >
-              <Phone className="h-4 w-4 text-[#eb4b00]" />
-              0330 229 5045
+              WhatsApp Us
             </a>
 
-            {!minimal && (
-              <>
-                {/* Call Us Hover Card */}
-                <HoverCard openDelay={0} closeDelay={200}>
-                  <HoverCardTrigger asChild>
-                    <button className="text-orange-500 hover:text-orange-600 font-semibold text-sm xl:text-base p-2 h-auto flex items-center gap-1 bg-transparent border-none cursor-pointer">
-                      <Phone className="h-4 w-4 text-orange-500" />
-                      Call Us
-                    </button>
-                  </HoverCardTrigger>
-                  <HoverCardContent align="end" className="w-72 p-4 bg-white border shadow-lg z-50">
-                    <div className="space-y-3">
-                      <div className="text-left text-base font-medium text-gray-600 mb-4 flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-600" />
-                        Mon-Fri 9am to 5:30pm
-                      </div>
-                      <a href="tel:03302295045" className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-                        <Phone className="h-5 w-5 mr-3 text-orange-500" />
-                        <div>
-                          <div className="font-semibold text-base text-black">Dealer Support</div>
-                          <div className="text-orange-500 font-semibold text-base">0330 229 5045</div>
-                        </div>
-                      </a>
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
-
-                <a
-                  href="https://wa.me/message/SPQPJ6O3UBF5B1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#25D366] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#20BA5A] transition-colors whitespace-nowrap"
-                >
-                  WhatsApp Us
-                </a>
-
-                <Link
-                  to="/dealer-portal/signup"
-                  className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#eb4b00] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
-                >
-                  Start Today
-                </Link>
-              </>
-            )}
-
-            {minimal && ctaTargetId && (
-              <a
-                href={`#${ctaTargetId}`}
-                onClick={(e) => {
-                  const el = document.getElementById(ctaTargetId);
-                  if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-                }}
-                className="inline-flex items-center px-4 xl:px-5 py-2 bg-[#eb4b00] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
-              >
-                Request Dealer Access
-              </a>
-            )}
-
-            {/* Motor Trade Login */}
+            {/* Start Today CTA */}
             <Link
-              to="/dealer-portal/login"
-              className={
-                minimal
-                  ? 'text-sm xl:text-base font-semibold text-slate-700 hover:text-slate-900 underline-offset-4 hover:underline whitespace-nowrap'
-                  : 'inline-flex items-center gap-1.5 px-3 xl:px-4 py-2 bg-slate-900 text-white text-sm xl:text-base font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap'
-              }
-              aria-label="Motor Trade Login for dealer partners"
+              to="/dealer-portal/signup"
+              className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#eb4b00] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
             >
-              {minimal ? 'Dealer Login' : (<><LogIn className="h-4 w-4" /> Motor Trade Login</>)}
+              Start Today
             </Link>
 
+            {/* Motor Trade Login - high contrast B2B CTA */}
+            <Link
+              to="/dealer-portal/login"
+              className="inline-flex items-center gap-1.5 px-3 xl:px-4 py-2 bg-slate-900 text-white text-sm xl:text-base font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap"
+              aria-label="Motor Trade Login for dealer partners"
+            >
+              <LogIn className="h-4 w-4" />
+              Motor Trade Login
+            </Link>
           </nav>
 
           {/* Mobile Menu Toggle */}
@@ -175,57 +138,34 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ variant 
               <a
                 href="tel:03302295045"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-[#eb4b00]"
+                className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-orange-500"
               >
-                <Phone className="h-4 w-4" /> 0330 229 5045
+                <Phone className="h-4 w-4" /> Call Us · 0330 229 5045
               </a>
-
-              {!minimal && (
-                <>
-                  <a
-                    href="https://wa.me/message/SPQPJ6O3UBF5B1"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileOpen(false)}
-                    className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-                  >
-                    WhatsApp Us
-                  </a>
-                  <Link
-                    to="/dealer-portal/signup"
-                    onClick={() => setMobileOpen(false)}
-                    className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-                  >
-                    Start Today
-                  </Link>
-                </>
-              )}
-              {minimal && ctaTargetId && (
-                <a
-                  href={`#${ctaTargetId}`}
-                  onClick={(e) => {
-                    setMobileOpen(false);
-                    const el = document.getElementById(ctaTargetId);
-                    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-                  }}
-                  className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-                >
-                  Request Dealer Access
-                </a>
-              )}
+              <a
+                href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+              >
+                WhatsApp Us
+              </a>
+              <Link
+                to="/dealer-portal/signup"
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+              >
+                Start Today
+              </Link>
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className={
-                  minimal
-                    ? 'inline-flex items-center justify-center text-sm font-semibold text-slate-700 underline-offset-4 hover:underline py-2'
-                    : 'inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors'
-                }
+                className="inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors"
               >
-                {minimal ? 'Dealer Login' : (<><LogIn className="h-4 w-4" /> Motor Trade Login</>)}
+                <LogIn className="h-4 w-4" /> Motor Trade Login
               </Link>
             </div>
-
           </div>
         )}
       </div>

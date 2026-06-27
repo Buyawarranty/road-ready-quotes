@@ -1335,6 +1335,7 @@ const Index = () => {
           { name: 'HOME PAGE', url: 'https://pandaprotect.co.uk/' },
           { name: 'MAKE A CLAIM', url: 'https://pandaprotect.co.uk/make-a-claim/' },
           { name: "WHAT'S COVERED", url: 'https://pandaprotect.co.uk/what-is-covered/' },
+          { name: "FAQ'S", url: 'https://pandaprotect.co.uk/faq/' },
           { name: 'LOGIN', url: 'https://pandaprotect.co.uk/customer-dashboard/' },
           { name: 'CAR WARRANTY', url: 'https://pandaprotect.co.uk/buy-a-used-car-warranty-reliable-warranties/' },
           { name: 'VAN WARRANTY', url: 'https://pandaprotect.co.uk/van-warranty/' },

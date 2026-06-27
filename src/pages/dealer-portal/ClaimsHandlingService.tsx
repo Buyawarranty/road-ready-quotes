@@ -23,9 +23,9 @@ import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 
 const ClaimsHandlingService = () => {
-  const pageTitle = 'Dealer Warranty Claims Handling | Panda Protect';
+  const pageTitle = 'Dealer Warranty Partner UK | Claims Handling for Car Dealers';
   const pageDescription =
-    'Streamline dealer warranty claims handling with digital processes, trade support and clear repair authorisation workflows from Panda Protect.';
+    'Trusted warranty partner for UK car dealers. Transparent pricing, dedicated claims manager, and repairs paid within 24 hours. Run your own dealer-paid warranty programme.';
   const canonical = 'https://pandaprotect.co.uk/dealer-portal/claims-handling';
 
   const managementBenefits = [

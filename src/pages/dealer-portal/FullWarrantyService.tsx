@@ -7,9 +7,9 @@ import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 
 const FullWarrantyService = () => {
-  const pageTitle = 'Dealer Vehicle Warranty Programme | Panda Protect';
+  const pageTitle = 'Full Warranty Cover for Dealers | We Pay the Repairs';
   const pageDescription =
-    'Join a dealer vehicle warranty programme that helps motor retailers offer added value, improve retention and support aftersales revenue.';
+    'Offer customers a fully insured extended warranty. We handle claims AND pay the repair payouts — you sell more cars with confidence.';
   const canonical = 'https://pandaprotect.co.uk/dealer-portal/full-warranty';
 
   const features = [

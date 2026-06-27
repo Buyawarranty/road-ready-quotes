@@ -52,14 +52,8 @@ const ConditionalCookieBanner = () => {
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isWidget = location.pathname.startsWith('/dealer-widget');
-  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
-  const mainClass = isWidget
-    ? 'flex-1 w-full overflow-x-hidden'
-    : isDealerLanding
-    ? 'flex-1 w-full overflow-x-hidden'
-    : 'flex-1 pb-16 w-full overflow-x-hidden';
   return (
-    <main className={mainClass}>
+    <main className={isWidget ? 'flex-1 w-full overflow-x-hidden' : 'flex-1 pb-16 w-full overflow-x-hidden'}>
       {children}
     </main>
   );
@@ -76,9 +70,6 @@ const ConditionalFooter = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget');
   
-  // Dealer public landing pages render their own footer
-  const isDealerLanding = location.pathname.startsWith('/dealer-portal/coming-soon');
-  
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
   
@@ -89,7 +80,7 @@ const ConditionalFooter = () => {
   // Also check for any step that begins with these numbers
   const isCheckoutStep = step && /^[2-6]/.test(step);
   
-  if (isCheckoutStep || isAdminRoute || isBrandLanding || isQuotePage || isDealerDashboard || isDealerLanding) return null;
+  if (isCheckoutStep || isAdminRoute || isBrandLanding || isQuotePage || isDealerDashboard) return null;
   return <WebsiteFooter />;
 };
 
@@ -310,9 +301,9 @@ const App = () => {
                 <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
                   <Routes>
                     <Route path="/" element={<DealerHome />} />
-                    <Route path="/home" element={<Navigate to="/" replace />} />
-                    <Route path="/home/" element={<Navigate to="/" replace />} />
-                    
+                    <Route path="/home" element={<DealerHome />} />
+                    <Route path="/home/" element={<DealerHome />} />
+                    <Route path="/faq/" element={<TradeOnlyPage />} />
                     <Route path="/faq/traders" element={<FAQTraders />} />
                     <Route path="/faq/traders/" element={<FAQTraders />} />
                     <Route path="/thank-you/" element={<ThankYou />} />
@@ -377,7 +368,7 @@ const App = () => {
                     <Route path="/dealer-portal/coming-soon" element={<DealerComingSoon />} />
                     <Route path="/dealer-portal/full-warranty" element={<FullWarrantyService />} />
                     <Route path="/dealer-portal/claims-handling" element={<ClaimsHandlingService />} />
-                    <Route path="/dealer-portal/signup" element={<Navigate to="/dealer-portal/coming-soon" replace />} />
+                    <Route path="/dealer-portal/signup" element={<DealerSignup />} />
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     {/* Portal not live yet — funnel all dealer app routes to the interest/signup form */}
                     <Route path="/dealer-portal/dashboard" element={<Navigate to="/dealer-portal/coming-soon" replace />} />

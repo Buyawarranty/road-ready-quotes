@@ -42,3 +42,6 @@ https://www.pandaprotect.co.uk/* https://pandaprotect.co.uk/:splat 301!
 /van-warranty-companies-uk-warranties /van-warranty-companies-uk-warranties/ 301
 /best-warranty-on-ev-cars-uk-warranties /best-warranty-on-ev-cars-uk-warranties/ 301
 /motorbike-repair-warranty-uk-warranties /motorbike-repair-warranty-uk-warranties/ 301
+
+# SPA fallback for client-side routes
+/* /index.html 200

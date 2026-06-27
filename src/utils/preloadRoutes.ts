@@ -5,6 +5,7 @@
 export const preloadCriticalRoutes = () => {
   // Preload most commonly accessed routes
   const criticalRoutes = [
+    '/faq/',
     '/contact-us/',
     '/what-is-covered/',
   ];

@@ -85,8 +85,8 @@ const DealerWidget: React.FC = () => {
       style={{ padding: compact ? '16px' : '24px 20px 0' }}
     >
       <Helmet>
-        <title>Dealer Warranty Quote Widget | Panda Protect</title>
-        <meta name="description" content="Add a dealer warranty quote widget to support trade sales, customer confidence and faster warranty registration for eligible vehicles." />
+        <title>Panda Protect Dealer Hero</title>
+        <meta name="robots" content="noindex" />
       </Helmet>
 
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">

@@ -39,13 +39,16 @@ const RequestAccess = () => {
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [confirmationMessage, setConfirmationMessage] = useState(
+    'Thank you for your interest. Our team will review your request and get back to you within 24-48 hours.'
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-
+    
+    // Validate form data
     const result = requestSchema.safeParse(formData);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
@@ -60,19 +63,22 @@ const RequestAccess = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('handle-access-request', {
-        body: formData,
+      const { data, error } = await supabase.functions.invoke<{
+        success: boolean;
+        requestId: string;
+        message?: string;
+      }>('handle-access-request', {
+        body: formData
       });
 
       if (error) throw error;
-      if (data && (data as any).error) throw new Error((data as any).error);
 
-      const message =
-        (data as any)?.message ||
-        'Your access request has been received. We will review it and get back to you within 1 business day.';
-      setSuccessMessage(message);
+      if (data?.message) {
+        setConfirmationMessage(data.message);
+      }
+
       setSubmitted(true);
-      toast.success(message);
+      toast.success(data?.message || 'Access request submitted successfully.');
     } catch (error: any) {
       console.error('Error submitting request:', error);
       toast.error(error.message || 'Failed to submit request. Please try again.');
@@ -88,7 +94,9 @@ const RequestAccess = () => {
           <CardContent className="pt-8 pb-8 text-center">
             <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-foreground mb-2">Request Submitted!</h2>
-            <p className="text-muted-foreground mb-6">{successMessage}</p>
+            <p className="text-muted-foreground mb-6">
+              {confirmationMessage}
+            </p>
             <Button variant="outline" onClick={() => navigate('/')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Homepage

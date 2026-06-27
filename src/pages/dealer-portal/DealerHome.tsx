@@ -25,7 +25,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import pandaMechanicImage from '@/assets/panda-waving.png.asset.json';
+import pandaMechanicImage from '@/assets/car-warranty-panda-vehicles.png';
 
 /**
  * Dealer home (/dealer-portal/) — trade-focused landing page.
@@ -41,9 +41,9 @@ const DealerHome = () => {
     navigate(`/dealer-portal/coming-soon${cleaned ? `?reg=${encodeURIComponent(cleaned)}` : ''}`);
   };
 
-  const pageTitle = 'Dealer Warranty Portal UK | Panda Protect';
+  const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
   const pageDescription =
-    'Access the Panda Protect dealer warranty portal for trade warranty registration, quote tools, claims support and dealer account management.';
+    'Boost dealer profits today. Offer extended warranties from 20p a day, sign up in 60 seconds and start earning with the UK\'s trusted dealer warranty partner.';
   const canonical = 'https://pandaprotect.co.uk/dealer-portal/';
 
   const jsonLd = {
@@ -99,7 +99,7 @@ const DealerHome = () => {
               <div className="space-y-3">
                 <div className="text-sm font-bold text-gray-900">Get an instant trade quote</div>
                 <form onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
-                  <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg border-2 border-black w-full max-w-xl">
+                  <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg w-full max-w-xl">
                     <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-4 select-none">
                       <span className="text-base leading-none" aria-hidden>🇬🇧</span>
                       <span className="text-[10px] font-bold tracking-wider mt-1">UK</span>
@@ -206,7 +206,7 @@ const DealerHome = () => {
                 </div>
               </div>
               <img
-                src={pandaMechanicImage.url}
+                src={pandaMechanicImage}
                 alt="Panda mascot"
                 className="hidden xl:block absolute -right-6 -bottom-4 w-40 pointer-events-none select-none"
               />
