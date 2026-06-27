@@ -138,7 +138,26 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Mirror into Panda Admin signups feed
+    try {
+      const { error: signupErr } = await supabaseClient
+        .from("trade_warranty_signups")
+        .insert({
+          contact_name: fullName,
+          email_address: email,
+          phone_number: phone || "Not provided",
+          dealership_name: company || null,
+          interested_in: requestedRole,
+          additional_information: `Admin access request (${ROLE_LABELS[requestedRole] || requestedRole}): ${reason}`,
+          status: "new",
+        });
+      if (signupErr) console.error("Failed to mirror to trade_warranty_signups:", signupErr);
+    } catch (mirrorErr) {
+      console.error("Mirror to signups threw:", mirrorErr);
+    }
+
     // Notify admin
+
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
