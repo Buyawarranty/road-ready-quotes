@@ -1,55 +1,25 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, Headphones, ShieldCheck, ClipboardList, Phone,
-  AlertCircle, Clock,
+  ArrowRight, Check, TrendingUp, Users, ShieldCheck, Headphones,
+  ShieldQuestion, Sparkles, Lock,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
-import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import qashqaiHero from '@/assets/qashqai-hero.webp.asset.json';
-import phevId3 from '@/assets/phev-id3.png.asset.json';
 
-const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+// UK phone — accepts 07xxxxxxxxx, 02..., +44..., spaces/dashes allowed
+const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// UK mobiles (07xxx, 11 digits) and landlines (01/02/03, 10–11 digits)
-const isValidUKPhone = (raw: string): boolean => {
-  const cleaned = raw.replace(/[\s\-()]/g, '');
-  const normalised = cleaned.replace(/^(\+?44)/, '0');
-  if (!/^0\d{9,10}$/.test(normalised)) return false;
-  if (!/^0[1237]/.test(normalised)) return false;
-  if (normalised.startsWith('07') && normalised.length !== 11) return false;
-  return true;
-};
-
-const heroBenefits = [
-  { icon: TrendingUp, title: 'Increase profit per vehicle', text: 'Earn more on every eligible sale with high-margin warranty products.' },
-  { icon: Headphones, title: 'No claims admin', text: 'We handle claims, documents and customer support for you.' },
-  { icon: ShieldCheck, title: 'Flexible cover options', text: 'Car, van, EV and motorcycle warranty options to suit your customers.' },
-];
-
-const whyChoose = [
-  'High profit warranty products with flexible options',
-  'Quick and simple dealer onboarding',
-  'Claims handled by our UK-based support team',
-  'Digital documents and instant policy issuance',
-  'Marketing support to help you sell more',
-];
-
-const howItWorks = [
-  { icon: ClipboardList, n: 1, title: 'Register', text: 'Complete the short form to tell us about your dealership.' },
-  { icon: Phone, n: 2, title: 'Quick call', text: 'Our trade team will call to confirm your needs and answer questions.' },
-  { icon: ShieldCheck, n: 3, title: 'Start selling', text: 'Get access to warranty options, documents and ongoing support.' },
-];
-
-const formTrust: { icon: React.ComponentType<{ className?: string }>; label: string }[] = [
-  { icon: ShieldCheck, label: 'No obligation' },
-  { icon: Clock, label: 'Takes less than 30 seconds' },
-  { icon: Headphones, label: 'UK dealer support' },
+const benefits = [
+  { icon: TrendingUp, title: 'Increase profit per vehicle sale', text: 'Add high-margin warranty cover to every deal.' },
+  { icon: Users, title: 'Simple dealer onboarding', text: 'Quick and easy to set up — we handle the rest.' },
+  { icon: ShieldCheck, title: 'Flexible cover options', text: 'Dealer-paid, fully covered, or both — your choice.' },
+  { icon: Headphones, title: 'Dedicated UK claims support', text: 'Real humans, real support, when you need it.' },
 ];
 
 const initialForm = {
@@ -58,187 +28,222 @@ const initialForm = {
   email_address: '',
   phone_number: '',
   monthly_vehicle_sales: '',
+  current_warranty_provider: '',
+  interested_in: '',
+  heard_about_us: '',
+  additional_information: '',
 };
 
-type FormKey = keyof typeof initialForm;
-type Errors = Partial<Record<FormKey, string>>;
-
-const getFieldErrorFor = (form: typeof initialForm, key: FormKey): string | undefined => {
-  const v = form[key].trim();
-  switch (key) {
-    case 'dealership_name':
-      if (!v) return 'Dealership name is required.';
-      if (v.length < 2) return 'Please enter your dealership name.';
-      return;
-    case 'contact_name':
-      if (!v) return 'Contact name is required.';
-      if (v.length < 2) return 'Please enter your full name.';
-      return;
-    case 'email_address':
-      if (!v) return 'Email address is required.';
-      if (!EMAIL_RE.test(v)) return 'Please enter a valid email address.';
-      return;
-    case 'phone_number':
-      if (!v) return 'Phone number is required.';
-      if (!isValidUKPhone(v)) return 'Please enter a valid UK phone number.';
-      return;
-    case 'monthly_vehicle_sales':
-      if (!v) return 'Please select your monthly vehicle sales.';
-      return;
-  }
+const PLAN_LABELS: Record<string, string> = {
+  'full-warranty': 'Full Warranty',
+  'claims-handling': 'Claims Handling',
 };
-
-const isFieldValid = (form: typeof initialForm, key: FormKey): boolean =>
-  !getFieldErrorFor(form, key);
-
-const blankBoolMap = (): Record<FormKey, boolean> => ({
-  dealership_name: false, contact_name: false, email_address: false,
-  phone_number: false, monthly_vehicle_sales: false,
-});
-
 
 const DealerComingSoon = () => {
-  const [form, setForm] = useState(initialForm);
-  const [touched, setTouched] = useState<Record<FormKey, boolean>>(blankBoolMap);
-  const [blurValidity, setBlurValidity] = useState<Record<FormKey, boolean>>(blankBoolMap);
+  const [searchParams] = useSearchParams();
+  const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
+  const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
+  const [form, setForm] = useState(() => ({
+    ...initialForm,
+    interested_in: initialInterestedIn,
+  }));
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<Errors>({});
-  const phoneValidLive = isFieldValid(form, 'phone_number');
+  const [errors, setErrors] = useState<{ email?: string; phone?: string; sellVehicles?: string }>({});
 
-  const set = (k: FormKey, v: string) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    setErrors((e) => ({ ...e, [k]: undefined }));
-  };
+  const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleBlur = (k: FormKey) => {
-    setTouched((t) => ({ ...t, [k]: true }));
-    setBlurValidity((b) => ({ ...b, [k]: isFieldValid(form, k) }));
-    setErrors((e) => ({ ...e, [k]: getFieldErrorFor(form, k) }));
-  };
-
-  const validate = useCallback((): boolean => {
-    const e: Errors = {};
-    (Object.keys(initialForm) as FormKey[]).forEach((k) => {
-      const err = getFieldErrorFor(form, k);
-      if (err) e[k] = err;
-    });
+  const validate = () => {
+    const e: typeof errors = {};
+    if (!form.email_address.trim() || !EMAIL_RE.test(form.email_address.trim())) {
+      e.email = 'Please enter a valid email address.';
+    }
+    if (!form.phone_number.trim() || !UK_PHONE_RE.test(form.phone_number.trim().replace(/\s+/g, ' '))) {
+      e.phone = 'Please enter a valid UK phone number.';
+    }
+    if (!form.heard_about_us.trim()) {
+      e.sellVehicles = 'Please share where you sell vehicles.';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
-  }, [form]);
+  };
+
+  const submitViaDatabaseFallback = async (payload: {
+    dealership_name: string | null;
+    contact_name: string | null;
+    email_address: string;
+    phone_number: string;
+    monthly_vehicle_sales: string | null;
+    current_warranty_provider: string | null;
+    interested_in: string | null;
+    heard_about_us: string | null;
+    additional_information: string | null;
+  }) => {
+    const { data, error } = await supabase
+      .from('trade_warranty_signups')
+      .insert(payload)
+      .select('id, created_at')
+      .single();
+
+    if (error) throw error;
+
+    supabase.functions.invoke('notify-dealer-waitlist', {
+      body: { ...payload, id: data?.id, created_at: data?.created_at },
+    }).catch((notifyError) => console.error('notify-dealer-waitlist failed', notifyError));
+  };
 
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    setTouched({
-      dealership_name: true, contact_name: true, email_address: true,
-      phone_number: true, monthly_vehicle_sales: true,
-    });
     if (!validate()) return;
     setSubmitting(true);
     try {
       const payload = {
-        dealership_name: form.dealership_name.trim(),
-        contact_name: form.contact_name.trim(),
+        dealership_name: form.dealership_name.trim() || null,
+        contact_name: form.contact_name.trim() || null,
         email_address: form.email_address.trim(),
         phone_number: form.phone_number.trim(),
-        monthly_vehicle_sales: form.monthly_vehicle_sales,
-        current_warranty_provider: null as string | null,
-        heard_about_us: null as string | null,
-        additional_information: null as string | null,
+        monthly_vehicle_sales: form.monthly_vehicle_sales || null,
+        current_warranty_provider: form.current_warranty_provider || null,
+        interested_in: form.interested_in || null,
+        heard_about_us: form.heard_about_us.trim() || null,
+        additional_information: form.additional_information.trim() || null,
       };
 
-      const { data, error } = await supabase
-        .from('trade_warranty_signups')
-        .insert(payload as any)
-        .select('id, created_at')
-        .single();
-      if (error) throw error;
 
-      supabase.functions.invoke('notify-dealer-waitlist', {
-        body: { ...payload, id: data?.id, created_at: data?.created_at },
-      }).catch((e) => console.error('notify-dealer-waitlist failed', e));
+      const response = await supabase.functions.invoke('submit-trade-warranty-signup', { body: payload });
+      if (response.error) {
+        const message = response.error.message || 'Failed to submit trade warranty signup';
+        const shouldFallback = /edge function|failed to send a request|failed to fetch|network/i.test(message);
+
+        if (shouldFallback) {
+          await submitViaDatabaseFallback(payload);
+        } else {
+          throw new Error(message);
+        }
+      }
 
       setSubmitted(true);
-      setForm(initialForm);
-      setTouched(blankBoolMap());
-      setBlurValidity(blankBoolMap());
-      setErrors({});
+      setForm({
+        ...initialForm,
+        interested_in: initialInterestedIn,
+      });
+      toast.success('Thank you for registering your interest. A member of our team will contact you shortly.');
     } catch (err: any) {
+      const message = err?.message || 'Something went wrong. Please try again.';
+      const shouldFallback = /edge function|failed to send a request|failed to fetch|network/i.test(message);
+
+      if (shouldFallback) {
+        try {
+          const payload = {
+            dealership_name: form.dealership_name.trim() || null,
+            contact_name: form.contact_name.trim() || null,
+            email_address: form.email_address.trim(),
+            phone_number: form.phone_number.trim(),
+            monthly_vehicle_sales: form.monthly_vehicle_sales || null,
+            current_warranty_provider: form.current_warranty_provider || null,
+            interested_in: form.interested_in || null,
+            heard_about_us: form.heard_about_us.trim() || null,
+            additional_information: form.additional_information.trim() || null,
+          };
+
+          await submitViaDatabaseFallback(payload);
+          setSubmitted(true);
+          setForm({
+            ...initialForm,
+            interested_in: initialInterestedIn,
+          });
+          toast.success('Thank you for registering your interest. A member of our team will contact you shortly.');
+          return;
+        } catch (fallbackError: any) {
+          toast.error(fallbackError?.message || message);
+          return;
+        }
+      }
+
       toast.error(err?.message || 'Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const scrollToForm = () => {
-    document.getElementById('dealer-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-orange-50">
       <Helmet>
-        <title>Get Early Dealer Access | Panda Protect Trade Warranty</title>
-        <meta name="description" content="UK motor trade dealers — offer flexible warranty cover to your customers while Panda Protect handles claims, documents and support. Register interest today." />
+        <title>Register Your Interest – Trade Warranty | Panda Protect</title>
+        <meta name="description" content="Register your interest in our new Trade Warranty solution for UK motor trade dealers. Be first to offer flexible cover and unlock extra revenue." />
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <DealerPublicHeader variant="minimal" ctaTargetId="dealer-form" />
+      <DealerPublicHeader />
 
-      {/* HERO */}
-      <section className="bg-gradient-to-br from-gray-50 via-white to-orange-50/40 border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
-          <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-start">
-            {/* LEFT — message + benefits */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sm:p-8 lg:p-10">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Left */}
             <div>
-              <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] uppercase mb-4">
-                Early dealer access now open
+              <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-4">
+                Coming Soon
               </span>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.08] tracking-tight text-[#0f1b3d]">
-                Offer Trade Warranties Without the Paperwork
+              <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.1] tracking-tight text-gray-900">
+                Register Your Interest<br />in Trade Warranty
               </h1>
-              <p className="text-gray-600 mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
-                Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
+              <p className="text-gray-600 mt-4 leading-relaxed">
+                Be first to offer our new trade warranty solution to your customers and unlock extra revenue for your dealership.
               </p>
 
-              <ul className="mt-8 space-y-5 max-w-xl">
-                {heroBenefits.map(({ icon: Icon, title, text }) => (
+              {form.interested_in && (
+                <div className="mt-4 inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                  Interested in: {PLAN_LABELS[form.interested_in] || form.interested_in.replace('-', ' ')}
+                </div>
+              )}
+
+              <ul className="mt-7 space-y-5">
+                {benefits.map(({ icon: Icon, title, text }) => (
                   <li key={title} className="flex gap-4">
-                    <span className="w-11 h-11 rounded-xl bg-orange-50 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+                    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
                       <Icon className="w-5 h-5" />
                     </span>
                     <div>
-                      <div className="font-bold text-[#0f1b3d]">{title}</div>
+                      <div className="font-bold text-gray-900">{title}</div>
                       <div className="text-sm text-gray-600 mt-0.5">{text}</div>
                     </div>
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-8">
-                <div className="text-sm font-semibold text-[#0f1b3d] mb-2">Trusted by UK motor trade professionals</div>
-                <img
-                  src={qashqaiHero.url}
-                  alt="Nissan Qashqai SUV — the kind of vehicle your customers can protect with a Panda Protect trade warranty"
-                  className="w-full max-w-[270px] object-contain"
-                  width={640}
-                  height={360}
-                  loading="eager"
-                />
+              {/* What happens next */}
+              <div className="mt-8 rounded-xl bg-gray-50 border border-gray-200 p-5">
+                <div className="font-bold text-gray-900 mb-4">What happens next</div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
+                    { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
+                    { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to customers.' },
+                  ].map((s) => (
+                    <div key={s.n} className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-xs font-bold flex items-center justify-center">{s.n}</span>
+                        <span className="text-sm font-bold text-gray-900">{s.t}</span>
+                      </div>
+                      <p className="text-xs text-gray-600 leading-snug">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* RIGHT — Form card */}
-            <div id="dealer-form" className="lg:sticky lg:top-24">
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
+            {/* Right — Form */}
+            <div>
+              <div className="bg-white">
+                <h2 className="text-lg font-bold text-gray-900">Tell us a bit about your dealership</h2>
+
                 {submitted ? (
-                  <div className="text-center space-y-4 py-4">
-                    <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
-                      <Check className="w-8 h-8" strokeWidth={3} />
+                  <div className="mt-6 rounded-xl border border-green-200 bg-green-50 p-6 text-center space-y-3">
+                    <div className="w-14 h-14 rounded-full bg-green-100 text-green-700 mx-auto flex items-center justify-center">
+                      <Check className="w-7 h-7" />
                     </div>
-                    <h3 className="text-xl font-black text-[#0f1b3d]">Thank you — form received</h3>
-                    <p className="text-sm text-gray-700 max-w-sm mx-auto leading-relaxed">
-                      Your details are with our trade team. Once Trade Warranty goes live, we'll be in touch within 1 working day to set up your account.
-                    </p>
+                    <h3 className="text-lg font-black text-gray-900">Thank you for registering your interest.</h3>
+                    <p className="text-sm text-gray-700">A member of our team will contact you shortly.</p>
                     <button
                       type="button"
                       onClick={() => setSubmitted(false)}
@@ -248,51 +253,38 @@ const DealerComingSoon = () => {
                     </button>
                   </div>
                 ) : (
-                  <>
-                    <h2 className="text-xl sm:text-2xl font-black text-[#0f1b3d]">Get early dealer access</h2>
-                    <p className="text-sm text-gray-600 mt-1.5">
-                      Complete the short form and our trade team will contact you within 1 working day.
-                    </p>
-
-                    <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
-                      <Field label="Dealership name" required valid={blurValidity.dealership_name} touched={touched.dealership_name} error={errors.dealership_name}>
+                  <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Dealership Name">
                         <input value={form.dealership_name} onChange={(e) => set('dealership_name', e.target.value)}
-                          onBlur={() => handleBlur('dealership_name')}
-                          placeholder="e.g. ABC Motors"
-                          className={`${inputCls} ${errors.dealership_name && touched.dealership_name ? 'border-red-400' : ''}`} />
+                          placeholder="Enter dealership name" className={inputCls} />
                       </Field>
-
-                      <Field label="Contact name" required valid={blurValidity.contact_name} touched={touched.contact_name} error={errors.contact_name}>
+                      <Field label="Contact Name">
                         <input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)}
-                          onBlur={() => handleBlur('contact_name')}
-                          placeholder="e.g. James Smith"
-                          className={`${inputCls} ${errors.contact_name && touched.contact_name ? 'border-red-400' : ''}`} />
+                          placeholder="Enter your full name" className={inputCls} />
                       </Field>
+                    </div>
 
-                      <Field label="Email address" required valid={blurValidity.email_address} touched={touched.email_address} error={errors.email_address}>
-                        <input type="text" inputMode="email" autoComplete="email" maxLength={255}
-                          value={form.email_address}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Email Address" required error={errors.email}>
+                        <input type="email" required value={form.email_address}
                           onChange={(e) => set('email_address', e.target.value)}
-                          onBlur={() => handleBlur('email_address')}
-                          placeholder="e.g. james@abcmotors.co.uk"
-                          className={`${inputCls} ${errors.email_address && touched.email_address ? 'border-red-400' : ''}`} />
+                          placeholder="Enter email address"
+                          className={`${inputCls} ${errors.email ? 'border-red-400' : ''}`} />
                       </Field>
-
-                      <Field label="Phone number" required valid={phoneValidLive} touched={touched.phone_number || phoneValidLive} error={errors.phone_number}>
-                        <input type="text" inputMode="tel" autoComplete="tel" maxLength={20}
-                          value={form.phone_number}
+                      <Field label="Phone Number" required error={errors.phone}>
+                        <input type="tel" required value={form.phone_number}
                           onChange={(e) => set('phone_number', e.target.value)}
-                          onBlur={() => handleBlur('phone_number')}
-                          placeholder="e.g. 07123 456 789"
-                          className={`${inputCls} ${errors.phone_number && touched.phone_number ? 'border-red-400' : ''}`} />
+                          placeholder="Enter phone number"
+                          className={`${inputCls} ${errors.phone ? 'border-red-400' : ''}`} />
                       </Field>
+                    </div>
 
-                      <Field label="Monthly vehicle sales" required selectField valid={blurValidity.monthly_vehicle_sales} touched={touched.monthly_vehicle_sales} error={errors.monthly_vehicle_sales}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Field label="Monthly vehicle sales">
                         <select value={form.monthly_vehicle_sales} onChange={(e) => set('monthly_vehicle_sales', e.target.value)}
-                          onBlur={() => handleBlur('monthly_vehicle_sales')}
-                          className={`${inputCls} pr-16 appearance-none bg-no-repeat bg-[right_0.75rem_center] bg-[length:14px] ${errors.monthly_vehicle_sales && touched.monthly_vehicle_sales ? 'border-red-400' : ''}`}
-                          style={{ backgroundImage: "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3e%3cpath d='M5.25 7.5L10 12.25 14.75 7.5z'/%3e%3c/svg%3e\")" }}>
-                          <option value="">Select your range</option>
+                          className={inputCls}>
+                          <option value="">Select range</option>
                           <option value="1-10">1 – 10</option>
                           <option value="11-25">11 – 25</option>
                           <option value="26-50">26 – 50</option>
@@ -300,190 +292,109 @@ const DealerComingSoon = () => {
                           <option value="100+">100+</option>
                         </select>
                       </Field>
+                      <Field label="Current warranty provider">
+                        <select value={form.current_warranty_provider} onChange={(e) => set('current_warranty_provider', e.target.value)}
+                          className={inputCls}>
+                          <option value="">Select provider</option>
+                          <option value="None">None</option>
+                          <option value="Warrantywise">Warrantywise</option>
+                          <option value="WMS">WMS</option>
+                          <option value="MotorEasy">MotorEasy</option>
+                          <option value="AutoProtect">AutoProtect</option>
+                          <option value="In-house">In-house</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </Field>
+                    </div>
 
-                      <button type="submit" disabled={submitting}
-                        className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base animate-breathing">
-                        {submitting ? 'Submitting…' : (<>Request Dealer Access <ArrowRight className="w-5 h-5" /></>)}
-                      </button>
-
-                      <div className="grid grid-cols-3 gap-2 text-center text-[11px] text-gray-600 mt-1">
-                        {formTrust.map(({ icon: Icon, label }) => (
-                          <div key={label} className="flex items-center justify-center gap-1.5">
-                            <Icon className="w-3.5 h-3.5 text-[#eb4b00] flex-shrink-0" />
-                            <span>{label}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      <p className="text-center text-xs text-gray-500 leading-relaxed flex items-center justify-center gap-1.5">
-                        <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                        We'll only contact you about Trade Warranty.
+                    <Field
+                      label="Where do you sell vehicles?"
+                      required
+                      hint="(Link to verify your business)"
+                      error={errors.sellVehicles}
+                    >
+                      <input
+                        type="url"
+                        required
+                        value={form.heard_about_us}
+                        onChange={(e) => set('heard_about_us', e.target.value)}
+                        placeholder="e.g. https://www.autotrader.co.uk/dealers/... or your website URL"
+                        className={`${inputCls} ${errors.sellVehicles ? 'border-red-400' : ''}`}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Paste your dealership website, AutoTrader / Motors.co.uk / eBay Motors listing page, or social shop URL.
                       </p>
-                    </form>
-                  </>
+                    </Field>
+
+
+
+                    <Field label="Anything else we should know?" hint="(Optional)">
+                      <textarea rows={3} value={form.additional_information}
+                        onChange={(e) => set('additional_information', e.target.value)}
+                        placeholder="Add any additional information…"
+                        className={`${inputCls} resize-none`} />
+                    </Field>
+
+                    <button type="submit" disabled={submitting}
+                      className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base transition-colors">
+                      {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
+                    </button>
+
+                    <p className="text-center text-xs text-gray-500">
+                      No obligation · Takes less than 30 seconds
+                    </p>
+                    <p className="flex items-center justify-center gap-1.5 text-center text-xs text-gray-500">
+                      <Lock className="w-3 h-3" /> We'll only contact you about Trade Warranty.
+                    </p>
+                  </form>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* HOW IT WORKS */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
-          <h2 className="text-center text-2xl sm:text-3xl font-black text-[#0f1b3d] mb-10">How it works</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative">
-            {howItWorks.map((s, idx) => (
-              <div key={s.n} className="relative">
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full border-l-4 border-l-[#eb4b00]">
-                  <div className="flex items-start gap-4">
-                    <div className="relative">
-                      <div className="w-12 h-12 rounded-full bg-orange-50 text-[#eb4b00] flex items-center justify-center">
-                        <s.icon className="w-5 h-5" />
-                      </div>
-                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#eb4b00] text-white text-[10px] font-black flex items-center justify-center">
-                        {s.n}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-bold text-[#0f1b3d] text-lg">{s.title}</div>
-                      <p className="text-sm text-gray-600 mt-1 leading-relaxed">{s.text}</p>
-                    </div>
-                  </div>
-                </div>
-                {idx < howItWorks.length - 1 && (
-                  <div className="hidden sm:block absolute top-1/2 -right-3 w-6 border-t-2 border-dashed border-gray-300" />
-                )}
-              </div>
-            ))}
-          </div>
+        {/* Footer mini-trust strip */}
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <TrustItem icon={ShieldCheck} title="No obligation" text="Register with zero commitment." />
+          <TrustItem icon={Sparkles} title="Early access for dealers" text="Be first in line for exclusive access." />
+          <TrustItem icon={ShieldQuestion} title="Built for UK motor trade" text="Designed around your business." />
         </div>
       </section>
 
-      {/* WHY DEALERS CHOOSE + FAQ */}
-      <section className="bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12">
-            {/* Why choose */}
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#0f1b3d] mb-6">Why dealers choose Panda Protect</h2>
-              <ul className="space-y-4">
-                {whyChoose.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <span className="w-5 h-5 rounded-full bg-[#eb4b00] text-white flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3 h-3" strokeWidth={3} />
-                    </span>
-                    <span className="text-gray-700 text-sm sm:text-base">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <img
-                src={phevId3.url}
-                alt="White Volkswagen ID.3 electric hatchback — EVs are covered by Panda Protect trade warranties"
-                className="w-full max-w-[320px] object-contain mt-8"
-                width={640}
-                height={360}
-                loading="lazy"
-              />
-            </div>
-
-            {/* FAQ */}
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-black text-[#0f1b3d] mb-6">Frequently asked questions</h2>
-              <DealerFAQSection
-                bgClassName="bg-gray-50"
-                compact
-                heading=""
-                intro=""
-                viewAllHref="/faq/traders"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
+      <DealerFAQSection
+        bgClassName="bg-gray-50"
+        intro="Quick answers for UK motor trade dealers about our partner programme, portal, claims and support."
+      />
       <DealerFAQSchema />
-
-      {/* CONTACT STRIP */}
-      <section className="bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-orange-50 rounded-xl p-6 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-[#eb4b00] text-white flex items-center justify-center flex-shrink-0">
-                <Phone className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-[#0f1b3d] text-lg">Prefer to speak to our team?</div>
-                <p className="text-sm text-gray-700 mt-1">
-                  Call <a href="tel:03302295045" className="font-bold text-[#0f1b3d] hover:underline">0330 229 5045</a> or{' '}
-                  <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="font-bold text-[#eb4b00] hover:underline">WhatsApp us</a>
-                </p>
-              </div>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-6 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-white border border-gray-200 text-[#0f1b3d] flex items-center justify-center flex-shrink-0">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-[#0f1b3d] text-lg">Panda Protect — UK warranty specialists</div>
-                <p className="text-sm text-gray-600 mt-1">
-                  Cover for cars, vans, EVs and motorcycles. Claims handled. Dealers supported.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <DealerPublicFooter />
     </div>
   );
 };
 
 const inputCls =
-  'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-gray-50 text-gray-900 placeholder:text-gray-500';
+  'w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-white text-gray-900 placeholder:text-gray-400';
 
-const Field: React.FC<{
-  label: string;
-  required?: boolean;
-  hint?: string;
-  valid?: boolean;
-  touched?: boolean;
-  error?: string;
-  selectField?: boolean;
-  children: React.ReactNode;
-}> = ({ label, required, hint, valid, touched, error, selectField, children }) => {
-  const showTick = valid && touched && !error;
-  const showError = error && touched;
-  const child = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement, {
-        className: `${(children as React.ReactElement).props.className || ''}${showTick && !selectField ? ' pr-12' : ''}`,
-      })
-    : children;
-  return (
+const Field: React.FC<{ label: string; required?: boolean; hint?: string; error?: string; children: React.ReactNode }> =
+  ({ label, required, hint, error, children }) => (
     <label className="block">
       <div className="flex items-center gap-1 mb-1.5">
         <span className="text-sm font-semibold text-gray-800">{label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}</span>
         {hint && <span className="text-xs text-gray-500">{hint}</span>}
       </div>
-      <div className="relative">
-        {child}
-        {showTick && (
-          <span className={`absolute ${selectField ? 'right-9' : 'right-3'} top-3 pointer-events-none text-green-500`}>
-            <Check className="w-5 h-5" strokeWidth={3} />
-          </span>
-        )}
-      </div>
-      {showError && (
-        <div className="mt-1.5 flex items-start gap-1.5 rounded-md bg-red-50 border border-red-200 px-2 py-1.5">
-          <AlertCircle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-red-700 leading-snug">{error}</p>
-        </div>
-      )}
+      {children}
+      {error && <p className="text-xs text-red-600 mt-1">{error}</p>}
     </label>
   );
-};
+
+const TrustItem: React.FC<{ icon: React.ComponentType<any>; title: string; text: string }> = ({ icon: Icon, title, text }) => (
+  <div className="flex items-center gap-3">
+    <span className="w-10 h-10 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+      <Icon className="w-5 h-5" />
+    </span>
+    <div>
+      <div className="font-bold text-gray-900 text-sm">{title}</div>
+      <div className="text-xs text-gray-600">{text}</div>
+    </div>
+  </div>
+);
 
 export default DealerComingSoon;

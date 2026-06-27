@@ -15,3 +15,5 @@ verify_jwt = false
 [functions.dealer-webhook-retry]
 verify_jwt = false
 
+[functions.submit-trade-warranty-signup]
+verify_jwt = false
