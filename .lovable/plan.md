@@ -1,78 +1,44 @@
+## What's happening
 
-## Goal
+The `/dealer-portal/signup` route renders `src/pages/dealer-portal/DealerComingSoon.tsx`, and that file is still the **old long-form layout** in your screenshot. None of the previous redesign work survives in the codebase — no "Offer Trade Warranties Without the Paperwork" hero, no Qashqai hero image, no "How it works" 3-step, no "Why dealers choose Panda Protect" with the VW ID.3, no compact FAQ row, no dark navy `DealerPublicFooter`. So you're seeing the old page because the old page is what's actually there. It needs to be rebuilt.
 
-Rewrite every public marketing/landing route currently selling **retail** car warranties (BuyAWarranty, "60p a day", consumer family copy) into **trade dealership** warranty pages under the **Panda Protect** brand. URLs stay the same. Admin, sales tooling, checkout backend, customer dashboard, and edge functions are untouched.
+## Plan — re-apply the Panda redesign to `/dealer-portal/signup`
 
-## Scope — pages to rewrite in place
+### 1. Rebuild `src/pages/dealer-portal/DealerComingSoon.tsx`
 
-**Core**
-- `/` and `/home` — Index page → Panda Protect trade home
-- `/faq/` and `/faq/traders/` — Trade FAQ (merge content)
-- `/what-is-covered/` — Trade warranty cover (mechanical/electrical, labour rates, claim limits as sold to dealers)
-- `/claims/` and `/make-a-claim/` — Dealer claims handling flow
-- `/cancel-warranty` — Trade-policy cancellation (dealer-initiated)
-- `/warranty-transfer/` — Inter-dealer / dealer→retail customer transfer
-- `/contact-us/` — Trade contact: hello@pandaprotect.co.uk, dealer support phone
-- `/complaints/` — Trade complaints procedure
-- `/discount-promo-offers/` — Dealer-tier / volume offers (or hide)
-- `/warranty-plan/` — Trade plan overview
+Replace the current layout with the redesigned structure, keeping the existing submit logic, RLS-safe insert into `trade_warranty_signups`, `notify-dealer-waitlist` invocation, success screen, and validation helpers exactly as they work today.
 
-**Vehicle landings**
-- `/van-warranty/` — Van stock warranties for dealers
-- `/ev-warranty/` — EV trade warranty for forecourts
-- `/motorbike-repair-warranty-uk-warranties/`, `/motorcycle-warranty/` — Motorbike dealer warranties
-- `/car-extended-warranty/` — Extended cover dealers can offer
-- `/used-car-warranty-uk/`, `/buy-a-used-car-warranty-reliable-warranties/` — Forecourt used-car cover
+New structure, top to bottom:
 
-**Brand landings under `/warranty-types/`**
-- `/warranty-types/` index + all 20+ `/warranty-types/:brand/` pages — rewrite hero/intro/CTA to dealer-focused; keep brand-specific cover detail but reframe ("offer your [Brand] stock with…").
+- **Header** — keep `DealerPublicHeader`.
+- **Hero (two-column on desktop)**
+  - Left: "Early dealer access now open" eyebrow → H1 **"Offer Trade Warranties Without the Paperwork"** → sub-copy ("Add extra profit to every sale… Panda Protect handles claims, documents and support."). Three trust bullets: *No obligation · Takes less than 30 seconds · UK dealer support*. Primary CTA scrolls to form.
+  - Right: Compact 5-field form card (Dealership, Contact name, Email, UK phone, Where you sell vehicles URL + optional notes), green-tick live validation on email/phone, Airbnb-pink error on blur, `animate-breathing` "Register My Interest" CTA. Success state shows green-check confirmation copy.
+  - Below the form column: small **Nissan Qashqai** image (`src/assets/nissan-qashqai-warranty-cover.png`) capped at `max-w-[270px]` (the 40%-smaller spec).
+- **How it works** — 3 numbered steps with dashed connectors: *Register interest → Our team contacts you → Get early access*.
+- **Why dealers choose Panda Protect** — two-column section: bulleted list (High-profit products, Quick onboarding, UK claims team, Digital docs, Marketing support) on the left, **VW ID.3** image (`src/assets/vw-id3-warranty.webp`) on the right.
+- **Benefit cards row** — 3 compact cards: *Increase profit per vehicle*, *No claims admin*, *Flexible cover options*.
+- **FAQ** — lighter, collapsed `DealerFAQSection` lower on the page + `DealerFAQSchema` for SEO.
+- **Footer** — new `src/components/dealer/DealerPublicFooter.tsx`, dark navy, simple columns (Panda Protect, dealer links, contact, legal).
 
-## Out of scope (will NOT change in this pass)
+### 2. New file `src/components/dealer/DealerPublicFooter.tsx`
 
-- Checkout funnel: `/checkout/payment`, `/cart`, `/quote/:token`, `/widget`
-- Customer dashboard, admin, dealer admin, dealer portal internal pages
-- Edge functions, database schema, Stripe products, pricing logic
-- Brand assets (logos, images) — text/copy only
-- Email templates, SMS, sales script
-- `/thewarrantyhub/*` (already rebranded)
+Dark navy (`bg-slate-900` / brand navy token) public footer used only on dealer-public routes. Logo + tagline, three link columns, copyright row.
 
-## Approach
+### 3. Hide the global site footer/padding on this route
 
-1. **Shared trade copy module** — create `src/content/trade-copy.ts` with:
-   - Brand: `Panda Protect`, support email `hello@pandaprotect.co.uk`, dealer phone `0330 229 5040`
-   - Standard trade value props (margin protection, FCA-aligned, fast claims, white-label, no comeback costs)
-   - Standard CTAs all pointing to `/dealer-portal/signup` (primary) and `/dealer-portal/coming-soon` (secondary)
-   - Trust badges / dealer-focused copy blocks
-2. **Per-page rewrite** — for each route listed above:
-   - Swap hero headline/subheadline to trade angle
-   - Replace retail CTAs (Get Quote, Buy Now, "From 60p a day") with dealer signup CTA
-   - Remove consumer trust signals (Trustpilot reviews from end customers stay — they're brand asset)
-   - Update `<Helmet>` / `SEOHead` title + description + canonical to trade keywords
-   - Update JSON-LD `Product`/`Service` schema → `Service` audience=Dealer
-   - Swap header/footer to `DealerPublicHeader` / dealer footer (same pattern as `/thewarrantyhub`)
-3. **Sitewide head** — update `index.html` `<title>`, meta description, and Organization JSON-LD to Panda Protect trade.
-4. **Internal links** — sweep public pages and rewrite hard-coded retail CTAs (`/cart`, `/quote/...`, `Get Quote` buttons) to `/dealer-portal/signup`.
+In `src/App.tsx`, keep `/dealer-portal/coming-soon` and `/dealer-portal/signup` in the existing "hide global Footer + main padding" condition so the new dark footer isn't doubled up.
 
-## Things you should know before I start
+### 4. SEO
 
-- **Conversion risk**: any live Google Ads or organic traffic landing on these URLs is currently retail-intent. Rewriting in place will tank retail conversions immediately. Confirm that's acceptable.
-- **Checkout still exists**: `/cart`, `/checkout/payment`, `/quote/:token` will continue to work for any links already in the wild (emails, old quotes). I won't break them — just won't link to them from public pages anymore.
-- **Brand pages**: 20+ `/warranty-types/:brand/` pages share a template. I'll rewrite the template + per-brand copy strings; if some brands need bespoke trade angles, flag them.
-- **No image regeneration** — I'll use existing assets. Hero imagery is currently consumer-feel; we can swap later.
-- **SEO loss**: existing rankings on "car warranty" consumer terms will drop. New trade-focused titles will need time to rank.
+Keep current `<Helmet>` title/description on the page. No route or meta changes.
 
-## Execution
+### Out of scope (not touching)
 
-Given size (~30 files, many large), I'll batch in 4 PRs of edits:
-1. Shared trade copy module + index.html sitewide head + home (`/`, `/home`)
-2. Vehicle landings (van, EV, motorbike, used car, car extended) + warranty-types index/template
-3. Brand pages (`/warranty-types/:brand`)
-4. Support pages (faq, what-is-covered, claims, cancel, transfer, contact, complaints, discounts, warranty-plan)
+- Form submit pipeline, RLS, edge functions, admin signups view — already working from prior fixes.
+- `DealerHome`, `DealerLogin`, other dealer portal pages.
+- Global header/nav.
 
-After each batch I'll pause for you to spot-check before continuing.
+### Verification
 
-## Confirm before I start
-
-1. Go ahead and tank retail SEO/ads on these URLs? (Y/N)
-2. All public CTAs route to `/dealer-portal/signup` — correct? (Y/N)
-3. Keep existing images for now, swap later? (Y/N)
+After rebuild: run typecheck/build, then drive Playwright to `http://localhost:8080/dealer-portal/signup`, screenshot the hero, "How it works", "Why dealers choose" with car image, and footer to confirm the new layout renders and the form still submits to `trade_warranty_signups`.
