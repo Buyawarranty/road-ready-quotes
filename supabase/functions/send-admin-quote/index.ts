@@ -469,28 +469,112 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // Handle CC as string or array
-    const ccRecipients = cc 
-      ? (Array.isArray(cc) ? cc : [cc])
-      : undefined;
+    // Sanitise CC: strings only, dedup, drop customer email and the authenticated sales-user email.
+    // The sales-user copy is NEVER derived from this list — it is sent as a separate email below.
+    const toLower = (to || "").toLowerCase().trim();
+    const salesEmailLower = salesUser?.email?.toLowerCase() ?? null;
+    const rawCc = cc ? (Array.isArray(cc) ? cc : [cc]) : [];
+    const ccRecipients = Array.from(
+      new Set(
+        rawCc
+          .filter((v): v is string => typeof v === "string")
+          .map((v) => v.toLowerCase().trim())
+          .filter((v) => v && v !== toLower && v !== salesEmailLower)
+      )
+    );
 
-    const emailResponse = await resend.emails.send({
-      from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
-      to: [to],
-      cc: ccRecipients,
-      subject: subject,
-      html: finalHtml,
-    });
+    // 1) Send to the customer
+    let customerSent = false;
+    let customerMessageId: string | null = null;
+    let customerError: string | null = null;
+    try {
+      const customerResponse = await resend.emails.send({
+        from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+        to: [to],
+        cc: ccRecipients.length > 0 ? ccRecipients : undefined,
+        subject: subject,
+        html: finalHtml,
+      });
+      if ((customerResponse as any)?.error) {
+        throw new Error(JSON.stringify((customerResponse as any).error));
+      }
+      customerMessageId = (customerResponse as any)?.data?.id ?? null;
+      customerSent = true;
+      console.log("quote_email.customer.sent", {
+        to: toLower,
+        message_id: customerMessageId,
+        caller_email: salesEmailLower,
+      });
+    } catch (e: any) {
+      customerError = e?.message || String(e);
+      console.error("quote_email.customer.failed", {
+        to: toLower,
+        error: customerError,
+        caller_email: salesEmailLower,
+      });
+      return new Response(
+        JSON.stringify({
+          customerSent: false,
+          salesCopySent: false,
+          error: customerError,
+        }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    console.log("Email sent successfully:", emailResponse);
+    // 2) Send a separate copy to the authenticated sales user (server-derived).
+    let salesCopySent = false;
+    let salesCopyMessageId: string | null = null;
+    let salesCopyError: string | null = null;
+    let salesCopyRecipient: string | null = null;
 
-    return new Response(JSON.stringify(emailResponse), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
+    if (salesUser && salesUser.email && salesUser.email !== toLower) {
+      salesCopyRecipient = salesUser.email;
+      try {
+        const copyResponse = await resend.emails.send({
+          from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+          to: [salesUser.email],
+          subject: `[Copy] ${subject}`,
+          html: finalHtml,
+        });
+        if ((copyResponse as any)?.error) {
+          throw new Error(JSON.stringify((copyResponse as any).error));
+        }
+        salesCopyMessageId = (copyResponse as any)?.data?.id ?? null;
+        salesCopySent = true;
+        console.log("quote_email.sales_copy.sent", {
+          caller_user_id: salesUser.userId,
+          caller_email: salesUser.email,
+          message_id: salesCopyMessageId,
+        });
+      } catch (e: any) {
+        salesCopyError = e?.message || String(e);
+        console.error("quote_email.sales_copy.failed", {
+          caller_user_id: salesUser.userId,
+          caller_email: salesUser.email,
+          error: salesCopyError,
+        });
+      }
+    } else {
+      console.warn("quote_email.sales_copy.skipped", {
+        reason: !salesUser
+          ? "no_authenticated_sales_user"
+          : "sales_email_equals_customer",
+        caller_email: salesEmailLower,
+      });
+    }
+
+    return new Response(
+      JSON.stringify({
+        customerSent,
+        customerMessageId,
+        salesCopySent,
+        salesCopyMessageId,
+        salesCopyRecipient,
+        salesCopyError,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   } catch (error: any) {
     console.error("Error in send-admin-quote function:", error);
     return new Response(
