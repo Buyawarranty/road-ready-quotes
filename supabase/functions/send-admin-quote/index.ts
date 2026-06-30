@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -35,6 +36,64 @@ interface QuoteEmailRequest {
   };
 }
 
+// Resolve the authenticated sales user's registered email server-side.
+// Never trust client-provided addresses for the sales-user copy.
+async function resolveSalesUser(req: Request): Promise<
+  { userId: string; email: string; name: string | null } | null
+> {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) return null;
+    const token = authHeader.replace("Bearer ", "");
+
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const { data: userRes, error: userErr } = await admin.auth.getUser(token);
+    if (userErr || !userRes?.user) {
+      console.warn("quote_email.auth.invalid", { error: userErr?.message });
+      return null;
+    }
+    const user = userRes.user;
+
+    // Look up admin_users by user_id first, then by email
+    let adminRow: any = null;
+    const byId = await admin
+      .from("admin_users")
+      .select("id, email, first_name, last_name, is_active")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    adminRow = byId.data;
+
+    if (!adminRow && user.email) {
+      const byEmail = await admin
+        .from("admin_users")
+        .select("id, email, first_name, last_name, is_active")
+        .eq("email", user.email)
+        .maybeSingle();
+      adminRow = byEmail.data;
+    }
+
+    const email = (adminRow?.email || user.email || "").toLowerCase().trim();
+    if (!email) return null;
+    if (adminRow && adminRow.is_active === false) {
+      console.warn("quote_email.sales_user.inactive", { email });
+      return null;
+    }
+
+    const name = adminRow
+      ? [adminRow.first_name, adminRow.last_name].filter(Boolean).join(" ") || null
+      : null;
+
+    return { userId: user.id, email, name };
+  } catch (e: any) {
+    console.warn("quote_email.auth.error", { error: e?.message });
+    return null;
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -52,7 +111,13 @@ const handler = async (req: Request): Promise<Response> => {
       quoteDetails,
     }: QuoteEmailRequest = await req.json();
 
-    console.log("Sending quote email to:", to);
+    const salesUser = await resolveSalesUser(req);
+
+    console.log("quote_email.request", {
+      to,
+      caller_user_id: salesUser?.userId ?? null,
+      caller_email: salesUser?.email ?? null,
+    });
     console.log("Quote link:", quoteLink);
     console.log("Quote details received:", JSON.stringify(quoteDetails, null, 2));
     console.log("Vehicle data received:", JSON.stringify(vehicleData, null, 2));
