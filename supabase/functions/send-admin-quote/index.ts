@@ -101,6 +101,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Kick off sales-user resolution in parallel with body parsing
+    const salesUserPromise = resolveSalesUser(req);
+
     const {
       to,
       cc,
@@ -111,16 +114,13 @@ const handler = async (req: Request): Promise<Response> => {
       quoteDetails,
     }: QuoteEmailRequest = await req.json();
 
-    const salesUser = await resolveSalesUser(req);
+    const salesUser = await salesUserPromise;
 
     console.log("quote_email.request", {
       to,
       caller_user_id: salesUser?.userId ?? null,
       caller_email: salesUser?.email ?? null,
     });
-    console.log("Quote link:", quoteLink);
-    console.log("Quote details received:", JSON.stringify(quoteDetails, null, 2));
-    console.log("Vehicle data received:", JSON.stringify(vehicleData, null, 2));
 
     const firstName = customerName.split(' ')[0];
     const vehicleDisplay = `${vehicleData.make || ''} ${vehicleData.model || ''}`.trim() || 'Your Vehicle';
