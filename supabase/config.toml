@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.submit-trade-warranty-signup]
 verify_jwt = false
+
+[functions.send-admin-quote]
+verify_jwt = true
