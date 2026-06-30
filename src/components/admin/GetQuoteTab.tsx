@@ -813,18 +813,18 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         }
       }
 
-      // Build recipients - customer + admin copy + additional emails
-      const allCcEmails = [
-        ...(adminEmail && adminEmail !== customerEmail ? [adminEmail] : []),
-        ...additionalEmails.filter(e => e !== customerEmail && e !== adminEmail)
-      ];
+      // Build additional CC recipients only — the sales-user copy is sent server-side
+      // from the authenticated session, never trusted from the client.
+      const allCcEmails = additionalEmails.filter(
+        (e) => e && e !== customerEmail && e !== adminEmail
+      );
 
       console.log('📧 Sending email to:', customerEmail);
-      console.log('📧 CC emails:', allCcEmails);
+      console.log('📧 Additional CC emails:', allCcEmails);
       console.log('📎 Quote link:', quoteLink);
       
-      // Send the email with HTML template (to customer with CC to admin and additional recipients)
-      const { error: emailError } = await supabase.functions.invoke('send-admin-quote', {
+      // Send the email with HTML template (to customer; server sends a separate copy to the authenticated sales user)
+      const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-admin-quote', {
         body: {
           to: customerEmail,
           cc: allCcEmails.length > 0 ? allCcEmails : undefined,
@@ -847,9 +847,21 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         }
       });
 
-      if (emailError) {
-        console.error('❌ Email sending failed:', emailError);
-        throw new Error(`Email failed: ${emailError.message}`);
+      if (emailError || emailResult?.customerSent === false) {
+        const msg = emailError?.message || emailResult?.error || 'Unknown error';
+        console.error('❌ Email sending failed:', msg);
+        throw new Error(`Email failed: ${msg}`);
+      }
+
+      if (emailResult?.salesCopySent === false) {
+        console.warn('⚠️ Sales-user copy failed:', emailResult?.salesCopyError);
+        toast({
+          title: '⚠️ Copy to your inbox failed',
+          description: `Customer email sent, but the copy to ${emailResult?.salesCopyRecipient || 'your account'} failed: ${emailResult?.salesCopyError || 'unknown error'}`,
+          duration: 7000,
+        });
+      } else if (emailResult?.salesCopyRecipient) {
+        console.log('✅ Sales-user copy sent to', emailResult.salesCopyRecipient);
       }
       
       console.log('✅ Email sent successfully');
@@ -1046,10 +1058,9 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
       setIsSendingEmail(true);
       console.log('🔄 Resending quote to:', quote.customer_email);
       
-      const { error: emailError } = await supabase.functions.invoke('send-admin-quote', {
+      const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-admin-quote', {
         body: {
           to: quote.customer_email,
-          cc: adminEmail !== quote.customer_email ? adminEmail : undefined,
           subject: `[RESENT] ${quote.email_subject}`,
           content: quote.email_content,
           vehicleData: {
@@ -1074,8 +1085,9 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         }
       });
 
-      if (emailError) {
-        throw new Error(`Email failed: ${emailError.message}`);
+      if (emailError || emailResult?.customerSent === false) {
+        const msg = emailError?.message || emailResult?.error || 'Unknown error';
+        throw new Error(`Email failed: ${msg}`);
       }
 
       await supabase
@@ -1086,7 +1098,12 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         })
         .eq('id', quote.id);
 
-      const copyMessage = adminEmail ? ` A copy was also sent to ${adminEmail}.` : '';
+      const copyRecipient = emailResult?.salesCopyRecipient;
+      const copyMessage = emailResult?.salesCopySent && copyRecipient
+        ? ` A copy was also sent to ${copyRecipient}.`
+        : emailResult?.salesCopySent === false
+          ? ` (Copy to ${copyRecipient || 'your account'} failed.)`
+          : '';
       toast({
         title: "✅ Quote Resent Successfully!",
         description: `Email resent to ${quote.customer_email}.${copyMessage}`,

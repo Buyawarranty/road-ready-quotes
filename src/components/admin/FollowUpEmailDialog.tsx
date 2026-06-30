@@ -116,7 +116,13 @@ export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({
         },
       });
 
-      if (error) throw error;
+      if (error || (data && data.customerSent === false)) {
+        throw new Error(error?.message || data?.error || 'Failed to send email');
+      }
+
+      if (data?.salesCopySent === false) {
+        toast.warning(`Customer email sent, but copy to ${data?.salesCopyRecipient || 'your account'} failed.`);
+      }
 
       // Log the admin follow-up email
       const { error: logError } = await supabase

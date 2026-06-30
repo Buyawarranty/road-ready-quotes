@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -35,6 +36,64 @@ interface QuoteEmailRequest {
   };
 }
 
+// Resolve the authenticated sales user's registered email server-side.
+// Never trust client-provided addresses for the sales-user copy.
+async function resolveSalesUser(req: Request): Promise<
+  { userId: string; email: string; name: string | null } | null
+> {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) return null;
+    const token = authHeader.replace("Bearer ", "");
+
+    const admin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    const { data: userRes, error: userErr } = await admin.auth.getUser(token);
+    if (userErr || !userRes?.user) {
+      console.warn("quote_email.auth.invalid", { error: userErr?.message });
+      return null;
+    }
+    const user = userRes.user;
+
+    // Look up admin_users by user_id first, then by email
+    let adminRow: any = null;
+    const byId = await admin
+      .from("admin_users")
+      .select("id, email, first_name, last_name, is_active")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    adminRow = byId.data;
+
+    if (!adminRow && user.email) {
+      const byEmail = await admin
+        .from("admin_users")
+        .select("id, email, first_name, last_name, is_active")
+        .eq("email", user.email)
+        .maybeSingle();
+      adminRow = byEmail.data;
+    }
+
+    const email = (adminRow?.email || user.email || "").toLowerCase().trim();
+    if (!email) return null;
+    if (adminRow && adminRow.is_active === false) {
+      console.warn("quote_email.sales_user.inactive", { email });
+      return null;
+    }
+
+    const name = adminRow
+      ? [adminRow.first_name, adminRow.last_name].filter(Boolean).join(" ") || null
+      : null;
+
+    return { userId: user.id, email, name };
+  } catch (e: any) {
+    console.warn("quote_email.auth.error", { error: e?.message });
+    return null;
+  }
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -52,7 +111,13 @@ const handler = async (req: Request): Promise<Response> => {
       quoteDetails,
     }: QuoteEmailRequest = await req.json();
 
-    console.log("Sending quote email to:", to);
+    const salesUser = await resolveSalesUser(req);
+
+    console.log("quote_email.request", {
+      to,
+      caller_user_id: salesUser?.userId ?? null,
+      caller_email: salesUser?.email ?? null,
+    });
     console.log("Quote link:", quoteLink);
     console.log("Quote details received:", JSON.stringify(quoteDetails, null, 2));
     console.log("Vehicle data received:", JSON.stringify(vehicleData, null, 2));
@@ -404,28 +469,112 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
-    // Handle CC as string or array
-    const ccRecipients = cc 
-      ? (Array.isArray(cc) ? cc : [cc])
-      : undefined;
+    // Sanitise CC: strings only, dedup, drop customer email and the authenticated sales-user email.
+    // The sales-user copy is NEVER derived from this list — it is sent as a separate email below.
+    const toLower = (to || "").toLowerCase().trim();
+    const salesEmailLower = salesUser?.email?.toLowerCase() ?? null;
+    const rawCc = cc ? (Array.isArray(cc) ? cc : [cc]) : [];
+    const ccRecipients = Array.from(
+      new Set(
+        rawCc
+          .filter((v): v is string => typeof v === "string")
+          .map((v) => v.toLowerCase().trim())
+          .filter((v) => v && v !== toLower && v !== salesEmailLower)
+      )
+    );
 
-    const emailResponse = await resend.emails.send({
-      from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
-      to: [to],
-      cc: ccRecipients,
-      subject: subject,
-      html: finalHtml,
-    });
+    // 1) Send to the customer
+    let customerSent = false;
+    let customerMessageId: string | null = null;
+    let customerError: string | null = null;
+    try {
+      const customerResponse = await resend.emails.send({
+        from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+        to: [to],
+        cc: ccRecipients.length > 0 ? ccRecipients : undefined,
+        subject: subject,
+        html: finalHtml,
+      });
+      if ((customerResponse as any)?.error) {
+        throw new Error(JSON.stringify((customerResponse as any).error));
+      }
+      customerMessageId = (customerResponse as any)?.data?.id ?? null;
+      customerSent = true;
+      console.log("quote_email.customer.sent", {
+        to: toLower,
+        message_id: customerMessageId,
+        caller_email: salesEmailLower,
+      });
+    } catch (e: any) {
+      customerError = e?.message || String(e);
+      console.error("quote_email.customer.failed", {
+        to: toLower,
+        error: customerError,
+        caller_email: salesEmailLower,
+      });
+      return new Response(
+        JSON.stringify({
+          customerSent: false,
+          salesCopySent: false,
+          error: customerError,
+        }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
-    console.log("Email sent successfully:", emailResponse);
+    // 2) Send a separate copy to the authenticated sales user (server-derived).
+    let salesCopySent = false;
+    let salesCopyMessageId: string | null = null;
+    let salesCopyError: string | null = null;
+    let salesCopyRecipient: string | null = null;
 
-    return new Response(JSON.stringify(emailResponse), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
-    });
+    if (salesUser && salesUser.email && salesUser.email !== toLower) {
+      salesCopyRecipient = salesUser.email;
+      try {
+        const copyResponse = await resend.emails.send({
+          from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+          to: [salesUser.email],
+          subject: `[Copy] ${subject}`,
+          html: finalHtml,
+        });
+        if ((copyResponse as any)?.error) {
+          throw new Error(JSON.stringify((copyResponse as any).error));
+        }
+        salesCopyMessageId = (copyResponse as any)?.data?.id ?? null;
+        salesCopySent = true;
+        console.log("quote_email.sales_copy.sent", {
+          caller_user_id: salesUser.userId,
+          caller_email: salesUser.email,
+          message_id: salesCopyMessageId,
+        });
+      } catch (e: any) {
+        salesCopyError = e?.message || String(e);
+        console.error("quote_email.sales_copy.failed", {
+          caller_user_id: salesUser.userId,
+          caller_email: salesUser.email,
+          error: salesCopyError,
+        });
+      }
+    } else {
+      console.warn("quote_email.sales_copy.skipped", {
+        reason: !salesUser
+          ? "no_authenticated_sales_user"
+          : "sales_email_equals_customer",
+        caller_email: salesEmailLower,
+      });
+    }
+
+    return new Response(
+      JSON.stringify({
+        customerSent,
+        customerMessageId,
+        salesCopySent,
+        salesCopyMessageId,
+        salesCopyRecipient,
+        salesCopyError,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+    );
   } catch (error: any) {
     console.error("Error in send-admin-quote function:", error);
     return new Response(
