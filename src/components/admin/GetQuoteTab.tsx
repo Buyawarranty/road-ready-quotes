@@ -1058,10 +1058,9 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
       setIsSendingEmail(true);
       console.log('🔄 Resending quote to:', quote.customer_email);
       
-      const { error: emailError } = await supabase.functions.invoke('send-admin-quote', {
+      const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-admin-quote', {
         body: {
           to: quote.customer_email,
-          cc: adminEmail !== quote.customer_email ? adminEmail : undefined,
           subject: `[RESENT] ${quote.email_subject}`,
           content: quote.email_content,
           vehicleData: {
@@ -1086,8 +1085,9 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         }
       });
 
-      if (emailError) {
-        throw new Error(`Email failed: ${emailError.message}`);
+      if (emailError || emailResult?.customerSent === false) {
+        const msg = emailError?.message || emailResult?.error || 'Unknown error';
+        throw new Error(`Email failed: ${msg}`);
       }
 
       await supabase
@@ -1098,7 +1098,12 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead }) =>
         })
         .eq('id', quote.id);
 
-      const copyMessage = adminEmail ? ` A copy was also sent to ${adminEmail}.` : '';
+      const copyRecipient = emailResult?.salesCopyRecipient;
+      const copyMessage = emailResult?.salesCopySent && copyRecipient
+        ? ` A copy was also sent to ${copyRecipient}.`
+        : emailResult?.salesCopySent === false
+          ? ` (Copy to ${copyRecipient || 'your account'} failed.)`
+          : '';
       toast({
         title: "✅ Quote Resent Successfully!",
         description: `Email resent to ${quote.customer_email}.${copyMessage}`,
