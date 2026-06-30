@@ -483,75 +483,94 @@ const handler = async (req: Request): Promise<Response> => {
       )
     );
 
-    // 1) Send to the customer
+    // Send customer email and sales-user copy IN PARALLEL to halve latency.
+    const shouldSendSalesCopy =
+      !!(salesUser && salesUser.email && salesUser.email !== toLower);
+    const salesCopyRecipient: string | null = shouldSendSalesCopy
+      ? salesUser!.email
+      : null;
+
+    const customerSendPromise = resend.emails.send({
+      from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+      to: [to],
+      cc: ccRecipients.length > 0 ? ccRecipients : undefined,
+      subject: subject,
+      html: finalHtml,
+    });
+
+    const salesCopySendPromise = shouldSendSalesCopy
+      ? resend.emails.send({
+          from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+          to: [salesUser!.email],
+          subject: `[Copy] ${subject}`,
+          html: finalHtml,
+        })
+      : Promise.resolve(null);
+
+    const [customerResult, salesCopyResult] = await Promise.allSettled([
+      customerSendPromise,
+      salesCopySendPromise,
+    ]);
+
+    // 1) Customer result
     let customerSent = false;
     let customerMessageId: string | null = null;
     let customerError: string | null = null;
-    try {
-      const customerResponse = await resend.emails.send({
-        from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
-        to: [to],
-        cc: ccRecipients.length > 0 ? ccRecipients : undefined,
-        subject: subject,
-        html: finalHtml,
-      });
-      if ((customerResponse as any)?.error) {
-        throw new Error(JSON.stringify((customerResponse as any).error));
+    if (customerResult.status === "fulfilled") {
+      const resp: any = customerResult.value;
+      if (resp?.error) {
+        customerError = JSON.stringify(resp.error);
+      } else {
+        customerMessageId = resp?.data?.id ?? null;
+        customerSent = true;
       }
-      customerMessageId = (customerResponse as any)?.data?.id ?? null;
-      customerSent = true;
+    } else {
+      customerError = customerResult.reason?.message || String(customerResult.reason);
+    }
+
+    if (customerSent) {
       console.log("quote_email.customer.sent", {
         to: toLower,
         message_id: customerMessageId,
         caller_email: salesEmailLower,
       });
-    } catch (e: any) {
-      customerError = e?.message || String(e);
+    } else {
       console.error("quote_email.customer.failed", {
         to: toLower,
         error: customerError,
         caller_email: salesEmailLower,
       });
-      return new Response(
-        JSON.stringify({
-          customerSent: false,
-          salesCopySent: false,
-          error: customerError,
-        }),
-        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
     }
 
-    // 2) Send a separate copy to the authenticated sales user (server-derived).
+    // 2) Sales-user copy result
     let salesCopySent = false;
     let salesCopyMessageId: string | null = null;
     let salesCopyError: string | null = null;
-    let salesCopyRecipient: string | null = null;
 
-    if (salesUser && salesUser.email && salesUser.email !== toLower) {
-      salesCopyRecipient = salesUser.email;
-      try {
-        const copyResponse = await resend.emails.send({
-          from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
-          to: [salesUser.email],
-          subject: `[Copy] ${subject}`,
-          html: finalHtml,
-        });
-        if ((copyResponse as any)?.error) {
-          throw new Error(JSON.stringify((copyResponse as any).error));
+    if (shouldSendSalesCopy) {
+      if (salesCopyResult.status === "fulfilled") {
+        const resp: any = salesCopyResult.value;
+        if (resp?.error) {
+          salesCopyError = JSON.stringify(resp.error);
+        } else {
+          salesCopyMessageId = resp?.data?.id ?? null;
+          salesCopySent = true;
         }
-        salesCopyMessageId = (copyResponse as any)?.data?.id ?? null;
-        salesCopySent = true;
+      } else {
+        salesCopyError =
+          salesCopyResult.reason?.message || String(salesCopyResult.reason);
+      }
+
+      if (salesCopySent) {
         console.log("quote_email.sales_copy.sent", {
-          caller_user_id: salesUser.userId,
-          caller_email: salesUser.email,
+          caller_user_id: salesUser!.userId,
+          caller_email: salesUser!.email,
           message_id: salesCopyMessageId,
         });
-      } catch (e: any) {
-        salesCopyError = e?.message || String(e);
+      } else {
         console.error("quote_email.sales_copy.failed", {
-          caller_user_id: salesUser.userId,
-          caller_email: salesUser.email,
+          caller_user_id: salesUser!.userId,
+          caller_email: salesUser!.email,
           error: salesCopyError,
         });
       }
@@ -563,6 +582,20 @@ const handler = async (req: Request): Promise<Response> => {
         caller_email: salesEmailLower,
       });
     }
+
+    // If the customer send failed, surface as 500 (quote considered failed)
+    if (!customerSent) {
+      return new Response(
+        JSON.stringify({
+          customerSent: false,
+          salesCopySent,
+          salesCopyError,
+          error: customerError,
+        }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
 
     return new Response(
       JSON.stringify({
