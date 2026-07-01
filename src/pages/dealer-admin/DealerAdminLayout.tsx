@@ -88,6 +88,7 @@ const navGroups: NavGroup[] = [
   {
     label: 'Operations',
     items: [
+      { to: '/dealer-admin/call-tracking', label: 'Call Tracking', icon: Phone },
       { to: '/dealer-admin/lead-backup', label: 'Lead Backup & Recovery', icon: Database },
       { to: '/dealer-admin/document-mapping', label: 'Document Mapping', icon: FolderOpen },
       { to: '/dealer-admin/policy-letters', label: 'Policy Letters', icon: FileText },
