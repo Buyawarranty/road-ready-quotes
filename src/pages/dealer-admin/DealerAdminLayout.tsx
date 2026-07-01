@@ -108,6 +108,7 @@ const navGroups: NavGroup[] = [
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { activeCalls, missedCalls, acknowledgeMissedCall, dismissActiveCall } = useCallRailPresence();
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [gateUnlocked, setGateUnlocked] = useState<boolean>(
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
@@ -115,6 +116,8 @@ const DealerAdminLayout: React.FC = () => {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(navGroups.map((g) => [g.label, true]))
   );
+
+  const bannerCount = activeCalls.length + missedCalls.length;
 
   useEffect(() => {
     if (!gateUnlocked) {
