@@ -34,7 +34,7 @@ export default function DealerAdminCallTracking() {
   const [webhookUrl, setWebhookUrl] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const projectRef = (import.meta.env.VITE_SUPABASE_PROJECT_REF || '') as string;
+  const projectId = (import.meta.env.VITE_SUPABASE_PROJECT_ID || '') as string;
 
   const load = async () => {
     setLoading(true);
