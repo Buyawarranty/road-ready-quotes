@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useCallRailPresence } from '@/hooks/useCallRailPresence';
+import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner';
+import { MissedCallBanner } from '@/components/admin/calls/MissedCallBanner';
 import {
   Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut,
   Target, Calculator, Lightbulb, Receipt, Car, Percent, UserPlus, MessageSquare,
   Star, Mail, ShoppingCart, Clock, Megaphone, Eye, Database, Shield, FolderOpen,
   PenTool, Globe, TestTube, CalendarClock, Trophy, Settings, ChevronDown, ChevronRight,
+  Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isAdminRole } from '@/lib/adminRoles';
