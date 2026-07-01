@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useCallRailPresence } from '@/hooks/useCallRailPresence';
+import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner';
+import { MissedCallBanner } from '@/components/admin/calls/MissedCallBanner';
 import {
   Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut,
   Target, Calculator, Lightbulb, Receipt, Car, Percent, UserPlus, MessageSquare,
   Star, Mail, ShoppingCart, Clock, Megaphone, Eye, Database, Shield, FolderOpen,
   PenTool, Globe, TestTube, CalendarClock, Trophy, Settings, ChevronDown, ChevronRight,
+  Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isAdminRole } from '@/lib/adminRoles';
@@ -84,6 +88,7 @@ const navGroups: NavGroup[] = [
   {
     label: 'Operations',
     items: [
+      { to: '/dealer-admin/call-tracking', label: 'Call Tracking', icon: Phone },
       { to: '/dealer-admin/lead-backup', label: 'Lead Backup & Recovery', icon: Database },
       { to: '/dealer-admin/document-mapping', label: 'Document Mapping', icon: FolderOpen },
       { to: '/dealer-admin/policy-letters', label: 'Policy Letters', icon: FileText },
@@ -103,6 +108,7 @@ const navGroups: NavGroup[] = [
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { activeCalls, missedCalls, acknowledgeMissedCall, dismissActiveCall } = useCallRailPresence();
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [gateUnlocked, setGateUnlocked] = useState<boolean>(
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
@@ -110,6 +116,8 @@ const DealerAdminLayout: React.FC = () => {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(navGroups.map((g) => [g.label, true]))
   );
+
+  const bannerCount = activeCalls.length + missedCalls.length;
 
   useEffect(() => {
     if (!gateUnlocked) {
@@ -150,6 +158,8 @@ const DealerAdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-muted/20 w-full">
+      <IncomingCallBanner calls={activeCalls} onDismiss={dismissActiveCall} />
+      <MissedCallBanner calls={missedCalls} onAcknowledge={acknowledgeMissedCall} />
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="px-5 py-5 border-b border-border">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Panda Protect</p>
@@ -208,7 +218,7 @@ const DealerAdminLayout: React.FC = () => {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">
+      <main className={`flex-1 overflow-auto ${bannerCount > 0 ? 'pt-24' : ''}`}>
         <div className="p-6 max-w-[1600px] mx-auto">
           <Outlet />
         </div>
