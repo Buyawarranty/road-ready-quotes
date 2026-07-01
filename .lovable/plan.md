@@ -1,54 +1,83 @@
-## Goal
-Ensure that when a sales/admin user sends a quote, a copy of the exact same email is delivered to the **authenticated** sales user's registered account email — derived server-side, not from client input.
 
-## Root cause
-`send-admin-quote` (edge function) only sends to `to` + a client-supplied `cc`. The sales user email is currently picked client-side in `GetQuoteTab.tsx` (`adminEmail` from `supabase.auth.getUser()` → `admin_users.email`) and passed as `cc`. If that fetch fails, hasn't resolved, or is tampered with, the sales user never receives a copy. The function never independently identifies the caller.
+# CallRail Integration for Admin Panel
 
-`send-quote-email` (used by `PricingTable`, `QuoteDeliveryStep`, `DealerPricingTable`) is a public/customer flow — no sales user involved, so no change needed there.
+Bring CallRail calls into the admin so sales agents see a big incoming-call banner in real time and a persistent missed-call alert they must acknowledge — routed to the agent CallRail assigned the tracking number to.
 
-## Changes
+## 1. Data model (Supabase)
 
-### 1. `supabase/functions/send-admin-quote/index.ts`
-- Require an `Authorization: Bearer <jwt>` header. Reject with 401 if missing/invalid.
-- Use the service-role Supabase client to:
-  - Call `auth.getUser(jwt)` to identify the caller.
-  - Look up `admin_users` by `user_id` (fallback by `email`) with `maybeSingle()` to get the active sales user record (email + name).
-- Build recipient list:
-  - **Primary send**: `to = customerEmail`, `cc = [additional emails the caller provided]` (sanitised: strings only, dedup, drop customer email and the sales user email).
-  - **Sales-user copy**: send a **separate** Resend email to the authenticated sales user's email with the identical HTML body and subject prefixed `[Copy] `. This avoids leaking the sales user's address to the customer via CC headers and guarantees delivery even if the customer send partially fails.
-- Stop trusting `cc` from the client as the source of the sales-user copy. Keep accepting `additionalEmails` for genuine extra recipients, but never use it to derive the sales user.
-- Logging: emit clear, structured logs:
-  - `quote_email.customer.sent` / `quote_email.customer.failed`
-  - `quote_email.sales_copy.sent` / `quote_email.sales_copy.failed`
-  - Include `caller_user_id`, `caller_email`, `to`, Resend message IDs, and error messages.
-- Error handling:
-  - If customer send fails → return 500 with the error (quote send considered failed).
-  - If only sales-user copy fails → return 200 with `{ customerSent: true, salesCopySent: false, salesCopyError }` so the UI can warn but not block.
-- Add `supabase/config.toml` entry:
-  ```toml
-  [functions.send-admin-quote]
-  verify_jwt = true
-  ```
+New tables in `public`:
 
-### 2. `src/components/admin/GetQuoteTab.tsx`
-- Remove `adminEmail` from the CC list passed to the function (the server now handles it).
-- Keep the UI hint ("A copy will be sent to you: …") but read it from the function response (`salesCopyRecipient`) so the displayed address is the one the server actually used.
-- Toast: on response, show success + warning if `salesCopySent === false`.
-- Lines affected: ~816-855 and ~1040-1095.
+- `callrail_tracking_numbers`
+  - `id uuid pk`, `callrail_tracker_id text unique`, `phone_e164 text`, `label text`
+  - `assigned_admin_user_id uuid` → maps tracking number → sales agent
+  - `active boolean default true`, timestamps
+- `callrail_calls`
+  - `id uuid pk`, `callrail_call_id text unique`
+  - `direction text` (`inbound`/`outbound`), `status text` (`ringing` | `in_progress` | `completed` | `missed` | `voicemail`)
+  - `caller_number text`, `caller_name text`, `caller_city text`, `tracker_id text`, `tracked_number text`
+  - `assigned_admin_user_id uuid` (resolved from tracking number → agent)
+  - `matched_lead_id uuid null`, `matched_customer_id uuid null` (phone-number match against `sales_leads` / `customers`)
+  - `started_at timestamptz`, `answered_at timestamptz`, `ended_at timestamptz`
+  - `duration_seconds int`, `recording_url text`, `raw jsonb`
+  - `acknowledged_at timestamptz null`, `acknowledged_by uuid null` (for missed-call dismissal)
+  - `callback_lead_id uuid null` (link if callback lead created)
+- Enable Realtime on `callrail_calls`; RLS: sales agents see calls where `assigned_admin_user_id = auth.uid()` OR unassigned; admins see all.
+- GRANTs per project rules; `service_role` full access for the edge function.
 
-### 3. `src/components/admin/FollowUpEmailDialog.tsx`
-- Same treatment: rely on server to copy the authenticated sales user. No client `cc` for the sales user. Show warning if `salesCopySent === false`.
+## 2. CallRail webhook edge function
 
-### 4. Deploy
-- Deploy `send-admin-quote` after changes.
+New public edge function `callrail-webhook` (verify_jwt = false, HMAC-verified via `CALLRAIL_WEBHOOK_SECRET`):
 
-## Non-goals
-- `send-quote-email` (customer-initiated public quote flow) is untouched — there is no sales user in that path.
-- No template/PDF changes; the sales copy reuses the exact HTML the customer receives, so attachments/links are identical by construction.
+- Handles CallRail's Pre-Call (ringing), Post-Call (completed/missed), and Call-Modified events.
+- Upserts one row per `callrail_call_id`, updating status transitions.
+- Looks up tracking number → `assigned_admin_user_id`.
+- Attempts phone-match against `sales_leads.mobile` / `customers.phone` to populate `matched_lead_id` / `matched_customer_id`.
+- On `missed` / `no-answer` / `voicemail`, ensures `status='missed'` and leaves `acknowledged_at` null.
+- On completed answered call, writes to existing `lead_call_logs` if a lead match exists.
+- Requires two secrets: `CALLRAIL_WEBHOOK_SECRET` and `CALLRAIL_API_KEY` (for fetching call detail / recordings when needed).
 
-## Verification
-- Sign in as a sales user with a known `admin_users.email`, send a quote to a test customer address.
-- Confirm two Resend sends in logs: one to the customer, one to the sales user's registered email.
-- Confirm the customer email does **not** include the sales user in CC headers.
-- Tamper test: call the function from the browser with a forged `cc`/`adminEmail` payload — server ignores it and still copies the authenticated user.
-- Failure test: temporarily break the sales-copy send (e.g. invalid sales address) → customer send still succeeds, response indicates `salesCopySent: false`, UI shows warning.
+Setup step for the user: in CallRail, add company-level webhooks for Pre-Call, Post-Call, and Call-Modified pointing to the deployed function URL.
+
+## 3. Admin realtime hook + UI
+
+New `src/hooks/useCallRailPresence.ts`:
+- Subscribes via Supabase Realtime to `callrail_calls` scoped to `assigned_admin_user_id = currentAdminId` (plus unassigned).
+- Exposes: `activeIncomingCall` (status `ringing`/`in_progress`, unended), `missedCalls` (status `missed` AND `acknowledged_at is null`).
+
+New components under `src/components/admin/calls/`:
+- `IncomingCallBanner.tsx` — full-width fixed banner at top of the admin layout, orange/blue high-contrast. Shows caller number, matched lead/customer name + link, tracking number label, ring animation. Plays ringtone (`/sounds/ringtone.mp3`) and fires a `Notification` if permission granted. Buttons: “Open lead”, “Answered”, “Mark missed”.
+- `MissedCallBanner.tsx` — sticky red bar below the incoming banner. Lists up to 3 recent unacknowledged missed calls with “Call back” (tel: link + creates callback reminder in `lead_reminders`) and “Dismiss” (sets `acknowledged_at`). A counter chip in `NotificationBell` shows total missed.
+- Both mounted from the admin layout so they're visible on every admin route.
+
+Integration:
+- Mount banners in the admin shell (same layer as `MaintenanceBanner`).
+- Extend `NotificationBell` to include a “Missed calls” tab.
+- Request `Notification.requestPermission()` on first admin load.
+
+## 4. Admin management screen
+
+New route `Dealer Admin → Call Tracking` (`src/pages/dealer-admin/DealerAdminCallTracking.tsx`):
+- Table of `callrail_tracking_numbers` with inline assign-to-agent dropdown (from `admin_users`).
+- Recent calls table (filterable by agent, status, date) sourced from `callrail_calls`, with recording playback, matched lead link, and manual re-assign.
+- One-time “Sync from CallRail” button that calls a `callrail-sync-numbers` edge function to pull the tracker list via CallRail API.
+
+## 5. Secrets required
+
+Requested via `add_secret` once the plan is approved:
+- `CALLRAIL_API_KEY` (Account API token)
+- `CALLRAIL_ACCOUNT_ID`
+- `CALLRAIL_WEBHOOK_SECRET` (shared signing secret you enter in CallRail webhook settings)
+
+## Technical notes
+
+- Realtime channel filter: `postgres_changes` on `public.callrail_calls` filtered by `assigned_admin_user_id=eq.{adminId}` inside `useEffect` with `removeChannel` cleanup, per project realtime rules.
+- Ringtone asset added to `public/sounds/ringtone.mp3`.
+- Missed-call visibility persists across page reloads because state lives in `callrail_calls.acknowledged_at`, not local state.
+- No changes to existing lead-distribution logic; CallRail only decorates leads and creates callback reminders.
+- Follows project memory: no negative wording, high-contrast banner styling per `high-contrast-visual-standards`, uses existing `lead_reminders` for callbacks.
+
+## Out of scope (can add later)
+
+- Click-to-dial through CallRail (currently uses `tel:` + existing Zoiper flow).
+- Whisper/coaching messages, SMS.
+- Automated agent status → CallRail routing (agents are static-mapped per tracker for v1).
