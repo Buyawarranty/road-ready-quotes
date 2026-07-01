@@ -56,10 +56,10 @@ export default function DealerAdminCallTracking() {
   }, []);
 
   useEffect(() => {
-    if (projectRef) {
-      setWebhookUrl(`https://${projectRef}.supabase.co/functions/v1/callrail-webhook`);
+    if (projectId) {
+      setWebhookUrl(`https://${projectId}.supabase.co/functions/v1/callrail-webhook`);
     }
-  }, [projectRef]);
+  }, [projectId]);
 
   const sync = async () => {
     setSyncing(true);
