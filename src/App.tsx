@@ -432,6 +432,7 @@ const App = () => {
                       <Route path="finance/rules" element={<DealerAdminFinanceRules />} />
                       <Route path="finance/payouts" element={<DealerAdminFinancePayouts />} />
                       <Route path="finance/:id" element={<DealerAdminFinanceDetail />} />
+                      <Route path="call-tracking" element={<DealerAdminCallTracking />} />
                     </Route>
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
