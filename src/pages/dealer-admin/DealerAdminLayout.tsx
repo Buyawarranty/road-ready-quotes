@@ -158,6 +158,8 @@ const DealerAdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-muted/20 w-full">
+      <IncomingCallBanner calls={activeCalls} onDismiss={dismissActiveCall} />
+      <MissedCallBanner calls={missedCalls} onAcknowledge={acknowledgeMissedCall} />
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="px-5 py-5 border-b border-border">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Panda Protect</p>
