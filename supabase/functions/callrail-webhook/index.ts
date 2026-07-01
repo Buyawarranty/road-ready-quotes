@@ -1,5 +1,9 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
-import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, CallRail-Signature, X-CallRail-Signature",
+};
 
 // Supabase Edge Function: callrail-webhook
 // Public endpoint (verify_jwt = false). CallRail webhooks are authenticated via HMAC.
@@ -25,7 +29,7 @@ interface CallRailWebhookBody {
   customer_state?: string;
   tracking_phone_number?: string;
   tracking_number_id?: string;
-  tracking_number?: string; // sometimes used instead of tracking_number_id
+  tracking_number?: string;
   direction?: string;
   source?: string;
   voicemail?: boolean;
@@ -60,7 +64,6 @@ async function verifySignature(req: Request, secret: string): Promise<boolean> {
 }
 
 function parseStatus(body: CallRailWebhookBody): string {
-  // pre_call -> ringing
   const event = (body.event || '').toLowerCase();
   if (event === 'pre_call') return STATUS_RINGING;
   if (event === 'post_call') {
@@ -69,7 +72,6 @@ function parseStatus(body: CallRailWebhookBody): string {
     return STATUS_FINISHED;
   }
   if (event === 'call_modified') {
-    // Re-derive from body if possible; otherwise treat as unchanged
     if (body.voicemail) return STATUS_VOICEMAIL;
     if (body.answered === false || body.duration === 0) return STATUS_MISSED;
     if (body.answered === true) return STATUS_FINISHED;
@@ -130,6 +132,18 @@ Deno.serve(async (req: Request) => {
     const trackedNumber = body.tracking_phone_number || null;
     const callerNumber = normalizePhoneNumber(body.customer_phone_number);
     const status = parseStatus(body);
+    if (event === 'call_routing_complete') {
+      // Routing complete means the call is now connected to an agent.
+      // Keep existing status if already in DB, otherwise mark in_progress.
+      const { data: existing } = await supabase
+        .from('callrail_calls')
+        .select('id')
+        .eq('callrail_call_id', callrailCallId)
+        .maybeSingle();
+      if (!existing) {
+        // fall through to insert with in_progress status
+      }
+    }
 
     // Resolve tracking number -> assigned admin user
     let trackingNumberId: string | null = null;
@@ -161,7 +175,6 @@ Deno.serve(async (req: Request) => {
     let matchedLeadId: string | null = null;
     let matchedCustomerId: string | null = null;
     if (callerNumber) {
-      // Try sales leads first
       const { data: leads } = await supabase
         .from('sales_leads')
         .select('id, mobile')
@@ -187,7 +200,6 @@ Deno.serve(async (req: Request) => {
     const endedAt = toDateTimeOrNull(body.end_time);
     const answeredAt = body.answered && startedAt ? startedAt : null;
 
-    // Upsert call row
     const upsertPayload = {
       callrail_call_id: callrailCallId,
       direction: (body.direction || 'inbound').toLowerCase(),
@@ -222,7 +234,6 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Log answered call to lead_call_logs if a lead match exists
     if (status === STATUS_FINISHED && matchedLeadId) {
       const { data: agent } = await supabase
         .from('admin_users')
