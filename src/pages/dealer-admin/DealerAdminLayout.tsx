@@ -218,7 +218,7 @@ const DealerAdminLayout: React.FC = () => {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">
+      <main className={`flex-1 overflow-auto ${bannerCount > 0 ? 'pt-24' : ''}`}>
         <div className="p-6 max-w-[1600px] mx-auto">
           <Outlet />
         </div>
