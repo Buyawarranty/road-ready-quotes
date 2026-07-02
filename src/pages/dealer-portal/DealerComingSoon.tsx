@@ -135,7 +135,9 @@ const DealerComingSoon = () => {
           });
           setSubmitted(true);
           setForm(initialForm);
+          scrollFormIntoView();
           toast.success('Thank you — a member of our team will be in touch shortly.');
+
           return;
         } catch (e: any) {
           toast.error(e?.message || message);
