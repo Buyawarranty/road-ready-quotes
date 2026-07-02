@@ -420,7 +420,7 @@ const MotorbikeWarranty = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
                 Motorbike Warranty FAQs
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {[
                   {
                     q: "Can I buy motorbike warranty online?",
@@ -447,9 +447,28 @@ const MotorbikeWarranty = () => {
                     a: "Yes! We offer flexible pay monthly motorcycle warranty plans with low deposits, making it easy to budget for your bike protection."
                   }
                 ].map((faq, index) => (
-                  <div key={index} className="bg-card p-6 rounded-lg border">
-                    <h3 className="text-xl font-semibold mb-3">{faq.q}</h3>
-                    <p className="text-muted-foreground">{faq.a}</p>
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                      className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="font-semibold text-lg pr-4">{faq.q}</span>
+                      <ChevronDown
+                        className={`w-5 h-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-out ${openFaqIndex === index ? 'max-h-96' : 'max-h-0'}`}
+                    >
+                      <div className="px-6 pb-5 bg-white border-t border-gray-100">
+                        <p className="pt-4 text-gray-700 leading-relaxed whitespace-pre-line">
+                          {faq.a}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
