@@ -176,7 +176,7 @@ const DealerComingSoon = () => {
                 <span className="text-[#eb4b00]">Without the Paperwork</span>
               </h1>
               <p className="text-slate-600 mt-4 sm:mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
-                Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
+                Add extra profit to every warranty sale and give your customers the confidence of complete warranty cover.
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
@@ -188,20 +188,11 @@ const DealerComingSoon = () => {
                   Register My Interest <ArrowRight className="w-5 h-5" />
                 </button>
               </div>
-
-              <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> No obligation</li>
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Takes less than 30 seconds</li>
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
-              </ul>
-
-              <div className="mt-8 max-w-[220px] sm:max-w-[270px] mx-auto lg:mx-0">
-                <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
-              </div>
             </div>
 
             {/* Right — Form */}
-            <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
+            <div>
+              <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
                   <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
@@ -320,6 +311,17 @@ const DealerComingSoon = () => {
                   </form>
                 </>
               )}
+              </div>
+
+              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> No obligation</li>
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Takes less than 30 seconds</li>
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
+              </ul>
+
+              <div className="mt-5 max-w-[220px] sm:max-w-[270px] mx-auto">
+                <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
+              </div>
             </div>
           </div>
         </div>
