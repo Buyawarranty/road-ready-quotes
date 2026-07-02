@@ -164,8 +164,8 @@ const DealerComingSoon = () => {
 
       {/* HERO */}
       <section className="relative bg-gradient-to-br from-orange-50 via-white to-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-14 items-start">
             {/* Left */}
             <div>
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-5">
