@@ -382,14 +382,14 @@ const DealerComingSoon = () => {
             </button>
           </div>
           <div className="flex justify-center">
-            <img src={vwId3} alt="Volkswagen ID.3 trade warranty cover" className="w-full max-w-md h-auto" />
+            <img src={vwId3} alt="Volkswagen ID.3 trade warranty cover" className="w-full max-w-xs sm:max-w-md h-auto" />
           </div>
         </div>
       </section>
 
       {/* BENEFIT CARDS */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-6">
+      <section className="bg-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           {[
             { icon: TrendingUp, t: 'Increase profit per vehicle', d: 'Earn more on every eligible sale with high-margin warranty products.' },
             { icon: FileText, t: 'No claims admin', d: 'We handle claims, documents and customer support for you.' },
