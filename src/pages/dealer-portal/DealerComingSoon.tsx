@@ -9,7 +9,7 @@ import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import qashqaiHero from '@/assets/nissan-qashqai-warranty-cover.png';
-import vwId3 from '@/assets/vw-id3-warranty.webp';
+import vwId3 from '@/assets/panda-with-vw.png.asset.json';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -384,7 +384,7 @@ const DealerComingSoon = () => {
             </button>
           </div>
           <div className="flex justify-center">
-            <img src={vwId3} alt="Volkswagen ID.3 trade warranty cover" className="w-full max-w-xs sm:max-w-md h-auto" />
+            <img src={vwId3.url} alt="Panda Protect trade warranty cover" className="w-full max-w-xs sm:max-w-md h-auto" />
           </div>
         </div>
       </section>
