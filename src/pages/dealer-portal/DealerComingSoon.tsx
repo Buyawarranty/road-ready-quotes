@@ -195,13 +195,13 @@ const DealerComingSoon = () => {
                 <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
               </ul>
 
-              <div className="mt-8 max-w-[270px]">
+              <div className="mt-8 max-w-[220px] sm:max-w-[270px] mx-auto lg:mx-0">
                 <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
               </div>
             </div>
 
             {/* Right — Form */}
-            <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8">
+            <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
                   <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
