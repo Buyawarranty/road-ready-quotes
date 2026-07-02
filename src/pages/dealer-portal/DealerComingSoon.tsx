@@ -354,10 +354,10 @@ const DealerComingSoon = () => {
       </section>
 
       {/* WHY DEALERS CHOOSE */}
-      <section className="bg-slate-50 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+      <section className="bg-slate-50 py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">Why dealers choose Panda Protect</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">Why dealers choose Panda Protect</h2>
             <ul className="mt-7 space-y-4">
               {[
                 'High profit warranty products with flexible options',
