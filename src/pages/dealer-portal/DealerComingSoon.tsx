@@ -114,7 +114,9 @@ const DealerComingSoon = () => {
 
       setSubmitted(true);
       setForm(initialForm);
+      scrollFormIntoView();
       toast.success('Thank you — a member of our team will be in touch shortly.');
+
     } catch (err: any) {
       const message = err?.message || 'Something went wrong. Please try again.';
       const shouldFallback = /edge function|failed to send|failed to fetch|network/i.test(message);
