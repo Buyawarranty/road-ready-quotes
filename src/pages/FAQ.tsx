@@ -580,36 +580,36 @@ const FAQ = () => {
                   
                   <div className="space-y-4">
                     {category.questions.map((faq) => (
-                      <article key={faq.id} id={faq.id} className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg overflow-hidden" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                      <article key={faq.id} id={faq.id} className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
                         <button
                           onClick={() => toggleItem(faq.id)}
-                          className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-orange-600/20 transition-colors"
+                          className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
                         >
                           <div className="flex items-center">
-                            <h3 className="font-semibold text-lg text-white pr-4" itemProp="name">
+                            <h3 className="font-semibold text-lg pr-4" itemProp="name">
                               {faq.question}
                             </h3>
                             {faq.popular && (
-                              <span className="bg-white text-orange-600 text-xs px-2 py-1 rounded-full font-medium">
+                              <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full font-medium">
                                 Popular
                               </span>
                             )}
                           </div>
-                          <ChevronDown 
-                            className={`w-6 h-6 flex-shrink-0 text-white transition-transform duration-300 ${
+                          <ChevronDown
+                            className={`w-5 h-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300 ${
                               openItems[faq.id] ? 'rotate-180' : ''
                             }`}
                           />
                         </button>
-                        
+
                         <div className={`overflow-hidden transition-all duration-200 ease-out ${
-                          openItems[faq.id] 
-                            ? 'max-h-screen opacity-100 animate-accordion-down' 
+                          openItems[faq.id]
+                            ? 'max-h-screen opacity-100 animate-accordion-down'
                             : 'max-h-0 opacity-0'
                         }`}>
-                          <div className="px-6 pb-5 bg-white border-t border-orange-200" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
+                          <div className="px-6 pb-5 bg-white border-t border-gray-100" itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
                             <div className="pt-4 transform translate-y-0">
-                              <div className="text-brand-dark-text leading-relaxed whitespace-pre-line" itemProp="text">
+                              <div className="text-gray-700 leading-relaxed whitespace-pre-line" itemProp="text">
                                 {renderAnswerWithLinks(faq.answer)}
                               </div>
                             </div>

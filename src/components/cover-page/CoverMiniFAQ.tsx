@@ -47,17 +47,17 @@ const CoverMiniFAQ: React.FC<CoverMiniFAQProps> = ({ onAskQuestion }) => {
 
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div key={i} className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg overflow-hidden shadow-lg">
+            <div key={i} className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden">
               <button
                 onClick={() => setOpenIdx(openIdx === i ? null : i)}
-                className="w-full px-6 py-5 text-left flex items-center justify-between text-white hover:bg-orange-600/20 transition-colors"
+                className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
                 aria-expanded={openIdx === i}
               >
-                <span className="font-bold text-lg pr-4">
+                <span className="font-semibold text-lg pr-4">
                   {faq.q}
                 </span>
                 <ChevronDown
-                  className={`w-6 h-6 text-white flex-shrink-0 transition-transform duration-300 ${
+                  className={`w-5 h-5 text-[#eb4b00] flex-shrink-0 transition-transform duration-300 ${
                     openIdx === i ? 'rotate-180' : ''
                   }`}
                 />
@@ -67,8 +67,8 @@ const CoverMiniFAQ: React.FC<CoverMiniFAQProps> = ({ onAskQuestion }) => {
                   openIdx === i ? 'max-h-screen opacity-100 animate-accordion-down' : 'max-h-0 opacity-0'
                 }`}
               >
-                <div className="px-6 pb-5 bg-white border-t border-orange-200">
-                  <p className="text-base leading-relaxed pt-4 text-brand-dark-text">
+                <div className="px-6 pb-5 bg-white border-t border-gray-100">
+                  <p className="text-base leading-relaxed pt-4 text-gray-700">
                     {faq.a}
                   </p>
                 </div>

@@ -511,25 +511,29 @@ const BMWWarranty: React.FC = () => {
 
           <div className="space-y-4">
             {bmwFAQs.map((faq, index) => (
-              <div key={index} className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg overflow-hidden">
+              <div key={index} className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden">
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-orange-600/20 transition-colors"
+                  className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
                 >
-                  <span className="font-semibold text-lg text-white pr-4">
+                  <span className="font-semibold text-lg pr-4">
                     {faq.question}
                   </span>
-                  {openFaqId === index ? (
-                    <ChevronUp className="h-6 w-6 text-white flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="h-6 w-6 text-white flex-shrink-0" />
-                  )}
+                  <ChevronDown
+                    className={`h-5 w-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300 ${
+                      openFaqId === index ? 'rotate-180' : ''
+                    }`}
+                  />
                 </button>
-                {openFaqId === index && (
-                  <div className="px-6 py-5 bg-white">
+                <div
+                  className={`overflow-hidden transition-all duration-200 ease-out ${
+                    openFaqId === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <div className="px-6 py-5 bg-white border-t border-gray-100">
                     <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
