@@ -175,7 +175,7 @@ const DealerComingSoon = () => {
                 Offer Trade Warranties{' '}
                 <span className="text-[#eb4b00]">Without the Paperwork</span>
               </h1>
-              <p className="text-slate-600 mt-5 text-lg leading-relaxed max-w-xl">
+              <p className="text-slate-600 mt-4 sm:mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
               </p>
 
