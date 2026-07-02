@@ -436,7 +436,7 @@ const FAQTraders: React.FC = () => {
                       return (
                         <div
                           key={key}
-                          className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-orange-300 transition-colors"
+                          className="bg-white border border-slate-200 border-l-4 border-l-orange-300 rounded-xl overflow-hidden hover:border-orange-300 transition-colors"
                         >
                           <button
                             onClick={() => toggle(key)}
