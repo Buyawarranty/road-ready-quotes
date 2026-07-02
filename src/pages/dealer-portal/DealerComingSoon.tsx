@@ -326,14 +326,14 @@ const DealerComingSoon = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">How it works</h2>
-            <p className="text-slate-600 mt-3">Three simple steps to start offering trade warranties.</p>
+      <section className="bg-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">How it works</h2>
+            <p className="text-slate-600 mt-3 text-sm sm:text-base">Three simple steps to start offering trade warranties.</p>
           </div>
 
-          <div className="relative grid md:grid-cols-3 gap-8">
+          <div className="relative grid md:grid-cols-3 gap-10 md:gap-8">
             {/* dashed connector (desktop) */}
             <div className="hidden md:block absolute top-7 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-slate-300 -z-0" />
             {[
