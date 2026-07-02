@@ -100,8 +100,8 @@ const DealerHome = () => {
                 <div className="text-sm font-bold text-gray-900">Get an instant trade quote</div>
                 <form onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
                   <div className="flex items-stretch rounded-xl overflow-hidden shadow-lg w-full max-w-xl">
-                    <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-4 select-none">
-                      <span className="text-base leading-none" aria-hidden>🇬🇧</span>
+                    <div className="flex flex-col items-center justify-center bg-blue-700 text-white px-2 sm:px-4 select-none flex-shrink-0">
+                      <span className="text-sm sm:text-base leading-none" aria-hidden>🇬🇧</span>
                       <span className="text-[10px] font-bold tracking-wider mt-1">UK</span>
                     </div>
                     <input
@@ -113,13 +113,14 @@ const DealerHome = () => {
                       onChange={(e) => setReg(e.target.value.toUpperCase())}
                       placeholder="ENTER REG"
                       aria-label="Vehicle registration"
-                      className="flex-1 min-w-0 bg-yellow-400 text-gray-900 placeholder:text-gray-700/60 font-extrabold tracking-[0.2em] text-2xl sm:text-3xl uppercase px-4 py-4 outline-none border-0"
+                      className="flex-1 min-w-0 w-full bg-yellow-400 text-gray-900 placeholder:text-gray-700/60 font-extrabold tracking-[0.15em] sm:tracking-[0.2em] text-lg sm:text-3xl uppercase px-2 sm:px-4 py-3 sm:py-4 outline-none border-0"
                     />
                     <button
                       type="submit"
-                      className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-5 sm:px-7 text-base whitespace-nowrap transition-colors"
+                      aria-label="Get Quote"
+                      className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-3 sm:px-7 text-sm sm:text-base whitespace-nowrap transition-colors flex-shrink-0"
                     >
-                      Get Quote
+                      <span className="hidden sm:inline">Get Quote</span>
                       <ArrowRight className="w-5 h-5" />
                     </button>
                   </div>
