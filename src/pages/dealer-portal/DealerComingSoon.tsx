@@ -171,7 +171,7 @@ const DealerComingSoon = () => {
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-5">
                 Early dealer access now open
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black leading-[1.05] tracking-tight text-slate-900">
+              <h1 className="text-[2rem] sm:text-5xl lg:text-[3.25rem] font-black leading-[1.1] tracking-tight text-slate-900">
                 Offer Trade Warranties{' '}
                 <span className="text-[#eb4b00]">Without the Paperwork</span>
               </h1>
