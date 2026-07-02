@@ -164,18 +164,18 @@ const DealerComingSoon = () => {
 
       {/* HERO */}
       <section className="relative bg-gradient-to-br from-orange-50 via-white to-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-14 items-start">
             {/* Left */}
             <div>
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-5">
                 Early dealer access now open
               </span>
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-black leading-[1.05] tracking-tight text-slate-900">
+              <h1 className="text-[2rem] sm:text-5xl lg:text-[3.25rem] font-black leading-[1.1] tracking-tight text-slate-900">
                 Offer Trade Warranties{' '}
                 <span className="text-[#eb4b00]">Without the Paperwork</span>
               </h1>
-              <p className="text-slate-600 mt-5 text-lg leading-relaxed max-w-xl">
+              <p className="text-slate-600 mt-4 sm:mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
                 Add extra profit to every sale and give your customers the confidence of flexible warranty cover. Panda Protect handles claims, documents and support.
               </p>
 
@@ -195,13 +195,13 @@ const DealerComingSoon = () => {
                 <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
               </ul>
 
-              <div className="mt-8 max-w-[270px]">
+              <div className="mt-8 max-w-[220px] sm:max-w-[270px] mx-auto lg:mx-0">
                 <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
               </div>
             </div>
 
             {/* Right — Form */}
-            <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 sm:p-8">
+            <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
                   <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
@@ -326,14 +326,14 @@ const DealerComingSoon = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">How it works</h2>
-            <p className="text-slate-600 mt-3">Three simple steps to start offering trade warranties.</p>
+      <section className="bg-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">How it works</h2>
+            <p className="text-slate-600 mt-3 text-sm sm:text-base">Three simple steps to start offering trade warranties.</p>
           </div>
 
-          <div className="relative grid md:grid-cols-3 gap-8">
+          <div className="relative grid md:grid-cols-3 gap-10 md:gap-8">
             {/* dashed connector (desktop) */}
             <div className="hidden md:block absolute top-7 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-slate-300 -z-0" />
             {[
@@ -354,10 +354,10 @@ const DealerComingSoon = () => {
       </section>
 
       {/* WHY DEALERS CHOOSE */}
-      <section className="bg-slate-50 py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+      <section className="bg-slate-50 py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900">Why dealers choose Panda Protect</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">Why dealers choose Panda Protect</h2>
             <ul className="mt-7 space-y-4">
               {[
                 'High profit warranty products with flexible options',
@@ -382,14 +382,14 @@ const DealerComingSoon = () => {
             </button>
           </div>
           <div className="flex justify-center">
-            <img src={vwId3} alt="Volkswagen ID.3 trade warranty cover" className="w-full max-w-md h-auto" />
+            <img src={vwId3} alt="Volkswagen ID.3 trade warranty cover" className="w-full max-w-xs sm:max-w-md h-auto" />
           </div>
         </div>
       </section>
 
       {/* BENEFIT CARDS */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-6">
+      <section className="bg-white py-12 sm:py-16">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           {[
             { icon: TrendingUp, t: 'Increase profit per vehicle', d: 'Earn more on every eligible sale with high-margin warranty products.' },
             { icon: FileText, t: 'No claims admin', d: 'We handle claims, documents and customer support for you.' },

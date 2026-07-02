@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 const DealerPublicFooter: React.FC = () => {
   return (
     <footer className="bg-slate-900 text-slate-300 mt-16">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10">
           <div className="md:col-span-1">
             <div className="text-white font-black text-xl">Panda Protect</div>
             <p className="text-sm text-slate-400 mt-3 leading-relaxed">

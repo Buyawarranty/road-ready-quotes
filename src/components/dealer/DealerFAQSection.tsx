@@ -21,10 +21,10 @@ const DealerFAQSection: React.FC<DealerFAQSectionProps> = ({
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
 
   return (
-    <section className={`py-16 ${bgClassName}`}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">{heading}</h2>
+    <section className={`py-12 sm:py-16 ${bgClassName}`}>
+      <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3">{heading}</h2>
           {intro && (
             <p className="text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">{intro}</p>
           )}
