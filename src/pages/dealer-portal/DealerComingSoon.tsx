@@ -311,6 +311,17 @@ const DealerComingSoon = () => {
                   </form>
                 </>
               )}
+              </div>
+
+              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> No obligation</li>
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Takes less than 30 seconds</li>
+                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
+              </ul>
+
+              <div className="mt-5 max-w-[220px] sm:max-w-[270px] mx-auto">
+                <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
+              </div>
             </div>
           </div>
         </div>
