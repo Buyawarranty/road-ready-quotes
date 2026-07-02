@@ -42,7 +42,7 @@ const DealerPublicFooter: React.FC = () => {
 
         <div className="border-t border-slate-800 mt-10 pt-6 text-xs text-slate-500 flex flex-col sm:flex-row gap-2 justify-between">
           <div>© {new Date().getFullYear()} Panda Protect. All rights reserved.</div>
-          <div>Built for the UK motor trade.</div>
+          <div>Built for the UK motor trade warranty industry.</div>
         </div>
       </div>
     </footer>
