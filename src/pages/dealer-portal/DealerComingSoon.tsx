@@ -8,7 +8,6 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import qashqaiHero from '@/assets/nissan-qashqai-warranty-cover.png';
 import vwId3 from '@/assets/panda-with-vw.png.asset.json';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -313,14 +312,47 @@ const DealerComingSoon = () => {
               )}
               </div>
 
-              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> No obligation</li>
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Takes less than 30 seconds</li>
-                <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> UK dealer support</li>
-              </ul>
+              <div className="mt-6 space-y-6">
+                <div className="text-center">
+                  <p className="text-xs font-bold tracking-[0.18em] text-[#eb4b00] uppercase">For Motor Trade Dealers</p>
+                  <h3 className="mt-1 text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+                    Sell more cars with extended warranties from 20p a day
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                    Join hundreds of UK dealers boosting margins with Panda Protect. Quote, sell and manage warranties from one simple portal.
+                  </p>
+                </div>
 
-              <div className="mt-5 max-w-[220px] sm:max-w-[270px] mx-auto">
-                <img src={qashqaiHero} alt="Nissan Qashqai under trade warranty cover" className="w-full h-auto" />
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="text-base sm:text-lg font-black text-slate-900">Sign up in 60 seconds</p>
+                    <p className="text-xs text-slate-500 mt-0.5">No setup fees, no contracts.</p>
+                  </div>
+                  <div>
+                    <p className="text-base sm:text-lg font-black text-slate-900">Earn from 20p a day</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Exclusive trade pricing on every policy.</p>
+                  </div>
+                  <div>
+                    <p className="text-base sm:text-lg font-black text-slate-900">Trusted UK partner</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Easy claims, fast payouts to any UK garage.</p>
+                  </div>
+                </div>
+
+                <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-600">
+                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Free dealer sign-up</li>
+                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Exclusive trade pricing</li>
+                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Easy claims, fast payouts</li>
+                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Dedicated UK support</li>
+                </ul>
+
+                <div className="text-center">
+                  <button
+                    onClick={scrollToForm}
+                    className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-6 py-3 rounded-lg text-sm"
+                  >
+                    Get started — Free dealer sign-up <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
