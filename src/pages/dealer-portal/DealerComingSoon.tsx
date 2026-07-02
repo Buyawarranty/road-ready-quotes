@@ -56,6 +56,13 @@ const DealerComingSoon = () => {
   const phoneValid = isValidUKPhone(form.phone_number);
   const urlValid = URL_RE.test(form.heard_about_us.trim());
 
+  const scrollFormIntoView = () => {
+    if (typeof window === 'undefined') return;
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const validate = () => {
     const e: typeof errors = {};
     if (!emailValid) e.email = 'Please enter a valid email address.';
@@ -63,8 +70,10 @@ const DealerComingSoon = () => {
     if (!urlValid) e.url = 'Please paste a valid website or listing URL.';
     setErrors(e);
     setTouched({ email: true, phone: true, url: true });
+    if (Object.keys(e).length > 0) scrollFormIntoView();
     return Object.keys(e).length === 0;
   };
+
 
   const submitViaDatabaseFallback = async (payload: any) => {
     const { data, error } = await supabase
