@@ -251,6 +251,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.email_address}
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
@@ -267,6 +271,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="tel"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.phone_number}
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
@@ -284,6 +292,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="url"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.heard_about_us}
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
@@ -300,6 +312,7 @@ const DealerComingSoon = () => {
                     >
                       {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
                     </button>
+
 
                     <p className="text-center text-xs text-slate-500">
                       We'll only contact you about Trade Warranty.
