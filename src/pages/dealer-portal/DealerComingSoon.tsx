@@ -56,6 +56,13 @@ const DealerComingSoon = () => {
   const phoneValid = isValidUKPhone(form.phone_number);
   const urlValid = URL_RE.test(form.heard_about_us.trim());
 
+  const scrollFormIntoView = () => {
+    if (typeof window === 'undefined') return;
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const validate = () => {
     const e: typeof errors = {};
     if (!emailValid) e.email = 'Please enter a valid email address.';
@@ -63,8 +70,10 @@ const DealerComingSoon = () => {
     if (!urlValid) e.url = 'Please paste a valid website or listing URL.';
     setErrors(e);
     setTouched({ email: true, phone: true, url: true });
+    if (Object.keys(e).length > 0) scrollFormIntoView();
     return Object.keys(e).length === 0;
   };
+
 
   const submitViaDatabaseFallback = async (payload: any) => {
     const { data, error } = await supabase
@@ -105,7 +114,9 @@ const DealerComingSoon = () => {
 
       setSubmitted(true);
       setForm(initialForm);
+      scrollFormIntoView();
       toast.success('Thank you — a member of our team will be in touch shortly.');
+
     } catch (err: any) {
       const message = err?.message || 'Something went wrong. Please try again.';
       const shouldFallback = /edge function|failed to send|failed to fetch|network/i.test(message);
@@ -124,7 +135,9 @@ const DealerComingSoon = () => {
           });
           setSubmitted(true);
           setForm(initialForm);
+          scrollFormIntoView();
           toast.success('Thank you — a member of our team will be in touch shortly.');
+
           return;
         } catch (e: any) {
           toast.error(e?.message || message);
@@ -238,6 +251,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.email_address}
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
@@ -254,6 +271,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="tel"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.phone_number}
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
@@ -271,6 +292,10 @@ const DealerComingSoon = () => {
                     >
                       <input
                         type="text"
+                        inputMode="url"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         value={form.heard_about_us}
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
@@ -287,6 +312,7 @@ const DealerComingSoon = () => {
                     >
                       {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
                     </button>
+
 
                     <p className="text-center text-xs text-slate-500">
                       We'll only contact you about Trade Warranty.

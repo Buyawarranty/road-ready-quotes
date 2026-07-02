@@ -586,6 +586,7 @@ export type Database = {
       }
       admin_users: {
         Row: {
+          callrail_banner_enabled: boolean
           column_masking: Json | null
           created_at: string
           department: string | null
@@ -605,6 +606,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          callrail_banner_enabled?: boolean
           column_masking?: Json | null
           created_at?: string
           department?: string | null
@@ -624,6 +626,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          callrail_banner_enabled?: boolean
           column_masking?: Json | null
           created_at?: string
           department?: string | null
@@ -1907,6 +1910,7 @@ export type Database = {
           approved_at: string | null
           assigned_to: string | null
           claim_reason: string | null
+          claimed_amount: number | null
           created_at: string
           date_of_incident: string | null
           days_on_risk: number | null
@@ -1923,6 +1927,7 @@ export type Database = {
           mileage_at_claim: number | null
           mileage_driven: number | null
           name: string
+          paid_amount: number | null
           paid_at: string | null
           payment_amount: number | null
           phone: string | null
@@ -1931,6 +1936,7 @@ export type Database = {
           purchase_mileage: number | null
           rejected_at: string | null
           rejection_reason: string | null
+          review_sentiment: string | null
           status: string
           tag_id: string | null
           updated_at: string
@@ -1942,6 +1948,7 @@ export type Database = {
           approved_at?: string | null
           assigned_to?: string | null
           claim_reason?: string | null
+          claimed_amount?: number | null
           created_at?: string
           date_of_incident?: string | null
           days_on_risk?: number | null
@@ -1958,6 +1965,7 @@ export type Database = {
           mileage_at_claim?: number | null
           mileage_driven?: number | null
           name: string
+          paid_amount?: number | null
           paid_at?: string | null
           payment_amount?: number | null
           phone?: string | null
@@ -1966,6 +1974,7 @@ export type Database = {
           purchase_mileage?: number | null
           rejected_at?: string | null
           rejection_reason?: string | null
+          review_sentiment?: string | null
           status?: string
           tag_id?: string | null
           updated_at?: string
@@ -1977,6 +1986,7 @@ export type Database = {
           approved_at?: string | null
           assigned_to?: string | null
           claim_reason?: string | null
+          claimed_amount?: number | null
           created_at?: string
           date_of_incident?: string | null
           days_on_risk?: number | null
@@ -1993,6 +2003,7 @@ export type Database = {
           mileage_at_claim?: number | null
           mileage_driven?: number | null
           name?: string
+          paid_amount?: number | null
           paid_at?: string | null
           payment_amount?: number | null
           phone?: string | null
@@ -2001,6 +2012,7 @@ export type Database = {
           purchase_mileage?: number | null
           rejected_at?: string | null
           rejection_reason?: string | null
+          review_sentiment?: string | null
           status?: string
           tag_id?: string | null
           updated_at?: string
@@ -6276,6 +6288,7 @@ export type Database = {
       }
       lead_teams: {
         Row: {
+          callrail_banner_enabled: boolean
           color: string
           created_at: string
           created_by: string | null
@@ -6288,6 +6301,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          callrail_banner_enabled?: boolean
           color?: string
           created_at?: string
           created_by?: string | null
@@ -6300,6 +6314,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          callrail_banner_enabled?: boolean
           color?: string
           created_at?: string
           created_by?: string | null
