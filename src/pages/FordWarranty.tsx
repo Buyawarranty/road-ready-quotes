@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Shield, Clock, Phone, Menu, X } from 'lucide-react';
+import { CheckCircle2, Shield, Clock, Phone, Menu, X, ChevronDown } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SEOHead } from '@/components/SEOHead';
 import { OrganizationSchema } from '@/components/schema/OrganizationSchema';
@@ -22,6 +22,7 @@ const FordWarranty = () => {
   const isMobile = useIsMobile();
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -362,10 +363,26 @@ const FordWarranty = () => {
               
               <div className="space-y-4">
                 {fordFAQs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg overflow-hidden">
-                    <div className="px-6 py-5">
-                      <h3 className="text-xl font-bold mb-3 text-white">{faq.question}</h3>
-                      <p className="text-lg text-white leading-relaxed">{faq.answer}</p>
+                  <div key={index} className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden">
+                    <button
+                      onClick={() => setOpenFaqIndex(prev => prev === index ? null : index)}
+                      className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
+                    >
+                      <h3 className="font-semibold text-lg pr-4">{faq.question}</h3>
+                      <ChevronDown
+                        className={`w-5 h-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300 ${
+                          openFaqIndex === index ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-200 ease-out ${
+                        openFaqIndex === index ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="px-6 pb-5 bg-white border-t border-gray-100">
+                        <p className="text-gray-700 leading-relaxed pt-4 text-sm md:text-base">{faq.answer}</p>
+                      </div>
                     </div>
                   </div>
                 ))}

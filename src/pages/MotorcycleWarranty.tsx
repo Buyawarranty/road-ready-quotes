@@ -467,7 +467,7 @@ const MotorcycleWarranty = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
               <div className="space-y-4">
                 {motorcycleFAQs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg overflow-hidden">
+                  <div key={index} className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden">
                     <button
                       onClick={() => {
                         const button = document.getElementById(`faq-${index}`);
@@ -479,24 +479,24 @@ const MotorcycleWarranty = () => {
                         }
                       }}
                       id={`faq-${index}`}
-                      className="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-orange-600/20 transition-colors"
+                      className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
                     >
-                      <span className="font-semibold text-lg text-white pr-4">
+                      <span className="font-semibold text-lg pr-4">
                         {faq.question}
                       </span>
-                      <ChevronDown 
-                        className="w-6 h-6 flex-shrink-0 text-white transition-transform duration-300"
+                      <ChevronDown
+                        className="w-5 h-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300"
                       />
                     </button>
-                    
-                    <div 
+
+                    <div
                       id={`faq-content-${index}`}
                       className="overflow-hidden transition-all duration-200 ease-out"
                       style={{ maxHeight: '0px' }}
                     >
-                      <div className="px-6 pb-5 bg-white border-t border-orange-200">
+                      <div className="px-6 pb-5 bg-white border-t border-gray-100">
                         <div className="pt-4">
-                          <p className="text-brand-dark-text leading-relaxed whitespace-pre-line">
+                          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                             {faq.answer}
                           </p>
                         </div>

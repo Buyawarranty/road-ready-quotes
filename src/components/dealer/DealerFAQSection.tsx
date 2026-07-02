@@ -39,36 +39,36 @@ const DealerFAQSection: React.FC<DealerFAQSectionProps> = ({
               <div className="space-y-3">
                 {cat.questions.map((q) => {
                   const isOpen = openId === q.id;
-                  return (
-                    <div
-                      key={q.id}
-                      className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg overflow-hidden shadow-md"
+                return (
+                  <div
+                    key={q.id}
+                    className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden"
+                  >
+                    <button
+                      onClick={() => toggle(q.id)}
+                      aria-expanded={isOpen}
+                      className="w-full px-5 py-4 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
                     >
-                      <button
-                        onClick={() => toggle(q.id)}
-                        aria-expanded={isOpen}
-                        className="w-full px-5 py-4 text-left flex items-center justify-between text-white hover:bg-orange-600/20 transition-colors"
-                      >
-                        <span className="font-semibold text-base sm:text-lg pr-4">{q.question}</span>
-                        <ChevronDown
-                          className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 text-white ${
-                            isOpen ? 'rotate-180' : ''
-                          }`}
-                        />
-                      </button>
-                      <div
-                        className={`overflow-hidden transition-all duration-200 ease-out ${
-                          isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
+                      <span className="font-semibold text-base sm:text-lg pr-4">{q.question}</span>
+                      <ChevronDown
+                        className={`w-5 h-5 flex-shrink-0 transition-transform duration-300 text-[#eb4b00] ${
+                          isOpen ? 'rotate-180' : ''
                         }`}
-                      >
-                        <div className="px-5 pb-5 bg-white border-t border-orange-200">
-                          <p className="text-base leading-relaxed pt-4 whitespace-pre-line text-gray-800">
-                            {q.answer}
-                          </p>
-                        </div>
+                      />
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-200 ease-out ${
+                        isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="px-5 pb-5 bg-white border-t border-gray-100">
+                        <p className="text-base leading-relaxed pt-4 whitespace-pre-line text-gray-700">
+                          {q.answer}
+                        </p>
                       </div>
                     </div>
-                  );
+                  </div>
+                );
                 })}
               </div>
             </div>

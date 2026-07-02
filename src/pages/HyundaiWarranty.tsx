@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Shield, Clock, Phone, Menu, X } from 'lucide-react';
+import { CheckCircle2, Shield, Clock, Phone, Menu, X, ChevronDown } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { SEOHead } from '@/components/SEOHead';
 import { OrganizationSchema } from '@/components/schema/OrganizationSchema';
@@ -23,6 +23,7 @@ const HyundaiWarranty = () => {
   const isMobile = useIsMobile();
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -464,11 +465,30 @@ const HyundaiWarranty = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {hyundaiFAQs.map((faq, index) => (
-                  <div key={index} className="bg-background p-6 rounded-lg border">
-                    <h3 className="text-xl font-bold mb-3">{faq.question}</h3>
-                    <p className="text-muted-foreground">{faq.answer}</p>
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl border border-gray-200 border-l-4 border-l-orange-300 shadow-sm overflow-hidden"
+                  >
+                    <button
+                      onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                      className="w-full px-6 py-5 text-left flex items-center justify-between text-gray-900 hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="font-semibold text-lg pr-4">{faq.question}</span>
+                      <ChevronDown
+                        className={`w-5 h-5 flex-shrink-0 text-[#eb4b00] transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ease-out ${openFaqIndex === index ? 'max-h-96' : 'max-h-0'}`}
+                    >
+                      <div className="px-6 pb-5 bg-white border-t border-gray-100">
+                        <p className="pt-4 text-gray-700 leading-relaxed whitespace-pre-line">
+                          {faq.answer}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
