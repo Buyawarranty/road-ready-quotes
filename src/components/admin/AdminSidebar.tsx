@@ -263,6 +263,12 @@ const defaultTabs: Tab[] = [
     description: 'Leaderboard, awards and sales competition'
   },
   {
+    id: 'call-stats',
+    label: 'Call Stats',
+    icon: PhoneCall,
+    description: 'Zoiper dials, missed calls and talk time per salesperson'
+  },
+  {
     id: 'discounts-given',
     label: 'Discounts Given',
     icon: Percent,
