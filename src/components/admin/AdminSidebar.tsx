@@ -348,7 +348,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
       
       // Fallback: restricted view for sales without custom permissions
       // Only their dashboard, quotes, and tips
-      const salesTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'selling-tips', 'timesheets', 'account'];
+      const salesTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'call-stats', 'selling-tips', 'timesheets', 'account'];
       return defaultTabs.filter(tab => salesTabIds.includes(tab.id));
     }
     
