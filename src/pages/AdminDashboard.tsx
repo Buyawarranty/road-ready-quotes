@@ -48,6 +48,7 @@ const PolicyDocumentsTab = lazy(() => import('@/components/admin/PolicyDocuments
 const PageAnalyticsTab = lazy(() => import('@/components/admin/PageAnalyticsTab').then(m => ({ default: m.PageAnalyticsTab })));
 const VehicleStatsTab = lazy(() => import('@/components/admin/VehicleStatsTab').then(m => ({ default: m.VehicleStatsTab })));
 const SalesScoreboardTab = lazy(() => import('@/components/admin/scoreboard/SalesScoreboardTab'));
+const CallStatsTab = lazy(() => import('@/components/admin/CallStatsTab'));
 const MarketingAnalyticsTab = lazy(() => import('@/components/admin/MarketingAnalyticsTab').then(m => ({ default: m.MarketingAnalyticsTab })));
 const LeadBackupRecoveryTab = lazy(() => import('@/components/admin/LeadBackupRecoveryTab'));
 const DiscountsGivenTab = lazy(() => import('@/components/admin/DiscountsGivenTab'));
