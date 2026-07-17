@@ -599,6 +599,56 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_user_access_periods: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          email: string
+          end_date: string | null
+          ended_by: string | null
+          full_name: string | null
+          id: string
+          reason: string | null
+          role: string
+          start_date: string
+          started_by: string | null
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          email: string
+          end_date?: string | null
+          ended_by?: string | null
+          full_name?: string | null
+          id?: string
+          reason?: string | null
+          role: string
+          start_date?: string
+          started_by?: string | null
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          email?: string
+          end_date?: string | null
+          ended_by?: string | null
+          full_name?: string | null
+          id?: string
+          reason?: string | null
+          role?: string
+          start_date?: string
+          started_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_user_access_periods_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_users: {
         Row: {
           callrail_banner_enabled: boolean
@@ -617,6 +667,7 @@ export type Database = {
           policy_id: string | null
           require_2fa: boolean | null
           role: Database["public"]["Enums"]["user_role"]
+          sip_extension: string | null
           updated_at: string
           user_id: string | null
         }
@@ -637,6 +688,7 @@ export type Database = {
           policy_id?: string | null
           require_2fa?: boolean | null
           role?: Database["public"]["Enums"]["user_role"]
+          sip_extension?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -657,6 +709,7 @@ export type Database = {
           policy_id?: string | null
           require_2fa?: boolean | null
           role?: Database["public"]["Enums"]["user_role"]
+          sip_extension?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -795,6 +848,7 @@ export type Database = {
           admin_user_id: string
           allowed_sources: string[] | null
           assigned_today: number | null
+          assignment_mode: string
           cap_reset_date: string | null
           created_at: string | null
           daily_cap: number | null
@@ -802,6 +856,7 @@ export type Database = {
           last_assigned_at: string | null
           paused: boolean | null
           percentage: number | null
+          priority: number | null
           sort_order: number | null
           updated_at: string | null
         }
@@ -809,6 +864,7 @@ export type Database = {
           admin_user_id: string
           allowed_sources?: string[] | null
           assigned_today?: number | null
+          assignment_mode?: string
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
@@ -816,6 +872,7 @@ export type Database = {
           last_assigned_at?: string | null
           paused?: boolean | null
           percentage?: number | null
+          priority?: number | null
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -823,6 +880,7 @@ export type Database = {
           admin_user_id?: string
           allowed_sources?: string[] | null
           assigned_today?: number | null
+          assignment_mode?: string
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
@@ -830,6 +888,7 @@ export type Database = {
           last_assigned_at?: string | null
           paused?: boolean | null
           percentage?: number | null
+          priority?: number | null
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -1645,6 +1704,150 @@ export type Database = {
         }
         Relationships: []
       }
+      claim_appeals: {
+        Row: {
+          claim_id: string
+          closed_at: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          new_evidence: string | null
+          outcome: string | null
+          reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          claim_id: string
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_evidence?: string | null
+          outcome?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          claim_id?: string
+          closed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_evidence?: string | null
+          outcome?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_appeals_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          claim_id: string
+          created_at: string
+          field: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          claim_id: string
+          created_at?: string
+          field?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          claim_id?: string
+          created_at?: string
+          field?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_audit_log_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_call_logs: {
+        Row: {
+          called_party: string
+          claim_id: string
+          created_at: string
+          direction: string | null
+          follow_up_date: string | null
+          follow_up_required: boolean
+          id: string
+          logged_by: string | null
+          logged_by_name: string | null
+          outcome: string | null
+          summary: string | null
+        }
+        Insert: {
+          called_party: string
+          claim_id: string
+          created_at?: string
+          direction?: string | null
+          follow_up_date?: string | null
+          follow_up_required?: boolean
+          id?: string
+          logged_by?: string | null
+          logged_by_name?: string | null
+          outcome?: string | null
+          summary?: string | null
+        }
+        Update: {
+          called_party?: string
+          claim_id?: string
+          created_at?: string
+          direction?: string | null
+          follow_up_date?: string | null
+          follow_up_required?: boolean
+          id?: string
+          logged_by?: string | null
+          logged_by_name?: string | null
+          outcome?: string | null
+          summary?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_call_logs_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claim_communications: {
         Row: {
           claim_id: string
@@ -1689,6 +1892,115 @@ export type Database = {
           {
             foreignKeyName: "claim_communications_claim_id_fkey"
             columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_documents: {
+        Row: {
+          claim_id: string
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          label: string | null
+          notes: string | null
+          uploaded_by: string | null
+          uploaded_by_name: string | null
+          uploaded_by_role: string | null
+          visibility: string
+        }
+        Insert: {
+          claim_id: string
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          uploaded_by?: string | null
+          uploaded_by_name?: string | null
+          uploaded_by_role?: string | null
+          visibility?: string
+        }
+        Update: {
+          claim_id?: string
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          label?: string | null
+          notes?: string | null
+          uploaded_by?: string | null
+          uploaded_by_name?: string | null
+          uploaded_by_role?: string | null
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_documents_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_email_retry_queue: {
+        Row: {
+          attempts: number
+          created_at: string
+          email_kind: string
+          id: string
+          last_error: string | null
+          max_attempts: number
+          next_attempt_at: string
+          payload: Json
+          sent_at: string | null
+          status: string
+          submission_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email_kind: string
+          id?: string
+          last_error?: string | null
+          max_attempts?: number
+          next_attempt_at?: string
+          payload: Json
+          sent_at?: string | null
+          status?: string
+          submission_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email_kind?: string
+          id?: string
+          last_error?: string | null
+          max_attempts?: number
+          next_attempt_at?: string
+          payload?: Json
+          sent_at?: string | null
+          status?: string
+          submission_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_email_retry_queue_submission_id_fkey"
+            columns: ["submission_id"]
             isOneToOne: false
             referencedRelation: "claims_submissions"
             referencedColumns: ["id"]
@@ -1766,6 +2078,62 @@ export type Database = {
             foreignKeyName: "claim_quick_notes_claim_id_fkey"
             columns: ["claim_id"]
             isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claim_settlements: {
+        Row: {
+          approved_amount: number | null
+          claim_id: string
+          created_at: string
+          created_by: string | null
+          excess_deducted: number | null
+          final_paid_amount: number | null
+          id: string
+          invoice_reference: string | null
+          notes: string | null
+          paid_to: string | null
+          payment_date: string | null
+          payment_method: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_amount?: number | null
+          claim_id: string
+          created_at?: string
+          created_by?: string | null
+          excess_deducted?: number | null
+          final_paid_amount?: number | null
+          id?: string
+          invoice_reference?: string | null
+          notes?: string | null
+          paid_to?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_amount?: number | null
+          claim_id?: string
+          created_at?: string
+          created_by?: string | null
+          excess_deducted?: number | null
+          final_paid_amount?: number | null
+          id?: string
+          invoice_reference?: string | null
+          notes?: string | null
+          paid_to?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_settlements_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: true
             referencedRelation: "claims_submissions"
             referencedColumns: ["id"]
           },
@@ -1935,6 +2303,9 @@ export type Database = {
           file_url: string | null
           file_urls: Json
           follow_up_date: string | null
+          garage_email: string | null
+          garage_name: string | null
+          garage_phone: string | null
           id: string
           internal_notes: string | null
           last_contacted_at: string | null
@@ -1973,6 +2344,9 @@ export type Database = {
           file_url?: string | null
           file_urls?: Json
           follow_up_date?: string | null
+          garage_email?: string | null
+          garage_name?: string | null
+          garage_phone?: string | null
           id?: string
           internal_notes?: string | null
           last_contacted_at?: string | null
@@ -2011,6 +2385,9 @@ export type Database = {
           file_url?: string | null
           file_urls?: Json
           follow_up_date?: string | null
+          garage_email?: string | null
+          garage_name?: string | null
+          garage_phone?: string | null
           id?: string
           internal_notes?: string | null
           last_contacted_at?: string | null
@@ -2840,6 +3217,7 @@ export type Database = {
           cancellation_note_updated_by: string | null
           claim_limit: number | null
           consequential: boolean | null
+          contact_notes: string | null
           country: string | null
           county: string | null
           created_at: string
@@ -2891,6 +3269,10 @@ export type Database = {
           quote_sent_by: string | null
           registration_plate: string | null
           review_email_sent_at: string | null
+          sale_credit_admin_user_id: string | null
+          sale_credit_overridden_at: string | null
+          sale_credit_overridden_by: string | null
+          sale_credit_override_reason: string | null
           seasonal_bonus_months: number | null
           signup_date: string
           status: string
@@ -2934,6 +3316,7 @@ export type Database = {
           cancellation_note_updated_by?: string | null
           claim_limit?: number | null
           consequential?: boolean | null
+          contact_notes?: string | null
           country?: string | null
           county?: string | null
           created_at?: string
@@ -2985,6 +3368,10 @@ export type Database = {
           quote_sent_by?: string | null
           registration_plate?: string | null
           review_email_sent_at?: string | null
+          sale_credit_admin_user_id?: string | null
+          sale_credit_overridden_at?: string | null
+          sale_credit_overridden_by?: string | null
+          sale_credit_override_reason?: string | null
           seasonal_bonus_months?: number | null
           signup_date?: string
           status?: string
@@ -3028,6 +3415,7 @@ export type Database = {
           cancellation_note_updated_by?: string | null
           claim_limit?: number | null
           consequential?: boolean | null
+          contact_notes?: string | null
           country?: string | null
           county?: string | null
           created_at?: string
@@ -3079,6 +3467,10 @@ export type Database = {
           quote_sent_by?: string | null
           registration_plate?: string | null
           review_email_sent_at?: string | null
+          sale_credit_admin_user_id?: string | null
+          sale_credit_overridden_at?: string | null
+          sale_credit_overridden_by?: string | null
+          sale_credit_override_reason?: string | null
           seasonal_bonus_months?: number | null
           signup_date?: string
           status?: string
@@ -3134,6 +3526,13 @@ export type Database = {
           {
             foreignKeyName: "customers_quote_sent_by_fkey"
             columns: ["quote_sent_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_sale_credit_admin_user_id_fkey"
+            columns: ["sale_credit_admin_user_id"]
             isOneToOne: false
             referencedRelation: "admin_users"
             referencedColumns: ["id"]
@@ -5961,8 +6360,13 @@ export type Database = {
       lead_distribution_settings: {
         Row: {
           active_only_distribution: boolean | null
+          alternating_counter_date: string | null
+          alternating_next: string
           created_at: string | null
           distribution_mode: string
+          drip_enabled: boolean
+          drip_interval_seconds: number
+          flow_mode: string
           id: string
           overflow_recipient_id: string | null
           solo_agent_id: string | null
@@ -5972,8 +6376,13 @@ export type Database = {
         }
         Insert: {
           active_only_distribution?: boolean | null
+          alternating_counter_date?: string | null
+          alternating_next?: string
           created_at?: string | null
           distribution_mode?: string
+          drip_enabled?: boolean
+          drip_interval_seconds?: number
+          flow_mode?: string
           id?: string
           overflow_recipient_id?: string | null
           solo_agent_id?: string | null
@@ -5983,8 +6392,13 @@ export type Database = {
         }
         Update: {
           active_only_distribution?: boolean | null
+          alternating_counter_date?: string | null
+          alternating_next?: string
           created_at?: string | null
           distribution_mode?: string
+          drip_enabled?: boolean
+          drip_interval_seconds?: number
+          flow_mode?: string
           id?: string
           overflow_recipient_id?: string | null
           solo_agent_id?: string | null
@@ -6200,6 +6614,7 @@ export type Database = {
       lead_team_members: {
         Row: {
           admin_user_id: string
+          can_see_team_leads: boolean
           created_at: string
           id: string
           notice_seen_at: string | null
@@ -6213,6 +6628,7 @@ export type Database = {
         }
         Insert: {
           admin_user_id: string
+          can_see_team_leads?: boolean
           created_at?: string
           id?: string
           notice_seen_at?: string | null
@@ -6226,6 +6642,7 @@ export type Database = {
         }
         Update: {
           admin_user_id?: string
+          can_see_team_leads?: boolean
           created_at?: string
           id?: string
           notice_seen_at?: string | null
@@ -6259,8 +6676,10 @@ export type Database = {
           allowed: boolean
           conversion_threshold_pct: number | null
           created_at: string
+          daily_cap: number | null
           id: string
           notes: string | null
+          overflow_team_id: string | null
           percentage: number
           priority: number
           source: string
@@ -6271,8 +6690,10 @@ export type Database = {
           allowed?: boolean
           conversion_threshold_pct?: number | null
           created_at?: string
+          daily_cap?: number | null
           id?: string
           notes?: string | null
+          overflow_team_id?: string | null
           percentage?: number
           priority?: number
           source: string
@@ -6283,8 +6704,10 @@ export type Database = {
           allowed?: boolean
           conversion_threshold_pct?: number | null
           created_at?: string
+          daily_cap?: number | null
           id?: string
           notes?: string | null
+          overflow_team_id?: string | null
           percentage?: number
           priority?: number
           source?: string
@@ -6292,6 +6715,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "lead_team_source_rules_overflow_team_id_fkey"
+            columns: ["overflow_team_id"]
+            isOneToOne: false
+            referencedRelation: "lead_teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "lead_team_source_rules_team_id_fkey"
             columns: ["team_id"]
@@ -6832,6 +7262,75 @@ export type Database = {
         }
         Relationships: []
       }
+      open_pool_restrictions: {
+        Row: {
+          active_hours_remaining: number | null
+          agent_id: string
+          agent_name: string | null
+          created_at: string
+          duration_active_hours: number | null
+          duration_working_days: number | null
+          ends_at: string | null
+          id: string
+          level: number
+          mismatch_event_id: string | null
+          reason: string | null
+          starts_at: string
+          status: string
+          updated_at: string
+          verification_id: string | null
+        }
+        Insert: {
+          active_hours_remaining?: number | null
+          agent_id: string
+          agent_name?: string | null
+          created_at?: string
+          duration_active_hours?: number | null
+          duration_working_days?: number | null
+          ends_at?: string | null
+          id?: string
+          level: number
+          mismatch_event_id?: string | null
+          reason?: string | null
+          starts_at?: string
+          status?: string
+          updated_at?: string
+          verification_id?: string | null
+        }
+        Update: {
+          active_hours_remaining?: number | null
+          agent_id?: string
+          agent_name?: string | null
+          created_at?: string
+          duration_active_hours?: number | null
+          duration_working_days?: number | null
+          ends_at?: string | null
+          id?: string
+          level?: number
+          mismatch_event_id?: string | null
+          reason?: string | null
+          starts_at?: string
+          status?: string
+          updated_at?: string
+          verification_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "open_pool_restrictions_mismatch_event_id_fkey"
+            columns: ["mismatch_event_id"]
+            isOneToOne: false
+            referencedRelation: "phone_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "open_pool_restrictions_verification_id_fkey"
+            columns: ["verification_id"]
+            isOneToOne: false
+            referencedRelation: "phone_event_verifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       overflow_recipients: {
         Row: {
           admin_user_id: string
@@ -6963,6 +7462,75 @@ export type Database = {
           utm_source?: string | null
           utm_term?: string | null
           visitor_id?: string | null
+        }
+        Relationships: []
+      }
+      payment_assist_transactions: {
+        Row: {
+          admin_user_id: string | null
+          amount_pence: number
+          application_url: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_first_name: string | null
+          customer_last_name: string | null
+          customer_phone: string | null
+          description: string | null
+          environment: string
+          id: string
+          last_error: string | null
+          last_event: string | null
+          provider_application_id: string | null
+          raw_response: Json | null
+          reference: string | null
+          sales_lead_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id?: string | null
+          amount_pence: number
+          application_url?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_phone?: string | null
+          description?: string | null
+          environment?: string
+          id?: string
+          last_error?: string | null
+          last_event?: string | null
+          provider_application_id?: string | null
+          raw_response?: Json | null
+          reference?: string | null
+          sales_lead_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string | null
+          amount_pence?: number
+          application_url?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_first_name?: string | null
+          customer_last_name?: string | null
+          customer_phone?: string | null
+          description?: string | null
+          environment?: string
+          id?: string
+          last_error?: string | null
+          last_event?: string | null
+          provider_application_id?: string | null
+          raw_response?: Json | null
+          reference?: string | null
+          sales_lead_id?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -7118,6 +7686,110 @@ export type Database = {
           session_timeout_minutes?: number | null
           tabs_permissions?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      phone_event_verifications: {
+        Row: {
+          created_at: string
+          id: string
+          manager_id: string
+          manager_name: string | null
+          notes: string | null
+          phone_event_id: string
+          recording_url: string | null
+          result: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          manager_id: string
+          manager_name?: string | null
+          notes?: string | null
+          phone_event_id: string
+          recording_url?: string | null
+          result: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          manager_id?: string
+          manager_name?: string | null
+          notes?: string | null
+          phone_event_id?: string
+          recording_url?: string | null
+          result?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_event_verifications_phone_event_id_fkey"
+            columns: ["phone_event_id"]
+            isOneToOne: false
+            referencedRelation: "phone_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phone_events: {
+        Row: {
+          agent_id: string | null
+          agent_name: string | null
+          created_at: string
+          customer_id: string | null
+          customer_name: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          lead_id: string | null
+          lead_source: string | null
+          lead_type: string | null
+          metadata: Json
+          phone_number: string | null
+          recording_url: string | null
+          reservation_id: string | null
+          selected_outcome: string | null
+          session_id: string | null
+          source_page: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          agent_name?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          lead_id?: string | null
+          lead_source?: string | null
+          lead_type?: string | null
+          metadata?: Json
+          phone_number?: string | null
+          recording_url?: string | null
+          reservation_id?: string | null
+          selected_outcome?: string | null
+          session_id?: string | null
+          source_page?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          agent_name?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          lead_id?: string | null
+          lead_source?: string | null
+          lead_type?: string | null
+          metadata?: Json
+          phone_number?: string | null
+          recording_url?: string | null
+          reservation_id?: string | null
+          selected_outcome?: string | null
+          session_id?: string | null
+          source_page?: string | null
         }
         Relationships: []
       }
@@ -7353,6 +8025,44 @@ export type Database = {
         }
         Relationships: []
       }
+      recontact_agent_caps: {
+        Row: {
+          admin_user_id: string
+          blocked: boolean
+          created_at: string
+          daily_cap: number | null
+          note: string | null
+          total_cap: number | null
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          blocked?: boolean
+          created_at?: string
+          daily_cap?: number | null
+          note?: string | null
+          total_cap?: number | null
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          blocked?: boolean
+          created_at?: string
+          daily_cap?: number | null
+          note?: string | null
+          total_cap?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recontact_agent_caps_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: true
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           converted_at: string | null
@@ -7522,6 +8232,67 @@ export type Database = {
         }
         Relationships: []
       }
+      renewal_pool_reservations: {
+        Row: {
+          created_at: string
+          id: string
+          locked_at: string
+          locked_by: string
+          owned_at: string | null
+          owned_by: string | null
+          policy_id: string
+          released_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          locked_at?: string
+          locked_by: string
+          owned_at?: string | null
+          owned_by?: string | null
+          policy_id: string
+          released_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          locked_at?: string
+          locked_by?: string
+          owned_at?: string | null
+          owned_by?: string | null
+          policy_id?: string
+          released_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renewal_pool_reservations_locked_by_fkey"
+            columns: ["locked_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_pool_reservations_owned_by_fkey"
+            columns: ["owned_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_pool_reservations_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: true
+            referencedRelation: "customer_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       round_robin_state: {
         Row: {
           id: string
@@ -7642,14 +8413,18 @@ export type Database = {
           abandoned_cart_id: string | null
           assigned_at: string | null
           assigned_to: string | null
+          auto_tags: string[]
           call_count: number | null
+          call_outcome: string | null
           cart_value: number | null
+          claim_count: number
           converted_at: string | null
           created_at: string
           do_not_contact: boolean
           do_not_contact_at: string | null
           do_not_contact_by: string | null
           do_not_contact_reason: string | null
+          drip_release_at: string | null
           email: string
           fake_audit_status: string | null
           fake_audited_at: string | null
@@ -7660,31 +8435,42 @@ export type Database = {
           fake_reason_note: string | null
           first_name: string | null
           follow_up_status: string | null
+          hidden_from_agent_ids: string[]
           id: string
           is_callback: boolean | null
           is_paid: boolean | null
           is_recreated: boolean | null
+          last_action_at: string | null
           last_activity_date: string | null
+          last_claimed_at: string | null
           last_contacted_at: string | null
           last_name: string | null
           last_resubmitted_at: string | null
           lead_source: Database["public"]["Enums"]["lead_source"] | null
+          locked_at: string | null
+          locked_by: string | null
           lost_at: string | null
           lost_reason: string | null
           mileage: string | null
+          next_action_at: string | null
           next_action_date: string | null
           next_action_type: string | null
           notes: string | null
           original_assigned_to: string | null
           original_source: string | null
+          owner_agent: string | null
           payment_amount: number | null
           payment_date: string | null
           payment_method: string | null
           phone: string | null
           plan_interest: string | null
+          pool_recycle_count: number
+          pool_status: string | null
           priority: Database["public"]["Enums"]["lead_priority"] | null
           priority_score: number | null
+          queue: string | null
           quote_amount: number | null
+          reason: string | null
           recovery_outcome: string | null
           recovery_worked_at: string | null
           resubmission_count: number | null
@@ -7703,14 +8489,18 @@ export type Database = {
           abandoned_cart_id?: string | null
           assigned_at?: string | null
           assigned_to?: string | null
+          auto_tags?: string[]
           call_count?: number | null
+          call_outcome?: string | null
           cart_value?: number | null
+          claim_count?: number
           converted_at?: string | null
           created_at?: string
           do_not_contact?: boolean
           do_not_contact_at?: string | null
           do_not_contact_by?: string | null
           do_not_contact_reason?: string | null
+          drip_release_at?: string | null
           email: string
           fake_audit_status?: string | null
           fake_audited_at?: string | null
@@ -7721,31 +8511,42 @@ export type Database = {
           fake_reason_note?: string | null
           first_name?: string | null
           follow_up_status?: string | null
+          hidden_from_agent_ids?: string[]
           id?: string
           is_callback?: boolean | null
           is_paid?: boolean | null
           is_recreated?: boolean | null
+          last_action_at?: string | null
           last_activity_date?: string | null
+          last_claimed_at?: string | null
           last_contacted_at?: string | null
           last_name?: string | null
           last_resubmitted_at?: string | null
           lead_source?: Database["public"]["Enums"]["lead_source"] | null
+          locked_at?: string | null
+          locked_by?: string | null
           lost_at?: string | null
           lost_reason?: string | null
           mileage?: string | null
+          next_action_at?: string | null
           next_action_date?: string | null
           next_action_type?: string | null
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
+          owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
           payment_method?: string | null
           phone?: string | null
           plan_interest?: string | null
+          pool_recycle_count?: number
+          pool_status?: string | null
           priority?: Database["public"]["Enums"]["lead_priority"] | null
           priority_score?: number | null
+          queue?: string | null
           quote_amount?: number | null
+          reason?: string | null
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
           resubmission_count?: number | null
@@ -7764,14 +8565,18 @@ export type Database = {
           abandoned_cart_id?: string | null
           assigned_at?: string | null
           assigned_to?: string | null
+          auto_tags?: string[]
           call_count?: number | null
+          call_outcome?: string | null
           cart_value?: number | null
+          claim_count?: number
           converted_at?: string | null
           created_at?: string
           do_not_contact?: boolean
           do_not_contact_at?: string | null
           do_not_contact_by?: string | null
           do_not_contact_reason?: string | null
+          drip_release_at?: string | null
           email?: string
           fake_audit_status?: string | null
           fake_audited_at?: string | null
@@ -7782,31 +8587,42 @@ export type Database = {
           fake_reason_note?: string | null
           first_name?: string | null
           follow_up_status?: string | null
+          hidden_from_agent_ids?: string[]
           id?: string
           is_callback?: boolean | null
           is_paid?: boolean | null
           is_recreated?: boolean | null
+          last_action_at?: string | null
           last_activity_date?: string | null
+          last_claimed_at?: string | null
           last_contacted_at?: string | null
           last_name?: string | null
           last_resubmitted_at?: string | null
           lead_source?: Database["public"]["Enums"]["lead_source"] | null
+          locked_at?: string | null
+          locked_by?: string | null
           lost_at?: string | null
           lost_reason?: string | null
           mileage?: string | null
+          next_action_at?: string | null
           next_action_date?: string | null
           next_action_type?: string | null
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
+          owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
           payment_method?: string | null
           phone?: string | null
           plan_interest?: string | null
+          pool_recycle_count?: number
+          pool_status?: string | null
           priority?: Database["public"]["Enums"]["lead_priority"] | null
           priority_score?: number | null
+          queue?: string | null
           quote_amount?: number | null
+          reason?: string | null
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
           resubmission_count?: number | null
@@ -8186,6 +9002,196 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shark_tank_agent_caps: {
+        Row: {
+          admin_user_id: string
+          blocked: boolean
+          daily_cap: number | null
+          note: string | null
+          total_cap: number | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          admin_user_id: string
+          blocked?: boolean
+          daily_cap?: number | null
+          note?: string | null
+          total_cap?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          admin_user_id?: string
+          blocked?: boolean
+          daily_cap?: number | null
+          note?: string | null
+          total_cap?: number | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shark_tank_agent_caps_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: true
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shark_tank_agent_caps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shark_tank_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          lead_id: string
+          payload: Json
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          lead_id: string
+          payload?: Json
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          lead_id?: string
+          payload?: Json
+        }
+        Relationships: []
+      }
+      shark_tank_pool: {
+        Row: {
+          attempt_count: number
+          chase_release_at: string | null
+          created_at: string
+          held_by: string | null
+          held_until: string | null
+          id: string
+          last_outcome: string | null
+          lead_id: string
+          retry_until: string | null
+          status: Database["public"]["Enums"]["shark_tank_status"]
+          team_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempt_count?: number
+          chase_release_at?: string | null
+          created_at?: string
+          held_by?: string | null
+          held_until?: string | null
+          id?: string
+          last_outcome?: string | null
+          lead_id: string
+          retry_until?: string | null
+          status?: Database["public"]["Enums"]["shark_tank_status"]
+          team_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempt_count?: number
+          chase_release_at?: string | null
+          created_at?: string
+          held_by?: string | null
+          held_until?: string | null
+          id?: string
+          last_outcome?: string | null
+          lead_id?: string
+          retry_until?: string | null
+          status?: Database["public"]["Enums"]["shark_tank_status"]
+          team_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shark_tank_pool_held_by_fkey"
+            columns: ["held_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shark_tank_pool_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shark_tank_pool_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "lead_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shark_tank_settings: {
+        Row: {
+          chase_minutes: number
+          dry_run: boolean
+          enabled: boolean
+          hold_seconds: number
+          id: number
+          no_answer_final_action: string
+          renewal_enabled: boolean
+          renewal_hold_seconds: number
+          renewal_owner_inactive_days: number
+          renewal_stale_days: number
+          renewal_window_days: number
+          retry_minutes: number
+          team_ids: string[]
+          updated_at: string
+        }
+        Insert: {
+          chase_minutes?: number
+          dry_run?: boolean
+          enabled?: boolean
+          hold_seconds?: number
+          id?: number
+          no_answer_final_action?: string
+          renewal_enabled?: boolean
+          renewal_hold_seconds?: number
+          renewal_owner_inactive_days?: number
+          renewal_stale_days?: number
+          renewal_window_days?: number
+          retry_minutes?: number
+          team_ids?: string[]
+          updated_at?: string
+        }
+        Update: {
+          chase_minutes?: number
+          dry_run?: boolean
+          enabled?: boolean
+          hold_seconds?: number
+          id?: number
+          no_answer_final_action?: string
+          renewal_enabled?: boolean
+          renewal_hold_seconds?: number
+          renewal_owner_inactive_days?: number
+          renewal_stale_days?: number
+          renewal_window_days?: number
+          retry_minutes?: number
+          team_ids?: string[]
+          updated_at?: string
+        }
+        Relationships: []
       }
       sms_consents: {
         Row: {
@@ -9525,6 +10531,140 @@ export type Database = {
           },
         ]
       }
+      worldpay_transactions: {
+        Row: {
+          admin_user_id: string | null
+          amount_pence: number
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_id: string | null
+          customer_phone: string | null
+          description: string | null
+          environment: string
+          flow: string
+          id: string
+          last_error: string | null
+          last_event: string | null
+          raw_response: Json | null
+          sales_lead_id: string | null
+          status: string
+          updated_at: string
+          worldpay_link_id: string | null
+          worldpay_link_url: string | null
+          worldpay_payment_id: string | null
+        }
+        Insert: {
+          admin_user_id?: string | null
+          amount_pence: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_phone?: string | null
+          description?: string | null
+          environment?: string
+          flow: string
+          id?: string
+          last_error?: string | null
+          last_event?: string | null
+          raw_response?: Json | null
+          sales_lead_id?: string | null
+          status?: string
+          updated_at?: string
+          worldpay_link_id?: string | null
+          worldpay_link_url?: string | null
+          worldpay_payment_id?: string | null
+        }
+        Update: {
+          admin_user_id?: string | null
+          amount_pence?: number
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_id?: string | null
+          customer_phone?: string | null
+          description?: string | null
+          environment?: string
+          flow?: string
+          id?: string
+          last_error?: string | null
+          last_event?: string | null
+          raw_response?: Json | null
+          sales_lead_id?: string | null
+          status?: string
+          updated_at?: string
+          worldpay_link_id?: string | null
+          worldpay_link_url?: string | null
+          worldpay_payment_id?: string | null
+        }
+        Relationships: []
+      }
+      zoiper_call_events: {
+        Row: {
+          agent_email: string | null
+          agent_extension: string | null
+          agent_user_id: string | null
+          answered_at: string | null
+          caller_number: string | null
+          created_at: string
+          dialed_number: string | null
+          direction: string
+          duration_seconds: number | null
+          ended_at: string | null
+          external_call_id: string | null
+          id: string
+          raw_payload: Json | null
+          started_at: string
+          status: string
+          talk_seconds: number | null
+        }
+        Insert: {
+          agent_email?: string | null
+          agent_extension?: string | null
+          agent_user_id?: string | null
+          answered_at?: string | null
+          caller_number?: string | null
+          created_at?: string
+          dialed_number?: string | null
+          direction?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          external_call_id?: string | null
+          id?: string
+          raw_payload?: Json | null
+          started_at: string
+          status?: string
+          talk_seconds?: number | null
+        }
+        Update: {
+          agent_email?: string | null
+          agent_extension?: string | null
+          agent_user_id?: string | null
+          answered_at?: string | null
+          caller_number?: string | null
+          created_at?: string
+          dialed_number?: string | null
+          direction?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          external_call_id?: string | null
+          id?: string
+          raw_payload?: Json | null
+          started_at?: string
+          status?: string
+          talk_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zoiper_call_events_agent_user_id_fkey"
+            columns: ["agent_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       monthly_claims_stats: {
@@ -9540,6 +10680,10 @@ export type Database = {
       }
     }
     Functions: {
+      agent_works_new_leads: {
+        Args: { p_admin_user_id: string }
+        Returns: boolean
+      }
       assign_lead_to_agent: {
         Args: {
           p_agent_id: string
@@ -9548,6 +10692,14 @@ export type Database = {
           p_override_cap?: boolean
         }
         Returns: Json
+      }
+      assign_recontact_leads_to_agent: {
+        Args: { _agent_id: string; _batch_size?: number }
+        Returns: {
+          assigned_count: number
+          blocked_reason: string
+          pool_remaining: number
+        }[]
       }
       auto_expire_discount_codes: { Args: never; Returns: number }
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
@@ -9584,6 +10736,30 @@ export type Database = {
       claim_lead_for_agent: {
         Args: { p_agent_id: string; p_lead_id: string }
         Returns: Json
+      }
+      claim_recontact_leads_batch: {
+        Args: { _batch_size?: number; _force?: boolean }
+        Returns: {
+          blocked_reason: string
+          claimed_count: number
+          oldest_age_days: number
+          pending_count: number
+          pool_remaining: number
+        }[]
+      }
+      claim_recontact_leads_self: {
+        Args: { _lead_ids: string[] }
+        Returns: {
+          claimed_id: string
+        }[]
+      }
+      count_recontact_leads_available: {
+        Args: never
+        Returns: {
+          available_count: number
+          oldest_age_days: number
+          pool_total: number
+        }[]
       }
       current_dealer_id: { Args: never; Returns: string }
       current_policy_pdf_urls: {
@@ -9691,12 +10867,35 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_sales: { Args: { _user_id: string }; Returns: boolean }
       is_agent_on_duty: { Args: { p_admin_user_id: string }; Returns: boolean }
+      is_agent_open_pool_restricted: {
+        Args: { _agent_id: string }
+        Returns: boolean
+      }
+      is_agent_receiving_enabled: {
+        Args: { p_agent_id: string }
+        Returns: boolean
+      }
       is_blog_writer: { Args: { user_id: string }; Returns: boolean }
       is_ip_blocked: { Args: { check_ip: unknown }; Returns: boolean }
       is_management: { Args: { _user_id: string }; Returns: boolean }
+      is_phone_logs_manager: { Args: { _user_id: string }; Returns: boolean }
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      list_recent_bulk_reassignments: {
+        Args: { p_hours?: number; p_min_batch?: number }
+        Returns: {
+          batch_key: string
+          bucket_start: string
+          changed_by: string
+          first_changed_at: string
+          last_changed_at: string
+          lead_count: number
+          new_assigned_to: string
+          old_assigned_to: string
+          still_on_new_count: number
+        }[]
+      }
       log_agent_interaction: {
         Args: { p_event_type?: string }
         Returns: undefined
@@ -9724,10 +10923,77 @@ export type Database = {
       make_user_admin: { Args: { user_email: string }; Returns: undefined }
       migrate_orphan_carts_to_leads: { Args: never; Returns: Json }
       normalize_uk_phone: { Args: { raw_phone: string }; Returns: string }
+      open_pool_bulk_assign_to_agent: {
+        Args: {
+          _count: number
+          _target_admin_id: string
+          _window_minutes?: number
+        }
+        Returns: {
+          assigned_count: number
+          lead_ids: string[]
+        }[]
+      }
+      open_pool_check_unpaid_links: { Args: never; Returns: number }
+      open_pool_drain_morning_queue: {
+        Args: { _max_leads?: number }
+        Returns: {
+          assigned_pool: number
+          assigned_rr: number
+          skipped: number
+        }[]
+      }
+      open_pool_flag_missed_callbacks: { Args: never; Returns: number }
+      open_pool_get_next: {
+        Args: { _agent: string }
+        Returns: {
+          lead_id: string
+        }[]
+      }
+      open_pool_log_outcome: {
+        Args: {
+          _agent: string
+          _lead_id: string
+          _next_action_at?: string
+          _outcome: string
+          _reason?: string
+        }
+        Returns: undefined
+      }
+      open_pool_manager_alerts_sweep: { Args: never; Returns: number }
+      open_pool_mark_paid: { Args: { _lead_id: string }; Returns: undefined }
+      open_pool_next_working_day_9am: { Args: never; Returns: string }
+      open_pool_promote_overnight: { Args: never; Returns: number }
+      open_pool_reap_expired_locks: { Args: never; Returns: number }
+      open_pool_recycle_stale: {
+        Args: never
+        Returns: {
+          flagged_stale: number
+          promoted_to_rr: number
+          returned_to_pool: number
+        }[]
+      }
+      open_pool_release_drip_now: {
+        Args: { _lead_ids?: string[] }
+        Returns: number
+      }
+      open_pool_schedule_drip: {
+        Args: { _interval_seconds?: number; _lead_ids: string[] }
+        Returns: number
+      }
       pick_agent_for_distribution:
         | { Args: { p_team_id: string }; Returns: string }
         | { Args: { p_source?: string; p_team_id: string }; Returns: string }
       process_scheduled_sms: { Args: never; Returns: number }
+      recontact_agent_stats: {
+        Args: never
+        Returns: {
+          admin_user_id: string
+          last_taken_at: string
+          taken_today: number
+          taken_total: number
+        }[]
+      }
       recover_leads_from_step2: {
         Args: { p_lookback_hours?: number }
         Returns: Json
@@ -9736,6 +11002,23 @@ export type Database = {
       recover_single_lead: {
         Args: { p_agent_id?: string; p_cart_id: string }
         Returns: Json
+      }
+      release_stale_recontact_leads: {
+        Args: { _silence_days?: number }
+        Returns: {
+          released_count: number
+        }[]
+      }
+      renewal_pool_get_next: {
+        Args: { _agent: string }
+        Returns: {
+          policy_id: string
+        }[]
+      }
+      renewal_pool_release_expired: { Args: never; Returns: number }
+      renewal_pool_stamp_ownership: {
+        Args: { _agent: string; _policy: string }
+        Returns: undefined
       }
       reset_agent_caps_daily: { Args: never; Returns: undefined }
       reset_daily_caps: { Args: never; Returns: undefined }
@@ -9755,6 +11038,37 @@ export type Database = {
         }[]
       }
       set_user_offline: { Args: never; Returns: undefined }
+      shark_tank_agent_stats: {
+        Args: never
+        Returns: {
+          admin_user_id: string
+          claimed_today: number
+          claimed_total: number
+          last_taken_at: string
+          taken_today: number
+          taken_total: number
+        }[]
+      }
+      shark_tank_is_active: { Args: { _team_id: string }; Returns: boolean }
+      shark_tank_is_live: { Args: never; Returns: boolean }
+      shark_tank_is_management: { Args: never; Returns: boolean }
+      shark_tank_log_outcome: {
+        Args: {
+          _call_reference?: string
+          _lead_id: string
+          _next_action?: string
+          _outcome: string
+        }
+        Returns: string
+      }
+      shark_tank_reap: { Args: never; Returns: number }
+      shark_tank_take_next: {
+        Args: { _team_id: string }
+        Returns: {
+          held_until: string
+          lead_id: string
+        }[]
+      }
       simulate_lead_routing: { Args: { p_source: string }; Returns: Json }
       snapshot_agent_daily_stats: { Args: { p_date: string }; Returns: number }
       soft_delete_customer: {
@@ -9762,6 +11076,15 @@ export type Database = {
         Returns: undefined
       }
       sync_leads_to_marketing_audience: { Args: never; Returns: Json }
+      undo_bulk_reassignment: {
+        Args: {
+          p_bucket_start: string
+          p_changed_by: string
+          p_new_assigned_to: string
+          p_old_assigned_to: string
+        }
+        Returns: Json
+      }
       update_campaign_analytics: {
         Args: { p_campaign_id: string }
         Returns: undefined
@@ -9825,6 +11148,7 @@ export type Database = {
         | "fake_lead"
         | "urgent_callback"
         | "archived"
+        | "not_interested"
       mask_level: "none" | "partial" | "full"
       note_purpose:
         | "claim_query"
@@ -9835,6 +11159,13 @@ export type Database = {
         | "general"
         | "complaint"
       risk_level: "low" | "medium" | "high"
+      shark_tank_status:
+        | "queued"
+        | "held"
+        | "retry_hold"
+        | "chase_hold"
+        | "claimed"
+        | "expired"
       timesheet_entry_type:
         | "worked"
         | "sick"
@@ -10035,6 +11366,7 @@ export const Constants = {
         "fake_lead",
         "urgent_callback",
         "archived",
+        "not_interested",
       ],
       mask_level: ["none", "partial", "full"],
       note_purpose: [
@@ -10047,6 +11379,14 @@ export const Constants = {
         "complaint",
       ],
       risk_level: ["low", "medium", "high"],
+      shark_tank_status: [
+        "queued",
+        "held",
+        "retry_hold",
+        "chase_hold",
+        "claimed",
+        "expired",
+      ],
       timesheet_entry_type: [
         "worked",
         "sick",
