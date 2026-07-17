@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, FileText, Car, BarChart3, Mail, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check } from 'lucide-react';
+import { Users, FileText, Car, BarChart3, Mail, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, PhoneCall } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
@@ -263,6 +263,12 @@ const defaultTabs: Tab[] = [
     description: 'Leaderboard, awards and sales competition'
   },
   {
+    id: 'call-stats',
+    label: 'Call Stats',
+    icon: PhoneCall,
+    description: 'Zoiper dials, missed calls and talk time per salesperson'
+  },
+  {
     id: 'discounts-given',
     label: 'Discounts Given',
     icon: Percent,
@@ -307,7 +313,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
     
     if (userRole === 'sales_lead') {
       // Sales leads: manage team, assign leads, view customers, quotes, tips, analytics (restricted), account
-      const salesLeadTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'customers', 'analytics', 'selling-tips', 'timesheets', 'account'];
+      const salesLeadTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'call-stats', 'customers', 'analytics', 'selling-tips', 'timesheets', 'account'];
       return defaultTabs.filter(tab => salesLeadTabIds.includes(tab.id));
     }
 
@@ -342,7 +348,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
       
       // Fallback: restricted view for sales without custom permissions
       // Only their dashboard, quotes, and tips
-      const salesTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'selling-tips', 'timesheets', 'account'];
+      const salesTabIds = ['new-leads', 'get-quote', 'sales-scoreboard', 'call-stats', 'selling-tips', 'timesheets', 'account'];
       return defaultTabs.filter(tab => salesTabIds.includes(tab.id));
     }
     
