@@ -49,9 +49,16 @@ async function fetchCdrs(sinceIso: string): Promise<any[]> {
   // Try a couple of endpoint shapes Dial9/aTech commonly uses. Log the
   // first successful one so we can lock this down after first run.
   const candidates = [
-    `${DIAL9_BASE}/api/v1/units/${DIAL9_UNIT}/calls?since=${encodeURIComponent(sinceIso)}&per_page=200`,
-    `${DIAL9_BASE}/api/v1/calls?unit=${DIAL9_UNIT}&since=${encodeURIComponent(sinceIso)}&per_page=200`,
-    `${DIAL9_BASE}/api/v1/cdr/list?date_from=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v2/calls?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v2/cdrs?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v1/cdrs?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v1/statistics/cdr?date_from=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v1/reports/cdr?date_from=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/units/${DIAL9_UNIT}/calls?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/unit/${DIAL9_UNIT}/api/v1/calls?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/unit/${DIAL9_UNIT}/api/v1/cdrs?since=${encodeURIComponent(sinceIso)}`,
+    `${DIAL9_BASE}/api/v1/ping`,
+    `${DIAL9_BASE}/api/v2/ping`,
   ];
   for (const url of candidates) {
     try {
