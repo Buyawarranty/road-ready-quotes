@@ -433,6 +433,8 @@ const AdminDashboard = () => {
         return <TimesheetsTab />;
       case 'sales-scoreboard':
         return <SalesScoreboardTab />;
+      case 'call-stats':
+        return <CallStatsTab />;
       case 'testing':
         return <TestingTabContent />;
       case 'discounts-given':
