@@ -651,6 +651,8 @@ export type Database = {
       }
       admin_users: {
         Row: {
+          archived_at: string | null
+          blocked_promos: string[]
           callrail_banner_enabled: boolean
           column_masking: Json | null
           created_at: string
@@ -663,6 +665,7 @@ export type Database = {
           is_active: boolean
           last_login: string | null
           last_name: string | null
+          max_discount_pct: number | null
           permissions: Json
           policy_id: string | null
           require_2fa: boolean | null
@@ -672,6 +675,8 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          archived_at?: string | null
+          blocked_promos?: string[]
           callrail_banner_enabled?: boolean
           column_masking?: Json | null
           created_at?: string
@@ -684,6 +689,7 @@ export type Database = {
           is_active?: boolean
           last_login?: string | null
           last_name?: string | null
+          max_discount_pct?: number | null
           permissions?: Json
           policy_id?: string | null
           require_2fa?: boolean | null
@@ -693,6 +699,8 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          archived_at?: string | null
+          blocked_promos?: string[]
           callrail_banner_enabled?: boolean
           column_masking?: Json | null
           created_at?: string
@@ -705,6 +713,7 @@ export type Database = {
           is_active?: boolean
           last_login?: string | null
           last_name?: string | null
+          max_discount_pct?: number | null
           permissions?: Json
           policy_id?: string | null
           require_2fa?: boolean | null
@@ -849,6 +858,7 @@ export type Database = {
           allowed_sources: string[] | null
           assigned_today: number | null
           assignment_mode: string
+          can_reassign_leads: boolean
           cap_reset_date: string | null
           created_at: string | null
           daily_cap: number | null
@@ -857,6 +867,7 @@ export type Database = {
           paused: boolean | null
           percentage: number | null
           priority: number | null
+          reassign_scope: string
           sort_order: number | null
           updated_at: string | null
         }
@@ -865,6 +876,7 @@ export type Database = {
           allowed_sources?: string[] | null
           assigned_today?: number | null
           assignment_mode?: string
+          can_reassign_leads?: boolean
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
@@ -873,6 +885,7 @@ export type Database = {
           paused?: boolean | null
           percentage?: number | null
           priority?: number | null
+          reassign_scope?: string
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -881,6 +894,7 @@ export type Database = {
           allowed_sources?: string[] | null
           assigned_today?: number | null
           assignment_mode?: string
+          can_reassign_leads?: boolean
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
@@ -889,6 +903,7 @@ export type Database = {
           paused?: boolean | null
           percentage?: number | null
           priority?: number | null
+          reassign_scope?: string
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -898,6 +913,195 @@ export type Database = {
             columns: ["admin_user_id"]
             isOneToOne: true
             referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_feedback: {
+        Row: {
+          attachments: Json
+          created_at: string
+          feedback_type: Database["public"]["Enums"]["agent_feedback_type"]
+          id: string
+          lead_id: string | null
+          lead_reference_text: string | null
+          message: string
+          resolution_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["agent_feedback_status"]
+          submitted_by: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json
+          created_at?: string
+          feedback_type: Database["public"]["Enums"]["agent_feedback_type"]
+          id?: string
+          lead_id?: string | null
+          lead_reference_text?: string | null
+          message: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["agent_feedback_status"]
+          submitted_by: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json
+          created_at?: string
+          feedback_type?: Database["public"]["Enums"]["agent_feedback_type"]
+          id?: string
+          lead_id?: string | null
+          lead_reference_text?: string | null
+          message?: string
+          resolution_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["agent_feedback_status"]
+          submitted_by?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_feedback_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_feedback_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_feedback_submitted_by_fkey"
+            columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_offboarding_events: {
+        Row: {
+          also_deactivated: boolean
+          created_at: string
+          executed_by: string | null
+          executed_by_name: string | null
+          id: string
+          lead_count: number
+          notes: string | null
+          paid_lead_count: number
+          reminder_count: number
+          reset_to_new: boolean
+          restored_at: string | null
+          restored_by: string | null
+          restored_lead_count: number | null
+          source_admin_user_id: string
+          source_email: string | null
+          source_name: string | null
+          target_admin_user_id: string
+          target_email: string | null
+          target_name: string | null
+        }
+        Insert: {
+          also_deactivated?: boolean
+          created_at?: string
+          executed_by?: string | null
+          executed_by_name?: string | null
+          id?: string
+          lead_count?: number
+          notes?: string | null
+          paid_lead_count?: number
+          reminder_count?: number
+          reset_to_new?: boolean
+          restored_at?: string | null
+          restored_by?: string | null
+          restored_lead_count?: number | null
+          source_admin_user_id: string
+          source_email?: string | null
+          source_name?: string | null
+          target_admin_user_id: string
+          target_email?: string | null
+          target_name?: string | null
+        }
+        Update: {
+          also_deactivated?: boolean
+          created_at?: string
+          executed_by?: string | null
+          executed_by_name?: string | null
+          id?: string
+          lead_count?: number
+          notes?: string | null
+          paid_lead_count?: number
+          reminder_count?: number
+          reset_to_new?: boolean
+          restored_at?: string | null
+          restored_by?: string | null
+          restored_lead_count?: number | null
+          source_admin_user_id?: string
+          source_email?: string | null
+          source_name?: string | null
+          target_admin_user_id?: string
+          target_email?: string | null
+          target_name?: string | null
+        }
+        Relationships: []
+      }
+      agent_offboarding_lead_snapshots: {
+        Row: {
+          call_logs: Json | null
+          changelog: Json | null
+          created_at: string
+          event_id: string
+          id: string
+          lead_id: string
+          lead_snapshot: Json
+          original_assigned_to: string | null
+          original_is_paid: boolean | null
+          original_status: string | null
+          quick_notes: Json | null
+          reminders: Json | null
+        }
+        Insert: {
+          call_logs?: Json | null
+          changelog?: Json | null
+          created_at?: string
+          event_id: string
+          id?: string
+          lead_id: string
+          lead_snapshot: Json
+          original_assigned_to?: string | null
+          original_is_paid?: boolean | null
+          original_status?: string | null
+          quick_notes?: Json | null
+          reminders?: Json | null
+        }
+        Update: {
+          call_logs?: Json | null
+          changelog?: Json | null
+          created_at?: string
+          event_id?: string
+          id?: string
+          lead_id?: string
+          lead_snapshot?: Json
+          original_assigned_to?: string | null
+          original_is_paid?: boolean | null
+          original_status?: string | null
+          quick_notes?: Json | null
+          reminders?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_offboarding_lead_snapshots_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "agent_offboarding_events"
             referencedColumns: ["id"]
           },
         ]
@@ -942,6 +1146,82 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "agent_schedules_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_weekend_shifts: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          shift_date: string
+          slot: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          shift_date: string
+          slot: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          shift_date?: string
+          slot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_weekend_shifts_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_working_days: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          created_by: string | null
+          day_type: string
+          id: string
+          updated_at: string
+          work_date: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          created_by?: string | null
+          day_type?: string
+          id?: string
+          updated_at?: string
+          work_date: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          created_by?: string | null
+          day_type?: string
+          id?: string
+          updated_at?: string
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_working_days_admin_user_id_fkey"
             columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "admin_users"
@@ -2741,6 +3021,8 @@ export type Database = {
         Row: {
           created_at: string
           document_name: string
+          effective_from: string | null
+          effective_to: string | null
           file_size: number | null
           file_url: string
           id: string
@@ -2748,10 +3030,13 @@ export type Database = {
           updated_at: string
           uploaded_by: string | null
           vehicle_type: string | null
+          version: string | null
         }
         Insert: {
           created_at?: string
           document_name: string
+          effective_from?: string | null
+          effective_to?: string | null
           file_size?: number | null
           file_url: string
           id?: string
@@ -2759,10 +3044,13 @@ export type Database = {
           updated_at?: string
           uploaded_by?: string | null
           vehicle_type?: string | null
+          version?: string | null
         }
         Update: {
           created_at?: string
           document_name?: string
+          effective_from?: string | null
+          effective_to?: string | null
           file_size?: number | null
           file_url?: string
           id?: string
@@ -2770,6 +3058,46 @@ export type Database = {
           updated_at?: string
           uploaded_by?: string | null
           vehicle_type?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
+      customer_lock_events: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          customer_id: string
+          from_state: string | null
+          id: string
+          lead_id: string | null
+          phone_normalized: string | null
+          reason: string | null
+          source: string | null
+          to_state: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          customer_id: string
+          from_state?: string | null
+          id?: string
+          lead_id?: string | null
+          phone_normalized?: string | null
+          reason?: string | null
+          source?: string | null
+          to_state: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          customer_id?: string
+          from_state?: string | null
+          id?: string
+          lead_id?: string | null
+          phone_normalized?: string | null
+          reason?: string | null
+          source?: string | null
+          to_state?: string
         }
         Relationships: []
       }
@@ -3207,6 +3535,7 @@ export type Database = {
         Row: {
           acquisition_source: string | null
           assigned_to: string | null
+          balance_due_amount: number | null
           breakdown_recovery: boolean | null
           brevo_contact_id: string | null
           building_name: string | null
@@ -3225,6 +3554,10 @@ export type Database = {
           dealer_id: string | null
           deleted_at: string | null
           deleted_by: string | null
+          deposit_amount: number | null
+          deposit_taken: boolean
+          deposit_taken_at: string | null
+          deposit_taken_by: string | null
           device_type: string | null
           discount_amount: number | null
           discount_code: string | null
@@ -3256,7 +3589,13 @@ export type Database = {
           mot_fee: boolean | null
           mot_repair: boolean | null
           name: string
+          ni_verified: boolean
+          ni_verified_at: string | null
+          ni_verified_by: string | null
           original_amount: number | null
+          payment_collected_at: string | null
+          payment_collected_by: string | null
+          payment_collection_note: string | null
           payment_confirmed_by: string | null
           payment_due_date: string | null
           payment_status: string | null
@@ -3265,6 +3604,11 @@ export type Database = {
           phone: string | null
           plan_type: string
           postcode: string | null
+          price_comparison_proof_url: string | null
+          price_match_applied: boolean
+          price_match_competitor: string | null
+          price_match_competitor_price: number | null
+          price_match_our_price: number | null
           purchase_source: string | null
           quote_sent_by: string | null
           registration_plate: string | null
@@ -3306,6 +3650,7 @@ export type Database = {
         Insert: {
           acquisition_source?: string | null
           assigned_to?: string | null
+          balance_due_amount?: number | null
           breakdown_recovery?: boolean | null
           brevo_contact_id?: string | null
           building_name?: string | null
@@ -3324,6 +3669,10 @@ export type Database = {
           dealer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          deposit_amount?: number | null
+          deposit_taken?: boolean
+          deposit_taken_at?: string | null
+          deposit_taken_by?: string | null
           device_type?: string | null
           discount_amount?: number | null
           discount_code?: string | null
@@ -3355,7 +3704,13 @@ export type Database = {
           mot_fee?: boolean | null
           mot_repair?: boolean | null
           name: string
+          ni_verified?: boolean
+          ni_verified_at?: string | null
+          ni_verified_by?: string | null
           original_amount?: number | null
+          payment_collected_at?: string | null
+          payment_collected_by?: string | null
+          payment_collection_note?: string | null
           payment_confirmed_by?: string | null
           payment_due_date?: string | null
           payment_status?: string | null
@@ -3364,6 +3719,11 @@ export type Database = {
           phone?: string | null
           plan_type: string
           postcode?: string | null
+          price_comparison_proof_url?: string | null
+          price_match_applied?: boolean
+          price_match_competitor?: string | null
+          price_match_competitor_price?: number | null
+          price_match_our_price?: number | null
           purchase_source?: string | null
           quote_sent_by?: string | null
           registration_plate?: string | null
@@ -3405,6 +3765,7 @@ export type Database = {
         Update: {
           acquisition_source?: string | null
           assigned_to?: string | null
+          balance_due_amount?: number | null
           breakdown_recovery?: boolean | null
           brevo_contact_id?: string | null
           building_name?: string | null
@@ -3423,6 +3784,10 @@ export type Database = {
           dealer_id?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          deposit_amount?: number | null
+          deposit_taken?: boolean
+          deposit_taken_at?: string | null
+          deposit_taken_by?: string | null
           device_type?: string | null
           discount_amount?: number | null
           discount_code?: string | null
@@ -3454,7 +3819,13 @@ export type Database = {
           mot_fee?: boolean | null
           mot_repair?: boolean | null
           name?: string
+          ni_verified?: boolean
+          ni_verified_at?: string | null
+          ni_verified_by?: string | null
           original_amount?: number | null
+          payment_collected_at?: string | null
+          payment_collected_by?: string | null
+          payment_collection_note?: string | null
           payment_confirmed_by?: string | null
           payment_due_date?: string | null
           payment_status?: string | null
@@ -3463,6 +3834,11 @@ export type Database = {
           phone?: string | null
           plan_type?: string
           postcode?: string | null
+          price_comparison_proof_url?: string | null
+          price_match_applied?: boolean
+          price_match_competitor?: string | null
+          price_match_competitor_price?: number | null
+          price_match_our_price?: number | null
           purchase_source?: string | null
           quote_sent_by?: string | null
           registration_plate?: string | null
@@ -3538,6 +3914,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_lead_stats_snapshot: {
+        Row: {
+          counts: Json
+          is_locked: boolean
+          lead_count: number
+          snapshot_date: string
+          snapshotted_at: string
+          team_scope: string
+        }
+        Insert: {
+          counts: Json
+          is_locked?: boolean
+          lead_count?: number
+          snapshot_date: string
+          snapshotted_at?: string
+          team_scope?: string
+        }
+        Update: {
+          counts?: Json
+          is_locked?: boolean
+          lead_count?: number
+          snapshot_date?: string
+          snapshotted_at?: string
+          team_scope?: string
+        }
+        Relationships: []
       }
       deal_records: {
         Row: {
@@ -5083,6 +5486,75 @@ export type Database = {
         }
         Relationships: []
       }
+      discount_auth_requests: {
+        Row: {
+          base_price: number | null
+          created_at: string
+          customer_name: string | null
+          decided_at: string | null
+          decided_by_name: string | null
+          decided_by_user_id: string | null
+          decision_note: string | null
+          discount_pct: number | null
+          id: string
+          mileage: string | null
+          payment_type: string | null
+          reason: string
+          registration_plate: string | null
+          requested_by_name: string | null
+          requested_by_user_id: string
+          requested_price: number | null
+          seen_by_requester: boolean
+          status: string
+          updated_at: string
+          vehicle_description: string | null
+        }
+        Insert: {
+          base_price?: number | null
+          created_at?: string
+          customer_name?: string | null
+          decided_at?: string | null
+          decided_by_name?: string | null
+          decided_by_user_id?: string | null
+          decision_note?: string | null
+          discount_pct?: number | null
+          id?: string
+          mileage?: string | null
+          payment_type?: string | null
+          reason: string
+          registration_plate?: string | null
+          requested_by_name?: string | null
+          requested_by_user_id?: string
+          requested_price?: number | null
+          seen_by_requester?: boolean
+          status?: string
+          updated_at?: string
+          vehicle_description?: string | null
+        }
+        Update: {
+          base_price?: number | null
+          created_at?: string
+          customer_name?: string | null
+          decided_at?: string | null
+          decided_by_name?: string | null
+          decided_by_user_id?: string | null
+          decision_note?: string | null
+          discount_pct?: number | null
+          id?: string
+          mileage?: string | null
+          payment_type?: string | null
+          reason?: string
+          registration_plate?: string | null
+          requested_by_name?: string | null
+          requested_by_user_id?: string
+          requested_price?: number | null
+          seen_by_requester?: boolean
+          status?: string
+          updated_at?: string
+          vehicle_description?: string | null
+        }
+        Relationships: []
+      }
       discount_code_usage: {
         Row: {
           customer_email: string
@@ -6315,37 +6787,73 @@ export type Database = {
           agent_id: string | null
           agent_name: string | null
           attempt_number: number
+          call_ended_at: string | null
+          call_started_at: string | null
+          contact_made: boolean | null
           created_at: string
           id: string
           lead_id: string
           lead_type: string
+          lock_state_at_end: string | null
+          lock_state_at_start: string | null
+          marked_dormant: boolean | null
+          new_owner_id: string | null
+          new_queue: string | null
+          next_eligible_at: string | null
           next_follow_up_date: string | null
           notes: string | null
           outcome: string
+          phone_normalized: string | null
+          team_id: string | null
+          updated_at: string | null
         }
         Insert: {
           agent_id?: string | null
           agent_name?: string | null
           attempt_number: number
+          call_ended_at?: string | null
+          call_started_at?: string | null
+          contact_made?: boolean | null
           created_at?: string
           id?: string
           lead_id: string
           lead_type?: string
+          lock_state_at_end?: string | null
+          lock_state_at_start?: string | null
+          marked_dormant?: boolean | null
+          new_owner_id?: string | null
+          new_queue?: string | null
+          next_eligible_at?: string | null
           next_follow_up_date?: string | null
           notes?: string | null
           outcome: string
+          phone_normalized?: string | null
+          team_id?: string | null
+          updated_at?: string | null
         }
         Update: {
           agent_id?: string | null
           agent_name?: string | null
           attempt_number?: number
+          call_ended_at?: string | null
+          call_started_at?: string | null
+          contact_made?: boolean | null
           created_at?: string
           id?: string
           lead_id?: string
           lead_type?: string
+          lock_state_at_end?: string | null
+          lock_state_at_start?: string | null
+          marked_dormant?: boolean | null
+          new_owner_id?: string | null
+          new_queue?: string | null
+          next_eligible_at?: string | null
           next_follow_up_date?: string | null
           notes?: string | null
           outcome?: string
+          phone_normalized?: string | null
+          team_id?: string | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -6356,6 +6864,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lead_customers: {
+        Row: {
+          attempt_count: number
+          callback_at: string | null
+          contacted_at: string | null
+          contacted_owner: string | null
+          created_at: string
+          do_not_call: boolean
+          do_not_call_at: string | null
+          do_not_call_reason: string | null
+          dormant: boolean
+          dormant_at: string | null
+          id: string
+          last_attempt_at: string | null
+          last_call_end: string | null
+          last_call_outcome: string | null
+          last_call_start: string | null
+          lock_agent_id: string | null
+          lock_lead_id: string | null
+          lock_owner: string | null
+          lock_source: string | null
+          lock_state: string
+          lock_state_at: string
+          lock_until: string | null
+          next_eligible_at: string | null
+          phone_normalized: string
+          phone_original: string | null
+          updated_at: string
+        }
+        Insert: {
+          attempt_count?: number
+          callback_at?: string | null
+          contacted_at?: string | null
+          contacted_owner?: string | null
+          created_at?: string
+          do_not_call?: boolean
+          do_not_call_at?: string | null
+          do_not_call_reason?: string | null
+          dormant?: boolean
+          dormant_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          last_call_end?: string | null
+          last_call_outcome?: string | null
+          last_call_start?: string | null
+          lock_agent_id?: string | null
+          lock_lead_id?: string | null
+          lock_owner?: string | null
+          lock_source?: string | null
+          lock_state?: string
+          lock_state_at?: string
+          lock_until?: string | null
+          next_eligible_at?: string | null
+          phone_normalized: string
+          phone_original?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attempt_count?: number
+          callback_at?: string | null
+          contacted_at?: string | null
+          contacted_owner?: string | null
+          created_at?: string
+          do_not_call?: boolean
+          do_not_call_at?: string | null
+          do_not_call_reason?: string | null
+          dormant?: boolean
+          dormant_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          last_call_end?: string | null
+          last_call_outcome?: string | null
+          last_call_start?: string | null
+          lock_agent_id?: string | null
+          lock_lead_id?: string | null
+          lock_owner?: string | null
+          lock_source?: string | null
+          lock_state?: string
+          lock_state_at?: string
+          lock_until?: string | null
+          next_eligible_at?: string | null
+          phone_normalized?: string
+          phone_original?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       lead_distribution_settings: {
         Row: {
@@ -6368,9 +6963,12 @@ export type Database = {
           drip_interval_seconds: number
           flow_mode: string
           id: string
+          open_round_robin_enabled: boolean
           overflow_recipient_id: string | null
           solo_agent_id: string | null
           solo_mode_enabled: boolean | null
+          strict_rotation_cursor: number
+          strict_rotation_enabled: boolean
           team_id: string | null
           updated_at: string | null
         }
@@ -6384,9 +6982,12 @@ export type Database = {
           drip_interval_seconds?: number
           flow_mode?: string
           id?: string
+          open_round_robin_enabled?: boolean
           overflow_recipient_id?: string | null
           solo_agent_id?: string | null
           solo_mode_enabled?: boolean | null
+          strict_rotation_cursor?: number
+          strict_rotation_enabled?: boolean
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6400,9 +7001,12 @@ export type Database = {
           drip_interval_seconds?: number
           flow_mode?: string
           id?: string
+          open_round_robin_enabled?: boolean
           overflow_recipient_id?: string | null
           solo_agent_id?: string | null
           solo_mode_enabled?: boolean | null
+          strict_rotation_cursor?: number
+          strict_rotation_enabled?: boolean
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6614,6 +7218,7 @@ export type Database = {
       lead_team_members: {
         Row: {
           admin_user_id: string
+          call_data_scope: string
           can_see_team_leads: boolean
           created_at: string
           id: string
@@ -6628,6 +7233,7 @@ export type Database = {
         }
         Insert: {
           admin_user_id: string
+          call_data_scope?: string
           can_see_team_leads?: boolean
           created_at?: string
           id?: string
@@ -6642,6 +7248,7 @@ export type Database = {
         }
         Update: {
           admin_user_id?: string
+          call_data_scope?: string
           can_see_team_leads?: boolean
           created_at?: string
           id?: string
@@ -6818,6 +7425,7 @@ export type Database = {
           vehicle_type: string | null
           vehicle_year: string | null
           viewed_at: string | null
+          warranty_start_date: string | null
         }
         Insert: {
           access_token: string
@@ -6863,6 +7471,7 @@ export type Database = {
           vehicle_type?: string | null
           vehicle_year?: string | null
           viewed_at?: string | null
+          warranty_start_date?: string | null
         }
         Update: {
           access_token?: string
@@ -6908,6 +7517,7 @@ export type Database = {
           vehicle_type?: string | null
           vehicle_year?: string | null
           viewed_at?: string | null
+          warranty_start_date?: string | null
         }
         Relationships: []
       }
@@ -7062,9 +7672,13 @@ export type Database = {
           caller_name: string | null
           caller_phone: string | null
           created_at: string
+          declined_by: string[]
           id: string
           matched_customer_id: string | null
           matched_lead_id: string | null
+          offer_expires_at: string | null
+          offered_at: string | null
+          offered_to: string | null
           provider: string
           raw_payload: Json | null
           recording_url: string | null
@@ -7082,9 +7696,13 @@ export type Database = {
           caller_name?: string | null
           caller_phone?: string | null
           created_at?: string
+          declined_by?: string[]
           id?: string
           matched_customer_id?: string | null
           matched_lead_id?: string | null
+          offer_expires_at?: string | null
+          offered_at?: string | null
+          offered_to?: string | null
           provider?: string
           raw_payload?: Json | null
           recording_url?: string | null
@@ -7102,9 +7720,13 @@ export type Database = {
           caller_name?: string | null
           caller_phone?: string | null
           created_at?: string
+          declined_by?: string[]
           id?: string
           matched_customer_id?: string | null
           matched_lead_id?: string | null
+          offer_expires_at?: string | null
+          offered_at?: string | null
+          offered_to?: string | null
           provider?: string
           raw_payload?: Json | null
           recording_url?: string | null
@@ -7330,6 +7952,156 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      orr_agent_status_overrides: {
+        Row: {
+          agent_id: string
+          is_available: boolean
+          reason: string | null
+          set_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          is_available?: boolean
+          reason?: string | null
+          set_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          is_available?: boolean
+          reason?: string | null
+          set_by?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orr_config: {
+        Row: {
+          id: boolean
+          live_cutoff: string
+          timezone: string
+          updated_at: string
+          weekend_days: number[]
+          work_end: string
+          work_start: string
+        }
+        Insert: {
+          id?: boolean
+          live_cutoff?: string
+          timezone?: string
+          updated_at?: string
+          weekend_days?: number[]
+          work_end?: string
+          work_start?: string
+        }
+        Update: {
+          id?: boolean
+          live_cutoff?: string
+          timezone?: string
+          updated_at?: string
+          weekend_days?: number[]
+          work_end?: string
+          work_start?: string
+        }
+        Relationships: []
+      }
+      orr_exceptional_closures: {
+        Row: {
+          closure_date: string
+          created_at: string
+          created_by: string | null
+          reason: string | null
+        }
+        Insert: {
+          closure_date: string
+          created_at?: string
+          created_by?: string | null
+          reason?: string | null
+        }
+        Update: {
+          closure_date?: string
+          created_at?: string
+          created_by?: string | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      orr_manager_overrides: {
+        Row: {
+          allowed_extra_call: boolean
+          created_at: string
+          id: string
+          lead_id: string | null
+          manager_id: string
+          new_owner_id: string | null
+          new_value: Json | null
+          override_type: string
+          phone_normalized: string | null
+          previous_owner_id: string | null
+          previous_value: Json | null
+          reason: string
+          refused: boolean
+          refused_reason: string | null
+        }
+        Insert: {
+          allowed_extra_call?: boolean
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          manager_id: string
+          new_owner_id?: string | null
+          new_value?: Json | null
+          override_type: string
+          phone_normalized?: string | null
+          previous_owner_id?: string | null
+          previous_value?: Json | null
+          reason: string
+          refused?: boolean
+          refused_reason?: string | null
+        }
+        Update: {
+          allowed_extra_call?: boolean
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          manager_id?: string
+          new_owner_id?: string | null
+          new_value?: Json | null
+          override_type?: string
+          phone_normalized?: string | null
+          previous_owner_id?: string | null
+          previous_value?: Json | null
+          reason?: string
+          refused?: boolean
+          refused_reason?: string | null
+        }
+        Relationships: []
+      }
+      orr_release_events: {
+        Row: {
+          agent_id: string | null
+          id: string
+          lead_id: string | null
+          reason: string
+          released_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          id?: string
+          lead_id?: string | null
+          reason: string
+          released_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          id?: string
+          lead_id?: string | null
+          reason?: string
+          released_at?: string
+        }
+        Relationships: []
       }
       overflow_recipients: {
         Row: {
@@ -7918,6 +8690,48 @@ export type Database = {
           },
         ]
       }
+      pricing_matrix_versions: {
+        Row: {
+          admin_matrix: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          label: string
+          notes: string | null
+          published_at: string | null
+          published_by: string | null
+          status: string
+          step3_discount_pct: number
+          updated_at: string
+        }
+        Insert: {
+          admin_matrix: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+          notes?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          status?: string
+          step3_discount_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          admin_matrix?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          label?: string
+          notes?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          status?: string
+          step3_discount_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quote_data: {
         Row: {
           created_at: string
@@ -8420,11 +9234,13 @@ export type Database = {
           claim_count: number
           converted_at: string | null
           created_at: string
+          customer_contact_id: string | null
           do_not_contact: boolean
           do_not_contact_at: string | null
           do_not_contact_by: string | null
           do_not_contact_reason: string | null
           drip_release_at: string | null
+          eligible_at: string | null
           email: string
           fake_audit_status: string | null
           fake_audited_at: string | null
@@ -8437,6 +9253,7 @@ export type Database = {
           follow_up_status: string | null
           hidden_from_agent_ids: string[]
           id: string
+          intake_class: string | null
           is_callback: boolean | null
           is_paid: boolean | null
           is_recreated: boolean | null
@@ -8451,6 +9268,8 @@ export type Database = {
           locked_by: string | null
           lost_at: string | null
           lost_reason: string | null
+          manual_call_adjustment: number
+          manual_entry: boolean
           mileage: string | null
           next_action_at: string | null
           next_action_date: string | null
@@ -8458,11 +9277,33 @@ export type Database = {
           notes: string | null
           original_assigned_to: string | null
           original_source: string | null
+          orr_attempt_count: number
+          orr_dormant_at: string | null
+          orr_first_call_deadline: string | null
+          orr_first_call_kind: string | null
+          orr_first_call_missed_at: string | null
+          orr_first_call_missed_by: string | null
+          orr_first_call_missed_count: number
+          orr_first_call_notified_at: string | null
+          orr_last_attempt_at: string | null
+          orr_locked_until: string | null
+          orr_next_release_at: string | null
+          orr_offer_expires_at: string | null
+          orr_offer_passed_by: string[]
+          orr_pool_kind: string | null
+          orr_pool_next_open_at: string | null
+          orr_pool_since: string | null
+          orr_pool_state: string | null
+          orr_reassign_count: number
+          orr_retry_deadline: string | null
+          orr_retry_missed_at: string | null
+          orr_retry_missed_by: string | null
           owner_agent: string | null
           payment_amount: number | null
           payment_date: string | null
           payment_method: string | null
           phone: string | null
+          phone_normalized: string | null
           plan_interest: string | null
           pool_recycle_count: number
           pool_status: string | null
@@ -8496,11 +9337,13 @@ export type Database = {
           claim_count?: number
           converted_at?: string | null
           created_at?: string
+          customer_contact_id?: string | null
           do_not_contact?: boolean
           do_not_contact_at?: string | null
           do_not_contact_by?: string | null
           do_not_contact_reason?: string | null
           drip_release_at?: string | null
+          eligible_at?: string | null
           email: string
           fake_audit_status?: string | null
           fake_audited_at?: string | null
@@ -8513,6 +9356,7 @@ export type Database = {
           follow_up_status?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
+          intake_class?: string | null
           is_callback?: boolean | null
           is_paid?: boolean | null
           is_recreated?: boolean | null
@@ -8527,6 +9371,8 @@ export type Database = {
           locked_by?: string | null
           lost_at?: string | null
           lost_reason?: string | null
+          manual_call_adjustment?: number
+          manual_entry?: boolean
           mileage?: string | null
           next_action_at?: string | null
           next_action_date?: string | null
@@ -8534,11 +9380,33 @@ export type Database = {
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
+          orr_attempt_count?: number
+          orr_dormant_at?: string | null
+          orr_first_call_deadline?: string | null
+          orr_first_call_kind?: string | null
+          orr_first_call_missed_at?: string | null
+          orr_first_call_missed_by?: string | null
+          orr_first_call_missed_count?: number
+          orr_first_call_notified_at?: string | null
+          orr_last_attempt_at?: string | null
+          orr_locked_until?: string | null
+          orr_next_release_at?: string | null
+          orr_offer_expires_at?: string | null
+          orr_offer_passed_by?: string[]
+          orr_pool_kind?: string | null
+          orr_pool_next_open_at?: string | null
+          orr_pool_since?: string | null
+          orr_pool_state?: string | null
+          orr_reassign_count?: number
+          orr_retry_deadline?: string | null
+          orr_retry_missed_at?: string | null
+          orr_retry_missed_by?: string | null
           owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
           payment_method?: string | null
           phone?: string | null
+          phone_normalized?: string | null
           plan_interest?: string | null
           pool_recycle_count?: number
           pool_status?: string | null
@@ -8572,11 +9440,13 @@ export type Database = {
           claim_count?: number
           converted_at?: string | null
           created_at?: string
+          customer_contact_id?: string | null
           do_not_contact?: boolean
           do_not_contact_at?: string | null
           do_not_contact_by?: string | null
           do_not_contact_reason?: string | null
           drip_release_at?: string | null
+          eligible_at?: string | null
           email?: string
           fake_audit_status?: string | null
           fake_audited_at?: string | null
@@ -8589,6 +9459,7 @@ export type Database = {
           follow_up_status?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
+          intake_class?: string | null
           is_callback?: boolean | null
           is_paid?: boolean | null
           is_recreated?: boolean | null
@@ -8603,6 +9474,8 @@ export type Database = {
           locked_by?: string | null
           lost_at?: string | null
           lost_reason?: string | null
+          manual_call_adjustment?: number
+          manual_entry?: boolean
           mileage?: string | null
           next_action_at?: string | null
           next_action_date?: string | null
@@ -8610,11 +9483,33 @@ export type Database = {
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
+          orr_attempt_count?: number
+          orr_dormant_at?: string | null
+          orr_first_call_deadline?: string | null
+          orr_first_call_kind?: string | null
+          orr_first_call_missed_at?: string | null
+          orr_first_call_missed_by?: string | null
+          orr_first_call_missed_count?: number
+          orr_first_call_notified_at?: string | null
+          orr_last_attempt_at?: string | null
+          orr_locked_until?: string | null
+          orr_next_release_at?: string | null
+          orr_offer_expires_at?: string | null
+          orr_offer_passed_by?: string[]
+          orr_pool_kind?: string | null
+          orr_pool_next_open_at?: string | null
+          orr_pool_since?: string | null
+          orr_pool_state?: string | null
+          orr_reassign_count?: number
+          orr_retry_deadline?: string | null
+          orr_retry_missed_at?: string | null
+          orr_retry_missed_by?: string | null
           owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
           payment_method?: string | null
           phone?: string | null
+          phone_normalized?: string | null
           plan_interest?: string | null
           pool_recycle_count?: number
           pool_status?: string | null
@@ -8650,6 +9545,13 @@ export type Database = {
             columns: ["assigned_to"]
             isOneToOne: false
             referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_leads_customer_contact_id_fkey"
+            columns: ["customer_contact_id"]
+            isOneToOne: false
+            referencedRelation: "lead_customers"
             referencedColumns: ["id"]
           },
         ]
@@ -9262,6 +10164,60 @@ export type Database = {
           },
         ]
       }
+      sms_send_log: {
+        Row: {
+          clicksend_message_id: string | null
+          clicksend_status: string | null
+          cost: number | null
+          created_at: string
+          customer_id: string | null
+          error_message: string | null
+          http_status: number | null
+          id: string
+          lead_id: string | null
+          message: string | null
+          message_type: string | null
+          phone: string
+          raw_response: Json | null
+          success: boolean
+          triggered_by: string | null
+        }
+        Insert: {
+          clicksend_message_id?: string | null
+          clicksend_status?: string | null
+          cost?: number | null
+          created_at?: string
+          customer_id?: string | null
+          error_message?: string | null
+          http_status?: number | null
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          message_type?: string | null
+          phone: string
+          raw_response?: Json | null
+          success?: boolean
+          triggered_by?: string | null
+        }
+        Update: {
+          clicksend_message_id?: string | null
+          clicksend_status?: string | null
+          cost?: number | null
+          created_at?: string
+          customer_id?: string | null
+          error_message?: string | null
+          http_status?: number | null
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          message_type?: string | null
+          phone?: string
+          raw_response?: Json | null
+          success?: boolean
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
       special_vehicle_plans: {
         Row: {
           coverage: Json
@@ -9419,6 +10375,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_work_locations: {
+        Row: {
+          admin_user_id: string
+          city: string | null
+          country: string | null
+          country_code: string | null
+          created_at: string
+          device_type: string | null
+          email: string
+          first_seen_at: string
+          id: string
+          ip_address: string
+          is_vpn: boolean
+          isp: string | null
+          last_seen_at: string
+          latitude: number | null
+          longitude: number | null
+          ping_count: number
+          region: string | null
+          session_date: string
+          timezone: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_user_id: string
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          device_type?: string | null
+          email: string
+          first_seen_at?: string
+          id?: string
+          ip_address: string
+          is_vpn?: boolean
+          isp?: string | null
+          last_seen_at?: string
+          latitude?: number | null
+          longitude?: number | null
+          ping_count?: number
+          region?: string | null
+          session_date?: string
+          timezone?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_user_id?: string
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          device_type?: string | null
+          email?: string
+          first_seen_at?: string
+          id?: string
+          ip_address?: string
+          is_vpn?: boolean
+          isp?: string | null
+          last_seen_at?: string
+          latitude?: number | null
+          longitude?: number | null
+          ping_count?: number
+          region?: string | null
+          session_date?: string
+          timezone?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       step2_submission_attempts: {
         Row: {
@@ -9976,6 +11004,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      uk_bank_holidays: {
+        Row: {
+          created_at: string
+          holiday_date: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          holiday_date: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          holiday_date?: string
+          name?: string | null
+        }
+        Relationships: []
       }
       underwriting_rules: {
         Row: {
@@ -10680,9 +11726,17 @@ export type Database = {
       }
     }
     Functions: {
+      adjust_sales_lead_call_count: {
+        Args: { p_delta: number; p_lead_id: string }
+        Returns: number
+      }
       agent_works_new_leads: {
         Args: { p_admin_user_id: string }
         Returns: boolean
+      }
+      archive_admin_user_preserve_sales: {
+        Args: { p_admin_user_id: string }
+        Returns: undefined
       }
       assign_lead_to_agent: {
         Args: {
@@ -10703,19 +11757,34 @@ export type Database = {
       }
       auto_expire_discount_codes: { Args: never; Returns: number }
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
-      bulk_reassign_leads_to_agent: {
-        Args: {
-          p_date_from?: string
-          p_date_to?: string
-          p_from_agent: string
-          p_include_customers?: boolean
-          p_lead_ids?: string[]
-          p_limit?: number
-          p_override_cap?: boolean
-          p_to_agent: string
-        }
-        Returns: Json
-      }
+      bulk_reassign_leads_to_agent:
+        | {
+            Args: {
+              p_date_from?: string
+              p_date_to?: string
+              p_from_agent: string
+              p_include_customers?: boolean
+              p_lead_ids?: string[]
+              p_limit?: number
+              p_override_cap?: boolean
+              p_to_agent: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_date_from?: string
+              p_date_to?: string
+              p_from_agent: string
+              p_include_customers?: boolean
+              p_lead_ids?: string[]
+              p_limit?: number
+              p_override_cap?: boolean
+              p_skip_worked?: boolean
+              p_to_agent: string
+            }
+            Returns: Json
+          }
       calculate_lead_priority_score: {
         Args: {
           p_cart_value: number
@@ -10761,6 +11830,16 @@ export type Database = {
           pool_total: number
         }[]
       }
+      create_agent_offboarding_backup: {
+        Args: {
+          _also_deactivate?: boolean
+          _notes?: string
+          _reset_to_new?: boolean
+          _source_admin_user_id: string
+          _target_admin_user_id: string
+        }
+        Returns: Json
+      }
       current_dealer_id: { Args: never; Returns: string }
       current_policy_pdf_urls: {
         Args: never
@@ -10784,6 +11863,13 @@ export type Database = {
       find_open_cart_id_by_reg: {
         Args: { _vehicle_reg: string }
         Returns: string
+      }
+      find_sales_lead_by_phone_tail9: {
+        Args: { tail_digits: string }
+        Returns: {
+          call_count: number
+          id: string
+        }[]
       }
       fix_customer_role: { Args: { p_user_id: string }; Returns: undefined }
       generate_admin_warranty_number: { Args: never; Returns: string }
@@ -10818,6 +11904,35 @@ export type Database = {
           status_changes: number
         }[]
       }
+      get_blog_page_analytics: {
+        Args: { _paths: string[]; _since_days?: number }
+        Returns: {
+          cta_sessions: number
+          direct_views: number
+          facebook_ads_views: number
+          google_ads_views: number
+          organic_views: number
+          page_path: string
+          top_referrer: string
+          top_utm_source: string
+          views: number
+          visitors: number
+        }[]
+      }
+      get_bumper_transaction_for_fallback: {
+        Args: { p_transaction_id: string }
+        Returns: {
+          claim_limit: number
+          customer_data: Json
+          discount_code: string
+          final_amount: number
+          payment_type: string
+          plan_id: string
+          protection_addons: Json
+          transaction_id: string
+          vehicle_data: Json
+        }[]
+      }
       get_claim_update_request_by_token: {
         Args: { _token: string }
         Returns: {
@@ -10836,6 +11951,25 @@ export type Database = {
       get_column_mask: {
         Args: { p_column: string; p_user_id: string }
         Returns: string
+      }
+      get_document_version_for_date: {
+        Args: { _on_date: string; _plan_type: string }
+        Returns: {
+          document_name: string
+          effective_from: string
+          effective_to: string
+          file_url: string
+          id: string
+          plan_type: string
+          version: string
+        }[]
+      }
+      get_lead_quick_note_counts: {
+        Args: { p_lead_ids: string[] }
+        Returns: {
+          lead_id: string
+          note_count: number
+        }[]
       }
       get_mtd_leads_per_agent: {
         Args: { _agent_ids: string[] }
@@ -10867,6 +12001,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_sales: { Args: { _user_id: string }; Returns: boolean }
       is_agent_on_duty: { Args: { p_admin_user_id: string }; Returns: boolean }
+      is_agent_on_team_blue: { Args: { _agent: string }; Returns: boolean }
       is_agent_open_pool_restricted: {
         Args: { _agent_id: string }
         Returns: boolean
@@ -10882,6 +12017,9 @@ export type Database = {
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      lead_has_been_worked: { Args: { p_lead_id: string }; Returns: boolean }
+      lead_has_human_activity: { Args: { p_lead_id: string }; Returns: boolean }
+      lead_routing_scope: { Args: { _user_id: string }; Returns: string }
       list_recent_bulk_reassignments: {
         Args: { p_hours?: number; p_min_batch?: number }
         Returns: {
@@ -10922,6 +12060,9 @@ export type Database = {
       }
       make_user_admin: { Args: { user_email: string }; Returns: undefined }
       migrate_orphan_carts_to_leads: { Args: never; Returns: Json }
+      missed_call_pass: { Args: { p_call_id: string }; Returns: boolean }
+      missed_call_rotate_offers: { Args: never; Returns: number }
+      normalize_phone_uk: { Args: { p: string }; Returns: string }
       normalize_uk_phone: { Args: { raw_phone: string }; Returns: string }
       open_pool_bulk_assign_to_agent: {
         Args: {
@@ -10981,10 +12122,225 @@ export type Database = {
         Args: { _interval_seconds?: number; _lead_ids: string[] }
         Returns: number
       }
+      orr_accept_offer: { Args: { _lead: string }; Returns: boolean }
+      orr_add_business_days: {
+        Args: { _from_date: string; _n: number }
+        Returns: string
+      }
+      orr_agent_has_open_callback: {
+        Args: { _agent_id: string }
+        Returns: boolean
+      }
+      orr_agent_is_orr_mode: { Args: { _agent: string }; Returns: boolean }
+      orr_agent_next_work: {
+        Args: { _agent_id: string }
+        Returns: {
+          due_at: string
+          kind: string
+          lead_id: string
+          tier: number
+        }[]
+      }
+      orr_agent_on_active_call: {
+        Args: { _agent_id: string }
+        Returns: boolean
+      }
+      orr_agent_uncalled_hold: { Args: { _agent_id: string }; Returns: string }
+      orr_apply_contact_outcome: {
+        Args: {
+          _agent_id: string
+          _callback_at?: string
+          _lead_id: string
+          _notes?: string
+          _outcome: string
+          _reason?: string
+        }
+        Returns: Json
+      }
+      orr_assign_attempt_one: {
+        Args: { _agent_id: string; _kind: string; _lead_id: string }
+        Returns: Json
+      }
+      orr_assign_retry: {
+        Args: { _agent_id: string; _lead_id: string; _queue: string }
+        Returns: Json
+      }
+      orr_call_ended: {
+        Args: {
+          _call_log_id: string
+          _callback_at?: string
+          _notes?: string
+          _outcome: string
+          _reason?: string
+        }
+        Returns: Json
+      }
+      orr_call_started: {
+        Args: { _agent_id: string; _agent_name?: string; _lead_id: string }
+        Returns: Json
+      }
+      orr_can_dial_customer: {
+        Args: { _agent_id: string; _lead_id: string; _phone_normalized: string }
+        Returns: {
+          ok: boolean
+          reason: string
+          state: string
+        }[]
+      }
+      orr_claim_pool_lead: {
+        Args: { _agent_id: string; _lead_id: string }
+        Returns: Json
+      }
+      orr_classify_intake: {
+        Args: { _arrived_at: string }
+        Returns: {
+          eligible_at: string
+          intake_class: string
+        }[]
+      }
+      orr_compute_next_release: {
+        Args: { _last_attempt_at: string; _next_attempt_number: number }
+        Returns: string
+      }
+      orr_current_retry_queue: {
+        Args: never
+        Returns: {
+          can_assign: boolean
+          closes_at: string
+          final_assign_at: string
+          is_open: boolean
+          opens_at: string
+          queue_name: string
+        }[]
+      }
+      orr_customer_for_lead: { Args: { _lead_id: string }; Returns: string }
+      orr_expire_stale_customer_locks: { Args: never; Returns: number }
+      orr_is_agent_available: { Args: { _agent_id: string }; Returns: boolean }
+      orr_is_business_day: { Args: { _d: string }; Returns: boolean }
+      orr_is_business_now: { Args: never; Returns: boolean }
+      orr_is_team_blue_source: { Args: { _source: string }; Returns: boolean }
+      orr_list_pool_leads: {
+        Args: { _pool_state?: string }
+        Returns: {
+          attempt_number: number
+          first_name: string
+          last_name: string
+          lead_id: string
+          lead_source: string
+          missed_at: string
+          missed_by: string
+          phone: string
+          pool_since: string
+          pool_state: string
+        }[]
+      }
+      orr_log_callback_no_answer: {
+        Args: {
+          _agent_id: string
+          _follow_up_at?: string
+          _lead_id: string
+          _notes?: string
+        }
+        Returns: Json
+      }
+      orr_manager_override: {
+        Args: {
+          _allow_extra_call?: boolean
+          _lead_id: string
+          _manager_id: string
+          _new_value?: Json
+          _override_type: string
+          _reason: string
+        }
+        Returns: Json
+      }
+      orr_mark_call_ended: {
+        Args: {
+          _agent_id: string
+          _lead_id: string
+          _next_eligible_at?: string
+          _outcome: string
+          _phone_normalized: string
+        }
+        Returns: boolean
+      }
+      orr_mark_call_started: {
+        Args: { _agent_id: string; _lead_id: string; _phone_normalized: string }
+        Returns: boolean
+      }
+      orr_mark_dialing: {
+        Args: { _agent_id: string; _lead_id: string; _phone_normalized: string }
+        Returns: boolean
+      }
+      orr_next_business_open: { Args: { _ts: string }; Returns: string }
+      orr_next_retry_lead: { Args: never; Returns: string }
+      orr_offer_lead_to_next: { Args: { _lead: string }; Returns: string }
+      orr_pass_offer: { Args: { _lead: string }; Returns: string }
+      orr_pick_available_blue_agents: {
+        Args: never
+        Returns: {
+          agent_id: string
+        }[]
+      }
+      orr_pick_weekend_agent: { Args: { _d: string }; Returns: string }
+      orr_queue_dashboard_snapshot: { Args: never; Returns: Json }
+      orr_reassign_callback: {
+        Args: {
+          _actor_id: string
+          _lead_id: string
+          _new_agent_id: string
+          _reason?: string
+        }
+        Returns: Json
+      }
+      orr_release_customer_lock: {
+        Args: { _agent_id: string; _phone_normalized: string; _reason: string }
+        Returns: boolean
+      }
+      orr_release_retry_hold: {
+        Args: { _lead_id: string; _reason: string }
+        Returns: boolean
+      }
+      orr_rollover_uncalled_queues: { Args: never; Returns: Json }
+      orr_sweep_attempt_one_expiries: { Args: never; Returns: Json }
+      orr_sweep_expired_offers: { Args: never; Returns: number }
+      orr_sweep_retry_expiries: { Args: never; Returns: Json }
+      orr_try_acquire_customer_lock: {
+        Args: {
+          _agent_id: string
+          _lead_id: string
+          _phone_normalized: string
+          _source?: string
+        }
+        Returns: {
+          customer_id: string
+          ok: boolean
+          reason: string
+          state: string
+        }[]
+      }
+      orr_weekend_roster: { Args: { _d: string }; Returns: string[] }
       pick_agent_for_distribution:
         | { Args: { p_team_id: string }; Returns: string }
         | { Args: { p_source?: string; p_team_id: string }; Returns: string }
+      preview_agent_offboarding_backup: {
+        Args: {
+          _also_deactivate?: boolean
+          _reset_to_new?: boolean
+          _source_admin_user_id: string
+          _target_admin_user_id: string
+        }
+        Returns: Json
+      }
       process_scheduled_sms: { Args: never; Returns: number }
+      publish_pricing_version: {
+        Args: { _version_id: string }
+        Returns: undefined
+      }
+      recompute_sales_lead_call_count: {
+        Args: { p_lead_id: string }
+        Returns: undefined
+      }
       recontact_agent_stats: {
         Args: never
         Returns: {
@@ -11022,6 +12378,10 @@ export type Database = {
       }
       reset_agent_caps_daily: { Args: never; Returns: undefined }
       reset_daily_caps: { Args: never; Returns: undefined }
+      restore_agent_offboarding_backup: {
+        Args: { _event_id: string; _restore_to_admin_user_id?: string }
+        Returns: Json
+      }
       restore_customer: { Args: { customer_uuid: string }; Returns: undefined }
       restore_lead_to_snapshot: {
         Args: { p_changelog_id: string; p_restored_by?: string }
@@ -11035,6 +12395,25 @@ export type Database = {
           plan_data: Json
           quote_id: string
           vehicle_data: Json
+        }[]
+      }
+      revert_pricing_to_code_defaults: { Args: never; Returns: undefined }
+      rolling_rr_distribute: {
+        Args: {
+          _batch_cap?: number
+          _max_total?: number
+          _window_minutes?: number
+        }
+        Returns: {
+          agents_used: number
+          assigned_count: number
+        }[]
+      }
+      rolling_rr_reclaim_overdue: {
+        Args: never
+        Returns: {
+          lead_ids: string[]
+          reclaimed_count: number
         }[]
       }
       set_user_offline: { Args: never; Returns: undefined }
@@ -11071,10 +12450,15 @@ export type Database = {
       }
       simulate_lead_routing: { Args: { p_source: string }; Returns: Json }
       snapshot_agent_daily_stats: { Args: { p_date: string }; Returns: number }
+      snapshot_daily_lead_counts: {
+        Args: { p_date: string; p_tz?: string }
+        Returns: undefined
+      }
       soft_delete_customer: {
         Args: { admin_uuid: string; customer_uuid: string }
         Returns: undefined
       }
+      sweep_open_round_robin: { Args: never; Returns: Json }
       sync_leads_to_marketing_audience: { Args: never; Returns: Json }
       undo_bulk_reassignment: {
         Args: {
@@ -11091,6 +12475,7 @@ export type Database = {
       }
       update_lead_status: {
         Args: {
+          p_force?: boolean
           p_is_abandoned_cart?: boolean
           p_lead_id: string
           p_status: string
@@ -11105,6 +12490,11 @@ export type Database = {
     }
     Enums: {
       action_scope: "none" | "own" | "team" | "department" | "global"
+      agent_feedback_status: "new" | "reviewed" | "resolved"
+      agent_feedback_type:
+        | "technical_issue"
+        | "customer_feedback"
+        | "lead_timestamp"
       complaint_status:
         | "new"
         | "acknowledged"
@@ -11135,6 +12525,7 @@ export type Database = {
         | "email"
         | "partner"
         | "other"
+        | "bing_ad"
       lead_status:
         | "new"
         | "contacted"
@@ -11149,6 +12540,14 @@ export type Database = {
         | "urgent_callback"
         | "archived"
         | "not_interested"
+        | "dormant"
+        | "no_answer"
+        | "left_voicemail"
+        | "wrong_number"
+        | "callback_booked"
+        | "bought_elsewhere"
+        | "vehicle_sold"
+        | "do_not_contact"
       mask_level: "none" | "partial" | "full"
       note_purpose:
         | "claim_query"
@@ -11320,6 +12719,12 @@ export const Constants = {
   public: {
     Enums: {
       action_scope: ["none", "own", "team", "department", "global"],
+      agent_feedback_status: ["new", "reviewed", "resolved"],
+      agent_feedback_type: [
+        "technical_issue",
+        "customer_feedback",
+        "lead_timestamp",
+      ],
       complaint_status: [
         "new",
         "acknowledged",
@@ -11352,6 +12757,7 @@ export const Constants = {
         "email",
         "partner",
         "other",
+        "bing_ad",
       ],
       lead_status: [
         "new",
@@ -11367,6 +12773,14 @@ export const Constants = {
         "urgent_callback",
         "archived",
         "not_interested",
+        "dormant",
+        "no_answer",
+        "left_voicemail",
+        "wrong_number",
+        "callback_booked",
+        "bought_elsewhere",
+        "vehicle_sold",
+        "do_not_contact",
       ],
       mask_level: ["none", "partial", "full"],
       note_purpose: [
