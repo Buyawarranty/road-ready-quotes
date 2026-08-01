@@ -1,11 +1,6 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
-      "destination": "https://pandaprotect.co.uk/:path*",
-      "permanent": true
-    },
-    {
       "source": "/home",
       "destination": "/",
       "permanent": true
