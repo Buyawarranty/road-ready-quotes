@@ -572,8 +572,8 @@ const PHEVWarrantyLanding: React.FC = () => {
         <meta property="product:price:amount" content="19" />
         <meta property="product:price:currency" content="GBP" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@buyawarranty" />
-        <meta name="twitter:creator" content="@buyawarranty" />
+        <meta name="twitter:site" content="@pandaprotect" />
+        <meta name="twitter:creator" content="@pandaprotect" />
         <meta name="twitter:title" content="PHEV Warranty UK From £19/mo — Plug-in Hybrid Cover for BMW, Mercedes, Volvo & 100+ Models" />
         <meta name="twitter:description" content="UK's specialist PHEV warranty covering electric motors, inverters, on-board chargers & 1,000+ parts. Unlimited claims, any UK garage. 60-second quote — 14-day money-back guarantee." />
         <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />

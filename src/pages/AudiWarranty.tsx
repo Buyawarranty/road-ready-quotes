@@ -177,7 +177,7 @@ const AudiWarranty = () => {
             <div className="max-w-3xl mx-auto">
               <OptimizedImage 
                 src={audiCarImage} 
-                alt="Audi car with buyawarranty branding" 
+                alt="Audi car with Panda Protect branding" 
                 className="w-full h-auto object-contain rounded-lg max-w-lg mx-auto"
                 width={600}
                 height={400}
