@@ -42,17 +42,10 @@ export const normalizePaymentType = (paymentType: string | null | undefined): st
 };
 
 // Get auto-included add-ons based on payment type
-export const getAutoIncludedAddOns = (paymentType: string): string[] => {
-  const normalizedType = normalizePaymentType(paymentType);
-  
-  switch (normalizedType) {
-    case '24months':
-      return ['breakdown']; // 2-Year: Vehicle recovery only
-    case '36months':
-      return ['breakdown', 'rental']; // 3-Year: Vehicle recovery + Rental only
-    default:
-      return []; // 12-month plans have no auto-included add-ons
-  }
+export const getAutoIncludedAddOns = (_paymentType: string): string[] => {
+  // Vehicle Recovery, Hire Car and European Cover are FREE by default on
+  // ALL vehicles and warranties across every duration (12/24/36 months).
+  return ['breakdown', 'rental', 'european'];
 };
 
 // Check if an add-on is auto-included for a specific payment type
