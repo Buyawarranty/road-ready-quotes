@@ -225,7 +225,7 @@ export async function updateClaimField(
   oldValue: any,
   reason?: string,
 ) {
-  const { error } = await supabase.from('claims_submissions').update({ [field]: newValue, updated_at: new Date().toISOString() }).eq('id', claimId);
+  const { error } = await supabase.from('claims_submissions').update({ [field]: newValue, updated_at: new Date().toISOString() } as any).eq('id', claimId);
   if (error) throw error;
   await logClaimAudit({
     claim_id: claimId,
