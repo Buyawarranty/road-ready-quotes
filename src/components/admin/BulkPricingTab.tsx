@@ -20,7 +20,7 @@ import {
   calculateLabourRateAdjustment,
   calculateBoostAdjustment,
   getBasePrice,
-  calculateTotalWarrantyPrice,
+  calculateAdminQuoteWarrantyPrice,
   type PaymentPeriod
 } from '@/lib/pricingMatrix';
 import {
@@ -47,7 +47,7 @@ interface UpdateResult {
 
 // Define all pricing options
 const EXCESS_OPTIONS = [0, 50, 100, 150] as const;
-const CLAIM_LIMIT_OPTIONS = [750, 1250, 2000] as const;
+const CLAIM_LIMIT_OPTIONS = [1000, 2000, 3000] as const;
 const LABOUR_RATE_OPTIONS = [50, 70, 100, 200] as const;
 const DURATION_OPTIONS = ['12months', '24months', '36months'] as const;
 
@@ -84,13 +84,13 @@ export const BulkPricingTab = () => {
       for (const excess of EXCESS_OPTIONS) {
         for (const claimLimit of CLAIM_LIMIT_OPTIONS) {
           for (const labourRate of LABOUR_RATE_OPTIONS) {
-            const basePrice = getBasePrice(duration, excess, claimLimit);
-            const labourAdjustment = calculateLabourRateAdjustment(labourRate, duration);
+            const basePrice = getBasePrice(duration, excess, claimLimit, 'admin');
+            const labourAdjustment = calculateLabourRateAdjustment(labourRate, duration, basePrice);
             const totalPrice = basePrice + labourAdjustment;
-            const monthlyPrice = Math.floor(totalPrice / 12);
+            const monthlyPrice = Math.ceil(totalPrice / 12);
             
             const boostTotal = totalPrice + (BOOST_CLAIM_LIMIT_MONTHLY * 12);
-            const boostMonthly = Math.floor(boostTotal / 12);
+            const boostMonthly = Math.ceil(boostTotal / 12);
             
             const marketingSavings = MARKETING_SAVINGS[duration] || 0;
             const wasPrice = totalPrice + marketingSavings;
@@ -438,7 +438,7 @@ export const BulkPricingTab = () => {
                   <Badge variant="outline">£50/hr</Badge>
                   <Badge className="bg-blue-100 text-blue-800">£70/hr (Default)</Badge>
                   <Badge variant="outline">£100/hr</Badge>
-                  <Badge variant="outline">£200/hr</Badge>
+                  <Badge variant="outline">£150/hr</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Per-month adjustments and totals by duration
@@ -474,7 +474,7 @@ export const BulkPricingTab = () => {
                       <span className="text-amber-600">+£8/month</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>£200/hr</span>
+                      <span>£150/hr</span>
                       <span className="text-red-600">+£24/month</span>
                     </div>
                   </div>
@@ -493,7 +493,7 @@ export const BulkPricingTab = () => {
                   </div>
                   <h4 className="font-medium text-sm mt-4">Multi-Year Promo</h4>
                   <div className="text-sm text-muted-foreground">
-                    2yr/3yr plans: £2000 claim limit at £1250 price
+                    2yr/3yr plans: £2,000 cover priced from the £2,000 column
                   </div>
                 </div>
               </div>
@@ -620,7 +620,7 @@ export const BulkPricingTab = () => {
                     <strong>CSV Format Required Columns:</strong>
                     <ul className="mt-2 space-y-1 text-xs">
                       <li>• <strong>Voluntary Excess Amount:</strong> £0, £50, £100, £150</li>
-                      <li>• <strong>Claim Limit:</strong> £750, £1250, £2000</li>
+                      <li>• <strong>Claim Limit</strong>: columns are the cover levels themselves — £1,000, £2,000 and £3,000</li>
                       <li>• <strong>1 Year Price:</strong> Base price at £70/hr</li>
                       <li>• <strong>2 Years Price:</strong> Base price at £70/hr</li>
                       <li>• <strong>3 Years Price:</strong> Base price at £70/hr</li>

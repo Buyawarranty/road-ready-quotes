@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Printer } from 'lucide-react';
+import { Printer, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface PolicyDetails {
@@ -133,6 +133,43 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
     }, 250);
   };
 
+  // Print a 90mm x 29mm Brother QL address label — mirrors PolicyDocumentsTab.
+  const handlePrintLabel = () => {
+    const addr = formatAddress();
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert('Please allow pop-ups to print the address label');
+      return;
+    }
+    const lines = [policy.customerName, ...addr].filter(Boolean);
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Address Label - ${policy.customerName}</title>
+          <style>
+            @page { size: 90mm 29mm; margin: 0; }
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+              width: 90mm; height: 29mm;
+              display: flex; align-items: center;
+              background: white; overflow: hidden;
+            }
+            .label { padding: 1.5mm 3mm; font-size: 8pt; line-height: 1.35; font-weight: 600; color: #000; width: 100%; }
+            .label p { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+          </style>
+        </head>
+        <body>
+          <div class="label">${lines.map(l => `<p>${l}</p>`).join('')}</div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 250);
+  };
+
   const formatAddress = () => {
     const addr = policy.customerAddress;
     if (!addr) return [];
@@ -186,9 +223,9 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" largeCloseButton>
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex items-center justify-between pr-10">
             <span>Warranty Confirmation Letter</span>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 border rounded-lg overflow-hidden">
@@ -205,6 +242,10 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
                   Colour
                 </button>
               </div>
+              <Button onClick={handlePrintLabel} variant="outline" className="gap-2">
+                <Tag className="h-4 w-4" />
+                Print Address Label
+              </Button>
               <Button onClick={handlePrint} className="gap-2">
                 <Printer className="h-4 w-4" />
                 Print Letter
@@ -218,9 +259,9 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
           <div ref={printRef} className="letter-container">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
-              <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
+              <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
               <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
-                <p style={{ fontWeight: '600' }}>Panda Protect Ltd</p>
+                <p style={{ fontWeight: '600' }}>Buy A Warranty Ltd</p>
                 <p>Warranty House, 62 Berkhamsted Ave</p>
                 <p>Wembley, HA9 6DT</p>
                 <p>Company No: 10314863</p>
@@ -251,7 +292,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
 
             <p style={{ marginBottom: '8px', fontSize: '11px' }}>Dear {policy.customerName.split(' ')[0]},</p>
             <p style={{ marginBottom: '12px', color: '#333', fontSize: '11px' }}>
-              Thank you for choosing Panda Protect to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
+              Thank you for choosing Buyawarranty to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
             </p>
 
             {/* Cover at a Glance */}
@@ -339,7 +380,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
             <div style={{ background: c.accountBg, border: `1px solid ${c.accountBorder}`, borderRadius: '6px', padding: '10px 14px', marginBottom: '14px' }}>
               <h4 style={{ color: c.accountHeading, fontSize: '12px', marginBottom: '4px', fontWeight: '700' }}>Your Account &amp; Policy Documents</h4>
               <p style={{ fontSize: '10.5px', color: '#333', margin: '2px 0' }}>Your warranty policy documents are also available online. You can access them at any time by visiting:</p>
-              <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://pandaprotect.co.uk/customer-dashboard/</p>
+              <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://buyawarranty.co.uk/customer-dashboard/</p>
               <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}>Simply click the <strong>Login</strong> option at the top of the homepage, or go directly to the link above. Use your registered email to sign in:</p>
               {policy.customerEmail && (
                 <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}><strong>Email:</strong> {policy.customerEmail}</p>
@@ -360,14 +401,14 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
 
             <div style={{ marginTop: '16px', fontSize: '11px' }}>
               <p style={{ margin: '1px 0' }}>Warm regards,</p>
-              <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Panda Protect Team</p>
+              <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Buyawarranty Team</p>
             </div>
 
             {/* Contact Footer */}
             <div style={{ marginTop: '18px', paddingTop: '10px', borderTop: `2px solid ${c.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '10px' }}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sales Enquiries</div>
-                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 5045</div>
+                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 5040</div>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Claims Hotline</div>
@@ -375,12 +416,12 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Customer Support</div>
-                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@pandaprotect.co.uk</div>
+                <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@buyawarranty.co.uk</div>
               </div>
             </div>
 
             <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: `1px solid ${c.border}`, fontSize: '8px', color: c.legal, textAlign: 'center' }}>
-              Panda Protect Ltd is registered in England &amp; Wales. Company No: 10314863.
+              Buy A Warranty Ltd is registered in England &amp; Wales. Company No: 10314863.
               Registered Address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.
             </div>
           </div>

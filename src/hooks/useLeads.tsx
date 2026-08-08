@@ -1,14 +1,27 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { fetchAllRows } from '@/utils/supabaseBatchFetch';
 import { toast } from 'sonner';
 import { addSystemNote } from '@/utils/leadSystemNotes';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { WEBSITE_SALES_ACCOUNT_ID } from '@/constants/salesDefaults';
 import { useAuth } from '@/hooks/useAuth';
+import { useViewAs } from '@/contexts/ViewAsContext';
 
-const LEAD_TAG_BATCH_SIZE = 300;
+const LEAD_TAG_BATCH_SIZE = 75;
+const INITIAL_LEADS_LOAD_TIMEOUT_MS = 25000;
+const LEADS_FETCH_TIMEOUT_MS = 25000;
+const LEAD_TAG_BATCH_TIMEOUT_MS = 4000;
+const LEADS_LIST_LIMIT = 750;
+const LEADS_PAGE_SIZE = 1000;
+const MAX_PAGED_LEADS = 5000;
 const PENDING_STATUS_UPDATES_STORAGE_KEY = 'new-leads:pending-status-updates';
+let latestAccessToken: string | null = null;
+
+const cacheLatestAccessToken = async () => {
+  const { data } = await supabase.auth.getSession();
+  latestAccessToken = data.session?.access_token || null;
+  return latestAccessToken;
+};
 
 type PendingStatusUpdate = {
   leadId: string;
@@ -64,9 +77,45 @@ const isRetryableMutationError = (error: unknown) => {
   );
 };
 
-export type LeadStatus = 'new' | 'contacted' | 'follow_up' | 'quote_sent' | 'negotiating' | 'converted' | 'lost' | 'fake_lead' | 'urgent_callback';
+const callUpdateLeadStatusRpc = async (
+  leadId: string,
+  status: LeadStatus,
+  isAbandonedCart: boolean,
+  keepalive = false
+) => {
+  const accessToken = keepalive ? latestAccessToken : await cacheLatestAccessToken();
+  const supabaseUrl = (supabase as any).supabaseUrl || import.meta.env.VITE_SUPABASE_URL;
+  const supabaseKey = (supabase as any).supabaseKey || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase configuration missing');
+  }
+
+  const response = await fetch(`${supabaseUrl}/rest/v1/rpc/update_lead_status`, {
+    method: 'POST',
+    keepalive,
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${accessToken || supabaseKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      p_lead_id: isAbandonedCart ? leadId.replace('cart_', '') : leadId,
+      p_status: status,
+      p_is_abandoned_cart: isAbandonedCart,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error((await response.text()) || `Status update failed (${response.status})`);
+  }
+
+  return await response.json() as { success: boolean; error?: string };
+};
+
+export type LeadStatus = 'new' | 'contacted' | 'follow_up' | 'quote_sent' | 'negotiating' | 'converted' | 'lost' | 'not_interested' | 'fake_lead' | 'urgent_callback' | 'no_answer' | 'left_voicemail' | 'wrong_number' | 'callback_booked' | 'bought_elsewhere' | 'vehicle_sold' | 'do_not_contact';
 export type LeadPriority = 'low' | 'medium' | 'high' | 'urgent';
-export type LeadSource = 'website' | 'referral' | 'social_ad' | 'google_ad' | 'phone' | 'email' | 'partner' | 'other';
+export type LeadSource = 'website' | 'referral' | 'social_ad' | 'google_ad' | 'bing_ad' | 'phone' | 'email' | 'partner' | 'other';
 
 export interface Lead {
   id: string;
@@ -141,6 +190,14 @@ export interface Lead {
   // Resubmission tracking - when returning customer submits again
   resubmission_count: number;
   last_resubmitted_at: string | null;
+  // Recontact bulk-claim tracking — how many times this lead has been claimed
+  // from the recontact pool (via ClaimRecontactBatchButton). >1 means it's
+  // been through multiple agents' hands.
+  claim_count?: number;
+  last_claimed_at?: string | null;
+  // Agent ids the lead should be hidden from in normal lists (previous owners
+  // after a recontact re-claim). They can still find the lead via search.
+  hidden_from_agent_ids?: string[] | null;
   // Joined data
   assigned_user?: {
     id: string;
@@ -185,10 +242,29 @@ export interface AdminUser {
 interface UseLeadsOptions {
   /** Server-side date filter applied to the Supabase query. Reduces row count dramatically. */
   serverDateFilter?: { from?: Date; to?: Date };
+  /** Server-side agent scope used for historical agent views so counts are not based on the recent global window. */
+  serverAgentFilter?: string;
+  /** Server-side database-wide search used when the user searches leads by core fields. */
+  serverSearchTerm?: string;
+  /** When true, server fetches ALL callback leads (is_callback=true) regardless of date window. */
+  serverCallbacksOnly?: boolean;
+  /**
+   * When true, the server date window ALSO matches leads whose last_contacted_at
+   * falls inside it. Lets an agent find older leads they actually worked today,
+   * which the created_at / last_resubmitted_at window hides.
+   */
+  serverIncludeContactedInRange?: boolean;
+
+  /** Explicit lead IDs to load, used for reminders so old callback leads do not disappear from the list. */
+  serverLeadIds?: string[];
 }
 
 export const useLeads = (options?: UseLeadsOptions) => {
   const { user, loading: authLoading } = useAuth();
+  const { isImpersonating, effectiveAdminUserId, effectiveRole, effectivePermissions } = useViewAs();
+  // Refs so fetchLeads can read the latest impersonation state without being recreated
+  const impersonationRef = useRef({ isImpersonating, effectiveAdminUserId, effectiveRole, effectivePermissions });
+  impersonationRef.current = { isImpersonating, effectiveAdminUserId, effectiveRole, effectivePermissions };
   const [leads, setLeads] = useState<Lead[]>([]);
   const [tags, setTags] = useState<LeadTag[]>([]);
   const [salesUsers, setSalesUsers] = useState<AdminUser[]>([]);
@@ -199,18 +275,32 @@ export const useLeads = (options?: UseLeadsOptions) => {
   const isFetchingRef = useRef(false);
   const pendingFetchRef = useRef(false);
   const latestFetchTokenRef = useRef(0);
+  const networkRetryCountRef = useRef(0);
+  const networkRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [filter, setFilter] = useState<LeadStatus | 'all' | 'all_leads' | 'live' | 'high_priority' | 'fake' | 'lost' | 'quote_sent' | 'urgent_callback' | 'callbacks' | 'recovered'>('all_leads');
 
   // Store server date filter as a ref so fetchLeads doesn't re-create on every date change
   const serverDateFilterRef = useRef(options?.serverDateFilter);
   serverDateFilterRef.current = options?.serverDateFilter;
+  const serverAgentFilterRef = useRef(options?.serverAgentFilter);
+  serverAgentFilterRef.current = options?.serverAgentFilter;
+  const serverSearchTermRef = useRef(options?.serverSearchTerm);
+  serverSearchTermRef.current = options?.serverSearchTerm;
+  const serverCallbacksOnlyRef = useRef(options?.serverCallbacksOnly);
+  serverCallbacksOnlyRef.current = options?.serverCallbacksOnly;
+  const serverLeadIdsRef = useRef(options?.serverLeadIds);
+  serverLeadIdsRef.current = options?.serverLeadIds;
+  const serverIncludeContactedRef = useRef(options?.serverIncludeContactedInRange);
+  serverIncludeContactedRef.current = options?.serverIncludeContactedInRange;
 
   // Stable key that changes when the date filter boundaries change — triggers re-fetch
   const dateFilterKey = useMemo(() => {
     const f = options?.serverDateFilter;
-    if (!f?.from && !f?.to) return 'all';
-    return `${f.from?.getTime() ?? ''}_${f.to?.getTime() ?? ''}`;
-  }, [options?.serverDateFilter]);
+    const dateKey = !f?.from && !f?.to ? 'all' : `${f.from?.getTime() ?? ''}_${f.to?.getTime() ?? ''}`;
+    const explicitLeadIdsKey = options?.serverLeadIds ? [...options.serverLeadIds].sort().join('|') : '';
+    return `${dateKey}_${options?.serverAgentFilter ?? 'all'}_${options?.serverSearchTerm?.trim().toLowerCase() ?? ''}_${options?.serverCallbacksOnly ? 'cb' : ''}_${options?.serverIncludeContactedInRange ? 'wk' : ''}_${explicitLeadIdsKey}`;
+  }, [options?.serverDateFilter, options?.serverAgentFilter, options?.serverSearchTerm, options?.serverCallbacksOnly, options?.serverIncludeContactedInRange, options?.serverLeadIds]);
+
   
   // Cache sales users and leads for optimistic updates (avoid stale closures)
   const salesUsersRef = useRef<AdminUser[]>([]);
@@ -223,8 +313,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
   userRef.current = user;
 
   // Cache admin user ID to avoid repeated auth lookups
-  const cachedAdminUserRef = useRef<{ id: string; firstName: string; email: string; role: string } | null>(null);
-  const adminUserPromiseRef = useRef<Promise<{ id: string; firstName: string; email: string; role: string } | null> | null>(null);
+  const cachedAdminUserRef = useRef<{ id: string; firstName: string; email: string; role: string; permissions: Record<string, boolean> } | null>(null);
+  const adminUserPromiseRef = useRef<Promise<{ id: string; firstName: string; email: string; role: string; permissions: Record<string, boolean> } | null> | null>(null);
   const pendingStatusFlushRef = useRef<Promise<void> | null>(null);
 
   const getCachedAdminUser = useCallback(async () => {
@@ -239,7 +329,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
       
       const { data: adminUser } = await supabase
         .from('admin_users')
-        .select('id, first_name, email, role')
+        .select('id, first_name, email, role, permissions')
         .eq('user_id', user.id)
         .maybeSingle();
       
@@ -248,7 +338,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
           id: adminUser.id, 
           firstName: adminUser.first_name || adminUser.email?.split('@')[0] || 'Admin',
           email: adminUser.email,
-          role: adminUser.role || 'sales'
+          role: adminUser.role || 'sales',
+          permissions: (adminUser.permissions as Record<string, boolean>) || {}
         };
         cachedAdminUserRef.current = cached;
         return cached;
@@ -292,20 +383,11 @@ export const useLeads = (options?: UseLeadsOptions) => {
 
       for (const item of pending) {
         try {
-          const { data: result, error } = await withTimeout(
-            (async () =>
-              await supabase.rpc('update_lead_status', {
-                p_lead_id: item.isAbandonedCart ? item.leadId.replace('cart_', '') : item.leadId,
-                p_status: item.status,
-                p_is_abandoned_cart: item.isAbandonedCart,
-              }))(),
+          const statusResult = await withTimeout(
+            callUpdateLeadStatusRpc(item.leadId, item.status, item.isAbandonedCart, false),
             8000,
             'Pending status sync timed out'
           );
-
-          if (error) throw error;
-
-          const statusResult = result as { success: boolean; error?: string };
           if (!statusResult?.success) {
             throw new Error(statusResult?.error || 'Pending status sync failed');
           }
@@ -361,45 +443,361 @@ export const useLeads = (options?: UseLeadsOptions) => {
           initialLoadStartedRef.current = false;
           isFetchingRef.current = false;
           loadingTimeoutRef.current = null;
-        }, 12000);
+        }, INITIAL_LEADS_LOAD_TIMEOUT_MS);
       }
 
       // PERFORMANCE: Fetch sales_leads only — abandoned_carts are handled separately
       // by LostLeadsSection / recover_orphaned_leads RPC.
-      const allSalesLeadsResult = await fetchAllRows(() => {
-        let query = supabase
-          .from('sales_leads')
-          .select(`
-            id, first_name, last_name, email, phone, lead_source, status, priority, priority_score,
-            plan_interest, cart_value, quote_amount, vehicle_reg, vehicle_make, vehicle_model, vehicle_year,
-            vehicle_type, mileage, assigned_to, assigned_at, next_action_type, next_action_date, follow_up_status,
-            last_activity_date, last_contacted_at, notes, converted_at, lost_at, lost_reason, abandoned_cart_id,
-            created_at, updated_at, is_paid, payment_amount, payment_method, payment_date, step_two_completed_at,
-            call_count, is_callback,
-            assigned_user:admin_users!sales_leads_assigned_to_fkey(id, first_name, last_name, email),
-            abandoned_cart:abandoned_carts!sales_leads_abandoned_cart_id_fkey(cart_metadata)
-          `)
-          .order('created_at', { ascending: false })
-          .order('id', { ascending: false });
+      // For 'sales' role agents: fetch ALL leads assigned to them (no 750 cap),
+      // plus the most recent unassigned leads so they can still claim new ones.
+      // For admin / sales_lead / super_admin: keep the global recent-750 window.
+      let currentAdmin = await getCachedAdminUser();
+      // When a super_admin impersonates another agent via "View As", scope the lead
+      // fetch as if it were that agent — otherwise we'd return the global recent-750
+      // window and miss older leads assigned to the impersonated sales agent.
+      const imp = impersonationRef.current;
+      if (imp.isImpersonating && imp.effectiveAdminUserId && currentAdmin) {
+        currentAdmin = {
+          ...currentAdmin,
+          id: imp.effectiveAdminUserId,
+          role: imp.effectiveRole || currentAdmin.role,
+          permissions: (imp.effectivePermissions as Record<string, boolean>) || {},
+        };
+      }
+      // Sales agents are normally restricted to assigned + unassigned leads.
+      // Granting `tab_new-leads_all-leads` lifts that restriction (manager-style global view).
+      const hasAllLeadsPerm = currentAdmin?.permissions?.['tab_new-leads_all-leads'] === true;
+      const isSalesAgent = currentAdmin?.role === 'sales' && !hasAllLeadsPerm;
 
-        // Apply server-side date filter to reduce dataset size
+      const SELECT_COLUMNS = `
+        id, first_name, last_name, email, phone, lead_source, status, priority, priority_score,
+        plan_interest, cart_value, quote_amount, vehicle_reg, vehicle_make, vehicle_model, vehicle_year,
+        vehicle_type, mileage, assigned_to, assigned_at, next_action_type, next_action_date, follow_up_status,
+        last_activity_date, last_contacted_at, notes, converted_at, lost_at, lost_reason, abandoned_cart_id,
+        created_at, updated_at, is_paid, payment_amount, payment_method, payment_date, step_two_completed_at,
+        call_count, is_callback, resubmission_count, last_resubmitted_at, hidden_from_agent_ids
+      `;
+
+      // For a sales agent, resolve the ids of everyone on their team so
+      // searches stay scoped to that team (they should NOT see other teams'
+      // leads even when searching by phone / reg). Managers keep global search.
+      let teamMemberIds: string[] | null = null;
+      if (isSalesAgent && currentAdmin?.id) {
+        const { data: myMembership } = await supabase
+          .from('lead_team_members')
+          .select('team_id')
+          .eq('admin_user_id', currentAdmin.id)
+          .maybeSingle();
+        if (myMembership?.team_id) {
+          const { data: teamMates } = await supabase
+            .from('lead_team_members')
+            .select('admin_user_id')
+            .eq('team_id', myMembership.team_id);
+          teamMemberIds = Array.from(new Set([
+            currentAdmin.id,
+            ...((teamMates || []) as any[]).map((r) => r.admin_user_id).filter(Boolean),
+          ]));
+        } else {
+          teamMemberIds = [currentAdmin.id];
+        }
+      }
+
+      // When a lead has been claimed away from a previous owner via the
+      // Recontact pool, the previous owner id is stored in
+      // hidden_from_agent_ids so the lead no longer surfaces for them.
+      const applyHiddenFromAgent = (query: any) => {
+        if (!isSalesAgent || !currentAdmin?.id) return query;
+        return query.not('hidden_from_agent_ids', 'cs', `{${currentAdmin.id}}`);
+      };
+
+      const applyServerDateFilter = (query: any) => {
+        if (serverSearchTermRef.current?.trim()) return query;
+        if (serverCallbacksOnlyRef.current) return query;
+
         const dateFilter = serverDateFilterRef.current;
-        if (dateFilter?.from) {
-          query = query.gte('created_at', dateFilter.from.toISOString());
+        if (!dateFilter?.from && !dateFilter?.to) return query;
+
+        // Filter by the effective "lead date" that shows in the row:
+        // last_resubmitted_at when present, otherwise created_at.
+        // We want rows where EITHER column falls fully inside [from, to].
+        // Chaining multiple `.or()` calls produces repeated `or=` params which
+        // PostgREST does not always AND correctly — combine into a single
+        // `or(and(...), and(...))` expression so the window is respected.
+        const fromIso = dateFilter.from?.toISOString();
+        const toIso = dateFilter.to?.toISOString();
+
+        const createdParts: string[] = [];
+        const resubParts: string[] = [];
+        const contactedParts: string[] = [];
+        if (fromIso) {
+          createdParts.push(`created_at.gte.${fromIso}`);
+          resubParts.push(`last_resubmitted_at.gte.${fromIso}`);
+          contactedParts.push(`last_contacted_at.gte.${fromIso}`);
         }
-        if (dateFilter?.to) {
-          query = query.lte('created_at', dateFilter.to.toISOString());
+        if (toIso) {
+          createdParts.push(`created_at.lte.${toIso}`);
+          resubParts.push(`last_resubmitted_at.lte.${toIso}`);
+          contactedParts.push(`last_contacted_at.lte.${toIso}`);
         }
 
-        return query;
-      });
+        const groupOf = (parts: string[]) => (parts.length > 1 ? `and(${parts.join(',')})` : parts[0]);
+        const groups = [groupOf(createdParts), groupOf(resubParts)];
+        if (serverIncludeContactedRef.current) groups.push(groupOf(contactedParts));
+
+        return query.or(groups.join(','));
+
+      };
+
+      const applyCallbacksFilter = (query: any) => {
+        if (!serverCallbacksOnlyRef.current) return query;
+        return query.eq('is_callback', true);
+      };
+
+      const applyServerSearchFilter = (query: any) => {
+        const rawTerm = serverSearchTermRef.current?.trim();
+        if (!rawTerm) return query;
+
+        const escapedTerm = rawTerm.replace(/[%_]/g, '\\$&').replace(/,/g, ' ');
+        const wildcardTerm = `%${escapedTerm}%`;
+        const nameParts = escapedTerm.split(/\s+/).filter(Boolean);
+        const digitsOnly = rawTerm.replace(/\D/g, '');
+        const compactTerm = rawTerm.replace(/\s+/g, '');
+        const phoneVariants = new Set<string>();
+        const regVariants = new Set<string>();
+        const searchClauses = [
+          `email.ilike.${wildcardTerm}`,
+          `first_name.ilike.${wildcardTerm}`,
+          `last_name.ilike.${wildcardTerm}`,
+          `phone.ilike.${wildcardTerm}`,
+          `vehicle_reg.ilike.${wildcardTerm}`,
+          `vehicle_make.ilike.${wildcardTerm}`,
+          `vehicle_model.ilike.${wildcardTerm}`,
+          `vehicle_year.ilike.${wildcardTerm}`,
+          `plan_interest.ilike.${wildcardTerm}`,
+          `notes.ilike.${wildcardTerm}`,
+        ];
+
+        if (nameParts.length >= 2) {
+          const firstPart = `%${nameParts[0]}%`;
+          const lastPart = `%${nameParts.slice(1).join(' ')}%`;
+          const reversedFirst = `%${nameParts[nameParts.length - 1]}%`;
+          const reversedLast = `%${nameParts.slice(0, -1).join(' ')}%`;
+          searchClauses.push(`and(first_name.ilike.${firstPart},last_name.ilike.${lastPart})`);
+          searchClauses.push(`and(first_name.ilike.${reversedFirst},last_name.ilike.${reversedLast})`);
+        }
+
+        if (digitsOnly.length >= 6) {
+          phoneVariants.add(digitsOnly);
+          phoneVariants.add(digitsOnly.replace(/^(\d{5})(\d+)/, '$1 $2'));
+          if (digitsOnly.startsWith('44')) {
+            phoneVariants.add(`0${digitsOnly.slice(2)}`);
+          } else if (digitsOnly.startsWith('0')) {
+            phoneVariants.add(`+44${digitsOnly.slice(1)}`);
+            phoneVariants.add(`44${digitsOnly.slice(1)}`);
+          }
+        }
+
+        if (/^[a-z0-9]{5,}$/i.test(compactTerm)) {
+          const upperCompact = compactTerm.toUpperCase();
+          regVariants.add(upperCompact);
+          regVariants.add(`${upperCompact.slice(0, -3)} ${upperCompact.slice(-3)}`);
+        }
+
+        searchClauses.push(...Array.from(phoneVariants).map(value => `phone.ilike.%${value}%`));
+        searchClauses.push(...Array.from(regVariants).map(value => `vehicle_reg.ilike.%${value}%`));
+
+        return query.or(searchClauses.join(','));
+      };
+
+      const fetchPagedLeads = async (buildQuery: (from: number, to: number) => any) => {
+        const rows: any[] = [];
+        for (let offset = 0; offset < MAX_PAGED_LEADS; offset += LEADS_PAGE_SIZE) {
+          const { data, error } = await buildQuery(offset, offset + LEADS_PAGE_SIZE - 1);
+          if (error) return { data: rows, error } as any;
+          const page = data || [];
+          rows.push(...page);
+          if (page.length < LEADS_PAGE_SIZE) break;
+        }
+        return { data: rows, error: null } as any;
+      };
+
+      const fetchExplicitLeads = async (ids: string[]) => {
+        const cleanedIds = [...new Set(ids.filter(id => id && !id.startsWith('cart_') && !id.startsWith('customer_') && !id.startsWith('claim_')))];
+        if (cleanedIds.length === 0) return { data: [], error: null } as any;
+
+        const rows: any[] = [];
+        for (let i = 0; i < cleanedIds.length; i += LEAD_TAG_BATCH_SIZE) {
+          const batch = cleanedIds.slice(i, i + LEAD_TAG_BATCH_SIZE);
+          const { data, error } = await applyServerSearchFilter(
+            supabase
+              .from('sales_leads')
+              .select(SELECT_COLUMNS)
+              .in('id', batch)
+          );
+          if (error) return { data: rows, error } as any;
+          rows.push(...(data || []));
+        }
+
+        return { data: rows, error: null } as any;
+      };
+
+      const allSalesLeadsResult = await withTimeout(
+        (async () => {
+          const serverAgentFilter = serverAgentFilterRef.current;
+          if (serverAgentFilter && serverAgentFilter !== 'all' && serverAgentFilter !== 'unassigned') {
+            return await fetchPagedLeads((from, to) =>
+              applyCallbacksFilter(applyServerSearchFilter(applyServerDateFilter(
+                supabase
+                  .from('sales_leads')
+                  .select(SELECT_COLUMNS)
+                  .eq('assigned_to', serverAgentFilter)
+                  .order('created_at', { ascending: false })
+                  .order('id', { ascending: false })
+                  .range(from, to)
+              )))
+            );
+          }
+
+          if (serverAgentFilter === 'unassigned') {
+            return await fetchPagedLeads((from, to) =>
+              applyCallbacksFilter(applyServerSearchFilter(applyServerDateFilter(
+                supabase
+                  .from('sales_leads')
+                  .select(SELECT_COLUMNS)
+                  .is('assigned_to', null)
+                  .order('created_at', { ascending: false })
+                  .order('id', { ascending: false })
+                  .range(from, to)
+              )))
+            );
+          }
+
+          // When a sales agent is actively searching, broaden the query to ALL leads
+          // so they can find any customer (assigned to anyone) and call them back or
+          // hand off to the right salesperson. Without an active search, keep the
+          // narrower assigned+unassigned scope.
+          const hasActiveSearch = !!serverSearchTermRef.current?.trim();
+          if (isSalesAgent && currentAdmin?.id && !hasActiveSearch) {
+            // 1) All leads assigned to this agent (full history, no 750 cap)
+            const assignedQ = fetchPagedLeads((from, to) =>
+              applyHiddenFromAgent(applyCallbacksFilter(applyServerSearchFilter(applyServerDateFilter(
+                supabase
+                  .from('sales_leads')
+                  .select(SELECT_COLUMNS)
+                  .eq('assigned_to', currentAdmin.id)
+                  .order('created_at', { ascending: false })
+                  .order('id', { ascending: false })
+                  .range(from, to)
+              ))))
+            );
+
+            // 2) Recent unassigned leads so the agent can still claim
+            let unassignedQ = supabase
+              .from('sales_leads')
+              .select(SELECT_COLUMNS)
+              .is('assigned_to', null)
+              .order('created_at', { ascending: false })
+              .order('id', { ascending: false })
+              .limit(500);
+            unassignedQ = applyServerDateFilter(unassignedQ);
+            unassignedQ = applyServerSearchFilter(unassignedQ);
+            unassignedQ = applyCallbacksFilter(unassignedQ);
+            unassignedQ = applyHiddenFromAgent(unassignedQ);
+
+            const [assignedRes, unassignedRes] = await Promise.all([assignedQ, unassignedQ]);
+            if (assignedRes.error) return assignedRes;
+            if (unassignedRes.error) return unassignedRes;
+
+            const merged = [...(assignedRes.data || []), ...(unassignedRes.data || [])];
+            // Dedupe by id
+            const seen = new Set<string>();
+            const data = merged.filter((r: any) => {
+              if (seen.has(r.id)) return false;
+              seen.add(r.id);
+              return true;
+            });
+            return { data, error: null } as any;
+          }
+
+          const hasServerSearch = !!serverSearchTermRef.current?.trim();
+          if (hasServerSearch) {
+            // Sales agents searching should stay scoped to their own team's
+            // leads (plus unassigned so they can claim). Managers/admins see
+            // the global result set unchanged.
+            if (isSalesAgent && teamMemberIds && teamMemberIds.length > 0) {
+              const idsCsv = teamMemberIds.join(',');
+              // Allow searching within: own team, unassigned, OR any lead the
+              // current agent used to own (so they can help returning callers).
+              // The row will be badged "Old lead — new owner" in the UI.
+              const scopeOr = `assigned_to.in.(${idsCsv}),assigned_to.is.null,hidden_from_agent_ids.cs.{${currentAdmin.id}}`;
+              return await fetchPagedLeads((from, to) =>
+                applyCallbacksFilter(applyServerSearchFilter(applyServerDateFilter(
+                  supabase
+                    .from('sales_leads')
+                    .select(SELECT_COLUMNS)
+                    .or(scopeOr)
+                    .order('created_at', { ascending: false })
+                    .order('id', { ascending: false })
+                    .range(from, to)
+                )))
+              );
+            }
+            return await fetchPagedLeads((from, to) =>
+              applyCallbacksFilter(applyServerSearchFilter(applyServerDateFilter(
+                supabase
+                  .from('sales_leads')
+                  .select(SELECT_COLUMNS)
+                  .order('created_at', { ascending: false })
+                  .order('id', { ascending: false })
+                  .range(from, to)
+              )))
+            );
+          }
+
+          const dateFilter = serverDateFilterRef.current;
+          const hasDateBoundedView = !!dateFilter?.from || !!dateFilter?.to;
+
+          if (hasDateBoundedView || serverCallbacksOnlyRef.current) {
+            return await fetchPagedLeads((from, to) =>
+              applyCallbacksFilter(applyServerDateFilter(
+                supabase
+                  .from('sales_leads')
+                  .select(SELECT_COLUMNS)
+                  .order('created_at', { ascending: false })
+                  .order('id', { ascending: false })
+                  .range(from, to)
+              ))
+            );
+          }
+
+          return await supabase
+            .from('sales_leads')
+            .select(SELECT_COLUMNS)
+            .order('created_at', { ascending: false })
+            .order('id', { ascending: false })
+            .limit(LEADS_LIST_LIMIT);
+        })(),
+        LEADS_FETCH_TIMEOUT_MS,
+        'Leads fetch timed out'
+      );
 
       const { data: allSalesLeadsData, error: salesError } = allSalesLeadsResult;
       if (salesError) throw salesError;
 
-      console.log(`[Leads] Fetched ${allSalesLeadsData?.length || 0} sales leads`);
+      const explicitLeadIds = serverLeadIdsRef.current || [];
+      const explicitLeadsResult = explicitLeadIds.length > 0
+        ? await withTimeout(fetchExplicitLeads(explicitLeadIds), LEADS_FETCH_TIMEOUT_MS, 'Reminder leads fetch timed out')
+        : { data: [], error: null } as any;
+      if (explicitLeadsResult.error) throw explicitLeadsResult.error;
 
-      const salesLeadsWithFlags = (allSalesLeadsData || []).map((lead: any) => {
+      const salesLeadRowsById = new Map<string, any>();
+      [...(allSalesLeadsData || []), ...(explicitLeadsResult.data || [])].forEach((lead: any) => {
+        if (!salesLeadRowsById.has(lead.id)) salesLeadRowsById.set(lead.id, lead);
+      });
+
+      console.log(`[Leads] Fetched ${salesLeadRowsById.size} sales leads (sales agent: ${isSalesAgent})`);
+
+      const salesLeadsWithFlags = Array.from(salesLeadRowsById.values()).map((lead: any) => {
         const fullName = lead.first_name || lead.last_name
           ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim()
           : lead.full_name || null;
@@ -417,6 +815,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
           cart_metadata: lead.abandoned_cart?.cart_metadata || null,
           resubmission_count: lead.resubmission_count || 0,
           last_resubmitted_at: lead.last_resubmitted_at || null,
+          hidden_from_agent_ids: lead.hidden_from_agent_ids || null,
         };
       });
 
@@ -426,22 +825,35 @@ export const useLeads = (options?: UseLeadsOptions) => {
         .filter((lead: any) => !recentlyDeletedRef.current.has(lead.id))
         .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-      // Deduplicate by email — keep only the most recent lead per email,
-      // carry the count so we know how many times they applied
+      // Deduplicate by email — pick the canonical "owner" row, not just the newest.
+      // Priority: assigned + has activity → assigned → has activity → most recently updated → newest created.
+      // This prevents duplicate rows from making ownership appear to switch between agents.
       const emailCounts: Record<string, number> = {};
-      const emailBestLead: Record<string, any> = {};
+      const emailGroups: Record<string, any[]> = {};
       allLeads.forEach((lead: any) => {
         const email = lead.email?.toLowerCase();
         if (email) {
           emailCounts[email] = (emailCounts[email] || 0) + 1;
-          // Keep the lead with the most recent activity (already sorted newest first)
-          if (!emailBestLead[email]) {
-            emailBestLead[email] = lead;
-          }
+          (emailGroups[email] ||= []).push(lead);
         }
       });
 
-      // Build deduplicated list: one row per email (most recent), plus leads without email
+      const scoreLead = (l: any) => {
+        const hasAssignee = l.assigned_to ? 0 : 1;
+        const hasActivity = (l.call_count > 0 || l.notes || l.last_contacted_at) ? 0 : 1;
+        return { hasAssignee, hasActivity };
+      };
+      const pickCanonical = (rows: any[]) =>
+        [...rows].sort((a, b) => {
+          const sa = scoreLead(a), sb = scoreLead(b);
+          if (sa.hasAssignee !== sb.hasAssignee) return sa.hasAssignee - sb.hasAssignee;
+          if (sa.hasActivity !== sb.hasActivity) return sa.hasActivity - sb.hasActivity;
+          const ua = new Date(a.updated_at || a.created_at).getTime();
+          const ub = new Date(b.updated_at || b.created_at).getTime();
+          if (ua !== ub) return ub - ua;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        })[0];
+
       const deduplicatedLeads: any[] = [];
       const seenEmails = new Set<string>();
       allLeads.forEach((lead: any) => {
@@ -449,7 +861,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
         if (email) {
           if (!seenEmails.has(email)) {
             seenEmails.add(email);
-            deduplicatedLeads.push(lead);
+            deduplicatedLeads.push(pickCanonical(emailGroups[email]));
           }
         } else {
           deduplicatedLeads.push(lead);
@@ -461,29 +873,33 @@ export const useLeads = (options?: UseLeadsOptions) => {
         application_count: Math.min(emailCounts[lead.email?.toLowerCase()] || 1, 10),
       }));
 
-      const salesLeadIds = leadsWithCounts.map((lead: any) => lead.id);
+      const visibleLeadIds = leadsWithCounts.slice(0, 250).map((lead: any) => lead.id);
 
       let tagsByLeadId: Record<string, any[]> = {};
 
       try {
-        if (salesLeadIds.length > 0) {
+        if (visibleLeadIds.length > 0) {
           const leadIdBatches: string[][] = [];
 
-          for (let i = 0; i < salesLeadIds.length; i += LEAD_TAG_BATCH_SIZE) {
-            leadIdBatches.push(salesLeadIds.slice(i, i + LEAD_TAG_BATCH_SIZE));
+          for (let i = 0; i < visibleLeadIds.length; i += LEAD_TAG_BATCH_SIZE) {
+            leadIdBatches.push(visibleLeadIds.slice(i, i + LEAD_TAG_BATCH_SIZE));
           }
 
-          const tagBatchResults = await Promise.all(
-            leadIdBatches.map(async (batch) =>
-              await supabase
-                .from('lead_tag_assignments')
-                .select('lead_id, tag_id, lead_tags(id, name, color, description)')
-                .in('lead_id', batch)
-            )
-          );
+          for (const batch of leadIdBatches) {
+            const { data, error } = await withTimeout(
+              (async () =>
+                await supabase
+                  .from('lead_tag_assignments')
+                  .select('lead_id, tag_id, lead_tags(id, name, color, description)')
+                  .in('lead_id', batch))(),
+              LEAD_TAG_BATCH_TIMEOUT_MS,
+              'Lead tag lookup timed out'
+            );
 
-          tagBatchResults.forEach(({ data, error }) => {
-            if (error) throw error;
+            if (error) {
+              console.warn('[Leads] Tag batch fetch failed, skipping batch:', error);
+              continue;
+            }
 
             (data || []).forEach((assignment: any) => {
               if (!tagsByLeadId[assignment.lead_id]) {
@@ -493,7 +909,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
                 tagsByLeadId[assignment.lead_id].push(assignment.lead_tags);
               }
             });
-          });
+          }
         }
       } catch (tagError) {
         console.warn('[Leads] Tag fetch failed, continuing without tags:', tagError);
@@ -532,6 +948,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
       } else {
         setLeads(leadsWithTags as Lead[]);
       }
+      networkRetryCountRef.current = 0;
     } catch (error) {
       if (fetchToken !== latestFetchTokenRef.current) {
         // Even on stale token, ensure loading is cleared to prevent infinite spinner
@@ -543,8 +960,32 @@ export const useLeads = (options?: UseLeadsOptions) => {
         isFetchingRef.current = false;
         return;
       }
-      console.error('Error fetching leads:', error);
-      toast.error('Failed to load leads');
+      console.error('[Leads] Error fetching leads:', error);
+      const errMsg = (error as any)?.message || (error as any)?.details || 'Unknown error';
+      const lowered = String(errMsg).toLowerCase();
+      const isTransientNetwork =
+        lowered.includes('failed to fetch') ||
+        lowered.includes('networkerror') ||
+        lowered.includes('load failed') ||
+        lowered.includes('aborterror') ||
+        lowered.includes('timed out');
+
+      if (isTransientNetwork && networkRetryCountRef.current < 2) {
+        // Browser was offline / tab throttled / transient fetch failure —
+        // silently retry instead of nagging the user with a red toast.
+        networkRetryCountRef.current += 1;
+        const delay = 1500 * networkRetryCountRef.current;
+        console.warn(`[Leads] Transient network error, retrying in ${delay}ms (attempt ${networkRetryCountRef.current}/2)`);
+        if (networkRetryTimerRef.current) clearTimeout(networkRetryTimerRef.current);
+        networkRetryTimerRef.current = setTimeout(() => {
+          networkRetryTimerRef.current = null;
+          fetchLeadsRef.current?.();
+        }, delay);
+      } else {
+        toast.error(`Failed to load leads: ${errMsg}`);
+        networkRetryCountRef.current = 0;
+      }
+
     } finally {
       // ALWAYS clear loading state — never leave spinner stuck
       if (loadingTimeoutRef.current) {
@@ -586,7 +1027,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
       .from('admin_users')
       .select('id, user_id, first_name, last_name, email, is_active, role')
       .eq('is_active', true)
-      .in('role', ['sales', 'sales_lead', 'admin', 'super_admin'])
+      .in('role', ['sales', 'sales_lead', 'claims_agent', 'claims_manager', 'admin', 'super_admin'])
       .order('first_name');
 
     if (error) {
@@ -629,6 +1070,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
 
     let cancelled = false;
 
+    void cacheLatestAccessToken();
+
     // Fire fetch immediately — don't block on flushing pending status updates
     fetchLeadsRef.current();
 
@@ -653,6 +1096,18 @@ export const useLeads = (options?: UseLeadsOptions) => {
     }
   }, [dateFilterKey, authLoading, user?.id]);
 
+  // Re-fetch when the super_admin starts/stops impersonating another agent so the
+  // scoped query (assigned-to-that-agent) runs instead of the global recent-750 window.
+  const impersonationKey = `${isImpersonating ? '1' : '0'}_${effectiveAdminUserId || ''}_${effectiveRole || ''}`;
+  const impersonationKeyRef = useRef(impersonationKey);
+  useEffect(() => {
+    if (impersonationKeyRef.current === impersonationKey) return;
+    impersonationKeyRef.current = impersonationKey;
+    if (!authLoading && user?.id) {
+      fetchLeadsRef.current();
+    }
+  }, [impersonationKey, authLoading, user?.id]);
+
   useEffect(() => {
     if (authLoading || !user?.id) return;
 
@@ -676,6 +1131,25 @@ export const useLeads = (options?: UseLeadsOptions) => {
     }, 60000);
 
     const flushPendingStatusQueue = () => {
+      const pending = Object.values(readPendingStatusUpdates()).sort(
+        (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+      );
+
+      if (pending.length === 0) return;
+
+      void cacheLatestAccessToken();
+
+      if (document.visibilityState === 'hidden') {
+        pending.forEach(item => {
+          void callUpdateLeadStatusRpc(item.leadId, item.status, item.isAbandonedCart, true)
+            .then((result) => {
+              if (result?.success) clearPendingStatusUpdate(item.leadId);
+            })
+            .catch((error) => console.warn('[Leads] keepalive status sync will retry later:', error));
+        });
+        return;
+      }
+
       void flushPendingStatusUpdates();
     };
 
@@ -759,20 +1233,11 @@ export const useLeads = (options?: UseLeadsOptions) => {
 
     try {
       // Use SECURITY DEFINER RPC to bypass RLS — ensures all agents can update status
-      const { data: result, error: rpcError } = await withTimeout(
-        (async () =>
-          await supabase.rpc('update_lead_status', {
-            p_lead_id: actualId,
-            p_status: status,
-            p_is_abandoned_cart: isAbandonedCart
-          }))(),
+      const statusResult = await withTimeout(
+        callUpdateLeadStatusRpc(actualId, status, isAbandonedCart, false),
         8000,
         'Status update timeout'
       );
-
-      if (rpcError) throw rpcError;
-
-      const statusResult = result as { success: boolean; error?: string };
       if (!statusResult.success) {
         throw new Error(statusResult.error || 'Status update failed');
       }
@@ -801,7 +1266,7 @@ export const useLeads = (options?: UseLeadsOptions) => {
         }).catch(err => console.error('Failed to send agent sale notification:', err));
       }
       
-      toast.success(`Status: ${status.replace('_', ' ')}`);
+      return;
     } catch (error) {
       console.error('Error updating lead status:', error);
       if (isRetryableMutationError(error)) {
@@ -836,8 +1301,12 @@ export const useLeads = (options?: UseLeadsOptions) => {
     // Super admins and admins can always override assignments
     const currentAdmin = await getCachedAdminUser();
     const isOverrideRole = currentAdmin?.role === 'super_admin' || currentAdmin?.role === 'admin' || currentAdmin?.role === 'sales_lead';
+    // Self-assign always wins — if an agent clicks "assign to me", they get the lead
+    // even if the auto-sweep just handed it to someone else. Only cross-agent
+    // reassignments by non-managers still hit the freshness guard.
+    const isSelfAssign = !!userId && !!currentAdmin?.id && userId === currentAdmin.id;
 
-    if (userId && !isOverrideRole) {
+    if (userId && !isOverrideRole && !isSelfAssign) {
       try {
         const table = isAbandonedCart ? 'abandoned_carts' : 'sales_leads';
         const field = isAbandonedCart ? 'contacted_by' : 'assigned_to';
@@ -851,30 +1320,24 @@ export const useLeads = (options?: UseLeadsOptions) => {
 
         const currentlyAssigned = freshLead?.[field];
         if (currentlyAssigned && currentlyAssigned !== userId && currentlyAssigned !== WEBSITE_SALES_ACCOUNT_ID) {
-          // Someone else already grabbed this lead — refresh the list and warn
           toast.error('This lead has already been assigned to another agent. Refreshing list...');
           fetchLeadsRef.current();
           return;
         }
       } catch (err) {
         console.error('Freshness check failed, proceeding with assignment:', err);
-        // If the check fails, still try to assign — the RPC will handle conflicts
       }
     }
-    
-    // Capture previous state for rollback using functional update
+
     let previousLeadSnapshot: Lead | null = null;
-    
-    // Protect from realtime overwrites
     recentOptimisticUpdatesRef.current.add(leadId);
     setTimeout(() => recentOptimisticUpdatesRef.current.delete(leadId), 30000);
-    
-    // Optimistic update
+
     setLeads(prev => prev.map(lead => {
       if (lead.id !== leadId) return lead;
       previousLeadSnapshot = { ...lead };
-      return { 
-        ...lead, 
+      return {
+        ...lead,
         assigned_to: userId,
         assigned_at: userId ? now : null,
         updated_at: now,
@@ -888,12 +1351,11 @@ export const useLeads = (options?: UseLeadsOptions) => {
     }));
 
     try {
-      // Use SECURITY DEFINER function for reliable assignment
       const { data: result, error: rpcError } = await supabase
         .rpc('assign_lead_to_agent', {
           p_lead_id: actualId,
           p_agent_id: userId,
-          p_is_abandoned_cart: isAbandonedCart
+          p_is_abandoned_cart: isAbandonedCart,
         });
 
       if (rpcError) throw rpcError;
@@ -907,7 +1369,6 @@ export const useLeads = (options?: UseLeadsOptions) => {
         logActivity(leadId, 'assignment', `Assigned to ${user.first_name || user.email || 'Unknown'}`);
       }
 
-      // Add automated system note for assignment change (fire-and-forget)
       const adminUser = await getCachedAdminUser();
       const previousUser = previousLeadSnapshot?.assigned_user;
       const previousName = previousUser ? (previousUser.first_name || previousUser.email || 'Unknown') : 'Unassigned';
@@ -921,10 +1382,9 @@ export const useLeads = (options?: UseLeadsOptions) => {
       console.error('Error assigning lead:', error);
       const errorMsg = error?.message || error?.details || 'Unknown error';
       toast.error(`Failed to assign lead: ${errorMsg}`);
-      // Revert to full previous state snapshot
       if (previousLeadSnapshot) {
         const snapshot = previousLeadSnapshot;
-        setLeads(prev => prev.map(lead => 
+        setLeads(prev => prev.map(lead =>
           lead.id === leadId ? snapshot : lead
         ));
       }
@@ -966,6 +1426,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
         .eq('id', leadId);
 
       if (error) throw error;
+      // Activity log: agents need a visible trail whenever priority changes.
+      void logActivity(leadId, 'priority_change', `Priority set to ${priority}`);
     } catch (error) {
       console.error('Error updating priority:', error);
       toast.error('Failed to update priority');
@@ -1046,6 +1508,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
         }
         throw error;
       }
+      // Activity log: tag changes should show up in the lead's activity feed.
+      void logActivity(leadId, 'tag_added', `Tag "${tagToAdd.name}" added`);
     } catch (error) {
       console.error('Error adding tag:', error);
       toast.error('Failed to add tag');
@@ -1055,6 +1519,9 @@ export const useLeads = (options?: UseLeadsOptions) => {
 
   // OPTIMISTIC UPDATE: Remove tag instantly
   const removeTagFromLead = useCallback(async (leadId: string, tagId: string) => {
+    // Capture the tag name before optimistic removal so the activity log can
+    // reference it even after it's gone from local state.
+    const removedTag = tags.find(t => t.id === tagId);
     // Optimistic update
     setLeads(prev => prev.map(lead => {
       if (lead.id === leadId) {
@@ -1071,12 +1538,13 @@ export const useLeads = (options?: UseLeadsOptions) => {
         .eq('tag_id', tagId);
 
       if (error) throw error;
+      void logActivity(leadId, 'tag_removed', `Tag "${removedTag?.name ?? 'unknown'}" removed`);
     } catch (error) {
       console.error('Error removing tag:', error);
       toast.error('Failed to remove tag');
       fetchLeads();
     }
-  }, []);
+  }, [tags]);
 
   const logActivity = useCallback(async (leadId: string, activityType: string, description: string, outcome?: string) => {
     try {
@@ -1192,6 +1660,8 @@ export const useLeads = (options?: UseLeadsOptions) => {
     }
     
     console.log(`[useLeads] Note saved successfully for ${leadId}`);
+    // Activity log so agents can see notes were added/updated from the row toolbar.
+    void logActivity(leadId, 'note', replaceAll ? 'Notes edited' : 'Note added');
     // Note: Toast is handled by the caller (LeadDetailsPanel) to avoid duplicates
   }, [getCachedAdminUser]);
 
@@ -1267,36 +1737,33 @@ export const useLeads = (options?: UseLeadsOptions) => {
       }
     }
 
+    // Small helper: run the update, retry once on transient timeouts before
+    // showing the user an error. sales_leads has heavy trigger overhead and
+    // the first write occasionally hits statement_timeout under load — a
+    // silent retry hides that from the agent so they don't feel the button
+    // is broken and start double-clicking.
+    const runUpdate = async () => {
+      const table = isAbandonedCart ? 'abandoned_carts' : 'sales_leads';
+      return supabase
+        .from(table)
+        .update({ call_count: newCount, updated_at: now })
+        .eq('id', actualId);
+    };
+
     try {
-      if (isAbandonedCart) {
-        const { error } = await supabase
-          .from('abandoned_carts')
-          .update({
-            call_count: newCount,
-            updated_at: now
-          })
-          .eq('id', actualId);
+      let { error } = await runUpdate();
+      if (error && /timeout|canceling statement|deadlock/i.test(error.message)) {
+        ({ error } = await runUpdate());
+      }
+      if (error) throw error;
 
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('sales_leads')
-          .update({
-            call_count: newCount,
-            updated_at: now
-          })
-          .eq('id', actualId);
-
-        if (error) throw error;
-
-        // Log activity for call tracking
-        if (increment > 0) {
-          logActivity(leadId, 'call', `Call attempt #${newCount}`);
-          // Add automated system note for call (fire-and-forget)
-          getCachedAdminUser().then(adminUser => {
-            addSystemNote(leadId, `📞 Call #${newCount} attempted`, adminUser?.id);
-          });
-        }
+      // Log activity for call tracking (sales leads only). We deliberately do
+      // NOT write a generic "📞 Call #N attempted" system note here — the
+      // outcome-picker (NotesQuickActionsPopover) writes the meaningful
+      // "Call #N — <outcome>" note, and writing both at the same second was
+      // double-counting the notes badge.
+      if (!isAbandonedCart && increment > 0) {
+        logActivity(leadId, 'call', `Call attempt #${newCount}`);
       }
     } catch (error) {
       console.error('Error updating call count:', error);

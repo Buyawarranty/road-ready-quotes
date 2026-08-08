@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Save, UserPlus, Trash2, Info, Zap, AlertCircle, UserCheck, RotateCcw } from 'lucide-react';
 import { AgentSchedulePanel } from './AgentSchedulePanel';
+import { AgentWorkingDays } from './AgentWorkingDays';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -23,6 +24,7 @@ interface AgentCap {
   assigned_today: number;
   last_assigned_at: string | null;
   paused: boolean;
+  assignment_mode?: 'round_robin' | 'open_pool' | string | null;
   admin_user?: {
     id: string;
     email: string;
@@ -112,6 +114,12 @@ export const AgentCapsPanel: React.FC<AgentCapsPanelProps> = ({
         return rest;
       });
     }
+    setSaving(null);
+  };
+
+  const handleModeChange = async (adminUserId: string, mode: 'round_robin' | 'open_pool') => {
+    setSaving(adminUserId);
+    await onUpdateCap(adminUserId, { assignment_mode: mode });
     setSaving(null);
   };
 
@@ -403,7 +411,28 @@ export const AgentCapsPanel: React.FC<AgentCapsPanelProps> = ({
                       </Button>
                     )}
                   </div>
+
+                  <div className="flex items-center gap-2 pt-2">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">Lead mode:</span>
+                    <Select
+                      value={cap.assignment_mode === 'open_pool' ? 'open_pool' : 'round_robin'}
+                      onValueChange={(value) => handleModeChange(cap.admin_user_id, value as 'round_robin' | 'open_pool')}
+                      disabled={saving === cap.admin_user_id}
+                    >
+                      <SelectTrigger className="h-8 w-[150px] text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="round_robin">Round Robin</SelectItem>
+                        <SelectItem value="open_pool">Open Round Robin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
+                {/* Working days quick-toggle */}
+                <AgentWorkingDays adminUserId={cap.admin_user_id} />
+
 
                 {/* Schedule & Availability */}
                 <Separator className="my-2" />

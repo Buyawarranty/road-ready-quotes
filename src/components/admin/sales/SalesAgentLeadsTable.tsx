@@ -116,15 +116,20 @@ export const SalesAgentLeadsTable: React.FC<SalesAgentLeadsTableProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Filters */}
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, email, phone, or vehicle..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+        <div className="flex gap-3 items-start">
+          <div className="flex-1 space-y-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, email, phone, or vehicle..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Searching by phone or email covers all leads — including ones assigned to other agents.
+            </p>
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[150px]">
@@ -132,8 +137,8 @@ export const SalesAgentLeadsTable: React.FC<SalesAgentLeadsTableProps> = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="contacted">Contacted</SelectItem>
+              <SelectItem value="new">Not spoken to</SelectItem>
+              <SelectItem value="contacted">Spoken to</SelectItem>
               <SelectItem value="follow_up">Follow Up</SelectItem>
               <SelectItem value="quoted">Quoted</SelectItem>
               <SelectItem value="converted">Converted</SelectItem>
@@ -243,8 +248,8 @@ export const SalesAgentLeadsTable: React.FC<SalesAgentLeadsTableProps> = ({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="new">New</SelectItem>
-                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="new">Not spoken to</SelectItem>
+                          <SelectItem value="contacted">Spoken to</SelectItem>
                           <SelectItem value="follow_up">Follow Up</SelectItem>
                           <SelectItem value="quoted">Quoted</SelectItem>
                           <SelectItem value="converted">Converted</SelectItem>

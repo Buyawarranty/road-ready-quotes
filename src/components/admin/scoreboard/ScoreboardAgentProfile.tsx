@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Trophy, TrendingUp, Target, Flame, Star, BarChart3, Calendar, PoundSterling, XCircle, Car, ChevronDown, ChevronUp } from 'lucide-react';
+import { Trophy, TrendingUp, Target, Flame, Star, BarChart3, Calendar, PoundSterling, XCircle, Car, ChevronDown, ChevronUp, UserCog } from 'lucide-react';
 import { AgentScore, TimePeriod } from '@/hooks/useScoreboardData';
 import { supabase } from '@/integrations/supabase/client';
 import { subDays, format, startOfMonth, endOfMonth } from 'date-fns';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { SaleCreditOverrideDialog } from './SaleCreditOverrideDialog';
 
 interface Props {
   agent: AgentScore | null;
   period: TimePeriod;
+  currentUserRole?: string | null;
 }
 
 interface DailySales {
@@ -29,11 +32,18 @@ interface CustomerDeal {
   final_amount: number;
   created_at: string;
   status: string;
+  assigned_to: string | null;
+  sale_credit_admin_user_id: string | null;
 }
 
-export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
+export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period, currentUserRole }) => {
   const [dailySales, setDailySales] = useState<DailySales[]>([]);
   const [customerDeals, setCustomerDeals] = useState<CustomerDeal[]>([]);
+  const [overrideDeal, setOverrideDeal] = useState<CustomerDeal | null>(null);
+  const isManagement =
+    currentUserRole === 'admin' ||
+    currentUserRole === 'super_admin' ||
+    currentUserRole === 'sales_manager';
   const [regPlatesOpen, setRegPlatesOpen] = useState(false);
 
   useEffect(() => {
@@ -76,14 +86,16 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
       setDailySales(result);
     };
 
-    // Fetch customer deals for this month (reg plates + details)
+    // Fetch customer deals for this month (reg plates + details).
+    // Honor the manager sale-credit override: show a deal to this agent when
+    // (override = agent) OR (override is null AND assigned_to = agent).
     const fetchCustomerDeals = async () => {
       const { data } = await supabase
         .from('customers')
-        .select('id, name, registration_plate, final_amount, created_at, status')
+        .select('id, name, registration_plate, final_amount, created_at, status, assigned_to, sale_credit_admin_user_id')
         .eq('is_deleted', false)
         .ilike('status', 'active')
-        .eq('assigned_to', agent.id)
+        .or(`sale_credit_admin_user_id.eq.${agent.id},and(sale_credit_admin_user_id.is.null,assigned_to.eq.${agent.id})`)
         .gte('created_at', monthStart.toISOString())
         .lte('created_at', monthEnd.toISOString())
         .order('created_at', { ascending: false });
@@ -107,9 +119,9 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
     );
   }
 
-  const monthlyTarget = agent.monthlyTarget || 0;
-  const targetProgress = monthlyTarget > 0 ? Math.min((agent.salesCount / monthlyTarget) * 100, 100) : 0;
-  const remaining = monthlyTarget > 0 ? Math.max(monthlyTarget - agent.salesCount, 0) : 0;
+  const monthlyTarget = agent.revenueTarget ?? 35000;
+  const targetProgress = monthlyTarget > 0 ? Math.min((agent.revenue / monthlyTarget) * 100, 100) : 0;
+  const remaining = monthlyTarget > 0 ? Math.max(monthlyTarget - agent.revenue, 0) : 0;
 
   const chartConfig = {
     count: { label: 'Sales', color: 'hsl(var(--primary))' },
@@ -183,9 +195,9 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium flex items-center gap-2">
                 <Flame className="h-4 w-4 text-orange-500" />
-                Monthly target
+                Monthly revenue target
               </span>
-              <span className="text-sm font-bold">{agent.salesCount} / {monthlyTarget}</span>
+              <span className="text-sm font-bold">£{agent.revenue.toLocaleString()} / £{monthlyTarget.toLocaleString()}</span>
             </div>
             <Progress value={targetProgress} className="h-3" />
             <div className="mt-2 text-xs text-muted-foreground">
@@ -194,7 +206,7 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
               ) : (
                 <span className="flex items-center gap-1">
                   <Flame className="h-3 w-3 text-orange-500" />
-                  {remaining} more to go — you've got this!
+                  £{remaining.toLocaleString()} more to go — you've got this!
                 </span>
               )}
             </div>
@@ -206,7 +218,7 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
         <Card className="border border-dashed">
           <CardContent className="p-4 text-center text-sm text-muted-foreground">
             <Target className="h-5 w-5 mx-auto mb-1 opacity-40" />
-            No monthly target set yet — ask your manager to set one
+            No monthly revenue target set yet — ask your manager to set one
           </CardContent>
         </Card>
       )}
@@ -232,9 +244,16 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
               ) : (
                 <div className="max-h-64 overflow-y-auto divide-y">
                   {customerDeals.map(deal => (
-                    <div key={deal.id} className="flex items-center justify-between py-2 text-sm">
+                    <div key={deal.id} className="flex items-center justify-between py-2 text-sm gap-2">
                       <div className="min-w-0">
-                        <p className="font-medium truncate">{deal.name}</p>
+                        <p className="font-medium truncate flex items-center gap-2">
+                          {deal.name}
+                          {deal.sale_credit_admin_user_id && (
+                            <Badge variant="secondary" className="text-[10px] uppercase tracking-wide">
+                              Credit overridden
+                            </Badge>
+                          )}
+                        </p>
                         <p className="text-xs text-muted-foreground">{format(new Date(deal.created_at), 'dd MMM yyyy')}</p>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
@@ -244,6 +263,18 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
                           </Badge>
                         )}
                         <span className="font-semibold text-emerald-600">£{(deal.final_amount || 0).toLocaleString()}</span>
+                        {isManagement && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2"
+                            onClick={() => setOverrideDeal(deal)}
+                            title="Reassign sale credit"
+                          >
+                            <UserCog className="h-3.5 w-3.5 mr-1" />
+                            Reassign
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -274,6 +305,22 @@ export const ScoreboardAgentProfile: React.FC<Props> = ({ agent, period }) => {
           </ChartContainer>
         </CardContent>
       </Card>
+
+      {overrideDeal && (
+        <SaleCreditOverrideDialog
+          open={!!overrideDeal}
+          onOpenChange={(o) => { if (!o) setOverrideDeal(null); }}
+          customerId={overrideDeal.id}
+          customerName={overrideDeal.name}
+          currentCreditAdminUserId={overrideDeal.sale_credit_admin_user_id}
+          defaultAgentId={overrideDeal.assigned_to}
+          onSaved={() => {
+            setOverrideDeal(null);
+            // Refetch deals — trigger by touching agent dep (safe: same ref)
+            setCustomerDeals(prev => prev.filter(d => d.id !== overrideDeal.id));
+          }}
+        />
+      )}
     </div>
   );
 };

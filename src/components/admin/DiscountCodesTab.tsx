@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,11 +11,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Pencil, Trash2, Plus, Copy, Filter, Archive, RotateCcw, CalendarDays, Users, RefreshCw, History } from "lucide-react";
+import { Calendar, Pencil, Trash2, Plus, Copy, Filter, Archive, RotateCcw, CalendarDays, Users, RefreshCw, History, TrendingUp, ShieldCheck } from "lucide-react";
 import { DiscountCodeUsageHistory } from "./DiscountCodeUsageHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
+import { UnifiedDateFilter, periodToRange, type PeriodKey, type DateScope } from "@/components/admin/UnifiedDateFilter";
+import { DateRange } from "react-day-picker";
 
 interface DiscountCode {
   id: string;
@@ -50,9 +53,11 @@ interface DiscountCodeFormData {
   usage_limit: number | null;
   campaign_source: string;
   active: boolean;
+  min_order_amount: number;
 }
 
 const CAMPAIGN_SOURCES = [
+  { value: 'SALESTEAM', label: 'Sales Team' },
   { value: 'INSTA', label: 'Instagram' },
   { value: 'BILLO', label: 'UGC Platform' },
   { value: 'WELCOME', label: 'New Users' },
@@ -73,9 +78,15 @@ export function DiscountCodesTab() {
   const [activeTab, setActiveTab] = useState<'active' | 'archived' | 'usage'>('active');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSource, setFilterSource] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'created_at' | 'valid_to' | 'used_count' | 'code'>('created_at');
+  const [sortBy, setSortBy] = useState<'created_at' | 'valid_to' | 'used_count' | 'code' | 'times_used' | 'range_revenue'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [validityPeriod, setValidityPeriod] = useState<'6months' | '1month' | 'noend' | 'custom'>('noend');
+  const [dateScope, setDateScope] = useState<DateScope>('signup');
+  const [datePeriod, setDatePeriod] = useState<PeriodKey>('all');
+  const [dateCustomRange, setDateCustomRange] = useState<DateRange | undefined>(undefined);
+  const [customerUsage, setCustomerUsage] = useState<{ code: string; signup_date: string; final_amount: number; discount_amount: number; status: string; payment_status: string; payment_verified: boolean }[]>([]);
+  const [usageLoading, setUsageLoading] = useState(false);
+  const [showAllRenewalCodes, setShowAllRenewalCodes] = useState(false);
   const [formData, setFormData] = useState<DiscountCodeFormData>({
     code: '',
     type: 'percentage',
@@ -85,11 +96,15 @@ export function DiscountCodesTab() {
     usage_limit: 1,
     campaign_source: 'GENERAL',
     active: true,
+    min_order_amount: 0,
   });
   const { toast } = useToast();
+  const { userRole } = useAuth();
+  const isReadOnly = userRole === 'sales' || userRole === 'sales_lead';
 
   useEffect(() => {
     fetchDiscountCodes();
+    fetchCustomerUsage();
   }, []);
 
   const fetchDiscountCodes = async () => {
@@ -113,6 +128,37 @@ export function DiscountCodesTab() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCustomerUsage = async () => {
+    try {
+      setUsageLoading(true);
+      const { data, error } = await supabase
+        .from('customers')
+        .select('discount_code, signup_date, created_at, final_amount, discount_amount, status, payment_status, payment_verified')
+        .not('discount_code', 'is', null)
+        .neq('discount_code', '');
+
+      if (error) throw error;
+      setCustomerUsage((data || []).map((r: any) => ({
+        code: r.discount_code.toUpperCase(),
+        signup_date: r.signup_date || r.created_at,
+        final_amount: Number(r.final_amount) || 0,
+        discount_amount: Number(r.discount_amount) || 0,
+        status: r.status || '',
+        payment_status: r.payment_status || '',
+        payment_verified: !!r.payment_verified,
+      })));
+    } catch (error) {
+      console.error('Error fetching customer usage:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load discount code usage",
+        variant: "destructive",
+      });
+    } finally {
+      setUsageLoading(false);
     }
   };
 
@@ -356,6 +402,7 @@ export function DiscountCodesTab() {
       usage_limit: 1,
       campaign_source: 'SAVE',
       active: true,
+      min_order_amount: 0,
     });
     setEditingCode(null);
     setIsCreateOpen(false);
@@ -371,6 +418,7 @@ export function DiscountCodesTab() {
       usage_limit: code.usage_limit,
       campaign_source: code.campaign_source || 'GENERAL',
       active: code.active,
+      min_order_amount: Number((code as any).min_order_amount ?? 0),
     });
     setEditingCode(code);
     setIsCreateOpen(true);
@@ -551,11 +599,69 @@ export function DiscountCodesTab() {
     }
   };
 
+  const activeDateRange = useMemo<DateRange | undefined>(() => {
+    if (datePeriod === 'custom') return dateCustomRange;
+    return periodToRange(datePeriod);
+  }, [datePeriod, dateCustomRange]);
+
+  const getUsageStats = (code: string) => {
+    const normalizedCode = code.toUpperCase();
+    const matches = customerUsage.filter(u => u.code === normalizedCode);
+    if (!activeDateRange?.from) {
+      return {
+        timesUsed: matches.length,
+        paidTimesUsed: matches.filter(m => m.status === 'paid' || m.status === 'active' || m.status === 'completed' || m.payment_status === 'paid' || m.payment_status === 'succeeded' || m.payment_verified).length,
+        rangeRevenue: matches.reduce((sum, m) => sum + (m.status === 'paid' || m.status === 'active' || m.status === 'completed' || m.payment_status === 'paid' || m.payment_status === 'succeeded' || m.payment_verified ? m.final_amount : 0), 0),
+        rangeDiscount: matches.reduce((sum, m) => sum + m.discount_amount, 0),
+      };
+    }
+    const from = new Date(activeDateRange.from);
+    from.setHours(0, 0, 0, 0);
+    const to = activeDateRange.to ? new Date(activeDateRange.to) : new Date();
+    to.setHours(23, 59, 59, 999);
+
+    const inRange = matches.filter(m => {
+      const d = new Date(m.signup_date);
+      return d >= from && d <= to;
+    });
+
+    return {
+      timesUsed: inRange.length,
+      paidTimesUsed: inRange.filter(m => m.status === 'paid' || m.status === 'active' || m.status === 'completed' || m.payment_status === 'paid' || m.payment_status === 'succeeded' || m.payment_verified).length,
+      rangeRevenue: inRange.reduce((sum, m) => sum + (m.status === 'paid' || m.status === 'active' || m.status === 'completed' || m.payment_status === 'paid' || m.payment_status === 'succeeded' || m.payment_verified ? m.final_amount : 0), 0),
+      rangeDiscount: inRange.reduce((sum, m) => sum + m.discount_amount, 0),
+    };
+  };
+
+  const isRenewalAutoCode = (code: DiscountCode) =>
+    (code.campaign_source || '').startsWith('renewal_') || /^REN\d+-/.test(code.code);
+
+  // Codes that are restricted to managers (QA / high-value internal codes).
+  // These are hidden from the normal lists and shown in the "Manager access" section.
+  const MANAGER_ACCESS_CODES = new Set([
+    'TEST95OFF',
+    'TEST99OFF',
+    'SAVE99GOLDEN',
+    'WELCOME98GLOW',
+    '75OFFBAW',
+  ]);
+  const isManagerAccessCode = (code: DiscountCode) => {
+    const c = (code.code || '').toUpperCase();
+    return MANAGER_ACCESS_CODES.has(c) || c.startsWith('TEST');
+  };
+
   const getFilteredCodes = () => {
     let filtered = discountCodes.filter(code => {
+      // Exclude auto-generated per-customer renewal codes from the main lists
+      if (isRenewalAutoCode(code)) return false;
+
+      // Manager-only codes live in their own section
+      if (isManagerAccessCode(code)) return false;
+
       // Tab filter
       if (activeTab === 'active' && code.archived) return false;
       if (activeTab === 'archived' && !code.archived) return false;
+
       
       // Search filter
       if (searchTerm && !code.code.toLowerCase().includes(searchTerm.toLowerCase())) return false;
@@ -581,6 +687,14 @@ export function DiscountCodesTab() {
         case 'used_count':
           aVal = a.used_count;
           bVal = b.used_count;
+          break;
+        case 'times_used':
+          aVal = getUsageStats(a.code).timesUsed;
+          bVal = getUsageStats(b.code).timesUsed;
+          break;
+        case 'range_revenue':
+          aVal = getUsageStats(a.code).rangeRevenue;
+          bVal = getUsageStats(b.code).rangeRevenue;
           break;
         default:
           aVal = new Date(a.created_at);
@@ -623,8 +737,13 @@ export function DiscountCodesTab() {
   }
 
   const filteredCodes = getFilteredCodes();
-  const activeCodes = discountCodes.filter(code => !code.archived);
-  const archivedCodes = discountCodes.filter(code => code.archived);
+  const activeCodes = discountCodes.filter(code => !code.archived && !isManagerAccessCode(code) && !isRenewalAutoCode(code));
+  const archivedCodes = discountCodes.filter(code => code.archived && !isManagerAccessCode(code) && !isRenewalAutoCode(code));
+  const isManager = userRole === 'admin' || userRole === 'super_admin' || userRole === 'sales_manager';
+  const managerAccessCodes = discountCodes
+    .filter(isManagerAccessCode)
+    .sort((a, b) => a.code.localeCompare(b.code));
+
 
   return (
     <div className="p-6 space-y-6">
@@ -637,6 +756,8 @@ export function DiscountCodesTab() {
         </div>
         
         <div className="flex gap-2">
+          {!isReadOnly && (
+          <>
           <Button variant="outline" onClick={autoExpireCodes} disabled={loading}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Auto-Expire
@@ -747,10 +868,24 @@ export function DiscountCodesTab() {
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">£</span>
                       )}
                     </div>
-                    {formData.type === 'fixed' && (
-                      <p className="text-xs text-amber-600">⚠️ Fixed (£) discounts require a minimum order of £350</p>
+                    {formData.type === 'fixed' && formData.min_order_amount > 0 && (
+                      <p className="text-xs text-amber-600">⚠️ This code requires a minimum order of £{formData.min_order_amount}</p>
                     )}
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="min_order_amount">Minimum Order Amount (£)</Label>
+                  <Input
+                    id="min_order_amount"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={formData.min_order_amount || ''}
+                    onChange={(e) => setFormData({ ...formData, min_order_amount: e.target.value ? parseFloat(e.target.value) : 0 })}
+                    placeholder="0 = no minimum"
+                  />
+                  <p className="text-xs text-muted-foreground">Leave at 0 for no minimum spend requirement.</p>
                 </div>
 
                 <div className="space-y-2">
@@ -862,6 +997,8 @@ export function DiscountCodesTab() {
               </form>
             </DialogContent>
           </Dialog>
+          </>
+          )}
         </div>
       </div>
 
@@ -910,7 +1047,9 @@ export function DiscountCodesTab() {
                 <SelectContent className="bg-white border shadow-lg z-50">
                   <SelectItem value="created_at">Created Date</SelectItem>
                   <SelectItem value="valid_to">Expiry Date</SelectItem>
-                  <SelectItem value="used_count">Usage Count</SelectItem>
+                  <SelectItem value="used_count">Total Usage</SelectItem>
+                  <SelectItem value="times_used">Times Used</SelectItem>
+                  <SelectItem value="range_revenue">Range Revenue</SelectItem>
                   <SelectItem value="code">Code A-Z</SelectItem>
                 </SelectContent>
               </Select>
@@ -929,10 +1068,183 @@ export function DiscountCodesTab() {
               </Select>
             </div>
           </div>
+
+          <div className="flex gap-4 flex-wrap mt-4">
+            <div className="flex-1 min-w-[280px]">
+              <Label>Usage Date Range</Label>
+              <UnifiedDateFilter
+                scope={dateScope}
+                period={datePeriod}
+                customRange={dateCustomRange}
+                onChange={(next) => {
+                  setDateScope(next.scope);
+                  setDatePeriod(next.period);
+                  setDateCustomRange(next.customRange);
+                }}
+                availableScopes={['signup']}
+                showLabel={false}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex items-end text-sm text-muted-foreground pb-1">
+              <span>
+                {customerUsage.length} customer records with discount codes loaded
+                {usageLoading && ' · loading...'}
+              </span>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
+      {/* Automated Renewal Codes — management only */}
+      {!isReadOnly && (() => {
+        const renewalCodes = discountCodes
+          .filter(isRenewalAutoCode)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const visible = showAllRenewalCodes ? renewalCodes : renewalCodes.slice(0, 3);
+        if (renewalCodes.length === 0) return null;
+        return (
+          <Card className="border-amber-200 bg-amber-50/40">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <RefreshCw className="h-4 w-4 text-amber-700" />
+                Automated Renewal Codes ({renewalCodes.length})
+              </CardTitle>
+              <CardDescription>
+                These codes are generated automatically by the renewal campaign system
+                (<code>process-renewal-campaigns</code>). One unique single-use code is
+                created per customer at each renewal milestone (e.g. <code>REN60-XXXXX</code>
+                for the 60-day-before-expiry email) and emailed with their renewal link.
+                They are not intended for manual distribution and are hidden from the main
+                list to keep it clean. Visible to management only.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Code</TableHead>
+                    <TableHead>Milestone</TableHead>
+                    <TableHead>Value</TableHead>
+                    <TableHead>Valid Until</TableHead>
+                    <TableHead>Usage</TableHead>
+                    <TableHead>Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {visible.map((code) => (
+                    <TableRow key={code.id}>
+                      <TableCell className="font-mono text-sm">{code.code}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{code.campaign_source}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        {code.type === 'percentage' ? `${code.value}%` : `£${code.value}`}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {format(new Date(code.valid_to), 'MMM dd, yyyy')}
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {code.used_count}{code.usage_limit ? `/${code.usage_limit}` : ''}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(code)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              {renewalCodes.length > 3 && (
+                <div className="mt-3 flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAllRenewalCodes(v => !v)}
+                  >
+                    {showAllRenewalCodes
+                      ? 'Show less'
+                      : `Show all ${renewalCodes.length} renewal codes`}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })()}
+
+      {/* Manager access codes — internal/QA and high-value codes, managers only */}
+      {isManager && managerAccessCodes.length > 0 && (
+        <Card className="border-amber-300 bg-amber-50/60">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-amber-600" />
+              Manager access
+            </CardTitle>
+            <CardDescription>
+              Restricted internal codes. Only managers can see and apply these — they are
+              refused at checkout unless a manager session is signed in on the same browser.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Source</TableHead>
+                  <TableHead>Value</TableHead>
+                  <TableHead>Valid Until</TableHead>
+                  <TableHead>Usage</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {managerAccessCodes.map((code) => (
+                  <TableRow key={code.id}>
+                    <TableCell className="font-mono text-sm font-semibold">{code.code}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {CAMPAIGN_SOURCES.find(s => s.value === code.campaign_source)?.label || code.campaign_source || 'Internal testing'}
+                    </TableCell>
+                    <TableCell>
+                      {code.type === 'percentage' ? `${code.value}%` : `£${code.value}`}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {new Date(code.valid_to).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {code.used_count}{code.usage_limit ? `/${code.usage_limit}` : ''}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(code)}</TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyCode(code.code)}
+                          aria-label={`Copy ${code.code}`}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        {!isReadOnly && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(code)}
+                            aria-label={`Edit ${code.code}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Tabs for Active/Archived */}
+
       <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)}>
         <TabsList>
           <TabsTrigger value="active" className="flex items-center gap-2">
@@ -974,6 +1286,7 @@ export function DiscountCodesTab() {
                     <TableHead>Value</TableHead>
                     <TableHead>Valid Until</TableHead>
                     <TableHead>Usage</TableHead>
+                    <TableHead>Times Used</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Public</TableHead>
                     <TableHead>Actions</TableHead>
@@ -982,7 +1295,7 @@ export function DiscountCodesTab() {
                 <TableBody>
                   {filteredCodes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
                         No discount codes found matching your filters
                       </TableCell>
                     </TableRow>
@@ -1037,11 +1350,34 @@ export function DiscountCodesTab() {
                             {code.used_count}{code.usage_limit ? `/${code.usage_limit}` : ''}
                           </div>
                         </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const stats = getUsageStats(code.code);
+                            return (
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1 font-medium">
+                                  <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                                  {stats.timesUsed}
+                                  {stats.paidTimesUsed > 0 && stats.paidTimesUsed !== stats.timesUsed && (
+                                    <span className="text-xs text-muted-foreground">({stats.paidTimesUsed} paid)</span>
+                                  )}
+                                </div>
+                                {stats.rangeRevenue > 0 && (
+                                  <div className="text-xs text-green-600">
+                                    £{stats.rangeRevenue.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </TableCell>
                         <TableCell>{getStatusBadge(code)}</TableCell>
                         <TableCell>
                           <Switch
                             checked={code.is_public || false}
+                            disabled={isReadOnly}
                             onCheckedChange={async (checked) => {
+                              if (isReadOnly) return;
                               const { error } = await supabase
                                 .from('discount_codes')
                                 .update({ is_public: checked } as any)
@@ -1055,6 +1391,9 @@ export function DiscountCodesTab() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
+                            {isReadOnly ? (
+                              <span className="text-xs text-muted-foreground">View only</span>
+                            ) : (<>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1099,6 +1438,7 @@ export function DiscountCodesTab() {
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
+                            </>)}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -1126,6 +1466,7 @@ export function DiscountCodesTab() {
                     <TableHead>Source</TableHead>
                     <TableHead>Value</TableHead>
                     <TableHead>Usage</TableHead>
+                    <TableHead>Times Used</TableHead>
                     <TableHead>Archived Reason</TableHead>
                     <TableHead>Archived Date</TableHead>
                     <TableHead>Actions</TableHead>
@@ -1134,7 +1475,7 @@ export function DiscountCodesTab() {
                 <TableBody>
                   {filteredCodes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No archived discount codes found
                       </TableCell>
                     </TableRow>
@@ -1158,6 +1499,27 @@ export function DiscountCodesTab() {
                           {code.used_count}{code.usage_limit ? `/${code.usage_limit}` : ''}
                         </TableCell>
                         <TableCell>
+                          {(() => {
+                            const stats = getUsageStats(code.code);
+                            return (
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1 font-medium">
+                                  <TrendingUp className="h-3 w-3 text-muted-foreground" />
+                                  {stats.timesUsed}
+                                  {stats.paidTimesUsed > 0 && stats.paidTimesUsed !== stats.timesUsed && (
+                                    <span className="text-xs text-muted-foreground">({stats.paidTimesUsed} paid)</span>
+                                  )}
+                                </div>
+                                {stats.rangeRevenue > 0 && (
+                                  <div className="text-xs text-green-600">
+                                    £{stats.rangeRevenue.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </TableCell>
+                        <TableCell>
                           <span className="text-sm text-muted-foreground">
                             {code.auto_archived_reason || 'Manually archived'}
                           </span>
@@ -1167,6 +1529,9 @@ export function DiscountCodesTab() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
+                            {isReadOnly ? (
+                              <span className="text-xs text-muted-foreground">View only</span>
+                            ) : (<>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1204,6 +1569,7 @@ export function DiscountCodesTab() {
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
+                            </>)}
                           </div>
                         </TableCell>
                       </TableRow>

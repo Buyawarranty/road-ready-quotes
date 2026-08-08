@@ -105,7 +105,7 @@ const initialOrderData: ManualOrderData = {
   startDate: new Date().toISOString().split('T')[0],
   expiryDate: '',
   voluntaryExcess: 0,
-  claimLimit: 1250,
+  claimLimit: 2000,
   totalAmount: '',
   wearTearCover: false,
   vehicleRecovery: false, // Auto-included for 2-year and 3-year only
@@ -165,9 +165,9 @@ Bumper
 Duration
 1 Year
 Voluntary Excess
-£100
+£0
 Claim Limit
-£1,250
+£2,000
 Total Amount
 [Enter amount]
 Wear & Tear Cover
@@ -266,7 +266,7 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
         startDate: startDate,
         expiryDate: expiryDate,
         voluntaryExcess: policyToEdit.voluntary_excess || 0,
-        claimLimit: policyToEdit.claim_limit || 1250,
+        claimLimit: policyToEdit.claim_limit || 2000,
         totalAmount: policyToEdit.payment_amount?.toString() || '',
         wearTearCover: policyToEdit.wear_tear || false,
         vehicleRecovery: policyToEdit.breakdown_recovery || false,
@@ -824,59 +824,11 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
         }
       }
 
-      // Only send to Warranties Register if checkbox is checked
-      if (orderData.sendToWarranties2000) {
-        try {
-          console.log('Sending to Warranties Register API via manual-bumper-completion...');
-          
-          const { data: w2kResponse, error: w2kError } = await supabase.functions.invoke(
-            'manual-bumper-completion',
-            {
-              body: { 
-                email: orderData.email.toLowerCase(),
-                notes: orderData.notes?.trim() || '' 
-              }
-            }
-          );
+      toast.success(isEditMode 
+        ? `Warranty order updated successfully! Reference: ${warrantyReference}`
+        : `Manual warranty order created successfully! Reference: ${warrantyReference}`
+      );
 
-          if (w2kError) {
-            console.error('Warranties Register API error:', w2kError);
-            await supabase
-              .from('admin_notes')
-              .insert({
-                customer_id: customerData.id,
-                note: `Failed to send to Warranties Register API: ${w2kError.message}`,
-                created_by: (await supabase.auth.getUser()).data.user?.id
-              });
-            toast.error('Order created but failed to send to Warranties Register');
-          } else {
-            console.log('Warranties Register API response:', w2kResponse);
-            await supabase
-              .from('admin_notes')
-              .insert({
-                customer_id: customerData.id,
-                note: `Successfully sent to Warranties Register API`,
-                created_by: (await supabase.auth.getUser()).data.user?.id
-              });
-            toast.success('Order created and sent to Warranties Register!');
-          }
-        } catch (w2kError) {
-          console.error('Failed to send to Warranties Register:', w2kError);
-          await supabase
-            .from('admin_notes')
-            .insert({
-              customer_id: customerData.id,
-              note: `Exception sending to Warranties Register API: ${w2kError instanceof Error ? w2kError.message : String(w2kError)}`,
-              created_by: (await supabase.auth.getUser()).data.user?.id
-            });
-          toast.error('Order created but failed to send to Warranties Register');
-        }
-      } else {
-        toast.success(isEditMode 
-          ? `Warranty order updated successfully! Reference: ${warrantyReference}`
-          : `Manual warranty order created successfully! Reference: ${warrantyReference}`
-        );
-      }
 
       console.log(isEditMode ? '🎉 Manual order updated successfully!' : '🎉 Manual order created successfully!');
 
@@ -1419,7 +1371,8 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
                   <ToggleGroupItem value="50" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£50</ToggleGroupItem>
                   <ToggleGroupItem value="100" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£100</ToggleGroupItem>
                   <ToggleGroupItem value="150" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£150</ToggleGroupItem>
-                  <ToggleGroupItem value="200" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£200</ToggleGroupItem>
+                  <ToggleGroupItem value="250" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£250</ToggleGroupItem>
+                  <ToggleGroupItem value="500" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£500</ToggleGroupItem>
                 </ToggleGroup>
               </div>
 
@@ -1432,11 +1385,8 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
                   className="justify-start flex-wrap gap-2"
                 >
                   <ToggleGroupItem value="750" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£1,000</ToggleGroupItem>
-                  <ToggleGroupItem value="1250" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£1,250</ToggleGroupItem>
                   <ToggleGroupItem value="2000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£2,000</ToggleGroupItem>
-                  <ToggleGroupItem value="2500" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£2,500</ToggleGroupItem>
                   <ToggleGroupItem value="3000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£3,000</ToggleGroupItem>
-                  <ToggleGroupItem value="4000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£4,000</ToggleGroupItem>
                   <ToggleGroupItem value="5000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£5,000</ToggleGroupItem>
                 </ToggleGroup>
               </div>
@@ -1619,21 +1569,6 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
               />
             </div>
 
-            <div className="flex items-center space-x-2 pt-4 border-t">
-              <Checkbox
-                id="sendToW2k"
-                checked={orderData.sendToWarranties2000}
-                onCheckedChange={(checked) => 
-                  updateOrderData('sendToWarranties2000', !!checked)
-                }
-              />
-              <Label
-                htmlFor="sendToW2k"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                Send to Warranties Register
-              </Label>
-            </div>
           </div>
 
           {/* Customer Dashboard Credentials Section */}

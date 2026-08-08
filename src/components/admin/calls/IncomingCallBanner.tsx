@@ -1,110 +1,60 @@
-import { Phone, PhoneIncoming, X, User, MapPin, Clock, ExternalLink } from 'lucide-react';
+import React from 'react';
+import { PhoneIncoming, X, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CallRailCall } from '@/hooks/useCallRailPresence';
-import { useEffect, useState } from 'react';
+import { useCallRailPresence } from '@/hooks/useCallRailPresence';
+import { useNavigate } from 'react-router-dom';
 
-interface IncomingCallBannerProps {
-  calls: CallRailCall[];
-  onDismiss: (callId: string) => void;
-}
+export const IncomingCallBanner: React.FC = () => {
+  const { ringing, dismissRinging } = useCallRailPresence();
+  const navigate = useNavigate();
 
-function formatPhone(phone: string | null) {
-  if (!phone) return 'Unknown number';
-  const s = phone.replace(/[^0-9+]/g, '');
-  if (s.startsWith('+44') && s.length === 13) {
-    return `0${s.slice(3)}`;
-  }
-  return s;
-}
+  if (!ringing) return null;
 
-function elapsedSince(startedAt: string | null) {
-  if (!startedAt) return '0:00';
-  const diff = Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
-  const m = Math.floor(diff / 60).toString().padStart(1, '0');
-  const s = (diff % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
+  const displayName = ringing.caller_name || 'Unknown caller';
+  const location = [ringing.caller_city, ringing.caller_state].filter(Boolean).join(', ');
 
-export const IncomingCallBanner = ({ calls, onDismiss }: IncomingCallBannerProps) => {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    if (calls.length === 0) return;
-    const timer = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, [calls.length]);
-
-  if (calls.length === 0) return null;
+  const openLead = () => {
+    if (ringing.matched_lead_id) {
+      navigate(`/admin-dashboard/?tab=new-leads&leadId=${ringing.matched_lead_id}`);
+    } else if (ringing.matched_customer_id) {
+      navigate(`/admin-dashboard/?tab=customers&customerId=${ringing.matched_customer_id}`);
+    }
+    dismissRinging();
+  };
 
   return (
-    <div className="fixed top-0 inset-x-0 z-[100] flex flex-col gap-2">
-      {calls.map((call) => (
-        <Card
-          key={call.id}
-          className="mx-2 mt-2 md:mx-6 md:mt-4 bg-emerald-600 text-white border-emerald-700 shadow-2xl animate-pulse"
+    <div className="fixed top-4 right-4 z-[100] w-[380px] max-w-[calc(100vw-2rem)] rounded-xl border-2 border-green-500 bg-white shadow-2xl animate-in slide-in-from-top-4">
+      <div className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-t-xl">
+        <PhoneIncoming className="w-4 h-4 animate-pulse" />
+        <span className="font-semibold text-sm uppercase tracking-wide">Incoming call</span>
+        <button
+          onClick={dismissRinging}
+          className="ml-auto p-1 hover:bg-white/20 rounded"
+          aria-label="Dismiss"
         >
-          <div className="px-4 py-4 md:px-6 md:py-5 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 md:gap-4 min-w-0">
-              <div className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                <PhoneIncoming className="h-6 w-6 md:h-7 md:w-7 text-white" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-lg md:text-2xl font-bold truncate">{formatPhone(call.caller_number)}</span>
-                  <Badge className="bg-white text-emerald-700 font-bold text-xs uppercase tracking-wider hover:bg-white">
-                    Incoming
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-3 mt-1 text-emerald-50 text-xs md:text-sm flex-wrap">
-                  {call.caller_name && (
-                    <span className="flex items-center gap-1">
-                      <User className="h-3 w-3" /> {call.caller_name}
-                    </span>
-                  )}
-                  {(call.caller_city || call.caller_state) && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {[call.caller_city, call.caller_state].filter(Boolean).join(', ')}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {elapsedSince(call.started_at)}
-                  </span>
-                  {call.tracked_number && (
-                    <span className="hidden md:inline">via {formatPhone(call.tracked_number)}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 md:gap-3 shrink-0">
-              {call.matched_lead_id && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="hidden md:flex bg-white text-emerald-700 hover:bg-emerald-50 font-semibold"
-                  asChild
-                >
-                  <a href={`/dealer-admin/new-leads?id=${call.matched_lead_id}`}>
-                    <ExternalLink className="h-4 w-4 mr-1" /> View lead
-                  </a>
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-white hover:bg-white/20 h-8 w-8 p-0"
-                onClick={() => onDismiss(call.id)}
-                aria-label="Dismiss"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="p-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <User className="w-5 h-5 text-slate-500" />
+          <div>
+            <div className="font-semibold text-slate-900">{displayName}</div>
+            {location && <div className="text-xs text-slate-500">{location}</div>}
           </div>
-        </Card>
-      ))}
+        </div>
+        <div className="text-lg font-mono text-slate-800">{ringing.caller_number ?? '—'}</div>
+        {ringing.tracked_number && (
+          <div className="text-xs text-slate-500">
+            To: <span className="font-mono">{ringing.tracked_number}</span>
+          </div>
+        )}
+        {(ringing.matched_lead_id || ringing.matched_customer_id) && (
+          <Button size="sm" className="w-full mt-2" onClick={openLead}>
+            Open {ringing.matched_customer_id ? 'customer' : 'lead'}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

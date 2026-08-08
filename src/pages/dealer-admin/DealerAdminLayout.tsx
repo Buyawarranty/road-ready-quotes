@@ -108,7 +108,7 @@ const navGroups: NavGroup[] = [
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const { activeCalls, missedCalls, acknowledgeMissedCall, dismissActiveCall } = useCallRailPresence();
+  const { ringing, missed, acknowledge } = useCallRailPresence();
   const [allowed, setAllowed] = useState<boolean | null>(null);
   const [gateUnlocked, setGateUnlocked] = useState<boolean>(
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
@@ -117,7 +117,7 @@ const DealerAdminLayout: React.FC = () => {
     () => Object.fromEntries(navGroups.map((g) => [g.label, true]))
   );
 
-  const bannerCount = activeCalls.length + missedCalls.length;
+  const bannerCount = (ringing ? 1 : 0) + missed.length;
 
   useEffect(() => {
     if (!gateUnlocked) {
@@ -158,8 +158,9 @@ const DealerAdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-muted/20 w-full">
-      <IncomingCallBanner calls={activeCalls} onDismiss={dismissActiveCall} />
-      <MissedCallBanner calls={missedCalls} onAcknowledge={acknowledgeMissedCall} />
+      <IncomingCallBanner />
+      <MissedCallBanner calls={missed} onAcknowledge={acknowledge} />
+
       <aside className="w-64 bg-card border-r border-border flex flex-col">
         <div className="px-5 py-5 border-b border-border">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Panda Protect</p>

@@ -1,239 +1,176 @@
-import React, { useState, memo } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { memo, useEffect, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Phone, Plus, Minus, AlertTriangle, ClipboardList } from 'lucide-react';
+import { Phone, Minus, Plus } from 'lucide-react';
 import { Lead, LeadStatus } from '@/hooks/useLeads';
-import { CallAttemptDialog } from './CallAttemptDialog';
-import { CallOutcome, useLeadCallTracking } from '@/hooks/useLeadCallTracking';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { addSystemNote } from '@/utils/leadSystemNotes';
+import { subscribeLiveCallStats, primeLiveCallStat, LiveCallStat } from '@/lib/liveCallStats';
+
 
 interface CallCountCellProps {
   lead: Lead;
-  onUpdateCallCount: (increment: number) => void;
-  onUpdateStatus: (status: LeadStatus) => void;
-  onScheduleFollowUp: (actionType: string, actionDate: string) => void;
-  onLogActivity: (type: string, description: string) => void;
+  // Kept for prop compatibility with existing call sites; no longer used.
+  onUpdateCallCount?: (increment: number) => void;
+  onUpdateStatus?: (status: LeadStatus) => void;
+  onScheduleFollowUp?: (actionType: string, actionDate: string) => void;
+  onLogActivity?: (type: string, description: string) => void;
   agentId?: string;
   agentName?: string;
 }
 
-const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
-  { value: 'follow_up', label: 'Follow Up Later' },
-  { value: 'lost', label: 'Unreachable' },
-];
+/**
+ * Call counter — automatic, with a manual backup.
+ *
+ * The base number is derived by the database from real Dial 9 / Zoiper
+ * outbound calls to the customer's phone number (see
+ * `recompute_sales_lead_call_count`). A shared 30s poller keeps the number
+ * live while the leads list is open, so calls made right now show up without
+ * a page refresh.
+ *
+ * The +/- buttons write to `sales_leads.manual_call_adjustment` — a separate
+ * offset that survives every automatic recount. They exist as a BACKUP for
+ * when the softphone/Dial 9 sync misses a call (e.g. agent dialled from a
+ * mobile). Because the offset is stored apart from the auto count, a manual
+ * bump can no longer be double-counted by the sync.
+ */
+export const CallCountCell: React.FC<CallCountCellProps> = memo(({ lead, agentId }) => {
+  const [optimistic, setOptimistic] = useState<number | null>(null);
+  const [lastCallOverride, setLastCallOverride] = useState<string | null>(null);
+  const [live, setLive] = useState<LiveCallStat | null>(null);
+  const [busy, setBusy] = useState(false);
 
-export const CallCountCell: React.FC<CallCountCellProps> = memo(({
-  lead,
-  onUpdateCallCount,
-  onUpdateStatus,
-  onScheduleFollowUp,
-  onLogActivity,
-  agentId,
-  agentName
-}) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { settings, logCallAttempt } = useLeadCallTracking();
+  // Keep this row's counter in sync with Dial 9 events as they land.
+  useEffect(() => {
+    setLive(null);
+    setOptimistic(null);
+    setLastCallOverride(null);
+    return subscribeLiveCallStats(lead.id, (stat) => setLive(stat));
+  }, [lead.id]);
 
-  const callCount = lead.call_count || 0;
-  const isMaxReached = callCount >= settings.max_call_attempts;
-  const isNearMax = callCount === settings.max_call_attempts - 1;
+  const callCount = optimistic ?? live?.call_count ?? (lead.call_count || 0);
+  const adjustment = live?.manual_call_adjustment ?? (lead as any).manual_call_adjustment ?? 0;
+  const lastContacted = lastCallOverride ?? live?.last_contacted_at ?? (lead as any).last_contacted_at ?? null;
 
-  const displayName = lead.first_name || lead.last_name 
-    ? `${lead.first_name || ''} ${lead.last_name || ''}`.trim()
-    : lead.full_name || lead.email;
 
-  // Quick increment without dialog
-  const handleQuickIncrement = async () => {
-    if (isMaxReached) {
-      toast.warning(`Max call attempts reached (${settings.max_call_attempts}). Move lead to next status.`);
+  const formatWhen = (iso: string) => {
+    const d = new Date(iso);
+    const mins = Math.round((Date.now() - d.getTime()) / 60000);
+    const rel =
+      mins < 1 ? 'just now'
+      : mins < 60 ? `${mins}m ago`
+      : mins < 1440 ? `${Math.round(mins / 60)}h ago`
+      : `${Math.round(mins / 1440)}d ago`;
+    return `${d.toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })} (${rel})`;
+  };
+
+  const adjust = async (delta: 1 | -1, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (busy) return;
+    if (delta === -1 && callCount <= 0) return;
+    setBusy(true);
+    const next = Math.max(callCount + delta, 0);
+    setOptimistic(next);
+    const { data, error } = await supabase.rpc('adjust_sales_lead_call_count', {
+      p_lead_id: lead.id,
+      p_delta: delta,
+    });
+    setBusy(false);
+    if (error) {
+      setOptimistic(null);
+      toast.error('Could not adjust the call count');
       return;
     }
-    
-    const newAttemptNumber = callCount + 1;
-    
-    // Log the call attempt with default outcome
-    const { success } = await logCallAttempt({
-      leadId: lead.id,
-      attemptNumber: newAttemptNumber,
-      outcome: 'no_answer',
-      notes: '',
-      agentId,
-      agentName
+    const confirmed = typeof data === 'number' ? data : next;
+    setOptimistic(confirmed);
+    // Prime the shared poller cache so the next poll doesn't flash the old value.
+    primeLiveCallStat(lead.id, {
+      call_count: confirmed,
+      manual_call_adjustment: adjustment + delta,
+      last_contacted_at: delta === 1 ? new Date().toISOString() : lastContacted,
     });
 
-    if (success) {
-      onUpdateCallCount(1);
-      onLogActivity('call_attempt', `Call attempt #${newAttemptNumber}: no answer`);
-      toast.success(`Call Attempts: ${newAttemptNumber}`);
+
+    if (delta === 1) {
+      const nowIso = new Date().toISOString();
+      setLastCallOverride(nowIso);
+      // Stamp the contact time so "last call" is visible everywhere
+      supabase
+        .from('sales_leads')
+        .update({ last_contacted_at: nowIso })
+        .eq('id', lead.id)
+        .then(() => {});
+      addSystemNote(
+        lead.id,
+        `📞 Call logged manually (call #${next}) — not captured by Dial 9 / Zoiper sync.`,
+        agentId ?? null
+      );
+      toast.success('Call logged to notes');
+    } else {
+      addSystemNote(lead.id, `↩️ Manual call count corrected down (now ${next}).`, agentId ?? null);
     }
   };
 
-  // Open dialog for detailed logging
-  const handleOpenDialog = () => {
-    if (isMaxReached) {
-      toast.warning(`Max call attempts reached (${settings.max_call_attempts}). Move lead to next status.`);
-      return;
-    }
-    setDialogOpen(true);
-  };
-
-  const handleCallSubmit = async (outcome: CallOutcome, notes: string) => {
-    const newAttemptNumber = callCount + 1;
-
-    // Log the call attempt
-    const { success, nextFollowUpDate } = await logCallAttempt({
-      leadId: lead.id,
-      attemptNumber: newAttemptNumber,
-      outcome,
-      notes,
-      agentId,
-      agentName
-    });
-
-    if (success) {
-      // Increment the call count
-      onUpdateCallCount(1);
-
-      // Log activity
-      onLogActivity('call_attempt', `Call attempt #${newAttemptNumber}: ${outcome.replace('_', ' ')}${notes ? ` - ${notes}` : ''}`);
-
-      // Schedule follow-up if suggested
-      if (nextFollowUpDate && (outcome === 'no_answer' || outcome === 'voicemail' || outcome === 'busy')) {
-        onScheduleFollowUp('call', nextFollowUpDate.toISOString());
-      }
-
-      toast.success(`Call Attempts updated to ${newAttemptNumber}`, {
-        description: outcome === 'connected' ? 'Great job!' : 'Follow-up scheduled'
-      });
-    }
-  };
-
-  const handleStatusChange = (status: LeadStatus) => {
-    onUpdateStatus(status);
-    onLogActivity('status_change', `Status changed to ${status} after ${callCount} call attempts`);
-  };
 
   return (
-    <>
-      <div className="flex items-center justify-center gap-0.5">
-        {/* Decrement button */}
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 text-muted-foreground hover:text-red-600 hover:bg-red-50"
-              onClick={() => onUpdateCallCount(-1)}
-              disabled={callCount <= 0}
-            >
-              <Minus className="h-3 w-3" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="text-xs">Decrease count</TooltipContent>
-        </Tooltip>
-
-        {/* Call count display */}
-        <div className="relative">
+    <Tooltip delayDuration={100}>
+      <TooltipTrigger asChild>
+        <div className="flex items-center justify-center gap-0.5">
+          <button
+            type="button"
+            onClick={(e) => adjust(-1, e)}
+            disabled={busy || callCount <= 0}
+            aria-label="Decrease call count"
+            className="h-5 w-5 rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 flex items-center justify-center"
+          >
+            <Minus className="h-3 w-3" />
+          </button>
+          <Phone className={cn(
+            "h-3 w-3 mx-0.5",
+            callCount === 0 ? "text-muted-foreground" : "text-primary"
+          )} />
           <span className={cn(
-            "min-w-[24px] text-center text-sm font-medium inline-block",
+            "min-w-[18px] text-center text-sm font-medium tabular-nums",
             callCount === 0 && "text-muted-foreground",
-            callCount > 0 && callCount < settings.max_call_attempts && "text-primary",
-            isMaxReached && "text-red-600"
+            callCount > 0 && "text-primary"
           )}>
             {callCount}
           </span>
-          {isMaxReached && (
-            <Tooltip delayDuration={100}>
-              <TooltipTrigger asChild>
-                <span className="absolute -top-1 -right-2">
-                  <AlertTriangle className="h-3 w-3 text-amber-500" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-[200px] text-xs">
-                Max call attempts reached ({settings.max_call_attempts}). Move lead to next status or schedule nurture.
-              </TooltipContent>
-            </Tooltip>
-          )}
+          <button
+            type="button"
+            onClick={(e) => adjust(1, e)}
+            disabled={busy}
+            aria-label="Increase call count"
+            className="h-5 w-5 rounded border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 flex items-center justify-center"
+          >
+            <Plus className="h-3 w-3" />
+          </button>
         </div>
-
-        {/* +1 Call button or status change */}
-        {isMaxReached ? (
-          <Select onValueChange={(value) => handleStatusChange(value as LeadStatus)}>
-            <SelectTrigger className="w-[90px] h-6 text-[10px] border-amber-300 bg-amber-50 text-amber-700">
-              <SelectValue placeholder="Move to..." />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value} className="text-xs">
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <>
-            {/* Quick +1 button (no dialog) */}
-            <Tooltip delayDuration={100}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-6 w-6 hover:bg-green-50",
-                    isNearMax 
-                      ? "text-amber-600 hover:text-amber-700" 
-                      : "text-green-600 hover:text-green-700"
-                  )}
-                  onClick={handleQuickIncrement}
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {isNearMax ? 'Last attempt before max' : 'Quick +1 call'}
-              </TooltipContent>
-            </Tooltip>
-            
-            {/* Detailed log button (opens dialog) */}
-            <Tooltip delayDuration={100}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 text-muted-foreground hover:text-primary hover:bg-primary/10"
-                  onClick={handleOpenDialog}
-                >
-                  <ClipboardList className="h-3 w-3" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Log with details
-              </TooltipContent>
-            </Tooltip>
-          </>
-        )}
-      </div>
-
-      {/* Call Attempt Dialog */}
-      <CallAttemptDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        leadName={displayName}
-        currentCallCount={callCount}
-        maxCallAttempts={settings.max_call_attempts}
-        followUpIntervals={settings.call_follow_up_intervals}
-        onSubmit={handleCallSubmit}
-      />
-    </>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[260px] text-xs space-y-1">
+        <div className="font-medium">
+          {lastContacted ? `Last call: ${formatWhen(lastContacted)}` : 'No call logged yet'}
+        </div>
+        <div>
+          Counts real outbound calls via Dial 9 / Zoiper automatically. Use +/- only as a backup —
+          each manual + writes a timestamped note to the lead
+          {adjustment !== 0 && ` (manual adjustment: ${adjustment > 0 ? '+' : ''}${adjustment})`}.
+        </div>
+      </TooltipContent>
+    </Tooltip>
   );
 }, (prevProps, nextProps) => {
   return (
     prevProps.lead.id === nextProps.lead.id &&
     prevProps.lead.call_count === nextProps.lead.call_count &&
+    (prevProps.lead as any).manual_call_adjustment === (nextProps.lead as any).manual_call_adjustment &&
+    (prevProps.lead as any).last_contacted_at === (nextProps.lead as any).last_contacted_at &&
     prevProps.lead.status === nextProps.lead.status
   );
 });
+
+
 
 CallCountCell.displayName = 'CallCountCell';

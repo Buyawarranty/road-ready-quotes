@@ -337,7 +337,7 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
             status: 'converted' as const,
             converted_at: now,
             last_activity_date: now,
-            notes: `PAID via Stripe - £${amount.toFixed(2)} - Marked by admin${additionalNotes ? `\n\nW2K Notes: ${additionalNotes}` : ''}`
+            notes: `PAID via Stripe - £${amount.toFixed(2)} - Marked by admin${additionalNotes ? `\n\nNotes: ${additionalNotes}` : ''}`
           })
           .eq('id', lead.id);
       }
@@ -360,38 +360,13 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
           .from('admin_notes')
           .insert({
             customer_id: customerId,
-            note: `Manual Stripe Payment - W2K Notes: ${additionalNotes}`,
+            note: `Manual Stripe Payment - Notes: ${additionalNotes}`,
             created_by: user?.id
           });
       }
 
-      // 5. Send to Warranties Register
-      if (sendToW2k) {
-        console.log('🔄 Sending to Warranties Register...');
-        try {
-          const { error: w2kError } = await supabase.functions.invoke(
-            'send-to-warranties-2000',
-            {
-              body: {
-                customerId: customerId,
-                policyId: policyData.id,
-                force: true,
-                additionalNotes: additionalNotes || undefined
-              }
-            }
-          );
+      // Warranties Register integration removed — internal handling only.
 
-          if (w2kError) {
-            console.error('W2K Error:', w2kError);
-            toast.warning('Order created but failed to send to Warranties Register');
-          } else {
-            console.log('✅ Sent to Warranties Register');
-          }
-        } catch (w2kErr) {
-          console.error('W2K Exception:', w2kErr);
-          toast.warning('Order created but Warranties Register submission failed');
-        }
-      }
 
       // 6. Send welcome email
       if (sendWelcomeEmail) {
@@ -651,18 +626,6 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
                   </div>
                 </div>
 
-                {/* W2K Notes */}
-                <div>
-                  <Label htmlFor="additionalNotes">Additional Notes for Warranties Register</Label>
-                  <Textarea
-                    id="additionalNotes"
-                    value={additionalNotes}
-                    onChange={(e) => setAdditionalNotes(e.target.value)}
-                    placeholder="Special instructions for W2K..."
-                    rows={2}
-                    className="mt-1"
-                  />
-                </div>
               </TabsContent>
 
               <TabsContent value="addons" className="space-y-3 mt-3">
@@ -700,10 +663,6 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
             {/* Options */}
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Checkbox id="sendToW2k" checked={sendToW2k} onCheckedChange={(c) => setSendToW2k(!!c)} />
-                <Label htmlFor="sendToW2k" className="cursor-pointer">Send to Warranties Register</Label>
-              </div>
-              <div className="flex items-center space-x-2">
                 <Checkbox id="sendWelcomeEmail" checked={sendWelcomeEmail} onCheckedChange={(c) => setSendWelcomeEmail(!!c)} />
                 <Label htmlFor="sendWelcomeEmail" className="cursor-pointer">Send welcome email with portal login</Label>
               </div>
@@ -712,7 +671,7 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
             <Alert>
               <CheckCircle2 className="h-4 w-4" />
               <AlertDescription>
-                This creates a customer record, policy, marks all cart entries as converted, and sends to W2K.
+                This creates a customer record, policy, and marks all cart entries as converted.
               </AlertDescription>
             </Alert>
           </div>

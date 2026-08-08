@@ -11,7 +11,9 @@ import { PerformanceInsights } from './blog/PerformanceInsights';
 import { PreviewTools } from './blog/PreviewTools';
 import { AIOptimizationTools } from './blog/AIOptimizationTools';
 import { ContentCalendar } from './blog/ContentCalendar';
-import { PenTool, Search, Image, FolderOpen, BarChart3, Eye, Brain, Calendar } from 'lucide-react';
+import { HeroImageValidator } from './blog/HeroImageValidator';
+import { BlogAnalyticsTab } from './blog/BlogAnalyticsTab';
+import { PenTool, Search, Image, FolderOpen, BarChart3, Eye, Brain, Calendar, ShieldCheck, LineChart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -38,6 +40,7 @@ export const BlogWritingTab = () => {
         .select(`
           id,
           title,
+          slug,
           status,
           updated_at,
           view_count,
@@ -61,7 +64,7 @@ export const BlogWritingTab = () => {
       setStats({
         total,
         published,
-        avgSeoScore: 82, // Could calculate from actual SEO scores if stored
+        avgSeoScore: 0, // Not tracked — no SEO score column exists on blog_posts
         monthlyViews: totalViews
       });
     } catch (error: any) {
@@ -86,8 +89,8 @@ export const BlogWritingTab = () => {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Blog Writing Portal</h1>
-          <p className="text-gray-600 mt-2">Create, optimize, and publish expert content that performs</p>
+          <h1 className="text-3xl font-bold text-gray-900">Blogs</h1>
+          <p className="text-gray-600 mt-2">Create, optimize, and track blog & landing page performance</p>
         </div>
         <Button 
           onClick={() => setActivePost('new')}
@@ -127,7 +130,7 @@ export const BlogWritingTab = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Avg SEO Score</p>
-                <p className="text-2xl font-bold">{stats.avgSeoScore}</p>
+                <p className="text-2xl font-bold text-gray-400" title="Not tracked yet">—</p>
               </div>
               <Search className="w-8 h-8 text-blue-600" />
             </div>
@@ -146,8 +149,12 @@ export const BlogWritingTab = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="editor" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-8">
+      <Tabs defaultValue="analytics" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-10">
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <LineChart className="w-4 h-4" />
+            Analytics
+          </TabsTrigger>
           <TabsTrigger value="editor" className="flex items-center gap-2">
             <PenTool className="w-4 h-4" />
             Editor
@@ -180,7 +187,15 @@ export const BlogWritingTab = () => {
             <Calendar className="w-4 h-4" />
             Calendar
           </TabsTrigger>
+          <TabsTrigger value="hero-check" className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            Hero Check
+          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="analytics">
+          <BlogAnalyticsTab />
+        </TabsContent>
 
         <TabsContent value="editor" className="space-y-6">
           {activePost ? (
@@ -235,7 +250,8 @@ export const BlogWritingTab = () => {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => window.open(`/blog/${post.id}`, '_blank')}
+                              disabled={!post.slug}
+                              onClick={() => post.slug && window.open(`/blog/${post.slug}`, '_blank')}
                             >
                               View
                             </Button>
@@ -276,6 +292,10 @@ export const BlogWritingTab = () => {
 
         <TabsContent value="calendar">
           <ContentCalendar />
+        </TabsContent>
+
+        <TabsContent value="hero-check">
+          <HeroImageValidator />
         </TabsContent>
       </Tabs>
     </div>

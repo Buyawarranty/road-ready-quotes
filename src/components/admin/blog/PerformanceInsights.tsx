@@ -1,422 +1,324 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart3, TrendingUp, Eye, Users, Clock, MousePointer, 
-  Share2, Search, Globe, Target, ArrowUp, ArrowDown, 
-  Calendar, Download, RefreshCw, Filter
-} from 'lucide-react';
+import { BarChart3, Eye, TrendingUp, Users, Globe, Megaphone, Info } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+
+interface PostRow {
+  id: string;
+  title: string;
+  slug: string | null;
+  view_count: number | null;
+  status: string | null;
+  published_at: string | null;
+}
+
+interface ViewRow {
+  page_path: string;
+  referrer: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  session_id: string | null;
+  visitor_id: string | null;
+  created_at: string;
+}
+
+const WINDOW_DAYS = 30;
+
+const classifyReferrer = (ref: string | null): string => {
+  if (!ref) return 'Direct';
+  try {
+    const host = new URL(ref).hostname.replace(/^www\./, '');
+    if (!host) return 'Direct';
+    if (host.includes('buyawarranty')) return 'Internal';
+    if (host.includes('google')) return 'Google';
+    if (host.includes('bing')) return 'Bing';
+    if (host.includes('duckduckgo')) return 'DuckDuckGo';
+    if (host.includes('facebook') || host.includes('fb.com') || host.includes('instagram')) return 'Meta';
+    if (host.includes('t.co') || host.includes('twitter') || host.includes('x.com')) return 'X / Twitter';
+    if (host.includes('linkedin')) return 'LinkedIn';
+    if (host.includes('reddit')) return 'Reddit';
+    if (host.includes('youtube')) return 'YouTube';
+    return host;
+  } catch {
+    return 'Direct';
+  }
+};
 
 export const PerformanceInsights = () => {
-  const performanceData = {
-    totalViews: 45230,
-    uniqueVisitors: 32180,
-    avgTimeOnPage: '3:42',
-    bounceRate: 32.5,
-    socialShares: 1247,
-    organicTraffic: 78.2,
-    clickThroughRate: 4.8,
-    conversionRate: 2.3
-  };
+  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<PostRow[]>([]);
+  const [views, setViews] = useState<ViewRow[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const topArticles = [
-    {
-      title: 'Complete Guide to EV Warranties in 2025',
-      views: 8945,
-      engagement: 87,
-      shares: 342,
-      trend: 'up',
-      trendValue: 12
-    },
-    {
-      title: 'Car Warranty vs Extended Warranty: Key Differences',
-      views: 6723,
-      engagement: 92,
-      shares: 198,
-      trend: 'up',
-      trendValue: 8
-    },
-    {
-      title: 'Top 10 Most Reliable Car Brands for Warranties',
-      views: 5834,
-      engagement: 76,
-      shares: 156,
-      trend: 'down',
-      trendValue: -3
-    },
-    {
-      title: 'How to Choose the Right Warranty Coverage',
-      views: 4921,
-      engagement: 89,
-      shares: 203,
-      trend: 'up',
-      trendValue: 15
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const sinceIso = new Date(Date.now() - WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
+        const [postsRes, viewsRes] = await Promise.all([
+          supabase
+            .from('blog_posts')
+            .select('id, title, slug, view_count, status, published_at')
+            .order('view_count', { ascending: false, nullsFirst: false })
+            .limit(200),
+          supabase
+            .from('page_views')
+            .select('page_path, referrer, utm_source, utm_medium, session_id, visitor_id, created_at')
+            .like('page_path', '/thewarrantyhub/%')
+            .gte('created_at', sinceIso)
+            .order('created_at', { ascending: false })
+            .limit(5000),
+        ]);
+        if (postsRes.error) throw postsRes.error;
+        if (viewsRes.error) throw viewsRes.error;
+        setPosts((postsRes.data as PostRow[]) || []);
+        setViews((viewsRes.data as ViewRow[]) || []);
+      } catch (e: any) {
+        setError(e?.message || 'Failed to load analytics');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const totalStoredViews = posts.reduce((s, p) => s + (p.view_count || 0), 0);
+  const publishedCount = posts.filter(p => p.status === 'published').length;
+
+  const trackedViews = views.length;
+  const uniqueVisitors = new Set(views.map(v => v.visitor_id).filter(Boolean)).size;
+  const uniqueSessions = new Set(views.map(v => v.session_id).filter(Boolean)).size;
+
+  const referrerBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    views.forEach(v => {
+      const k = classifyReferrer(v.referrer);
+      map.set(k, (map.get(k) || 0) + 1);
+    });
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+  }, [views]);
+
+  const utmBreakdown = useMemo(() => {
+    const map = new Map<string, number>();
+    views.forEach(v => {
+      if (!v.utm_source) return;
+      const k = v.utm_medium ? `${v.utm_source} / ${v.utm_medium}` : v.utm_source;
+      map.set(k, (map.get(k) || 0) + 1);
+    });
+    return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
+  }, [views]);
+
+  const timeline = useMemo(() => {
+    const days: { date: string; views: number }[] = [];
+    const buckets = new Map<string, number>();
+    views.forEach(v => {
+      const d = new Date(v.created_at).toISOString().slice(0, 10);
+      buckets.set(d, (buckets.get(d) || 0) + 1);
+    });
+    for (let i = WINDOW_DAYS - 1; i >= 0; i--) {
+      const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      days.push({ date: d.slice(5), views: buckets.get(d) || 0 });
     }
-  ];
+    return days;
+  }, [views]);
 
-  const trafficSources = [
-    { source: 'Organic Search', percentage: 64.2, visitors: 20652, color: 'bg-green-500' },
-    { source: 'Direct', percentage: 18.7, visitors: 6017, color: 'bg-blue-500' },
-    { source: 'Social Media', percentage: 9.3, visitors: 2993, color: 'bg-purple-500' },
-    { source: 'Referral', percentage: 5.8, visitors: 1864, color: 'bg-orange-500' },
-    { source: 'Email', percentage: 2.0, visitors: 643, color: 'bg-yellow-500' }
-  ];
-
-  const keywordRankings = [
-    { keyword: 'car warranty', position: 3, searches: 8900, difficulty: 67 },
-    { keyword: 'extended warranty', position: 7, searches: 5400, difficulty: 54 },
-    { keyword: 'EV warranty', position: 2, searches: 3200, difficulty: 42 },
-    { keyword: 'warranty guide', position: 5, searches: 2100, difficulty: 38 },
-    { keyword: 'car insurance vs warranty', position: 12, searches: 1800, difficulty: 51 }
-  ];
-
-  const getTrendIcon = (trend: string) => {
-    return trend === 'up' ? 
-      <ArrowUp className="w-4 h-4 text-green-600" /> : 
-      <ArrowDown className="w-4 h-4 text-red-600" />;
-  };
-
-  const getRankingColor = (position: number) => {
-    if (position <= 3) return 'bg-green-100 text-green-800';
-    if (position <= 10) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
-  };
+  const topByTracked = useMemo(() => {
+    const map = new Map<string, number>();
+    views.forEach(v => {
+      const key = v.page_path.replace(/^\/thewarrantyhub\//, '').replace(/\/$/, '');
+      if (!key) return; // hub landing itself
+      if (/^page\/\d+$/i.test(key)) return; // pagination
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+    const bySlug = new Map(posts.map(p => [p.slug || '', p]));
+    const byId = new Map(posts.map(p => [p.id, p]));
+    return Array.from(map.entries())
+      .map(([key, count]) => {
+        const post = bySlug.get(key) || byId.get(key);
+        return { key, slug: post?.slug || key, count, post };
+      })
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [views, posts]);
 
   return (
     <div className="space-y-6">
-      {/* Performance Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <Card className="border-emerald-200 bg-emerald-50">
+        <CardContent className="pt-6 flex items-start gap-3">
+          <Info className="w-5 h-5 text-emerald-700 mt-0.5" />
+          <div className="text-sm text-emerald-900">
+            <p className="font-semibold">Real traffic tracking is live</p>
+            <p>
+              Every public blog pageview is logged server-side to <code>page_views</code> with referrer,
+              UTM tags and visitor/session IDs. Numbers below are actual visitor data from the last {WINDOW_DAYS} days.
+              Time-on-page and bounce rate still require GA4.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Views</p>
-                <p className="text-2xl font-bold">{performanceData.totalViews.toLocaleString()}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <ArrowUp className="w-3 h-3 text-green-600" />
-                  <span className="text-xs text-green-600">+12.4%</span>
-                </div>
+          <CardHeader className="pb-2">
+            <CardDescription>Pageviews (30d)</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <Eye className="w-6 h-6 text-blue-600" />
+              {loading ? '—' : trackedViews.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-gray-500">From page_views</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Unique Visitors</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <Users className="w-6 h-6 text-indigo-600" />
+              {loading ? '—' : uniqueVisitors.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-gray-500">Distinct visitor_id</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Sessions</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <TrendingUp className="w-6 h-6 text-purple-600" />
+              {loading ? '—' : uniqueSessions.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-gray-500">Distinct session_id</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>All-time Views</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-slate-600" />
+              {loading ? '—' : totalStoredViews.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-gray-500">blog_posts.view_count</CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Published</CardDescription>
+            <CardTitle className="text-3xl flex items-center gap-2">
+              <BarChart3 className="w-6 h-6 text-green-600" />
+              {loading ? '—' : publishedCount}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-xs text-gray-500">Live articles</CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Pageviews — last {WINDOW_DAYS} days</CardTitle>
+          <CardDescription>Daily blog pageviews from real traffic</CardDescription>
+        </CardHeader>
+        <CardContent className="h-64">
+          {loading ? (
+            <p className="text-gray-500 text-sm py-6 text-center">Loading…</p>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={timeline}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="date" fontSize={11} />
+                <YAxis allowDecimals={false} fontSize={11} />
+                <Tooltip />
+                <Line type="monotone" dataKey="views" stroke="#2563eb" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="w-4 h-4" /> Traffic Sources
+            </CardTitle>
+            <CardDescription>Where visitors came from (referrer domain)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <p className="text-gray-500 text-sm py-4 text-center">Loading…</p>
+            ) : referrerBreakdown.length === 0 ? (
+              <p className="text-gray-500 text-sm py-4 text-center">No traffic yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {referrerBreakdown.slice(0, 8).map(([k, count]) => (
+                  <div key={k} className="flex items-center justify-between text-sm">
+                    <span className="truncate">{k}</span>
+                    <Badge variant="secondary">{count}</Badge>
+                  </div>
+                ))}
               </div>
-              <Eye className="w-8 h-8 text-blue-600" />
-            </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Unique Visitors</p>
-                <p className="text-2xl font-bold">{performanceData.uniqueVisitors.toLocaleString()}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <ArrowUp className="w-3 h-3 text-green-600" />
-                  <span className="text-xs text-green-600">+8.7%</span>
-                </div>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="w-4 h-4" /> Campaigns (UTM)
+            </CardTitle>
+            <CardDescription>utm_source / utm_medium breakdown</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <p className="text-gray-500 text-sm py-4 text-center">Loading…</p>
+            ) : utmBreakdown.length === 0 ? (
+              <p className="text-gray-500 text-sm py-4 text-center">No UTM-tagged visits in this window.</p>
+            ) : (
+              <div className="space-y-2">
+                {utmBreakdown.slice(0, 8).map(([k, count]) => (
+                  <div key={k} className="flex items-center justify-between text-sm">
+                    <span className="truncate">{k}</span>
+                    <Badge variant="secondary">{count}</Badge>
+                  </div>
+                ))}
               </div>
-              <Users className="w-8 h-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Avg. Time</p>
-                <p className="text-2xl font-bold">{performanceData.avgTimeOnPage}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <ArrowUp className="w-3 h-3 text-green-600" />
-                  <span className="text-xs text-green-600">+15.2%</span>
-                </div>
-              </div>
-              <Clock className="w-8 h-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Bounce Rate</p>
-                <p className="text-2xl font-bold">{performanceData.bounceRate}%</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <ArrowDown className="w-3 h-3 text-green-600" />
-                  <span className="text-xs text-green-600">-3.1%</span>
-                </div>
-              </div>
-              <MousePointer className="w-8 h-8 text-orange-600" />
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="articles" className="space-y-6">
-        <div className="flex justify-between items-center">
-          <TabsList>
-            <TabsTrigger value="articles">Top Articles</TabsTrigger>
-            <TabsTrigger value="traffic">Traffic Sources</TabsTrigger>
-            <TabsTrigger value="keywords">Keywords</TabsTrigger>
-            <TabsTrigger value="social">Social Media</TabsTrigger>
-          </TabsList>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
-            <Button variant="outline" size="sm">
-              <Calendar className="w-4 h-4 mr-2" />
-              Last 30 Days
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export
-            </Button>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-
-        <TabsContent value="articles">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Top Performing Articles
-              </CardTitle>
-              <CardDescription>Your most successful blog posts this month</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topArticles.map((article, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex-1">
-                      <h4 className="font-medium mb-2">{article.title}</h4>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          <span>{article.views.toLocaleString()} views</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Target className="w-4 h-4" />
-                          <span>{article.engagement}% engagement</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Share2 className="w-4 h-4" />
-                          <span>{article.shares} shares</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        {getTrendIcon(article.trend)}
-                        <span className={`text-sm ${article.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                          {article.trend === 'up' ? '+' : ''}{article.trendValue}%
-                        </span>
-                      </div>
-                      <Button variant="outline" size="sm">View Details</Button>
+      <Card>
+        <CardHeader>
+          <CardTitle>Top Articles (last {WINDOW_DAYS} days)</CardTitle>
+          <CardDescription>Ranked by real pageviews in the window</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <p className="text-gray-500 text-sm py-6 text-center">Loading…</p>
+          ) : error ? (
+            <p className="text-red-600 text-sm py-6 text-center">{error}</p>
+          ) : topByTracked.length === 0 ? (
+            <p className="text-gray-500 text-sm py-6 text-center">No tracked pageviews yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {topByTracked.map((row, i) => (
+                <div key={row.key} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-gray-400 text-sm w-6">#{i + 1}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium truncate">
+                        {row.post?.title || <span className="text-gray-500 italic">Unknown / deleted post</span>}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">/thewarrantyhub/{row.slug}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="traffic">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="w-5 h-5" />
-                Traffic Sources
-              </CardTitle>
-              <CardDescription>Where your blog visitors are coming from</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {trafficSources.map((source, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{source.source}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">{source.visitors.toLocaleString()} visitors</span>
-                        <Badge variant="secondary">{source.percentage}%</Badge>
-                      </div>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`${source.color} h-2 rounded-full transition-all duration-300`}
-                        style={{ width: `${source.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <h4 className="font-medium text-green-800">Organic Growth</h4>
-                  <p className="text-2xl font-bold text-green-600">{performanceData.organicTraffic}%</p>
-                  <p className="text-sm text-green-600">+5.2% from last month</p>
+                  <Badge variant="secondary" className="ml-3 shrink-0">
+                    {row.count.toLocaleString()} views
+                  </Badge>
                 </div>
-                <div className="p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-800">Click-Through Rate</h4>
-                  <p className="text-2xl font-bold text-blue-600">{performanceData.clickThroughRate}%</p>
-                  <p className="text-sm text-blue-600">+0.8% from last month</p>
-                </div>
-                <div className="p-4 bg-purple-50 rounded-lg">
-                  <h4 className="font-medium text-purple-800">Social Shares</h4>
-                  <p className="text-2xl font-bold text-purple-600">{performanceData.socialShares}</p>
-                  <p className="text-sm text-purple-600">+18.4% from last month</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="keywords">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5" />
-                Keyword Rankings
-              </CardTitle>
-              <CardDescription>Track your search engine rankings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {keywordRankings.map((keyword, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-medium">{keyword.keyword}</h4>
-                        <Badge className={getRankingColor(keyword.position)}>
-                          Position {keyword.position}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <span>{keyword.searches.toLocaleString()} searches/month</span>
-                        <span>Difficulty: {keyword.difficulty}%</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm">Track</Button>
-                      <Button variant="outline" size="sm">Optimize</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 p-4 bg-yellow-50 rounded-lg">
-                <h4 className="font-medium text-yellow-800 mb-2">SEO Opportunities</h4>
-                <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• 5 keywords dropped in rankings - needs attention</li>
-                  <li>• 12 new keyword opportunities identified</li>
-                  <li>• Featured snippet opportunity for "car warranty comparison"</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="social">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Share2 className="w-5 h-5" />
-                Social Media Performance
-              </CardTitle>
-              <CardDescription>How your content performs across social platforms</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">Facebook</h4>
-                    <Badge className="bg-blue-100 text-blue-800">487 shares</Badge>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Reach:</span>
-                      <span>12.4K</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Engagement:</span>
-                      <span>3.2%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">Twitter</h4>
-                    <Badge className="bg-sky-100 text-sky-800">312 shares</Badge>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Impressions:</span>
-                      <span>8.7K</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Engagement:</span>
-                      <span>4.1%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">LinkedIn</h4>
-                    <Badge className="bg-blue-100 text-blue-800">298 shares</Badge>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Reach:</span>
-                      <span>6.2K</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Engagement:</span>
-                      <span>5.8%</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">Pinterest</h4>
-                    <Badge className="bg-red-100 text-red-800">150 shares</Badge>
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Saves:</span>
-                      <span>1.8K</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>CTR:</span>
-                      <span>2.4%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Most Shared Articles</h4>
-                {topArticles.slice(0, 3).map((article, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="font-medium text-sm">{article.title}</span>
-                    <div className="flex items-center gap-2">
-                      <Share2 className="w-4 h-4 text-gray-600" />
-                      <span className="text-sm">{article.shares} shares</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

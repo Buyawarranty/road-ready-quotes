@@ -1,4 +1,12 @@
+import { getVehicleAge } from '@/lib/vehicleAge';
+import { hasLiveVehicleFactorModel } from '@/lib/pricing/vehicleFactorModel';
 // Vehicle validation and pricing adjustment utilities
+
+import { isVehicleBlockedByRules, MANUAL_REFERRAL_MESSAGE } from '@/lib/pricing/vehicleRules';
+import { isVehicleExcluded, stripCosmeticTrims } from '@/lib/vehicleExclusions';
+
+
+
 
 export interface VehicleData {
   make?: string;
@@ -8,6 +16,7 @@ export interface VehicleData {
   year?: string;
   mileage?: string | number;
   manufactureDate?: string; // Full manufacture date (ISO format) for precise age calculation
+  registrationDate?: string; // First registration date (ISO format) — preferred basis for age
 }
 
 export interface PriceAdjustment {
@@ -217,15 +226,19 @@ export function validateVehicleEligibility(vehicleData: VehicleData): { isValid:
   const now = new Date();
   let vehicleAgePrecise: number | null = null;
   
-  // Try to use manufactureDate for precise age calculation
-  if (vehicleData.manufactureDate) {
-    const manufactureDate = new Date(vehicleData.manufactureDate);
-    if (!isNaN(manufactureDate.getTime())) {
-      const ageInMs = now.getTime() - manufactureDate.getTime();
-      const msPerYear = 365.25 * 24 * 60 * 60 * 1000; // Account for leap years
-      vehicleAgePrecise = ageInMs / msPerYear;
-      
+  // Prefer first registration date, then manufacture date, for precise age
+  {
+    const age = getVehicleAge({
+      registrationDate: vehicleData.registrationDate,
+      manufactureDate: vehicleData.manufactureDate,
+      asOf: now,
+    });
+    if (age.ageYears !== null && age.source !== 'year_of_manufacture') {
+      vehicleAgePrecise = age.ageYears;
+
       console.log('🔍 Precise age calculation:', {
+        source: age.source,
+        registrationDate: vehicleData.registrationDate,
         manufactureDate: vehicleData.manufactureDate,
         vehicleAgePrecise: vehicleAgePrecise.toFixed(4),
         threshold: '> 15 years'
@@ -263,28 +276,39 @@ export function validateVehicleEligibility(vehicleData: VehicleData): { isValid:
     }
   }
   
-  // Check excluded makes
+  // Excluded matrix: whole-brand exclusions and specific make + model combinations
+  // (a standard BMW/Mercedes stays coverable, the M or AMG version does not).
+  if (isVehicleExcluded(vehicleData.make, vehicleData.model)) {
+    return {
+      isValid: false,
+      errorMessage: EXCLUSION_ERROR_MESSAGE
+    };
+  }
+
+  // Legacy make-level list (kept for any brand not in the shared matrix)
   if (EXCLUDED_MAKES.includes(make)) {
     return {
       isValid: false,
       errorMessage: EXCLUSION_ERROR_MESSAGE
     };
   }
-  
-  // Check specific model exclusions
+
+  // Check specific model exclusions (cosmetic trims like "S line" / "AMG Line" stripped first)
   if (MODEL_EXCLUSIONS[make]) {
     const excludedModels = MODEL_EXCLUSIONS[make];
     const isExcluded = excludedModels.some(excludedModel => {
       // Normalize both model strings for comparison
-      const normalizedModel = model.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
+      const normalizedModel = stripCosmeticTrims(model).replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
       const normalizedExcludedModel = excludedModel.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim();
-      
+      if (!normalizedModel || !normalizedExcludedModel) return false;
+
       // Check for exact match or if the model starts with the excluded model
       return normalizedModel === normalizedExcludedModel || 
              normalizedModel.startsWith(normalizedExcludedModel + ' ') ||
              normalizedModel.includes(' ' + normalizedExcludedModel + ' ') ||
              normalizedModel.includes(' ' + normalizedExcludedModel);
     });
+
     
     if (isExcluded) {
       return {
@@ -293,9 +317,21 @@ export function validateVehicleEligibility(vehicleData: VehicleData): { isValid:
       };
     }
   }
-  
+
+
+  // Model-specific "Not covered" rules from Admin → Price updates. These apply on the
+  // customer journey and the admin Quotes & Orders page from the same shared list.
+  const ruleName = [vehicleData.make, vehicleData.model].filter(Boolean).join(' ').trim();
+  if (isVehicleBlockedByRules(ruleName)) {
+    return {
+      isValid: false,
+      errorMessage: MANUAL_REFERRAL_MESSAGE
+    };
+  }
+
   return { isValid: true };
 }
+
 
 /**
  * Determine vehicle category for pricing adjustments
@@ -392,9 +428,9 @@ export function calculateVehiclePriceAdjustment(
       break;
       
     case 'range_rover':
-      if (warrantyDurationYears === 1) adjustmentAmount = 300;
-      else if (warrantyDurationYears === 2) adjustmentAmount = 500;
-      else if (warrantyDurationYears === 3) adjustmentAmount = 700;
+      if (warrantyDurationYears === 1) adjustmentAmount = 200;
+      else if (warrantyDurationYears === 2) adjustmentAmount = 400;
+      else if (warrantyDurationYears === 3) adjustmentAmount = 600;
       adjustmentType = 'range_rover_premium';
       breakdown.push({
         baseAdjustment: adjustmentAmount,
@@ -414,16 +450,25 @@ export function calculateVehiclePriceAdjustment(
   }
   
   // Mileage and age surcharges with tiered amounts (non-stacking)
-  
+  // EXCEPTION: Honda and Toyota (all models) are exempt from both age and mileage
+  // surcharges due to their exceptional reliability records.
+  const makeLC = (vehicleData.make || '').toLowerCase().trim();
+  const isReliabilityExempt = makeLC === 'honda' || makeLC === 'toyota';
+
+  // When the Age-based builder figures are published live, age and mileage are
+  // already priced as multipliers on the base grid — adding these legacy fixed
+  // surcharges on top would charge for the same risk twice.
+  const factorModelLive = hasLiveVehicleFactorModel();
+
   // Calculate mileage-based premium for vehicles between 120,001 and 150,000 miles
   // Boundary: 120,001 triggers, 120,000 does NOT. 150,000 triggers, 150,001 does NOT.
   const mileage = typeof vehicleData.mileage === 'string' 
     ? parseInt(vehicleData.mileage.replace(/[^0-9]/g, '')) 
     : vehicleData.mileage;
   
-  const mileageQualifies = mileage && mileage > 120000 && mileage <= 150000;
+  const mileageQualifies = !factorModelLive && !isReliabilityExempt && mileage && mileage > 120000 && mileage <= 150000;
   
-  console.log('🔍 Mileage Check:', { mileage, mileageQualifies, threshold: '120,001 - 150,000' });
+  console.log('🔍 Mileage Check:', { mileage, mileageQualifies, isReliabilityExempt, make: vehicleData.make, threshold: '120,001 - 150,000' });
   
   // Calculate age-based premium for vehicles strictly > 12 years old AND <= 15 years old
   // Uses precise age from manufactureDate if available, otherwise falls back to year calculation
@@ -432,14 +477,16 @@ export function calculateVehiclePriceAdjustment(
   let vehicleAgeYears: number | null = null;
   const now = new Date();
   
-  // Try to use manufactureDate for precise age calculation (in years as decimal)
-  if (vehicleData.manufactureDate) {
-    const manufactureDate = new Date(vehicleData.manufactureDate);
-    if (!isNaN(manufactureDate.getTime())) {
-      const ageInMs = now.getTime() - manufactureDate.getTime();
-      const msPerYear = 365.25 * 24 * 60 * 60 * 1000; // Account for leap years
-      vehicleAgePrecise = ageInMs / msPerYear;
-      vehicleAgeYears = Math.floor(vehicleAgePrecise); // Full years for display
+  // Prefer first registration date, then manufacture date, for precise age
+  {
+    const age = getVehicleAge({
+      registrationDate: vehicleData.registrationDate,
+      manufactureDate: vehicleData.manufactureDate,
+      asOf: now,
+    });
+    if (age.ageYears !== null && age.source !== 'year_of_manufacture') {
+      vehicleAgePrecise = age.ageYears;
+      vehicleAgeYears = age.ageWholeYears; // Full years for display
     }
   }
   
@@ -454,7 +501,7 @@ export function calculateVehiclePriceAdjustment(
   }
   
   // Age qualifies if strictly > 12 years (12.0001+) AND <= 15 years
-  const ageQualifies = vehicleAgePrecise !== null && vehicleAgePrecise > 12 && vehicleAgePrecise <= 15;
+  const ageQualifies = !factorModelLive && !isReliabilityExempt && vehicleAgePrecise !== null && vehicleAgePrecise > 12 && vehicleAgePrecise <= 15;
   
   console.log('🔍 Age Check (Precise):', { 
     'vehicleData.manufactureDate': vehicleData.manufactureDate,
@@ -467,18 +514,18 @@ export function calculateVehiclePriceAdjustment(
   });
   
   // Surcharge tiers by warranty duration
-  // Both age and mileage use the same rates: +£100/£150/£200
+  // Both age and mileage use the same rates: +£200/£250/£300
   // Non-stacking: if both qualify, only one surcharge is applied
   const getAgeSurcharge = (years: number): number => {
-    if (years === 1) return 100;
-    if (years === 2) return 150;
-    if (years === 3) return 200;
+    if (years === 1) return 200;
+    if (years === 2) return 250;
+    if (years === 3) return 300;
     return 0;
   };
   const getMileageSurcharge = (years: number): number => {
-    if (years === 1) return 100;
-    if (years === 2) return 150;
-    if (years === 3) return 200;
+    if (years === 1) return 200;
+    if (years === 2) return 250;
+    if (years === 3) return 300;
     return 0;
   };
 
@@ -535,4 +582,13 @@ export function applyPriceAdjustment(basePrice: number, adjustment: PriceAdjustm
   
   // Handle fixed amount adjustments - use floor for consistent financial calculations
   return Math.floor(basePrice + adjustment.adjustmentAmount);
+}
+
+/**
+ * True when the vehicle adjustment is the motorbike 50% discount.
+ * Used to halve the minimum base price floor so motorbikes really do
+ * come out at 50% of the standard vehicle price.
+ */
+export function isMotorbikeAdjustment(adjustment?: PriceAdjustment | null): boolean {
+  return adjustment?.adjustmentType === 'motorbike_discount';
 }

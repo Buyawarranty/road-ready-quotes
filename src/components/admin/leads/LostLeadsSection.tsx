@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { useAuth } from '@/hooks/useAuth';
+import { getAgentColor, getAgentBadgeColor } from '@/lib/agentColors';
 
 // Disposable/throwaway email domains
 const DISPOSABLE_DOMAINS = new Set([
@@ -89,7 +90,7 @@ interface LostLeadsSectionProps {
 
 export const LostLeadsSection: React.FC<LostLeadsSectionProps> = ({ onRecovered, compact = false, inline = false, salesUsers = [], userRole }) => {
   const { user, loading: authLoading } = useAuth();
-  const showCbColumn = userRole === 'super_admin' || userRole === 'admin' || userRole === 'lead_gen';
+  const showCbColumn = userRole === 'super_admin' || userRole === 'admin' || userRole === 'lead_gen' || userRole === 'accounts_manager';
   const [orphanedLeads, setOrphanedLeads] = useState<OrphanedLead[]>([]);
   const [loading, setLoading] = useState(true);
   const initialLoadDone = React.useRef(false);
@@ -427,22 +428,9 @@ export const LostLeadsSection: React.FC<LostLeadsSectionProps> = ({ onRecovered,
                 {orphanedLeads.map((lead) => {
                   const preAgent = getAgentInfo(lead.preAssignedTo);
                   const agentInitial = preAgent?.first_name?.[0]?.toUpperCase() || '?';
-                  const AGENT_COLOR_MAP: Record<string, { bg: string; badge: string }> = {
-                    'isobel': { bg: 'bg-emerald-600', badge: 'bg-emerald-100 text-emerald-800 border-emerald-300' },
-                    'james': { bg: 'bg-blue-600', badge: 'bg-blue-100 text-blue-800 border-blue-300' },
-                    'ash': { bg: 'bg-violet-600', badge: 'bg-violet-100 text-violet-800 border-violet-300' },
-                  };
-                  const FALLBACK_BADGE_COLORS = [
-                    'bg-orange-100 text-orange-800 border-orange-300',
-                    'bg-pink-100 text-pink-800 border-pink-300',
-                    'bg-indigo-100 text-indigo-800 border-indigo-300',
-                    'bg-teal-100 text-teal-800 border-teal-300',
-                  ];
                   const firstName = (preAgent?.first_name || '').toLowerCase();
-                  const colorEntry = AGENT_COLOR_MAP[firstName];
-                  const agentBadgeColor = colorEntry?.badge
-                    || FALLBACK_BADGE_COLORS[salesUsers.findIndex(u => u.id === lead.preAssignedTo) % FALLBACK_BADGE_COLORS.length];
-                  const agentAvatarBg = colorEntry?.bg || 'bg-gray-600';
+                  const agentBadgeColor = getAgentBadgeColor(firstName, lead.preAssignedTo);
+                  const agentAvatarBg = getAgentColor(firstName, lead.preAssignedTo);
 
                   return (
                     <React.Fragment key={lead.id}>
@@ -482,14 +470,15 @@ export const LostLeadsSection: React.FC<LostLeadsSectionProps> = ({ onRecovered,
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="new">New</SelectItem>
-                            <SelectItem value="contacted">Contacted</SelectItem>
+                            <SelectItem value="new">Not spoken to</SelectItem>
+                            <SelectItem value="contacted">Spoken to</SelectItem>
                             <SelectItem value="follow_up">Follow-up</SelectItem>
                             <SelectItem value="quote_sent">Quote Sent</SelectItem>
                             <SelectItem value="urgent_callback">Urgent Call-back</SelectItem>
                             <SelectItem value="negotiating">Negotiating</SelectItem>
                             <SelectItem value="converted">Converted</SelectItem>
                             <SelectItem value="lost">Lost</SelectItem>
+                            <SelectItem value="not_interested">Not interested</SelectItem>
                             <SelectItem value="fake_lead">Fake 404</SelectItem>
                             <SelectItem value="duplicate">Duplicate</SelectItem>
                           </SelectContent>
@@ -646,6 +635,7 @@ export const LostLeadsSection: React.FC<LostLeadsSectionProps> = ({ onRecovered,
                             <UnifiedNotesPanel
                               leadId={lead.id}
                               compact
+                              hidePoolOutcome
                             />
                           </div>
                         </TableCell>
