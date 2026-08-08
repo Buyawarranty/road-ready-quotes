@@ -721,8 +721,8 @@ const HybridWarrantyLanding: React.FC = () => {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@buyawarranty" />
-        <meta name="twitter:creator" content="@buyawarranty" />
+        <meta name="twitter:site" content="@pandaprotect" />
+        <meta name="twitter:creator" content="@pandaprotect" />
         <meta name="twitter:title" content="Hybrid Car Warranty UK — From £19/mo | 100+ Models Covered" />
         <meta name="twitter:description" content="Specialist hybrid warranty for Toyota, BMW, Kia, Volvo & more. Electric motors, inverters, battery systems covered. Unlimited claims, any UK garage. Quote in 60 seconds." />
         <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />

@@ -147,7 +147,7 @@ const VolkswagenWarranty = () => {
               <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
                 <img 
                   src={vwGolfImage} 
-                  alt="Volkswagen Golf GTI extended warranty UK - buyawarranty coverage for VW vehicles" 
+                  alt="Volkswagen Golf GTI extended warranty UK - Panda Protect coverage for VW vehicles" 
                   className="w-full max-w-md mx-auto h-auto object-contain"
                   loading="eager"
                 />

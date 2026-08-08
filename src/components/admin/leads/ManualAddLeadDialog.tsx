@@ -192,7 +192,7 @@ export const ManualAddLeadDialog: React.FC<ManualAddLeadDialogProps> = ({
       const payload: any = {
         first_name: form.first_name.trim() || null,
         last_name: form.last_name.trim() || null,
-        email: email || `no-email+${Date.now()}@buyawarranty.co.uk`,
+        email: email || `no-email+${Date.now()}@pandaprotect.co.uk`,
         phone: phone || null,
         vehicle_reg: form.vehicle_reg.trim().toUpperCase(),
         vehicle_make: form.vehicle_make.trim() || null,

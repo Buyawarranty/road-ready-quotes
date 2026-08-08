@@ -39,7 +39,7 @@ import mercedesHighMileage from '@/assets/mercedes-van.png';
 
 // Hero image: Panda mascot with two Mercedes cars
 const mercedesHeroImage = '/lovable-uploads/MERCEDES-BENZ-extended-warranty.webp';
-// Why Choose Us section: Mercedes with buyawarranty logo
+// Why Choose Us section: Mercedes with Panda Protect logo
 const mercedesWhyChooseUs = '/lovable-uploads/mercedes-used-car-warranty-expired.webp';
 
 // Mercedes-Benz Models covered (grouped by category)

@@ -662,7 +662,7 @@ const EVWarrantyLanding: React.FC = () => {
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@buyawarranty" />
+        <meta name="twitter:site" content="@pandaprotect" />
         <meta name="twitter:title" content="Electric Vehicle Warranty UK — Specialist EV Cover from £19/mo" />
         <meta name="twitter:description" content="Protect your EV with UK's specialist warranty. Tesla, Nissan, BMW, Hyundai, Kia, VW & 20+ makes covered. Motors, inverters, chargers included. Unlimited claims, any garage. Instant quote." />
         <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />

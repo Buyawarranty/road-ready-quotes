@@ -166,7 +166,7 @@ const PaymentFallback = () => {
         console.log('Email:', email);
         
         const vehicleData = {
-          email: email || 'guest@buyawarranty.com',
+          email: email || 'guest@pandaprotect.co.uk',
           regNumber: searchParams.get('reg') || '',
           mileage: searchParams.get('mileage') || '',
           fullName: searchParams.get('name') || '',

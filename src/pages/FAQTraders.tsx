@@ -208,7 +208,7 @@ const PILLARS: Pillar[] = [
     items: [
       {
         q: 'Can private individuals buy an extended car warranty directly from Panda Protect?',
-        plain: 'No, Panda Protect operates strictly as a business-to-business (B2B) platform offering specialized warranty solutions for motor trade professionals, commercial networks, and vehicle dealerships. If you are a private consumer, individual driver, or retail customer looking to secure an extended warranty for your personal car, van, EV, or motorcycle, please visit our consumer retail site Buy A Warranty (https://buyawarranty.co.uk/). Buy A Warranty provides direct-to-consumer vehicle protection plans with transparent retail pricing.',
+        plain: 'No, Panda Protect operates strictly as a business-to-business (B2B) platform offering specialized warranty solutions for motor trade professionals, commercial networks, and vehicle dealerships. If you are a private consumer, individual driver, or retail customer looking to secure an extended warranty for your personal car, van, EV, or motorcycle, please visit our consumer retail site Buy A Warranty (https://pandaprotect.co.uk/). Buy A Warranty provides direct-to-consumer vehicle protection plans with transparent retail pricing.',
         a: (
           <>
             No, Panda Protect operates strictly as a{' '}
@@ -217,7 +217,7 @@ const PILLARS: Pillar[] = [
             <p className="mt-3">
               If you are a private consumer, individual driver, or retail customer looking to secure an extended warranty
               for your personal car, van, EV, or motorcycle, please visit our consumer retail site{' '}
-              <a href="https://buyawarranty.co.uk/" target="_blank" rel="noopener noreferrer" className="text-primary underline font-semibold">Buy A Warranty</a>.
+              <a href="https://pandaprotect.co.uk/" target="_blank" rel="noopener noreferrer" className="text-primary underline font-semibold">Buy A Warranty</a>.
             </p>
             <p className="mt-3">Buy A Warranty provides direct-to-consumer vehicle protection plans with transparent retail pricing.</p>
           </>

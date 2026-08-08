@@ -17,7 +17,7 @@ const Step3Header: React.FC<Step3HeaderProps> = ({ currentStep }) => {
           <a href="/" className="hover:opacity-80 transition-opacity">
             <img 
               src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" 
-              alt="buyawarranty" 
+              alt="Panda Protect" 
               className="h-7 w-auto"
             />
           </a>

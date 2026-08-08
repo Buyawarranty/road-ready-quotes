@@ -43,11 +43,11 @@ interface InvoiceDialogProps {
 
 const COMPANY_INFO = {
   name: 'Buy A Warranty',
-  website: 'www.buyawarranty.co.uk',
-  email: 'support@buyawarranty.co.uk',
+  website: 'www.pandaprotect.co.uk',
+  email: 'support@pandaprotect.co.uk',
   phone: '0330 229 5040',
   address: ['Buy A Warranty', 'Online', 'United Kingdom'],
-  logoUrl: 'https://buyawarranty.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png'
+  logoUrl: 'https://pandaprotect.co.uk/panda-protect-logo.png'
 };
 
 const formatCurrency = (amount: number): string => {

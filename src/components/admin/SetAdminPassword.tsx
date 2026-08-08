@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const SetAdminPassword = () => {
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('info@buyawarranty.co.uk');
+  const [email, setEmail] = useState('info@pandaprotect.co.uk');
   const [passwordValue, setPasswordValue] = useState('PasswordLogin123-');
   const { toast } = useToast();
 

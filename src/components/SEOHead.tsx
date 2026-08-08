@@ -70,7 +70,7 @@ export const SEOHead = ({
       <meta name="twitter:description" content={ogDescription || description} />
       <meta name="twitter:image" content={ogImage} />
       <meta name="twitter:image:alt" content={ogImageAlt} />
-      <meta name="twitter:site" content="@buyawarranty" />
+      <meta name="twitter:site" content="@pandaprotect" />
 
       {/* Bot directives */}
       <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />

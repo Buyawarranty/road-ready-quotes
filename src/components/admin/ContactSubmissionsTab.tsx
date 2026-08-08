@@ -127,7 +127,7 @@ const ContactSubmissionsTab = () => {
 
       toast({
         title: "Success",
-        description: "Contact email forwarded successfully to support@buyawarranty.co.uk",
+        description: "Contact email forwarded successfully to support@pandaprotect.co.uk",
       });
     } catch (error) {
       console.error('Error forwarding contact email:', error);
@@ -324,7 +324,7 @@ const ContactSubmissionsTab = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => forwardContactEmail(submission.id)}
-                      title="Forward email to support@buyawarranty.co.uk"
+                      title="Forward email to support@pandaprotect.co.uk"
                     >
                       <Forward className="w-4 h-4 mr-1" />
                       Forward

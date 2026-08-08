@@ -337,8 +337,8 @@ export const MissedCallAlertBar: React.FC<Props> = ({ userRole, onOpenLead }) =>
 
     // No existing lead — mint a fresh one.
     const placeholderEmail = phoneDigits
-      ? `missed-call-${phoneDigits}-${Date.now().toString(36)}@buyawarranty.internal`
-      : `missed-call-${call.id}@buyawarranty.internal`;
+      ? `missed-call-${phoneDigits}-${Date.now().toString(36)}@pandaprotect.internal`
+      : `missed-call-${call.id}@pandaprotect.internal`;
     const rawName = (call.caller_name || '').trim();
     const firstName = rawName && rawName.toLowerCase() !== 'unavailable' ? rawName.split(' ')[0] : null;
     const lastName = rawName && rawName.toLowerCase() !== 'unavailable' && rawName.includes(' ')
