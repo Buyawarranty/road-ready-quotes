@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,7 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Lead, AdminUser } from '@/hooks/useLeads';
 import { useLeadDistribution } from '@/hooks/useLeadDistribution';
 import { useAdminConfig } from '@/hooks/useAdminConfig';
+import { useLeadRoutingPermission } from '@/hooks/useLeadRoutingPermission';
 import { PresenceBadge } from './distribution/PresenceBadge';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -27,6 +28,7 @@ import {
 import { format, formatDistanceToNow, startOfWeek, startOfMonth, startOfYear, endOfDay, isWithinInterval, subWeeks, subMonths, endOfWeek, endOfMonth } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { DateRange } from 'react-day-picker';
+import { TeamBadge } from './TeamBadge';
 
 interface AgentsLeadsViewProps {
   leads: Lead[];
@@ -47,12 +49,12 @@ interface AgentLeadGroup {
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status) {
-    case 'new': return 'bg-blue-100 text-blue-800';
+    case 'new': return 'bg-green-100 text-green-800';
     case 'contacted': return 'bg-yellow-100 text-yellow-800';
     case 'follow_up': return 'bg-purple-100 text-purple-800';
     case 'qualified': return 'bg-cyan-100 text-cyan-800';
     case 'negotiating': return 'bg-orange-100 text-orange-800';
-    case 'converted': return 'bg-green-100 text-green-800';
+    case 'converted': return 'bg-teal-100 text-teal-800';
     case 'lost': return 'bg-red-100 text-red-800';
     case 'fake_lead': return 'bg-gray-100 text-gray-800';
     default: return 'bg-gray-100 text-gray-800';
@@ -60,6 +62,14 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 type DistributionMode = 'round_robin' | 'percentage';
+type AgentAssignmentMode = 'round_robin' | 'open_pool';
+
+// Module-level cache so team tabs load instantly on re-mount / tab switches
+const _teamCache: {
+  teams: Array<{ id: string; name: string; color: string; emoji: string | null }>;
+  members: Array<{ admin_user_id: string; team_id: string }>;
+  promise: Promise<any> | null;
+} = { teams: [], members: [], promise: null };
 
 export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
   leads,
@@ -82,9 +92,14 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
   // Admin-controlled toggle: force all agents to only see their own leads
   const { value: agentsOwnLeadsOnly, updateConfig: updateAgentsOwnLeadsOnly } = useAdminConfig('agents_own_leads_only');
   
-  // Sales leads can see distribution settings only if admin has granted access
-  // Default to true if config not set (backwards compatible)
-  const canSeeDistributionSettings = isFullAdmin || (isSalesLead && salesLeadDistributionAccess !== false);
+  // Sales leads / sales agents can see distribution settings only when their
+  // per-agent "Staff Lead Access" flag is on (managers always). Falls back to
+  // the legacy global toggle while that data loads.
+  const { canReassign: routingCanReassign } = useLeadRoutingPermission();
+  const canSeeDistributionSettings =
+    isFullAdmin ||
+    (isSalesLead && salesLeadDistributionAccess !== false) ||
+    routingCanReassign;
   
   const [selectedAgent, setSelectedAgent] = useState<string>('all');
   const [expandedAgents, setExpandedAgents] = useState<Set<string>>(new Set(['awaiting_contact']));
@@ -117,6 +132,66 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
   const [bulkDateRange, setBulkDateRange] = useState<DateRange | undefined>(undefined);
   const [bulkReassigning, setBulkReassigning] = useState(false);
   const [bulkCalendarOpen, setBulkCalendarOpen] = useState(false);
+
+  // Team filter tabs (split distribution view per team for managers)
+  const [teams, setTeams] = useState<Array<{ id: string; name: string; color: string; emoji: string | null }>>(() => _teamCache.teams);
+  const [teamMembers, setTeamMembers] = useState<Array<{ admin_user_id: string; team_id: string }>>(() => _teamCache.members);
+  const [activeTeamTab, setActiveTeamTab] = useState<string>('all'); // 'all' | team.id | 'unassigned'
+
+  useEffect(() => {
+    // Always refetch on mount so team-membership changes (e.g. an agent moved
+    // from Red to Blue) propagate immediately. The previous module-level cache
+    // pinned a stale snapshot until full page reload, which caused agents to
+    // appear under their old team's flow.
+    let cancelled = false;
+    Promise.all([
+      supabase.from('lead_teams').select('id, name, color, emoji').order('sort_order'),
+      supabase.from('lead_team_members').select('admin_user_id, team_id'),
+    ]).then(([teamsRes, membersRes]) => {
+      if (cancelled) return;
+      const t = (teamsRes.data as any) || [];
+      const m = (membersRes.data as any) || [];
+      _teamCache.teams = t;
+      _teamCache.members = m;
+      setTeams(t);
+      setTeamMembers(m);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+
+  // Full unscoped roster used ONLY for resolving agent names in the caps table.
+  // The `salesUsers` prop may be team-scoped by the parent, which would cause
+  // agents on other teams (or whose team membership is loading) to render as "Unknown"
+  // even though their cap row exists. This fallback prevents that.
+  const [allAgentsForLookup, setAllAgentsForLookup] = useState<AdminUser[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('id, user_id, first_name, last_name, email, is_active, role')
+        .in('role', ['sales', 'sales_lead', 'claims_agent', 'claims_manager', 'admin', 'super_admin', 'sales_manager']);
+      if (!cancelled && !error && data) setAllAgentsForLookup(data as AdminUser[]);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const agentLookup = useMemo(() => {
+    const map = new Map<string, AdminUser>();
+    allAgentsForLookup.forEach(u => map.set(u.id, u));
+    // Prefer the prop's copy when present (it may be fresher / scoped)
+    salesUsers.forEach(u => map.set(u.id, u));
+    return map;
+  }, [allAgentsForLookup, salesUsers]);
+
+
+  const memberTeamMap = useMemo(() => {
+    const m = new Map<string, string>();
+    teamMembers.forEach(tm => m.set(tm.admin_user_id, tm.team_id));
+    return m;
+  }, [teamMembers]);
+
 
   // Lead distribution hook for agent caps
   const {
@@ -296,7 +371,10 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
   // Handle save cap
   const handleSaveCap = async (adminUserId: string) => {
     const newCap = editedCaps[adminUserId];
-    if (newCap === undefined) return;
+    if (newCap === undefined) {
+      toast({ title: 'No changes', description: 'Edit the cap value first.' });
+      return;
+    }
 
     setSaving(adminUserId);
     const success = await updateAgentCap(adminUserId, { daily_cap: newCap });
@@ -304,6 +382,22 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
       setEditedCaps(prev => {
         const { [adminUserId]: _, ...rest } = prev;
         return rest;
+      });
+      toast({
+        title: 'Daily cap updated',
+        description: `New limit: ${newCap === null ? 'Unlimited' : newCap} leads/day.`,
+      });
+    }
+    setSaving(null);
+  };
+
+  const handleAssignmentModeChange = async (adminUserId: string, mode: AgentAssignmentMode) => {
+    setSaving(adminUserId);
+    const success = await updateAgentCap(adminUserId, { assignment_mode: mode } as any);
+    if (success) {
+      toast({
+        title: 'Lead mode updated',
+        description: mode === 'open_pool' ? 'Agent can now claim from Open Lead Pool.' : 'Agent is back on Round Robin.',
       });
     }
     setSaving(null);
@@ -400,13 +494,14 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
   // Bulk reassign leads from one agent to another
   const bulkSourceLeadCount = useMemo(() => {
     if (!bulkSourceAgent) return 0;
+    // If a partial range is selected (only 'from'), don't preview a count —
+    // the user must pick both ends so we never accidentally over-select.
+    if (bulkDateRange?.from && !bulkDateRange?.to) return 0;
     let sourceLeads = leads.filter(l => l.assigned_to === bulkSourceAgent);
-    if (bulkDateRange?.from) {
+    if (bulkDateRange?.from && bulkDateRange?.to) {
       sourceLeads = sourceLeads.filter(lead => {
         const leadDate = new Date(lead.created_at);
-        const from = bulkDateRange.from!;
-        const to = bulkDateRange.to || endOfDay(new Date());
-        return isWithinInterval(leadDate, { start: from, end: to });
+        return isWithinInterval(leadDate, { start: bulkDateRange.from!, end: endOfDay(bulkDateRange.to!) });
       });
     }
     return sourceLeads.length;
@@ -414,25 +509,61 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
 
   const handleBulkReassign = async () => {
     if (!bulkSourceAgent || bulkTargetAgents.length === 0) return;
-    
+
+    // SAFETY: if a partial date range is selected (only 'from' picked), force the
+    // user to also pick a 'to' date — otherwise the query unbounds the upper end
+    // and sweeps every lead from that date forward (this caused the previous
+    // accidental mass reassignment).
+    if (bulkDateRange?.from && !bulkDateRange?.to) {
+      toast({
+        title: 'Pick an end date',
+        description: 'Please select both a start and end date, or clear the date filter.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setBulkReassigning(true);
     try {
-      // First, get the actual lead IDs to reassign (so we can distribute equally)
-      let leadsQuery = supabase
-        .from('sales_leads')
-        .select('id')
-        .eq('assigned_to', bulkSourceAgent);
-      
-      // Apply date filter if set
-      if (bulkDateRange?.from) {
-        leadsQuery = leadsQuery.gte('created_at', bulkDateRange.from.toISOString());
-        if (bulkDateRange.to) {
-          leadsQuery = leadsQuery.lte('created_at', endOfDay(bulkDateRange.to).toISOString());
-        }
-      }
+      // Normalize date boundaries to local-day start/end so timezone shifts can't
+      // expand the window (avoid raw new Date(dateStr).toISOString() drift).
+      const fromIso = bulkDateRange?.from
+        ? new Date(
+            bulkDateRange.from.getFullYear(),
+            bulkDateRange.from.getMonth(),
+            bulkDateRange.from.getDate(),
+            0, 0, 0, 0,
+          ).toISOString()
+        : null;
+      const toIso = bulkDateRange?.to
+        ? endOfDay(bulkDateRange.to).toISOString()
+        : null;
 
-      const { data: leadsToReassign, error: fetchError } = await leadsQuery;
-      if (fetchError) throw fetchError;
+      // First, get the actual lead IDs to reassign (so we can distribute equally).
+      // Page through results to bypass Supabase's default 1000-row select cap —
+      // otherwise the count preview and the actual update can disagree.
+      const PAGE = 1000;
+      const collected: { id: string }[] = [];
+      let offset = 0;
+      // Hard ceiling to prevent runaway loops if something is misconfigured
+      const HARD_LIMIT = 50000;
+      while (offset < HARD_LIMIT) {
+        let pageQuery = supabase
+          .from('sales_leads')
+          .select('id')
+          .eq('assigned_to', bulkSourceAgent)
+          .order('created_at', { ascending: false })
+          .range(offset, offset + PAGE - 1);
+        if (fromIso) pageQuery = pageQuery.gte('created_at', fromIso);
+        if (toIso) pageQuery = pageQuery.lte('created_at', toIso);
+        const { data: pageData, error: pageError } = await pageQuery;
+        if (pageError) throw pageError;
+        const rows = pageData || [];
+        collected.push(...rows);
+        if (rows.length < PAGE) break;
+        offset += PAGE;
+      }
+      const leadsToReassign = collected;
       if (!leadsToReassign || leadsToReassign.length === 0) {
         toast({ title: 'No leads', description: 'No leads found matching the criteria.', variant: 'destructive' });
         return;
@@ -512,7 +643,13 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
     const groups: AgentLeadGroup[] = [];
     
     // Awaiting Contact first (previously unassigned)
-    const awaitingContactLeads = groupMap.get(null) || [];
+    // Exclude already-converted/paid, lost and fake leads — no one needs to "contact" them.
+    const awaitingContactLeads = (groupMap.get(null) || []).filter(l =>
+      l.status !== 'converted' &&
+      l.status !== 'lost' &&
+      l.status !== 'fake_lead' &&
+      !l.is_paid
+    );
     groups.push({
       agent: null,
       agentId: null,
@@ -520,8 +657,8 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
       leads: awaitingContactLeads,
       newCount: awaitingContactLeads.filter(l => l.status === 'new').length,
       contactedCount: awaitingContactLeads.filter(l => l.status === 'contacted').length,
-      convertedCount: awaitingContactLeads.filter(l => l.status === 'converted' || l.is_paid).length,
-      lostCount: awaitingContactLeads.filter(l => l.status === 'lost').length,
+      convertedCount: 0,
+      lostCount: 0,
     });
 
     // Then agents sorted by lead count
@@ -1383,33 +1520,10 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
               </div>
             )}
 
+            {/* Per-agent visibility — single source of truth.
+                The global `agents_own_leads_only` config is intentionally not exposed
+                in the UI to avoid contradictory controls. Tick agents individually. */}
             {(isFullAdmin || isSalesLead) && (
-              <div className="flex items-center gap-2 p-2.5 bg-muted/30 border rounded-lg">
-                <Eye className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">Let all agents see all leads</span>
-                <Switch
-                  checked={agentsOwnLeadsOnly === true}
-                  onCheckedChange={async (checked) => {
-                    const success = await updateAgentsOwnLeadsOnly(checked);
-                    if (success) {
-                      toast({
-                        title: checked ? 'All leads visible to agents' : 'Agents see own leads only',
-                        description: checked
-                          ? 'All sales agents can now see all leads.'
-                          : 'Agents can only see their own assigned leads (unless individually allowed below).',
-                      });
-                    }
-                  }}
-                />
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  {agentsOwnLeadsOnly === true ? 'All agents can see all leads' : 'Agents see only their own leads'}
-                  <Check className="h-5 w-5 text-green-500" strokeWidth={3} />
-                </span>
-              </div>
-            )}
-
-            {/* Per-agent visibility checkboxes - show when global toggle is OFF */}
-            {(isFullAdmin || isSalesLead) && agentsOwnLeadsOnly !== true && (
               <div className="p-3 bg-muted/20 border rounded-lg space-y-2">
                 <div className="flex items-center gap-2 mb-2">
                   <UserCheck className="h-4 w-4 text-muted-foreground" />
@@ -1453,7 +1567,7 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                     })}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Tick agents who should be able to see all leads, not just their own.
+                  Tick agents who should be able to see all leads. Unticked agents see only their own assigned leads.
                 </p>
               </div>
             )}
@@ -1545,7 +1659,7 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
               <UserCheck className="h-4 w-4 text-amber-600" />
               <span className="text-sm font-medium">Overflow Recipients</span>
               <span className="text-xs text-amber-700 dark:text-amber-300">
-                When all agents hit their daily cap, extra leads rotate among these people.
+                When no active agents are available, extra leads rotate among these people.
               </span>
             </div>
             
@@ -1553,18 +1667,25 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
             {overflowRecipients.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {overflowRecipients.map((recipient, idx) => {
-                  const user = salesUsers.find(u => u.id === recipient.admin_user_id);
-                  const name = user?.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user?.email || 'Unknown';
+                  const user = agentLookup.get(recipient.admin_user_id);
+                  const fullName = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : '';
+                  const name = fullName || user?.email || 'Loading…';
                   return (
                     <Badge key={recipient.id} variant="secondary" className="flex items-center gap-1 py-1 px-2">
                       <span className="text-xs font-medium text-amber-700">#{idx + 1}</span>
                       <span className="text-xs">{name}</span>
                       {isFullAdmin && (
                         <button
-                          onClick={() => removeOverflowRecipient(recipient.id)}
-                          className="ml-1 hover:text-destructive"
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeOverflowRecipient(recipient.id);
+                          }}
+                          className="ml-1 hover:text-destructive cursor-pointer"
+                          aria-label={`Remove ${name}`}
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-3 w-3 pointer-events-none" />
                         </button>
                       )}
                     </Badge>
@@ -1585,8 +1706,10 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                   <SelectValue placeholder="+ Add overflow recipient" />
                 </SelectTrigger>
                 <SelectContent>
-                  {salesUsers
+                  {Array.from(agentLookup.values())
+                    .filter(u => u.is_active !== false)
                     .filter(u => !overflowRecipients.some(r => r.admin_user_id === u.id))
+                    .sort((a, b) => (a.first_name || a.email || '').localeCompare(b.first_name || b.email || ''))
                     .map(user => (
                       <SelectItem key={user.id} value={user.id}>
                         {user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user.email}
@@ -1596,6 +1719,59 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
               </Select>
             )}
           </div>
+
+          {/* Team Tabs — split distribution view per team for managers */}
+          {teams.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mb-3 mt-1">
+              <span className="text-xs font-semibold text-muted-foreground mr-1">View team:</span>
+              <button
+                type="button"
+                onClick={() => setActiveTeamTab('all')}
+                className={`text-xs font-medium px-3 py-1.5 rounded-full border transition ${
+                  activeTeamTab === 'all'
+                    ? 'bg-foreground text-background border-foreground'
+                    : 'bg-background text-foreground border-border hover:bg-muted'
+                }`}
+              >
+                All ({agentCaps.length})
+              </button>
+              {teams.map(t => {
+                const count = agentCaps.filter(c => memberTeamMap.get(c.admin_user_id) === t.id).length;
+                const isActive = activeTeamTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setActiveTeamTab(t.id)}
+                    className="text-xs font-medium px-3 py-1.5 rounded-full border transition"
+                    style={
+                      isActive
+                        ? { backgroundColor: t.color, color: '#fff', borderColor: t.color }
+                        : { backgroundColor: `${t.color}15`, color: t.color, borderColor: `${t.color}55` }
+                    }
+                  >
+                    {t.emoji ? `${t.emoji} ` : ''}{t.name} ({count})
+                  </button>
+                );
+              })}
+              {(() => {
+                const unassignedCount = agentCaps.filter(c => !memberTeamMap.has(c.admin_user_id)).length;
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setActiveTeamTab('unassigned')}
+                    className={`text-xs font-medium px-3 py-1.5 rounded-full border transition ${
+                      activeTeamTab === 'unassigned'
+                        ? 'bg-muted-foreground text-background border-muted-foreground'
+                        : 'bg-background text-muted-foreground border-border hover:bg-muted'
+                    }`}
+                  >
+                    No team ({unassignedCount})
+                  </button>
+                );
+              })()}
+            </div>
+          )}
 
           {/* Agent Controls Table */}
           <div className="border-2 border-border rounded-lg overflow-hidden">
@@ -1609,33 +1785,51 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                   )}
                   <TableHead className="w-[140px]">Daily Cap</TableHead>
                   <TableHead className="w-[100px]">Today</TableHead>
+                  <TableHead className="w-[150px]">Lead mode</TableHead>
                   <TableHead className="w-[120px]">ON/OFF</TableHead>
-                  {isFullAdmin && <TableHead className="w-[80px] text-center">Delete</TableHead>}
+                  {(isFullAdmin || (isSalesLead && canSeeDistributionSettings)) && <TableHead className="w-[80px] text-center">Delete</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={isFullAdmin ? 6 : 5} className="text-center py-8 text-muted-foreground">
-                      <p>Loading agent distribution settings...</p>
-                    </TableCell>
-                  </TableRow>
-                ) : agentCaps.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={isFullAdmin ? 6 : 5} className="text-center py-8 text-muted-foreground">
-                      <p className="mb-2">No agents configured for lead distribution.</p>
-                      {salesUsers.length > 0 ? (
-                        <Button variant="outline" size="sm" onClick={initializeAgentCaps}>
-                          Add {salesUsers.length} Agent(s) to Distribution
-                        </Button>
-                      ) : (
-                        <p className="text-sm">No sales agents available.</p>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  agentCaps.map(cap => {
-                    const agent = salesUsers.find(u => u.id === cap.admin_user_id);
+                {(() => {
+                  const filteredCaps = agentCaps.filter(c => {
+                    if (activeTeamTab === 'all') return true;
+                    if (activeTeamTab === 'unassigned') return !memberTeamMap.has(c.admin_user_id);
+                    return memberTeamMap.get(c.admin_user_id) === activeTeamTab;
+                  });
+                  if (loading) {
+                    return (
+                      <TableRow>
+                        <TableCell colSpan={(isFullAdmin || (isSalesLead && canSeeDistributionSettings)) ? 7 : 6} className="text-center py-8 text-muted-foreground">
+                          <p>Loading agent distribution settings...</p>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                  if (filteredCaps.length === 0) {
+                    return (
+                      <TableRow>
+                        <TableCell colSpan={(isFullAdmin || (isSalesLead && canSeeDistributionSettings)) ? 7 : 6} className="text-center py-8 text-muted-foreground">
+                          {agentCaps.length === 0 ? (
+                            <>
+                              <p className="mb-2">No agents configured for lead distribution.</p>
+                              {salesUsers.length > 0 ? (
+                                <Button variant="outline" size="sm" onClick={initializeAgentCaps}>
+                                  Add {salesUsers.length} Agent(s) to Distribution
+                                </Button>
+                              ) : (
+                                <p className="text-sm">No sales agents available.</p>
+                              )}
+                            </>
+                          ) : (
+                            <p>No agents in this team yet.</p>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                  return filteredCaps.map(cap => {
+                    const agent = agentLookup.get(cap.admin_user_id) ?? salesUsers.find(u => u.id === cap.admin_user_id);
                     const status = getAgentPresenceStatus(cap.admin_user_id);
                     const presence = getPresence(cap.admin_user_id);
                     const editedCap = editedCaps[cap.admin_user_id];
@@ -1656,6 +1850,7 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                             <div>
                               <div className="font-medium text-sm flex items-center gap-2">
                                 {getAgentName(agent)}
+                                <TeamBadge userId={cap.admin_user_id} variant="pill" />
                                 {status === 'active' && !cap.paused && (
                                   <Badge variant="default" className="text-[10px] px-1.5 py-0 bg-green-600 hover:bg-green-600">
                                     <Zap className="h-2.5 w-2.5 mr-0.5" />
@@ -1761,6 +1956,23 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                           </div>
                         </TableCell>
 
+                        {/* Per-agent lead mode */}
+                        <TableCell>
+                          <Select
+                            value={(cap as any).assignment_mode === 'open_pool' ? 'open_pool' : 'round_robin'}
+                            onValueChange={(value) => handleAssignmentModeChange(cap.admin_user_id, value as AgentAssignmentMode)}
+                            disabled={saving === cap.admin_user_id}
+                          >
+                            <SelectTrigger className="h-8 w-[140px] text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="round_robin">Round Robin</SelectItem>
+                              <SelectItem value="open_pool">Open Round Robin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+
                         {/* ON/OFF Toggle */}
                         <TableCell>
                           <Tooltip>
@@ -1785,8 +1997,8 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                           </Tooltip>
                         </TableCell>
 
-                        {/* Delete - Opens reassignment dialog (Admin only) */}
-                        {isFullAdmin && (
+                        {/* Delete - Opens reassignment dialog (Admin + Sales Lead when access granted) */}
+                        {(isFullAdmin || (isSalesLead && canSeeDistributionSettings)) && (
                           <TableCell className="text-center">
                             <Button 
                               variant="ghost" 
@@ -1801,8 +2013,8 @@ export const AgentsLeadsView: React.FC<AgentsLeadsViewProps> = ({
                         )}
                       </TableRow>
                     );
-                  })
-                )}
+                  });
+                })()}
                 {/* Total percentage indicator row (only in percentage mode) */}
                 {displayMode === 'percentage' && agentCaps.length > 0 && !loading && (
                   <TableRow className="bg-muted/50 border-t-2">

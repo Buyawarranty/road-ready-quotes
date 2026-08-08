@@ -80,7 +80,7 @@ const EmailManagementTab = () => {
     name: '',
     subject: '',
     template_type: '',
-    from_email: 'info@pandaprotect.co.uk',
+    from_email: 'info@buyawarranty.co.uk',
     greeting: '',
     content: '',
     is_active: true
@@ -443,8 +443,8 @@ const EmailManagementTab = () => {
     const sampleVariables = {
       customerFirstName: 'John',
       expiryDate: '31st December 2024',
-      portalUrl: 'https://portal.pandaprotect.co.uk',
-      renewalUrl: 'https://pandaprotect.co.uk/renew'
+      portalUrl: 'https://portal.buyawarranty.co.uk',
+      renewalUrl: 'https://buyawarranty.co.uk/renew'
     };
 
     let content = selectedTemplate.content.content || '';
@@ -460,7 +460,7 @@ const EmailManagementTab = () => {
     return (
       <div className="border rounded-lg p-6 bg-white max-h-96 overflow-y-auto">
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-t-lg -m-6 mb-6">
-          <h3 className="font-bold text-lg">Panda Protect</h3>
+          <h3 className="font-bold text-lg">Buyawarranty.co.uk</h3>
         </div>
         <div className="space-y-4">
           <p className="font-semibold text-lg">{greeting}</p>
@@ -973,7 +973,7 @@ const EmailManagementTab = () => {
             name: '',
             subject: '',
             template_type: '',
-            from_email: 'info@pandaprotect.co.uk',
+            from_email: 'info@buyawarranty.co.uk',
             greeting: '',
             content: '',
             is_active: true
@@ -1004,7 +1004,7 @@ const EmailManagementTab = () => {
                   id="subject"
                   value={formData.subject}
                   onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                  placeholder="Welcome to Panda Protect"
+                  placeholder="Welcome to Buyawarranty.co.uk"
                 />
               </div>
 
@@ -1038,9 +1038,9 @@ const EmailManagementTab = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="info@pandaprotect.co.uk">info@pandaprotect.co.uk</SelectItem>
-                    <SelectItem value="claims@pandaprotect.co.uk">claims@pandaprotect.co.uk</SelectItem>
-                    <SelectItem value="sales@pandaprotect.co.uk">sales@pandaprotect.co.uk</SelectItem>
+                    <SelectItem value="info@buyawarranty.co.uk">info@buyawarranty.co.uk</SelectItem>
+                    <SelectItem value="claims@buyawarranty.co.uk">claims@buyawarranty.co.uk</SelectItem>
+                    <SelectItem value="sales@buyawarranty.co.uk">sales@buyawarranty.co.uk</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -14,6 +14,8 @@ import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
 interface CustomerData {
   id: string;
   name: string;
+  first_name?: string;
+  last_name?: string;
   email: string;
   phone?: string;
   flat_number?: string;
@@ -71,11 +73,44 @@ export const PolicyDocumentsTab: React.FC = () => {
   const [customerPolicies, setCustomerPolicies] = useState<PolicyData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
-  const [printMode, setPrintMode] = useState<'bw' | 'colour'>('bw');
+  const [printMode, setPrintMode] = useState<'bw' | 'colour'>('colour');
   const [showDropdown, setShowDropdown] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<Partial<CustomerData>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [isDvlaLoading, setIsDvlaLoading] = useState(false);
+
+  const lookupDvla = async (reg: string, { overwrite }: { overwrite: boolean }) => {
+    const clean = (reg || '').replace(/\s+/g, '').toUpperCase();
+    if (!clean) {
+      toast({ title: 'Enter registration', description: 'Add a registration number first.', variant: 'destructive' });
+      return;
+    }
+    setIsDvlaLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dvla-vehicle-lookup', {
+        body: { registrationNumber: clean, skipAgeCheck: true },
+      });
+      if (error) throw error;
+      if (!data?.found) {
+        toast({ title: 'Vehicle not found', description: data?.error || 'DVLA lookup returned no data.', variant: 'destructive' });
+        return;
+      }
+      setEditData(d => ({
+        ...d,
+        registration_plate: clean,
+        vehicle_make: overwrite || !d.vehicle_make ? (data.make || d.vehicle_make || '') : d.vehicle_make,
+        vehicle_model: overwrite || !d.vehicle_model ? (data.model || d.vehicle_model || '') : d.vehicle_model,
+        vehicle_year: overwrite || !d.vehicle_year ? (data.yearOfManufacture ? String(data.yearOfManufacture) : d.vehicle_year || '') : d.vehicle_year,
+      }));
+      toast({ title: 'Vehicle details updated', description: 'Populated from DVLA/DVSA.' });
+    } catch (err: any) {
+      toast({ title: 'DVLA lookup failed', description: err.message || 'Try again.', variant: 'destructive' });
+    } finally {
+      setIsDvlaLoading(false);
+    }
+  };
+
   const printRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -130,6 +165,23 @@ export const PolicyDocumentsTab: React.FC = () => {
     setShowDropdown(false);
     setSearchQuery('');
     setShowPreview(false);
+
+    // Always re-fetch the latest customer row so address edits made in
+    // Customer Management show up immediately (the list is cached on mount).
+    try {
+      const { data: fresh } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', customer.id)
+        .maybeSingle();
+      if (fresh) {
+        setSelectedCustomer(fresh as CustomerData);
+        setAllCustomers((prev) => prev.map((c) => (c.id === fresh.id ? (fresh as CustomerData) : c)));
+      }
+    } catch {
+      // keep the cached row if the refresh fails
+    }
+
 
     // Auto-log search selection to Posted Letters Log (timestamped)
     try {
@@ -195,8 +247,30 @@ export const PolicyDocumentsTab: React.FC = () => {
       selectedCustomer.county,
       selectedCustomer.postcode,
     ].filter(Boolean);
-    return parts;
+    if (parts.length > 0) return parts;
+
+    // Fallback: address stored on the policy record (jsonb or plain string)
+    const raw: any = (selectedPolicy as any)?.address;
+    if (!raw) return [];
+    if (typeof raw === 'string') {
+      return raw.split(',').map((s) => s.trim()).filter(Boolean);
+    }
+    if (typeof raw === 'object') {
+      return [
+        raw.flat_number && `Flat ${raw.flat_number}`,
+        raw.building_name,
+        raw.building_number && (raw.street || raw.address_line_1)
+          ? `${raw.building_number} ${raw.street || raw.address_line_1}`
+          : raw.street || raw.address_line_1,
+        raw.address_line_2,
+        raw.town || raw.city,
+        raw.county,
+        raw.postcode,
+      ].filter(Boolean);
+    }
+    return [];
   };
+
 
   const getAddonsList = () => {
     if (!selectedCustomer) return [];
@@ -469,6 +543,11 @@ export const PolicyDocumentsTab: React.FC = () => {
         <p className="text-gray-500 mt-1">Search for a customer and generate a printable A4 policy document letter to include with posted T&Cs.</p>
       </div>
 
+      {/* To Post — batch queue at top */}
+      <BatchPolicyQueue />
+
+
+
       {/* Search Section */}
       <Card>
         <CardHeader>
@@ -545,8 +624,13 @@ export const PolicyDocumentsTab: React.FC = () => {
                   {!isEditing ? (
                     <Button size="sm" variant="ghost" onClick={() => {
                       setIsEditing(true);
+                      const parts = (selectedCustomer.name || '').trim().split(/\s+/);
+                      const fnFallback = parts[0] || '';
+                      const lnFallback = parts.slice(1).join(' ') || '';
                       setEditData({
                         name: selectedCustomer.name,
+                        first_name: selectedCustomer.first_name || fnFallback,
+                        last_name: selectedCustomer.last_name || lnFallback,
                         email: selectedCustomer.email,
                         phone: selectedCustomer.phone || '',
                         flat_number: selectedCustomer.flat_number || '',
@@ -561,7 +645,13 @@ export const PolicyDocumentsTab: React.FC = () => {
                         vehicle_model: selectedCustomer.vehicle_model || '',
                         vehicle_year: selectedCustomer.vehicle_year || '',
                       });
+                      const hasReg = !!selectedCustomer.registration_plate;
+                      const missingVehicle = !selectedCustomer.vehicle_make && !selectedCustomer.vehicle_model && !selectedCustomer.vehicle_year;
+                      if (hasReg && missingVehicle) {
+                        lookupDvla(selectedCustomer.registration_plate!, { overwrite: false });
+                      }
                     }} className="gap-1 text-xs h-7">
+
                       <Pencil className="h-3 w-3" />
                       Edit
                     </Button>
@@ -570,12 +660,11 @@ export const PolicyDocumentsTab: React.FC = () => {
                       <Button size="sm" variant="default" disabled={isSaving} onClick={async () => {
                         setIsSaving(true);
                         try {
-                          // Parse first/last name from full name for sync trigger
-                          const nameParts = (editData.name || '').trim().split(' ');
-                          const firstName = nameParts[0] || '';
-                          const lastName = nameParts.slice(1).join(' ') || '';
+                          const firstName = (editData.first_name || '').trim();
+                          const lastName = (editData.last_name || '').trim();
+                          const fullName = `${firstName} ${lastName}`.trim();
                           const { error } = await supabase.from('customers').update({
-                            name: editData.name,
+                            name: fullName,
                             first_name: firstName,
                             last_name: lastName,
                             email: editData.email,
@@ -593,7 +682,8 @@ export const PolicyDocumentsTab: React.FC = () => {
                             vehicle_year: editData.vehicle_year || null,
                           }).eq('id', selectedCustomer.id);
                           if (error) throw error;
-                          const updated = { ...selectedCustomer, ...editData };
+                          const updated = { ...selectedCustomer, ...editData, name: fullName, first_name: firstName, last_name: lastName };
+
                           setSelectedCustomer(updated as CustomerData);
                           setAllCustomers(prev => prev.map(c => c.id === selectedCustomer.id ? updated as CustomerData : c));
                           setIsEditing(false);
@@ -650,10 +740,15 @@ export const PolicyDocumentsTab: React.FC = () => {
             <CardContent className="text-sm space-y-1">
               {isEditing ? (
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="col-span-2">
-                    <Label className="text-xs text-muted-foreground">Full Name</Label>
-                    <Input value={editData.name || ''} onChange={e => setEditData(d => ({ ...d, name: e.target.value }))} className="h-8 text-sm" />
+                  <div>
+                    <Label className="text-xs text-muted-foreground">First Name</Label>
+                    <Input value={editData.first_name || ''} onChange={e => setEditData(d => ({ ...d, first_name: e.target.value }))} className="h-8 text-sm" />
                   </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Surname</Label>
+                    <Input value={editData.last_name || ''} onChange={e => setEditData(d => ({ ...d, last_name: e.target.value }))} className="h-8 text-sm" />
+                  </div>
+
                   <div>
                     <Label className="text-xs text-muted-foreground">Email</Label>
                     <Input value={editData.email || ''} onChange={e => setEditData(d => ({ ...d, email: e.target.value }))} className="h-8 text-sm" />
@@ -711,10 +806,16 @@ export const PolicyDocumentsTab: React.FC = () => {
             <CardContent className="text-sm space-y-1">
               {isEditing ? (
                 <div className="grid grid-cols-2 gap-2">
-                  <div>
+                  <div className="col-span-2">
                     <Label className="text-xs text-muted-foreground">Registration</Label>
-                    <Input value={editData.registration_plate || ''} onChange={e => setEditData(d => ({ ...d, registration_plate: e.target.value }))} className="h-8 text-sm font-mono uppercase" />
+                    <div className="flex gap-2">
+                      <Input value={editData.registration_plate || ''} onChange={e => setEditData(d => ({ ...d, registration_plate: e.target.value.toUpperCase() }))} className="h-8 text-sm font-mono uppercase flex-1" />
+                      <Button type="button" size="sm" variant="outline" disabled={isDvlaLoading || !editData.registration_plate} onClick={() => lookupDvla(editData.registration_plate || '', { overwrite: true })} className="h-8 text-xs whitespace-nowrap">
+                        {isDvlaLoading ? 'Looking up…' : 'Lookup DVLA'}
+                      </Button>
+                    </div>
                   </div>
+
                   <div>
                     <Label className="text-xs text-muted-foreground">Make</Label>
                     <Input value={editData.vehicle_make || ''} onChange={e => setEditData(d => ({ ...d, vehicle_make: e.target.value }))} className="h-8 text-sm" />
@@ -780,9 +881,9 @@ export const PolicyDocumentsTab: React.FC = () => {
             <div ref={printRef} className="policy-letter">
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
-                <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
+                <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
                 <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
-                  <p style={{ fontWeight: '600' }}>Panda Protect Ltd</p>
+                  <p style={{ fontWeight: '600' }}>Buy A Warranty Ltd</p>
                   <p>Warranty House, 62 Berkhamsted Ave</p>
                   <p>Wembley, HA9 6DT</p>
                   <p>Company No: 10314863</p>
@@ -796,22 +897,26 @@ export const PolicyDocumentsTab: React.FC = () => {
                 {address.map((line, i) => (
                   <p key={i} style={{ margin: '1px 0' }}>{line}</p>
                 ))}
-                <p style={{ margin: '4px 0 0', color: '#666' }}>{selectedCustomer.email}</p>
               </div>
 
               <h1 style={{ fontSize: '18px', fontWeight: '700', color: c.heading, marginBottom: '10px' }}>
                 Your Warranty Cover Document
               </h1>
 
-              {/* Warranty Badge */}
-              <div style={{ background: isBW ? '#333' : c.accentGrad, color: c.accentText, padding: '8px 16px', borderRadius: '6px', display: 'inline-block', marginBottom: '14px' }}>
-                <div style={{ fontSize: '8px', textTransform: 'uppercase', letterSpacing: '1px', opacity: '0.9' }}>Warranty Reference</div>
-                <div style={{ fontSize: '15px', fontWeight: '700', marginTop: '2px' }}>{warrantyRef}</div>
+              {/* Vehicle Registration */}
+              <div style={{ display: 'inline-flex', alignItems: 'stretch', border: '2.5px solid #111', borderRadius: '8px', overflow: 'hidden', fontFamily: "'Segoe UI', Arial, sans-serif", marginBottom: '14px', verticalAlign: 'middle' }}>
+                <span style={{ background: '#2563eb', color: '#fff', padding: '6px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: '9px', fontWeight: 700, lineHeight: 1.15, letterSpacing: '0.5px' }}>
+                  <span>GB</span>
+                  <span>UK</span>
+                </span>
+                <span style={{ background: '#f0c040', color: '#111', padding: '6px 16px', fontSize: '16px', fontWeight: 700, letterSpacing: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {selectedCustomer.registration_plate || 'N/A'}
+                </span>
               </div>
 
               <p style={{ marginBottom: '8px', fontSize: '11px' }}>Dear {selectedCustomer.name.split(' ')[0]},</p>
               <p style={{ marginBottom: '12px', color: '#333', fontSize: '11px' }}>
-                Thank you for choosing Panda Protect to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
+                Thank you for choosing Buyawarranty to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
               </p>
 
               {/* Cover at a Glance */}
@@ -819,7 +924,7 @@ export const PolicyDocumentsTab: React.FC = () => {
                 <div style={{ fontSize: '13px', fontWeight: '700', color: c.heading, marginBottom: '8px', borderBottom: `2px solid ${c.border}`, paddingBottom: '4px' }}>Your Cover at a Glance</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', background: c.glanceBg, border: `1px solid ${c.glanceBorder}`, borderRadius: '6px', padding: '12px 14px' }}>
                   {[
-                    ['Vehicle', selectedCustomer.registration_plate || '-'],
+                    ['Vehicle', <span style={{ display: 'inline-flex', alignItems: 'stretch', border: '2px solid #111', borderRadius: '6px', overflow: 'hidden', fontFamily: "'Segoe UI', Arial, sans-serif", verticalAlign: 'middle' }}><span style={{ background: '#2563eb', color: '#fff', padding: '2px 5px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontSize: '7px', fontWeight: 700, lineHeight: 1.1, letterSpacing: '0.5px' }}><span>GB</span><span>UK</span></span><span style={{ background: '#f0c040', color: '#111', padding: '2px 8px', fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', display: 'flex', alignItems: 'center' }}>{selectedCustomer.registration_plate || 'N/A'}</span></span>],
                     ['Plan Type', planType],
                     ['Duration', getDuration()],
                     ['Mileage', selectedCustomer.mileage ? `${parseInt(selectedCustomer.mileage).toLocaleString()} miles` : 'N/A'],
@@ -832,7 +937,7 @@ export const PolicyDocumentsTab: React.FC = () => {
                       }
                       return format(endDate, 'd MMM yyyy');
                     })()],
-                    ['Warranty Ref', warrantyRef],
+                    ['Email', selectedCustomer.email],
                     ['Policy No.', selectedPolicy.policy_number],
                   ].map(([label, value], i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0', borderBottom: `1px solid ${c.divider}` }}>
@@ -841,6 +946,11 @@ export const PolicyDocumentsTab: React.FC = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Details Check Statement */}
+              <div style={{ background: '#FF5A5F', color: '#fff', borderRadius: '6px', padding: '12px 16px', marginBottom: '14px', fontSize: '11px', fontWeight: 600, textAlign: 'center' }}>
+                If any of the details are incorrect, please contact us on support@buyawarranty.co.uk
               </div>
 
               {/* Benefits */}
@@ -900,7 +1010,7 @@ export const PolicyDocumentsTab: React.FC = () => {
               <div style={{ background: c.accountBg, border: `1px solid ${c.accountBorder}`, borderRadius: '6px', padding: '10px 14px', marginBottom: '14px' }}>
                 <h4 style={{ color: c.accountHeading, fontSize: '12px', marginBottom: '4px', fontWeight: '700' }}>Your Account &amp; Policy Documents</h4>
                 <p style={{ fontSize: '10.5px', color: '#333', margin: '2px 0' }}>Your warranty policy documents are also available online. You can access them at any time by visiting:</p>
-                <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://pandaprotect.co.uk/customer-dashboard/</p>
+                <p style={{ fontSize: '11px', color: c.contactValue, margin: '6px 0', fontWeight: '700' }}>https://buyawarranty.co.uk/customer-dashboard/</p>
                 <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}>Simply click the <strong>Login</strong> option at the top of the homepage, or go directly to the link above. Use your registered email to sign in:</p>
                 <p style={{ fontSize: '10.5px', color: '#333', margin: '4px 0' }}><strong>Email:</strong> {selectedCustomer.email}</p>
                 <p style={{ fontSize: '10px', color: '#555', margin: '6px 0 0' }}>Once logged in, you can:</p>
@@ -919,14 +1029,14 @@ export const PolicyDocumentsTab: React.FC = () => {
 
               <div style={{ marginTop: '16px', fontSize: '11px' }}>
                 <p style={{ margin: '1px 0' }}>Warm regards,</p>
-                <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Panda Protect Team</p>
+                <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Buyawarranty Team</p>
               </div>
 
               {/* Contact Footer */}
               <div style={{ marginTop: '18px', paddingTop: '10px', borderTop: `2px solid ${c.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '10px' }}>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sales Enquiries</div>
-                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 5045</div>
+                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 5040</div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Claims Hotline</div>
@@ -934,12 +1044,12 @@ export const PolicyDocumentsTab: React.FC = () => {
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Customer Support</div>
-                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@pandaprotect.co.uk</div>
+                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>support@buyawarranty.co.uk</div>
                 </div>
               </div>
 
               <div style={{ marginTop: '12px', paddingTop: '8px', borderTop: `1px solid ${c.border}`, fontSize: '8px', color: c.legal, textAlign: 'center' }}>
-                Panda Protect Ltd is registered in England &amp; Wales. Company No: 10314863.
+                Buy A Warranty Ltd is registered in England &amp; Wales. Company No: 10314863.
                 Registered Address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.
               </div>
             </div>
@@ -947,11 +1057,9 @@ export const PolicyDocumentsTab: React.FC = () => {
         </Card>
       )}
 
-      {/* Batch Print Queue */}
-      <BatchPolicyQueue />
-
       {/* Posted Letters Log Register */}
       <PostedLettersLog />
     </div>
   );
 };
+

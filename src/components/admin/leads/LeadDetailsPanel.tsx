@@ -5,11 +5,10 @@ import { addSystemNote } from '@/utils/leadSystemNotes';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { 
   Phone, Mail, MessageSquare, Car, User, 
   ChevronDown, ChevronUp, 
-  Plus, CreditCard, Printer, Award
+  CreditCard, Printer, Award
 } from 'lucide-react';
 import { CommissionClaimDialog } from './CommissionClaimDialog';
 import { CommissionClaimReviewPanel } from './CommissionClaimReviewPanel';
@@ -17,11 +16,11 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
-import { ManualOrderEntry } from '../ManualOrderEntry';
 import { RemindMePopover } from './RemindMePopover';
 import { MarkAsPaidDialog } from './MarkAsPaidDialog';
 import { UnifiedNotesPanel } from './notes/UnifiedNotesPanel';
 import { PrintableWarrantyLetter } from '../PrintableWarrantyLetter';
+import { LeadDuplicatesPanel } from './LeadDuplicatesPanel';
 
 interface LeadDetailsPanelProps {
   lead: Lead;
@@ -30,6 +29,8 @@ interface LeadDetailsPanelProps {
   onRefresh?: () => void;
   onNavigateToQuote?: (lead: Lead) => void;
   hasQuotesSent?: boolean;
+  /** Recontact / Renewals / Lost lists pass true — no Open-Pool outcome UI. */
+  hidePoolOutcome?: boolean;
 }
 
 export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
@@ -37,11 +38,11 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
   onLogActivity,
   onRefresh,
   onNavigateToQuote,
-  hasQuotesSent = false
+  hasQuotesSent = false,
+  hidePoolOutcome = false,
 }) => {
   const [contactOpen, setContactOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(true);
-  const [isOrderDialogOpen, setIsOrderDialogOpen] = useState(false);
   const [isMarkPaidDialogOpen, setIsMarkPaidDialogOpen] = useState(false);
   const [isPrintLetterOpen, setIsPrintLetterOpen] = useState(false);
   
@@ -53,21 +54,6 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
       previousLeadIdRef.current = lead.id;
     }
   }, [lead.id]);
-
-  // Prepare customer data for ManualOrderEntry pre-fill
-  const customerDataForOrder = {
-    id: lead.id,
-    name: lead.first_name && lead.last_name 
-      ? `${lead.first_name} ${lead.last_name}` 
-      : lead.full_name || '',
-    email: lead.email,
-    phone: lead.phone || '',
-    registration_plate: lead.vehicle_reg || '',
-    vehicle_make: lead.vehicle_make || '',
-    vehicle_model: lead.vehicle_model || '',
-    vehicle_year: lead.vehicle_year || '',
-    mileage: lead.mileage || '',
-  };
 
   const handleCall = () => {
     if (lead.phone) {
@@ -83,7 +69,9 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
   };
 
   const handleEmail = () => {
-    window.open(`mailto:${lead.email}?subject=Your Warranty Quote`);
+    const subject = 'Your Warranty Quote';
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent(subject)}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
     if (!lead.is_from_abandoned_cart) {
       onLogActivity(lead.id, 'email', 'Sent email');
     }
@@ -168,27 +156,18 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
                 WhatsApp
               </Button>
               
-              {/* Create Order Button */}
-              <Button
-                size="sm"
-                className="h-8 bg-primary hover:bg-primary/90"
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  setIsOrderDialogOpen(true); 
-                }}
-              >
-                <Plus className="h-4 w-4 mr-1.5" />
-                Create Order
-              </Button>
-              
-              {/* Mark as Paid Button */}
+              {/* Mark as Paid - navigate to Confirm External Payment workflow */}
               <Button
                 size="sm"
                 variant="outline"
                 className="h-8 text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
                 onClick={(e) => { 
                   e.stopPropagation(); 
-                  setIsMarkPaidDialogOpen(true); 
+                  if (onNavigateToQuote) {
+                    onNavigateToQuote(lead);
+                  } else {
+                    setIsMarkPaidDialogOpen(true);
+                  }
                 }}
               >
                 <CreditCard className="h-4 w-4 mr-1.5" />
@@ -252,8 +231,6 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
             {/* Spacer */}
             <div className="flex-1" />
 
-            {/* Notes Title */}
-            <h3 className="font-semibold text-lg">Notes</h3>
 
             {/* Contact Details Button */}
             <Button
@@ -358,6 +335,15 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
             </div>
           )}
 
+          {/* Duplicate siblings by phone/email */}
+          <LeadDuplicatesPanel
+            leadId={lead.id}
+            phone={lead.phone}
+            email={lead.email}
+          />
+
+
+
           {/* Commission Claims Section - available to all users for PAID leads */}
           {lead.is_paid && (
             <div className="px-4 pt-3">
@@ -383,20 +369,10 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
 
           {/* Notes Content - Always mounted to preserve state, hidden when collapsed */}
           <div className={cn("p-4", !notesOpen && "hidden")}>
-            <UnifiedNotesPanel leadId={lead.id} />
+            <UnifiedNotesPanel leadId={lead.id} hidePoolOutcome={hidePoolOutcome} />
           </div>
         </CardContent>
       </Card>
-
-      {/* Manual Order Entry Dialog */}
-      <Dialog open={isOrderDialogOpen} onOpenChange={setIsOrderDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
-          <ManualOrderEntry 
-            customerToEdit={customerDataForOrder}
-            onClose={() => setIsOrderDialogOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
 
       {/* Mark as Paid Dialog */}
       <MarkAsPaidDialog

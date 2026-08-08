@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
 import { AdminNotification } from '@/hooks/useAdminNotifications';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import FreeMonthsOptions, { bonusMonthsForOption, type FreeCoverOption } from './quote/FreeMonthsOptions';
+import { useCurrentAdminId } from '@/hooks/useCurrentAdminId';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -17,11 +19,12 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Edit, Download, Search, RefreshCw, AlertCircle, CalendarIcon, Save, Key, Send, Clock, CheckCircle, Trash2, UserX, Phone, Mail, RotateCcw, Archive, ChevronDown, ChevronUp, Eye, EyeOff, Copy, CopyPlus, FileText, User, Sparkles, FileSpreadsheet, Star, Ban, PoundSterling, FlaskConical, UserMinus, Printer, GitMerge, Trophy } from 'lucide-react';
+import { Edit, Download, Search, RefreshCw, AlertCircle, CalendarIcon, Save, Key, Send, Clock, CheckCircle, Trash2, UserX, Phone, Mail, RotateCcw, Archive, ChevronDown, ChevronUp, Eye, EyeOff, Copy, CopyPlus, FileText, User, Sparkles, FileSpreadsheet, Star, Ban, PoundSterling, FlaskConical, UserMinus, Printer, GitMerge, Trophy, Heart, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import UnsubscribeQuickLink from '@/components/admin/UnsubscribeQuickLink';
 import { CommissionClaimedBadge } from './CommissionClaimedBadge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useDataExport } from '@/hooks/useDataExport';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -29,13 +32,20 @@ import { usePagination } from '@/hooks/usePagination';
 import { PaginationControls } from '@/components/ui/pagination-controls';
 
 import { CustomerNotesSection } from './CustomerNotesSection';
+import { SmartDateInput } from './SmartDateInput';
 import { StructuredNotesSection } from './StructuredNotesSection';
 import { CustomerServiceNotes } from './CustomerServiceNotes';
 import { WarrantyActions } from './WarrantyActions';
+import { PriceComparisonProofCell } from './customers/PriceComparisonProofCell';
+
 import { EditOrderButton } from './EditOrderButton';
 import { MOTHistorySection } from './MOTHistorySection';
+import { PartPaymentsPanel } from './customers/PartPaymentsPanel';
+import { PartPaymentRemindersBanner } from './customers/PartPaymentRemindersBanner';
+
 import { W2000DataPreview } from './W2000DataPreview';
 import { SendNotificationDialog } from './SendNotificationDialog';
+import { RecentEmailsDialog } from './RecentEmailsDialog';
 import { ViewAsCustomerButton } from './ViewAsCustomerButton';
 import { AddIncompleteCustomerDialog } from './AddIncompleteCustomerDialog';
 import { CustomerTagsManager } from './CustomerTagsManager';
@@ -50,7 +60,7 @@ import { InvoiceDialog } from './InvoiceDialog';
 import CoverageDetailsDisplay from '@/components/CoverageDetailsDisplay';
 import { CustomerClaimsSummary } from './claims/CustomerClaimsSummary';
 import AddOnProtectionDisplay from '@/components/AddOnProtectionDisplay';
-import { W2KAuditLog } from './W2KAuditLog';
+
 import { WarrantyUpgradeDialog } from './WarrantyUpgradeDialog';
 import { InlineWarrantyUpgrade } from './InlineWarrantyUpgrade';
 import { InlineFutureActivationEdit } from './InlineFutureActivationEdit';
@@ -62,7 +72,11 @@ import { PaymentDueDatePicker } from './PaymentDueDatePicker';
 import { CancellationsTab } from './CancellationsTab';
 import { RemindMePopover } from './leads/RemindMePopover';
 import { DateRangeFilter } from './DateRangeFilter';
+import { QuickMonthFilter } from './QuickMonthFilter';
+import { QuickWeekFilter } from './QuickWeekFilter';
+import { UnifiedDateFilter, periodToRange, type DateScope, type PeriodKey } from './UnifiedDateFilter';
 import { QuickCustomerSignupButton } from './QuickCustomerSignupButton';
+import { AddClaimDialog } from './claims/AddClaimDialog';
 import { format } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
@@ -70,6 +84,8 @@ import { getWarrantyDurationInMonths } from '@/lib/warrantyDurationUtils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { WEBSITE_SALES_ACCOUNT_ID } from '@/constants/salesDefaults';
 import { useViewAs } from '@/contexts/ViewAsContext';
+import { CustomersMobileCards } from './customers/CustomersMobileCards';
+import { isNorthernIrelandPlate } from '@/lib/niPlate';
 
 // Helper function to map plan types to Warranties 2000 warranty types
 function getWarrantyType(planType: string): string {
@@ -118,8 +134,42 @@ function calculateExpiryDate(startDate: string, paymentType: string): Date {
   return expiry;
 }
 
+// Time from the lead arriving (sales_leads.created_at) to the sale completing
+// (customers.signup_date). Used to track round-robin sales conversion speed.
+function formatTimeToLead(leadDate?: string | null, saleDate?: string | null): string | null {
+  if (!leadDate || !saleDate) return null;
+  const lead = new Date(leadDate).getTime();
+  const sale = new Date(saleDate).getTime();
+  if (!Number.isFinite(lead) || !Number.isFinite(sale)) return null;
+  const mins = Math.round((sale - lead) / 60000);
+  if (mins < 0) return null;
+  if (mins < 60) return `${mins}m`;
+  if (mins < 1440) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
+  }
+  const days = Math.floor(mins / 1440);
+  const hrs = Math.floor((mins % 1440) / 60);
+  return hrs ? `${days}d ${hrs}h` : `${days}d`;
+}
+
+/** Returns time-to-lead in minutes, or null when unavailable. */
+function getTimeToLeadMinutes(leadDate?: string | null, saleDate?: string | null): number | null {
+  if (!leadDate || !saleDate) return null;
+  const lead = new Date(leadDate).getTime();
+  const sale = new Date(saleDate).getTime();
+  if (!Number.isFinite(lead) || !Number.isFinite(sale)) return null;
+  const mins = Math.round((sale - lead) / 60000);
+  return mins >= 0 ? mins : null;
+}
+
+
+
+
 interface Customer {
   id: string;
+  device_type?: string | null;
   name: string;
   email: string;
   phone?: string;
@@ -201,8 +251,18 @@ interface Customer {
   payment_verified?: boolean;
   // Payment collection tracking
   payment_due_date?: string | null;
-  // Purchase source tracking
+  // Purchase source tracking (payment method)
   purchase_source?: string | null;
+  // Acquisition source (marketing channel: google_ads / facebook_ads / website)
+  acquisition_source?: string | null;
+  // Free-text customer contact notes (shown in Customer Management Notes column)
+  contact_notes?: string | null;
+  gclid?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
   customer_dob?: string | null;
   admin_users?: {
     id: string;
@@ -299,6 +359,47 @@ const NumberPlate = ({ plateNumber }: { plateNumber: string }) => {
   );
 };
 
+const getCustomerAcquisitionChannel = (
+  customer: Pick<Customer, 'acquisition_source' | 'gclid' | 'utm_source' | 'purchase_source'> & { is_manual_entry?: boolean | null }
+) => {
+  const source = (customer.acquisition_source || '').trim().toLowerCase();
+  const utm = (customer.utm_source || '').trim().toLowerCase();
+  const purchaseSrc = (customer.purchase_source || '').trim().toLowerCase();
+  const hasGclid = !!customer.gclid?.trim();
+
+  // Google: ANY Google signal counts as Google — gclid, normalised source, utm_source,
+  // or purchase_source. This ensures phone sales from Google ads are included
+  // in the "Google all" filter even when the agent closed the deal.
+  if (
+    hasGclid ||
+    source.includes('google') ||
+    source === 'adwords' || source === 'g' ||
+    utm.includes('google') || utm === 'adwords' ||
+    purchaseSrc === 'google_ads'
+  ) return 'google_ads';
+
+  if (
+    source.includes('facebook') || source.includes('meta') || source.includes('instagram') ||
+    ['facebook_ads', 'social_ad', 'facebook', 'meta', 'fb', 'f', 'instagram', 'ig'].includes(source) ||
+    utm.includes('facebook') || utm.includes('meta') || utm.includes('instagram') ||
+    utm === 'fb' || utm === 'ig' ||
+    purchaseSrc === 'facebook_ads'
+  ) return 'facebook_ads';
+
+  if (['website', 'organic', 'direct', 'website_organic'].includes(source)) return 'website';
+
+  // Website purchase with no recoverable marketing attribution -> Direct/Website
+  if (customer.is_manual_entry !== true) {
+    const websitePurchaseSources = ['stripe', 'payment_assist', 'bumper', 'bumper_portal', 'paypal', 'website', ''];
+    if (websitePurchaseSources.includes(purchaseSrc)) return 'website';
+  }
+
+  // Manual back-office sale with no recoverable marketing source
+  if (customer.is_manual_entry === true) return 'manual';
+
+  return source || 'unknown';
+};
+
 interface CustomersTabProps {
   notifications?: AdminNotification[];
   unreadCount?: number;
@@ -323,6 +424,8 @@ export const CustomersTab = ({
   
   const [searchParams, setSearchParams] = useSearchParams();
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [claimEmails, setClaimEmails] = useState<Set<string>>(new Set());
+  const [claimRegs, setClaimRegs] = useState<Set<string>>(new Set());
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
   const [deletedCustomers, setDeletedCustomers] = useState<Customer[]>([]);
   const [filteredDeletedCustomers, setFilteredDeletedCustomers] = useState<Customer[]>([]);
@@ -337,16 +440,64 @@ export const CustomersTab = ({
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [deletedSearchTerm, setDeletedSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest'); // Default to newest first
+  // 'desc' = slowest (longest) first, 'asc' = fastest (shortest) first, null = inactive
+  const [timeToLeadSort, setTimeToLeadSort] = useState<'desc' | 'asc' | null>(null);
+  const [initialContactSort, setInitialContactSort] = useState<'desc' | 'asc' | null>(null);
   const [filterByPlan, setFilterByPlan] = useState('all');
   const [filterByStatus, setFilterByStatus] = useState('all');
   const [filterByTag, setFilterByTag] = useState('all');
   const [filterBySource, setFilterBySource] = useState('all_view'); // Default to All View
   const [filterByWarrantyPeriod, setFilterByWarrantyPeriod] = useState('all');
+  const [filterByPaymentSource, setFilterByPaymentSource] = useState('all'); // all | bumper | stripe | payment_assist
+  const [paymentSourceDateFilter, setPaymentSourceDateFilter] = useState('all');
   const [filterByAgent, setFilterByAgent] = useState('all');
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
+    const today = new Date();
+    return { from: today, to: today };
+  });
   const [availableTags, setAvailableTags] = useState<any[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const currentAdminIdForConcessions = useCurrentAdminId();
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  // ── Part payment plans (read-only summary used for row tags + filtering) ──────
+  const [filterByPartPayment, setFilterByPartPayment] = useState<'all' | 'has' | 'outstanding' | 'completed'>('all');
+  const [partPaymentPlans, setPartPaymentPlans] = useState<Map<string, {
+    total_due: number; status: string; next_due_date: string | null; paid: number;
+  }>>(new Map());
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadPartPayments = async () => {
+      const [{ data: plans }, { data: payments }] = await Promise.all([
+        supabase
+          .from('customer_part_payment_plans')
+          .select('customer_id, total_due, status, next_due_date'),
+        supabase
+          .from('customer_part_payments')
+          .select('customer_id, amount'),
+      ]);
+      if (cancelled) return;
+      const paidById = new Map<string, number>();
+      (payments ?? []).forEach((p: any) => {
+        paidById.set(p.customer_id, (paidById.get(p.customer_id) ?? 0) + Number(p.amount || 0));
+      });
+      const map = new Map<string, { total_due: number; status: string; next_due_date: string | null; paid: number }>();
+      (plans ?? []).forEach((p: any) => {
+        map.set(p.customer_id, {
+          total_due: Number(p.total_due || 0),
+          status: p.status,
+          next_due_date: p.next_due_date,
+          paid: paidById.get(p.customer_id) ?? 0,
+        });
+      });
+      setPartPaymentPlans(map);
+    };
+    loadPartPayments();
+    return () => { cancelled = true; };
+  }, []);
+
   const [notes, setNotes] = useState<AdminNote[]>([]);
   const [newNote, setNewNote] = useState('');
   const [noteDate, setNoteDate] = useState<Date>(new Date());
@@ -367,7 +518,16 @@ export const CustomersTab = ({
   const [customerCredentials, setCustomerCredentials] = useState<{ email: string; password: string } | null>(null);
   const [credentialsLoading, setCredentialsLoading] = useState(false);
   const [sendingCredentials, setSendingCredentials] = useState(false);
+  const [sendingApology, setSendingApology] = useState(false);
   const [credentialsExpanded, setCredentialsExpanded] = useState(false);
+  const [credentialsPreview, setCredentialsPreview] = useState<{
+    open: boolean;
+    mode: 'normal' | 'apology';
+    subject: string;
+    body: string;
+    email: string;
+  }>({ open: false, mode: 'normal', subject: '', body: '', email: '' });
+
   const [isPrintLetterOpen, setIsPrintLetterOpen] = useState(false);
   const [cancelWarrantyDialog, setCancelWarrantyDialog] = useState<{
     isOpen: boolean;
@@ -383,7 +543,9 @@ export const CustomersTab = ({
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [upgradeCustomer, setUpgradeCustomer] = useState<Customer | null>(null);
   const [trustpilotReviewCustomer, setTrustpilotReviewCustomer] = useState<Customer | null>(null);
+  const [addClaimCustomer, setAddClaimCustomer] = useState<Customer | null>(null);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [archiveSimpleConfirm, setArchiveSimpleConfirm] = useState(false);
   const [archiveCustomers, setArchiveCustomers] = useState<Array<{
     id: string;
     name: string;
@@ -396,7 +558,21 @@ export const CustomersTab = ({
   const [mergeDialogOpen, setMergeDialogOpen] = useState(false);
   const [mergeDuplicates, setMergeDuplicates] = useState<any[]>([]);
   const [totalSalesDateFilter, setTotalSalesDateFilter] = useState<string>('30days');
+  // Unified date filter UI state
+  const [unifiedScope, setUnifiedScope] = useState<DateScope>('signup');
+  const [unifiedPeriod, setUnifiedPeriod] = useState<PeriodKey>('today');
+  const [unifiedCustomRange, setUnifiedCustomRange] = useState<DateRange | undefined>(undefined);
   const [agentDealCounts, setAgentDealCounts] = useState<Record<string, { sales: number; cancelled: number }>>({});
+  const [showPurchaseSource, setShowPurchaseSource] = useState(false);
+  const [showPaymentColumn, setShowPaymentColumn] = useState(false);
+  const PENDING_DISMISS_KEY = 'pendingPaymentBannerDismissedCount';
+  const [pendingDismissedCount, setPendingDismissedCount] = useState<number>(() => {
+    if (typeof window === 'undefined') return 0;
+    const raw = window.localStorage.getItem(PENDING_DISMISS_KEY);
+    const n = raw ? parseInt(raw, 10) : 0;
+    return Number.isFinite(n) ? n : 0;
+  });
+
   const [revenueDateRange, setRevenueDateRange] = useState<DateRange | undefined>(() => {
     const today = new Date();
     return { from: today, to: today };
@@ -413,30 +589,65 @@ export const CustomersTab = ({
     ? viewAsAgent.id
     : currentAdminUser?.id;
   const isSuperAdmin = normalizedRole === 'super_admin';
+  const isAdmin = normalizedRole === 'admin';
+  const isLeadGen = normalizedRole === 'lead_gen';
+  const isClaimsManager = normalizedRole === 'claims_manager';
+  // See Source column — granular permission with role-based defaults
+  // (super_admin, admin, lead_gen ON by default; togglable per user)
+  const seeSourceGranular = hasGranularPermission('customers', 'see-source');
+  const seeSourceDefault = isSuperAdmin || normalizedRole === 'admin' || normalizedRole === 'lead_gen';
+  const canSeeSourceColumn = seeSourceGranular === undefined ? seeSourceDefault : seeSourceGranular;
   const isSalesAgent = normalizedRole === 'sales';
   const isSalesLead = normalizedRole === 'sales_lead';
   const isSalesScopedRole = isSalesAgent || isSalesLead;
-  
+  // Google Ads-style date filter visible only for these roles
+  const canUseDateFilter = isSuperAdmin || isAdmin || isLeadGen || isClaimsManager || isSalesScopedRole;
+
+  // Payment + SRC column visibility — managers, digital@, accounts@ only.
+  // Sales / sales_lead can never see or toggle these columns.
+  const adminEmail = (currentAdminUser?.email || '').trim().toLowerCase();
+  const isAccountsManager = normalizedRole === 'accounts_manager' || normalizedRole === 'accounts';
+  const isSalesManager = normalizedRole === 'sales_manager';
+  const isDigitalOrAccountsMailbox =
+    adminEmail.startsWith('digital@') || adminEmail.startsWith('accounts@');
+  const canToggleHColumns =
+    !isSalesScopedRole &&
+    (isSuperAdmin || isAdmin || isLeadGen || isSalesManager || isAccountsManager || isDigitalOrAccountsMailbox);
+
   // Track whether role has been determined to prevent flash of unrestricted UI
   const isRoleLoaded = !!currentAdminUser;
+
+  // Default the H (Payment + SRC) columns ON for users who are allowed to see them.
+  // Applied once when the role first resolves so manual toggling still works.
+  const hDefaultsAppliedRef = React.useRef(false);
+  useEffect(() => {
+    if (!hDefaultsAppliedRef.current && currentAdminUser && canToggleHColumns) {
+      setShowPaymentColumn(true);
+      setShowPurchaseSource(true);
+      hDefaultsAppliedRef.current = true;
+    }
+  }, [currentAdminUser, canToggleHColumns]);
 
   const filteredRevenueStats = useMemo(() => {
     if (!isSuperAdmin) return null;
     // Use filteredCustomers which already respects status, agent, source, tag, and other filters
-    let filtered = [...filteredCustomers];
+    let base = [...filteredCustomers];
     // Only exclude cancelled/refunded when viewing 'all' status AND not specifically looking at cancelled_refunded source
     if (filterByStatus === 'all' && filterBySource !== 'cancelled_refunded') {
-      filtered = filtered.filter(c => {
+      base = base.filter(c => {
         const status = (c.status || '').toLowerCase();
         return status !== 'cancelled' && status !== 'refunded';
       });
     }
+    let filtered = base;
+    let dateFilterActive = false;
     if (revenueDateRange?.from) {
+      dateFilterActive = true;
       const from = new Date(revenueDateRange.from);
       from.setHours(0, 0, 0, 0);
       const to = revenueDateRange.to ? new Date(revenueDateRange.to) : new Date(from);
       to.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(c => {
+      filtered = base.filter(c => {
         const signupDate = c.signup_date ? new Date(c.signup_date) : (c.created_at ? new Date(c.created_at) : null);
         return signupDate && signupDate >= from && signupDate <= to;
       });
@@ -449,6 +660,10 @@ export const CustomersTab = ({
       statusLabel = 'website sales';
     } else if (filterBySource === 'website_google') {
       statusLabel = 'Google Ads sales';
+    } else if (filterBySource === 'google_all') {
+      statusLabel = 'Google Ads + Google Leads sales';
+    } else if (filterBySource === 'google_leads_sales') {
+      statusLabel = 'Google Leads sales';
     } else if (filterBySource === 'website_facebook') {
       statusLabel = 'Facebook Ads sales';
     } else if (filterBySource === 'website_organic') {
@@ -462,12 +677,142 @@ export const CustomersTab = ({
     } else if (filterByStatus !== 'all') {
       statusLabel = filterByStatus === 'cancelled_and_refunded' ? 'cancellations/refunds' : filterByStatus;
     }
+    const sourceFilterActive = filterBySource !== 'all_view';
     return {
       count: filtered.length,
       revenue: filtered.reduce((sum, c) => sum + (c.final_amount || 0), 0),
       label: statusLabel,
+      dateFilterActive,
+      sourceFilterActive,
+      hiddenByDate: dateFilterActive ? Math.max(0, base.length - filtered.length) : 0,
     };
   }, [filteredCustomers, revenueDateRange, isSuperAdmin, filterByStatus, filterBySource]);
+
+  // Super-admin-only: per-source totals shown inside the Purchase Source dropdown.
+  // Honors the active date filter (Quick month / custom range) so April vs May
+  // show their own numbers. Falls back to all-time when no date is selected.
+  const sourceBreakdownStats = useMemo(() => {
+    if (!isSuperAdmin) return null;
+    const empty = () => ({ count: 0, revenue: 0 });
+    const buckets: Record<string, { count: number; revenue: number }> = {
+      all_view: empty(),
+      website: empty(),
+      website_google: empty(),
+      website_facebook: empty(),
+      website_organic: empty(),
+      staff_purchase: empty(),
+      quote_order: empty(),
+      agent_sales: empty(),
+      cancelled_refunded: empty(),
+    };
+
+    // Honour the same date window the main table uses (dateRange/revenueDateRange
+    // are kept in sync), and align date-field selection (signup_date only) so
+    // breakdown totals match the filtered list exactly.
+    let from: Date | null = null;
+    let to: Date | null = null;
+    const activeRange = revenueDateRange ?? dateRange;
+    if (activeRange?.from) {
+      from = new Date(activeRange.from);
+      from.setHours(0, 0, 0, 0);
+      to = activeRange.to ? new Date(activeRange.to) : new Date(from);
+      to.setHours(23, 59, 59, 999);
+    }
+
+    const inRange = (c: any) => {
+      if (!from || !to) return true;
+      if (!c.signup_date) return false;
+      const d = new Date(c.signup_date);
+      return d >= from && d <= to;
+    };
+
+    // Honour the active status filter so source totals reflect what the user
+    // is looking at (e.g. switching to "Active" updates every bucket).
+    const matchesStatus = (c: any) => {
+      const status = (c.status || '').toLowerCase();
+      if (filterByStatus === 'all') return true;
+      if (filterByStatus === 'cancelled_and_refunded') {
+        return status === 'cancelled' || status === 'refunded';
+      }
+      return status === filterByStatus.toLowerCase();
+    };
+
+    customers.forEach((c) => {
+      if (!inRange(c)) return;
+      if (!matchesStatus(c)) return;
+
+      const warrantyNum =
+        c.customer_policies?.[0]?.warranty_number ||
+        c.warranty_reference_number ||
+        c.warranty_number ||
+        '';
+      const status = (c.status || '').toLowerCase();
+      const amount = c.final_amount || 0;
+      const isCancelled = status === 'cancelled' || status === 'refunded';
+
+      if (isCancelled) {
+        buckets.cancelled_refunded.count += 1;
+        buckets.cancelled_refunded.revenue += amount;
+        return;
+      }
+
+      buckets.all_view.count += 1;
+      buckets.all_view.revenue += amount;
+
+      const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-');
+      const isStaff = warrantyNum.startsWith('BAW-S-');
+      const isAdm = warrantyNum.startsWith('ADM');
+
+      // Channel attribution falls back to acquisition_source/gclid so that customers
+      // without a warranty number yet still count toward Google/Facebook totals.
+      const channel = getCustomerAcquisitionChannel(c);
+      const channelOnly = !isWebsite && !isStaff && !isAdm &&
+        (channel === 'google_ads' || channel === 'facebook_ads' || channel === 'website');
+
+      if (isWebsite || channelOnly) {
+        if (isWebsite) {
+          buckets.website.count += 1;
+          buckets.website.revenue += amount;
+        }
+        if (channel === 'google_ads') {
+          buckets.website_google.count += 1;
+          buckets.website_google.revenue += amount;
+        } else if (channel === 'facebook_ads') {
+          buckets.website_facebook.count += 1;
+          buckets.website_facebook.revenue += amount;
+        } else {
+          buckets.website_organic.count += 1;
+          buckets.website_organic.revenue += amount;
+        }
+      }
+      if (isStaff) {
+        buckets.staff_purchase.count += 1;
+        buckets.staff_purchase.revenue += amount;
+      }
+      if (isAdm) {
+        buckets.quote_order.count += 1;
+        buckets.quote_order.revenue += amount;
+      }
+      if (isStaff || isAdm) {
+        buckets.agent_sales.count += 1;
+        buckets.agent_sales.revenue += amount;
+      }
+    });
+    return buckets;
+  }, [customers, isSuperAdmin, revenueDateRange, dateRange, filterByStatus]);
+
+  const formatSourceStat = (key: string) => {
+    const s = sourceBreakdownStats?.[key];
+    if (!s) return null;
+    const aov = s.count > 0 ? s.revenue / s.count : 0;
+    const fmt = (n: number) =>
+      new Intl.NumberFormat('en-GB', {
+        style: 'currency',
+        currency: 'GBP',
+        maximumFractionDigits: 0,
+      }).format(n);
+    return `${s.count} · ${fmt(s.revenue)} · AOV ${fmt(aov)}`;
+  };
 
   // Detect customers with future activations due today
   const dueTodayCustomers = useMemo(() => {
@@ -551,6 +896,44 @@ export const CustomersTab = ({
   // Cache for tag assignments to avoid DB calls in filter function
   const [tagAssignmentsCache, setTagAssignmentsCache] = useState<Record<string, Set<string>>>({});
   const [refundedCustomerIds, setRefundedCustomerIds] = useState<Set<string>>(new Set());
+  const [postedCustomerIds, setPostedCustomerIds] = useState<Set<string>>(new Set());
+
+  const fetchPostedCustomerIds = useCallback(async () => {
+    try {
+      const { data } = await supabase
+        .from('posted_letters_log')
+        .select('customer_id, marked_sent_by')
+        .not('customer_id', 'is', null)
+        .not('marked_sent_by', 'is', null)
+        .limit(5000);
+      if (data) {
+        const set = new Set<string>();
+        data.forEach((r: any) => { if (r.customer_id) set.add(r.customer_id); });
+        setPostedCustomerIds(set);
+      }
+    } catch (e) {
+      console.error('Error fetching posted customer ids:', e);
+    }
+  }, []);
+
+  const markCustomerAsPosted = useCallback(async (customer: any) => {
+    const { error } = await supabase.from('posted_letters_log').insert({
+      customer_id: customer.id,
+      registration_plate: customer.registration_plate || 'N/A',
+      customer_name: customer.name,
+      customer_email: customer.email,
+      warranty_number: customer.warranty_number,
+      plan_type: customer.plan_type,
+      sent_at: new Date().toISOString(),
+      marked_sent_by: 'admin',
+    } as any);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success(`${customer.name} documents marked as posted.`);
+      setPostedCustomerIds(prev => new Set(prev).add(customer.id));
+    }
+  }, []);
 
   const fetchTagAssignmentsCache = useCallback(async () => {
     try {
@@ -577,16 +960,60 @@ export const CustomersTab = ({
   }, [availableTags]);
 
   useEffect(() => {
+    // Critical path first
     fetchCustomers();
-    fetchDeletedCustomers();
-    fetchIncompleteCustomers();
-    fetchPlans();
-    fetchEmailStatuses();
     fetchAdminUsers();
-    fetchAgentDealCounts();
     getCurrentUser();
-    fetchAvailableTags();
+
+    // Secondary data loaded after the main table so it doesn't slow first paint
+    const t = setTimeout(() => {
+      fetchDeletedCustomers();
+      fetchIncompleteCustomers();
+      fetchPlans();
+      fetchEmailStatuses();
+      fetchAgentDealCounts();
+      fetchAvailableTags();
+      fetchPostedCustomerIds();
+    }, 800);
+    return () => clearTimeout(t);
   }, []);
+
+
+  // Fetch "Claim made" flags for currently-loaded customers (by email and reg plate)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const emails = Array.from(new Set(
+        customers.map((c) => (c.email || '').toLowerCase()).filter(Boolean)
+      ));
+      const regs = Array.from(new Set(
+        customers.map((c: any) => (c.registration_plate || '').replace(/\s+/g, '').toUpperCase()).filter(Boolean)
+      ));
+      if (emails.length === 0 && regs.length === 0) {
+        if (!cancelled) { setClaimEmails(new Set()); setClaimRegs(new Set()); }
+        return;
+      }
+      const eSet = new Set<string>();
+      const rSet = new Set<string>();
+      if (emails.length) {
+        const { data } = await (supabase.from('claims_submissions') as any)
+          .select('email').in('email', emails).limit(10000);
+        ((data as any[]) || []).forEach((r) => {
+          const k = (r.email || '').toLowerCase(); if (k) eSet.add(k);
+        });
+      }
+      if (regs.length) {
+        const { data } = await (supabase.from('claims_submissions') as any)
+          .select('vehicle_registration').in('vehicle_registration', regs).limit(10000);
+        ((data as any[]) || []).forEach((r) => {
+          const k = (r.vehicle_registration || '').replace(/\s+/g, '').toUpperCase();
+          if (k) rSet.add(k);
+        });
+      }
+      if (!cancelled) { setClaimEmails(eSet); setClaimRegs(rSet); }
+    })();
+    return () => { cancelled = true; };
+  }, [customers]);
 
   // Re-fetch agent deal counts when date filters change
   useEffect(() => {
@@ -600,28 +1027,39 @@ export const CustomersTab = ({
     }
   }, [availableTags, customers.length]);
 
-  // Auto-select own agent filter for sales agents + keep their period locked to 60 days max
+  // Auto-select own agent filter for sales agents.
+  // No date cap: agents can see every customer they have ever sold to.
   useEffect(() => {
     if (!isSalesAgent) return;
     const agentId = effectiveAdminId;
     if (!agentId) return;
 
     setFilterByAgent((prev) => (prev === 'all' ? agentId : prev));
+  }, [effectiveAdminId, isSalesAgent]);
 
-    if (totalSalesDateFilter === 'all') {
-      setTotalSalesDateFilter('60days');
-    }
-  }, [effectiveAdminId, isSalesAgent, totalSalesDateFilter]);
-
-  // Keep the shared customer date filter in sync with the Deals Period dropdown for all roles
+  // Sales agents default to their full history (all time), not a rolling window.
+  const [salesAllTimeApplied, setSalesAllTimeApplied] = useState(false);
   useEffect(() => {
-    const selectedPeriod = isSalesAgent && totalSalesDateFilter === 'all'
-      ? '60days'
-      : totalSalesDateFilter;
+    if (!isSalesScopedRole || salesAllTimeApplied) return;
+    setSalesAllTimeApplied(true);
+    setTotalSalesDateFilter('all');
+    setUnifiedScope('signup');
+    setUnifiedPeriod('all');
+    setUnifiedCustomRange(undefined);
+    setDateRange(undefined);
+  }, [isSalesScopedRole, salesAllTimeApplied]);
 
-    const range = getAgentCountsDateRange(selectedPeriod);
+  // Keep the shared customer date filter in sync with the Deals Period dropdown.
+  // IMPORTANT: only clobber dateRange when the Deals dropdown is the active driver.
+  // For sales roles we wait until the all-time default has been applied, otherwise
+  // the stale '30days' default would immediately re-cap them to a rolling window.
+  useEffect(() => {
+    if (isSalesScopedRole && !salesAllTimeApplied) return;
+    if (totalSalesDateFilter === 'all') return; // don't wipe a custom signup range
+    const range = getAgentCountsDateRange(totalSalesDateFilter);
     setDateRange(range ? { from: range.start, to: range.end } : undefined);
-  }, [isSalesAgent, totalSalesDateFilter]);
+  }, [isSalesAgent, isSalesScopedRole, salesAllTimeApplied, totalSalesDateFilter]);
+
 
   // Listen for URL search parameter changes
   useEffect(() => {
@@ -629,14 +1067,81 @@ export const CustomersTab = ({
     if (urlSearch && urlSearch !== searchTerm) {
       setSearchTerm(urlSearch);
     }
+    const pp = searchParams.get('pp');
+    if (pp === 'outstanding' || pp === 'has' || pp === 'completed') {
+      setFilterByPartPayment(pp);
+    }
   }, [searchParams]);
+
 
   // Debounce search term to avoid filtering on every keystroke
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  // Server-side search fallback: the loaded table is capped/date-scoped, so a search
+  // that finds nothing locally queries the database directly (any date, any agent).
+  useEffect(() => {
+    const term = debouncedSearchTerm.trim();
+    if (term.length < 2) return;
+
+    let cancelled = false;
+    const run = async () => {
+      const clean = term.replace(/[%,]/g, '');
+      const like = `%${clean}%`;
+      const compact = clean.replace(/\s+/g, '');
+      const compactLike = `%${compact}%`;
+      // Reg plates are stored both compact ("SE14HNB") and spaced ("SE14 HNB"),
+      // so search every sensible variant of what was typed.
+      const spaced = compact.length >= 5 ? `%${compact.slice(0, -3)} ${compact.slice(-3)}%` : compactLike;
+      try {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*, customer_policies!customer_id(id, policy_number, policy_end_date, policy_start_date, status, warranty_number, claim_limit, payment_amount)')
+          .or([
+            `name.ilike.${like}`,
+            `first_name.ilike.${like}`,
+            `last_name.ilike.${like}`,
+            `email.ilike.${like}`,
+            `phone.ilike.${like}`,
+            `registration_plate.ilike.${like}`,
+            `registration_plate.ilike.${compactLike}`,
+            `registration_plate.ilike.${spaced}`,
+            `warranty_reference_number.ilike.${compactLike}`,
+            `warranty_number.ilike.${compactLike}`,
+            `postcode.ilike.${compactLike}`,
+          ].join(','))
+          .eq('is_deleted', false)
+          .order('signup_date', { ascending: false })
+          .limit(200);
+
+
+        if (cancelled || error || !data?.length) return;
+
+        setCustomers((prev) => {
+          const known = new Set(prev.map((c: any) => c.id));
+          const extras = data
+            .filter((c: any) => !known.has(c.id))
+            .map((c: any) => ({
+              ...c,
+              warranty_expiry: c.customer_policies?.[0]?.policy_end_date || null,
+              policy_number: c.customer_policies?.[0]?.policy_number || null,
+              policy_status: c.customer_policies?.[0]?.status || null,
+              policy_start_date: c.customer_policies?.[0]?.policy_start_date || null,
+              lead_date: null,
+            }));
+          return extras.length ? [...prev, ...extras] : prev;
+        });
+      } catch (e) {
+        console.warn('Customer search fallback failed:', e);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [debouncedSearchTerm]);
+
   useEffect(() => {
     applyFiltersAndSort();
-  }, [debouncedSearchTerm, customers, sortBy, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByAgent, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating]);
+  }, [debouncedSearchTerm, customers, sortBy, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByPaymentSource, paymentSourceDateFilter, filterByAgent, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating]);
+
 
   const fetchAvailableTags = async () => {
     try {
@@ -659,9 +1164,35 @@ export const CustomersTab = ({
     // Apply search filter — sales/sales_lead restricted to name, email, phone, reg plate only
     if (debouncedSearchTerm) {
       const searchLower = debouncedSearchTerm.toLowerCase();
+      // Normalized form (whitespace removed) for reg-plate / warranty-number style fields
+      const searchCompact = searchLower.replace(/\s+/g, '');
+      const compact = (v?: string | null) => (v ?? '').toLowerCase().replace(/\s+/g, '');
       const isSalesRole = isSalesScopedRole;
 
+      // Detect a UK-reg style query (letters + digits, no @, 4-8 chars compact).
+      // When matched, restrict search to plate/warranty fields so an email like
+      // "lee.knap69@gmail.com" doesn't get returned for a reg like "AP69 YUX".
+      const isRegLikeQuery =
+        !searchCompact.includes('@') &&
+        searchCompact.length >= 4 &&
+        searchCompact.length <= 8 &&
+        /^[a-z0-9]+$/.test(searchCompact) &&
+        /[a-z]/.test(searchCompact) &&
+        /[0-9]/.test(searchCompact);
+
       filtered = filtered.filter(customer => {
+        if (isRegLikeQuery) {
+          return (
+            compact(customer.registration_plate).includes(searchCompact) ||
+            compact(customer.warranty_reference_number).includes(searchCompact) ||
+            compact(customer.warranty_number).includes(searchCompact) ||
+            customer.customer_policies?.some(policy =>
+              compact(policy.policy_number).includes(searchCompact) ||
+              compact(policy.warranty_number).includes(searchCompact)
+            )
+          );
+        }
+
         // Core fields available to all roles
         const coreMatch =
           customer.name?.toLowerCase().includes(searchLower) ||
@@ -669,9 +1200,20 @@ export const CustomersTab = ({
           customer.first_name?.toLowerCase().includes(searchLower) ||
           customer.last_name?.toLowerCase().includes(searchLower) ||
           customer.phone?.toLowerCase().includes(searchLower) ||
-          customer.registration_plate?.toLowerCase().includes(searchLower);
+          customer.registration_plate?.toLowerCase().includes(searchLower) ||
+          compact(customer.registration_plate).includes(searchCompact);
 
-        if (isSalesRole) return coreMatch;
+        // Sales roles can search the whole customer base by identity fields
+        // (name / email / phone / reg) plus warranty & policy references.
+        if (isSalesRole) {
+          return coreMatch ||
+            compact(customer.warranty_reference_number).includes(searchCompact) ||
+            compact(customer.warranty_number).includes(searchCompact) ||
+            customer.customer_policies?.some(policy =>
+              compact(policy.policy_number).includes(searchCompact) ||
+              compact(policy.warranty_number).includes(searchCompact)
+            );
+        }
 
         // Extended fields for admin/super_admin and other roles
         return coreMatch ||
@@ -688,9 +1230,12 @@ export const CustomersTab = ({
           customer.town?.toLowerCase().includes(searchLower) ||
           customer.county?.toLowerCase().includes(searchLower) ||
           customer.postcode?.toLowerCase().includes(searchLower) ||
+          compact(customer.postcode).includes(searchCompact) ||
           customer.country?.toLowerCase().includes(searchLower) ||
           customer.warranty_reference_number?.toLowerCase().includes(searchLower) ||
+          compact(customer.warranty_reference_number).includes(searchCompact) ||
           customer.warranty_number?.toLowerCase().includes(searchLower) ||
+          compact(customer.warranty_number).includes(searchCompact) ||
           customer.plan_type?.toLowerCase().includes(searchLower) ||
           customer.payment_type?.toLowerCase().includes(searchLower) ||
           customer.discount_code?.toLowerCase().includes(searchLower) ||
@@ -698,12 +1243,15 @@ export const CustomersTab = ({
           customer.bumper_order_id?.toLowerCase().includes(searchLower) ||
           customer.stripe_customer_id?.toLowerCase().includes(searchLower) ||
           customer.status?.toLowerCase().includes(searchLower) ||
-          customer.customer_policies?.some(policy => 
+          customer.customer_policies?.some(policy =>
             policy.policy_number?.toLowerCase().includes(searchLower) ||
-            policy.warranty_number?.toLowerCase().includes(searchLower)
+            policy.warranty_number?.toLowerCase().includes(searchLower) ||
+            compact(policy.policy_number).includes(searchCompact) ||
+            compact(policy.warranty_number).includes(searchCompact)
           );
       });
     }
+
 
     // Apply plan filter
     if (filterByPlan !== 'all') {
@@ -725,10 +1273,21 @@ export const CustomersTab = ({
           customer.status?.toLowerCase() === filterByStatus.toLowerCase()
         );
       }
+    } else if (filterBySource !== 'cancelled_refunded' && !debouncedSearchTerm) {
+      // Default view hides cancelled/refunded customers — they belong in the
+      // "Cancellations & Refunds" source filter only.
+      // While searching we keep them so any customer can be found.
+      filtered = filtered.filter(customer => {
+        const status = (customer.status || '').toLowerCase();
+        if (status === 'cancelled' || status === 'refunded') return false;
+        if (refundedCustomerIds.has(customer.id)) return false;
+        return true;
+      });
     }
 
-    // Hide "Claim Made" customers from sales agents and sales leads
-    if (isSalesScopedRole) {
+    // Hide "Claim Made" customers from sales agents and sales leads (browsing only —
+    // an explicit search can still surface the record so they know whose customer it is)
+    if (isSalesScopedRole && !debouncedSearchTerm) {
       filtered = filtered.filter(customer => customer.status?.toLowerCase() !== 'claim_made');
     }
 
@@ -742,9 +1301,11 @@ export const CustomersTab = ({
       }
     }
 
-    // Apply source filter based on warranty number prefix as single source of truth
+    // Apply source filter for super admins only — bypassed while searching so a
+    // record is never hidden just because it sits under a different source tab.
     // BAW- = website/self-service, ADM- = manual/sales-team confirmed
-    if (filterBySource !== 'all_view') {
+    if (isSuperAdmin && filterBySource !== 'all_view' && !debouncedSearchTerm) {
+
       filtered = filtered.filter(customer => {
         // Get the definitive warranty number (from policy first, then customer record)
         const warrantyNum = customer.customer_policies?.[0]?.warranty_number || 
@@ -752,26 +1313,35 @@ export const CustomersTab = ({
                            customer.warranty_number || '';
         
         if (filterBySource === 'website') {
-          // BAW- prefix (but NOT BAW-S-) AND not assigned to an agent = pure website sale
-          return warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-') && !customer.assigned_to;
+          // "Website (BAW)" = pure direct/organic website sales only.
+          // Google-ads and Facebook-ads attributed website sales are shown under
+          // their own dedicated filters, so exclude them here to avoid double-counting.
+          const isWebsitePrefix = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-');
+          if (!isWebsitePrefix) return false;
+          const channel = getCustomerAcquisitionChannel(customer);
+          return channel !== 'google_ads' && channel !== 'facebook_ads';
         } else if (filterBySource === 'website_google') {
-          // Website sale with Google Ads attribution
-          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-') && !customer.assigned_to;
-          const source = customer.purchase_source?.toLowerCase() || '';
-          return isWebsite && source === 'google_ads';
+          // Website sale with Google Ads attribution (normalised acquisition source, fall back to gclid)
+          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-');
+          return isWebsite && getCustomerAcquisitionChannel(customer) === 'google_ads';
+        } else if (filterBySource === 'google_leads_sales') {
+          // Agent-closed sales (BAW-S- staff or ADM- quote/order) where lead originated from Google Ads
+          const isAgent = warrantyNum.startsWith('BAW-S-') || warrantyNum.startsWith('ADM');
+          return isAgent && getCustomerAcquisitionChannel(customer) === 'google_ads';
+        } else if (filterBySource === 'google_all') {
+          // Google Ads pure (website) + Google Leads sales (agent-closed) combined
+          return getCustomerAcquisitionChannel(customer) === 'google_ads';
         } else if (filterBySource === 'website_facebook') {
           // Website sale with Facebook Ads attribution
-          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-') && !customer.assigned_to;
-          const source = customer.purchase_source?.toLowerCase() || '';
-          return isWebsite && source === 'facebook_ads';
+          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-');
+          return isWebsite && getCustomerAcquisitionChannel(customer) === 'facebook_ads';
         } else if (filterBySource === 'website_organic') {
-          // Website sale with no paid attribution (organic)
-          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-') && !customer.assigned_to;
-          const source = customer.purchase_source?.toLowerCase() || '';
-          return isWebsite && source !== 'google_ads' && source !== 'facebook_ads';
+          // Website sale with no paid attribution (organic / direct website)
+          const isWebsite = warrantyNum.startsWith('BAW-') && !warrantyNum.startsWith('BAW-S-');
+          return isWebsite && getCustomerAcquisitionChannel(customer) === 'website';
         } else if (filterBySource === 'staff_purchase') {
-          // BAW-S- prefix OR BAW- with an agent assigned = staff claimed purchase
-          return warrantyNum.startsWith('BAW-S-') || (warrantyNum.startsWith('BAW-') && !!customer.assigned_to);
+          // BAW-S- prefix = staff claimed purchase
+          return warrantyNum.startsWith('BAW-S-');
         } else if (filterBySource === 'quote_order') {
           // ADM- prefix = sales team confirmed / manual entry
           return warrantyNum.startsWith('ADM');
@@ -781,13 +1351,17 @@ export const CustomersTab = ({
         } else if (filterBySource === 'cancelled_refunded') {
           const status = customer.status?.toLowerCase() || '';
           return status === 'cancelled' || status === 'refunded';
+        } else if (filterBySource === 'payment_due') {
+          // Deposit taken on Stripe, balance still outstanding
+          return !!(customer as any).deposit_taken && !(customer as any).payment_collected_at;
         }
         return true;
       });
     }
 
-    // Apply agent filter — skip when sales/sales_lead is actively searching
-    const isSalesSearching = !!debouncedSearchTerm && isSalesScopedRole;
+    // Apply agent filter — an active search always searches the whole customer base,
+    // for every role. Sales wrongly credited to another agent still need to be findable.
+    const isSalesSearching = !!debouncedSearchTerm;
 
     // For sales agents: enforce own-agent filter when no explicit agent selection or search bypass
     const effectiveAgentFilter = (isSalesAgent && filterByAgent === 'all' && !isSalesSearching)
@@ -795,11 +1369,22 @@ export const CustomersTab = ({
       : filterByAgent;
 
     if (effectiveAgentFilter !== 'all' && !isSalesSearching) {
+
       if (effectiveAgentFilter === 'unassigned') {
-        filtered = filtered.filter(customer => !customer.assigned_to);
+        filtered = filtered.filter(customer => !customer.assigned_to && !(customer as any).payment_confirmed_by);
       } else {
-        filtered = filtered.filter(customer => customer.assigned_to === effectiveAgentFilter);
+        // Attribute a sale to the agent when they own the record (assigned_to),
+        // confirmed the payment (payment_confirmed_by), sent the quote (quote_sent_by),
+        // OR were given the sale credit via manager override (sale_credit_admin_user_id).
+        // This mirrors the Sales Scoreboard so both views agree on totals.
+        filtered = filtered.filter(customer =>
+          customer.assigned_to === effectiveAgentFilter ||
+          (customer as any).payment_confirmed_by === effectiveAgentFilter ||
+          (customer as any).quote_sent_by === effectiveAgentFilter ||
+          (customer as any).sale_credit_admin_user_id === effectiveAgentFilter
+        );
       }
+
     }
 
     // Apply warranty period filter
@@ -811,21 +1396,56 @@ export const CustomersTab = ({
       });
     }
 
+    // Apply Payment Source filter (Bumper / Stripe / Payment Assist / PayPal / Other)
+    if (filterByPaymentSource !== 'all') {
+      filtered = filtered.filter(customer => {
+        const purchaseSrc = ((customer as any).purchase_source || '').toLowerCase();
+        const hasBumper = !!customer.bumper_order_id || purchaseSrc.includes('bumper');
+        const hasStripe = !!customer.stripe_session_id || purchaseSrc.includes('stripe');
+        const sessionId = (customer.stripe_session_id || '').toLowerCase();
+        const paymentTypeStr = (customer.payment_type || '').toLowerCase();
+        const isPaypal = sessionId.includes('paypal') || paymentTypeStr.includes('paypal') || purchaseSrc.includes('paypal');
+        const isPaymentAssist = purchaseSrc.includes('payment_assist') || purchaseSrc.includes('payment assist');
+        if (filterByPaymentSource === 'bumper') return hasBumper;
+        if (filterByPaymentSource === 'stripe') return hasStripe && !isPaypal && !hasBumper;
+        if (filterByPaymentSource === 'paypal') return isPaypal;
+        if (filterByPaymentSource === 'payment_assist') return isPaymentAssist || (!hasBumper && !hasStripe && !isPaypal && purchaseSrc === '');
+        if (filterByPaymentSource === 'other') return !hasBumper && !hasStripe && !isPaypal && !isPaymentAssist;
+        return true;
+      });
+    }
+
+    // Apply part payment filter (independent of source/role filters)
+    if (filterByPartPayment !== 'all') {
+      filtered = filtered.filter(customer => {
+        const plan = partPaymentPlans.get(customer.id);
+        if (!plan) return false;
+        if (filterByPartPayment === 'has') return true;
+        const outstanding = Math.max(plan.total_due - plan.paid, 0);
+        if (filterByPartPayment === 'completed') return plan.status === 'completed' || outstanding <= 0;
+        return plan.status !== 'completed' && outstanding > 0;
+      });
+    }
+
+    // Apply Payment Source date filter (uses signup_date)
+    if (paymentSourceDateFilter !== 'all') {
+      const psRange = getAgentCountsDateRange(paymentSourceDateFilter);
+      if (psRange) {
+        filtered = filtered.filter(customer => {
+          const ds = customer.signup_date || customer.created_at;
+          if (!ds) return false;
+          const d = new Date(ds);
+          return d >= psRange.start && d <= psRange.end;
+        });
+      }
+    }
+
     // Apply date range filter — bypass when actively searching (so users can find any customer by name/email/reg)
     // For sales agents: ALWAYS enforce 2-month restriction even if dateRange state is somehow cleared
     const isActivelySearching = !!debouncedSearchTerm;
-    const isSalesAgentSearching = isActivelySearching && isSalesAgent;
-    if (!isActivelySearching || (isSalesAgent && !isSalesAgentSearching)) {
-      let effectiveDateRange = dateRange;
-      
-      // Hard enforcement: sales agents are locked to the selected period, capped at 2 months max
-      if (isSalesAgent) {
-        const lockedRange = getAgentCountsDateRange(totalSalesDateFilter === 'all' ? '60days' : totalSalesDateFilter) || getAgentCountsDateRange('60days');
-        if (lockedRange) {
-          effectiveDateRange = { from: lockedRange.start, to: lockedRange.end };
-        }
-      }
-      
+    if (!isActivelySearching) {
+      const effectiveDateRange = dateRange;
+
       if (effectiveDateRange?.from) {
         filtered = filtered.filter(customer => {
           const signupDate = new Date(customer.signup_date);
@@ -853,24 +1473,55 @@ export const CustomersTab = ({
       const dateA = new Date(a.signup_date).getTime();
       const dateB = new Date(b.signup_date).getTime();
       
+      // Initial-contact column sort takes priority when active.
+      if (initialContactSort) {
+        const ca = getTimeToLeadMinutes((a as any).lead_date, (a as any).first_contact_date);
+        const cb = getTimeToLeadMinutes((b as any).lead_date, (b as any).first_contact_date);
+        if (ca === null && cb === null) return dateB - dateA;
+        if (ca === null) return 1;
+        if (cb === null) return -1;
+        return initialContactSort === 'desc' ? cb - ca : ca - cb;
+      }
+
+      // Time-to-lead column sort takes priority when active.
+      if (timeToLeadSort) {
+        const ta = getTimeToLeadMinutes((a as any).lead_date, a.signup_date);
+        const tb = getTimeToLeadMinutes((b as any).lead_date, b.signup_date);
+        // Rows with no time-to-lead always sink to the bottom.
+        if (ta === null && tb === null) return dateB - dateA;
+        if (ta === null) return 1;
+        if (tb === null) return -1;
+        return timeToLeadSort === 'desc' ? tb - ta : ta - tb;
+      }
+
+
       switch (sortBy) {
         case 'newest':
           return dateB - dateA;
         case 'oldest':
           return dateA - dateB;
+        case 'highest_amount':
+          return (b.final_amount || 0) - (a.final_amount || 0);
+        case 'lowest_amount':
+          return (a.final_amount || 0) - (b.final_amount || 0);
+        case 'name_az':
         case 'name':
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
+        case 'name_za':
+          return (b.name || '').localeCompare(a.name || '');
         case 'email':
-          return a.email.localeCompare(b.email);
+          return (a.email || '').localeCompare(b.email || '');
         case 'plan':
           return (a.plan_type || '').localeCompare(b.plan_type || '');
+        case 'reg':
+          return (a.registration_plate || '').localeCompare(b.registration_plate || '');
         default:
           return dateB - dateA;
       }
     });
 
     setFilteredCustomers(filtered);
-  }, [customers, debouncedSearchTerm, sortBy, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByAgent, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating]);
+  }, [customers, debouncedSearchTerm, sortBy, timeToLeadSort, initialContactSort, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByPaymentSource, paymentSourceDateFilter, filterByAgent, filterByPartPayment, partPaymentPlans, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSuperAdmin, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating]);
 
   const getCurrentUser = async () => {
     try {
@@ -973,18 +1624,23 @@ export const CustomersTab = ({
         to.setHours(23, 59, 59, 999);
         range = { start: from, end: to };
       } else {
-        range = getAgentCountsDateRange(isSalesAgent && totalSalesDateFilter === 'all' ? '60days' : totalSalesDateFilter);
+        range = getAgentCountsDateRange(totalSalesDateFilter);
       }
+
+      // Attribution mirrors the Sales Scoreboard exactly:
+      // sale_credit_admin_user_id → payment_confirmed_by → quote_sent_by → assigned_to,
+      // counted on signup_date so both views always agree.
+      const creditCols = 'id, assigned_to, payment_confirmed_by, quote_sent_by, sale_credit_admin_user_id';
 
       let activeQuery = supabase
         .from('customers')
-        .select('id, assigned_to')
+        .select(creditCols)
         .eq('is_deleted', false)
         .ilike('status', 'active');
 
       let cancelledQuery = supabase
         .from('customers')
-        .select('id, assigned_to')
+        .select(creditCols)
         .eq('is_deleted', false)
         .or('status.ilike.cancelled,status.ilike.refunded');
 
@@ -994,8 +1650,8 @@ export const CustomersTab = ({
         .eq('status', 'approved');
 
       if (range) {
-        activeQuery = activeQuery.gte('created_at', range.start.toISOString()).lte('created_at', range.end.toISOString());
-        cancelledQuery = cancelledQuery.gte('updated_at', range.start.toISOString()).lte('updated_at', range.end.toISOString());
+        activeQuery = activeQuery.gte('signup_date', range.start.toISOString()).lte('signup_date', range.end.toISOString());
+        cancelledQuery = cancelledQuery.gte('signup_date', range.start.toISOString()).lte('signup_date', range.end.toISOString());
         claimsQuery = claimsQuery.gte('created_at', range.start.toISOString()).lte('created_at', range.end.toISOString());
       }
 
@@ -1003,18 +1659,24 @@ export const CustomersTab = ({
       const { data: cancelledCustomers } = await cancelledQuery;
       const { data: approvedClaims } = await claimsQuery;
 
+      const attributionOf = (c: any) =>
+        c.sale_credit_admin_user_id || c.payment_confirmed_by || c.quote_sent_by || c.assigned_to;
+
       const counts: Record<string, { sales: number; cancelled: number }> = {};
       const ensure = (id: string) => { if (!counts[id]) counts[id] = { sales: 0, cancelled: 0 }; };
       (activeCustomers || []).forEach(c => {
-        if (c.assigned_to) { ensure(c.assigned_to); counts[c.assigned_to].sales++; }
+        const id = attributionOf(c);
+        if (id) { ensure(id); counts[id].sales++; }
       });
       (approvedClaims || []).forEach(c => {
         if (c.agent_id) { ensure(c.agent_id); counts[c.agent_id].sales++; }
       });
       (cancelledCustomers || []).forEach(c => {
-        if (c.assigned_to) { ensure(c.assigned_to); counts[c.assigned_to].cancelled++; }
+        const id = attributionOf(c);
+        if (id) { ensure(id); counts[id].cancelled++; }
       });
       setAgentDealCounts(counts);
+
     } catch (error) {
       console.error('Error fetching agent deal counts:', error);
     }
@@ -1152,61 +1814,66 @@ export const CustomersTab = ({
       console.log('📊 Attempting query with policy data and real customers only...');
       
       // First get customers with their policies and assigned admin details (exclude soft-deleted)
-      const { data: customersData, error: customersError } = await supabase
-        .from('customers')
-        .select(`
-          *,
-          customer_policies!customer_id(
-            id,
-            policy_number,
-            policy_end_date,
-            policy_start_date,
-            status,
-            warranty_number,
-            email_sent_status,
-            warranties_2000_status,
-            warranties_2000_sent_at,
-            warranties_2000_scheduled_for,
-            mot_fee,
-            tyre_cover,
-            wear_tear,
-            europe_cover,
-            transfer_cover,
-            breakdown_recovery,
-            vehicle_rental,
-            claim_limit,
-            mot_repair,
-            lost_key,
-            consequential,
-            additional_notes,
-            seasonal_bonus_months,
-            user_id,
-            customer_id,
-            email
-          ),
-          admin_users!assigned_to(
-            id,
-            first_name,
-            last_name,
-            email
-          )
-        `)
-        .not('email', 'ilike', '%@test.com%')
-        .not('email', 'ilike', '%testuser%')
-        .not('email', 'ilike', '%guest@%')
-        .not('name', 'eq', 'Test Customer')
-        .not('name', 'eq', 'Guest Customer')
-        .eq('is_deleted', false)
-        .order('updated_at', { ascending: false })
-        .limit(3000);
+      const [
+        { data: customersData, error: customersError },
+        { data: orphanedPolicies, error: orphanedError },
+      ] = await Promise.all([
+        supabase
+          .from('customers')
+          .select(`
+            *,
+            customer_policies!customer_id(
+              id,
+              policy_number,
+              policy_end_date,
+              policy_start_date,
+              status,
+              warranty_number,
+              email_sent_status,
+              warranties_2000_status,
+              warranties_2000_sent_at,
+              warranties_2000_scheduled_for,
+              mot_fee,
+              tyre_cover,
+              wear_tear,
+              europe_cover,
+              transfer_cover,
+              breakdown_recovery,
+              vehicle_rental,
+              claim_limit,
+              payment_amount,
+              mot_repair,
+              lost_key,
+              consequential,
+              additional_notes,
+              seasonal_bonus_months,
+              user_id,
+              customer_id,
+              email
+            ),
+            admin_users!assigned_to(
+              id,
+              first_name,
+              last_name,
+              email
+            )
+          `)
+          .not('email', 'ilike', '%@test.com%')
+          .not('email', 'ilike', '%testuser%')
+          .not('email', 'ilike', '%guest@%')
+          .not('name', 'eq', 'Test Customer')
+          .not('name', 'eq', 'Guest Customer')
+          .eq('is_deleted', false)
+          .order('updated_at', { ascending: false })
+          .limit(3000),
+        supabase
+          .from('customer_policies')
+          .select('*')
+          .is('customer_id', null)
+          .order('created_at', { ascending: false })
+          .limit(500),
+      ]);
 
-      // Then get orphaned policies (policies without customer records)
-      const { data: orphanedPolicies, error: orphanedError } = await supabase
-        .from('customer_policies')
-        .select('*')
-        .is('customer_id', null)
-        .order('created_at', { ascending: false })
-        .limit(500);
 
       let directData = customersData || [];
       let directError = customersError;
@@ -1300,14 +1967,10 @@ export const CustomersTab = ({
           google_ads_conversion_uploaded_at: null,
           google_ads_conversion_status: null,
           customer_dob: null,
-          dealer_id: null,
-          payment_status: null,
-          cancellation_note: null,
-          cancellation_note_updated_at: null,
-          cancellation_note_updated_by: null,
-        }));
+          dealer_id: null
+        })) as any[];
         
-        directData = [...directData, ...(orphanedAsCustomers as any)];
+        directData = [...directData, ...orphanedAsCustomers] as typeof directData;
       }
       
       const directCount = directData.length;
@@ -1374,33 +2037,6 @@ export const CustomersTab = ({
         toast.success(`Loaded ${directData.length} customers`);
       }
       
-      // Fetch lead dates from sales_leads for all customers (by email)
-      const customerEmails = directData?.map((c: any) => c.email?.toLowerCase()).filter(Boolean) || [];
-      let leadDateMap: Record<string, string> = {};
-      if (customerEmails.length > 0) {
-        try {
-          // Fetch in batches of 200 to stay under query limits
-          for (let i = 0; i < customerEmails.length; i += 200) {
-            const batch = customerEmails.slice(i, i + 200);
-            const { data: leadsData } = await supabase
-              .from('sales_leads')
-              .select('email, created_at')
-              .in('email', batch)
-              .order('created_at', { ascending: true });
-            if (leadsData) {
-              for (const lead of leadsData) {
-                const key = lead.email?.toLowerCase();
-                if (key && !leadDateMap[key]) {
-                  leadDateMap[key] = lead.created_at; // earliest lead date
-                }
-              }
-            }
-          }
-        } catch (e) {
-          console.warn('Could not fetch lead dates:', e);
-        }
-      }
-
       // Process the data to flatten the customer_policies relationship
       const processedData = directData?.map((customer: any) => ({
         ...customer,
@@ -1411,20 +2047,107 @@ export const CustomersTab = ({
         policy_start_date: customer.customer_policies?.[0]?.policy_start_date || null,
         warranties_2000_scheduled_for: customer.customer_policies?.[0]?.warranties_2000_scheduled_for || null,
         last_login: customer.last_login || null,
-        lead_date: leadDateMap[customer.email?.toLowerCase()] || null
+        lead_date: null as string | null,
       })) || [];
 
-      const { recoveredRows, recoveredCount } = await recoverMissingPhones(processedData);
+      // Paint the table immediately, then enrich in the background
+      setCustomers(processedData);
+      setFilteredCustomers(processedData);
+      setLoading(false);
+      if (!initialLoadDone) setInitialLoadDone(true);
 
-      setCustomers(recoveredRows);
-      setFilteredCustomers(recoveredRows);
+      // Background enrichment: lead dates + recovered phone numbers
+      (async () => {
+        try {
+          const customerEmails = Array.from(new Set(
+            processedData.map((c: any) => c.email?.toLowerCase()).filter(Boolean)
+          )) as string[];
 
-      if (recoveredCount > 0) {
-        toast.success(`Recovered ${recoveredCount} missing phone number${recoveredCount > 1 ? 's' : ''} from Step 2 backups`);
-      }
-      
+          const leadDateMap: Record<string, string> = {};
+          // email -> earliest lead id, used to look up first agent contact
+          const leadIdMap: Record<string, string> = {};
+          if (customerEmails.length > 0) {
+            const batches: string[][] = [];
+            for (let i = 0; i < customerEmails.length; i += 300) {
+              batches.push(customerEmails.slice(i, i + 300));
+            }
+            const results = await Promise.all(
+              batches.map((batch) =>
+                supabase
+                  .from('sales_leads')
+                  .select('id, email, created_at')
+                  .in('email', batch)
+                  .order('created_at', { ascending: true })
+              )
+            );
+            for (const { data: leadsData } of results) {
+              for (const lead of leadsData || []) {
+                const key = lead.email?.toLowerCase();
+                if (key && !leadDateMap[key]) {
+                  leadDateMap[key] = lead.created_at;
+                  leadIdMap[key] = (lead as any).id;
+                }
+              }
+            }
+          }
+
+          // First initial contact = earliest logged call, quick note or status
+          // change against that lead. Whichever happened first counts.
+          const firstContactByLeadId: Record<string, string> = {};
+          const leadIds = Object.values(leadIdMap).filter(Boolean);
+          if (leadIds.length > 0) {
+            const idBatches: string[][] = [];
+            for (let i = 0; i < leadIds.length; i += 300) {
+              idBatches.push(leadIds.slice(i, i + 300));
+            }
+            const noteFirst = (leadId: string, ts?: string | null) => {
+              if (!ts) return;
+              const cur = firstContactByLeadId[leadId];
+              if (!cur || new Date(ts).getTime() < new Date(cur).getTime()) {
+                firstContactByLeadId[leadId] = ts;
+              }
+            };
+            await Promise.all(
+              idBatches.map(async (batch) => {
+                const [calls, notes, changes] = await Promise.all([
+                  supabase.from('lead_call_logs').select('lead_id, created_at').in('lead_id', batch),
+                  supabase.from('lead_quick_notes').select('lead_id, created_at').in('lead_id', batch),
+                  supabase.from('sales_leads_changelog').select('lead_id, changed_at').in('lead_id', batch),
+                ]);
+                for (const row of calls.data || []) noteFirst((row as any).lead_id, (row as any).created_at);
+                for (const row of notes.data || []) noteFirst((row as any).lead_id, (row as any).created_at);
+                for (const row of changes.data || []) noteFirst((row as any).lead_id, (row as any).changed_at);
+              })
+            );
+          }
+
+          const withLeadDates = processedData.map((c: any) => {
+            const key = c.email?.toLowerCase();
+            const leadId = key ? leadIdMap[key] : undefined;
+            return {
+              ...c,
+              lead_date: (key && leadDateMap[key]) || null,
+              first_contact_date: (leadId && firstContactByLeadId[leadId]) || null,
+            };
+          });
+
+
+          const { recoveredRows, recoveredCount } = await recoverMissingPhones(withLeadDates);
+
+          setCustomers(recoveredRows);
+          setFilteredCustomers((prev) => (prev.length === processedData.length ? recoveredRows : prev));
+
+          if (recoveredCount > 0) {
+            toast.success(`Recovered ${recoveredCount} missing phone number${recoveredCount > 1 ? 's' : ''} from Step 2 backups`);
+          }
+        } catch (e) {
+          console.warn('Background customer enrichment failed:', e);
+        }
+      })();
+
       // Fetch email statuses after customers are loaded
       fetchEmailStatuses();
+
     } catch (error) {
       console.error('💥 Unexpected error fetching customers:', error);
       setDebugInfo(prev => prev + `\nUnexpected error: ${error}`);
@@ -1443,7 +2166,9 @@ export const CustomersTab = ({
       const { data, error } = await supabase
         .from('abandoned_carts')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(1000);
+
 
       if (error) {
         console.error('Error fetching incomplete customers:', error);
@@ -1543,7 +2268,9 @@ export const CustomersTab = ({
           )
         `)
         .eq('is_deleted', true)
-        .order('deleted_at', { ascending: false });
+        .order('deleted_at', { ascending: false })
+        .limit(1000);
+
 
       if (customersError) {
         console.error('Error fetching deleted customers:', customersError);
@@ -1662,7 +2389,7 @@ export const CustomersTab = ({
 
       const { error } = await supabase
         .from('customers')
-        .update(updateData as any)
+        .update(updateData)
         .eq('id', customerId);
 
       if (error) throw error;
@@ -1906,58 +2633,210 @@ export const CustomersTab = ({
     }
   };
 
+  // Staff-facing helper: set/reset a customer's dashboard password without needing
+  // to complete the full warranty record (helps elderly customers who can't self-reset).
+  const setCustomerDashboardPassword = async (customer: any, password: string) => {
+    const email = (customer?.email || '').trim();
+    if (!email) {
+      toast.error('Customer needs an email address first');
+      return;
+    }
+    if (!password || password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-customer-account', {
+        body: {
+          email,
+          password,
+          firstName: customer.first_name || customer.name?.split(' ')[0] || '',
+          lastName: customer.last_name || customer.name?.split(' ').slice(1).join(' ') || '',
+          customerId: customer.id,
+        },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast.success(
+        data?.action === 'updated'
+          ? `Password updated for ${email}`
+          : `Login created for ${email}`,
+        { description: 'Share the new password with the customer.' }
+      );
+    } catch (err: any) {
+      console.error('Set customer password error:', err);
+      toast.error(err.message || 'Failed to update password');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
   const updateCustomer = async () => {
     if (!editingCustomer) return;
 
+    // Warranty & Payment Details are only mandatory for manual entries whose payment
+    // has not yet been confirmed. Existing/paid records can be edited freely so staff
+    // aren't blocked from routine updates (notes, address, passwords, etc.).
+    const needsPaymentDetails =
+      (editingCustomer as any).is_manual_entry === true &&
+      (editingCustomer as any).payment_verified === false;
+
+    if (needsPaymentDetails) {
+      // The toggle groups visually show sensible defaults (Platinum / £0 excess /
+      // £2,000 claim limit / £70 labour) even when the record has no value stored.
+      // Adopt those displayed defaults so staff aren't blocked by fields that
+      // already look complete on screen.
+      if (!editingCustomer.plan_type) editingCustomer.plan_type = 'Platinum';
+      if (editingCustomer.voluntary_excess === null || editingCustomer.voluntary_excess === undefined) {
+        editingCustomer.voluntary_excess = 0;
+      }
+      if (!editingCustomer.claim_limit) editingCustomer.claim_limit = 2000;
+      if (!editingCustomer.labour_rate) editingCustomer.labour_rate = 70;
+
+      // Amount can live on the customer record OR on the linked policy
+      // (Quotes & Orders writes payment_amount to customer_policies).
+      const policyAmount = Number(
+        (editingCustomer as any).customer_policies?.[0]?.payment_amount ?? 0
+      );
+      const originalAmt = Number(editingCustomer.original_amount) || 0;
+      const finalAmt = Number(editingCustomer.final_amount) || 0;
+      const resolvedAmount = originalAmt > 0 ? originalAmt : finalAmt > 0 ? finalAmt : policyAmount;
+
+      const missing: string[] = [];
+      if (!editingCustomer.payment_type) missing.push('Duration');
+      if (!(resolvedAmount > 0)) missing.push('Original Amount');
+      if (missing.length > 0) {
+        toast.error(`Please select: ${missing.join(', ')}`, {
+          description: 'All Warranty & Payment Details are required before confirming a payment.',
+        });
+        return;
+      }
+      if (!originalAmt) editingCustomer.original_amount = resolvedAmount;
+      if (!finalAmt) editingCustomer.final_amount = resolvedAmount;
+    }
+
+
+
+
+
     try {
-      // Update customer table
-      const { error: customerError } = await supabase
+      const nowIso = new Date().toISOString();
+      const normalizedStatus = (editingCustomer.status || '').toLowerCase();
+      const isCancelTransition = normalizedStatus === 'cancelled' || normalizedStatus === 'refunded';
+
+      // Detect whether this edit is the FIRST time the customer is being moved into
+      // a Cancelled/Refunded state so we can mirror the CancelWarrantyDialog flow
+      // (archive, log, cancel linked policy) and the Cancellations tab tallies correctly.
+      let wasAlreadyCancelled = false;
+      if (isCancelTransition) {
+        const { data: existing } = await supabase
+          .from('customers')
+          .select('status, is_deleted')
+          .eq('id', editingCustomer.id)
+          .maybeSingle();
+        const prevStatus = (existing?.status || '').toLowerCase();
+        wasAlreadyCancelled = prevStatus === 'cancelled' || prevStatus === 'refunded';
+      }
+
+      const customerUpdate: Record<string, any> = {
+        name: editingCustomer.name,
+        email: editingCustomer.email,
+        phone: editingCustomer.phone,
+        first_name: editingCustomer.first_name,
+        last_name: editingCustomer.last_name,
+        flat_number: editingCustomer.flat_number,
+        building_name: editingCustomer.building_name,
+        building_number: editingCustomer.building_number,
+        street: editingCustomer.street,
+        town: editingCustomer.town,
+        county: editingCustomer.county,
+        postcode: editingCustomer.postcode,
+        country: editingCustomer.country,
+        registration_plate: editingCustomer.registration_plate,
+        vehicle_make: editingCustomer.vehicle_make,
+        vehicle_model: editingCustomer.vehicle_model,
+        vehicle_year: editingCustomer.vehicle_year,
+        vehicle_fuel_type: editingCustomer.vehicle_fuel_type,
+        vehicle_transmission: editingCustomer.vehicle_transmission,
+        mileage: editingCustomer.mileage,
+        plan_type: editingCustomer.plan_type,
+        payment_type: editingCustomer.payment_type,
+        status: editingCustomer.status,
+        voluntary_excess: editingCustomer.voluntary_excess,
+        claim_limit: editingCustomer.claim_limit,
+        seasonal_bonus_months: (editingCustomer as any).seasonal_bonus_months ?? null,
+        discount_code: editingCustomer.discount_code,
+        original_amount: editingCustomer.original_amount,
+        discount_amount: editingCustomer.discount_amount,
+        final_amount: editingCustomer.final_amount,
+        mot_fee: editingCustomer.mot_fee,
+        tyre_cover: editingCustomer.tyre_cover,
+        wear_tear: editingCustomer.wear_tear,
+        europe_cover: editingCustomer.europe_cover,
+        transfer_cover: editingCustomer.transfer_cover,
+        breakdown_recovery: editingCustomer.breakdown_recovery,
+        vehicle_rental: editingCustomer.vehicle_rental,
+        mot_repair: editingCustomer.mot_repair,
+        lost_key: editingCustomer.lost_key,
+        consequential: editingCustomer.consequential,
+        labour_rate: editingCustomer.labour_rate,
+        updated_at: nowIso,
+      };
+
+      // When the edit dialog flips status to Cancelled/Refunded, perform the
+      // same archival side-effects as the dedicated Cancel Warranty flow so the
+      // Cancellations tab picks it up with the correct cancellation date.
+      if (isCancelTransition && !wasAlreadyCancelled) {
+        customerUpdate.is_deleted = true;
+        customerUpdate.deleted_at = nowIso;
+        customerUpdate.cancellation_note_updated_at = nowIso;
+        const { data: authData } = await supabase.auth.getUser();
+        customerUpdate.cancellation_note_updated_by = authData?.user?.id ?? null;
+      }
+
+      const { data: updatedCustomerRows, error: customerError } = await supabase
         .from('customers')
-        .update({
-          name: editingCustomer.name,
-          email: editingCustomer.email,
-          phone: editingCustomer.phone,
-          first_name: editingCustomer.first_name,
-          last_name: editingCustomer.last_name,
-          flat_number: editingCustomer.flat_number,
-          building_name: editingCustomer.building_name,
-          building_number: editingCustomer.building_number,
-          street: editingCustomer.street,
-          town: editingCustomer.town,
-          county: editingCustomer.county,
-          postcode: editingCustomer.postcode,
-          country: editingCustomer.country,
-          registration_plate: editingCustomer.registration_plate,
-          vehicle_make: editingCustomer.vehicle_make,
-          vehicle_model: editingCustomer.vehicle_model,
-          vehicle_year: editingCustomer.vehicle_year,
-          vehicle_fuel_type: editingCustomer.vehicle_fuel_type,
-          vehicle_transmission: editingCustomer.vehicle_transmission,
-          mileage: editingCustomer.mileage,
-          plan_type: editingCustomer.plan_type,
-          payment_type: editingCustomer.payment_type,
-          status: editingCustomer.status,
-          voluntary_excess: editingCustomer.voluntary_excess,
-          claim_limit: editingCustomer.claim_limit,
-          discount_code: editingCustomer.discount_code,
-          original_amount: editingCustomer.original_amount,
-          discount_amount: editingCustomer.discount_amount,
-          final_amount: editingCustomer.final_amount,
-          mot_fee: editingCustomer.mot_fee,
-          tyre_cover: editingCustomer.tyre_cover,
-          wear_tear: editingCustomer.wear_tear,
-          europe_cover: editingCustomer.europe_cover,
-          transfer_cover: editingCustomer.transfer_cover,
-          breakdown_recovery: editingCustomer.breakdown_recovery,
-          vehicle_rental: editingCustomer.vehicle_rental,
-          mot_repair: editingCustomer.mot_repair,
-          lost_key: editingCustomer.lost_key,
-          consequential: editingCustomer.consequential,
-          labour_rate: editingCustomer.labour_rate
-        })
-        .eq('id', editingCustomer.id);
+        .update(customerUpdate)
+        .eq('id', editingCustomer.id)
+        .select('id');
 
       if (customerError) throw customerError;
+
+      // Zero rows updated means row-level permissions blocked the write silently.
+      if (!updatedCustomerRows || updatedCustomerRows.length === 0) {
+        throw new Error(
+          "Nothing was saved — your account doesn't have permission to edit this customer. Ask a manager to check your staff account is active."
+        );
+      }
+
+
+      // Mirror the cancellation onto the linked policy + audit log so reporting,
+      // commission unwinds and claims views stay in sync.
+      if (isCancelTransition && !wasAlreadyCancelled) {
+        try {
+          await supabase
+            .from('customer_policies')
+            .update({
+              status: 'cancelled',
+              is_deleted: true,
+              deleted_at: nowIso,
+              updated_at: nowIso,
+            })
+            .eq('customer_id', editingCustomer.id);
+
+          await supabase.from('admin_notes').insert({
+            customer_id: editingCustomer.id,
+            note:
+              `WARRANTY ${normalizedStatus.toUpperCase()} via edit dialog\n` +
+              `Customer: ${editingCustomer.name || editingCustomer.email}\n` +
+              `At: ${new Date().toLocaleString()}`,
+          });
+        } catch (sideEffectErr) {
+          console.error('Cancellation side-effects failed (non-blocking):', sideEffectErr);
+        }
+      }
+
 
       let authAccountCreated = false;
       // Create customer dashboard account if credentials provided
@@ -1999,6 +2878,7 @@ export const CustomersTab = ({
             customer_full_name: `${(editingCustomer.first_name || '').trim()} ${(editingCustomer.last_name || '').trim()}`.trim() || editingCustomer.name,
             voluntary_excess: editingCustomer.voluntary_excess,
             claim_limit: editingCustomer.claim_limit,
+            seasonal_bonus_months: (editingCustomer as any).seasonal_bonus_months ?? null,
             payment_type: editingCustomer.payment_type,
             payment_amount: editingCustomer.final_amount || null,
             mot_fee: editingCustomer.mot_fee,
@@ -2050,13 +2930,67 @@ export const CustomersTab = ({
       
     } catch (error) {
       console.error('Error updating customer:', error);
-      toast.error('Failed to update customer');
+      toast.error(`Failed to update customer: ${(error as any)?.message || 'unknown error'}`, {
+        description: (error as any)?.details || (error as any)?.hint || undefined,
+      });
     }
   };
 
   const getExportData = useCallback(() => {
-    const canViewFinancials = currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'admin';
-    return filteredCustomers.map(customer => {
+    const role = currentAdminUser?.role || '';
+    const emailLower = (currentAdminUser?.email || '').toLowerCase();
+    const canViewFinancials = role === 'super_admin' || role === 'admin';
+    // Management + accounts + lead gen get every field held against the customer,
+    // so nothing from the customer profile is missing in the CSV/Excel export.
+    const canExportEveryColumn =
+      [
+        'super_admin',
+        'admin',
+        'sales_manager',
+        'performance_manager',
+        'accounts_manager',
+        'accounts',
+        'lead_gen',
+      ].includes(role) || emailLower.startsWith('accounts@');
+
+    // Union of every key present on any customer row (plus joined policy fields),
+    // so agents' rows with sparse data still line up column-for-column.
+    const extraKeys: string[] = [];
+    const policyKeys: string[] = [];
+    if (canExportEveryColumn) {
+      const seen = new Set<string>();
+      const seenPolicy = new Set<string>();
+      filteredCustomers.forEach((c: any) => {
+        Object.keys(c || {}).forEach((k) => {
+          if (k === 'customer_policies') return;
+          if (!seen.has(k)) {
+            seen.add(k);
+            extraKeys.push(k);
+          }
+        });
+        const p = Array.isArray(c?.customer_policies) ? c.customer_policies[0] : null;
+        if (p) {
+          Object.keys(p).forEach((k) => {
+            if (!seenPolicy.has(k)) {
+              seenPolicy.add(k);
+              policyKeys.push(k);
+            }
+          });
+        }
+      });
+      extraKeys.sort();
+      policyKeys.sort();
+    }
+
+
+    const flatten = (v: any) => {
+      if (v === null || v === undefined) return '';
+      if (v instanceof Date) return v.toISOString();
+      if (typeof v === 'object') return JSON.stringify(v);
+      return v;
+    };
+
+    return filteredCustomers.map((customer: any) => {
       const row: Record<string, any> = {
         'Name': customer.name,
         'Email': customer.email,
@@ -2066,7 +3000,11 @@ export const CustomersTab = ({
         'Vehicle': `${customer.vehicle_make || ''} ${customer.vehicle_model || ''} ${customer.vehicle_year || ''}`.trim(),
         'Plan Type': customer.plan_type,
         'Payment Type': customer.payment_type || '',
-        'Signup Date': new Date(customer.signup_date).toLocaleDateString('en-GB'),
+        'Signup Date': customer.signup_date ? new Date(customer.signup_date).toLocaleDateString('en-GB') : '',
+        'Time to Lead': formatTimeToLead((customer as any).lead_date, customer.signup_date) || '',
+        'Time to Initial Contact': formatTimeToLead((customer as any).lead_date, (customer as any).first_contact_date) || '',
+        'Initial Contact At': (customer as any).first_contact_date ? new Date((customer as any).first_contact_date).toLocaleString('en-GB') : '',
+
         'Warranty Expiry': customer.warranty_expiry ? new Date(customer.warranty_expiry).toLocaleDateString('en-GB') : 'N/A',
         'Voluntary Excess': customer.voluntary_excess || 0,
         'Status': customer.status,
@@ -2074,9 +3012,19 @@ export const CustomersTab = ({
       if (canViewFinancials) {
         row['Final Amount'] = customer.final_amount || 0;
       }
+      if (canExportEveryColumn) {
+        extraKeys.forEach((k) => {
+          row[k] = flatten(customer[k]);
+        });
+        const policy = Array.isArray(customer.customer_policies) ? customer.customer_policies[0] : null;
+        policyKeys.forEach((k) => {
+          row[`policy_${k}`] = flatten(policy ? policy[k] : '');
+        });
+      }
       return row;
     });
-  }, [filteredCustomers, currentAdminUser?.role]);
+  }, [filteredCustomers, currentAdminUser?.role, currentAdminUser?.email]);
+
 
   const handleExport = (format: 'csv' | 'xlsx') => {
     const exportData = getExportData();
@@ -2086,6 +3034,244 @@ export const CustomersTab = ({
       exportToExcel(exportData, { filename: 'customers', format: 'xlsx' });
     }
   };
+
+  // Full export: every column from the customers row, for management + accounts + lead_gen.
+  // Used for deep analysis / data handovers; not available to standard sales agents.
+  const managerExportRoles = [
+    'super_admin',
+    'admin',
+    'sales_manager',
+    'performance_manager',
+    'accounts_manager',
+    'accounts',
+    'lead_gen',
+  ];
+  const adminEmailLower = (currentAdminUser?.email || '').toLowerCase();
+  const canExportFullCustomers =
+    managerExportRoles.includes(currentAdminUser?.role || '') ||
+    adminEmailLower.startsWith('accounts@');
+
+
+  const buildFullCsvRows = (list: any[]) => {
+    const keySet = new Set<string>();
+    list.forEach(c => Object.keys(c || {}).forEach(k => keySet.add(k)));
+    const keys = Array.from(keySet);
+    const rows = list.map(c => {
+      const out: Record<string, any> = {};
+      keys.forEach(k => {
+        const v = (c as any)[k];
+        if (v === null || v === undefined) out[k] = '';
+        else if (v instanceof Date) out[k] = v.toISOString();
+        else if (typeof v === 'object') out[k] = JSON.stringify(v);
+        else out[k] = v;
+      });
+      return out;
+    });
+    return { rows, keys };
+  };
+
+  const handleExportFullCsv = () => {
+    if (!canExportFullCustomers) {
+      toast.error('You do not have permission to export the full customer dataset');
+      return;
+    }
+    if (!filteredCustomers.length) {
+      toast.error('No customers to export');
+      return;
+    }
+    const sorted = [...filteredCustomers].sort((a: any, b: any) => {
+      const ta = a?.signup_date ? new Date(a.signup_date).getTime() : 0;
+      const tb = b?.signup_date ? new Date(b.signup_date).getTime() : 0;
+      return tb - ta;
+    });
+    const { rows, keys } = buildFullCsvRows(sorted);
+    exportDataToCSV(rows, {
+      filename: `customers-full-${new Date().toISOString().slice(0, 10)}`,
+      format: 'csv',
+    });
+    toast.success(`Exported ${rows.length} customer(s) with ${keys.length} columns`);
+  };
+
+  // Export all customers whose signup_date falls in a given [start, end) window.
+  // Queries Supabase directly with pagination + signup_date DESC ordering so the
+  // export is not capped by the 3000-row in-memory list (which is ordered by updated_at).
+  const exportForRange = async (start: Date, end: Date, label: string) => {
+    if (!canExportFullCustomers) {
+      toast.error('You do not have permission to export');
+      return;
+    }
+    const toastId = toast.loading(`Preparing export for ${label}...`);
+    try {
+      const startIso = start.toISOString();
+      const endIso = end.toISOString();
+      const pageSize = 1000;
+      let from = 0;
+      const collected: any[] = [];
+      // Paginate to bypass PostgREST's default 1000-row cap.
+      // Sort by signup_date DESC so the CSV is newest → oldest.
+      // Fallback secondary sort on created_at keeps rows without signup_date deterministic.
+      while (true) {
+        const { data, error } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('is_deleted', false)
+          .not('email', 'ilike', '%@test.com%')
+          .not('email', 'ilike', '%testuser%')
+          .not('email', 'ilike', '%guest@%')
+          .not('name', 'eq', 'Test Customer')
+          .not('name', 'eq', 'Guest Customer')
+          .gte('signup_date', startIso)
+          .lt('signup_date', endIso)
+          .order('signup_date', { ascending: false })
+          .order('created_at', { ascending: false })
+          .range(from, from + pageSize - 1);
+        if (error) throw error;
+        const batch = data || [];
+        collected.push(...batch);
+        if (batch.length < pageSize) break;
+        from += pageSize;
+        // No hard cap — paginate until Supabase returns a short page.
+      }
+
+      if (!collected.length) {
+        toast.error(`No customers found for ${label}`, { id: toastId });
+        return;
+      }
+
+      // Ensure final ordering is newest → oldest by signup_date.
+      collected.sort((a, b) => {
+        const ta = a?.signup_date ? new Date(a.signup_date).getTime() : 0;
+        const tb = b?.signup_date ? new Date(b.signup_date).getTime() : 0;
+        return tb - ta;
+      });
+
+      const { rows, keys } = buildFullCsvRows(collected);
+      exportDataToCSV(rows, { filename: `customers-${label}`, format: 'csv' });
+      toast.success(`Exported ${rows.length} customer(s) for ${label} (${keys.length} columns)`, { id: toastId });
+    } catch (err: any) {
+      console.error('exportForRange failed:', err);
+      toast.error(`Export failed: ${err?.message || 'unknown error'}`, { id: toastId });
+    }
+  };
+
+  // Month list is unbounded — spans from the earliest known signup month up to
+  // the current month, so no historical date is ever blocked from the picker.
+  const earliestSignupMs = useMemo(() => {
+    let earliest = Date.UTC(2025, 7, 1); // Aug 2025 (first signup in DB)
+    for (const c of customers) {
+      const iso = (c as any)?.signup_date;
+      if (!iso) continue;
+      const t = new Date(iso).getTime();
+      if (Number.isFinite(t) && t < earliest) earliest = t;
+    }
+    return earliest;
+  }, [customers]);
+
+  const monthExportOptions = useMemo(() => {
+    const opts: { label: string; filenameLabel: string; start: Date; end: Date }[] = [];
+    const now = new Date();
+    const earliest = new Date(earliestSignupMs);
+    const earliestYear = earliest.getUTCFullYear();
+    const earliestMonth = earliest.getUTCMonth();
+    const totalMonths =
+      (now.getUTCFullYear() - earliestYear) * 12 + (now.getUTCMonth() - earliestMonth) + 1;
+    for (let i = 0; i < Math.max(totalMonths, 1); i++) {
+      const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+      const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i + 1, 1));
+      opts.push({
+        label: start.toLocaleString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' }),
+        filenameLabel: `${start.getUTCFullYear()}-${String(start.getUTCMonth() + 1).padStart(2, '0')}`,
+        start, end,
+      });
+    }
+    return opts;
+  }, [earliestSignupMs]);
+
+  // Quick-range presets that call the same server-side paginated export as
+  // Month / Date Range, so results are never truncated by the in-memory 3000-row cap.
+  const quickRangeOptions = useMemo(() => {
+    const now = new Date();
+    const startOfTodayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 86400000);
+    // Week starts Monday (UK convention).
+    const dow = startOfTodayUtc.getUTCDay(); // 0 = Sun
+    const daysSinceMonday = (dow + 6) % 7;
+    const startOfThisWeek = addDays(startOfTodayUtc, -daysSinceMonday);
+    const startOfLastWeek = addDays(startOfThisWeek, -7);
+    const startOfThisMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+    const startOfLastMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const startOfThisYear = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+    const tomorrow = addDays(startOfTodayUtc, 1);
+    const veryFarFuture = new Date(Date.UTC(now.getUTCFullYear() + 5, 0, 1));
+    const epoch = new Date(Date.UTC(2020, 0, 1));
+    return [
+      { label: 'Today', filenameLabel: 'today', start: startOfTodayUtc, end: tomorrow },
+      { label: 'Yesterday', filenameLabel: 'yesterday', start: addDays(startOfTodayUtc, -1), end: startOfTodayUtc },
+      { label: 'Last 7 days', filenameLabel: 'last-7-days', start: addDays(startOfTodayUtc, -6), end: tomorrow },
+      { label: 'This week (Mon–today)', filenameLabel: 'this-week', start: startOfThisWeek, end: tomorrow },
+      { label: 'Last week', filenameLabel: 'last-week', start: startOfLastWeek, end: startOfThisWeek },
+      { label: 'This month', filenameLabel: 'this-month', start: startOfThisMonth, end: tomorrow },
+      { label: 'Last month', filenameLabel: 'last-month', start: startOfLastMonth, end: startOfThisMonth },
+      { label: 'Last 30 days', filenameLabel: 'last-30-days', start: addDays(startOfTodayUtc, -29), end: tomorrow },
+      { label: 'Last 90 days', filenameLabel: 'last-90-days', start: addDays(startOfTodayUtc, -89), end: tomorrow },
+      { label: 'Year to date', filenameLabel: 'year-to-date', start: startOfThisYear, end: tomorrow },
+      { label: 'All time', filenameLabel: 'all-time', start: epoch, end: veryFarFuture },
+    ];
+  }, []);
+
+  const [rangeExportOpen, setRangeExportOpen] = useState(false);
+  const [rangeExportFrom, setRangeExportFrom] = useState<string>('');
+  const [rangeExportTo, setRangeExportTo] = useState<string>('');
+
+  const handleRangeExportSubmit = () => {
+    if (!rangeExportFrom || !rangeExportTo) {
+      toast.error('Pick a start and end date');
+      return;
+    }
+    const start = new Date(`${rangeExportFrom}T00:00:00Z`);
+    const endInclusive = new Date(`${rangeExportTo}T00:00:00Z`);
+    const end = new Date(endInclusive.getTime() + 24 * 60 * 60 * 1000);
+    if (end.getTime() <= start.getTime()) {
+      toast.error('End date must be on or after start date');
+      return;
+    }
+    exportForRange(start, end, `${rangeExportFrom}_to_${rangeExportTo}`);
+    setRangeExportOpen(false);
+  };
+
+
+  // Google Ads Offline Conversion Import export.
+  // Format follows Google's required schema: Google Click ID, Conversion Name,
+  // Conversion Time, Conversion Value, Conversion Currency.
+  // Only includes customers that have a gclid recorded.
+  const handleExportGoogleConversions = () => {
+    const rows = filteredCustomers
+      .filter(c => !!(c.gclid && String(c.gclid).trim()))
+      .map(c => {
+        const ts = new Date(c.signup_date);
+        // Google requires: "yyyy-MM-dd HH:mm:ss+0000"
+        const pad = (n: number) => String(n).padStart(2, '0');
+        const conversionTime = `${ts.getUTCFullYear()}-${pad(ts.getUTCMonth() + 1)}-${pad(ts.getUTCDate())} ${pad(ts.getUTCHours())}:${pad(ts.getUTCMinutes())}:${pad(ts.getUTCSeconds())}+0000`;
+        return {
+          'Google Click ID': c.gclid,
+          'Conversion Name': 'Warranty Purchase',
+          'Conversion Time': conversionTime,
+          'Conversion Value': Number(c.final_amount || 0).toFixed(2),
+          'Conversion Currency': 'GBP',
+          'Email': c.email || '',
+          'Phone': c.phone || '',
+          'Name': c.name || '',
+          'Registration Plate': c.registration_plate || '',
+        };
+      });
+    if (!rows.length) {
+      toast.error('No customers with a GCLID found in the current filter');
+      return;
+    }
+    exportDataToCSV(rows, { filename: `google-ads-conversions-${new Date().toISOString().slice(0, 10)}`, format: 'csv' });
+    toast.success(`Exported ${rows.length} Google Ads conversion(s)`);
+  };
+
 
   const handleExportPDF = () => {
     const exportData = getExportData();
@@ -2149,11 +3335,87 @@ export const CustomersTab = ({
     }
   };
 
-  const sendCredentialsEmail = async (customerEmail: string) => {
+  const buildCredentialsTemplate = (mode: 'normal' | 'apology') => {
+    const firstName = selectedCustomer?.first_name || editingCustomer?.first_name || 'there';
+    const email = customerCredentials?.email || selectedCustomer?.email || '';
+    const password = customerCredentials?.password || '';
+    const dashboardUrl = 'https://buyawarranty.co.uk/customer-dashboard';
+
+    if (mode === 'apology') {
+      return {
+        subject: 'Sorry you had trouble logging in — here are your details',
+        body: `Hi ${firstName},
+
+I'm really sorry for the trouble you've had logging in. To get you back into your account as quickly as possible, please use the details below:
+
+Customer Dashboard: ${dashboardUrl}
+Username: ${email}
+Temporary password: ${password}
+
+For security, please change your password once you've logged in.
+
+A few quick tips if you're still having trouble:
+• Copy and paste the password rather than typing it (it's case-sensitive).
+• Try the latest version of Chrome, Safari or Edge, or open a private window.
+• Use "Forgot password" on the login page if you'd like to set a new one.
+
+If there's anything else I can help with, please just reply to this email or call us on 0330 229 5040.
+
+Kind regards,
+Mike Swan
+Buyawarranty.co.uk`,
+      };
+    }
+
+    return {
+      subject: 'Your Customer Dashboard Login Details',
+      body: `Hi ${firstName},
+
+I hope you're well.
+
+We have checked the system and everything appears to be running as normal. However, to help you access your account, please try logging in using the details below:
+
+Customer Dashboard: ${dashboardUrl}
+Username: ${email}
+Temporary password: ${password}
+
+For security, please change your password once you have logged in.
+
+If you experience any further issues or have any questions, please do not hesitate to contact us.
+
+Kind regards,
+Mike Swan
+Buyawarranty.co.uk`,
+    };
+  };
+
+  const openCredentialsPreview = (mode: 'normal' | 'apology') => {
+    if (!customerCredentials) return;
+    const tpl = buildCredentialsTemplate(mode);
+    setCredentialsPreview({
+      open: true,
+      mode,
+      subject: tpl.subject,
+      body: tpl.body,
+      email: customerCredentials.email,
+    });
+  };
+
+  const sendCredentialsEmail = async (
+    customerEmail: string,
+    mode: 'normal' | 'apology' = 'normal',
+    custom?: { subject: string; body: string }
+  ) => {
     try {
-      setSendingCredentials(true);
+      setSendingCredentials(mode === 'normal');
+      setSendingApology(mode === 'apology');
       const { data, error } = await supabase.functions.invoke('resend-customer-credentials', {
-        body: { email: customerEmail }
+        body: {
+          email: customerEmail,
+          mode,
+          customSubject: custom?.subject,
+          customBody: custom?.body,
+        }
       });
       
       if (error) {
@@ -2161,14 +3423,25 @@ export const CustomersTab = ({
         return;
       }
       
-      toast.success('Login credentials sent successfully to ' + customerEmail);
-    } catch (error) {
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to send credentials');
+      }
+      
+      if (mode === 'apology') {
+        toast.success('Apology login details sent successfully to ' + customerEmail);
+      } else {
+        toast.success('Login credentials sent successfully to ' + customerEmail);
+      }
+      setCredentialsPreview((p) => ({ ...p, open: false }));
+    } catch (error: any) {
       console.error('Error sending credentials:', error);
-      toast.error('Failed to send credentials email');
+      toast.error(error.message || 'Failed to send credentials email');
     } finally {
       setSendingCredentials(false);
+      setSendingApology(false);
     }
   };
+
 
   const openCustomerDialog = (customer: Customer) => {
     setSelectedCustomer(customer);
@@ -2443,7 +3716,7 @@ export const CustomersTab = ({
         const customerEmails = emailLogs?.filter(log => log.recipient_email === customer.email) || [];
         statuses[customer.email] = {
           portal_signup: customerEmails.some(log => 
-            log.subject?.toLowerCase().includes('welcome to pandaprotect.co.uk') &&
+            log.subject?.toLowerCase().includes('welcome to buyawarranty.co.uk') &&
             log.subject?.toLowerCase().includes('get you started')
           ),
           policy_documents: customerEmails.some(log => 
@@ -2613,35 +3886,7 @@ export const CustomersTab = ({
     }
   };
 
-  const handleSendToWarranties2000 = async (policyId: string, customerId: string, force = false) => {
-    setEmailSendingLoading(prev => ({ 
-      ...prev, 
-      [customerId]: { ...prev[customerId], warranties2000: true } 
-    }));
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('send-to-warranties-2000', {
-        body: { 
-          policyId: policyId,
-          customerId: customerId,
-          force: force // Allow resending even if already sent
-        }
-      });
-
-      if (error) throw error;
-      
-      toast.success('Successfully sent to Warranties Register!');
-      fetchCustomers(); // Refresh to update status
-    } catch (error: any) {
-      console.error('Error sending to Warranties Register:', error);
-      toast.error(`Failed to send to Warranties Register: ${error.message}`);
-    } finally {
-      setEmailSendingLoading(prev => ({ 
-        ...prev, 
-        [customerId]: { ...prev[customerId], warranties2000: false } 
-      }));
-    }
-  };
+  // Warranties Register integration removed — internal handling only.
 
   const refreshVehicleDataFromDVLA = async (customerId: string, registrationPlate: string) => {
     if (!registrationPlate) {
@@ -2832,13 +4077,87 @@ export const CustomersTab = ({
     );
   }
 
+  const pendingConfirmationCount = customers.filter(
+    (c) => c.is_manual_entry && c.payment_verified === false
+  ).length;
+  const canConfirmPayments =
+    userRole === 'admin' ||
+    userRole === 'super_admin' ||
+    userRole === 'sales_manager';
+
+  const showPendingBanner =
+    canConfirmPayments && pendingConfirmationCount > pendingDismissedCount;
+
+
   return (
     <div className="space-y-6">
+      {/* Part payments pending (top-of-page banner) */}
+      <PartPaymentRemindersBanner
+        canMarkReceived={canConfirmPayments}
+        onShowPendingList={() => setFilterByPartPayment('outstanding')}
+        onOpenCustomer={(id) => {
+          setSearchTerm(id);
+        }}
+      />
+
+
+      {/* Pending payment confirmation banner (managers only) */}
+
+      {showPendingBanner && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border-2 border-amber-400 bg-amber-50 px-4 py-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-200 text-amber-900 text-lg">
+              ⏳
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-amber-900">
+                {pendingConfirmationCount} {pendingConfirmationCount === 1 ? 'order needs' : 'orders need'} payment confirmation
+              </div>
+              <div className="text-xs text-amber-800">
+                Agent sales awaiting a manager to tick <strong>Confirm Payment</strong> once funds have cleared.
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-amber-500 bg-white text-amber-900 hover:bg-amber-100"
+              onClick={() => {
+                setFilterByStatus('pending');
+                setSortBy('newest');
+                const el = document.getElementById('customers-list-anchor');
+                el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
+              Review pending payments
+            </Button>
+            <button
+              type="button"
+              aria-label="Dismiss pending payments banner"
+              title="Dismiss — will reappear only when new pending payments arrive"
+              onClick={() => {
+                try {
+                  window.localStorage.setItem(
+                    PENDING_DISMISS_KEY,
+                    String(pendingConfirmationCount)
+                  );
+                } catch {}
+                setPendingDismissedCount(pendingConfirmationCount);
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded-md text-amber-900 hover:bg-amber-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
       {/* Revenue by Date is now inline in the filter row below */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold text-gray-900">Customer Management</h2>
         </div>
+
         <div className="flex items-center space-x-2">
           {/* Notification Bell for admin/super_admin */}
           {(userRole === 'admin' || userRole === 'super_admin') && onMarkAsRead && onMarkAllAsRead && (
@@ -2851,16 +4170,16 @@ export const CustomersTab = ({
             />
           )}
           {!isSalesAgent && <QuickCustomerSignupButton />}
-          
+          <UnsubscribeQuickLink />
           <Button
-            onClick={fetchCustomers} 
+            onClick={fetchCustomers}
             variant="outline"
             className="flex items-center space-x-2"
           >
             <RefreshCw className="h-4 w-4" />
             <span>Refresh</span>
           </Button>
-          {canExport && (
+          {(canExport || canExportFullCustomers) && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="flex items-center space-x-2">
@@ -2869,21 +4188,110 @@ export const CustomersTab = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleExport('csv')}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Export as CSV
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport('xlsx')}>
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
-                  Export as Excel
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportPDF}>
-                  <Printer className="h-4 w-4 mr-2" />
-                  Save as PDF
-                </DropdownMenuItem>
+                {(canExport || canExportFullCustomers) && (
+                  <>
+                    <DropdownMenuItem onClick={() => handleExport('csv')}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('xlsx')}>
+                      <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      Export as Excel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleExportPDF}>
+                      <Printer className="h-4 w-4 mr-2" />
+                      Save as PDF
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {canExportFullCustomers && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleExportFullCsv}>
+                      <FileSpreadsheet className="h-4 w-4 mr-2" />
+                      Full Customer Export (visible rows)
+                    </DropdownMenuItem>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <CalendarIcon className="h-4 w-4 mr-2" />
+                        Quick date export
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="max-h-80 overflow-y-auto">
+                        {quickRangeOptions.map(opt => (
+                          <DropdownMenuItem
+                            key={opt.filenameLabel}
+                            onClick={() => exportForRange(opt.start, opt.end, opt.filenameLabel)}
+                          >
+                            {opt.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <CalendarIcon className="h-4 w-4 mr-2" />
+                        Export by Month
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent className="max-h-80 overflow-y-auto">
+                        {monthExportOptions.map(opt => (
+                          <DropdownMenuItem
+                            key={opt.filenameLabel}
+                            onClick={() => exportForRange(opt.start, opt.end, opt.filenameLabel)}
+                          >
+                            {opt.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setRangeExportOpen(true); }}>
+                      <CalendarIcon className="h-4 w-4 mr-2" />
+                      Custom date range…
+                    </DropdownMenuItem>
+                  </>
+                )}
+                {canExportFullCustomers && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleExportGoogleConversions}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Google Ads Conversions (GCLID)
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+
+          <Dialog open={rangeExportOpen} onOpenChange={setRangeExportOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Export customers by date range</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Exports all customers whose signup date falls within the selected range (inclusive).
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label htmlFor="range-from" className="text-xs">From</Label>
+                    <Input id="range-from" type="date" value={rangeExportFrom} onChange={(e) => setRangeExportFrom(e.target.value)} />
+                  </div>
+                  <div>
+                    <Label htmlFor="range-to" className="text-xs">To</Label>
+                    <Input id="range-to" type="date" value={rangeExportTo} onChange={(e) => setRangeExportTo(e.target.value)} />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="outline" onClick={() => setRangeExportOpen(false)}>Cancel</Button>
+                  <Button onClick={handleRangeExportSubmit}>
+                    <Download className="h-4 w-4 mr-2" /> Export CSV
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+
           
           {/* Debug Info Button - hidden for sales agents */}
           {debugInfo && !isSalesAgent && (
@@ -2985,323 +4393,376 @@ export const CustomersTab = ({
               ))}
             </div>
           )}
-          {/* Enhanced Search and Filter Controls */}
-          <div className="bg-white p-4 rounded-lg border space-y-4">
-            {/* Row 1: Search, Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Search */}
-              <div className="space-y-1 lg:col-span-3">
-                <Label htmlFor="search" className="text-sm font-medium">Search</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="search"
-                    placeholder="Search by name, email, phone, reg plate, vehicle, address..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+          {/* Redesigned filter toolbar — Linear/Notion style */}
+          {(() => {
+            // Build active filter chips (only show non-defaults)
+            const chips: { key: string; label: string; value: string; onRemove: () => void }[] = [];
+            if (filterByStatus !== 'all') {
+              const statusLabels: Record<string, string> = {
+                active: 'Active', pending: 'Pending', cancelled: 'Cancelled',
+                refunded: 'Refunded', cancelled_and_refunded: 'Cancelled & Refunded', claim_made: 'Claim Made',
+              };
+              chips.push({ key: 'status', label: 'Status', value: statusLabels[filterByStatus] || filterByStatus, onRemove: () => setFilterByStatus('all') });
+            }
+            if (filterByWarrantyPeriod !== 'all') {
+              chips.push({ key: 'wlen', label: 'Length', value: `${parseInt(filterByWarrantyPeriod, 10) / 12} Year${filterByWarrantyPeriod === '12' ? '' : 's'}`, onRemove: () => setFilterByWarrantyPeriod('all') });
+            }
+            if (canSeeSourceColumn && filterBySource !== 'all_view') {
+              const srcLabels: Record<string, string> = {
+                website: 'Website (BAW)', website_google: 'Google web',
+                google_all: 'Google all', google_leads_sales: 'Google leads',
+                website_facebook: 'Website F',
+                website_organic: 'Website O', staff_purchase: 'Staff', quote_order: 'Quote & Orders',
+                agent_sales: 'Agent Sales', cancelled_refunded: 'Cancelled / Refunded',
+                payment_due: 'Payment due (deposit)',
+              };
 
-              {/* Filter by Status */}
-              <div className="space-y-1">
-                <Label htmlFor="statusFilter" className="text-sm font-medium">Status</Label>
-                <Select value={filterByStatus} onValueChange={setFilterByStatus}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="refunded">Refunded</SelectItem>
-                    <SelectItem value="cancelled_and_refunded">Cancelled & Refunded</SelectItem>
-                    {!isSalesScopedRole && (
-                      <SelectItem value="claim_made">Claim Made</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+              chips.push({ key: 'source', label: 'Source', value: srcLabels[filterBySource] || filterBySource, onRemove: () => setFilterBySource('all_view') });
+            }
+            if (filterByPaymentSource !== 'all') {
+              const payLabels: Record<string, string> = { bumper: 'Bumper', stripe: 'Stripe', payment_assist: 'Payment Assist', paypal: 'PayPal', other: 'Other / Manual' };
+              chips.push({ key: 'payment', label: 'Payment', value: payLabels[filterByPaymentSource] || filterByPaymentSource, onRemove: () => setFilterByPaymentSource('all') });
+            }
+            if (filterByAgent !== 'all') {
+              const agent = adminUsers.find(u => u.id === filterByAgent);
+              const agentName = filterByAgent === 'unassigned' ? 'Unassigned' : (agent ? (`${agent.first_name || ''} ${agent.last_name || ''}`.trim() || agent.email) : 'Selected');
+              chips.push({ key: 'agent', label: 'Agent', value: agentName, onRemove: () => setFilterByAgent('all') });
+            }
 
-             {/* Row 2: Filter by Tag, Date Range, Warranty Period, Purchase Source - hidden for sales agents */}
-            {!isSalesAgent && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-              {/* Filter by Tag */}
-              <div className="space-y-1">
-                <Label htmlFor="tagFilter" className="text-sm font-medium">Filter by Tag</Label>
-                <Select value={filterByTag} onValueChange={setFilterByTag}>
-                  <SelectTrigger>
-                    <SelectValue>
-                      {filterByTag === 'all' ? (
-                        'All Tags'
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full flex-shrink-0" 
-                            style={{ backgroundColor: availableTags.find(t => t.id === filterByTag)?.color }}
-                          />
-                          <span>{availableTags.find(t => t.id === filterByTag)?.name || 'Select Tag'}</span>
-                        </div>
-                      )}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    {Object.entries(
-                      availableTags.reduce((acc: any, tag) => {
-                        if (!acc[tag.category]) {
-                          acc[tag.category] = [];
+            const clearAll = () => {
+              setSearchTerm('');
+              setFilterByStatus('all');
+              setSortBy('newest');
+              setFilterByWarrantyPeriod('all');
+              if (canSeeSourceColumn) setFilterBySource('all_view');
+              setFilterByPaymentSource('all');
+              setPaymentSourceDateFilter('all');
+              setFilterByAgent('all');
+              setTotalSalesDateFilter('all');
+              setDateRange(undefined);
+              setRevenueDateRange(undefined);
+              setUnifiedScope('signup');
+              setUnifiedPeriod('all');
+              setUnifiedCustomRange(undefined);
+            };
+
+            const activeFilterCount = chips.length;
+            return (
+              <div className="bg-white rounded-lg border overflow-hidden">
+                {/* Row 1: Date scope + results count */}
+                {canUseDateFilter && (
+                  <div className="flex items-center gap-3 px-4 py-2.5 border-b bg-muted/20 flex-wrap">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Date</span>
+                    <UnifiedDateFilter
+                      scope={unifiedScope}
+                      period={unifiedPeriod}
+                      customRange={unifiedCustomRange}
+                      availableScopes={
+                        isSuperAdmin
+                          ? ['signup', 'payment', 'deals', 'revenue']
+                          : (isSalesAgent || isSalesScopedRole)
+                            ? ['signup', 'deals']
+                            : ['signup', 'payment', 'deals']
+                      }
+                      onChange={({ scope, period, customRange }) => {
+                        setUnifiedScope(scope);
+                        setUnifiedPeriod(period);
+                        setUnifiedCustomRange(customRange);
+                        setDateRange(undefined);
+                        setRevenueDateRange(undefined);
+                        setPaymentSourceDateFilter('all');
+                        setTotalSalesDateFilter('all');
+                        if (period === 'all') return;
+                        const range = period === 'custom' ? customRange : periodToRange(period);
+                        if (scope === 'signup') {
+                          setDateRange(range);
+                          setRevenueDateRange(range);
+                        } else if (scope === 'revenue') {
+                          setRevenueDateRange(range);
+                        } else if (scope === 'payment' && period !== 'custom') {
+                          setPaymentSourceDateFilter(period);
+                        } else if (scope === 'deals' && period !== 'custom') {
+                          setTotalSalesDateFilter(period);
                         }
-                        acc[tag.category].push(tag);
-                        return acc;
-                      }, {})
-                    ).map(([category, tags]: [string, any]) => (
-                      <React.Fragment key={category}>
-                        <SelectItem value={`category-${category}`} disabled className="font-semibold text-xs uppercase text-muted-foreground">
-                          {category}
-                        </SelectItem>
-                        {tags.map((tag: any) => (
-                          <SelectItem key={tag.id} value={tag.id} className="pl-6">
-                            <div className="flex items-center gap-2">
-                              <div 
-                                className="w-3 h-3 rounded-full flex-shrink-0" 
-                                style={{ backgroundColor: tag.color }}
-                              />
-                              <span>{tag.name}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </React.Fragment>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Date Range Filter */}
-              <div className="space-y-1">
-                <Label className="text-sm font-medium invisible">Date Range</Label>
-                <DateRangeFilter
-                  dateRange={dateRange}
-                  onDateRangeChange={setDateRange}
-                />
-              </div>
-
-              {/* Filter by Warranty Period */}
-              <div className="space-y-1">
-                <Label htmlFor="warrantyPeriodFilter" className="text-sm font-medium">Warranty Period</Label>
-                <Select value={filterByWarrantyPeriod} onValueChange={setFilterByWarrantyPeriod}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Periods</SelectItem>
-                    <SelectItem value="12">1 Year (12 months)</SelectItem>
-                    <SelectItem value="24">2 Years (24 months)</SelectItem>
-                    <SelectItem value="36">3 Years (36 months)</SelectItem>
-                    <SelectItem value="48">4 Years (48 months)</SelectItem>
-                    <SelectItem value="60">5 Years (60 months)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Filter by Source */}
-              <div className="space-y-1">
-                <Label htmlFor="sourceFilter" className="text-sm font-medium">Purchase Source</Label>
-                <Select value={filterBySource} onValueChange={setFilterBySource}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all_view">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-gray-400" />
-                        All View
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="website">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        Website (BAW)
-                      </div>
-                    </SelectItem>
-                    {(currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'admin' || currentAdminUser?.role === 'lead_gen') && (
-                      <>
-                        <SelectItem value="website_google">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                            Website G (Google Ads)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="website_facebook">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-sky-500" />
-                            Website F (Facebook Ads)
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="website_organic">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-amber-500" />
-                            Website O (Organic)
-                          </div>
-                        </SelectItem>
-                      </>
+                      }}
+                    />
+                    {/* Quick month/week navigators removed — use Custom range in the date filter above */}
+                    {canToggleHColumns && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const next = !(showPaymentColumn && showPurchaseSource);
+                          setShowPaymentColumn(next);
+                          setShowPurchaseSource(next);
+                        }}
+                        className="text-xs gap-1.5 h-8"
+                        title={(showPaymentColumn && showPurchaseSource) ? 'Hide Payment & SRC columns' : 'Show Payment & SRC columns'}
+                      >
+                        {(showPaymentColumn && showPurchaseSource) ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                        H
+                      </Button>
                     )}
-                    <SelectItem value="staff_purchase">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500" />
-                        Staff Purchase (BAW-S)
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="quote_order">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-purple-500" />
-                        Quote & Orders (ADM)
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="agent_sales">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-500" />
-                        Agent Sales (BAW-S + ADM)
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="cancelled_refunded">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-red-500" />
-                        Cancelled / Refunded
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-               </div>
-            </div>
-            )}
-
-             {/* Row 3: Sales by Agent + Deals Period + Revenue by Date */}
-            <div className="flex items-end gap-4 flex-wrap">
-              {/* Filter by Agent */}
-              {(currentAdminUser?.role === 'admin' || currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'sales_lead' || currentAdminUser?.role === 'sales_manager' || currentAdminUser?.role === 'sales' || currentAdminUser?.role === 'lead_gen') && (
-                <>
-                <div className="space-y-1 w-[220px]">
-                  <Label className="text-sm font-medium">Sales by Agent</Label>
-                  <Select value={filterByAgent} onValueChange={setFilterByAgent}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(currentAdminUser?.role === 'admin' || currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'sales_lead' || currentAdminUser?.role === 'sales' || currentAdminUser?.role === 'lead_gen') && (
-                        <>
-                          <SelectItem value="all">All Agents</SelectItem>
-                          {!isSalesAgent && <SelectItem value="unassigned">Unassigned</SelectItem>}
-                        </>
-                      )}
-                      {adminUsers
-                        .filter(u => ['sales', 'sales_lead', 'sales_manager', 'admin', 'super_admin'].includes(u.role))
-                        .map(user => {
-                          const stats = agentDealCounts[user.id] || { sales: 0, cancelled: 0 };
-                          const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
-                          const isSalesAgentRole = isSalesAgent;
-                          return (
-                            <SelectItem key={user.id} value={user.id}>
-                              {displayName}{!isSalesAgentRole && ` (${stats.sales}${stats.cancelled > 0 ? ` · ${stats.cancelled} refunds` : ''})`}
-                            </SelectItem>
-                          );
-                        })}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Deals Period Selector */}
-                <div className="space-y-1 w-[160px]">
-                  <Label className="text-sm font-medium">Deals Period</Label>
-                  <Select value={totalSalesDateFilter} onValueChange={setTotalSalesDateFilter}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="today">Today</SelectItem>
-                      <SelectItem value="yesterday">Yesterday</SelectItem>
-                      <SelectItem value="7days">Last 7 Days</SelectItem>
-                      <SelectItem value="14days">Last 14 Days</SelectItem>
-                      <SelectItem value="30days">Last 30 Days</SelectItem>
-                      <SelectItem value="60days">Last 60 Days</SelectItem>
-                      <SelectItem value="this_month">This Month</SelectItem>
-                      <SelectItem value="last_month">Last Month</SelectItem>
-                      {!isSalesAgent && <SelectItem value="all">All Time</SelectItem>}
-                    </SelectContent>
-                  </Select>
-                </div>
-                </>
-              )}
-
-              {/* Revenue by Date - inline (super_admin only) */}
-              {isSuperAdmin && (
-                <div className="flex items-end gap-3 border-l pl-4">
-                  <div className="flex items-center gap-2 pb-1.5">
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium whitespace-nowrap">Revenue:</span>
+                    {!isSalesAgent && (
+                      <span className="text-xs text-muted-foreground ml-auto whitespace-nowrap">
+                        <span className="font-semibold text-foreground">{filteredCustomers.length}</span> of {customers.length} results
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 pb-0.5">
-                    {[
-                      { label: 'Today', getRange: () => { const d = new Date(); return { from: d, to: d }; } },
-                      { label: 'Yesterday', getRange: () => { const d = new Date(); d.setDate(d.getDate() - 1); return { from: d, to: d }; } },
-                      { label: 'This Month', getRange: () => { const now = new Date(); return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: now }; } },
-                      { label: 'Last Month', getRange: () => { const now = new Date(); return { from: new Date(now.getFullYear(), now.getMonth() - 1, 1), to: new Date(now.getFullYear(), now.getMonth(), 0) }; } },
-                      { label: 'All Time', getRange: () => undefined as DateRange | undefined },
-                    ].map((preset) => {
-                      const isActive = (() => {
-                        const r = preset.getRange();
-                        if (!r && !revenueDateRange?.from) return true;
-                        if (!r || !revenueDateRange?.from) return false;
-                        const rf = new Date(r.from); rf.setHours(0,0,0,0);
-                        const rt = r.to ? new Date(r.to) : rf; rt.setHours(0,0,0,0);
-                        const cf = new Date(revenueDateRange.from); cf.setHours(0,0,0,0);
-                        const ct = revenueDateRange.to ? new Date(revenueDateRange.to) : cf; ct.setHours(0,0,0,0);
-                        return rf.getTime() === cf.getTime() && rt.getTime() === ct.getTime();
-                      })();
-                      return (
-                        <Button
-                          key={preset.label}
-                          variant={isActive ? 'default' : 'outline'}
-                          size="sm"
-                          className="text-xs h-7 px-2.5"
-                          onClick={() => {
-                            const range = preset.getRange();
-                            setRevenueDateRange(range ?? { from: new Date(2020, 0, 1), to: new Date() });
-                          }}
+                )}
+
+
+                {/* Row 2: Search + Filters + Sort — single compact toolbar */}
+                <div className="flex items-center gap-2 px-4 py-2.5 flex-wrap border-b">
+                  <div className="relative flex-1 min-w-[260px] max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="search"
+                      placeholder={isSalesScopedRole ? 'Search all customers — name, email, phone, reg…' : 'Search name, email, phone, reg…'}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9 h-9"
+                    />
+                  </div>
+
+                  {isSalesScopedRole && (
+                    <Badge
+                      variant="outline"
+                      className={debouncedSearchTerm
+                        ? 'border-blue-300 bg-blue-50 text-blue-700 whitespace-nowrap'
+                        : 'border-muted-foreground/30 text-muted-foreground whitespace-nowrap'}
+                    >
+                      {debouncedSearchTerm
+                        ? 'Searching every customer — see “Assigned To” for the owner'
+                        : 'Search finds any customer in the database'}
+                    </Badge>
+                  )}
+
+
+                  {!isSalesAgent && canSeeSourceColumn && (
+                    <Select value={filterBySource} onValueChange={setFilterBySource}>
+                      <SelectTrigger className="h-9 w-[150px]"><SelectValue placeholder="Source" /></SelectTrigger>
+                      <SelectContent className="max-w-[420px]">
+                        <SelectItem value="all_view"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-gray-400" /><span>All Sources</span></div></SelectItem>
+                        <SelectItem value="website"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500" /><span>Website (BAW)</span></div></SelectItem>
+                        <SelectItem value="website_google"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span>Google web (pure)</span></div></SelectItem>
+                        <SelectItem value="google_all"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-600" /><span>Google all (web + leads)</span></div></SelectItem>
+                        <SelectItem value="google_leads_sales"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-700" /><span>Google leads (agent)</span></div></SelectItem>
+                        <SelectItem value="website_facebook"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-sky-500" /><span>Website F (Facebook)</span></div></SelectItem>
+                        <SelectItem value="website_organic"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500" /><span>Website O (Organic)</span></div></SelectItem>
+                        <SelectItem value="staff_purchase"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-green-500" /><span>Staff (BAW-S)</span></div></SelectItem>
+                        <SelectItem value="quote_order"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-purple-500" /><span>Quote & Orders (ADM)</span></div></SelectItem>
+                        <SelectItem value="agent_sales"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-orange-500" /><span>Agent Sales</span></div></SelectItem>
+                        <SelectItem value="cancelled_refunded"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-red-500" /><span>Cancelled / Refunded</span></div></SelectItem>
+                        <SelectItem value="payment_due"><div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500" /><span>Payment due (deposit)</span></div></SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  <Select value={filterByPartPayment} onValueChange={(v) => setFilterByPartPayment(v as any)}>
+                    <SelectTrigger className="h-9 w-[160px]"><SelectValue placeholder="Part payment" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All part payments</SelectItem>
+                      <SelectItem value="has">Has part payment plan</SelectItem>
+                      <SelectItem value="outstanding">Balance outstanding</SelectItem>
+                      <SelectItem value="completed">Part payment completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+
+
+                  {(currentAdminUser?.role === 'admin' || currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'sales_lead' || currentAdminUser?.role === 'sales_manager' || currentAdminUser?.role === 'sales' || currentAdminUser?.role === 'lead_gen') && (
+                    <Select value={filterByAgent} onValueChange={setFilterByAgent}>
+                      <SelectTrigger className="h-9 w-[150px]"><SelectValue placeholder="Agent" /></SelectTrigger>
+                      <SelectContent>
+                        {(currentAdminUser?.role === 'admin' || currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'sales_lead' || currentAdminUser?.role === 'sales' || currentAdminUser?.role === 'lead_gen') && (
+                          <>
+                            <SelectItem value="all">All Agents</SelectItem>
+                            {!isSalesAgent && <SelectItem value="unassigned">Unassigned</SelectItem>}
+                          </>
+                        )}
+                        {adminUsers
+                          .filter(u => ['sales', 'sales_lead', 'sales_manager', 'admin', 'super_admin'].includes(u.role))
+                          .map(user => {
+                            const stats = agentDealCounts[user.id] || { sales: 0, cancelled: 0 };
+                            const displayName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email;
+                            return (
+                              <SelectItem key={user.id} value={user.id}>
+                                {displayName} ({stats.sales}{stats.cancelled > 0 ? ` · ${stats.cancelled} refunds` : ''})
+                              </SelectItem>
+                            );
+                          })}
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {!isSalesAgent && (
+                    <Select value={filterByPaymentSource} onValueChange={setFilterByPaymentSource}>
+                      <SelectTrigger className="h-9 w-[140px]"><SelectValue placeholder="Payment" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Payments</SelectItem>
+                        <SelectItem value="bumper">Bumper</SelectItem>
+                        <SelectItem value="stripe">Stripe</SelectItem>
+                        <SelectItem value="payment_assist">Payment Assist</SelectItem>
+                        <SelectItem value="paypal">PayPal</SelectItem>
+                        <SelectItem value="other">Other / Manual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {!isSalesAgent && (
+                    <Select value={filterByWarrantyPeriod} onValueChange={setFilterByWarrantyPeriod}>
+                      <SelectTrigger className="h-9 w-[130px]"><SelectValue placeholder="Length" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Lengths</SelectItem>
+                        <SelectItem value="12">1 Year</SelectItem>
+                        <SelectItem value="24">2 Years</SelectItem>
+                        <SelectItem value="36">3 Years</SelectItem>
+                        <SelectItem value="48">4 Years</SelectItem>
+                        <SelectItem value="60">5 Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  <Select value={filterByStatus} onValueChange={setFilterByStatus}>
+                    <SelectTrigger className="h-9 w-[130px]"><SelectValue placeholder="Status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                      <SelectItem value="refunded">Refunded</SelectItem>
+                      <SelectItem value="cancelled_and_refunded">Cancelled & Refunded</SelectItem>
+                      {!isSalesScopedRole && (<SelectItem value="claim_made">Claim Made</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+
+                  {!isSalesAgent && (
+                    <Select value={sortBy} onValueChange={setSortBy}>
+                      <SelectTrigger className="h-9 w-[150px] ml-auto"><SelectValue placeholder="Sort by" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newest">Newest first</SelectItem>
+                        <SelectItem value="oldest">Oldest first</SelectItem>
+                        <SelectItem value="highest_amount">Highest amount</SelectItem>
+                        <SelectItem value="lowest_amount">Lowest amount</SelectItem>
+                        <SelectItem value="name_az">Name (A–Z)</SelectItem>
+                        <SelectItem value="name_za">Name (Z–A)</SelectItem>
+                        <SelectItem value="email">Email (A–Z)</SelectItem>
+                        <SelectItem value="plan">Plan</SelectItem>
+                        <SelectItem value="reg">Reg plate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {activeFilterCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearAll}
+                      className="text-xs font-medium text-orange-600 hover:text-orange-700 hover:underline whitespace-nowrap"
+                    >
+                      Reset filters
+                    </button>
+                  )}
+                </div>
+
+                {/* Row 3: Active filter chips */}
+                {chips.length > 0 && (
+                  <div className="flex items-start gap-2 px-4 py-2 border-b bg-blue-50/40 flex-wrap">
+                    <span className="text-xs font-semibold text-muted-foreground pt-1">Active</span>
+                    <div className="flex items-center gap-1.5 flex-wrap flex-1">
+                      {chips.map(chip => (
+                        <button
+                          key={chip.key}
+                          type="button"
+                          onClick={chip.onRemove}
+                          className="group inline-flex items-center gap-1.5 h-7 pl-2.5 pr-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium transition-colors"
+                          title={`Remove ${chip.label} filter`}
                         >
-                          {preset.label}
-                        </Button>
-                      );
-                    })}
+                          <span>{chip.label}: {chip.value}</span>
+                          <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-200 group-hover:bg-blue-300 text-blue-700 text-[10px] leading-none">✕</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearAll}
+                      className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-medium whitespace-nowrap"
+                    >
+                      Clear all
+                    </button>
                   </div>
-                  {filteredRevenueStats && (
-                    <div className="flex items-center gap-2 pb-1.5">
+                )}
+
+                {/* Payment stats summary (only when payment filter is applied) */}
+                {!isSalesAgent && (() => {
+                  if (filterByPaymentSource === 'all' && paymentSourceDateFilter === 'all') return null;
+                  // Use filteredCustomers so this respects the same date range, status,
+                  // source, agent and other active filters as the table itself.
+                  const stats = filteredCustomers.reduce((acc, customer) => {
+                    const status = (customer.status || '').toLowerCase();
+                    if (status === 'cancelled' || status === 'refunded') return acc;
+                    acc.count += 1;
+                    acc.total += Number(customer.final_amount) || 0;
+                    return acc;
+                  }, { count: 0, total: 0 });
+                  return (
+                    <div className="flex items-center gap-2 px-4 py-2 border-t">
+                      <span className="text-xs text-muted-foreground">Payment filter total:</span>
                       <span className="text-emerald-600 font-bold text-sm whitespace-nowrap">
+                        £{stats.total.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                      <Badge variant="outline" className="text-xs whitespace-nowrap">
+                        {stats.count} {stats.count === 1 ? 'sale' : 'sales'}
+                      </Badge>
+                    </div>
+                  );
+                })()}
+
+
+                {/* Revenue stats badge — shown for any active date selection so admins always see the total for what they've filtered */}
+                {isSuperAdmin && filteredRevenueStats && (() => {
+                  const activeRange = revenueDateRange ?? dateRange;
+                  let rangeLabel = 'all time';
+                  if (activeRange?.from) {
+                    const fromD = new Date(activeRange.from);
+                    const toD = activeRange.to ? new Date(activeRange.to) : fromD;
+                    rangeLabel = format(fromD, 'd MMM yyyy') === format(toD, 'd MMM yyyy')
+                      ? format(fromD, 'd MMM yyyy')
+                      : `${format(fromD, 'd MMM')} – ${format(toD, 'd MMM yyyy')}`;
+                  }
+                  const avg = filteredRevenueStats.count > 0
+                    ? filteredRevenueStats.revenue / filteredRevenueStats.count
+                    : 0;
+                  const sourceSuffix = filterBySource && filterBySource !== 'all_view' ? ` per ${filteredRevenueStats.label.replace(/ sales$/, '')} sale` : ' per sale';
+                  return (
+                    <div className="flex items-center gap-2 px-4 py-2 border-t bg-emerald-50/40 flex-wrap">
+                      <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                        <CalendarIcon className="h-3.5 w-3.5" />
+                        Total for {unifiedScope} ({rangeLabel}):
+                      </span>
+                      <span className="text-emerald-600 font-bold text-base whitespace-nowrap">
                         £{filteredRevenueStats.revenue.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                       <Badge variant="outline" className="text-xs">
                         {filteredRevenueStats.count} {filteredRevenueStats.label}
                       </Badge>
+                      {filteredRevenueStats.count > 0 && (
+                        <span className="text-xs text-muted-foreground ml-2">
+                          Avg price{sourceSuffix}: <span className="font-semibold text-foreground">£{avg.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        </span>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
-
-              {/* Activity summary - hidden for sales agents */}
-              {!isSalesAgent && (
-              <div className="flex items-end pb-0.5 ml-auto">
-                <span className="text-sm text-muted-foreground">
-                  Showing {filteredCustomers.length} of {customers.length} customers
-                </span>
+                  );
+                })()}
               </div>
-              )}
-            </div>
+            );
+          })()}
+
+
 
             {/* Results Summary and Bulk Actions */}
-            <div className="flex items-center justify-between text-sm text-muted-foreground pt-2 border-t">
+            <div className="flex items-center justify-between text-sm text-muted-foreground p-3">
+
               <div className="flex items-center gap-4">
                 {selectedCustomers.size > 0 && (() => {
                   const selectedItems = filteredCustomers.filter(c => selectedCustomers.has(c.id));
@@ -3368,6 +4829,7 @@ export const CustomersTab = ({
                                 user_id: c.customer_policies?.[0]?.user_id,
                                 customer_id: c.id
                               })));
+                              setArchiveSimpleConfirm(true);
                               setArchiveDialogOpen(true);
                             }}
                             className="text-red-600"
@@ -3387,6 +4849,7 @@ export const CustomersTab = ({
                                 user_id: c.customer_policies?.[0]?.user_id,
                                 customer_id: c.id
                               })));
+                              setArchiveSimpleConfirm(false);
                               setArchiveDialogOpen(true);
                             }}
                             className="text-amber-600"
@@ -3406,6 +4869,7 @@ export const CustomersTab = ({
                                 user_id: c.customer_policies?.[0]?.user_id,
                                 customer_id: c.id
                               })));
+                              setArchiveSimpleConfirm(false);
                               setArchiveDialogOpen(true);
                             }}
                             className="text-gray-600"
@@ -3449,11 +4913,14 @@ export const CustomersTab = ({
                     setFilterByStatus('all');
                     setFilterByTag('all');
                     setFilterByWarrantyPeriod('all');
-                    setFilterBySource(isSalesAgent ? 'all_view' : 'website');
-                    setFilterByAgent(isSalesAgent && currentAdminUser ? currentAdminUser.id : 'all');
-                    setTotalSalesDateFilter(isSalesAgent ? '60days' : '30days');
-                    const resetRange = isSalesAgent ? getAgentCountsDateRange('60days') : null;
-                    setDateRange(resetRange ? { from: resetRange.start, to: resetRange.end } : undefined);
+                    setFilterBySource('all_view');
+                    setFilterByAgent(isSalesScopedRole && effectiveAdminId ? effectiveAdminId : 'all');
+                    setTotalSalesDateFilter(isSalesScopedRole ? 'all' : '30days');
+                    setUnifiedScope('signup');
+                    setUnifiedPeriod('all');
+                    setUnifiedCustomRange(undefined);
+                    setDateRange(undefined);
+                    setRevenueDateRange(undefined);
                     setSelectedCustomers(new Set());
                   }}
                   className="text-xs"
@@ -3462,10 +4929,20 @@ export const CustomersTab = ({
                 </Button>
               </div>
             </div>
-          </div>
 
-      {/* Results Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden mt-2">
+
+          {/* H (Payment + SRC) toggle now lives inline with the Date row above. */}
+
+
+      {/* Mobile-only card view for managers spot-checking on phones. Desktop table is unchanged. */}
+      <CustomersMobileCards
+        className="md:hidden mt-2"
+        customers={customersPagination.paginatedData}
+        onOpen={openCustomerDialog}
+      />
+
+      {/* Results Table (desktop) */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden mt-2">
 
         <div className="overflow-x-auto">
           <Table className="min-w-[1800px]">
@@ -3481,44 +4958,55 @@ export const CustomersTab = ({
               <TableHead>Name</TableHead>
               <TableHead>Lead Date</TableHead>
               <TableHead>Purchase Date</TableHead>
+
+
+
               <TableHead>Email</TableHead>
               <TableHead>Phone</TableHead>
               <TableHead>DOB</TableHead>
               <TableHead>RegNum</TableHead>
-              <TableHead>Payment</TableHead>
+              <TableHead>Price</TableHead>
+              {showPaymentColumn && <TableHead>Payment</TableHead>}
+              <TableHead className="text-center bg-amber-50 min-w-[130px]" title="Upload a screenshot of the price comparison shown to the customer">Price Comp. Proof</TableHead>
+
+              <TableHead>Assigned To</TableHead>
+              {canSeeSourceColumn && showPurchaseSource && <TableHead className="bg-purple-50">SRC</TableHead>}
               <TableHead>Ref</TableHead>
               <TableHead>Email Status</TableHead>
-              <TableHead>Warranties Register</TableHead>
+              
               <TableHead>Status</TableHead>
-              <TableHead>Assigned To</TableHead>
               <TableHead>Make</TableHead>
               <TableHead>Model</TableHead>
-              <TableHead>RegDate</TableHead>
+              <TableHead>Vol. Excess</TableHead>
+              <TableHead>Claim Limit</TableHead>
+              <TableHead>Labour Rate</TableHead>
+              <TableHead>Mileage</TableHead>
               <TableHead>Address</TableHead>
+              <TableHead>RegDate</TableHead>
               <TableHead>WarType</TableHead>
               <TableHead>Dur.</TableHead>
               <TableHead>Start Date</TableHead>
               
               {!isSalesAgent && <TableHead className="bg-gradient-to-r from-amber-50 to-orange-50">Upgrade</TableHead>}
               <TableHead>Expiry Date</TableHead>
-              <TableHead>Payment Method</TableHead>
-              <TableHead className="bg-purple-50">Source</TableHead>
-              <TableHead>Vol. Excess</TableHead>
-              <TableHead>Claim Limit</TableHead>
+              {canSeeSourceColumn && showPurchaseSource && <TableHead className="bg-purple-50">Source</TableHead>}
+              {isSuperAdmin && <TableHead className="bg-purple-50">Device</TableHead>}
               <TableHead>Claims Made</TableHead>
               <TableHead>Claims Paid</TableHead>
               <TableHead className="text-center bg-green-50">Trustpilot</TableHead>
               <TableHead className="text-center bg-blue-50">Google</TableHead>
-              <TableHead>Labour Rate</TableHead>
-              <TableHead>Mileage</TableHead>
               <TableHead>Tags</TableHead>
+              <TableHead className="min-w-[200px]">Notes</TableHead>
               <TableHead>Actions</TableHead>
+
+
             </TableRow>
+
           </TableHeader>
           <TableBody>
             {filteredCustomers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={33} className="text-center py-8">
+                <TableCell colSpan={38} className="text-center py-8">
                   <div className="space-y-4">
                     <AlertCircle className="h-12 w-12 text-gray-400 mx-auto" />
                     <div>
@@ -3536,7 +5024,7 @@ export const CustomersTab = ({
               </TableRow>
             ) : (
               customersPagination.paginatedData.map((customer) => (
-                <TableRow key={customer.id} className={isDueToday(customer) ? 'bg-orange-50 border-l-4 border-l-orange-500' : ''}>
+                <TableRow key={customer.id} className={`${isDueToday(customer) ? 'bg-orange-50 border-l-4 border-l-orange-500' : ''} ${postedCustomerIds.has(customer.id) ? 'bg-emerald-50/60 border-l-4 border-l-emerald-500' : ''}`}>
                   <TableCell>
                     <Checkbox
                       checked={selectedCustomers.has(customer.id)}
@@ -3558,7 +5046,7 @@ export const CustomersTab = ({
                             <Edit className="h-3 w-3" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" largeCloseButton>
                           <DialogHeader>
                             <div className="flex items-center justify-between">
                               <DialogTitle>Manage Customer: {selectedCustomer?.name}</DialogTitle>
@@ -3572,6 +5060,10 @@ export const CustomersTab = ({
                                     <Printer className="h-4 w-4 mr-1" />
                                     Print Letter
                                   </Button>
+                                  <RecentEmailsDialog
+                                    customerEmail={selectedCustomer.email}
+                                    customerName={selectedCustomer.name}
+                                  />
                                   <SendNotificationDialog 
                                     customerId={selectedCustomer.id}
                                     customerName={selectedCustomer.name}
@@ -3615,7 +5107,7 @@ export const CustomersTab = ({
                                             <div>
                                               <Label className="text-sm font-medium text-gray-700">Customer Dashboard URL</Label>
                                               <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded block mt-1">
-                                                https://pandaprotect.co.uk/customer-dashboard
+                                                https://buyawarranty.co.uk/customer-dashboard
                                               </code>
                                             </div>
                                             
@@ -3641,7 +5133,7 @@ export const CustomersTab = ({
                                             onClick={() => {
                                               const credentials = `Customer Dashboard Login Details
 
-Dashboard URL: https://pandaprotect.co.uk/customer-dashboard
+Dashboard URL: https://buyawarranty.co.uk/customer-dashboard
 Username: ${customerCredentials.email}
 Password: ${customerCredentials.password}
 
@@ -3663,8 +5155,8 @@ Please log in and change your password after first login.`;
                                         
                                         <div className="flex gap-2 mt-4">
                                           <Button
-                                            onClick={() => sendCredentialsEmail(customerCredentials.email)}
-                                            disabled={sendingCredentials}
+                                            onClick={() => openCredentialsPreview('normal')}
+                                            disabled={sendingCredentials || sendingApology}
                                             className="flex-1"
                                           >
                                             {sendingCredentials ? (
@@ -3680,25 +5172,118 @@ Please log in and change your password after first login.`;
                                             )}
                                           </Button>
                                           
-                                          {/* View as Customer Info Box */}
-                                          <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mt-4">
-                                            <div className="flex items-start gap-3">
-                                              <Eye className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                                              <div className="flex-1 space-y-2">
-                                                <h4 className="font-semibold text-blue-900">Safe Customer View</h4>
-                                                <p className="text-sm text-blue-800">
-                                                  Use the button below to view this customer's dashboard safely. Your admin session will remain active in other tabs - no need to log out!
+                                          <Button
+                                            onClick={() => openCredentialsPreview('apology')}
+
+                                            disabled={sendingCredentials || sendingApology}
+                                            variant="outline"
+                                            className="flex-1"
+                                          >
+                                            {sendingApology ? (
+                                              <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                                                Sending...
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Heart className="h-4 w-4 mr-2" />
+                                                Resend with apology
+                                              </>
+                                            )}
+                                          </Button>
+                                        </div>
+
+                                        <Dialog
+                                          open={credentialsPreview.open}
+                                          onOpenChange={(open) => setCredentialsPreview((p) => ({ ...p, open }))}
+                                        >
+                                          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                                            <DialogHeader>
+                                              <DialogTitle>
+                                                Preview email to {credentialsPreview.email}
+                                              </DialogTitle>
+                                            </DialogHeader>
+                                            <div className="space-y-4">
+                                              <div>
+                                                <Label className="text-sm font-medium">From</Label>
+                                                <div className="text-sm text-gray-600 mt-1">
+                                                  Buyawarranty Customer Care &lt;noreply@buyawarranty.co.uk&gt;
+                                                </div>
+                                              </div>
+                                              <div>
+                                                <Label htmlFor="preview-subject" className="text-sm font-medium">Subject</Label>
+                                                <Input
+                                                  id="preview-subject"
+                                                  value={credentialsPreview.subject}
+                                                  onChange={(e) => setCredentialsPreview((p) => ({ ...p, subject: e.target.value }))}
+                                                  className="mt-1"
+                                                />
+                                              </div>
+                                              <div>
+                                                <Label htmlFor="preview-body" className="text-sm font-medium">Message</Label>
+                                                <Textarea
+                                                  id="preview-body"
+                                                  value={credentialsPreview.body}
+                                                  onChange={(e) => setCredentialsPreview((p) => ({ ...p, body: e.target.value }))}
+                                                  rows={18}
+                                                  className="mt-1 font-mono text-sm"
+                                                />
+                                                <p className="text-xs text-gray-500 mt-1">
+                                                  Edit anything above before sending. Line breaks will be preserved in the email.
                                                 </p>
                                               </div>
+                                              <div className="flex justify-end gap-2 pt-2">
+                                                <Button
+                                                  variant="outline"
+                                                  onClick={() => setCredentialsPreview((p) => ({ ...p, open: false }))}
+                                                  disabled={sendingCredentials || sendingApology}
+                                                >
+                                                  Cancel
+                                                </Button>
+                                                <Button
+                                                  onClick={() => sendCredentialsEmail(
+                                                    credentialsPreview.email,
+                                                    credentialsPreview.mode,
+                                                    { subject: credentialsPreview.subject, body: credentialsPreview.body }
+                                                  )}
+                                                  disabled={sendingCredentials || sendingApology || !credentialsPreview.subject.trim() || !credentialsPreview.body.trim()}
+                                                >
+                                                  {(sendingCredentials || sendingApology) ? (
+                                                    <>
+                                                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                      Sending...
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <Send className="h-4 w-4 mr-2" />
+                                                      Send Email
+                                                    </>
+                                                  )}
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </DialogContent>
+                                        </Dialog>
+                                        
+                                        {/* View as Customer Info Box */}
+
+                                        <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mt-4">
+                                          <div className="flex items-start gap-3">
+                                            <Eye className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="flex-1 space-y-2">
+                                              <h4 className="font-semibold text-blue-900">Safe Customer View</h4>
+                                              <p className="text-sm text-blue-800">
+                                                Use the button below to view this customer's dashboard safely. Your admin session will remain active in other tabs - no need to log out!
+                                              </p>
                                             </div>
                                           </div>
-                                          
-                                          <ViewAsCustomerButton
-                                            customerId={selectedCustomer.id}
-                                            customerEmail={customerCredentials.email}
-                                            customerName={selectedCustomer.name}
-                                          />
                                         </div>
+                                        
+                                        <ViewAsCustomerButton
+                                          customerId={selectedCustomer.id}
+                                          customerEmail={customerCredentials.email}
+                                          customerName={selectedCustomer.name}
+                                        />
                                         
                                         {/* Last Login Information */}
                                         {selectedCustomer.last_login && (
@@ -3722,10 +5307,11 @@ Please log in and change your password after first login.`;
                                 </div>
                               </Collapsible>
 
-                              <Tabs defaultValue="details" className="w-full">
-                                <TabsList className="grid w-full grid-cols-8">
+                              <Tabs defaultValue={searchParams.get('ctab') === 'part-payments' ? 'part-payments' : 'details'} className="w-full">
+                                <TabsList className="grid w-full grid-cols-9">
                                   <TabsTrigger value="details">Customer Details</TabsTrigger>
                                   <TabsTrigger value="warranty">Warranty Details</TabsTrigger>
+                                  <TabsTrigger value="part-payments">Part Payments</TabsTrigger>
                                   <TabsTrigger value="claims">Claims</TabsTrigger>
                                   <TabsTrigger value="tags">Tags</TabsTrigger>
                                   <TabsTrigger value="notes">Notes</TabsTrigger>
@@ -3733,6 +5319,7 @@ Please log in and change your password after first login.`;
                                   <TabsTrigger value="mot">MOT History</TabsTrigger>
                                   <TabsTrigger value="w2000">Warranties Register</TabsTrigger>
                                 </TabsList>
+
 
                                 <TabsContent value="details" className="space-y-4">
                                   <div className="grid grid-cols-2 gap-4">
@@ -3976,48 +5563,72 @@ Please log in and change your password after first login.`;
                                           onValueChange={(value) => value && setEditingCustomer({ ...editingCustomer, voluntary_excess: parseInt(value) })}
                                           className="justify-start flex-wrap gap-2"
                                         >
-                                          <ToggleGroupItem value="0" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£0</ToggleGroupItem>
-                                          <ToggleGroupItem value="50" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£50</ToggleGroupItem>
-                                          <ToggleGroupItem value="100" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£100</ToggleGroupItem>
-                                          <ToggleGroupItem value="150" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£150</ToggleGroupItem>
-                                          <ToggleGroupItem value="200" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£200</ToggleGroupItem>
-                                        </ToggleGroup>
-                                      </div>
+                                         <ToggleGroupItem value="0" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£0</ToggleGroupItem>
+                                           <ToggleGroupItem value="50" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£50</ToggleGroupItem>
+                                           <ToggleGroupItem value="100" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£100</ToggleGroupItem>
+                                           <ToggleGroupItem value="150" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£150</ToggleGroupItem>
+                                           <ToggleGroupItem value="250" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£250</ToggleGroupItem>
+                                           <ToggleGroupItem value="500" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£500</ToggleGroupItem>
+                                         </ToggleGroup>
+                                       </div>
+ 
+                                       <div>
+                                         <Label className="mb-2 block">Claim Limit</Label>
+                                         <ToggleGroup 
+                                           type="single" 
+                                           value={editingCustomer.claim_limit?.toString() || '2000'} 
+                                           onValueChange={(value) => value && setEditingCustomer({ ...editingCustomer, claim_limit: parseInt(value) })}
+                                           className="justify-start flex-wrap gap-2"
+                                         >
+                                           <ToggleGroupItem value="750" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£1,000</ToggleGroupItem>
+                                           <ToggleGroupItem value="2000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£2,000</ToggleGroupItem>
+                                           <ToggleGroupItem value="3000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£3,000</ToggleGroupItem>
+                                           <ToggleGroupItem value="5000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£5,000</ToggleGroupItem>
+                                         </ToggleGroup>
+                                       </div>
+ 
+                                       <div>
+                                         <Label className="mb-2 block">Labour Rate</Label>
+                                         <ToggleGroup 
+                                           type="single" 
+                                           value={editingCustomer.labour_rate?.toString() || '70'} 
+                                           onValueChange={(value) => value && setEditingCustomer({ ...editingCustomer, labour_rate: parseInt(value) })}
+                                           className="justify-start flex-wrap gap-2"
+                                         >
+                                            <ToggleGroupItem value="50" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£50/hr</ToggleGroupItem>
+                                            <ToggleGroupItem value="70" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£70/hr</ToggleGroupItem>
+                                            <ToggleGroupItem value="100" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£100/hr</ToggleGroupItem>
+                                            <ToggleGroupItem value="150" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£150/hr</ToggleGroupItem>
 
-                                      <div>
-                                        <Label className="mb-2 block">Claim Limit</Label>
-                                        <ToggleGroup 
-                                          type="single" 
-                                          value={editingCustomer.claim_limit?.toString() || '1250'} 
-                                          onValueChange={(value) => value && setEditingCustomer({ ...editingCustomer, claim_limit: parseInt(value) })}
-                                          className="justify-start flex-wrap gap-2"
-                                        >
-                                          <ToggleGroupItem value="750" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£1,000</ToggleGroupItem>
-                                          <ToggleGroupItem value="1250" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£1,250</ToggleGroupItem>
-                                          <ToggleGroupItem value="2000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£2,000</ToggleGroupItem>
-                                          <ToggleGroupItem value="2500" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£2,500</ToggleGroupItem>
-                                          <ToggleGroupItem value="3000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£3,000</ToggleGroupItem>
-                                          <ToggleGroupItem value="4000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£4,000</ToggleGroupItem>
-                                          <ToggleGroupItem value="5000" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£5,000</ToggleGroupItem>
-                                        </ToggleGroup>
-                                      </div>
+                                          </ToggleGroup>
+                                        </div>
 
-                                      <div>
-                                        <Label className="mb-2 block">Labour Rate</Label>
-                                        <ToggleGroup 
-                                          type="single" 
-                                          value={editingCustomer.labour_rate?.toString() || '70'} 
-                                          onValueChange={(value) => value && setEditingCustomer({ ...editingCustomer, labour_rate: parseInt(value) })}
-                                          className="justify-start flex-wrap gap-2"
-                                        >
-                                          <ToggleGroupItem value="50" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£50/hr</ToggleGroupItem>
-                                          <ToggleGroupItem value="70" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£70/hr</ToggleGroupItem>
-                                          <ToggleGroupItem value="100" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£100/hr</ToggleGroupItem>
-                                          <ToggleGroupItem value="150" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£150/hr</ToggleGroupItem>
-                                          <ToggleGroupItem value="200" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">£200/hr</ToggleGroupItem>
-                                        </ToggleGroup>
-                                      </div>
-                                    </div>
+                                        <div className="col-span-full">
+                                          <Label className="mb-2 block">Optional Extended Cover (free months)</Label>
+                                          {(() => {
+                                            const coverYears = Math.max(1, Math.round((parseInt(String(editingCustomer.payment_type || '12').replace(/\D/g, '')) || 12) / 12));
+                                            const months = Number((editingCustomer as any).seasonal_bonus_months || 0);
+                                            const value: FreeCoverOption =
+                                              months === 6 ? '6months'
+                                                : months === 3 && coverYears !== 3 ? '3months'
+                                                  : months > 0 && months === coverYears ? 'peryear'
+                                                    : months === 3 ? '3months'
+                                                      : 'none';
+                                            return (
+                                              <FreeMonthsOptions
+                                                value={value}
+                                                onChange={(next) => setEditingCustomer({
+                                                  ...editingCustomer,
+                                                  seasonal_bonus_months: bonusMonthsForOption(next, coverYears),
+                                                } as any)}
+                                                coverYears={coverYears}
+                                                adminUserId={currentAdminIdForConcessions}
+                                                hideHeader
+                                              />
+                                            );
+                                          })()}
+                                        </div>
+                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4 pt-4">
                                       <div>
@@ -4080,34 +5691,11 @@ Please log in and change your password after first login.`;
                                       </div>
                                       <div>
                                         <Label htmlFor="edit-signup-date">Signup Date</Label>
-                                        <Popover>
-                                          <PopoverTrigger asChild>
-                                            <Button
-                                              id="edit-signup-date"
-                                              variant="outline"
-                                              className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !editingCustomer.signup_date && "text-muted-foreground"
-                                              )}
-                                            >
-                                              <CalendarIcon className="mr-2 h-4 w-4" />
-                                              {editingCustomer.signup_date ? (
-                                                format(new Date(editingCustomer.signup_date), 'dd/MM/yyyy')
-                                              ) : (
-                                                <span>Pick a date</span>
-                                              )}
-                                            </Button>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                              mode="single"
-                                              selected={editingCustomer.signup_date ? new Date(editingCustomer.signup_date) : undefined}
-                                              onSelect={(date) => date && setEditingCustomer({ ...editingCustomer, signup_date: date.toISOString() })}
-                                              initialFocus
-                                            className="p-3 pointer-events-auto"
-                                           />
-                                          </PopoverContent>
-                                        </Popover>
+                                        <SmartDateInput
+                                          id="edit-signup-date"
+                                          value={editingCustomer.signup_date}
+                                          onChange={(date) => setEditingCustomer({ ...editingCustomer, signup_date: date ? date.toISOString() : null })}
+                                        />
                                       </div>
                                        <div>
                                         <Label>Purchase Date</Label>
@@ -4133,88 +5721,41 @@ Please log in and change your password after first login.`;
                                       </div>
                                       <div>
                                         <Label htmlFor="edit-start-date">Warranty Start Date</Label>
-                                        <Popover>
-                                          <PopoverTrigger asChild>
-                                            <Button
-                                              id="edit-start-date"
-                                              variant="outline"
-                                              className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !editingCustomer.customer_policies?.[0]?.policy_start_date && "text-muted-foreground"
-                                              )}
-                                            >
-                                              <CalendarIcon className="mr-2 h-4 w-4" />
-                                              {editingCustomer.customer_policies?.[0]?.policy_start_date ? (
-                                                format(new Date(editingCustomer.customer_policies[0].policy_start_date), 'dd/MM/yyyy')
-                                              ) : (
-                                                <span>Pick a date</span>
-                                              )}
-                                            </Button>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                              mode="single"
-                                              selected={editingCustomer.customer_policies?.[0]?.policy_start_date ? new Date(editingCustomer.customer_policies[0].policy_start_date) : undefined}
-                                              onSelect={(date) => {
-                                                if (date && editingCustomer.customer_policies && editingCustomer.customer_policies[0]) {
-                                                  const months = getWarrantyDurationInMonths(editingCustomer.payment_type || '12months');
-                                                  const expiry = new Date(date);
-                                                  expiry.setMonth(expiry.getMonth() + months);
-                                                  
-                                                  const updatedPolicies = [...editingCustomer.customer_policies];
-                                                  updatedPolicies[0] = {
-                                                    ...updatedPolicies[0],
-                                                    policy_start_date: date.toISOString(),
-                                                    policy_end_date: expiry.toISOString()
-                                                  };
-                                                  setEditingCustomer({ ...editingCustomer, customer_policies: updatedPolicies });
-                                                }
-                                              }}
-                                              initialFocus
-                                              className="p-3 pointer-events-auto"
-                                            />
-                                          </PopoverContent>
-                                        </Popover>
+                                        <SmartDateInput
+                                          id="edit-start-date"
+                                          value={editingCustomer.customer_policies?.[0]?.policy_start_date}
+                                          onChange={(date) => {
+                                            if (date && editingCustomer.customer_policies && editingCustomer.customer_policies[0]) {
+                                              const months = getWarrantyDurationInMonths(editingCustomer.payment_type || '12months');
+                                              const expiry = new Date(date);
+                                              expiry.setMonth(expiry.getMonth() + months);
+                                              const updatedPolicies = [...editingCustomer.customer_policies];
+                                              updatedPolicies[0] = {
+                                                ...updatedPolicies[0],
+                                                policy_start_date: date.toISOString(),
+                                                policy_end_date: expiry.toISOString()
+                                              };
+                                              setEditingCustomer({ ...editingCustomer, customer_policies: updatedPolicies });
+                                            }
+                                          }}
+                                        />
                                       </div>
                                       <div>
                                         <Label htmlFor="edit-expiry-date">Warranty Expiry Date</Label>
-                                        <Popover>
-                                          <PopoverTrigger asChild>
-                                            <Button
-                                              id="edit-expiry-date"
-                                              variant="outline"
-                                              className={cn(
-                                                "w-full justify-start text-left font-normal",
-                                                !editingCustomer.customer_policies?.[0]?.policy_end_date && "text-muted-foreground"
-                                              )}
-                                            >
-                                              <CalendarIcon className="mr-2 h-4 w-4" />
-                                              {editingCustomer.customer_policies?.[0]?.policy_end_date ? (
-                                                format(new Date(editingCustomer.customer_policies[0].policy_end_date), 'dd/MM/yyyy')
-                                              ) : (
-                                                <span>Pick a date</span>
-                                              )}
-                                            </Button>
-                                          </PopoverTrigger>
-                                          <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                              mode="single"
-                                              selected={editingCustomer.customer_policies?.[0]?.policy_end_date ? new Date(editingCustomer.customer_policies[0].policy_end_date) : undefined}
-                                              onSelect={(date) => {
-                                                if (date && editingCustomer.customer_policies && editingCustomer.customer_policies[0]) {
-                                                  const updatedPolicies = [...editingCustomer.customer_policies];
-                                                  updatedPolicies[0] = {
-                                                    ...updatedPolicies[0],
-                                                    policy_end_date: date.toISOString()
-                                                  };
-                                                  setEditingCustomer({ ...editingCustomer, customer_policies: updatedPolicies });
-                                                }
-                                              }}
-                                              initialFocus
-                                              className="p-3 pointer-events-auto"
-                                            />
-                                          </PopoverContent>
-                                        </Popover>
+                                        <SmartDateInput
+                                          id="edit-expiry-date"
+                                          value={editingCustomer.customer_policies?.[0]?.policy_end_date}
+                                          onChange={(date) => {
+                                            if (date && editingCustomer.customer_policies && editingCustomer.customer_policies[0]) {
+                                              const updatedPolicies = [...editingCustomer.customer_policies];
+                                              updatedPolicies[0] = {
+                                                ...updatedPolicies[0],
+                                                policy_end_date: date.toISOString()
+                                              };
+                                              setEditingCustomer({ ...editingCustomer, customer_policies: updatedPolicies });
+                                            }
+                                          }}
+                                        />
                                       </div>
                                     </div>
                                   </div>
@@ -4230,22 +5771,8 @@ Please log in and change your password after first login.`;
                                         />
                                         <Label htmlFor="edit-breakdown-recovery" className="font-normal cursor-pointer">Breakdown Recovery</Label>
                                       </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Checkbox 
-                                          id="edit-tyre-cover"
-                                          checked={editingCustomer.tyre_cover || false}
-                                          onCheckedChange={(checked) => setEditingCustomer({ ...editingCustomer, tyre_cover: !!checked })}
-                                        />
-                                        <Label htmlFor="edit-tyre-cover" className="font-normal cursor-pointer">Tyre Cover</Label>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Checkbox 
-                                          id="edit-wear-tear"
-                                          checked={editingCustomer.wear_tear || false}
-                                          onCheckedChange={(checked) => setEditingCustomer({ ...editingCustomer, wear_tear: !!checked })}
-                                        />
-                                        <Label htmlFor="edit-wear-tear" className="font-normal cursor-pointer">Wear & Tear Cover</Label>
-                                      </div>
+                                      {/* Tyre Cover removed — no longer offered */}
+                                      {/* Wear & Tear Cover removed — no longer offered */}
                                       <div className="flex items-center space-x-2">
                                         <Checkbox 
                                           id="edit-europe-cover"
@@ -4270,30 +5797,9 @@ Please log in and change your password after first login.`;
                                         />
                                         <Label htmlFor="edit-transfer-cover" className="font-normal cursor-pointer">Transfer Cover</Label>
                                       </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Checkbox 
-                                          id="edit-mot-repair"
-                                          checked={editingCustomer.mot_repair || false}
-                                          onCheckedChange={(checked) => setEditingCustomer({ ...editingCustomer, mot_repair: !!checked })}
-                                        />
-                                        <Label htmlFor="edit-mot-repair" className="font-normal cursor-pointer">MOT Repair</Label>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Checkbox 
-                                          id="edit-lost-key"
-                                          checked={editingCustomer.lost_key || false}
-                                          onCheckedChange={(checked) => setEditingCustomer({ ...editingCustomer, lost_key: !!checked })}
-                                        />
-                                        <Label htmlFor="edit-lost-key" className="font-normal cursor-pointer">Lost Key Cover</Label>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <Checkbox 
-                                          id="edit-consequential"
-                                          checked={editingCustomer.consequential || false}
-                                          onCheckedChange={(checked) => setEditingCustomer({ ...editingCustomer, consequential: !!checked })}
-                                        />
-                                        <Label htmlFor="edit-consequential" className="font-normal cursor-pointer">Consequential Loss</Label>
-                                      </div>
+                                      {/* MOT Repair removed — no longer offered */}
+                                      {/* Lost Key Cover removed — no longer offered */}
+                                      {/* Consequential Loss removed — no longer offered */}
                                     </div>
                                   </div>
 
@@ -4355,7 +5861,46 @@ Please log in and change your password after first login.`;
                                           placeholder="temp-password-123"
                                         />
                                       </div>
-                                    </div>
+                                     </div>
+
+                                     <div className="flex flex-wrap items-center gap-2 pt-1">
+                                       <Button
+                                         type="button"
+                                         variant="outline"
+                                         size="sm"
+                                         onClick={() => {
+                                           const generated = `Bw${Math.floor(1000 + Math.random() * 9000)}${['pine', 'rose', 'oak', 'sky'][Math.floor(Math.random() * 4)]}`;
+                                           setEditingCustomer({ ...editingCustomer, temporary_password: generated });
+                                         }}
+                                       >
+                                         Generate password
+                                       </Button>
+                                       <Button
+                                         type="button"
+                                         size="sm"
+                                         disabled={savingPassword || !editingCustomer.email || !editingCustomer.temporary_password}
+                                         onClick={() => setCustomerDashboardPassword(editingCustomer, editingCustomer.temporary_password || '')}
+                                       >
+                                         {savingPassword ? 'Updating…' : 'Set / update password'}
+                                       </Button>
+                                       {editingCustomer.temporary_password ? (
+                                         <Button
+                                           type="button"
+                                           variant="ghost"
+                                           size="sm"
+                                           onClick={() => {
+                                             navigator.clipboard.writeText(editingCustomer.temporary_password || '');
+                                             toast.success('Password copied');
+                                           }}
+                                         >
+                                           Copy
+                                         </Button>
+                                       ) : null}
+                                       <span className="text-xs text-muted-foreground">
+                                         Applies immediately — no need to save the record first.
+                                       </span>
+                                     </div>
+
                                   </div>
                                   
                                   <div className="flex justify-end space-x-2 pt-4">
@@ -4371,48 +5916,7 @@ Please log in and change your password after first login.`;
                                     <div className="space-y-4">
                                       {/* Last Sent Info & Action Buttons */}
                                       <div className="space-y-3">
-                                        {editingCustomer.customer_policies[0]?.warranties_2000_sent_at && (
-                                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                            <div className="flex items-center gap-2 text-sm">
-                                              <Clock className="h-4 w-4 text-blue-600" />
-                                              <span className="font-medium text-blue-900">Last sent to Warranties Register:</span>
-                                              <span className="text-blue-700">
-                                                {new Date(editingCustomer.customer_policies[0].warranties_2000_sent_at).toLocaleString('en-GB', {
-                                                  day: '2-digit',
-                                                  month: 'short',
-                                                  year: 'numeric',
-                                                  hour: '2-digit',
-                                                  minute: '2-digit'
-                                                })}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        )}
-                                        
-                                        <div className="flex justify-between items-center gap-2">
-                                          <Button 
-                                            onClick={() => {
-                                              if (editingCustomer.customer_policies[0]?.id) {
-                                                if (confirm('⚠️ WARNING: Warranties Register should only receive ONE submission per warranty.\n\nOnly resend if you have updated critical information that must be corrected in their system.\n\nContinue with manual resend?')) {
-                                                  handleSendToWarranties2000(
-                                                    editingCustomer.customer_policies[0].id,
-                                                    editingCustomer.id,
-                                                    true // Force resend - overrides duplicate check
-                                                  );
-                                                }
-                                              }
-                                            }}
-                                            variant="outline"
-                                            className="flex items-center gap-2 border-orange-300 hover:bg-orange-50 hover:border-orange-400"
-                                            disabled={emailSendingLoading[editingCustomer.id]?.warranties2000}
-                                          >
-                                            {emailSendingLoading[editingCustomer.id]?.warranties2000 ? (
-                                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600"></div>
-                                            ) : (
-                                              <Send className="h-4 w-4 text-orange-600" />
-                                            )}
-                                            <span className="text-orange-600">Manual Resend to Warranties Register</span>
-                                          </Button>
+                                        <div className="flex justify-end items-center gap-2">
                                           <EditOrderButton 
                                             customer={editingCustomer}
                                             policy={editingCustomer.customer_policies[0]}
@@ -4599,10 +6103,6 @@ Please log in and change your password after first login.`;
                                         </Card>
                                       ))}
                                       
-                                      {/* Warranties Register Submission History */}
-                                      {editingCustomer.customer_policies[0]?.id && (
-                                        <W2KAuditLog policyId={editingCustomer.customer_policies[0].id} />
-                                      )}
                                     </div>
                                   ) : (
                                     <div className="text-center text-gray-500 py-8">
@@ -4610,6 +6110,18 @@ Please log in and change your password after first login.`;
                                     </div>
                                   )}
                                 </TabsContent>
+
+                                <TabsContent value="part-payments">
+                                  {selectedCustomer && (
+                                    <PartPaymentsPanel
+                                      customerId={selectedCustomer.id}
+                                      customerName={selectedCustomer.name}
+                                      orderTotal={Number(selectedCustomer.final_amount ?? 0) || null}
+                                    />
+                                  )}
+                                </TabsContent>
+
+
 
                                 <TabsContent value="claims">
                                   {selectedCustomer && (
@@ -4662,7 +6174,7 @@ Please log in and change your password after first login.`;
                                       policyId={selectedCustomer.customer_policies?.[0]?.id}
                                       warrantyNumber={selectedCustomer.customer_policies?.[0]?.warranty_number}
                                       emailStatus={selectedCustomer.customer_policies?.[0]?.email_sent_status}
-                                      warranties2000Status={selectedCustomer.customer_policies?.[0]?.warranties_2000_status}
+                                      
                                       onActionComplete={fetchCustomers}
                                     />
                                   )}
@@ -4685,6 +6197,23 @@ Please log in and change your password after first login.`;
                                   )}
                                 </TabsContent>
                               </Tabs>
+
+                              {/* Always-available save footer — edits made on any tab
+                                  (warranty details, payment fields, etc.) can be saved
+                                  without switching back to Customer Details. */}
+                              <div className="sticky bottom-0 -mx-6 mt-4 flex items-center justify-end gap-2 border-t bg-background/95 px-6 py-3 backdrop-blur">
+                                <span className="mr-auto text-xs text-muted-foreground">
+                                  Changes on any tab are saved together.
+                                </span>
+                                <Button variant="outline" onClick={() => setEditingCustomer(null)}>
+                                  Close
+                                </Button>
+                                <Button onClick={updateCustomer}>
+                                  <Save className="h-4 w-4 mr-2" />
+                                  Save Changes
+                                </Button>
+                              </div>
+
                             </>
                           )}
                         </DialogContent>
@@ -4692,6 +6221,95 @@ Please log in and change your password after first login.`;
                       <div className="flex items-center justify-between gap-2 w-full">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="font-medium">{customer.name}</span>
+                          {(() => {
+                            const em = (customer.email || '').toLowerCase();
+                            const rg = ((customer as any).registration_plate || '').replace(/\s+/g, '').toUpperCase();
+                            const hasClaim = (em && claimEmails.has(em)) || (rg && claimRegs.has(rg));
+                            return hasClaim ? (
+                              <Badge
+                                variant="outline"
+                                className="h-5 px-1.5 text-[10px] font-semibold uppercase tracking-wide border-amber-500 text-amber-700 bg-amber-50"
+                                title="This customer has submitted a claim"
+                              >
+                                Claim made
+                              </Badge>
+                            ) : null;
+                          })()}
+                          {(() => {
+                            const plan = partPaymentPlans.get(customer.id);
+                            if (!plan) return null;
+                            const outstanding = Math.max(plan.total_due - plan.paid, 0);
+                            const done = plan.status === 'completed' || outstanding <= 0;
+                            return (
+                              <Badge
+                                variant="outline"
+                                className={`h-5 px-1.5 text-[10px] font-semibold uppercase tracking-wide ${
+                                  done
+                                    ? 'border-emerald-500 text-emerald-700 bg-emerald-50'
+                                    : 'border-orange-500 text-orange-700 bg-orange-50'
+                                }`}
+                                title={
+                                  done
+                                    ? 'Part payment plan settled in full'
+                                    : `Part payment plan — £${outstanding.toFixed(2)} outstanding of £${plan.total_due.toFixed(2)}`
+                                }
+                              >
+                                {done ? 'Part paid · settled' : `Part payment · £${outstanding.toFixed(0)} due`}
+                              </Badge>
+                            );
+                          })()}
+                          {customer.is_manual_entry && customer.payment_verified === false && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  // Only truly blocking gaps stop a confirmation — the
+                                  // amount can come from the customer record or the policy.
+                                  const policyAmt = Number((customer as any).customer_policies?.[0]?.payment_amount ?? 0);
+                                  const amountOk =
+                                    Number((customer as any).original_amount) > 0 ||
+                                    Number((customer as any).final_amount) > 0 ||
+                                    policyAmt > 0;
+                                  const missing: string[] = [];
+                                  if (!customer.payment_type) missing.push('Duration');
+                                  if (!amountOk) missing.push('Original Amount');
+                                  if (missing.length > 0) {
+                                    toast.error(`Cannot confirm payment — missing: ${missing.join(', ')}`, {
+                                      description: 'Open the customer edit dialog and complete all Warranty & Payment Details first.',
+                                    });
+                                    return;
+                                  }
+
+                                  if (!window.confirm(`Confirm payment received for ${customer.name}?`)) return;
+                                  const nowIso = new Date().toISOString();
+                                  const { error: cErr } = await supabase
+                                    .from('customers')
+                                    .update({ payment_verified: true, payment_confirmed_by: currentAdminUser?.id, updated_at: nowIso })
+                                    .eq('id', customer.id);
+                                  if (cErr) { toast.error(`Failed to confirm payment: ${cErr.message}`); return; }
+                                  await supabase
+                                    .from('customer_policies')
+                                    .update({ payment_verified: true, updated_at: nowIso })
+                                    .eq('customer_id', customer.id);
+                                  toast.success('Payment confirmed');
+                                  fetchCustomers();
+                                }}
+
+                                className="h-5 px-2 text-[10px] gap-1 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-400 rounded font-semibold animate-pulse"
+                                title="Click to confirm payment received"
+                              >
+                                ⏳ Confirm Payment
+                              </Button>
+                          )}
+                          {!!(customer as any).deposit_taken && !(customer as any).payment_collected_at && (
+                            <Badge
+                              className="bg-amber-500 text-white text-[10px] px-1.5 py-0 h-4 font-bold"
+                              title={`Deposit £${Number((customer as any).deposit_amount || 0)} taken on Stripe · balance £${Number((customer as any).balance_due_amount || 0)} outstanding`}
+                            >
+                              💰 PAYMENT DUE £{Number((customer as any).balance_due_amount || 0)}
+                            </Badge>
+                          )}
                           {isDueToday(customer) && (
                             <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0 h-4 font-bold animate-pulse">
                               🔔 DUE TODAY
@@ -4702,6 +6320,18 @@ Please log in and change your password after first login.`;
                             paymentDueDate={(customer as any).payment_due_date}
                             onUpdate={fetchCustomers}
                           />
+                          {(currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'admin') && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => { e.stopPropagation(); setAddClaimCustomer(customer); }}
+                              className="h-5 px-1.5 text-[10px] gap-1 text-amber-700 hover:text-amber-900 hover:bg-amber-50 border border-amber-300 rounded"
+                              title="Add claim for this customer"
+                            >
+                              <FileText className="h-3 w-3" />
+                              + Claim
+                            </Button>
+                          )}
                         </div>
                         <InlineFutureActivationEdit
                           customerId={customer.id}
@@ -4736,13 +6366,20 @@ Please log in and change your password after first login.`;
                        {format(new Date(customer.signup_date), 'HH:mm')}
                      </div>
                    </TableCell>
+
+
+
                   <TableCell>{customer.email}</TableCell>
                   <TableCell>
                     {customer.phone ? (
-                      <span className="text-foreground text-sm flex items-center gap-1">
+                      <a
+                        href={`tel:${normalisePhone(customer.phone)}`}
+                        className="text-foreground text-sm inline-flex items-center gap-1 hover:underline"
+                        aria-label={`Call ${customer.phone}`}
+                      >
                         <Phone className="h-3 w-3" />
                         {customer.phone}
-                      </span>
+                      </a>
                     ) : 'N/A'}
                   </TableCell>
                   <TableCell>
@@ -4753,7 +6390,7 @@ Please log in and change your password after first login.`;
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <NumberPlate plateNumber={customer.registration_plate} />
                       {isDuplicate(customer.registration_plate) && (
                         <button
@@ -4766,21 +6403,141 @@ Please log in and change your password after first login.`;
                           </Badge>
                         </button>
                       )}
+                      {isNorthernIrelandPlate(customer.registration_plate) && !(customer as any).ni_verified && (
+                        <div className="flex items-center gap-1">
+                          <Badge className="bg-amber-500 text-white border-amber-600 text-[10px] font-bold animate-pulse">
+                            ⚠ VERIFY vehicle (NI)
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-5 px-1.5 text-[10px] border-amber-500 text-amber-800 hover:bg-amber-50"
+                            title="Mark this NI vehicle as manually verified"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              const { data: auth } = await supabase.auth.getUser();
+                              const { error } = await supabase
+                                .from('customers')
+                                .update({
+                                  ni_verified: true,
+                                  ni_verified_at: new Date().toISOString(),
+                                  ni_verified_by: auth?.user?.id ?? null,
+                                } as any)
+                                .eq('id', customer.id);
+                              if (error) {
+                                toast.error('Could not mark as verified');
+                              } else {
+                                toast.success('NI vehicle marked as verified');
+                                fetchCustomers();
+                              }
+                            }}
+                          >
+                            Mark verified
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-0.5">
-                      <PurchaseSourceBadge 
-                        source={customer.purchase_source} 
-                        bumperOrderId={customer.bumper_order_id}
-                        stripeSessionId={customer.stripe_session_id}
-                        className="text-[10px]"
-                      />
-                      {(currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'admin') && customer.final_amount ? (
-                        <span className="text-xs font-semibold text-foreground">£{Number(customer.final_amount).toFixed(2)}</span>
-                      ) : null}
-                    </div>
+                    {customer.final_amount != null ? (
+                      <span className="text-sm font-semibold text-emerald-700 whitespace-nowrap">
+                        £{Number(customer.final_amount).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
+                  {showPaymentColumn && (
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                          <Badge variant={customer.is_manual_entry ? 'secondary' : 'outline'}>
+                            {customer.is_manual_entry ? 'Manual' :
+                             customer.bumper_order_id ? 'Bumper' : 
+                             customer.stripe_session_id ? 'Stripe' : 'N/A'}
+                          </Badge>
+                          {customer.payment_verified ? (
+                            <span className="text-green-600" title="Payment verified">✓</span>
+                          ) : customer.is_manual_entry ? (
+                            <span className="text-amber-500" title="Manual entry - no payment record">⚠</span>
+                          ) : (
+                            <span className="text-red-500" title="Payment not verified">✗</span>
+                          )}
+                        </div>
+                        {customer.final_amount && customer.final_amount > 0 && (normalizedRole === 'super_admin' || normalizedRole === 'admin' || normalizedRole === 'accounts' || normalizedRole === 'accounts_manager') && (
+                          <span className="text-xs font-medium text-green-700">
+                            £{customer.final_amount.toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
+                  <TableCell className="text-center bg-amber-50/40">
+                    <PriceComparisonProofCell
+                      customerId={customer.id}
+                      currentPath={(customer as any).price_comparison_proof_url}
+                    />
+                  </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col space-y-1">
+                        <Select
+                          value={customer.assigned_to ? customer.assigned_to : (
+                            (customer.customer_policies?.[0]?.warranty_number || '').startsWith('BAW-') && !(customer.customer_policies?.[0]?.warranty_number || '').startsWith('BAW-S-')
+                              ? WEBSITE_SALES_ACCOUNT_ID : 'unassigned'
+                          )}
+                          onValueChange={(val) => {
+                            if (val === WEBSITE_SALES_ACCOUNT_ID) {
+                              assignCustomerToAgent(customer.id, WEBSITE_SALES_ACCOUNT_ID, true);
+                            } else {
+                              assignCustomerToAgent(customer.id, val === 'unassigned' ? null : val);
+                            }
+                          }}
+                          disabled={assignmentLoading[customer.id]}
+                        >
+                          <SelectTrigger className="w-[160px] h-8 text-xs">
+                            <SelectValue placeholder="Assign agent" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="unassigned">Unassigned</SelectItem>
+                            <SelectItem value={WEBSITE_SALES_ACCOUNT_ID}>Website</SelectItem>
+                            {adminUsers.filter(u => u.id !== WEBSITE_SALES_ACCOUNT_ID && (u.role === 'sales' || u.role === 'sales_lead' || u.role === 'sales_manager' || u.role === 'admin' || u.role === 'super_admin')).map(user => (
+                              <SelectItem key={user.id} value={user.id}>
+                                {`${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </TableCell>
+                  {canSeeSourceColumn && showPurchaseSource && (
+                    <TableCell className="bg-purple-50/30">
+                      {(() => {
+                        // Use acquisition_source (marketing channel from sales_leads), not purchase_source (payment method).
+                        const channel = getCustomerAcquisitionChannel(customer);
+                        const utmLines: string[] = [];
+                        if (customer.utm_source)   utmLines.push(`UTM Source: ${customer.utm_source}`);
+                        if (customer.utm_medium)   utmLines.push(`UTM Medium: ${customer.utm_medium}`);
+                        if (customer.utm_campaign) utmLines.push(`UTM Campaign: ${customer.utm_campaign}`);
+                        if (customer.utm_term)     utmLines.push(`UTM Term: ${customer.utm_term}`);
+                        if (customer.utm_content)  utmLines.push(`UTM Content: ${customer.utm_content}`);
+                        const utmTip = utmLines.length ? `\n${utmLines.join('\n')}` : '';
+                        const cursor = utmLines.length ? 'cursor-help' : '';
+                        if (channel === 'google_ads') {
+                          return <Badge title={`Google Ads${utmTip}`} className={`bg-emerald-100 text-emerald-800 border-emerald-200 text-[10px] ${cursor}`}>Google</Badge>;
+                        }
+                        if (channel === 'facebook_ads') {
+                          return <Badge title={`Facebook Ads${utmTip}`} className={`bg-blue-100 text-blue-700 border-blue-200 text-[10px] ${cursor}`}>Facebook</Badge>;
+                        }
+                        if (channel === 'website') {
+                          return <Badge title={`Direct/Website${utmTip}`} className={`bg-gray-100 text-gray-700 border-gray-200 text-[10px] ${cursor}`}>Direct/Website</Badge>;
+                        }
+                        if (channel === 'manual') {
+                          return <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-[10px]" title="Manual back-office sale — no marketing source recorded">Manual</Badge>;
+                        }
+                        return <Badge title={`Unknown${utmTip}`} className={`bg-gray-100 text-gray-500 border-gray-200 text-[10px] ${cursor}`}>Unknown</Badge>;
+                      })()}
+                    </TableCell>
+                  )}
                     <TableCell className="font-mono text-sm">
                     {customer.warranty_reference_number || customer.warranty_number ? (
                       <div className="bg-green-50 px-2 py-1 rounded border">
@@ -4828,43 +6585,6 @@ Please log in and change your password after first login.`;
                      </div>
                    </TableCell>
                    <TableCell>
-                     <div className="flex items-center gap-2">
-                       {customer.customer_policies?.[0]?.warranties_2000_status === 'sent' ? (
-                         <Badge variant="secondary" className="bg-green-100 text-green-800">
-                           <CheckCircle className="w-3 h-3 mr-1" />
-                           Sent
-                         </Badge>
-                       ) : customer.customer_policies?.[0]?.warranties_2000_status === 'failed' ? (
-                         <Badge variant="destructive" className="bg-red-100 text-red-800">
-                           <AlertCircle className="w-3 h-3 mr-1" />
-                           Failed
-                         </Badge>
-                       ) : (
-                         <Badge variant="outline" className="bg-gray-100 text-gray-800">
-                           <Clock className="w-3 h-3 mr-1" />
-                           Not Sent
-                         </Badge>
-                       )}
-                       
-                       {customer.customer_policies?.[0]?.id && (
-                         <Button
-                           variant="ghost"
-                           size="sm"
-                           onClick={() => handleSendToWarranties2000(customer.customer_policies[0].id, customer.id)}
-                           disabled={emailSendingLoading[customer.id]?.warranties2000}
-                           title="Send to Warranties Register"
-                           className="hover:bg-purple-50 hover:text-purple-600"
-                         >
-                           {emailSendingLoading[customer.id]?.warranties2000 ? (
-                             <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
-                           ) : (
-                             <Send className="h-3 w-3" />
-                           )}
-                         </Button>
-                       )}
-                     </div>
-                   </TableCell>
-                   <TableCell>
                     <div className="flex flex-col gap-1">
                      <Badge 
                        variant={customer.status === 'Active' ? 'default' : 'destructive'}
@@ -4879,37 +6599,7 @@ Please log in and change your password after first login.`;
                      <CommissionClaimedBadge customerId={customer.id} />
                     </div>
                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col space-y-1">
-                        <Select
-                          value={customer.assigned_to ? customer.assigned_to : (
-                            (customer.customer_policies?.[0]?.warranty_number || '').startsWith('BAW-') && !(customer.customer_policies?.[0]?.warranty_number || '').startsWith('BAW-S-')
-                              ? WEBSITE_SALES_ACCOUNT_ID : 'unassigned'
-                          )}
-                          onValueChange={(val) => {
-                            if (val === WEBSITE_SALES_ACCOUNT_ID) {
-                              assignCustomerToAgent(customer.id, WEBSITE_SALES_ACCOUNT_ID, true);
-                            } else {
-                              assignCustomerToAgent(customer.id, val === 'unassigned' ? null : val);
-                            }
-                          }}
-                          disabled={assignmentLoading[customer.id]}
-                        >
-                          <SelectTrigger className="w-[160px] h-8 text-xs">
-                            <SelectValue placeholder="Assign agent" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="unassigned">Unassigned</SelectItem>
-                            <SelectItem value={WEBSITE_SALES_ACCOUNT_ID}>Website</SelectItem>
-                            {adminUsers.filter(u => u.id !== WEBSITE_SALES_ACCOUNT_ID && (u.role === 'sales' || u.role === 'sales_lead' || u.role === 'sales_manager' || u.role === 'admin' || u.role === 'super_admin')).map(user => (
-                              <SelectItem key={user.id} value={user.id}>
-                                {`${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TableCell>
+
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-2">
                       <span className={customer.vehicle_make ? 'text-gray-900' : 'text-gray-400'}>
@@ -4944,16 +6634,71 @@ Please log in and change your password after first login.`;
                       )}
                     </div>
                   </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <>
+                      <InlineWarrantyUpgrade
+                        customerId={customer.id}
+                        customerEmail={customer.email}
+                        customerName={customer.name}
+                        registrationPlate={customer.registration_plate}
+                        field="excess"
+                        currentValue={customer.voluntary_excess || 100}
+                        onUpdate={fetchCustomers}
+                      />
+                      {customer.manual_upgrade_at && (
+                        <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
+                      )}
+                      </>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <>
+                      <InlineWarrantyUpgrade
+                        customerId={customer.id}
+                        customerEmail={customer.email}
+                        customerName={customer.name}
+                        registrationPlate={customer.registration_plate}
+                        field="claim_limit"
+                        currentValue={(customer.customer_policies?.[0] as any)?.claim_limit || customer.claim_limit || 1250}
+                        onUpdate={fetchCustomers}
+                      />
+                      {customer.manual_upgrade_at && (
+                        <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
+                      )}
+                      </>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <InlineWarrantyUpgrade
+                        customerId={customer.id}
+                        customerEmail={customer.email}
+                        customerName={customer.name}
+                        registrationPlate={customer.registration_plate}
+                        field="labour_rate"
+                        currentValue={customer.labour_rate || 70}
+                        onUpdate={fetchCustomers}
+                      />
+                      {customer.manual_upgrade_at && (
+                        <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-center">
-                    <span className={customer.vehicle_year ? 'text-gray-900' : 'text-gray-400'}>
-                      {customer.vehicle_year || 'N/A'}
-                    </span>
+                    {customer.mileage || 'N/A'}
                   </TableCell>
                   <TableCell className="max-w-xs truncate">
                     {customer.street || customer.town || customer.postcode 
                       ? `${customer.street || ''} ${customer.town || ''} ${customer.postcode || ''}`.trim()
                       : 'N/A'
                     }
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <span className={customer.vehicle_year ? 'text-gray-900' : 'text-gray-400'}>
+                      {customer.vehicle_year || 'N/A'}
+                    </span>
                   </TableCell>
                    <TableCell>
                      <Badge variant="secondary">{getWarrantyType(customer.plan_type)}</Badge>
@@ -5031,81 +6776,34 @@ Please log in and change your password after first login.`;
                        <span className="text-gray-400">N/A</span>
                      )}
                    </TableCell>
-                     <TableCell>
-                       <div className="flex flex-col gap-1">
-                         <div className="flex items-center gap-1">
-                           <Badge variant={customer.is_manual_entry ? 'secondary' : 'outline'}>
-                             {customer.is_manual_entry ? 'Manual' :
-                              customer.bumper_order_id ? 'Bumper' : 
-                              customer.stripe_session_id ? 'Stripe' : 'N/A'}
-                           </Badge>
-                           {customer.payment_verified ? (
-                             <span className="text-green-600" title="Payment verified">✓</span>
-                           ) : customer.is_manual_entry ? (
-                             <span className="text-amber-500" title="Manual entry - no payment record">⚠</span>
-                           ) : (
-                             <span className="text-red-500" title="Payment not verified">✗</span>
-                           )}
-                         </div>
-                         {customer.final_amount && customer.final_amount > 0 && (normalizedRole === 'super_admin' || normalizedRole === 'admin' || normalizedRole === 'accounts' || normalizedRole === 'accounts_manager') && (
-                            <span className="text-xs font-medium text-green-700">
-                              £{customer.final_amount.toFixed(2)}
-                            </span>
+                      {canSeeSourceColumn && showPurchaseSource && (
+                        <TableCell className="bg-purple-50/30">
+                          <PurchaseSourceBadge 
+                            source={customer.purchase_source} 
+                            bumperOrderId={customer.bumper_order_id}
+                            stripeSessionId={customer.stripe_session_id}
+                          />
+                        </TableCell>
+                      )}
+                      {isSuperAdmin && (
+                        <TableCell className="bg-purple-50/30">
+                          {customer.device_type ? (
+                            <Badge
+                              className={
+                                customer.device_type === 'mobile'
+                                  ? 'bg-blue-100 text-blue-700 border-blue-200 text-[10px] capitalize'
+                                  : customer.device_type === 'tablet'
+                                  ? 'bg-amber-100 text-amber-700 border-amber-200 text-[10px] capitalize'
+                                  : 'bg-slate-100 text-slate-700 border-slate-200 text-[10px] capitalize'
+                              }
+                            >
+                              {customer.device_type}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
                           )}
-                       </div>
-                     </TableCell>
-                     {/* Purchase Source */}
-                     <TableCell className="bg-purple-50/30">
-                       <PurchaseSourceBadge 
-                         source={customer.purchase_source} 
-                         bumperOrderId={customer.bumper_order_id}
-                         stripeSessionId={customer.stripe_session_id}
-                       />
-                     </TableCell>
-                       <TableCell>
-                         <div className="flex items-center gap-1">
-                           {isSalesAgent ? (
-                             <span className="text-sm">£{customer.voluntary_excess || 100}</span>
-                           ) : (
-                           <>
-                           <InlineWarrantyUpgrade
-                             customerId={customer.id}
-                             customerEmail={customer.email}
-                             customerName={customer.name}
-                             registrationPlate={customer.registration_plate}
-                             field="excess"
-                             currentValue={customer.voluntary_excess || 100}
-                             onUpdate={fetchCustomers}
-                           />
-                           {customer.manual_upgrade_at && (
-                             <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
-                           )}
-                           </>
-                           )}
-                         </div>
-                       </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            {isSalesAgent ? (
-                              <span className="text-sm">£{(customer.customer_policies?.[0] as any)?.claim_limit || customer.claim_limit || 1250}</span>
-                            ) : (
-                            <>
-                            <InlineWarrantyUpgrade
-                              customerId={customer.id}
-                              customerEmail={customer.email}
-                              customerName={customer.name}
-                              registrationPlate={customer.registration_plate}
-                              field="claim_limit"
-                              currentValue={(customer.customer_policies?.[0] as any)?.claim_limit || customer.claim_limit || 1250}
-                              onUpdate={fetchCustomers}
-                            />
-                            {customer.manual_upgrade_at && (
-                              <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
-                            )}
-                            </>
-                            )}
-                         </div>
-                       </TableCell>
+                        </TableCell>
+                      )}
                        <TableCell>
                          <CustomerClaimsSummary
                            customerEmail={customer.email}
@@ -5194,29 +6892,30 @@ Please log in and change your password after first login.`;
                            </DropdownMenuContent>
                          </DropdownMenu>
                        </TableCell>
-                       <TableCell>
-                         <div className="flex items-center gap-1">
-                           <InlineWarrantyUpgrade
-                             customerId={customer.id}
-                             customerEmail={customer.email}
-                             customerName={customer.name}
-                             registrationPlate={customer.registration_plate}
-                             field="labour_rate"
-                             currentValue={customer.labour_rate || 70}
-                             onUpdate={fetchCustomers}
-                           />
-                           {customer.manual_upgrade_at && (
-                             <span title="Manually upgraded"><Sparkles className="h-3 w-3 text-amber-500" /></span>
-                           )}
+                        <TableCell>
+                          <div className="flex flex-col gap-1">
+                            <CustomerTagsDisplay customerId={customer.id} maxVisible={2} />
+                            {postedCustomerIds.has(customer.id) && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-100 border border-emerald-300 rounded px-1.5 py-0.5 w-fit">
+                                <Send className="h-2.5 w-2.5" />
+                                Posted
+                              </span>
+                            )}
                           </div>
                         </TableCell>
-                       <TableCell className="text-center">
-                         {customer.mileage || 'N/A'}
-                       </TableCell>
-                       <TableCell>
-                         <CustomerTagsDisplay customerId={customer.id} maxVisible={2} />
-                       </TableCell>
-                    <TableCell>
+                        <TableCell className="max-w-[240px]">
+                          {customer.contact_notes ? (
+                            <div
+                              className="text-xs text-gray-700 whitespace-pre-wrap line-clamp-3"
+                              title={customer.contact_notes}
+                            >
+                              {customer.contact_notes}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400 italic">No notes</span>
+                          )}
+                         </TableCell>
+                     <TableCell>
                      <div className="flex space-x-2">
                         {/* DVLA Vehicle Data Refresh */}
                         <Button
@@ -5233,6 +6932,21 @@ Please log in and change your password after first login.`;
                             <RefreshCw className="h-4 w-4" />
                           )}
                         </Button>
+
+                        {/* Quick mark as posted */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => markCustomerAsPosted(customer)}
+                          title={postedCustomerIds.has(customer.id) ? 'Mark as posted again (logs another entry)' : 'Mark documents as posted'}
+                          className={postedCustomerIds.has(customer.id)
+                            ? 'text-emerald-700 hover:bg-emerald-50'
+                            : 'hover:bg-emerald-50 hover:text-emerald-700'}
+                        >
+                          <Send className="h-4 w-4" />
+                        </Button>
+
+
 
 
                         {canDeleteCustomers() && (
@@ -5259,6 +6973,7 @@ Please log in and change your password after first login.`;
                                     user_id: customer.customer_policies?.[0]?.user_id,
                                     customer_id: customer.id
                                   }]);
+                                  setArchiveSimpleConfirm(true);
                                   setArchiveDialogOpen(true);
                                 }}
                                 className="text-red-600"
@@ -5277,6 +6992,7 @@ Please log in and change your password after first login.`;
                                     user_id: customer.customer_policies?.[0]?.user_id,
                                     customer_id: customer.id
                                   }]);
+                                  setArchiveSimpleConfirm(false);
                                   setArchiveDialogOpen(true);
                                 }}
                                 className="text-amber-600"
@@ -5295,6 +7011,7 @@ Please log in and change your password after first login.`;
                                     user_id: customer.customer_policies?.[0]?.user_id,
                                     customer_id: customer.id
                                   }]);
+                                  setArchiveSimpleConfirm(false);
                                   setArchiveDialogOpen(true);
                                 }}
                                 className="text-gray-600"
@@ -5358,6 +7075,7 @@ Please log in and change your password after first login.`;
                   </TableCell>
                 </TableRow>
               ))
+
             )}
           </TableBody>
         </Table>
@@ -5466,7 +7184,44 @@ Please log in and change your password after first login.`;
                       <TableHead>Plan Type</TableHead>
                       <TableHead>Deleted Date</TableHead>
                       <TableHead>Deleted By</TableHead>
+                      <TableHead className="bg-sky-50 min-w-[130px] cursor-pointer select-none" title="Time from the lead arriving to the sale being completed">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setTimeToLeadSort((prev) => (prev === 'desc' ? 'asc' : prev === 'asc' ? null : 'desc'))
+                          }
+                          className="inline-flex items-center gap-1 hover:text-sky-900"
+                        >
+                          Time to Lead
+                          {timeToLeadSort === 'desc' ? (
+                            <ArrowDown className="h-3.5 w-3.5 text-sky-700" />
+                          ) : timeToLeadSort === 'asc' ? (
+                            <ArrowUp className="h-3.5 w-3.5 text-sky-700" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-muted-foreground/50" />
+                          )}
+                        </button>
+                      </TableHead>
+                      <TableHead className="bg-indigo-50 min-w-[140px] cursor-pointer select-none" title="Time from the lead arriving to the first agent contact (call logged, note added or status change)">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setInitialContactSort((prev) => (prev === 'desc' ? 'asc' : prev === 'asc' ? null : 'desc'))
+                          }
+                          className="inline-flex items-center gap-1 hover:text-indigo-900"
+                        >
+                          Initial Contact
+                          {initialContactSort === 'desc' ? (
+                            <ArrowDown className="h-3.5 w-3.5 text-indigo-700" />
+                          ) : initialContactSort === 'asc' ? (
+                            <ArrowUp className="h-3.5 w-3.5 text-indigo-700" />
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-muted-foreground/50" />
+                          )}
+                        </button>
+                      </TableHead>
                       <TableHead>Actions</TableHead>
+
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -5534,8 +7289,10 @@ Please log in and change your password after first login.`;
         onClose={() => {
           setArchiveDialogOpen(false);
           setArchiveCustomers([]);
+          setArchiveSimpleConfirm(false);
         }}
         customers={archiveCustomers}
+        simpleConfirm={archiveSimpleConfirm}
         onSuccess={() => {
           fetchCustomers();
           fetchDeletedCustomers();
@@ -5593,6 +7350,18 @@ Please log in and change your password after first login.`;
           customerFirstName={trustpilotReviewCustomer.first_name}
           alreadyRequested={trustpilotReviewCustomer.trustpilot_review_requested}
           requestedAt={trustpilotReviewCustomer.trustpilot_review_requested_at}
+        />
+      )}
+
+      {/* Add Claim Dialog (admin/super_admin) */}
+      {addClaimCustomer && (
+        <AddClaimDialog
+          open={!!addClaimCustomer}
+          onOpenChange={(open) => { if (!open) setAddClaimCustomer(null); }}
+          customerEmail={addClaimCustomer.email}
+          customerName={addClaimCustomer.name}
+          vehicleReg={addClaimCustomer.registration_plate}
+          onClaimAdded={() => { setAddClaimCustomer(null); fetchCustomers(); }}
         />
       )}
 

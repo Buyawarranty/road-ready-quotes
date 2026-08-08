@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { SalesLoginGate } from '@/components/auth/SalesLoginGate';
 
 const SalesLogin = () => {
   const [email, setEmail] = useState('');
@@ -14,8 +15,12 @@ const SalesLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(
+    typeof window !== 'undefined' && sessionStorage.getItem('salesLoginGateUnlocked') === 'true'
+  );
   const navigate = useNavigate();
   const { toast } = useToast();
+
 
   // Check if already logged in
   useEffect(() => {
@@ -31,7 +36,7 @@ const SalesLogin = () => {
         
         const userRoles = roles?.map(r => r.role) || [];
         
-        const staffRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+        const staffRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts', 'claims_agent', 'claims_manager', 'performance_manager', 'sales_manager'];
         if (userRoles.some(r => staffRoles.includes(r))) {
           navigate('/admin-dashboard/', { replace: true });
           return;
@@ -75,7 +80,7 @@ const SalesLogin = () => {
       }
 
       const userRoles = roles?.map(r => r.role) || [];
-      const staffRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
+      const staffRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts', 'claims_agent', 'claims_manager', 'performance_manager', 'sales_manager'];
       const hasAccess = userRoles.some(r => staffRoles.includes(r));
 
       if (!hasAccess) {
@@ -109,6 +114,10 @@ const SalesLogin = () => {
       setLoading(false);
     }
   };
+
+  if (!isUnlocked) {
+    return <SalesLoginGate onUnlock={() => setIsUnlocked(true)} />;
+  }
 
   if (checkingSession) {
     return (

@@ -162,7 +162,7 @@ export const ReviewsTab = () => {
 
       const { error } = await supabase
         .from('customers')
-        .update(updateData as any)
+        .update(updateData)
         .eq('id', customerId);
 
       if (error) throw error;

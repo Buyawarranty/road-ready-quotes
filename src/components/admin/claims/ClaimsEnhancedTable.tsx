@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, Edit, Send, Paperclip, FileSpreadsheet, StickyNote } from 'lucide-react';
+import { Eye, Edit, Send, Paperclip, FileSpreadsheet, StickyNote, ChevronDown, ChevronRight } from 'lucide-react';
 import { ClaimStatusDropdown } from './ClaimStatusDropdown';
 import { ClaimNotesPanel } from './ClaimNotesPanel';
 import { cn } from '@/lib/utils';
@@ -74,6 +74,7 @@ export const ClaimsEnhancedTable: React.FC<ClaimsEnhancedTableProps> = ({
   loading,
 }) => {
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
+  const [expandedSubmissionId, setExpandedSubmissionId] = useState<string | null>(null);
 
   if (groupedClaims.length === 0) {
     return (
@@ -102,9 +103,9 @@ export const ClaimsEnhancedTable: React.FC<ClaimsEnhancedTableProps> = ({
             <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Email</TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Phone #</TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Issue</TableHead>
-            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Customer Message</TableHead>
-            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Notes</TableHead>
-            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Status</TableHead>
+            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Customer Submission</TableHead>
+            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap">Internal Notes</TableHead>
+            <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap w-[220px] min-w-[220px]">Update Status</TableHead>
             <TableHead className="font-semibold text-xs uppercase tracking-wider whitespace-nowrap text-right">Amount</TableHead>
             <TableHead className="w-24"></TableHead>
           </TableRow>
@@ -184,12 +185,22 @@ export const ClaimsEnhancedTable: React.FC<ClaimsEnhancedTableProps> = ({
                     </span>
                   </TableCell>
 
-                  {/* Customer Message */}
-                  <TableCell className="py-2">
+                  {/* Customer Submission (collapsible) */}
+                  <TableCell className="py-2 align-top">
                     {claim.message ? (
-                      <span className="text-xs text-muted-foreground block truncate max-w-[180px]" title={claim.message}>
-                        {claim.message}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedSubmissionId(expandedSubmissionId === claim.id ? null : claim.id)}
+                        className="flex items-start gap-1 text-left text-xs text-foreground hover:text-blue-600 max-w-[260px] group"
+                        title="Click to expand"
+                      >
+                        {expandedSubmissionId === claim.id ? (
+                          <ChevronDown className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground group-hover:text-blue-600" />
+                        ) : (
+                          <ChevronRight className="h-3 w-3 mt-0.5 shrink-0 text-muted-foreground group-hover:text-blue-600" />
+                        )}
+                        <span className="truncate block">{claim.message.split('\n')[0]}</span>
+                      </button>
                     ) : (
                       <span className="text-muted-foreground text-xs">—</span>
                     )}
@@ -237,17 +248,32 @@ export const ClaimsEnhancedTable: React.FC<ClaimsEnhancedTableProps> = ({
                   {/* Actions */}
                   <TableCell className="py-2">
                     <div className="flex items-center gap-0.5">
-                      {claim.file_url && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => onDownloadFile(claim.file_url!, claim.file_name!)}
-                          className="h-7 w-7 p-0"
-                          title="Download file"
-                        >
-                          <Paperclip className="h-3.5 w-3.5 text-blue-600" />
-                        </Button>
-                      )}
+                      {(() => {
+                        const list: any[] = Array.isArray((claim as any).file_urls) ? (claim as any).file_urls : [];
+                        const attachments = list
+                          .map((f) => ({ url: f?.publicUrl || f?.url, name: f?.name || 'attachment' }))
+                          .filter((f) => !!f.url);
+                        if (attachments.length === 0 && claim.file_url) {
+                          attachments.push({ url: claim.file_url, name: claim.file_name || 'attachment' });
+                        }
+                        if (attachments.length === 0) return null;
+                        return (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => attachments.forEach((a) => onDownloadFile(a.url, a.name))}
+                            className="h-7 w-7 p-0 relative"
+                            title={`${attachments.length} attachment(s) – click to download all`}
+                          >
+                            <Paperclip className="h-3.5 w-3.5 text-blue-600" />
+                            {attachments.length > 1 && (
+                              <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-blue-600 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+                                {attachments.length}
+                              </span>
+                            )}
+                          </Button>
+                        );
+                      })()}
                       <Button variant="ghost" size="sm" onClick={() => onViewClaim(claim)} className="h-7 w-7 p-0" title="View claim">
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -257,6 +283,19 @@ export const ClaimsEnhancedTable: React.FC<ClaimsEnhancedTableProps> = ({
                     </div>
                   </TableCell>
                 </TableRow>
+                {/* Expandable customer submission sub-row */}
+                {expandedSubmissionId === claim.id && claim.message && (
+                  <TableRow className="bg-blue-50/40">
+                    <TableCell colSpan={12} className="p-0">
+                      <div className="px-4 py-3 border-l-4 border-blue-400">
+                        <div className="text-[11px] font-semibold uppercase tracking-wider text-blue-800 mb-1">Customer Submission</div>
+                        <div className="text-sm text-foreground whitespace-pre-line leading-relaxed">
+                          {claim.message}
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
                 {/* Expandable notes sub-row */}
                 {expandedNoteId === claim.id && (
                   <TableRow className="bg-muted/20">

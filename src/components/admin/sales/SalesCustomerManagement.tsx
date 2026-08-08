@@ -503,22 +503,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
     }
   };
 
-  const handleSendToWarrantiesRegister = async (policyId: string, customerId: string) => {
-    setEmailSendingLoading(prev => ({ ...prev, [customerId]: { ...prev[customerId], warranties2000: true } }));
-    try {
-      const { data, error } = await supabase.functions.invoke('send-to-warranties-2000', {
-        body: { policyId, customerId, force: true }
-      });
-      if (error) throw error;
-      toast.success('Successfully sent to Warranty Register!');
-      fetchCustomers();
-    } catch (error: any) {
-      console.error('Error sending to Warranty Register:', error);
-      toast.error(`Failed to send to Warranty Register: ${error.message}`);
-    } finally {
-      setEmailSendingLoading(prev => ({ ...prev, [customerId]: { ...prev[customerId], warranties2000: false } }));
-    }
-  };
+  // Warranties Register integration removed — internal handling only.
 
   if (loading) {
     return (
@@ -722,7 +707,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
                 <TableHead>Tags</TableHead>
                 <TableHead className="bg-purple-50">Source</TableHead>
                 <TableHead>Customer Email</TableHead>
-                <TableHead>Warranty Register</TableHead>
+                
                 <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -833,10 +818,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
                     <TableCell>
                       {customer.registration_plate ? (
                         <div className="inline-flex items-center">
-                          <span className="bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-l">
-                            GB
-                          </span>
-                          <span className="bg-yellow-400 text-black font-bold px-2 py-0.5 rounded-r text-sm">
+                          <span className="bg-yellow-400 text-black font-bold px-2 py-0.5 rounded text-sm">
                             {customer.registration_plate}
                           </span>
                         </div>
@@ -986,28 +968,6 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
                       </div>
                     </TableCell>
                     
-                    {/* Warranty Register */}
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        {getWarrantyRegisterStatus(customer.policy?.warranties_2000_status || null)}
-                        {customer.policy?.id && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleSendToWarrantiesRegister(customer.policy!.id, customer.id)}
-                            disabled={emailSendingLoading[customer.id]?.warranties2000}
-                            title="Send to Warranty Register"
-                            className="hover:bg-purple-50 hover:text-purple-600 h-6 w-6 p-0"
-                          >
-                            {emailSendingLoading[customer.id]?.warranties2000 ? (
-                              <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
-                            ) : (
-                              <Send className="h-3 w-3" />
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
                     
                     {/* Status */}
                     <TableCell>

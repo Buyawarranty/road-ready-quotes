@@ -85,6 +85,7 @@ export const ManagerDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      
       {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">

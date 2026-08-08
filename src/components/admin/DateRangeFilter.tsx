@@ -66,6 +66,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   className,
 }) => {
   const [open, setOpen] = useState(false);
+  const [draftRange, setDraftRange] = useState<DateRange | undefined>();
 
   const activeQuick = getActiveQuickFilter(dateRange);
 
@@ -126,7 +127,13 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
   return (
     <div className={cn('', className)}>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (nextOpen) setDraftRange(undefined);
+        }}
+      >
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -145,7 +152,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-4 z-50 space-y-4" align="start" sideOffset={4}>
+        <PopoverContent className="w-auto p-4 z-50 space-y-4 pointer-events-auto" align="start" sideOffset={4}>
           {/* Quick Filters */}
           <div>
             <p className="text-sm font-medium text-muted-foreground mb-2">Quick filters</p>
@@ -196,18 +203,55 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
 
           {/* Custom Range Calendar */}
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-2">Custom Range</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Custom Range</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => onDateRangeChange(undefined)}
+              >
+                Clear
+              </Button>
+            </div>
             <Calendar
-              initialFocus
               mode="range"
               defaultMonth={dateRange?.from || subMonths(new Date(), 1)}
-              selected={dateRange}
-              onSelect={(range) => onDateRangeChange(range)}
+              selected={draftRange}
+              onDayClick={(day, modifiers) => {
+                if (modifiers?.disabled) return;
+                const from = draftRange?.from;
+                // The first click only starts a fresh draft selection. It does
+                // not inherit today's date (or either end of the applied range).
+                if (!from) {
+                  setDraftRange({ from: day, to: undefined });
+                  return;
+                }
+                const completedRange = day < from
+                  ? { from: day, to: from }
+                  : { from, to: day };
+                setDraftRange(completedRange);
+                onDateRangeChange(completedRange);
+                setOpen(false);
+              }}
+              onSelect={() => { /* handled in onDayClick */ }}
               numberOfMonths={2}
               className="pointer-events-auto"
+              classNames={{
+                // Today must not look selected — only the chosen range is filled.
+                day_today:
+                  'font-semibold ring-1 ring-brand-orange text-foreground rounded-md aria-selected:ring-0',
+                day_range_middle:
+                  'aria-selected:bg-brand-orange/20 aria-selected:text-foreground rounded-none',
+              }}
               disabled={(date) => date > new Date()}
             />
+            <p className="text-xs text-muted-foreground mt-2">
+              Click a start date, then an end date. Clicking again starts a new range.
+            </p>
+
           </div>
+
         </PopoverContent>
       </Popover>
     </div>

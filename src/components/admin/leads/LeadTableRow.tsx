@@ -1,5 +1,6 @@
-import React, { memo, useState, useCallback, useMemo } from 'react';
+import React, { memo, useState, useCallback, useMemo, useEffect } from 'react';
 import { PaidLeadLockOverlay } from './PaidLeadLockOverlay';
+import { formatLeadDateUK } from '@/lib/leadFeedDate';
 import { WEBSITE_SALES_ACCOUNT_ID } from '@/constants/salesDefaults';
 import { CommissionClaimDialog } from './CommissionClaimDialog';
 import { useLeadCommissionClaim } from '@/hooks/useLeadCommissionClaims';
@@ -9,29 +10,51 @@ import { detectSuspiciousLead, isSuspicious } from '@/utils/suspiciousLeadDetect
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RemindMePopover } from './RemindMePopover';
 import { CopyButton } from './CopyButton';
+import { ZoiperDialButton } from './ZoiperDialButton';
+import { dialWithZoiper } from '@/utils/zoiperDial';
+import { EmailActionsButton } from './EmailActionsButton';
 import { CallCountCell } from './CallCountCell';
+import { NotesQuickActionsPopover } from './NotesQuickActionsPopover';
+import { RetryCountdownBadge } from './RetryCountdownBadge';
+import { OvernightBadge } from './OvernightBadge';
 import { QuoteSentCell } from './QuoteSentCell';
+import { CustomerActivityCell } from './CustomerActivityCell';
+import { TimeToContactCell } from './TimeToContactCell';
+import { UnsubscribeLeadButton } from './UnsubscribeLeadButton';
+import { RepeatCustomerBadge } from './RepeatCustomerBadge';
+import { ManualLeadBadge } from './ManualLeadBadge';
+
 import { 
   Phone, Mail, MessageSquare, Calendar as CalendarIcon, Clock,
-  Tag, AlertTriangle, FileText, StickyNote,
-  CheckCircle, ChevronDown, Send, ExternalLink, Flame, X, Plus, User, RotateCw, Award, Globe
+  Tag, AlertTriangle, FileText, StickyNote, NotebookPen,
+  CheckCircle, ChevronDown, Send, ExternalLink, Flame, X, Plus, User, RotateCw, Award, Globe, Copy, Check
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow, isPast, differenceInHours, differenceInDays, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { TeamBadge } from './TeamBadge';
+import { useAgentTeams } from '@/hooks/useAgentTeams';
+import { useAllAdminUsersMap } from '@/hooks/useAllAdminUsersMap';
+import { getAgentColor } from '@/lib/agentColors';
 
 interface LeadTableRowProps {
   lead: Lead;
   tags: LeadTag[];
   salesUsers: AdminUser[];
+  /** Optional cross-team roster used to populate the in-row assignee dropdown.
+   *  Managers (admin / super_admin / sales_manager / performance_manager) pass the
+   *  full active agent list so they can reassign any lead to any team.
+   *  Falls back to `salesUsers` when not provided. */
+  assignableSalesUsers?: AdminUser[];
   isSelected: boolean;
   isExpanded: boolean;
   sentQuotes?: SentQuote[];
@@ -49,7 +72,10 @@ interface LeadTableRowProps {
   onSendQuote?: () => void;
   hideAssignedColumn?: boolean;
   canAssignLeads?: boolean;
+  /** Viewer has explicit lead-routing permission, so website-sale locks don't apply. */
+  canOverrideAssignmentLock?: boolean;
   noteCount?: number;
+  agentActivity?: { lastAt: string; source: 'note' | 'call' | 'status' };
   showFbBadge?: boolean;
   showRecoveredBadge?: boolean;
   showSourceColumn?: boolean;
@@ -60,18 +86,72 @@ interface LeadTableRowProps {
   isLeadGenView?: boolean;
   userRole?: string | null;
   reminderTime?: string;
+  struggleAlert?: { signal_type: string; created_at: string } | null;
+  /** Hide the "New" option from the status dropdown (e.g. Recontact / Renewals tabs). */
+  hideNewStatus?: boolean;
+  /** Open Lead Pool: pin this row with mint styling + quiet countdown chip. */
+  isReserved?: boolean;
+  reservedRemainingSec?: number;
+  /**
+   * Recontact tab: suppress the "status=new + >24h old" SLA-overdue red tint
+   * (every recontact lead is 30+ days old by definition, so the SLA colour is
+   * meaningless there). Instead, only tint red when the lead has been sitting
+   * with the *current* agent for >24h without a note/call.
+   */
+  recontactMode?: boolean;
+  /** admin_users.id of the viewer — used by recontactMode to score "sitting with me". */
+  currentAdminId?: string | null;
+  /** 1-based row number rendered in the leftmost column for easy counting. */
+  rowNumber?: number;
+  /** Cross-team visibility: viewer can see this lead but not edit it. Shows a
+   *  "VIEW ONLY" chip and dims interactive controls. */
+  readOnly?: boolean;
+  /** Latest customer-side activity (last quote, step 2, portal login, etc.) */
+  customerActivity?: import('@/hooks/useCustomerActivity').CustomerActivity;
+  /** Time from lead arrival to the agent's first action on it. */
+  responseTime?: import('@/hooks/useLeadResponseTime').LeadResponseTime;
+  /** Set when this lead matches an existing customer (previous purchase). */
+  repeatCustomer?: import('@/hooks/useRepeatCustomers').RepeatCustomerInfo;
 }
 
 const statusColors: Record<LeadStatus, string> = {
-  new: 'bg-blue-100 text-blue-800',
+  new: 'bg-green-100 text-green-800',
   contacted: 'bg-yellow-100 text-yellow-800',
   follow_up: 'bg-purple-100 text-purple-800',
   quote_sent: 'bg-indigo-100 text-indigo-800',
   negotiating: 'bg-orange-100 text-orange-800',
-  converted: 'bg-green-100 text-green-800',
+  converted: 'bg-teal-100 text-teal-800',
   lost: 'bg-gray-100 text-gray-800',
+  not_interested: 'bg-slate-200 text-slate-700',
   fake_lead: 'bg-red-100 text-red-800',
-  urgent_callback: 'bg-red-500 text-white'
+  urgent_callback: 'bg-red-500 text-white',
+  no_answer: 'bg-amber-100 text-amber-800',
+  left_voicemail: 'bg-sky-100 text-sky-800',
+  wrong_number: 'bg-rose-100 text-rose-800',
+  callback_booked: 'bg-blue-100 text-blue-800',
+  bought_elsewhere: 'bg-zinc-200 text-zinc-800',
+  vehicle_sold: 'bg-stone-200 text-stone-800',
+  do_not_contact: 'bg-black text-white',
+};
+
+const statusLabels: Record<LeadStatus, string> = {
+  new: 'Not spoken to',
+  contacted: 'Spoken to',
+  follow_up: 'Follow-up',
+  quote_sent: 'Quote sent',
+  negotiating: 'Negotiating',
+  converted: 'Converted',
+  lost: 'Lost',
+  not_interested: 'Not interested',
+  fake_lead: 'Fake / 404',
+  urgent_callback: 'Urgent call-back',
+  no_answer: 'No answer',
+  left_voicemail: 'Left voicemail',
+  wrong_number: 'Wrong number',
+  callback_booked: 'Callback booked',
+  bought_elsewhere: 'Bought elsewhere',
+  vehicle_sold: 'Vehicle sold',
+  do_not_contact: 'Do not contact',
 };
 
 const formatUKPhone = (phone: string): string => {
@@ -119,36 +199,55 @@ const getUrgencySLA = (lead: Lead): { label: string; color: string; priority: nu
     if (hoursOld > 4) {
       return { label: 'Due today', color: 'bg-amber-500 text-white', priority: 1 };
     }
-    return { label: 'New', color: 'bg-blue-100 text-blue-800', priority: 2 };
+    return { label: 'Not spoken to', color: 'bg-blue-100 text-blue-800', priority: 2 };
   }
   
   // Closed/resolved leads don't need action
-  if (lead.status === 'converted' || lead.status === 'lost' || lead.status === 'fake_lead') {
-    const labelMap: Record<string, string> = { converted: 'Converted', lost: 'Lost', fake_lead: 'Fake 404' };
+  if (lead.status === 'converted' || lead.status === 'lost' || lead.status === 'not_interested' || lead.status === 'fake_lead') {
+    const labelMap: Record<string, string> = { converted: 'Converted', lost: 'Lost', not_interested: 'Not interested', fake_lead: 'Fake 404' };
     return { label: labelMap[lead.status] || lead.status, color: 'bg-gray-100 text-gray-600', priority: 5 };
   }
   
   return { label: 'Action needed', color: 'bg-orange-100 text-orange-700', priority: 4 };
 };
 
-const getRowUrgencyClass = (lead: Lead, reminderTime?: string): string => {
+const getRowUrgencyClass = (
+  lead: Lead,
+  reminderTime?: string,
+  recontactMode?: boolean,
+  currentAdminId?: string | null,
+): string => {
   if (lead.is_paid) return 'bg-green-50 hover:bg-green-100/70';
   if ((lead.resubmission_count || 0) > 0) return 'bg-purple-50 hover:bg-purple-100/70';
-  
-  // Reminder-based urgency colouring
+
+  // Reminder-based urgency colouring (kept in every tab)
   if (reminderTime) {
     const reminderDate = new Date(reminderTime);
     if (isPast(reminderDate)) {
-      const overdueMin = differenceInHours(new Date(), reminderDate);
-      // Overdue reminder — red tint (stronger than SLA overdue)
       return 'bg-red-50 hover:bg-red-100/70';
     }
     if (isToday(reminderDate)) {
-      // Due today — amber tint
       return 'bg-amber-50 hover:bg-amber-100/70';
     }
   }
-  
+
+  if (recontactMode) {
+    // Option 2: tint red if the lead has been sitting with THIS agent for
+    // >24h without any note/call/resubmit signal. Uses assigned_at as the
+    // "landed with me" timestamp. Falls back to no tint otherwise.
+    if (currentAdminId && lead.assigned_to === currentAdminId && lead.assigned_at) {
+      const lastTouch = new Date(
+        lead.last_activity_date || lead.last_contacted_at || lead.assigned_at
+      ).getTime();
+      const assignedTime = new Date(lead.assigned_at).getTime();
+      const referenceTime = Math.max(lastTouch, assignedTime);
+      const hoursSinceTouch = (Date.now() - referenceTime) / 3_600_000;
+      if (hoursSinceTouch >= 24) return 'bg-red-50 hover:bg-red-100/70';
+    }
+    if (lead.is_from_abandoned_cart) return 'bg-amber-50/30 hover:bg-amber-100/50';
+    return 'hover:bg-muted/50';
+  }
+
   const sla = getUrgencySLA(lead);
   if (sla.priority === 0) return 'bg-red-50 hover:bg-red-100/70';
   if (sla.priority === 1) return 'bg-amber-50 hover:bg-amber-100/70';
@@ -157,19 +256,94 @@ const getRowUrgencyClass = (lead: Lead, reminderTime?: string): string => {
 };
 
 // Memoized phone text component
-// Keep the number as plain visible text so Zoiper Click2Dial can detect and convert it,
-// while preserving the requested green styling on any injected link.
-const PhoneCopyText = memo<{ phone: string }>(({ phone }) => {
+// Renders the number as a tel: link so click-to-dial works natively (and Zoiper
+// Click2Dial can still enhance it). A sibling copy button lets agents copy the
+// number to the clipboard for paste into any other dialer.
+const PhoneCopyText = memo<{ phone: string; leadId?: string | null }>(({ phone, leadId }) => {
+  const telHref = `tel:${phone.replace(/[^\d+]/g, '')}`;
+  const [copied, setCopied] = useState(false);
+
+  const handleDial = useCallback((e: React.MouseEvent) => {
+    // Middle-click or modifier keys keep native behaviour so power users can
+    // still open the tel: link in a new tab / their OS default handler.
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    e.stopPropagation();
+    dialWithZoiper(phone, { leadId: leadId ?? null, leadType: 'sales_lead' });
+    navigator.clipboard?.writeText(phone.replace(/[^\d+]/g, '')).catch(() => { /* noop */ });
+    toast.success('Dialling via Zoiper', {
+      duration: 2500,
+      description: "If Zoiper didn't open, the number is on your clipboard.",
+    });
+  }, [phone, leadId]);
+
+  const handleCopy = useCallback(async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(phone);
+      setCopied(true);
+      toast.success('Phone number copied', { duration: 1500 });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy');
+    }
+  }, [phone]);
+
   return (
-    <span className="inline-flex items-center gap-1 text-emerald-600 hover:text-emerald-700 text-xs font-semibold whitespace-nowrap [&_a]:text-inherit [&_a]:font-inherit [&_a]:underline [&_a]:underline-offset-2 [&_a]:decoration-current">
-      <Phone className="h-3.5 w-3.5 flex-shrink-0" />
-      <span className="underline underline-offset-2 decoration-current select-text">
-        {formatUKPhone(phone)}
-      </span>
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            onClick={handleDial}
+            aria-label="Dial via Zoiper"
+            className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#F58220] text-white text-[9px] font-black leading-none shadow-sm hover:bg-[#e07216] focus:outline-none focus:ring-2 focus:ring-[#F58220]/40 flex-shrink-0"
+          >
+            Z
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">Dial via Zoiper</TooltipContent>
+      </Tooltip>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>
+          <a
+            href={telHref}
+            onClick={handleDial}
+            onAuxClick={(e) => e.stopPropagation()}
+            aria-label={`Click to dial ${formatUKPhone(phone)} via Zoiper`}
+            className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:border-emerald-500 hover:text-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 cursor-pointer transition-colors"
+          >
+            <Phone className="h-3 w-3 flex-shrink-0" fill="currentColor" strokeWidth={0} />
+            <span className="select-text">{formatUKPhone(phone)}</span>
+          </a>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">Click to dial via Zoiper</TooltipContent>
+      </Tooltip>
+      <Tooltip delayDuration={100}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-5 w-5 text-muted-foreground hover:text-primary hover:bg-muted",
+              copied && "text-green-600"
+            )}
+            onClick={handleCopy}
+            aria-label="Copy phone number"
+          >
+            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          {copied ? 'Copied!' : 'Copy number'}
+        </TooltipContent>
+      </Tooltip>
     </span>
   );
 });
 PhoneCopyText.displayName = 'PhoneCopyText';
+
 
 const EmailCopyText = memo<{ email: string }>(({ email }) => {
   const [copied, setCopied] = useState(false);
@@ -273,6 +447,7 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
   lead,
   tags,
   salesUsers,
+  assignableSalesUsers,
   isSelected,
   isExpanded,
   sentQuotes,
@@ -290,7 +465,9 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
   onSendQuote,
   hideAssignedColumn,
   canAssignLeads = true,
+  canOverrideAssignmentLock = false,
   noteCount = 0,
+  agentActivity,
   showFbBadge = false,
   showRecoveredBadge = false,
   showSourceColumn = false,
@@ -301,11 +478,64 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
   isLeadGenView = false,
   userRole,
   reminderTime,
+  struggleAlert,
+  hideNewStatus = false,
+  isReserved = false,
+  reservedRemainingSec = 0,
+  recontactMode = false,
+  currentAdminId = null,
+  rowNumber,
+  readOnly = false,
+  customerActivity,
+  responseTime,
+  repeatCustomer,
 }) => {
   const [followUpDate, setFollowUpDate] = useState<Date | undefined>();
   const [followUpType, setFollowUpType] = useState('call');
   const navigate = useNavigate();
-  
+  const { byAgent: agentTeamMap } = useAgentTeams();
+  const allAdminUsersMap = useAllAdminUsersMap(lead.assigned_to);
+
+  // Allow child components (e.g. UnifiedNotesPanel retry banner "Close" button)
+  // to collapse this row via a window event.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ leadId?: string }>).detail;
+      if (detail?.leadId === lead.id && isExpanded) onToggleExpand();
+    };
+    window.addEventListener('lead-row:collapse', handler as EventListener);
+    return () => window.removeEventListener('lead-row:collapse', handler as EventListener);
+  }, [lead.id, isExpanded, onToggleExpand]);
+
+  // Agent activity = latest real human touch: explicit "mark contacted", an
+  // agent note, a logged call, a status change made by a user, or a quote the
+  // agent actually sent to this customer (sending a quote IS an interaction).
+  const lastQuoteSentAt = useMemo(() => {
+    if (!sentQuotes || sentQuotes.length === 0) return 0;
+    return sentQuotes.reduce((max, q) => {
+      const t = q.sent_at ? new Date(q.sent_at).getTime() : 0;
+      return t > max ? t : max;
+    }, 0);
+  }, [sentQuotes]);
+
+  const agentTouchAt = useMemo(() => {
+    const a = lead.last_contacted_at ? new Date(lead.last_contacted_at).getTime() : 0;
+    const b = agentActivity?.lastAt ? new Date(agentActivity.lastAt).getTime() : 0;
+    const best = Math.max(a, b, lastQuoteSentAt);
+    if (!best) return null;
+    return new Date(best).toISOString();
+  }, [lead.last_contacted_at, agentActivity?.lastAt, lastQuoteSentAt]);
+
+  const agentTouchLabel = useMemo(() => {
+    const a = lead.last_contacted_at ? new Date(lead.last_contacted_at).getTime() : 0;
+    const b = agentActivity?.lastAt ? new Date(agentActivity.lastAt).getTime() : 0;
+    if (lastQuoteSentAt && lastQuoteSentAt >= a && lastQuoteSentAt >= b) return 'quote sent';
+    if (!agentActivity || b < a) return null;
+    return agentActivity.source === 'note' ? 'note'
+      : agentActivity.source === 'call' ? 'call'
+      : 'status change';
+  }, [agentActivity, lead.last_contacted_at, lastQuoteSentAt]);
+
   const sla = getUrgencySLA(lead);
   
   const displayName = lead.first_name || lead.last_name 
@@ -328,7 +558,10 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
   // - Google Ads paid leads: ALWAYS locked to Website, only admin/super_admin can reassign
   // - Facebook/Organic paid leads outside work hours (6pm-9am): locked to Website, no agent can claim
   // - Facebook/Organic paid leads during work hours (9am-6pm): default Website but agents can claim
-  const isAdminRole = userRole === 'admin' || userRole === 'super_admin';
+  const isAdminRole = userRole === 'admin' || userRole === 'super_admin' || userRole === 'sales_manager' || userRole === 'performance_manager' || userRole === 'lead_gen' || userRole === 'accounts_manager'
+    // Agents explicitly granted lead-routing rights (Staff Lead Access) can move
+    // these leads too — otherwise the tick box looks on but every row is locked.
+    || canOverrideAssignmentLock;
   const isGoogleAdSale = (lead.is_paid || lead.status === 'converted') && lead.lead_source === 'google_ad';
   const isFacebookSale = lead.is_paid && lead.lead_source === 'social_ad';
   const isOrganicSale = lead.is_paid && (!lead.lead_source || lead.lead_source === 'website');
@@ -362,13 +595,25 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
   }, [navigate, lead.email]);
 
   return (
-    <TableRow className={cn(
-      "transition-colors border-b border-border/30 group", 
-      getRowUrgencyClass(lead, reminderTime),
+    <TableRow
+      data-lead-id={lead.id}
+      className={cn(
+      "transition-colors border-b border-border/30 group",
+      getRowUrgencyClass(lead, reminderTime, recontactMode, currentAdminId),
       isFakeLead && "opacity-50 bg-red-50 hover:bg-red-100/60 pointer-events-auto",
       isLocked && "opacity-70",
-      isSuspiciousLead && !isFakeLead && "bg-red-50/50 hover:bg-red-100/40"
+      isSuspiciousLead && !isFakeLead && "bg-red-50/50 hover:bg-red-100/40",
+      // Open Lead Pool: pinned reserved row — clearer left rail (6px) + slightly stronger mint tint.
+      // Kept restrained so phone / reg / actions still read as the primary content.
+      isReserved && "!bg-emerald-100/60 hover:!bg-emerald-100/80 shadow-[inset_6px_0_0_0_theme(colors.emerald.600)]"
     )}>
+      {/* Row number (leftmost, for easy counting) */}
+      {typeof rowNumber === 'number' && (
+        <TableCell className="w-[44px] text-center text-xs tabular-nums text-muted-foreground font-medium">
+          {rowNumber}
+        </TableCell>
+      )}
+
       {/* Selection Checkbox */}
       {!isLeadGenView && (
       <TableCell onClick={(e) => e.stopPropagation()}>
@@ -411,32 +656,40 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
                 {lead.assigned_to && lead.assigned_to !== WEBSITE_SALES_ACCOUNT_ID ? (
                   // Assigned state - show initials avatar with per-agent color
                   (() => {
-                    const AGENT_COLOR_MAP: Record<string, string> = {
-                      'isobel': 'bg-emerald-600',
-                      'james': 'bg-blue-600',
-                      'ash': 'bg-violet-600',
-                    };
-                    const FALLBACK_COLORS = [
-                      'bg-orange-600', 'bg-pink-600', 'bg-indigo-600', 'bg-teal-600',
-                      'bg-rose-600', 'bg-cyan-600', 'bg-amber-600'
-                    ];
-                    const assignedUser = lead.assigned_user || salesUsers.find(u => u.id === lead.assigned_to);
+                    const resolvedFromAllMap = lead.assigned_to ? allAdminUsersMap.get(lead.assigned_to) : null;
+                    const assignedUser = lead.assigned_user
+                      || salesUsers.find(u => u.id === lead.assigned_to)
+                      || resolvedFromAllMap;
+                    const isInactiveAgent = !!resolvedFromAllMap && resolvedFromAllMap.is_active === false
+                      && !salesUsers.find(u => u.id === lead.assigned_to);
                     const firstName = (assignedUser?.first_name || '').toLowerCase();
-                    const agentColor = AGENT_COLOR_MAP[firstName]
-                      || FALLBACK_COLORS[salesUsers.findIndex(u => u.id === lead.assigned_to) % FALLBACK_COLORS.length];
-                    const initial = assignedUser?.first_name?.[0]?.toUpperCase() || assignedUser?.email?.[0]?.toUpperCase() || 'A';
-                    const displayName = assignedUser 
-                      ? `${assignedUser.first_name || ''}`.trim() || assignedUser.email?.split('@')[0] || 'Assigned'
-                      : 'Assigned';
-                    return (
-                      <>
-                        <div className={`h-5 w-5 rounded-full ${agentColor} text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0`}>
-                          {initial}
-                        </div>
-                        <span className="truncate">{displayName}</span>
-                      </>
-                    );
-                  })()
+                    const agentColor = getAgentColor(firstName, lead.assigned_to);
+                    const initial = assignedUser?.first_name?.[0]?.toUpperCase() || assignedUser?.email?.[0]?.toUpperCase() || '?';
+                    const displayName = assignedUser
+                      ? (`${assignedUser.first_name || ''} ${assignedUser.last_name || ''}`.trim()
+                          || assignedUser.email?.split('@')[0]
+                          || 'Unknown')
+                      : 'Unknown agent';
+                     return (
+                       <>
+                         <div
+                           className={`h-5 w-5 rounded-full ${isInactiveAgent ? 'bg-muted-foreground/40' : agentColor} text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0`}
+                           title={isInactiveAgent ? `${displayName} (deactivated)` : displayName}
+                         >
+                           {initial}
+                         </div>
+                         <span className={`truncate ${isInactiveAgent ? 'italic text-muted-foreground' : ''}`}>
+                           {isReserved ? `${(assignedUser?.first_name || displayName).split(' ')[0]} — You` : displayName}{isInactiveAgent ? ' (off)' : ''}
+                         </span>
+                         {isReserved && (
+                           <span className="ml-1 inline-flex items-center rounded-full bg-emerald-600 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white shadow-sm">
+                             Working
+                           </span>
+                         )}
+                         <TeamBadge userId={lead.assigned_to} className="flex-shrink-0" />
+                       </>
+                     );
+                   })()
                 ) : (
                   <>
                     <Globe className="h-3.5 w-3.5 flex-shrink-0" />
@@ -475,30 +728,65 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
                 </div>
               </SelectItem>
               <SelectSeparator />
-              {salesUsers.filter(u => u.id !== WEBSITE_SALES_ACCOUNT_ID).map((user, idx) => {
-                const AGENT_COLOR_MAP: Record<string, string> = {
-                  'isobel': 'bg-emerald-600',
-                  'james': 'bg-blue-600',
-                  'ash': 'bg-violet-600',
+              {(() => {
+                const roster = (assignableSalesUsers ?? salesUsers).filter(u => u.id !== WEBSITE_SALES_ACCOUNT_ID);
+                // Group by team for managers (cross-team roster). Single-team users see a flat list.
+                const groups = new Map<string, typeof roster>();
+                roster.forEach(u => {
+                  const t = agentTeamMap.get(u.id);
+                  const team = t?.name || 'No team';
+                  if (!groups.has(team)) groups.set(team, [] as any);
+                  (groups.get(team) as any).push(u);
+                });
+                const showGroups = groups.size > 1;
+                const renderUser = (user: typeof roster[number], idx: number) => {
+                  const uFirstName = (user.first_name || '').toLowerCase();
+                  const color = getAgentColor(uFirstName, user.id);
+                  return (
+                    <SelectItem key={user.id} value={user.id}>
+                      <div className="flex items-center gap-2">
+                        <div className={`h-5 w-5 rounded-full ${color} text-white flex items-center justify-center text-[10px] font-medium`}>
+                          {user.first_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                        </div>
+                        <span>{`${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email}</span>
+                        <TeamBadge userId={user.id} className="ml-auto" />
+                      </div>
+                    </SelectItem>
+                  );
                 };
-                const FALLBACK_COLORS = [
-                  'bg-orange-600', 'bg-pink-600', 'bg-indigo-600', 'bg-teal-600',
-                  'bg-rose-600', 'bg-cyan-600', 'bg-amber-600'
-                ];
-                const uFirstName = (user.first_name || '').toLowerCase();
-                const color = AGENT_COLOR_MAP[uFirstName]
-                  || FALLBACK_COLORS[idx % FALLBACK_COLORS.length];
-                return (
-                <SelectItem key={user.id} value={user.id}>
-                  <div className="flex items-center gap-2">
-                    <div className={`h-5 w-5 rounded-full ${color} text-white flex items-center justify-center text-[10px] font-medium`}>
-                      {user.first_name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                if (!showGroups) {
+                  return roster.map((u, i) => renderUser(u, i));
+                }
+                // Active sales teams first (Team Blue, Team Red), everything else after,
+                // "No team" pinned to the bottom — so managers don't have to scroll past
+                // dormant/legacy buckets to reach the agents they actually assign to.
+                const TOP_TEAM_ORDER = ['team blue', 'team red'];
+                const rankTeam = (name: string) => {
+                  const lower = name.toLowerCase();
+                  if (lower === 'no team') return 2;
+                  const topIdx = TOP_TEAM_ORDER.indexOf(lower);
+                  return topIdx >= 0 ? 0 : 1;
+                };
+                const entries = Array.from(groups.entries()).sort((a, b) => {
+                  const ra = rankTeam(a[0]);
+                  const rb = rankTeam(b[0]);
+                  if (ra !== rb) return ra - rb;
+                  if (ra === 0) {
+                    return TOP_TEAM_ORDER.indexOf(a[0].toLowerCase()) -
+                           TOP_TEAM_ORDER.indexOf(b[0].toLowerCase());
+                  }
+                  return a[0].localeCompare(b[0]);
+                });
+                return entries.map(([team, users], gi) => (
+                  <React.Fragment key={team}>
+                    {gi > 0 && <SelectSeparator />}
+                    <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      {team}
                     </div>
-                    <span>{`${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email}</span>
-                  </div>
-                </SelectItem>
-                );
-              })}
+                    {users.map((u, i) => renderUser(u, i))}
+                  </React.Fragment>
+                ));
+              })()}
             </SelectContent>
           </Select>
       </TableCell>}
@@ -508,22 +796,35 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
         <TableCell className="text-center">
           {(() => {
             const src = lead.lead_source;
-            const metadata = lead.cart_metadata as { gclid?: string; fbclid?: string; utm_source?: string; utm_medium?: string; utm_campaign?: string } | null;
+            const metadata = lead.cart_metadata as { gclid?: string; fbclid?: string; utm_source?: string; utm_medium?: string; utm_campaign?: string; utm_term?: string; utm_content?: string } | null;
+            const utmLines: string[] = [];
+            if (metadata?.utm_source)   utmLines.push(`UTM Source: ${metadata.utm_source}`);
+            if (metadata?.utm_medium)   utmLines.push(`UTM Medium: ${metadata.utm_medium}`);
+            if (metadata?.utm_campaign) utmLines.push(`UTM Campaign: ${metadata.utm_campaign}`);
+            if (metadata?.utm_term)     utmLines.push(`UTM Term: ${metadata.utm_term}`);
+            if (metadata?.utm_content)  utmLines.push(`UTM Content: ${metadata.utm_content}`);
+            const utmBlock = utmLines.length ? `\n${utmLines.join('\n')}` : '';
             if (src === 'google_ad') {
               const gclid = metadata?.gclid;
-              const tip = gclid ? `Google Ads\nGCLID: ${gclid}` : 'Google Ads (no GCLID captured)';
+              const tip = (gclid ? `Google Ads\nGCLID: ${gclid}` : 'Google Ads (no GCLID captured)') + utmBlock;
               return <span className="text-[11px] font-bold text-emerald-700 cursor-help" title={tip}>G</span>;
             }
             if (src === 'social_ad') {
               const fbclid = metadata?.fbclid;
-              const utmSrc = metadata?.utm_source;
               const parts = ['Facebook Ads'];
               if (fbclid) parts.push(`FBCLID: ${fbclid}`);
-              if (utmSrc) parts.push(`UTM Source: ${utmSrc}`);
-              if (!fbclid && !utmSrc) parts.push('(no FBCLID captured)');
-              return <span className="text-[11px] font-bold text-blue-700 cursor-help" title={parts.join('\n')}>F</span>;
+              if (!fbclid && !metadata?.utm_source) parts.push('(no FBCLID captured)');
+              return <span className="text-[11px] font-bold text-blue-700 cursor-help" title={parts.join('\n') + utmBlock}>F</span>;
             }
-            return <span className="text-[11px] font-medium text-muted-foreground cursor-help" title="Organic">O</span>;
+            if (src === 'bing_ad') {
+              const msclkid = (metadata as any)?.msclkid;
+              const parts = ['Bing Ads'];
+              if (msclkid) parts.push(`MSCLKID: ${msclkid}`);
+              if (!msclkid && !metadata?.utm_source) parts.push('(no MSCLKID captured)');
+              return <span className="text-[11px] font-bold text-teal-700 cursor-help" title={parts.join('\n') + utmBlock}>B</span>;
+            }
+            const organicTip = 'Organic' + utmBlock;
+            return <span className={`text-[11px] font-medium cursor-help ${utmLines.length ? 'text-foreground' : 'text-muted-foreground'}`} title={organicTip}>O</span>;
           })()}
         </TableCell>
       )}
@@ -538,47 +839,37 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
             onRequestAccess={onRequestAccess || (() => {})}
           />
         ) : (
-        <Select
-          value={lead.status}
-          onValueChange={(value) => onUpdateStatus(value as LeadStatus)}
-        >
-          <SelectTrigger className={cn("w-[100px] h-7 text-xs", statusColors[lead.status])}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="new">New</SelectItem>
-            <SelectItem value="contacted">Contacted</SelectItem>
-            <SelectItem value="follow_up">Follow-up</SelectItem>
-            <SelectItem value="quote_sent">Quote Sent</SelectItem>
-            <SelectItem value="urgent_callback">Urgent Call-back</SelectItem>
-            <SelectItem value="negotiating">Negotiating</SelectItem>
-            <SelectItem value="converted">Converted</SelectItem>
-            <SelectItem value="lost">Lost</SelectItem>
-            <SelectItem value="fake_lead">Fake 404</SelectItem>
-          </SelectContent>
-        </Select>
+          <div className="flex items-center gap-0.5">
+            <Select value={lead.status} onValueChange={(v) => onUpdateStatus(v as LeadStatus)}>
+              <SelectTrigger className={cn("h-7 px-2 text-[10px] font-medium whitespace-nowrap border-0 gap-1 w-auto min-w-[90px]", statusColors[lead.status])}>
+                <SelectValue>{statusLabels[lead.status]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {(Object.keys(statusLabels) as LeadStatus[])
+                  .filter((s) => !(hideNewStatus && s === 'new'))
+                  .map((s) => (
+                  <SelectItem key={s} value={s} className="text-xs">
+                    <span className={cn("inline-block px-2 py-0.5 rounded", statusColors[s])}>{statusLabels[s]}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <UnsubscribeLeadButton
+              email={lead.email}
+              customerName={lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || null}
+              vehicleReg={lead.vehicle_reg}
+              alreadyNotInterested={lead.status === 'not_interested'}
+              onMarkNotInterested={() => onUpdateStatus('not_interested' as LeadStatus)}
+            />
+          </div>
+
         )}
       </TableCell>
       )}
 
-      {/* Callback indicator */}
-      {!isLeadGenView && (
-      <TableCell className="text-center">
-        {lead.is_callback ? (
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild>
-              <Badge className="text-[10px] px-1.5 py-0.5 bg-teal-100 text-teal-800 border-teal-300 cursor-default">
-                <Phone className="h-3 w-3 mr-0.5" />
-                CB
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">Callback requested from website</TooltipContent>
-          </Tooltip>
-        ) : (
-          <span className="text-muted-foreground text-xs">—</span>
-        )}
-      </TableCell>
-      )}
+      {/* Send Quote column removed — feature remains available via the row action button */}
+
+
 
       {/* Call Count - Enhanced with dialog and guardrails */}
       {!isLeadGenView && (
@@ -614,7 +905,7 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
                 )}
                 onClick={onToggleExpand}
               >
-                <ChevronDown className={cn("h-5 w-5 transition-transform duration-180", isExpanded && "rotate-180")} strokeWidth={3} />
+                <ChevronDown className={cn("h-5 w-5 transition-transform duration-180", isExpanded && "rotate-180 text-white")} strokeWidth={3.5} />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" className="text-xs">
@@ -622,33 +913,43 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
             </TooltipContent>
           </Tooltip>
           
-          <CopyButton value={lead.phone || ''} type="phone" />
+          <ZoiperDialButton
+            phone={lead.phone || ''}
+            leadId={lead.id}
+            leadType={lead.is_from_abandoned_cart ? 'abandoned_cart' : 'sales_lead'}
+            leadSource={lead.lead_source || null}
+            onDialed={(number) => onLogActivity('call_dial', `Dialled ${number} via Zoiper`)}
+          />
+
+          <RetryCountdownBadge
+            nextActionDate={lead.next_action_date}
+            followUpStatus={lead.follow_up_status}
+          />
+
+          <OvernightBadge leadId={lead.id} />
+
           
-          <Tooltip delayDuration={100}>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className={cn("h-7 w-7 relative", (lead.notes || noteCount > 0) && "text-amber-600")}
-                onClick={onToggleExpand}
-              >
-                <StickyNote className="h-3.5 w-3.5" />
-                {noteCount > 0 ? (
-                  <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-amber-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                    {noteCount}
-                  </span>
-                ) : lead.notes ? (
-                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-500" />
-                ) : null}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {lead.notes ? 'View notes' : 'Add note'}
-            </TooltipContent>
-          </Tooltip>
+          <NotesQuickActionsPopover
+            lead={lead}
+            noteCount={noteCount}
+            onOpenFullNotes={onToggleExpand}
+            onUpdateCallCount={onUpdateCallCount}
+            onScheduleFollowUp={onScheduleFollowUp}
+            onLogActivity={onLogActivity}
+            agentId={lead.assigned_to || ''}
+          />
+
           
-          <CopyButton value={lead.email} type="email" />
-          <RemindMePopover leadId={lead.id} compact />
+          <EmailActionsButton
+            email={lead.email}
+            onAction={(a) =>
+              onLogActivity(
+                a === 'gmail' ? 'email_open_gmail' : 'email_copy',
+                a === 'gmail' ? 'Opened lead in Gmail' : 'Copied email address',
+              )
+            }
+          />
+          <RemindMePopover leadId={lead.id} compact onReminderSaved={(msg) => onLogActivity('reminder', msg)} />
           
           {onSendQuote && !lead.is_paid && (
             <Tooltip delayDuration={100}>
@@ -657,7 +958,7 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
                   variant="outline" 
                   size="sm"
                   className="h-7 px-2 text-xs font-medium text-orange-600 border-orange-300 hover:bg-orange-50"
-                  onClick={onSendQuote}
+                  onClick={() => { onLogActivity('quote_open', 'Opened Send Quote flow'); onSendQuote(); }}
                 >
                   <FileText className="h-3 w-3 mr-1" />
                   Quote
@@ -667,22 +968,6 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
             </Tooltip>
           )}
 
-          {(lead.status === 'fake_lead' || lead.status === 'lost') && (
-            <Tooltip delayDuration={100}>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 px-2 text-xs font-medium"
-                  onClick={() => onUpdateStatus('archived' as any)}
-                >
-                  <X className="h-3 w-3 mr-1" />
-                  Hide
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">Hide from New Leads</TooltipContent>
-            </Tooltip>
-          )}
         </div>
       </TableCell>
       )}
@@ -735,6 +1020,8 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
               </TooltipContent>
             </Tooltip>
           )}
+          {repeatCustomer && <RepeatCustomerBadge info={repeatCustomer} />}
+          {!repeatCustomer && (lead as any).manual_entry && <ManualLeadBadge />}
           {(lead.resubmission_count || 0) > 0 && (
             <Tooltip delayDuration={100}>
               <TooltipTrigger asChild>
@@ -751,6 +1038,88 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
             <Badge className="text-[10px] px-1.5 py-0.5 bg-orange-500 text-white border-0 flex items-center gap-0.5 flex-shrink-0">
               <Flame className="h-3 w-3" />x{lead.application_count > 9 ? '9+' : `${lead.application_count}`}
             </Badge>
+          )}
+          {(lead.claim_count || 0) >= 1 && (() => {
+            const n = lead.claim_count || 0;
+            // 1 = first touch (neutral slate), 2 = amber "worked once already",
+            // 3+ = red "cold — been round the block". Tooltip shows last claim date.
+            const tone = n === 1
+              ? 'bg-slate-200 text-slate-700 border-slate-300'
+              : n === 2
+                ? 'bg-amber-100 text-amber-800 border-amber-300'
+                : 'bg-red-100 text-red-800 border-red-300';
+            const label = n === 1 ? '1st touch' : n === 2 ? '2nd attempt' : `${n}th attempt`;
+            return (
+              <Tooltip delayDuration={100}>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0.5 border flex items-center gap-0.5 flex-shrink-0 ${tone}`}>
+                    {label}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  Claimed from recontact pool {n} time{n === 1 ? '' : 's'}
+                  {lead.last_claimed_at ? ` — last: ${format(new Date(lead.last_claimed_at), 'dd/MM HH:mm')}` : ''}
+                </TooltipContent>
+              </Tooltip>
+            );
+          })()}
+          {recontactMode && lead.last_claimed_at && (Date.now() - new Date(lead.last_claimed_at).getTime()) < 3 * 24 * 3600 * 1000 && (
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <Badge className="text-[10px] px-1.5 py-0.5 bg-emerald-500 text-white border-0 flex items-center gap-0.5 flex-shrink-0 uppercase tracking-wide font-bold">
+                  Newly claimed
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                Claimed from recontact pool {format(new Date(lead.last_claimed_at), 'dd/MM HH:mm')} — badge lasts 3 days
+              </TooltipContent>
+            </Tooltip>
+          )}
+          {readOnly && (
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant="outline"
+                  className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-800 border-amber-300 flex items-center gap-0.5 flex-shrink-0"
+                >
+                  VIEW ONLY
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs max-w-[240px]">
+                Another team's lead. You can view it but not make changes.
+              </TooltipContent>
+            </Tooltip>
+          )}
+          {currentAdminId
+            && Array.isArray(lead.hidden_from_agent_ids)
+            && lead.hidden_from_agent_ids.includes(currentAdminId)
+            && lead.assigned_to
+            && lead.assigned_to !== currentAdminId && (
+              <Tooltip delayDuration={100}>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 border-slate-300 flex items-center gap-0.5 flex-shrink-0"
+                  >
+                    OLD LEAD · NEW OWNER
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs max-w-[240px]">
+                  You previously worked this lead. It's now owned by another agent — warm-transfer any inbound calls.
+                </TooltipContent>
+              </Tooltip>
+          )}
+          {struggleAlert && (
+            <Tooltip delayDuration={100}>
+              <TooltipTrigger asChild>
+                <Badge className="text-[10px] px-1.5 py-0.5 bg-red-600 text-white border-0 flex items-center gap-0.5 flex-shrink-0 cursor-help animate-pulse">
+                  🚨
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs max-w-[260px]">
+                Checkout struggle: {struggleAlert.signal_type.replace(/_/g, ' ')} — {formatDistanceToNow(new Date(struggleAlert.created_at), { addSuffix: true })}
+              </TooltipContent>
+            </Tooltip>
           )}
           {displayName ? (
             <span className="font-medium text-sm truncate max-w-[100px]" title={displayName}>{displayName}</span>
@@ -804,7 +1173,7 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <PhoneCopyText phone={lead.phone} />
+              <PhoneCopyText phone={lead.phone} leadId={lead.id} />
             )}
             <div className="flex items-center">
               <Tooltip delayDuration={100}>
@@ -894,21 +1263,92 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
       </TableCell>
       )}
 
-      {/* Last Activity */}
+      {/* Agent activity — human touches only (calls, notes, status changes) */}
       {!isLeadGenView && (
       <TableCell>
-        <span className="text-xs text-muted-foreground">
-          {formatDistanceToNow(new Date(lead.last_activity_date), { addSuffix: true })}
+        {isReserved ? (() => {
+          const mm = Math.floor(Math.max(0, reservedRemainingSec) / 60);
+          const ss = Math.max(0, reservedRemainingSec) % 60;
+          const label = `${mm}:${ss.toString().padStart(2, '0')}`;
+          const warn = reservedRemainingSec <= 30;
+          return (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-semibold tabular-nums",
+                warn
+                  ? "border-amber-300 bg-amber-50 text-amber-800"
+                  : "border-emerald-300 bg-emerald-50 text-emerald-800"
+              )}
+              title="Reserved to you from the Open Lead Pool"
+            >
+              <Clock className="h-3 w-3" />
+              {warn ? `Releasing soon · ${label}` : `Reserved · ${label}`}
+            </span>
+          );
+        })() : (
+          <div className="flex flex-col leading-tight">
+            {agentTouchAt ? (
+              <span
+                className="text-xs text-foreground"
+                title={`Agent last touched this lead ${format(new Date(agentTouchAt), 'MMM d, yyyy HH:mm')}${agentTouchLabel ? ` — ${agentTouchLabel}` : ''}`}
+              >
+                {formatDistanceToNow(new Date(agentTouchAt), { addSuffix: true })}
+                {agentTouchLabel && (
+                  <span className="ml-1 text-[10px] text-muted-foreground">· {agentTouchLabel}</span>
+                )}
+              </span>
+            ) : (
+              <span
+                className="text-xs text-muted-foreground italic"
+                title="No agent has called, noted, or changed the status of this lead yet"
+              >
+                No agent activity
+              </span>
+            )}
+            {lead.last_activity_date && (!agentTouchAt || new Date(lead.last_activity_date).getTime() > new Date(agentTouchAt).getTime() + 60_000) && (
+              <span
+                className="text-[10px] text-muted-foreground/70"
+                title={`System/automated write at ${format(new Date(lead.last_activity_date), 'MMM d, yyyy HH:mm')} (not agent activity)`}
+              >
+                sys {formatDistanceToNow(new Date(lead.last_activity_date), { addSuffix: true })}
+              </span>
+            )}
+          </div>
+        )}
+      </TableCell>
+      )}
+
+
+      {/* Lead Date — original arrival time in UK time (never assignment/resubmission time) */}
+      {!isLeadGenView && (
+      <TableCell>
+        <span className="text-xs text-muted-foreground" title="UK time">
+          {formatLeadDateUK(lead.created_at)}
         </span>
       </TableCell>
       )}
 
-      {/* Lead Date (Created) */}
+      {/* Date Added — when the lead was reclaimed from the recontact pool */}
+      {recontactMode && !isLeadGenView && (
+      <TableCell>
+        <span className="text-xs text-muted-foreground" title="UK time">
+          {lead.last_claimed_at ? formatLeadDateUK(lead.last_claimed_at) : '—'}
+        </span>
+      </TableCell>
+      )}
+
+      {/* Customer activity — last time the CUSTOMER themselves did something
+          (asked for another quote, filled step 2, logged into the portal). */}
       {!isLeadGenView && (
       <TableCell>
-        <span className="text-xs text-muted-foreground">
-          {format(new Date(lead.created_at), 'MMM d, yyyy HH:mm')}
-        </span>
+        <CustomerActivityCell activity={customerActivity} />
+      </TableCell>
+      )}
+
+      {/* Time to contact — lead arrival → agent's first action (target 120s) */}
+      {!isLeadGenView && (
+      <TableCell>
+        <TimeToContactCell response={responseTime} />
       </TableCell>
       )}
     </TableRow>
@@ -931,13 +1371,20 @@ export const LeadTableRow = memo<LeadTableRowProps>(({
     prevProps.isExpanded === nextProps.isExpanded &&
     prevProps.hideAssignedColumn === nextProps.hideAssignedColumn &&
     prevProps.canAssignLeads === nextProps.canAssignLeads &&
+    prevProps.canOverrideAssignmentLock === nextProps.canOverrideAssignmentLock &&
     prevProps.salesUsers.length === nextProps.salesUsers.length &&
+    (prevProps.assignableSalesUsers?.length ?? -1) === (nextProps.assignableSalesUsers?.length ?? -1) &&
     prevProps.isPaidLocked === nextProps.isPaidLocked &&
     prevProps.showSourceColumn === nextProps.showSourceColumn &&
     prevProps.hasPendingAccessRequest === nextProps.hasPendingAccessRequest &&
     prevProps.hasApprovedAccess === nextProps.hasApprovedAccess &&
     prevProps.isLeadGenView === nextProps.isLeadGenView &&
-    prevProps.reminderTime === nextProps.reminderTime
+    prevProps.reminderTime === nextProps.reminderTime &&
+    prevProps.isReserved === nextProps.isReserved &&
+    prevProps.reservedRemainingSec === nextProps.reservedRemainingSec &&
+    prevProps.customerActivity?.lastAt === nextProps.customerActivity?.lastAt &&
+    prevProps.responseTime?.seconds === nextProps.responseTime?.seconds &&
+    prevProps.repeatCustomer?.policyCount === nextProps.repeatCustomer?.policyCount
   );
 });
 

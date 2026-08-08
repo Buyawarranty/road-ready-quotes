@@ -1,4 +1,4 @@
-// Panda Protect Permissions System - Role Templates
+// BuyAWarranty Permissions System - Role Templates
 // Pre-built policies for common roles
 
 import { PermissionPolicy, TabPermission, ColumnMask, ActionPermissions, SecuritySettings } from './types';

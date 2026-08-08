@@ -1,4 +1,4 @@
-// Panda Protect Permissions System - Types
+// BuyAWarranty Permissions System - Types
 // UK English throughout
 
 export type MaskLevel = 'none' | 'partial' | 'full';
@@ -63,9 +63,10 @@ export interface PermissionPolicy {
 // Tab definitions for the admin panel
 export const ADMIN_TAB_DEFINITIONS = [
   { id: 'new-leads', key: 'new_leads', label: 'New Leads', description: 'Manage sales pipeline and lead assignments', category: 'Sales' },
+  { id: 'callrail-trackers', key: 'callrail_trackers', label: 'CallRail Tracker Assignments', description: 'Assign CallRail tracking numbers to agents (management, sales manager, super admin only)', category: 'Sales' },
   { id: 'get-quote', key: 'get_quote', label: 'Quotes & Orders', description: 'Generate quotes and process manual orders', category: 'Sales' },
   { id: 'customers', key: 'customers', label: 'Customers', description: 'Manage customer accounts and policies', category: 'Sales' },
-  { id: 'plans', key: 'plans', label: 'Standard Plans', description: 'Manage Basic, Gold, and Platinum plans', category: 'Products' },
+  { id: 'plans', key: 'plans', label: 'Terms & Conditions', description: 'Upload Terms & Conditions and Platinum Plan PDFs (super admin by default)', category: 'Products' },
   { id: 'bulk-pricing', key: 'bulk_pricing', label: 'Bulk Pricing', description: 'Update pricing using CSV files', category: 'Products' },
   { id: 'special-plans', key: 'special_plans', label: 'Special Vehicle Plans', description: 'Manage EV, PHEV, and Motorbike plans', category: 'Products' },
   { id: 'discount-codes', key: 'discount_codes', label: 'Discount Codes', description: 'Manage discount codes and promotions', category: 'Marketing' },
@@ -73,14 +74,15 @@ export const ADMIN_TAB_DEFINITIONS = [
   { id: 'claims', key: 'claims', label: 'Claims', description: 'Manage customer claim submissions', category: 'Support' },
   { id: 'contact', key: 'contact', label: 'Contact Submissions', description: 'Manage customer contact form submissions', category: 'Support' },
   { id: 'abandoned-carts', key: 'abandoned_carts', label: 'Abandoned Carts', description: 'Track and follow up with incomplete purchases', category: 'Sales' },
-  { id: 'pending-w2000', key: 'pending_w2000', label: 'Pending Register', description: 'Scheduled warranty submissions to register', category: 'Operations' },
+  
   { id: 'emails', key: 'emails', label: 'Email Hub', description: 'Unified email management', category: 'Marketing' },
   { id: 'analytics', key: 'analytics', label: 'Analytics', description: 'View reports and analytics', category: 'Reports' },
   { id: 'user-permissions', key: 'user_permissions', label: 'User Permissions', description: 'Manage admin user access and permissions', category: 'Settings' },
   { id: 'document-mapping', key: 'document_mapping', label: 'Document Mapping', description: 'Manage plan to document mappings', category: 'Settings' },
-  { id: 'blog-writing', key: 'blog_writing', label: 'Blog Writing', description: 'Create and manage blog content with AI tools', category: 'Content' },
+  { id: 'blogs-data', key: 'blog_writing', label: 'Blogs Data', description: 'Blog analytics, editor and SEO tools', category: 'Content' },
   { id: 'landing-pages', key: 'landing_pages', label: 'Landing Pages', description: 'Create SEO-optimised landing pages', category: 'Content' },
   { id: 'sales-scoreboard', key: 'sales_scoreboard', label: 'Sales Scoreboard', description: 'View sales performance, rankings and competitions', category: 'Sales' },
+  { id: 'sales-agent-targets', key: 'sales_agent_targets', label: 'Sales Agent Monthly Targets', description: 'Set monthly revenue targets that show on each agent\'s own scoreboard', category: 'Sales' },
   { id: 'timesheets', key: 'timesheets', label: 'Timesheets', description: 'Track work hours, deals and commissions', category: 'HR' },
   { id: 'testing', key: 'testing', label: 'Testing', description: 'Test APIs and create test data', category: 'Development' },
   { id: 'account', key: 'account', label: 'Account Settings', description: 'Manage your account and password', category: 'Settings' },

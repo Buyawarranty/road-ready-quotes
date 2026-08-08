@@ -42,12 +42,12 @@ interface InvoiceDialogProps {
 }
 
 const COMPANY_INFO = {
-  name: 'Panda Protect',
-  website: 'www.pandaprotect.co.uk',
-  email: 'support@pandaprotect.co.uk',
-  phone: '0330 229 5045',
-  address: ['Panda Protect', 'Online', 'United Kingdom'],
-  logoUrl: 'https://pandaprotect.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png'
+  name: 'Buy A Warranty',
+  website: 'www.buyawarranty.co.uk',
+  email: 'support@buyawarranty.co.uk',
+  phone: '0330 229 5040',
+  address: ['Buy A Warranty', 'Online', 'United Kingdom'],
+  logoUrl: 'https://buyawarranty.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png'
 };
 
 const formatCurrency = (amount: number): string => {
@@ -124,7 +124,7 @@ const generateInvoiceHTML = (customer: Customer): string => {
     <body>
       <div class="header">
         <div class="logo-section">
-          <img src="${COMPANY_INFO.logoUrl}" alt="Panda Protect" />
+          <img src="${COMPANY_INFO.logoUrl}" alt="Buy A Warranty" />
         </div>
         <div class="company-details">
           <h3>${COMPANY_INFO.name}</h3>
@@ -303,7 +303,7 @@ export const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
         body: {
           recipientEmail: emailAddress.trim(),
           invoices: invoiceData,
-          subject: `Invoice${selectedCustomers.length > 1 ? 's' : ''} from Panda Protect - ${formatUKDate(new Date())}`
+          subject: `Invoice${selectedCustomers.length > 1 ? 's' : ''} from Buy A Warranty - ${formatUKDate(new Date())}`
         }
       });
 

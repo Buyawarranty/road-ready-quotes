@@ -1,4 +1,4 @@
-// Panda Protect Permissions System - Main Export
+// BuyAWarranty Permissions System - Main Export
 
 export * from './types';
 export * from './templates';

@@ -2363,6 +2363,75 @@ export type Database = {
           },
         ]
       }
+      claim_reminders: {
+        Row: {
+          assigned_to: string | null
+          claim_id: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          due_at: string
+          id: string
+          is_muted: boolean
+          lead_time_minutes: number
+          notes: string | null
+          reminder_kind: string
+          snoozed_until: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          claim_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_at: string
+          id?: string
+          is_muted?: boolean
+          lead_time_minutes?: number
+          notes?: string | null
+          reminder_kind?: string
+          snoozed_until?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          claim_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_at?: string
+          id?: string
+          is_muted?: boolean
+          lead_time_minutes?: number
+          notes?: string | null
+          reminder_kind?: string
+          snoozed_until?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_reminders_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claim_reminders_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       claim_settlements: {
         Row: {
           approved_amount: number | null
@@ -2972,6 +3041,110 @@ export type Database = {
           },
         ]
       }
+      concession_allowances: {
+        Row: {
+          admin_user_id: string
+          allow_1mo: number
+          allow_3mo: number
+          allow_6mo: number
+          created_at: string
+          id: string
+          updated_at: string
+          year_month: string
+        }
+        Insert: {
+          admin_user_id: string
+          allow_1mo?: number
+          allow_3mo?: number
+          allow_6mo?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          year_month: string
+        }
+        Update: {
+          admin_user_id?: string
+          allow_1mo?: number
+          allow_3mo?: number
+          allow_6mo?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          year_month?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concession_allowances_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concession_auth_requests: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decided_by_name: string | null
+          decision_note: string | null
+          id: string
+          reason: string
+          request_type: string
+          seen_by_requester: boolean
+          status: string
+          updated_at: string
+          year_month: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decided_by_name?: string | null
+          decision_note?: string | null
+          id?: string
+          reason: string
+          request_type: string
+          seen_by_requester?: boolean
+          status?: string
+          updated_at?: string
+          year_month: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decided_by_name?: string | null
+          decision_note?: string | null
+          id?: string
+          reason?: string
+          request_type?: string
+          seen_by_requester?: boolean
+          status?: string
+          updated_at?: string
+          year_month?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concession_auth_requests_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concession_auth_requests_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_submissions: {
         Row: {
           assigned_to: string | null
@@ -3231,6 +3404,112 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "customer_notifications_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_part_payment_plans: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          next_due_date: string | null
+          notes: string | null
+          reminder_dismissed_until: string | null
+          reminder_enabled: boolean
+          reminder_note: string | null
+          status: string
+          total_due: number
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          next_due_date?: string | null
+          notes?: string | null
+          reminder_dismissed_until?: string | null
+          reminder_enabled?: boolean
+          reminder_note?: string | null
+          status?: string
+          total_due?: number
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          next_due_date?: string | null
+          notes?: string | null
+          reminder_dismissed_until?: string | null
+          reminder_enabled?: boolean
+          reminder_note?: string | null
+          status?: string
+          total_due?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_part_payment_plans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_part_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string
+          id: string
+          notes: string | null
+          paid_on: string
+          payment_method: string
+          proof_url: string | null
+          recorded_by: string | null
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          notes?: string | null
+          paid_on?: string
+          payment_method?: string
+          proof_url?: string | null
+          recorded_by?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          notes?: string | null
+          paid_on?: string
+          payment_method?: string
+          proof_url?: string | null
+          recorded_by?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_part_payments_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
@@ -5501,6 +5780,7 @@ export type Database = {
           payment_type: string | null
           reason: string
           registration_plate: string | null
+          request_type: string
           requested_by_name: string | null
           requested_by_user_id: string
           requested_price: number | null
@@ -5523,6 +5803,7 @@ export type Database = {
           payment_type?: string | null
           reason: string
           registration_plate?: string | null
+          request_type?: string
           requested_by_name?: string | null
           requested_by_user_id?: string
           requested_price?: number | null
@@ -5545,6 +5826,7 @@ export type Database = {
           payment_type?: string | null
           reason?: string
           registration_plate?: string | null
+          request_type?: string
           requested_by_name?: string | null
           requested_by_user_id?: string
           requested_price?: number | null
@@ -6740,11 +7022,14 @@ export type Database = {
           assigned_by: string | null
           assigned_to_id: string | null
           assignment_type: string
+          changed_by_user_id: string | null
           created_at: string | null
           eligible_agents_count: number | null
           id: string
           lead_id: string
+          previous_assigned_to_id: string | null
           reason: string | null
+          was_worked: boolean | null
         }
         Insert: {
           agent_assigned_today_at_time?: number | null
@@ -6753,11 +7038,14 @@ export type Database = {
           assigned_by?: string | null
           assigned_to_id?: string | null
           assignment_type: string
+          changed_by_user_id?: string | null
           created_at?: string | null
           eligible_agents_count?: number | null
           id?: string
           lead_id: string
+          previous_assigned_to_id?: string | null
           reason?: string | null
+          was_worked?: boolean | null
         }
         Update: {
           agent_assigned_today_at_time?: number | null
@@ -6766,11 +7054,14 @@ export type Database = {
           assigned_by?: string | null
           assigned_to_id?: string | null
           assignment_type?: string
+          changed_by_user_id?: string | null
           created_at?: string | null
           eligible_agents_count?: number | null
           id?: string
           lead_id?: string
+          previous_assigned_to_id?: string | null
           reason?: string | null
+          was_worked?: boolean | null
         }
         Relationships: [
           {
@@ -7884,6 +8175,51 @@ export type Database = {
         }
         Relationships: []
       }
+      offline_campaigns: {
+        Row: {
+          campaign_type: string
+          created_at: string
+          end_date: string | null
+          id: string
+          install_date: string
+          is_active: boolean
+          location: string | null
+          monthly_cost: number | null
+          name: string
+          notes: string | null
+          postcode_prefixes: string[]
+          updated_at: string
+        }
+        Insert: {
+          campaign_type?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          install_date: string
+          is_active?: boolean
+          location?: string | null
+          monthly_cost?: number | null
+          name: string
+          notes?: string | null
+          postcode_prefixes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          campaign_type?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          install_date?: string
+          is_active?: boolean
+          location?: string | null
+          monthly_cost?: number | null
+          name?: string
+          notes?: string | null
+          postcode_prefixes?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       open_pool_restrictions: {
         Row: {
           active_hours_remaining: number | null
@@ -8177,8 +8513,10 @@ export type Database = {
           fbclid: string | null
           gclid: string | null
           id: string
+          is_bing_ads: boolean | null
           is_facebook_ads: boolean | null
           is_google_ads: boolean | null
+          msclkid: string | null
           page_path: string
           page_title: string | null
           referrer: string | null
@@ -8198,8 +8536,10 @@ export type Database = {
           fbclid?: string | null
           gclid?: string | null
           id?: string
+          is_bing_ads?: boolean | null
           is_facebook_ads?: boolean | null
           is_google_ads?: boolean | null
+          msclkid?: string | null
           page_path: string
           page_title?: string | null
           referrer?: string | null
@@ -8219,8 +8559,10 @@ export type Database = {
           fbclid?: string | null
           gclid?: string | null
           id?: string
+          is_bing_ads?: boolean | null
           is_facebook_ads?: boolean | null
           is_google_ads?: boolean | null
+          msclkid?: string | null
           page_path?: string
           page_title?: string | null
           referrer?: string | null
@@ -8690,45 +9032,218 @@ export type Database = {
           },
         ]
       }
+      price_override_audit: {
+        Row: {
+          admin_user_id: string | null
+          agent_email: string | null
+          agent_name: string | null
+          below_floor: boolean
+          claim_limit: number | null
+          context: string
+          created_at: string
+          customer_email: string | null
+          customer_name: string | null
+          diff_amount: number | null
+          diff_pct: number | null
+          discount_auth_request_id: string | null
+          entered_monthly: number | null
+          entered_total: number | null
+          excess_amount: number | null
+          floor_amount: number | null
+          id: string
+          labour_rate: number | null
+          matrix_monthly: number | null
+          matrix_total: number | null
+          notes: string | null
+          payment_type: string | null
+          price_match_company: string | null
+          price_match_mode: boolean
+          price_match_price: number | null
+          user_id: string | null
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_reg: string | null
+        }
+        Insert: {
+          admin_user_id?: string | null
+          agent_email?: string | null
+          agent_name?: string | null
+          below_floor?: boolean
+          claim_limit?: number | null
+          context?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          diff_amount?: number | null
+          diff_pct?: number | null
+          discount_auth_request_id?: string | null
+          entered_monthly?: number | null
+          entered_total?: number | null
+          excess_amount?: number | null
+          floor_amount?: number | null
+          id?: string
+          labour_rate?: number | null
+          matrix_monthly?: number | null
+          matrix_total?: number | null
+          notes?: string | null
+          payment_type?: string | null
+          price_match_company?: string | null
+          price_match_mode?: boolean
+          price_match_price?: number | null
+          user_id?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+        }
+        Update: {
+          admin_user_id?: string | null
+          agent_email?: string | null
+          agent_name?: string | null
+          below_floor?: boolean
+          claim_limit?: number | null
+          context?: string
+          created_at?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          diff_amount?: number | null
+          diff_pct?: number | null
+          discount_auth_request_id?: string | null
+          entered_monthly?: number | null
+          entered_total?: number | null
+          excess_amount?: number | null
+          floor_amount?: number | null
+          id?: string
+          labour_rate?: number | null
+          matrix_monthly?: number | null
+          matrix_total?: number | null
+          notes?: string | null
+          payment_type?: string | null
+          price_match_company?: string | null
+          price_match_mode?: boolean
+          price_match_price?: number | null
+          user_id?: string | null
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_reg?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_override_audit_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pricing_matrix_versions: {
         Row: {
           admin_matrix: Json
+          claim_limit_factors: Json | null
+          config_checksum: string | null
           created_at: string
           created_by: string | null
+          effective_date: string | null
           id: string
           label: string
+          labour_rate_factors: Json | null
+          model_version: number
           notes: string | null
+          price_caps: Json | null
+          price_floors: Json | null
           published_at: string | null
           published_by: string | null
+          reference_factors: Json | null
+          reference_vehicle: Json | null
+          rounding_rule: string | null
           status: string
           step3_discount_pct: number
           updated_at: string
+          vehicle_factor_model: Json | null
         }
         Insert: {
           admin_matrix: Json
+          claim_limit_factors?: Json | null
+          config_checksum?: string | null
           created_at?: string
           created_by?: string | null
+          effective_date?: string | null
           id?: string
           label?: string
+          labour_rate_factors?: Json | null
+          model_version?: number
           notes?: string | null
+          price_caps?: Json | null
+          price_floors?: Json | null
           published_at?: string | null
           published_by?: string | null
+          reference_factors?: Json | null
+          reference_vehicle?: Json | null
+          rounding_rule?: string | null
           status?: string
           step3_discount_pct?: number
           updated_at?: string
+          vehicle_factor_model?: Json | null
         }
         Update: {
           admin_matrix?: Json
+          claim_limit_factors?: Json | null
+          config_checksum?: string | null
           created_at?: string
           created_by?: string | null
+          effective_date?: string | null
           id?: string
           label?: string
+          labour_rate_factors?: Json | null
+          model_version?: number
           notes?: string | null
+          price_caps?: Json | null
+          price_floors?: Json | null
           published_at?: string | null
           published_by?: string | null
+          reference_factors?: Json | null
+          reference_vehicle?: Json | null
+          rounding_rule?: string | null
           status?: string
           step3_discount_pct?: number
           updated_at?: string
+          vehicle_factor_model?: Json | null
+        }
+        Relationships: []
+      }
+      pricing_vehicle_rules: {
+        Row: {
+          covered: boolean
+          created_at: string
+          id: string
+          min_one_year: number | null
+          sort_order: number
+          treatment: string
+          updated_at: string
+          updated_by: string | null
+          vehicle: string
+        }
+        Insert: {
+          covered?: boolean
+          created_at?: string
+          id?: string
+          min_one_year?: number | null
+          sort_order?: number
+          treatment?: string
+          updated_at?: string
+          updated_by?: string | null
+          vehicle: string
+        }
+        Update: {
+          covered?: boolean
+          created_at?: string
+          id?: string
+          min_one_year?: number | null
+          sort_order?: number
+          treatment?: string
+          updated_at?: string
+          updated_by?: string | null
+          vehicle?: string
         }
         Relationships: []
       }
@@ -8843,27 +9358,36 @@ export type Database = {
         Row: {
           admin_user_id: string
           blocked: boolean
+          can_reassign: boolean
+          can_self_assign: boolean
           created_at: string
           daily_cap: number | null
           note: string | null
+          skip_batch_check: boolean
           total_cap: number | null
           updated_at: string
         }
         Insert: {
           admin_user_id: string
           blocked?: boolean
+          can_reassign?: boolean
+          can_self_assign?: boolean
           created_at?: string
           daily_cap?: number | null
           note?: string | null
+          skip_batch_check?: boolean
           total_cap?: number | null
           updated_at?: string
         }
         Update: {
           admin_user_id?: string
           blocked?: boolean
+          can_reassign?: boolean
+          can_self_assign?: boolean
           created_at?: string
           daily_cap?: number | null
           note?: string | null
+          skip_batch_check?: boolean
           total_cap?: number | null
           updated_at?: string
         }
@@ -9652,39 +10176,48 @@ export type Database = {
           admin_user_id: string
           created_at: string
           end_date: string
+          full_month_days: number | null
           id: string
           manual_actual_attempts: number | null
           manual_leads_count: number | null
+          revenue_target: number
           start_date: string
           target_amount: number
           target_period: string
           updated_at: string
+          working_days: number | null
         }
         Insert: {
           achieved_amount?: number
           admin_user_id: string
           created_at?: string
           end_date: string
+          full_month_days?: number | null
           id?: string
           manual_actual_attempts?: number | null
           manual_leads_count?: number | null
+          revenue_target?: number
           start_date: string
           target_amount: number
           target_period: string
           updated_at?: string
+          working_days?: number | null
         }
         Update: {
           achieved_amount?: number
           admin_user_id?: string
           created_at?: string
           end_date?: string
+          full_month_days?: number | null
           id?: string
           manual_actual_attempts?: number | null
           manual_leads_count?: number | null
+          revenue_target?: number
           start_date?: string
           target_amount?: number
           target_period?: string
           updated_at?: string
+          working_days?: number | null
         }
         Relationships: [
           {
@@ -11757,34 +12290,20 @@ export type Database = {
       }
       auto_expire_discount_codes: { Args: never; Returns: number }
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
-      bulk_reassign_leads_to_agent:
-        | {
-            Args: {
-              p_date_from?: string
-              p_date_to?: string
-              p_from_agent: string
-              p_include_customers?: boolean
-              p_lead_ids?: string[]
-              p_limit?: number
-              p_override_cap?: boolean
-              p_to_agent: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              p_date_from?: string
-              p_date_to?: string
-              p_from_agent: string
-              p_include_customers?: boolean
-              p_lead_ids?: string[]
-              p_limit?: number
-              p_override_cap?: boolean
-              p_skip_worked?: boolean
-              p_to_agent: string
-            }
-            Returns: Json
-          }
+      bulk_reassign_leads_to_agent: {
+        Args: {
+          p_date_from?: string
+          p_date_to?: string
+          p_from_agent: string
+          p_include_customers?: boolean
+          p_lead_ids?: string[]
+          p_limit?: number
+          p_override_cap?: boolean
+          p_skip_worked?: boolean
+          p_to_agent: string
+        }
+        Returns: Json
+      }
       calculate_lead_priority_score: {
         Args: {
           p_cart_value: number
@@ -11797,6 +12316,7 @@ export type Database = {
         Args: { payment_type: string; start_date: string }
         Returns: string
       }
+      can_manage_claim_reminders: { Args: never; Returns: boolean }
       can_manage_lead_routing: { Args: { _user_id: string }; Returns: boolean }
       can_view_staff_hub_doc: {
         Args: { _allowed_roles: string[]; _allowed_team_ids: string[] }
@@ -11840,6 +12360,7 @@ export type Database = {
         }
         Returns: Json
       }
+      current_admin_user_id: { Args: never; Returns: string }
       current_dealer_id: { Args: never; Returns: string }
       current_policy_pdf_urls: {
         Args: never
@@ -11948,9 +12469,25 @@ export type Database = {
           vehicle_registration: string
         }[]
       }
+      get_clean_leads_per_agent: {
+        Args: { _agent_ids: string[]; _end: string; _start: string }
+        Returns: {
+          assigned_to: string
+          clean_converted: number
+          clean_leads: number
+        }[]
+      }
       get_column_mask: {
         Args: { p_column: string; p_user_id: string }
         Returns: string
+      }
+      get_concession_usage: {
+        Args: { p_admin_user_id: string; p_year_month: string }
+        Returns: {
+          used_1mo: number
+          used_3mo: number
+          used_6mo: number
+        }[]
       }
       get_document_version_for_date: {
         Args: { _on_date: string; _plan_type: string }
@@ -11983,6 +12520,26 @@ export type Database = {
         | { Args: { p_exclude_agent_id?: string }; Returns: string }
       get_next_sales_user: { Args: never; Returns: string }
       get_next_warranty_serial: { Args: never; Returns: number }
+      get_team_scoreboard: {
+        Args: { p_end: string; p_start: string }
+        Returns: {
+          admin_user_id: string
+          agent_name: string
+          full_month_days: number
+          full_month_target: number
+          is_self: boolean
+          pct_achieved: number
+          revenue: number
+          revenue_target: number
+          sales_count: number
+          team_id: string
+          team_name: string
+          team_pct: number
+          team_revenue: number
+          team_sort: number
+          working_days: number
+        }[]
+      }
       get_user_permissions: { Args: { p_user_id: string }; Returns: Json }
       has_admin_permission: {
         Args: { permission_key: string; user_id: string }
@@ -12015,7 +12572,9 @@ export type Database = {
       is_management: { Args: { _user_id: string }; Returns: boolean }
       is_phone_logs_manager: { Args: { _user_id: string }; Returns: boolean }
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
-      is_staff: { Args: never; Returns: boolean }
+      is_staff:
+        | { Args: never; Returns: boolean }
+        | { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
       lead_has_been_worked: { Args: { p_lead_id: string }; Returns: boolean }
       lead_has_human_activity: { Args: { p_lead_id: string }; Returns: boolean }
@@ -12064,6 +12623,16 @@ export type Database = {
       missed_call_rotate_offers: { Args: never; Returns: number }
       normalize_phone_uk: { Args: { p: string }; Returns: string }
       normalize_uk_phone: { Args: { raw_phone: string }; Returns: string }
+      offline_campaign_monthly_stats: {
+        Args: { _from: string; _prefixes: string[]; _to: string }
+        Returns: {
+          month: string
+          organic_revenue: number
+          organic_sales: number
+          revenue: number
+          sales: number
+        }[]
+      }
       open_pool_bulk_assign_to_agent: {
         Args: {
           _count: number
@@ -12323,6 +12892,40 @@ export type Database = {
       pick_agent_for_distribution:
         | { Args: { p_team_id: string }; Returns: string }
         | { Args: { p_source?: string; p_team_id: string }; Returns: string }
+      pick_agent_for_distribution_legacy: {
+        Args: { p_source?: string; p_team_id: string }
+        Returns: string
+      }
+      postcode_area_monthly_claims: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          area: string
+          claim_cost: number
+          claims: number
+          month: string
+        }[]
+      }
+      postcode_area_monthly_sales: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          area: string
+          month: string
+          organic_revenue: number
+          organic_sales: number
+          revenue: number
+          sales: number
+        }[]
+      }
+      postcode_district_stats: {
+        Args: { _area: string; _from: string; _to: string }
+        Returns: {
+          claim_cost: number
+          claims: number
+          district: string
+          revenue: number
+          sales: number
+        }[]
+      }
       preview_agent_offboarding_backup: {
         Args: {
           _also_deactivate?: boolean

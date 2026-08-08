@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format, subMonths, addMonths, subDays } from 'date-fns';
-import { Calendar, TrendingUp, Coins, RefreshCw, FileDown, Mail, ChevronLeft, ChevronRight, ClipboardCheck } from 'lucide-react';
+import { Calendar, TrendingUp, Coins, RefreshCw, FileDown, Mail, ChevronLeft, ChevronRight, ClipboardCheck, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTimesheets } from '@/hooks/useTimesheets';
@@ -15,10 +15,17 @@ import { AdditionalBonuses } from './AdditionalBonuses';
 import { CommissionClaimsSection } from './CommissionClaimsSection';
 import { StaffTimesheetSelector } from './StaffTimesheetSelector';
 import { UnwindsSection } from './UnwindsSection';
+
+import { WeekendShiftsCard } from './WeekendShiftsCard';
+
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export function TimesheetsTab() {
+interface TimesheetsTabProps {
+  onNavigateToTab?: (tab: string) => void;
+}
+
+export function TimesheetsTab({ onNavigateToTab }: TimesheetsTabProps = {}) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [activeView, setActiveView] = useState<'my-timesheet' | 'approvals'>('my-timesheet');
   const { session } = useAuth();
@@ -26,8 +33,17 @@ export function TimesheetsTab() {
   const [sendingEmail, setSendingEmail] = useState(false);
   const [viewingUserId, setViewingUserId] = useState<string | null>(null);
 
-  const effectiveViewingUserId = viewingUserId && viewingUserId !== session?.user?.id ? viewingUserId : undefined;
+  // Only accounts/management may ever look at someone else's calendar. Sales agents
+  // (and any other role) are hard-locked to their own timesheet.
+  const canViewOthers =
+    userRole === 'accounts_manager' ||
+    userRole === 'accounts_payroll' ||
+    userRole === 'super_admin' ||
+    userRole === 'admin';
+  const effectiveViewingUserId =
+    canViewOthers && viewingUserId && viewingUserId !== session?.user?.id ? viewingUserId : undefined;
   const isViewingOther = !!effectiveViewingUserId;
+
 
   const {
     entries,
@@ -56,7 +72,16 @@ export function TimesheetsTab() {
     checkRole();
   }, [session?.user?.id]);
 
-  const isAccountsRole = userRole === 'accounts_manager' || userRole === 'accounts_payroll' || userRole === 'super_admin' || userRole === 'admin';
+  const isAccountsRole = canViewOthers;
+
+  // If the role resolves to a non-manager, clear any stale "viewing other" selection
+  useEffect(() => {
+    if (userRole && !canViewOthers && viewingUserId) {
+      setViewingUserId(null);
+      setActiveView('my-timesheet');
+    }
+  }, [userRole, canViewOthers, viewingUserId]);
+
   const generateTimesheetHTML = () => {
     const monthLabel = format(currentMonth, 'MMMM yyyy');
     const userEmail = session?.user?.email || 'Unknown';
@@ -124,7 +149,7 @@ export function TimesheetsTab() {
       });
 
       if (error) throw error;
-      toast.success('Timesheet emailed to accounts@pandaprotect.co.uk');
+      toast.success('Timesheet emailed to accounts@buyawarranty.co.uk');
     } catch (err) {
       console.error('Error sending timesheet email:', err);
       toast.error('Failed to send timesheet email');
@@ -178,6 +203,12 @@ export function TimesheetsTab() {
             <Button variant="default" size="sm" onClick={() => setActiveView('approvals')} className="gap-2 bg-orange-600 hover:bg-orange-700">
               <ClipboardCheck className="h-4 w-4" />
               Approve Timesheets
+            </Button>
+          )}
+          {onNavigateToTab && (
+            <Button variant="outline" size="sm" onClick={() => onNavigateToTab('sales-scoreboard')} className="gap-2 bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100">
+              <Trophy className="h-4 w-4" />
+              Scoreboard
             </Button>
           )}
           <Button variant="outline" size="sm" onClick={handleDownloadPDF} className="gap-2">
@@ -238,10 +269,14 @@ export function TimesheetsTab() {
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <TimesheetStats stats={stats} />
+      {/* Stats are now merged into the calendar card below */}
+
+
+      {/* Weekend Shifts — agents pick 2 × Saturday AM + optional Sundays per month */}
+      <WeekendShiftsCard isManagement={isAccountsRole} />
 
       {/* Main Content - Mobile Tabs / Desktop Grid */}
+
       <div className="block lg:hidden">
         <Tabs defaultValue="calendar" className="w-full">
           <TabsList className="w-full grid grid-cols-3">
@@ -259,10 +294,10 @@ export function TimesheetsTab() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="calendar" className="mt-4">
-            <TimesheetCalendar entries={entries} currentMonth={currentMonth} onMonthChange={setCurrentMonth} onEntryUpdate={upsertEntry} onEntryDelete={deleteEntry} />
+            <TimesheetCalendar entries={entries} currentMonth={currentMonth} onMonthChange={setCurrentMonth} onEntryUpdate={upsertEntry} onEntryDelete={deleteEntry} stats={stats} />
           </TabsContent>
           <TabsContent value="deals" className="mt-4">
-            <DealsSection deals={deals} onAddDeal={addDeal} onDeleteDeal={deleteDeal} currentMonth={currentMonth} />
+            <DealsSection deals={deals} onAddDeal={addDeal} onDeleteDeal={deleteDeal} currentMonth={currentMonth} viewingUserId={effectiveViewingUserId || session?.user?.id || undefined} />
           </TabsContent>
           <TabsContent value="commissions" className="mt-4">
             <CommissionClaimsSection currentMonth={currentMonth} />
@@ -285,10 +320,10 @@ export function TimesheetsTab() {
       {/* Desktop Layout */}
       <div className="hidden lg:grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <TimesheetCalendar entries={entries} currentMonth={currentMonth} onMonthChange={setCurrentMonth} onEntryUpdate={upsertEntry} onEntryDelete={deleteEntry} />
+          <TimesheetCalendar entries={entries} currentMonth={currentMonth} onMonthChange={setCurrentMonth} onEntryUpdate={upsertEntry} onEntryDelete={deleteEntry} stats={stats} />
         </div>
         <div className="space-y-6">
-          <DealsSection deals={deals} onAddDeal={addDeal} onDeleteDeal={deleteDeal} currentMonth={currentMonth} />
+          <DealsSection deals={deals} onAddDeal={addDeal} onDeleteDeal={deleteDeal} currentMonth={currentMonth} viewingUserId={effectiveViewingUserId || session?.user?.id || undefined} />
           <CommissionClaimsSection currentMonth={currentMonth} />
           <UnwindsSection currentMonth={currentMonth} viewingUserId={effectiveViewingUserId || session?.user?.id || undefined} />
           <CommissionsSection commissions={commissions} />

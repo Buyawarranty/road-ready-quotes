@@ -85,9 +85,9 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
   const [robotsDirective, setRobotsDirective] = useState('index, follow');
   
   // Local Business Schema
-  const [localBusinessName, setLocalBusinessName] = useState('Panda Protect');
-  const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295045');
-  const [localBusinessEmail, setLocalBusinessEmail] = useState('support@pandaprotect.co.uk');
+  const [localBusinessName, setLocalBusinessName] = useState('Buy A Warranty');
+  const [localBusinessPhone, setLocalBusinessPhone] = useState('+443302295040');
+  const [localBusinessEmail, setLocalBusinessEmail] = useState('support@buyawarranty.co.uk');
 
   useEffect(() => {
     if (pageId) {
@@ -159,9 +159,9 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
       setIncludeBreadcrumbSchema(data.include_breadcrumb_schema);
       setIsIndexable(data.is_indexable);
       setRobotsDirective(data.robots_directive || 'index, follow');
-      setLocalBusinessName(data.local_business_name || 'Panda Protect');
-      setLocalBusinessPhone(data.local_business_phone || '+443302295045');
-      setLocalBusinessEmail(data.local_business_email || 'support@pandaprotect.co.uk');
+      setLocalBusinessName(data.local_business_name || 'Buy A Warranty');
+      setLocalBusinessPhone(data.local_business_phone || '+443302295040');
+      setLocalBusinessEmail(data.local_business_email || 'support@buyawarranty.co.uk');
       
       // Parse hero content
       const heroContent = (data.hero_content as any) || {};
@@ -575,7 +575,7 @@ export const LandingPageEditor = ({ pageId, onSave }: LandingPageEditorProps) =>
                     {metaTitle || 'Page Title Here'}
                   </p>
                   <p className="text-green-700 text-sm">
-                    pandaprotect.co.uk/{slug}/
+                    buyawarranty.co.uk/{slug}/
                   </p>
                   <p className="text-gray-600 text-sm line-clamp-2">
                     {metaDescription || 'Meta description will appear here...'}

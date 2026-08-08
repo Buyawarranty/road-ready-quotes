@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
 import { FollowUpEmailDialog } from './FollowUpEmailDialog';
+import { AbandonedCartExportPanel, buildAbandonedCartCsv, downloadAbandonedCartCsv } from './AbandonedCartExportPanel';
 import { 
   ShoppingCart, 
   Mail, 
@@ -21,7 +22,8 @@ import {
   Clock,
   AlertCircle,
   MapPin,
-  Shield
+  Shield,
+  Download
 } from 'lucide-react';
 
 interface AbandonedCart {
@@ -44,6 +46,8 @@ interface AbandonedCart {
   updated_at: string;
   last_contacted_at: string | null;
   contacted_by: string | null;
+  is_converted?: boolean | null;
+  converted_at?: string | null;
   cart_metadata?: {
     total_price?: number;
     voluntary_excess?: number;
@@ -83,8 +87,13 @@ interface CartEmail {
   price_amount: number | null;
 }
 
+const normalizeEmail = (email: string | null | undefined) => (email || '').trim().toLowerCase();
+const normalizeReg = (reg: string | null | undefined) => (reg || '').replace(/\s+/g, '').toUpperCase();
+
 export const AbandonedCartsTab: React.FC = () => {
   const [carts, setCarts] = useState<AbandonedCart[]>([]);
+  const [rawCartCount, setRawCartCount] = useState(0);
+  const [removedConvertedCount, setRemovedConvertedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCart, setSelectedCart] = useState<AbandonedCart | null>(null);
@@ -92,6 +101,8 @@ export const AbandonedCartsTab: React.FC = () => {
   const [savingNotes, setSavingNotes] = useState(false);
   const [newCartsCount, setNewCartsCount] = useState(0);
   const [cartEmails, setCartEmails] = useState<Record<string, CartEmail[]>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 50;
 
   useEffect(() => {
     fetchAbandonedCarts();
@@ -112,10 +123,18 @@ export const AbandonedCartsTab: React.FC = () => {
           setNewCartsCount(prev => prev + 1);
           toast.info('New abandoned cart detected!', {
             description: `Customer: ${(payload.new as AbandonedCart).email}`,
-            duration: 5000
+            duration: 5000,
+            action: {
+              label: 'Refresh',
+              onClick: () => {
+                fetchAbandonedCarts();
+                fetchAllCartEmails();
+              },
+            },
           });
-          fetchAbandonedCarts();
-          fetchAllCartEmails();
+          // Don't auto-refetch on every insert — it re-renders the whole page
+          // (including the export panel) and makes dropdowns/buttons unresponsive
+          // under live traffic. The user can click Refresh when ready.
         }
       )
       .subscribe();
@@ -127,14 +146,69 @@ export const AbandonedCartsTab: React.FC = () => {
 
   const fetchAbandonedCarts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('abandoned_carts')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Paginate to bypass Supabase 1000-row default limit
+      const pageSize = 1000;
+      let offset = 0;
+      const all: AbandonedCart[] = [];
+      while (true) {
+        const { data, error } = await supabase
+          .from('abandoned_carts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(offset, offset + pageSize - 1);
+        if (error) throw error;
+        const rows = (data || []) as AbandonedCart[];
+        all.push(...rows);
+        if (rows.length < pageSize) break;
+        offset += pageSize;
+        if (offset > 50000) break; // hard safety cap
+      }
 
-      if (error) throw error;
+      setRawCartCount(all.length);
 
-      setCarts((data || []) as AbandonedCart[]);
+      // Only exclude carts that match a real active warranty customer
+      // (status = 'Active'). This matches what's visible in the Customers
+      // dashboard and prevents the count being inflated by quote payments,
+      // unconverted records, or cancelled/refunded customers.
+      const purchasedEmails = new Set<string>();
+      const purchasedRegs = new Set<string>();
+      let cOffset = 0;
+      while (true) {
+        const { data: cust, error: cErr } = await supabase
+          .from('customers')
+          .select('email,registration_plate')
+          .eq('is_deleted', false)
+          .ilike('status', 'active')
+          .range(cOffset, cOffset + pageSize - 1);
+        if (cErr) break;
+        const crows = (cust || []) as { email: string | null; registration_plate: string | null }[];
+        crows.forEach(c => {
+          const email = normalizeEmail(c.email);
+          const reg = normalizeReg(c.registration_plate);
+          if (email) purchasedEmails.add(email);
+          if (reg) purchasedRegs.add(reg);
+        });
+        if (crows.length < pageSize) break;
+        cOffset += pageSize;
+        if (cOffset > 100000) break;
+      }
+
+      const remarketable = all.filter(c => {
+        const e = normalizeEmail(c.email);
+        const reg = normalizeReg(c.vehicle_reg);
+        const cartStatus = (c.contact_status || '').toLowerCase();
+        return (
+          e &&
+          !c.is_converted &&
+          !c.converted_at &&
+          cartStatus !== 'converted' &&
+          !purchasedEmails.has(e) &&
+          (!reg || !purchasedRegs.has(reg))
+        );
+      });
+
+      setRemovedConvertedCount(all.length - remarketable.length);
+      setCarts(remarketable);
       setNewCartsCount(0);
     } catch (error) {
       console.error('Error fetching abandoned carts:', error);
@@ -146,10 +220,14 @@ export const AbandonedCartsTab: React.FC = () => {
 
   const fetchAllCartEmails = async () => {
     try {
+      // Limit to the last 90 days to avoid pulling 15k+ rows and freezing the page.
+      const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from('abandoned_cart_emails')
         .select('*')
-        .order('sent_at', { ascending: false });
+        .gte('sent_at', since)
+        .order('sent_at', { ascending: false })
+        .limit(5000);
 
       if (error) throw error;
 
@@ -219,16 +297,30 @@ export const AbandonedCartsTab: React.FC = () => {
     }
   };
 
-  const filteredCarts = carts.filter(cart => {
+  const filteredCarts = useMemo(() => {
     const searchLower = searchTerm.toLowerCase();
-    return (
+    if (!searchLower) return carts;
+    return carts.filter(cart =>
       cart.email?.toLowerCase().includes(searchLower) ||
       cart.full_name?.toLowerCase().includes(searchLower) ||
       cart.vehicle_reg?.toLowerCase().includes(searchLower) ||
       cart.vehicle_make?.toLowerCase().includes(searchLower) ||
       cart.vehicle_model?.toLowerCase().includes(searchLower)
     );
-  });
+  }, [carts, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredCarts.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedCarts = useMemo(
+    () => filteredCarts.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [filteredCarts, safePage]
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -273,12 +365,13 @@ export const AbandonedCartsTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with Stats */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Abandoned Carts</h1>
           <p className="text-gray-600 mt-2">
-            Track and follow up with customers who didn't complete their purchase
+            Customers who started but did not finish checkout. Anyone who has since purchased is automatically removed.
+            Used for remarketing exports to Google and Facebook. Live outreach is handled in the Leads section.
           </p>
         </div>
         {newCartsCount > 0 && (
@@ -289,13 +382,14 @@ export const AbandonedCartsTab: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Carts</p>
-                <p className="text-2xl font-bold">{carts.length}</p>
+                <p className="text-sm text-gray-600">Total captured carts</p>
+                <p className="text-2xl font-bold">{rawCartCount.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 mt-1">full database count, not capped at 1000</p>
               </div>
               <ShoppingCart className="w-8 h-8 text-gray-400" />
             </div>
@@ -306,12 +400,11 @@ export const AbandonedCartsTab: React.FC = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Not Contacted</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {carts.filter(c => c.contact_status === 'not_contacted').length}
-                </p>
+                <p className="text-sm text-gray-600">Remarketable carts</p>
+                <p className="text-2xl font-bold text-blue-600">{carts.length.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 mt-1">ready for Google / Facebook export</p>
               </div>
-              <AlertCircle className="w-8 h-8 text-red-400" />
+              <Clock className="w-8 h-8 text-blue-400" />
             </div>
           </CardContent>
         </Card>
@@ -320,30 +413,19 @@ export const AbandonedCartsTab: React.FC = () => {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Contacted</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {carts.filter(c => c.contact_status === 'contacted').length}
-                </p>
+                <p className="text-sm text-gray-600">Removed purchasers</p>
+                <p className="text-2xl font-bold text-purple-600">{removedConvertedCount.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 mt-1">matched to a paid customer (excludes cancelled & refunded)</p>
               </div>
-              <Clock className="w-8 h-8 text-yellow-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Converted</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {carts.filter(c => c.contact_status === 'converted').length}
-                </p>
-              </div>
-              <CheckCircle className="w-8 h-8 text-green-400" />
+              <Calendar className="w-8 h-8 text-purple-400" />
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Remarketing Export Panel */}
+      <AbandonedCartExportPanel candidateCarts={carts as any} />
+
 
       {/* Search */}
       <div className="flex items-center gap-2">
@@ -359,11 +441,33 @@ export const AbandonedCartsTab: React.FC = () => {
         <Button onClick={fetchAbandonedCarts} variant="outline">
           Refresh
         </Button>
+        <Button
+          onClick={() => downloadAbandonedCartCsv(buildAbandonedCartCsv(carts as any, 'google'), `abandoned-carts-google-all-${new Date().toISOString().slice(0, 10)}.csv`)}
+          disabled={carts.length === 0}
+          className="gap-2"
+        >
+          <Download className="w-4 h-4" />
+          Full Google CSV
+        </Button>
+        <Button
+          onClick={() => downloadAbandonedCartCsv(buildAbandonedCartCsv(carts as any, 'facebook'), `abandoned-carts-facebook-all-${new Date().toISOString().slice(0, 10)}.csv`)}
+          disabled={carts.length === 0}
+          variant="outline"
+          className="gap-2"
+        >
+          <Download className="w-4 h-4" />
+          Full Facebook CSV
+        </Button>
       </div>
 
       {/* Carts List */}
+      <div className="text-sm text-gray-600">
+        Showing {filteredCarts.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}
+        –{Math.min(safePage * PAGE_SIZE, filteredCarts.length)} of {filteredCarts.length.toLocaleString()}
+        {searchTerm && ` (filtered from ${carts.length.toLocaleString()})`}
+      </div>
       <div className="grid gap-4">
-        {filteredCarts.map((cart) => (
+        {pagedCarts.map((cart) => (
           <Card key={cart.id} className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
@@ -633,6 +737,31 @@ export const AbandonedCartsTab: React.FC = () => {
           </Card>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage <= 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-gray-600">
+            Page {safePage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={safePage >= totalPages}
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
       {/* Contact Notes Modal */}
       {selectedCart && (

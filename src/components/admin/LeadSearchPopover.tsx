@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Search, UserPlus, Phone, Mail, Car, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAllAdminUsersMap } from '@/hooks/useAllAdminUsersMap';
 import { cn } from '@/lib/utils';
 
 export interface LeadData {
@@ -20,6 +21,8 @@ export interface LeadData {
   vehicle_year: string | null;
   mileage: string | null;
   plan_interest: string | null;
+  assigned_to?: string | null;
+  owner_name?: string | null;
 }
 
 interface LeadSearchPopoverProps {
@@ -35,6 +38,14 @@ export const LeadSearchPopover: React.FC<LeadSearchPopoverProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [leads, setLeads] = useState<LeadData[]>([]);
   const [loading, setLoading] = useState(false);
+  const adminMap = useAllAdminUsersMap();
+
+  const ownerNameFor = React.useCallback((assignedTo?: string | null) => {
+    if (!assignedTo) return null;
+    const u = adminMap.get(assignedTo);
+    if (!u) return null;
+    return [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || u.email;
+  }, [adminMap]);
 
   // Fetch leads when popover opens or search term changes
   useEffect(() => {
@@ -45,24 +56,103 @@ export const LeadSearchPopover: React.FC<LeadSearchPopoverProps> = ({
       try {
         let query = supabase
           .from('sales_leads')
-          .select('id, first_name, last_name, email, phone, vehicle_reg, vehicle_make, vehicle_model, vehicle_year, mileage, plan_interest')
+          .select('id, first_name, last_name, email, phone, vehicle_reg, vehicle_make, vehicle_model, vehicle_year, mileage, plan_interest, assigned_to')
           .eq('is_paid', false)
           .order('created_at', { ascending: false })
           .limit(50);
 
+        let cartQuery = supabase
+          .from('abandoned_carts')
+          .select('id, full_name, email, phone, vehicle_reg, vehicle_make, vehicle_model, vehicle_year, mileage, plan_name, updated_at, is_converted')
+          .eq('is_converted', false)
+          .order('updated_at', { ascending: false })
+          .limit(50);
+
         if (searchTerm) {
           const term = `%${searchTerm}%`;
-          query = query.or(`email.ilike.${term},first_name.ilike.${term},last_name.ilike.${term},phone.ilike.${term},vehicle_reg.ilike.${term}`);
+          // Reg plate variants: strip spaces, and add a spaced variant (e.g. "AP69YUX" ↔ "AP69 YUX")
+          const compact = searchTerm.replace(/\s+/g, '').toUpperCase();
+          const regVariants = new Set<string>([searchTerm]);
+          if (compact.length >= 5) {
+            regVariants.add(compact);
+            regVariants.add(`${compact.slice(0, -3)} ${compact.slice(-3)}`);
+          }
+          const regClauses = Array.from(regVariants).map(v => `vehicle_reg.ilike.%${v}%`).join(',');
+          query = query.or(`email.ilike.${term},first_name.ilike.${term},last_name.ilike.${term},phone.ilike.${term},${regClauses}`);
+          cartQuery = cartQuery.or(`email.ilike.${term},full_name.ilike.${term},phone.ilike.${term},${regClauses}`);
         }
 
-        const { data, error } = await query;
+        const [slRes, cartRes] = await Promise.all([query, cartQuery]);
 
-        if (error) {
-          console.error('Error fetching leads:', error);
-          return;
+        if (slRes.error) console.error('Error fetching leads:', slRes.error);
+        if (cartRes.error) console.error('Error fetching abandoned carts:', cartRes.error);
+
+        const merged: LeadData[] = [...((slRes.data as any[]) || [])];
+        const seen = new Set(
+          merged.map((l) => `${(l.email || '').toLowerCase()}|${(l.vehicle_reg || '').replace(/\s/g, '').toUpperCase()}`)
+        );
+
+        // Owner lookup so abandoned-cart rows can still show whose lead it is
+        const tail9 = (p?: string | null) => (p || '').replace(/\D/g, '').slice(-9);
+        const ownerByEmail = new Map<string, string>();
+        const ownerByPhone = new Map<string, string>();
+        for (const l of (slRes.data as any[]) || []) {
+          if (!l.assigned_to) continue;
+          if (l.email) ownerByEmail.set(String(l.email).toLowerCase(), l.assigned_to);
+          const t = tail9(l.phone);
+          if (t.length === 9) ownerByPhone.set(t, l.assigned_to);
         }
 
-        setLeads(data || []);
+        const cartRows = (cartRes.data as any[]) || [];
+        // Resolve owners for cart emails/phones not covered by the lead result above
+        const missingEmails = Array.from(
+          new Set(
+            cartRows
+              .map((c) => (c.email || '').toLowerCase())
+              .filter((e) => e && !ownerByEmail.has(e))
+          )
+        ).slice(0, 50);
+        if (missingEmails.length > 0) {
+          const { data: ownerRows } = await supabase
+            .from('sales_leads')
+            .select('email, phone, assigned_to')
+            .in('email', missingEmails)
+            .not('assigned_to', 'is', null)
+            .order('created_at', { ascending: false })
+            .limit(200);
+          for (const l of (ownerRows as any[]) || []) {
+            const e = String(l.email || '').toLowerCase();
+            if (e && !ownerByEmail.has(e)) ownerByEmail.set(e, l.assigned_to);
+            const t = tail9(l.phone);
+            if (t.length === 9 && !ownerByPhone.has(t)) ownerByPhone.set(t, l.assigned_to);
+          }
+        }
+
+        for (const c of cartRows) {
+          const key = `${(c.email || '').toLowerCase()}|${(c.vehicle_reg || '').replace(/\s/g, '').toUpperCase()}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+          const parts = (c.full_name || '').trim().split(/\s+/);
+          merged.push({
+            id: `cart:${c.id}`,
+            first_name: parts[0] || null,
+            last_name: parts.slice(1).join(' ') || null,
+            email: c.email,
+            phone: c.phone,
+            vehicle_reg: c.vehicle_reg,
+            vehicle_make: c.vehicle_make,
+            vehicle_model: c.vehicle_model,
+            vehicle_year: c.vehicle_year,
+            mileage: c.mileage != null ? String(c.mileage) : null,
+            plan_interest: c.plan_name || null,
+            assigned_to:
+              ownerByEmail.get((c.email || '').toLowerCase()) ||
+              ownerByPhone.get(tail9(c.phone)) ||
+              null,
+          });
+        }
+
+        setLeads(merged);
       } catch (err) {
         console.error('Error fetching leads:', err);
       } finally {
@@ -75,7 +165,7 @@ export const LeadSearchPopover: React.FC<LeadSearchPopoverProps> = ({
   }, [open, searchTerm]);
 
   const handleSelectLead = (lead: LeadData) => {
-    onSelectLead(lead);
+    onSelectLead({ ...lead, owner_name: ownerNameFor(lead.assigned_to) });
     setOpen(false);
     setSearchTerm('');
   };
@@ -128,9 +218,23 @@ export const LeadSearchPopover: React.FC<LeadSearchPopoverProps> = ({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-sm truncate">
-                        {getDisplayName(lead)}
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span className="font-medium text-sm truncate">
+                          {getDisplayName(lead)}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'shrink-0 text-[10px] font-semibold',
+                            ownerNameFor(lead.assigned_to)
+                              ? 'border-primary/30 bg-primary/10 text-primary'
+                              : 'border-muted-foreground/30 text-muted-foreground'
+                          )}
+                        >
+                          {ownerNameFor(lead.assigned_to) || 'Unassigned'}
+                        </Badge>
                       </div>
+
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                         <Mail className="h-3 w-3 shrink-0" />
                         <span className="truncate">{lead.email}</span>

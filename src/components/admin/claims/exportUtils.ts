@@ -78,7 +78,7 @@ export const exportToPDF = async (data: any[], filename: string) => {
       </table>
       
       <div class="footer">
-        <p>Panda Protect - Claims Management System</p>
+        <p>Buy a Warranty - Claims Management System</p>
       </div>
       
       <script>

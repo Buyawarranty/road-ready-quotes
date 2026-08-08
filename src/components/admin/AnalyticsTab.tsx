@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchAllRows } from '@/utils/supabaseBatchFetch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,6 +9,13 @@ import { toast } from 'sonner';
 import { ApiConnectivityTest } from './ApiConnectivityTest';
 import { SalesAgeMileageAnalytics } from './SalesAgeMileageAnalytics';
 import { DateRangeFilter } from './DateRangeFilter';
+import { CostEfficiencyPanel } from './scoreboard/CostEfficiencyPanel';
+import { CoverOptionsMixPanel } from './analytics/CoverOptionsMixPanel';
+import { DailyRevenueTrendPanel } from './analytics/DailyRevenueTrendPanel';
+import { CustomerDemographicsPanel } from './analytics/CustomerDemographicsPanel';
+
+import { QuickMonthFilter } from './QuickMonthFilter';
+import { QuickWeekFilter } from './QuickWeekFilter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { DateRange } from 'react-day-picker';
@@ -16,6 +23,8 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Badge } from '@/components/ui/badge';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subWeeks, subMonths, subYears, isSameWeek, isSameMonth, isSameYear } from 'date-fns';
+import { getWarrantyDurationInMonths } from '@/lib/warrantyDurationUtils';
+import { cn } from '@/lib/utils';
 
 interface Customer {
   id: string;
@@ -32,8 +41,14 @@ interface Customer {
   vehicle_year: string | null;
   mileage: string | null;
   assigned_to: string | null;
+  sale_credit_admin_user_id: string | null;
+  payment_confirmed_by: string | null;
+  quote_sent_by: string | null;
+  payment_collected_by: string | null;
   updated_at: string | null;
   gclid: string | null;
+  acquisition_source: string | null;
+  payment_type: string | null;
 }
 
 interface AdminUser {
@@ -61,10 +76,122 @@ const isTestOrder = (name: string, email: string): boolean => {
   return TEST_NAMES.some(testName => lowerName.includes(testName));
 };
 
+
+/**
+ * Quick links + section headings for the Analytics dashboard, matching the
+ * "Jump to" pattern used on Lead Allocation so managers can hop straight to
+ * the block they need instead of scrolling the whole page.
+ */
+const ANALYTICS_QUICK_LINKS = [
+  { id: 'revenue-monthly', label: 'Revenue & AOV', className: 'bg-emerald-300/50 text-emerald-900 border-emerald-200/50 hover:bg-emerald-400/50' },
+  { id: 'revenue-daily', label: 'Daily revenue', className: 'bg-teal-300/50 text-teal-900 border-teal-200/50 hover:bg-teal-400/50' },
+  { id: 'month-projection', label: 'Month projection', className: 'bg-lime-300/50 text-lime-900 border-lime-200/50 hover:bg-lime-400/50' },
+  { id: 'duration-mix', label: 'Duration mix', className: 'bg-sky-300/50 text-sky-900 border-sky-200/50 hover:bg-sky-400/50' },
+  { id: 'per-year-value', label: 'Per-year value', className: 'bg-blue-300/50 text-blue-900 border-blue-200/50 hover:bg-blue-400/50' },
+  { id: 'aov-by-term', label: 'AOV by term', className: 'bg-indigo-300/50 text-indigo-900 border-indigo-200/50 hover:bg-indigo-400/50' },
+  { id: 'daily-breakdown', label: 'Per-day breakdown', className: 'bg-violet-300/50 text-violet-900 border-violet-200/50 hover:bg-violet-400/50' },
+  { id: 'cover-options', label: 'Cover options mix', className: 'bg-purple-300/50 text-purple-900 border-purple-200/50 hover:bg-purple-400/50' },
+  { id: 'demographics', label: 'Age & UK demographics', className: 'bg-fuchsia-300/50 text-fuchsia-900 border-fuchsia-200/50 hover:bg-fuchsia-400/50' },
+
+  { id: 'filters', label: 'Price analysis per day', className: 'bg-slate-300/50 text-slate-900 border-slate-200/50 hover:bg-slate-400/50' },
+  { id: 'key-metrics', label: 'Key metrics', className: 'bg-amber-200/50 text-amber-900 border-amber-100/50 hover:bg-amber-300/50' },
+  { id: 'sales-by-source', label: 'Sales by source', className: 'bg-orange-300/50 text-orange-900 border-orange-200/50 hover:bg-orange-400/50' },
+  { id: 'price-metrics', label: 'Price metrics', className: 'bg-yellow-300/50 text-yellow-900 border-yellow-200/50 hover:bg-yellow-400/50' },
+  { id: 'refunds-cancellations', label: 'Refunds & cancellations', className: 'bg-red-300/50 text-red-900 border-red-200/50 hover:bg-red-400/50' },
+  { id: 'signups-vehicles', label: 'Signups & vehicles', className: 'bg-cyan-300/50 text-cyan-900 border-cyan-200/50 hover:bg-cyan-400/50' },
+  { id: 'agent-performance', label: 'Agent performance', className: 'bg-rose-300/50 text-rose-900 border-rose-200/50 hover:bg-rose-400/50' },
+  { id: 'recent-activity', label: 'Recent activity', className: 'bg-stone-300/50 text-stone-900 border-stone-200/50 hover:bg-stone-400/50' },
+  { id: 'api-connectivity', label: 'API connectivity', className: 'bg-gray-300/50 text-gray-900 border-gray-200/50 hover:bg-gray-400/50' },
+];
+
+function AnalyticsQuickLinksBar() {
+  const handleClick = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.replaceState(null, '', `#${id}`);
+    }
+  };
+
+  const half = Math.ceil(ANALYTICS_QUICK_LINKS.length / 2);
+  const rows = [ANALYTICS_QUICK_LINKS.slice(0, half), ANALYTICS_QUICK_LINKS.slice(half)];
+
+  return (
+    <div className="sticky top-0 z-30 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-background/95 backdrop-blur border-b border-border">
+      <div className="flex flex-col gap-1.5">
+        {rows.map((row, idx) => (
+          <div key={idx} className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {idx === 0 && <span className="text-xs font-semibold text-foreground shrink-0">Jump to:</span>}
+            {row.map(link => (
+              <button
+                key={link.id}
+                type="button"
+                onClick={() => handleClick(link.id)}
+                className={cn(
+                  'shrink-0 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border hover:shadow-md transition-colors',
+                  link.className,
+                )}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsSectionHeading({
+  id,
+  title,
+  description,
+  accent = 'border-primary/60',
+  size = 'default',
+  controls,
+}: {
+  id: string;
+  title: string;
+  description?: string;
+  accent?: string;
+  size?: 'default' | 'lg';
+  controls?: React.ReactNode;
+}) {
+  return (
+    <div
+      id={id}
+      className={cn(
+        'scroll-mt-28 border-l-4 pl-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between',
+        accent
+      )}
+    >
+      <div>
+        <h2
+          className={cn(
+            'font-semibold text-foreground',
+            size === 'lg' ? 'text-2xl md:text-3xl font-bold tracking-tight' : 'text-lg'
+          )}
+        >
+          {title}
+        </h2>
+        {description && (
+          <p className={cn('text-muted-foreground', size === 'lg' ? 'text-sm' : 'text-xs')}>{description}</p>
+        )}
+      </div>
+      {controls && <div className="shrink-0">{controls}</div>}
+    </div>
+  );
+}
+
+
 export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   const isSalesLead = userRole === 'sales_lead';
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const hasLoadedOnceRef = useRef(false);
+  // Keeps the current section in view when filters change and panels resize.
+  const filtersSectionRef = useRef<HTMLDivElement>(null);
   // Default to "This Month"
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const now = new Date();
@@ -72,10 +199,11 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   });
   const [sourceFilter, setSourceFilter] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [perYearScope, setPerYearScope] = useState<string>('last12');
   const [comparisonPeriod, setComparisonPeriod] = useState<'today' | 'yesterday' | 'week' | 'last_week' | 'month' | 'last_month' | 'last_30' | 'year' | null>('month');
 
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const customerSelect = 'id, name, email, plan_type, signup_date, status, final_amount, warranty_reference_number, purchase_source, is_manual_entry, vehicle_fuel_type, vehicle_year, mileage, assigned_to, updated_at, gclid';
+  const customerSelect = 'id, name, email, plan_type, signup_date, status, final_amount, warranty_reference_number, purchase_source, is_manual_entry, vehicle_fuel_type, vehicle_year, mileage, assigned_to, sale_credit_admin_user_id, payment_confirmed_by, quote_sent_by, payment_collected_by, updated_at, gclid, acquisition_source, payment_type';
 
   // Refetch data whenever the component mounts or becomes visible
   useEffect(() => {
@@ -92,7 +220,8 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   }, []);
 
   const fetchAnalyticsData = async () => {
-    setLoading(true);
+    if (hasLoadedOnceRef.current) setRefreshing(true);
+    else setLoading(true);
 
     try {
       console.log('Fetching analytics data...');
@@ -162,9 +291,60 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
       console.error('Error fetching analytics data:', error);
       toast.error('Failed to load analytics data');
     } finally {
+      hasLoadedOnceRef.current = true;
       setLoading(false);
+      setRefreshing(false);
     }
   };
+
+  /**
+   * Applies a filter change without the page jumping: the filters block is
+   * pinned to its current viewport position after panels re-render.
+   */
+  const applyFilterChange = useCallback((change: () => void) => {
+    const el = filtersSectionRef.current;
+    const before = el?.getBoundingClientRect().top ?? null;
+    change();
+    if (before === null || !el) return;
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const after = el.getBoundingClientRect().top;
+        const delta = after - before;
+        if (Math.abs(delta) < 2) return;
+        let node: HTMLElement | null = el.parentElement;
+        while (node) {
+          const style = window.getComputedStyle(node);
+          if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight) {
+            node.scrollTop += delta;
+            return;
+          }
+          node = node.parentElement;
+        }
+        window.scrollBy({ top: delta });
+      })
+    );
+  }, []);
+
+  /**
+   * Compact per-section date controls (quick month stepper + full date range).
+   * They drive the same page-level period as the main filters block.
+   */
+  const setPeriod = useCallback((range: DateRange | undefined) => {
+    applyFilterChange(() => {
+      setDateRange(range);
+      setSelectedMonth(null);
+      setComparisonPeriod(null);
+    });
+  }, [applyFilterChange]);
+
+  const sectionFilters = (
+    <div className="flex flex-wrap items-center gap-2">
+      <QuickMonthFilter dateRange={dateRange} onDateRangeChange={setPeriod} />
+      <DateRangeFilter dateRange={dateRange} onDateRangeChange={setPeriod} />
+    </div>
+  );
+
+
 
   // Handle bar chart click - filter to selected month
   const handleBarClick = useCallback((data: any) => {
@@ -317,15 +497,16 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   }, [filteredCustomers]);
 
 
-  // Helper function to categorize customer by source - uses purchase_source and is_manual_entry
-  const getCustomerSource = (customer: Customer): 'website' | 'staff_purchase' | 'sales_team' | 'unknown' => {
-    const source = customer.purchase_source?.toLowerCase() || '';
-    const isManual = customer.is_manual_entry === true;
+  // Helper function to categorize customer by source.
+  // Rule (exhaustive — never returns 'unknown' so buckets always reconcile to total):
+  //   1. BAW-S- warranty prefix → staff purchase
+  //   2. is_manual_entry = true → sales team (admin/back-office entered)
+  //   3. otherwise → website (self-serve checkout via Stripe / Bumper / etc.)
+  const getCustomerSource = (customer: Customer): 'website' | 'staff_purchase' | 'sales_team' => {
     const warrantyNum = customer.warranty_reference_number || '';
     if (warrantyNum.startsWith('BAW-S-')) return 'staff_purchase';
-    if (isManual || source === 'quote_link' || source === 'external' || source === 'admin_external') return 'sales_team';
-    if (source === 'website' || source === 'stripe' || source === 'bumper' || source === 'bumper_portal' || source === 'google_ads' || source === 'facebook_ads' || source === '') return 'website';
-    return 'unknown';
+    if (customer.is_manual_entry === true) return 'sales_team';
+    return 'website';
   };
 
   // Sub-categorize website sales by ad channel — check both purchase_source AND click IDs
@@ -337,6 +518,17 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
     return 'pure';
   };
 
+  // Sub-categorize Sales Team (ADM) sales by the lead's original acquisition source.
+  // Sales team sales are admin-entered, so purchase_source is quote_link/external —
+  // attribution lives on acquisition_source (copied from the originating lead).
+  const getSalesTeamLeadSource = (customer: Customer): 'google' | 'facebook' | 'organic' => {
+    const acq = customer.acquisition_source?.toLowerCase() || '';
+    const hasGclid = !!(customer.gclid && String(customer.gclid).trim() !== '');
+    if (acq === 'google_ads' || hasGclid) return 'google';
+    if (acq === 'facebook_ads') return 'facebook';
+    return 'organic';
+  };
+
   // Calculate metrics with safe defaults - EXCLUDING cancelled/refunded from revenue
   const totalCustomers = filteredCustomers.length;
   const activeCustomers = filteredCustomers.filter(c => c.status === 'Active').length;
@@ -346,44 +538,27 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   const paidOrders = activeRevenueCustomers.filter(c => c.final_amount && Number(c.final_amount) > 0);
   const overallAOV = paidOrders.length > 0 ? Math.round(totalRevenue / paidOrders.length) : 0;
 
-  // Calculate AOV by source (using effectiveDateRange for both chart clicks and date picker)
+  // Calculate AOV by source — based on activeRevenueCustomers so it stays
+  // in sync with the top KPI cards (same date filter, same source filter,
+  // same cancelled/refunded exclusion). Sum of website + staffPurchase +
+  // salesTeam buckets equals the "Total Revenue" / "paid orders" cards.
   const sourceMetrics = useMemo(() => {
-    // Filter by effective date range (includes selected month from chart click)
-    const dateFilteredCustomers = customers.filter(customer => {
-      if (effectiveDateRange?.from) {
-        const signupDate = new Date(customer.signup_date);
-        const fromStart = new Date(effectiveDateRange.from);
-        fromStart.setHours(0, 0, 0, 0);
-        if (signupDate < fromStart) return false;
-        
-        if (effectiveDateRange.to) {
-          const toEnd = new Date(effectiveDateRange.to);
-          toEnd.setHours(23, 59, 59, 999);
-          if (signupDate > toEnd) return false;
-        }
-      }
-      return true;
-    });
+    const paid = activeRevenueCustomers.filter(c => c.final_amount && Number(c.final_amount) > 0);
 
-    // Exclude cancelled/refunded from revenue calculations
-    const websiteCustomers = dateFilteredCustomers.filter(c => 
-      getCustomerSource(c) === 'website' && 
-      c.final_amount && 
-      Number(c.final_amount) > 0 &&
-      !isRevenueLost(c.status)
-    );
-    const salesTeamCustomers = dateFilteredCustomers.filter(c => 
-      getCustomerSource(c) === 'sales_team' && 
-      c.final_amount && 
-      Number(c.final_amount) > 0 &&
-      !isRevenueLost(c.status)
-    );
+    const websiteCustomers = paid.filter(c => getCustomerSource(c) === 'website');
+    const staffPurchaseCustomers = paid.filter(c => getCustomerSource(c) === 'staff_purchase');
+    const salesTeamCustomers = paid.filter(c => getCustomerSource(c) === 'sales_team');
 
     // Website channel breakdown
     const googleCustomers = websiteCustomers.filter(c => getWebsiteChannel(c) === 'google');
     const facebookCustomers = websiteCustomers.filter(c => getWebsiteChannel(c) === 'facebook');
     const pureWebsiteCustomers = websiteCustomers.filter(c => getWebsiteChannel(c) === 'pure');
-    
+
+    // Sales Team lead-source breakdown
+    const salesGoogle = salesTeamCustomers.filter(c => getSalesTeamLeadSource(c) === 'google');
+    const salesFacebook = salesTeamCustomers.filter(c => getSalesTeamLeadSource(c) === 'facebook');
+    const salesOrganic = salesTeamCustomers.filter(c => getSalesTeamLeadSource(c) === 'organic');
+
     const calcStats = (custs: Customer[]) => {
       const revenue = custs.reduce((sum, c) => sum + (Number(c.final_amount) || 0), 0);
       return {
@@ -392,15 +567,20 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
         aov: custs.length > 0 ? Math.round(revenue / custs.length) : 0
       };
     };
-    
+
     return {
+      allSources: calcStats(paid),
       website: calcStats(websiteCustomers),
+      staffPurchase: calcStats(staffPurchaseCustomers),
       salesTeam: calcStats(salesTeamCustomers),
       google: calcStats(googleCustomers),
       facebook: calcStats(facebookCustomers),
       pureWebsite: calcStats(pureWebsiteCustomers),
+      salesGoogle: calcStats(salesGoogle),
+      salesFacebook: calcStats(salesFacebook),
+      salesOrganic: calcStats(salesOrganic),
     };
-  }, [customers, effectiveDateRange]);
+  }, [activeRevenueCustomers]);
 
   // Price metrics by source: lowest, highest, average — respects both date AND source filter
   const priceMetrics = useMemo(() => {
@@ -592,15 +772,308 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
     return months;
   }, [customers, selectedMonth, sourceFilter]);
 
+  // Duration mix per month (1yr / 2yr / 3yr) — percentages and avg revenue per year of cover
+  const durationByMonth = useMemo(() => {
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date();
+      date.setDate(1);
+      date.setMonth(date.getMonth() - i);
+      return {
+        month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        monthKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+        count1: 0, count2: 0, count3: 0,
+        rev1: 0, rev2: 0, rev3: 0,
+        pct1: 0, pct2: 0, pct3: 0,
+        avgPerYear1: 0, avgPerYear2: 0, avgPerYear3: 0,
+        aov1: 0, aov2: 0, aov3: 0,
+
+      };
+    }).reverse();
+
+    const sourceFilteredCustomers = customers.filter(customer => {
+      if (sourceFilter === 'all') return true;
+      const source = customer.purchase_source?.toLowerCase() || '';
+      const isManual = customer.is_manual_entry === true;
+      const warrantyNum = customer.warranty_reference_number || '';
+      if (sourceFilter === 'website') {
+        const isBawS = warrantyNum.startsWith('BAW-S-');
+        return !isBawS && !isManual && (source === 'website' || source === 'stripe' || source === 'bumper' || source === 'bumper_portal' || source === 'google_ads' || source === 'facebook_ads' || source === '');
+      } else if (sourceFilter === 'staff_purchase') {
+        return warrantyNum.startsWith('BAW-S-');
+      } else if (sourceFilter === 'sales_team') {
+        return isManual || source === 'quote_link' || source === 'external' || source === 'admin_external';
+      }
+      return true;
+    });
+
+    sourceFilteredCustomers.forEach(customer => {
+      if (isRevenueLost(customer.status)) return;
+      if (!customer.signup_date) return;
+      const signupDate = new Date(customer.signup_date);
+      const monthKey = `${signupDate.getFullYear()}-${String(signupDate.getMonth() + 1).padStart(2, '0')}`;
+      const monthData = months.find(m => m.monthKey === monthKey);
+      if (!monthData) return;
+
+      const durationMonths = getWarrantyDurationInMonths(customer.payment_type || '');
+      const years = Math.max(1, Math.round(durationMonths / 12));
+      const amount = Number(customer.final_amount) || 0;
+
+      if (years === 1) { monthData.count1 += 1; monthData.rev1 += amount; }
+      else if (years === 2) { monthData.count2 += 1; monthData.rev2 += amount; }
+      else if (years >= 3) { monthData.count3 += 1; monthData.rev3 += amount; }
+    });
+
+    months.forEach(m => {
+      const total = m.count1 + m.count2 + m.count3;
+      if (total > 0) {
+        m.pct1 = Math.round((m.count1 / total) * 100);
+        m.pct2 = Math.round((m.count2 / total) * 100);
+        m.pct3 = 100 - m.pct1 - m.pct2;
+      }
+      m.avgPerYear1 = m.count1 > 0 ? Math.round(m.rev1 / m.count1) : 0;
+      m.avgPerYear2 = m.count2 > 0 ? Math.round(m.rev2 / m.count2 / 2) : 0;
+      m.avgPerYear3 = m.count3 > 0 ? Math.round(m.rev3 / m.count3 / 3) : 0;
+      m.aov1 = m.count1 > 0 ? Math.round(m.rev1 / m.count1) : 0;
+      m.aov2 = m.count2 > 0 ? Math.round(m.rev2 / m.count2) : 0;
+      m.aov3 = m.count3 > 0 ? Math.round(m.rev3 / m.count3) : 0;
+
+    });
+
+    return months;
+  }, [customers, sourceFilter]);
+
+  // Per-year equivalent summary — scope is either the trailing 12 months or a single month
+  const buildPerYearSummary = useCallback((rows: typeof durationByMonth) => {
+    const agg = [
+      { key: '1yr', label: '1 Year', years: 1, count: 0, revenue: 0, colour: '#f97316' },
+      { key: '2yr', label: '2 Year', years: 2, count: 0, revenue: 0, colour: '#3b82f6' },
+      { key: '3yr', label: '3 Year', years: 3, count: 0, revenue: 0, colour: '#10b981' },
+    ];
+    rows.forEach(m => {
+      agg[0].count += m.count1; agg[0].revenue += m.rev1;
+      agg[1].count += m.count2; agg[1].revenue += m.rev2;
+      agg[2].count += m.count3; agg[2].revenue += m.rev3;
+    });
+    const totalCount = agg.reduce((s, a) => s + a.count, 0);
+    return agg.map(a => ({
+      ...a,
+      avgOrder: a.count > 0 ? Math.round(a.revenue / a.count) : 0,
+      avgPerYear: a.count > 0 ? Math.round(a.revenue / a.count / a.years) : 0,
+      annualisedRevenue: Math.round(a.revenue / a.years),
+      share: totalCount > 0 ? Math.round((a.count / totalCount) * 100) : 0,
+    }));
+  }, []);
+
+  const perYearMonthOptions = useMemo(
+    () => durationByMonth.map(m => ({ monthKey: m.monthKey, label: m.month })).reverse(),
+    [durationByMonth]
+  );
+
+  const perYearScopeRows = useMemo(() => {
+    if (perYearScope === 'last12') return durationByMonth;
+    return durationByMonth.filter(m => m.monthKey === perYearScope);
+  }, [durationByMonth, perYearScope]);
+
+  const perYearPrevRows = useMemo(() => {
+    if (perYearScope === 'last12') return [];
+    const idx = durationByMonth.findIndex(m => m.monthKey === perYearScope);
+    return idx > 0 ? [durationByMonth[idx - 1]] : [];
+  }, [durationByMonth, perYearScope]);
+
+  const perYearSummary = useMemo(() => buildPerYearSummary(perYearScopeRows), [buildPerYearSummary, perYearScopeRows]);
+  const perYearPrevSummary = useMemo(
+    () => (perYearPrevRows.length > 0 ? buildPerYearSummary(perYearPrevRows) : null),
+    [buildPerYearSummary, perYearPrevRows]
+  );
+
+  const perYearScopeLabel = useMemo(() => {
+    if (perYearScope === 'last12') return 'last 12 months';
+    return durationByMonth.find(m => m.monthKey === perYearScope)?.month ?? perYearScope;
+  }, [durationByMonth, perYearScope]);
+
+  const perYearPrevLabel = useMemo(
+    () => (perYearPrevRows.length > 0 ? perYearPrevRows[0].month : null),
+    [perYearPrevRows]
+  );
+
+
+
+
+
+
+  // Current-month pace projection: extrapolate end-of-month revenue/sales from days elapsed
+  const monthProjection = useMemo(() => {
+    const now = new Date();
+    const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const current = monthlyRevenue.find(m => m.monthKey === currentKey);
+    if (!current) return null;
+
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const dayOfMonth = now.getDate();
+    const daysRemaining = Math.max(0, daysInMonth - dayOfMonth);
+    // Treat partial day as full day so a single sale on day 1 doesn't divide by zero
+    const elapsed = Math.max(1, dayOfMonth);
+    const paceMultiplier = daysInMonth / elapsed;
+
+    const projectedRevenue = Math.round(current.revenue * paceMultiplier);
+    const projectedSales = Math.round(current.salesCount * paceMultiplier);
+    const projectedAov = projectedSales > 0 ? Math.round(projectedRevenue / projectedSales) : current.aov;
+    const dailyRunRate = Math.round(current.revenue / elapsed);
+    const dailySalesRate = Math.round((current.salesCount / elapsed) * 10) / 10;
+    const remainingRevenue = Math.max(0, projectedRevenue - current.revenue);
+    const remainingSales = Math.max(0, projectedSales - current.salesCount);
+
+    // Prior month for comparison
+    const prior = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const priorKey = `${prior.getFullYear()}-${String(prior.getMonth() + 1).padStart(2, '0')}`;
+    const priorMonth = monthlyRevenue.find(m => m.monthKey === priorKey);
+    const revenueDeltaPct = priorMonth && priorMonth.revenue > 0
+      ? Math.round(((projectedRevenue - priorMonth.revenue) / priorMonth.revenue) * 100)
+      : null;
+
+    // Year-over-year: same calendar month, prior year. Computed directly from customers
+    // because monthlyRevenue only covers the last 12 months.
+    const yoyYear = now.getFullYear() - 1;
+    const yoyMonth = now.getMonth();
+    let yoyRevenue = 0;
+    let yoySales = 0;
+    customers.forEach(c => {
+      if (sourceFilter !== 'all') {
+        const source = c.purchase_source?.toLowerCase() || '';
+        const isManual = c.is_manual_entry === true;
+        const warrantyNum = c.warranty_reference_number || '';
+        if (sourceFilter === 'website') {
+          const isBawS = warrantyNum.startsWith('BAW-S-');
+          if (!(!isBawS && !isManual && (source === 'website' || source === 'stripe' || source === 'bumper' || source === 'bumper_portal' || source === 'google_ads' || source === 'facebook_ads' || source === ''))) return;
+        } else if (sourceFilter === 'staff_purchase') {
+          if (!warrantyNum.startsWith('BAW-S-')) return;
+        } else if (sourceFilter === 'sales_team') {
+          if (!(isManual || source === 'quote_link' || source === 'external' || source === 'admin_external')) return;
+        }
+      }
+      if (isRevenueLost(c.status)) return;
+      if (!c.final_amount || !c.signup_date) return;
+      const d = new Date(c.signup_date);
+      if (d.getFullYear() === yoyYear && d.getMonth() === yoyMonth) {
+        yoyRevenue += Number(c.final_amount) || 0;
+        yoySales += 1;
+      }
+    });
+    const hasYoY = yoySales > 0;
+    const yoyRevenueDeltaPct = hasYoY && yoyRevenue > 0
+      ? Math.round(((projectedRevenue - yoyRevenue) / yoyRevenue) * 100)
+      : null;
+
+    return {
+      monthLabel: current.month,
+      daysInMonth,
+      dayOfMonth,
+      daysRemaining,
+      actualRevenue: current.revenue,
+      actualSales: current.salesCount,
+      actualAov: current.aov,
+      projectedRevenue,
+      projectedSales,
+      projectedAov,
+      dailyRunRate,
+      dailySalesRate,
+      remainingRevenue,
+      remainingSales,
+      priorRevenue: priorMonth?.revenue ?? null,
+      priorSales: priorMonth?.salesCount ?? null,
+      revenueDeltaPct,
+      hasYoY,
+      yoyRevenue: hasYoY ? Math.round(yoyRevenue) : null,
+      yoySales: hasYoY ? yoySales : null,
+      yoyRevenueDeltaPct,
+    };
+  }, [monthlyRevenue, customers, sourceFilter]);
+
   const COLORS = ['#f97316', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6'];
+
+  // Per-day breakdown for the currently filtered period (defaults to last 30 days)
+  const dailyBreakdown = useMemo(() => {
+    let fromDate: Date;
+    let toDate: Date;
+    if (effectiveDateRange?.from) {
+      fromDate = new Date(effectiveDateRange.from);
+      toDate = effectiveDateRange.to ? new Date(effectiveDateRange.to) : new Date();
+    } else {
+      toDate = new Date();
+      fromDate = new Date();
+      fromDate.setDate(fromDate.getDate() - 29);
+    }
+    fromDate.setHours(0, 0, 0, 0);
+    toDate.setHours(23, 59, 59, 999);
+
+    const dayMap = new Map<string, { date: Date; deals: number; revenue: number; cancelled: number; refunded: number }>();
+    const cursor = new Date(fromDate);
+    while (cursor <= toDate) {
+      const key = format(cursor, 'yyyy-MM-dd');
+      dayMap.set(key, { date: new Date(cursor), deals: 0, revenue: 0, cancelled: 0, refunded: 0 });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    filteredCustomers.forEach(c => {
+      if (!c.signup_date) return;
+      const d = new Date(c.signup_date);
+      if (d < fromDate || d > toDate) return;
+      const key = format(d, 'yyyy-MM-dd');
+      const entry = dayMap.get(key);
+      if (!entry) return;
+      if (isRevenueLost(c.status)) {
+        if (isRefunded(c.status)) entry.refunded++;
+        else entry.cancelled++;
+      } else {
+        entry.deals++;
+        entry.revenue += Number(c.final_amount) || 0;
+      }
+    });
+
+    return Array.from(dayMap.values())
+      .map(d => ({
+        dateKey: format(d.date, 'yyyy-MM-dd'),
+        dateLabel: format(d.date, 'EEE dd MMM'),
+        shortLabel: format(d.date, 'EEEEE dd MMM'),
+        deals: d.deals,
+        revenue: Math.round(d.revenue * 100) / 100,
+        aov: d.deals > 0 ? Math.round(d.revenue / d.deals) : 0,
+        cancelled: d.cancelled,
+        refunded: d.refunded,
+      }))
+      .sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+  }, [filteredCustomers, effectiveDateRange]);
+
+  const dailyTotals = useMemo(() => {
+    const deals = dailyBreakdown.reduce((s, d) => s + d.deals, 0);
+    const revenue = dailyBreakdown.reduce((s, d) => s + d.revenue, 0);
+    const cancelled = dailyBreakdown.reduce((s, d) => s + d.cancelled, 0);
+    const refunded = dailyBreakdown.reduce((s, d) => s + d.refunded, 0);
+    return {
+      deals,
+      revenue: Math.round(revenue * 100) / 100,
+      aov: deals > 0 ? Math.round(revenue / deals) : 0,
+      cancelled,
+      refunded,
+    };
+  }, [dailyBreakdown]);
 
   // Agent performance analytics
   const agentPerformance = useMemo(() => {
     const agentMap = new Map<string, { sales: number; revenue: number; cancelled: number; refunded: number }>();
 
     filteredCustomers.forEach(c => {
-      const agentId = c.assigned_to;
-      if (!agentId) return; // skip unassigned
+      // Credit the sale to whoever actually closed it, not simply the lead owner.
+      // Priority: explicit sale credit > payment confirmed > quote sent > payment
+      // collected > lead owner. Leads reassigned after the sale used to hand the
+      // revenue to the new owner, which understated the real closer.
+      const agentId =
+        c.sale_credit_admin_user_id ||
+        c.payment_confirmed_by ||
+        c.quote_sent_by ||
+        c.payment_collected_by ||
+        c.assigned_to;
+      if (!agentId) return; // skip unattributed (pure website sales)
       if (!agentMap.has(agentId)) agentMap.set(agentId, { sales: 0, revenue: 0, cancelled: 0, refunded: 0 });
       const entry = agentMap.get(agentId)!;
       entry.sales++;
@@ -653,18 +1126,518 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
 
   return (
     <div className="space-y-6">
+      <AnalyticsQuickLinksBar />
+
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
           <p className="text-sm text-gray-600">Overview of your warranty business (excludes test orders)</p>
         </div>
+
+        <AnalyticsSectionHeading id="revenue-monthly" title="Revenue & AOV by month" description="Monthly revenue, order volume and average order value across the last 12 months." accent="border-emerald-500/60" />
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Total Revenue & AOV by Month (Last 12 Months)</CardTitle>
+              <CardDescription className="mt-1">
+                Click on any bar to filter all data by that month
+              </CardDescription>
+            </div>
+            {selectedMonth && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearSelectedMonth}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Clear selection
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={350}>
+              <ComposedChart
+                data={monthlyRevenue}
+                onClick={handleBarClick}
+                style={{ cursor: 'pointer' }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis yAxisId="left" tickFormatter={(value) => `£${value.toLocaleString()}`} />
+                <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => `£${value}`} />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    if (name === 'salesCount') {
+                      return [value.toLocaleString('en-GB'), 'Warranties Sold'];
+                    }
+                    const label = name === 'revenue' ? 'Revenue' : name === 'aov' ? 'Avg Order Value' : name;
+                    return [`£${value.toLocaleString('en-GB', { minimumFractionDigits: 0 })}`, label];
+                  }}
+                  labelStyle={{ fontWeight: 'bold' }}
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend formatter={(value) => value === 'revenue' ? 'Revenue' : value === 'aov' ? 'Avg Order Value' : value === 'salesCount' ? 'Warranties Sold' : value} />
+                <Bar
+                  yAxisId="left"
+                  dataKey="revenue"
+                  radius={[4, 4, 0, 0]}
+                  fill="#10b981"
+                >
+                  {monthlyRevenue.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.isSelected ? '#059669' : '#10b981'}
+                      stroke={entry.isSelected ? '#047857' : 'transparent'}
+                      strokeWidth={entry.isSelected ? 2 : 0}
+                      style={{
+                        cursor: 'pointer',
+                        filter: entry.isSelected ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' : 'none'
+                      }}
+                    />
+                  ))}
+                  <LabelList
+                    dataKey="salesCount"
+                    position="top"
+                    formatter={(value: number) => value > 0 ? `${value} ${value === 1 ? 'deal' : 'deals'}` : ''}
+                    style={{ fill: '#065f46', fontSize: 11, fontWeight: 600 }}
+                  />
+                </Bar>
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="aov"
+                  stroke="#f59e0b"
+                  strokeWidth={2.5}
+                  dot={{ fill: '#f59e0b', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="salesCount"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                  activeDot={{ r: 6, fill: '#2563eb' }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <AnalyticsSectionHeading id="revenue-daily" title="Daily revenue trend" description="Day-by-day revenue, AOV and sales count within a 30-day window." accent="border-teal-500/60" />
+
+        <DailyRevenueTrendPanel customers={customers} sourceFilter={sourceFilter} />
+
+
+
+        {monthProjection && (
+          <AnalyticsSectionHeading id="month-projection" title="This month's projection" description="Run-rate forecast for the current month based on sales so far." accent="border-lime-500/60" controls={sectionFilters} />
+
+        )}
+
+        {monthProjection && (
+          <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                {monthProjection.monthLabel} — Current Pace Projection
+              </CardTitle>
+              <CardDescription>
+                You're on day {monthProjection.dayOfMonth} of {monthProjection.daysInMonth} with{' '}
+                <strong>{monthProjection.actualSales} {monthProjection.actualSales === 1 ? 'sale' : 'sales'}</strong>{' '}
+                (£{monthProjection.actualRevenue.toLocaleString('en-GB')}). At this rate
+                (~{monthProjection.dailySalesRate} sales / £{monthProjection.dailyRunRate.toLocaleString('en-GB')} per day),
+                you'll finish {monthProjection.monthLabel} at approximately{' '}
+                <strong className="text-primary">£{monthProjection.projectedRevenue.toLocaleString('en-GB')}</strong>{' '}
+                from <strong className="text-primary">{monthProjection.projectedSales} warranties</strong>.
+                {monthProjection.daysRemaining > 0 && (
+                  <> That's another £{monthProjection.remainingRevenue.toLocaleString('en-GB')} /{' '}
+                  {monthProjection.remainingSales} sales over the next {monthProjection.daysRemaining} day{monthProjection.daysRemaining === 1 ? '' : 's'}.</>
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">So far this month</span>
+                  <p className="text-2xl font-bold">£{monthProjection.actualRevenue.toLocaleString('en-GB')}</p>
+                  <p className="text-xs text-muted-foreground">{monthProjection.actualSales} warranties</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">Projected revenue</span>
+                  <p className="text-2xl font-bold text-primary">£{monthProjection.projectedRevenue.toLocaleString('en-GB')}</p>
+                  {monthProjection.revenueDeltaPct !== null && (
+                    <p className={`text-xs flex items-center gap-1 ${monthProjection.revenueDeltaPct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {monthProjection.revenueDeltaPct >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {monthProjection.revenueDeltaPct >= 0 ? '+' : ''}{monthProjection.revenueDeltaPct}% vs last month
+                    </p>
+                  )}
+                  {monthProjection.hasYoY && monthProjection.yoyRevenueDeltaPct !== null && (
+                    <p className={`text-xs flex items-center gap-1 ${monthProjection.yoyRevenueDeltaPct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {monthProjection.yoyRevenueDeltaPct >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {monthProjection.yoyRevenueDeltaPct >= 0 ? '+' : ''}{monthProjection.yoyRevenueDeltaPct}% vs same month last year (£{monthProjection.yoyRevenue!.toLocaleString('en-GB')})
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">Projected warranties</span>
+                  <p className="text-2xl font-bold text-primary">{monthProjection.projectedSales}</p>
+                  {monthProjection.priorSales !== null && (
+                    <p className="text-xs text-muted-foreground">Last month: {monthProjection.priorSales}</p>
+                  )}
+                  {monthProjection.hasYoY && (
+                    <p className="text-xs text-muted-foreground">
+                      Same month {new Date().getFullYear() - 1}: {monthProjection.yoySales}
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">Projected AOV</span>
+                  <p className="text-2xl font-bold">£{monthProjection.projectedAov.toLocaleString('en-GB')}</p>
+                  <p className="text-xs text-muted-foreground">Current: £{monthProjection.actualAov.toLocaleString('en-GB')}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <AnalyticsSectionHeading id="duration-mix" title="Warranty duration mix" description="Split of 1-year, 2-year and 3-year policies sold each month." accent="border-sky-500/60" />
+
+        {/* Warranty duration mix per month (1yr / 2yr / 3yr) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Warranty Duration Mix by Month</CardTitle>
+            <CardDescription className="mt-1">
+              Share of 1-year, 2-year and 3-year policies sold each month (last 12 months)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={durationByMonth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
+                <Tooltip
+                  formatter={(value: number, name: string, props: any) => {
+                    const key = props?.dataKey as string;
+                    const count = key === 'pct1' ? props.payload.count1 : key === 'pct2' ? props.payload.count2 : props.payload.count3;
+                    const label = key === 'pct1' ? '1 Year' : key === 'pct2' ? '2 Year' : '3 Year';
+                    return [`${value}% (${count} ${count === 1 ? 'sale' : 'sales'})`, label];
+                  }}
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend formatter={(v) => v === 'pct1' ? '1 Year' : v === 'pct2' ? '2 Year' : '3 Year'} />
+                <Bar dataKey="pct1" stackId="dur" fill="#f97316" />
+                <Bar dataKey="pct2" stackId="dur" fill="#3b82f6" />
+                <Bar dataKey="pct3" stackId="dur" fill="#10b981" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <AnalyticsSectionHeading id="per-year-value" title="Per-year equivalent value" description="Compares what each duration is worth per year of cover." accent="border-blue-500/60" />
+
+        {/* Per-year equivalent value comparison */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle>Per-Year Equivalent Value ({perYearScopeLabel})</CardTitle>
+                <CardDescription className="mt-1">
+                  Every policy divided by its years of cover, so 1-year, 2-year and 3-year sales can be compared like for like
+                  (e.g. £800 over 2 years = £400/yr, £1,000 over 3 years = £333/yr)
+                  {perYearPrevLabel && <> — change shown vs {perYearPrevLabel}</>}
+                </CardDescription>
+              </div>
+              <Select value={perYearScope} onValueChange={setPerYearScope}>
+                <SelectTrigger className="w-full sm:w-[190px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="last12">Last 12 months</SelectItem>
+                  {perYearMonthOptions.map(opt => (
+                    <SelectItem key={opt.monthKey} value={opt.monthKey}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {perYearSummary.map((row, idx) => {
+                const prev = perYearPrevSummary?.[idx];
+                const delta = (curr: number, before?: number) => {
+                  if (before === undefined || before === 0 || curr === 0) return null;
+                  const pct = Math.round(((curr - before) / before) * 100);
+                  if (pct === 0) return { text: 'No change', tone: 'text-muted-foreground' };
+                  return {
+                    text: `${pct > 0 ? '+' : ''}${pct}% MoM`,
+                    tone: pct > 0 ? 'text-emerald-600' : 'text-red-600',
+                  };
+                };
+                const perYearDelta = delta(row.avgPerYear, prev?.avgPerYear);
+                const countDelta = delta(row.count, prev?.count);
+                return (
+                  <div key={row.key} className="rounded-lg border p-4" style={{ borderColor: row.colour }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold" style={{ color: row.colour }}>{row.label}</span>
+                      <span className="text-xs text-muted-foreground">{row.share}% of sales</span>
+                    </div>
+                    <div className="mt-2 flex items-baseline gap-2">
+                      <span className="text-3xl font-bold">£{row.avgPerYear.toLocaleString('en-GB')}<span className="text-sm font-medium text-muted-foreground">/yr</span></span>
+                      {perYearDelta && <span className={`text-xs font-semibold ${perYearDelta.tone}`}>{perYearDelta.text}</span>}
+                    </div>
+                    <div className="mt-2 text-xs text-muted-foreground space-y-0.5">
+                      <div>Avg order value: <strong>£{row.avgOrder.toLocaleString('en-GB')}</strong></div>
+                      <div>
+                        Policies sold: <strong>{row.count.toLocaleString('en-GB')}</strong>
+                        {countDelta && <span className={`ml-1 font-semibold ${countDelta.tone}`}>({countDelta.text})</span>}
+                      </div>
+                      <div>Total revenue: <strong>£{row.revenue.toLocaleString('en-GB')}</strong></div>
+                      <div>Annualised revenue: <strong>£{row.annualisedRevenue.toLocaleString('en-GB')}</strong></div>
+                      {prev && (
+                        <div className="pt-1 text-[11px]">
+                          {perYearPrevLabel}: £{prev.avgPerYear.toLocaleString('en-GB')}/yr · {prev.count.toLocaleString('en-GB')} sold
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={perYearSummary} margin={{ top: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `£${v}`} />
+                <Tooltip
+                  formatter={(value: number, name: string) => [
+                    `£${Number(value).toLocaleString('en-GB')}`,
+                    name === 'avgOrder' ? 'Avg order value' : 'Per-year equivalent',
+                  ]}
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend formatter={(v) => (v === 'avgOrder' ? 'Avg order value' : 'Per-year equivalent')} />
+                <Bar dataKey="avgOrder" fill="#cbd5e1" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="avgOrder" position="top" formatter={(v: number) => (v > 0 ? `£${v.toLocaleString('en-GB')}` : '')} style={{ fontSize: 11, fill: '#475569' }} />
+                </Bar>
+                <Bar dataKey="avgPerYear" fill="#10b981" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="avgPerYear" position="top" formatter={(v: number) => (v > 0 ? `£${v.toLocaleString('en-GB')}/yr` : '')} style={{ fontSize: 11, fontWeight: 600, fill: '#065f46' }} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Average revenue per year of cover, by duration */}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Avg Revenue per Year of Cover by Duration</CardTitle>
+            <CardDescription className="mt-1">
+              For each month: order value ÷ years of cover, split by 1-year, 2-year and 3-year policies
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={durationByMonth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `£${v}`} />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    const label = name === 'avgPerYear1' ? '1 Year (avg/yr)' : name === 'avgPerYear2' ? '2 Year (avg/yr)' : '3 Year (avg/yr)';
+                    return [`£${Number(value).toLocaleString('en-GB')}`, label];
+                  }}
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend formatter={(v) => v === 'avgPerYear1' ? '1 Year' : v === 'avgPerYear2' ? '2 Year' : '3 Year'} />
+                <Bar dataKey="avgPerYear1" fill="#f97316" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="avgPerYear2" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="avgPerYear3" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <AnalyticsSectionHeading id="aov-by-term" title="AOV by warranty term" description="Average order value per term, per month, plus total received." accent="border-indigo-500/60" />
+
+        {/* AOV by warranty term per month + total received */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Average Order Value by Warranty Term (per month)</CardTitle>
+            <CardDescription className="mt-1">
+              Average order value and total amount received for 1-year, 2-year and 3-year warranties, month by month (last 12 months)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <ResponsiveContainer width="100%" height={320}>
+              <BarChart data={durationByMonth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `£${v}`} />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    const label = name === 'aov1' ? '1 Year AOV' : name === 'aov2' ? '2 Year AOV' : '3 Year AOV';
+                    return [`£${Number(value).toLocaleString('en-GB')}`, label];
+                  }}
+                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                />
+                <Legend formatter={(v) => (v === 'aov1' ? '1 Year' : v === 'aov2' ? '2 Year' : '3 Year')} />
+                <Bar dataKey="aov1" fill="#f97316" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="aov2" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="aov3" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="py-2 pr-3 font-semibold">Month</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#f97316' }}>1yr AOV</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#f97316' }}>1yr received</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#3b82f6' }}>2yr AOV</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#3b82f6' }}>2yr received</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#10b981' }}>3yr AOV</th>
+                    <th className="py-2 px-3 text-right font-semibold" style={{ color: '#10b981' }}>3yr received</th>
+                    <th className="py-2 pl-3 text-right font-semibold">Total received</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...durationByMonth].reverse().map((m) => (
+                    <tr key={m.monthKey} className="border-b last:border-0">
+                      <td className="py-2 pr-3 font-medium">{m.month}</td>
+                      <td className="py-2 px-3 text-right">{m.count1 > 0 ? `£${m.aov1.toLocaleString('en-GB')}` : '—'}</td>
+                      <td className="py-2 px-3 text-right text-muted-foreground">£{Math.round(m.rev1).toLocaleString('en-GB')} <span className="text-xs">({m.count1})</span></td>
+                      <td className="py-2 px-3 text-right">{m.count2 > 0 ? `£${m.aov2.toLocaleString('en-GB')}` : '—'}</td>
+                      <td className="py-2 px-3 text-right text-muted-foreground">£{Math.round(m.rev2).toLocaleString('en-GB')} <span className="text-xs">({m.count2})</span></td>
+                      <td className="py-2 px-3 text-right">{m.count3 > 0 ? `£${m.aov3.toLocaleString('en-GB')}` : '—'}</td>
+                      <td className="py-2 px-3 text-right text-muted-foreground">£{Math.round(m.rev3).toLocaleString('en-GB')} <span className="text-xs">({m.count3})</span></td>
+                      <td className="py-2 pl-3 text-right font-semibold">£{Math.round(m.rev1 + m.rev2 + m.rev3).toLocaleString('en-GB')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+
+
+        <AnalyticsSectionHeading id="daily-breakdown" title="Per-day breakdown" description="Deals, revenue, AOV, cancellations and refunds for each day." accent="border-violet-500/60" controls={sectionFilters} />
+
+        {/* Per-day breakdown */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Per Day Breakdown
+            </CardTitle>
+            <CardDescription>
+              Deals, sale value & AOV per day {effectiveDateRange?.from
+                ? `(${format(effectiveDateRange.from, 'dd MMM yyyy')}${effectiveDateRange.to ? ` – ${format(effectiveDateRange.to, 'dd MMM yyyy')}` : ''})`
+                : '(last 30 days)'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={260}>
+              <ComposedChart data={[...dailyBreakdown].reverse()}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="shortLabel" tick={{ fontSize: 11 }} interval="preserveStartEnd" />
+                <YAxis yAxisId="left" tickFormatter={(v) => `£${v.toLocaleString()}`} tick={{ fontSize: 11 }} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
+                <Tooltip
+                  formatter={(value: number, name: string) => {
+                    if (name === 'revenue') return [`£${value.toLocaleString('en-GB')}`, 'Revenue'];
+                    if (name === 'aov') return [`£${value.toLocaleString('en-GB')}`, 'AOV'];
+                    if (name === 'deals') return [value, 'Deals'];
+                    return [value, name];
+                  }}
+                />
+                <Legend />
+                <Bar yAxisId="left" dataKey="revenue" fill="#10b981" name="Revenue" radius={[4, 4, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="deals" stroke="#3b82f6" strokeWidth={2} name="Deals" dot={{ r: 3 }} />
+                <Line yAxisId="left" type="monotone" dataKey="aov" stroke="#f59e0b" strokeWidth={2} name="AOV" dot={{ r: 3 }} />
+              </ComposedChart>
+            </ResponsiveContainer>
+
+
+
+          </CardContent>
+        </Card>
+
+        <AnalyticsSectionHeading id="cover-options" title="Cover options mix" description="Most commonly bought labour rate, claim limit and excess." accent="border-purple-500/60" controls={sectionFilters} />
+
+        {/* Cover options mix: labour rate / claim limit / excess */}
+        <CoverOptionsMixPanel dateRange={effectiveDateRange} />
+
+        <AnalyticsSectionHeading id="demographics" title="Customer age & UK demographics" description="Age profile of buyers plus where our customers are across the UK by postcode area." accent="border-fuchsia-500/60" />
+
+        <CustomerDemographicsPanel dateRange={effectiveDateRange} />
+
+
+
+
+
+
+
+        {/* Cost Efficiency (super-admin only) */}
+        <CostEfficiencyPanel
+          currentUserRole={userRole ?? null}
+          referenceDate={effectiveDateRange?.from || dateRange?.from || new Date()}
+        />
+
+
         
+        <AnalyticsSectionHeading id="filters" title="Price analysis per day" description="Choose a period, month, week or custom date range — every panel on this page follows this selection." accent="border-slate-500/60" size="lg" />
+
         {/* Filters Row */}
-        <div className="flex flex-wrap gap-4 items-end p-4 bg-muted/30 rounded-lg border">
+        <div ref={filtersSectionRef} className="p-4 bg-muted/30 rounded-lg border space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h4 className="text-sm font-semibold">
+                Filter this dashboard
+                {refreshing && (
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">Updating…</span>
+                )}
+              </h4>
+              <p className="text-xs text-muted-foreground">
+                Currently showing:{' '}
+                <span className="font-medium text-foreground">
+                  {effectiveDateRange?.from
+                    ? `${format(effectiveDateRange.from, 'dd MMM yyyy')} – ${effectiveDateRange.to ? format(effectiveDateRange.to, 'dd MMM yyyy') : 'select end date'}`
+                    : 'All time'}
+                </span>
+                {sourceFilter !== 'all' ? ` · ${sourceFilter.replace('_', ' ')}` : ''}
+              </p>
+            </div>
+            {(effectiveDateRange || sourceFilter !== 'all' || comparisonPeriod) && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs"
+                onClick={() => {
+                  setDateRange(undefined);
+                  setSelectedMonth(null);
+                  setComparisonPeriod(null);
+                  setSourceFilter('all');
+                }}
+              >
+                <X className="h-3 w-3 mr-1" /> Reset filters
+              </Button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-4 items-end">
           {/* Period Comparison Toggle */}
           <div className="space-y-1">
             <Label className="text-sm font-medium">Quick Period</Label>
-            <ToggleGroup type="single" value={comparisonPeriod || ''} onValueChange={(val) => handlePeriodComparison(val as any)}>
+            <ToggleGroup type="single" value={comparisonPeriod || ''} onValueChange={(val) => applyFilterChange(() => handlePeriodComparison(val as any))}>
               <ToggleGroupItem value="today" aria-label="Today" className="px-3">
                 Today
               </ToggleGroupItem>
@@ -692,19 +1665,57 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
             </ToggleGroup>
           </div>
           
-          <DateRangeFilter 
-            dateRange={dateRange} 
-            onDateRangeChange={(range) => {
-              setDateRange(range);
-              setSelectedMonth(null);
-              setComparisonPeriod(null);
-            }}
-            className="min-w-[280px]"
-          />
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Custom date range</Label>
+            <DateRangeFilter 
+              dateRange={dateRange} 
+              onDateRangeChange={(range) => {
+                applyFilterChange(() => {
+                  setDateRange(range);
+                  setSelectedMonth(null);
+                  setComparisonPeriod(null);
+                });
+              }}
+              className="min-w-[280px]"
+            />
+          </div>
+
+
+          {(userRole === 'super_admin' || userRole === 'admin') && (
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Quick month</Label>
+              <QuickMonthFilter
+                dateRange={dateRange}
+                onDateRangeChange={(range) => {
+                  applyFilterChange(() => {
+                    setDateRange(range);
+                    setSelectedMonth(null);
+                    setComparisonPeriod(null);
+                  });
+                }}
+              />
+            </div>
+          )}
+
+          {(userRole === 'super_admin' || userRole === 'admin') && (
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Quick week</Label>
+              <QuickWeekFilter
+                dateRange={dateRange}
+                onDateRangeChange={(range) => {
+                  applyFilterChange(() => {
+                    setDateRange(range);
+                    setSelectedMonth(null);
+                    setComparisonPeriod(null);
+                  });
+                }}
+              />
+            </div>
+          )}
           
           <div className="space-y-1 min-w-[200px]">
             <Label className="text-sm font-medium">Sales Source</Label>
-            <Select value={sourceFilter} onValueChange={setSourceFilter}>
+            <Select value={sourceFilter} onValueChange={(v) => applyFilterChange(() => setSourceFilter(v))}>
               <SelectTrigger className="h-10">
                 <SelectValue placeholder="All Sources" />
               </SelectTrigger>
@@ -755,8 +1766,12 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
               Showing <span className="font-semibold text-foreground">{filteredCustomers.length}</span> of {customers.length} customers
             </div>
           )}
+          </div>
         </div>
+
       </div>
+
+      <AnalyticsSectionHeading id="key-metrics" title="Key metrics" description="Headline customer, order and revenue totals for the selected period." accent="border-amber-500/60" controls={sectionFilters} />
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -802,23 +1817,41 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
 
       {!isSalesLead && (
       <>
+      <AnalyticsSectionHeading id="sales-by-source" title="Sales by source" description="Website, staff purchase and sales-team revenue, reconciled to total revenue." accent="border-orange-500/60" controls={sectionFilters} />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Globe className="h-5 w-5 text-blue-500" />
-            Website Sales Breakdown
+            Sales Breakdown by Source
           </CardTitle>
           <CardDescription>
-            All website sales (Stripe &amp; Bumper) broken down by acquisition channel
+            Reconciles with the Total Revenue card above — All Sources = Website + Staff Purchase + Sales Team
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* All Website Sales */}
+        <CardContent className="space-y-4">
+          {/* Reconciliation total — should equal Total Revenue card */}
+          <div className="p-4 rounded-lg border-2 border-primary bg-primary/5">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">All Sources (Total)</span>
+                <Badge variant="secondary" className="text-[10px]">matches Total Revenue</Badge>
+              </div>
+              <div className="flex gap-6">
+                <div className="text-sm"><span className="text-muted-foreground">Orders </span><span className="font-bold">{sourceMetrics.allSources.count}</span></div>
+                <div className="text-sm"><span className="text-muted-foreground">Revenue </span><span className="font-bold text-primary">£{sourceMetrics.allSources.revenue.toLocaleString('en-GB')}</span></div>
+                <div className="text-sm"><span className="text-muted-foreground">AOV </span><span className="font-bold">£{sourceMetrics.allSources.aov}</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Top-level source split */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 rounded-lg border-2 border-blue-300 bg-blue-50/40 space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <Globe className="h-4 w-4 text-blue-600" />
-                <span className="font-semibold text-sm text-blue-700">All Website Sales</span>
+                <span className="font-semibold text-sm text-blue-700">Website (BAW)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Orders</span>
@@ -834,96 +1867,179 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
               </div>
             </div>
 
-            {/* Website Google */}
-            <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/30 space-y-2">
+            <div className="p-4 rounded-lg border-2 border-green-300 bg-green-50/40 space-y-2">
               <div className="flex items-center gap-2 mb-1">
-                <Target className="h-4 w-4 text-emerald-600" />
-                <span className="font-semibold text-sm text-emerald-700">Website G (Google Ads)</span>
+                <Globe className="h-4 w-4 text-green-600" />
+                <span className="font-semibold text-sm text-green-700">Staff Purchase (BAW-S)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Orders</span>
-                <span className="font-bold text-lg">{sourceMetrics.google.count}</span>
+                <span className="font-bold text-lg">{sourceMetrics.staffPurchase.count}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Revenue</span>
-                <span className="font-bold text-lg text-emerald-600">£{sourceMetrics.google.revenue.toLocaleString('en-GB')}</span>
+                <span className="font-bold text-lg text-green-600">£{sourceMetrics.staffPurchase.revenue.toLocaleString('en-GB')}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
+              <div className="flex justify-between items-center pt-2 border-t border-green-200">
                 <span className="text-xs font-medium">AOV</span>
-                <span className="font-bold text-emerald-700">£{sourceMetrics.google.aov}</span>
+                <span className="font-bold text-green-700">£{sourceMetrics.staffPurchase.aov}</span>
               </div>
             </div>
 
-            {/* Website Facebook */}
-            <div className="p-4 rounded-lg border border-indigo-200 bg-indigo-50/30 space-y-2">
+            <div className="p-4 rounded-lg border-2 border-orange-300 bg-orange-50/40 space-y-2">
               <div className="flex items-center gap-2 mb-1">
-                <Facebook className="h-4 w-4 text-indigo-600" />
-                <span className="font-semibold text-sm text-indigo-700">Website F (Facebook Ads)</span>
+                <Phone className="h-4 w-4 text-orange-600" />
+                <span className="font-semibold text-sm text-orange-700">Sales Team (ADM)</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Orders</span>
-                <span className="font-bold text-lg">{sourceMetrics.facebook.count}</span>
+                <span className="font-bold text-lg">{sourceMetrics.salesTeam.count}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-xs text-muted-foreground">Revenue</span>
-                <span className="font-bold text-lg text-indigo-600">£{sourceMetrics.facebook.revenue.toLocaleString('en-GB')}</span>
+                <span className="font-bold text-lg text-orange-600">£{sourceMetrics.salesTeam.revenue.toLocaleString('en-GB')}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-indigo-200">
+              <div className="flex justify-between items-center pt-2 border-t border-orange-200">
                 <span className="text-xs font-medium">AOV</span>
-                <span className="font-bold text-indigo-700">£{sourceMetrics.facebook.aov}</span>
+                <span className="font-bold text-orange-700">£{sourceMetrics.salesTeam.aov}</span>
               </div>
             </div>
+          </div>
 
-            {/* Pure Website (Organic) */}
-            <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/30 space-y-2">
-              <div className="flex items-center gap-2 mb-1">
-                <Globe className="h-4 w-4 text-sky-600" />
-                <span className="font-semibold text-sm text-sky-700">Pure Website (Organic)</span>
+          {/* Website channel sub-breakdown */}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 mt-2">
+              Website (BAW) acquisition channels — sum equals Website tile above
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Target className="h-4 w-4 text-emerald-600" />
+                  <span className="font-semibold text-sm text-emerald-700">Google Ads</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.google.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-emerald-600">£{sourceMetrics.google.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-emerald-700">£{sourceMetrics.google.aov}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Orders</span>
-                <span className="font-bold text-lg">{sourceMetrics.pureWebsite.count}</span>
+
+              <div className="p-4 rounded-lg border border-indigo-200 bg-indigo-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Facebook className="h-4 w-4 text-indigo-600" />
+                  <span className="font-semibold text-sm text-indigo-700">Facebook Ads</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.facebook.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-indigo-600">£{sourceMetrics.facebook.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-indigo-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-indigo-700">£{sourceMetrics.facebook.aov}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">Revenue</span>
-                <span className="font-bold text-lg text-sky-600">£{sourceMetrics.pureWebsite.revenue.toLocaleString('en-GB')}</span>
+
+              <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Globe className="h-4 w-4 text-sky-600" />
+                  <span className="font-semibold text-sm text-sky-700">Pure Website (Organic)</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.pureWebsite.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-sky-600">£{sourceMetrics.pureWebsite.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-sky-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-sky-700">£{sourceMetrics.pureWebsite.aov}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-sky-200">
-                <span className="text-xs font-medium">AOV</span>
-                <span className="font-bold text-sky-700">£{sourceMetrics.pureWebsite.aov}</span>
+            </div>
+          </div>
+
+          {/* Sales Team lead-source sub-breakdown */}
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-2 mt-2">
+              Sales Team (ADM) lead source — where the converted lead originally came from (sum equals Sales Team tile above)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-lg border border-emerald-200 bg-emerald-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Target className="h-4 w-4 text-emerald-600" />
+                  <span className="font-semibold text-sm text-emerald-700">Google Ads lead</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.salesGoogle.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-emerald-600">£{sourceMetrics.salesGoogle.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-emerald-700">£{sourceMetrics.salesGoogle.aov}</span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg border border-indigo-200 bg-indigo-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Facebook className="h-4 w-4 text-indigo-600" />
+                  <span className="font-semibold text-sm text-indigo-700">Facebook Ads lead</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.salesFacebook.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-indigo-600">£{sourceMetrics.salesFacebook.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-indigo-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-indigo-700">£{sourceMetrics.salesFacebook.aov}</span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg border border-sky-200 bg-sky-50/30 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <Globe className="h-4 w-4 text-sky-600" />
+                  <span className="font-semibold text-sm text-sky-700">Organic / Website lead</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Orders</span>
+                  <span className="font-bold text-lg">{sourceMetrics.salesOrganic.count}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground">Revenue</span>
+                  <span className="font-bold text-lg text-sky-600">£{sourceMetrics.salesOrganic.revenue.toLocaleString('en-GB')}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-sky-200">
+                  <span className="text-xs font-medium">AOV</span>
+                  <span className="font-bold text-sky-700">£{sourceMetrics.salesOrganic.aov}</span>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Sales Team Card */}
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        <Card className="border-l-4 border-l-orange-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Phone className="h-4 w-4 text-orange-500" />
-              Sales Team (ADM)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-8">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Orders</span>
-                <span className="font-semibold">{sourceMetrics.salesTeam.count}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Revenue</span>
-                <span className="font-semibold">£{sourceMetrics.salesTeam.revenue.toLocaleString('en-GB')}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">AOV</span>
-                <span className="text-xl font-bold text-orange-600">£{sourceMetrics.salesTeam.aov}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+
+      <AnalyticsSectionHeading id="price-metrics" title="Price metrics" description="Lowest, highest and average order values, broken down by source." accent="border-yellow-500/60" controls={sectionFilters} />
 
       {/* Price Metrics: Lowest, Highest, Average - by Source */}
       <Card>
@@ -1004,6 +2120,8 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
         </CardContent>
       </Card>
 
+      <AnalyticsSectionHeading id="refunds-cancellations" title="Refunds & cancellations" description="Money lost to refunds and cancellations in the selected period." accent="border-red-500/60" controls={sectionFilters} />
+
       <Card className="border-l-4 border-l-red-500">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>
@@ -1067,81 +2185,13 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
       </>
       )}
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Total Revenue & AOV by Month (Last 12 Months)</CardTitle>
-            <CardDescription className="mt-1">
-              Click on any bar to filter all data by that month
-            </CardDescription>
-          </div>
-          {selectedMonth && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={clearSelectedMonth}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Clear selection
-            </Button>
-          )}
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
-            <ComposedChart 
-              data={monthlyRevenue} 
-              onClick={handleBarClick}
-              style={{ cursor: 'pointer' }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-              <YAxis yAxisId="left" tickFormatter={(value) => `£${value.toLocaleString()}`} />
-              <YAxis yAxisId="right" orientation="right" tickFormatter={(value) => `£${value}`} />
-              <Tooltip 
-                formatter={(value: number, name: string) => {
-                  const label = name === 'revenue' ? 'Revenue' : name === 'aov' ? 'Avg Order Value' : name;
-                  return [`£${value.toLocaleString('en-GB', { minimumFractionDigits: 0 })}`, label];
-                }}
-                labelStyle={{ fontWeight: 'bold' }}
-                contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-              />
-              <Legend formatter={(value) => value === 'revenue' ? 'Revenue' : value === 'aov' ? 'Avg Order Value' : value} />
-              <Bar 
-                yAxisId="left"
-                dataKey="revenue" 
-                radius={[4, 4, 0, 0]}
-                fill="#10b981"
-              >
-                {monthlyRevenue.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.isSelected ? '#059669' : '#10b981'}
-                    stroke={entry.isSelected ? '#047857' : 'transparent'}
-                    strokeWidth={entry.isSelected ? 2 : 0}
-                    style={{ 
-                      cursor: 'pointer',
-                      filter: entry.isSelected ? 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))' : 'none'
-                    }}
-                  />
-                ))}
-              </Bar>
-              <Line 
-                yAxisId="right"
-                type="monotone" 
-                dataKey="aov" 
-                stroke="#f59e0b" 
-                strokeWidth={2.5}
-                dot={{ fill: '#f59e0b', r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+
+
 
       {!isSalesLead && (
       <>
+      <AnalyticsSectionHeading id="signups-vehicles" title="Signups & vehicle mix" description="Monthly signups alongside the fuel-type split of vehicles covered." accent="border-cyan-500/60" controls={sectionFilters} />
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -1201,6 +2251,8 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
         </Card>
       </div>
 
+      <AnalyticsSectionHeading id="agent-performance" title="Agent sales performance" description="Sales credited to the agent who closed them, with revenue, AOV and unwinds." accent="border-rose-500/60" controls={sectionFilters} />
+
       {/* Agent Performance */}
       {agentPerformance.length > 0 && (
         <Card>
@@ -1209,7 +2261,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
               <Users className="h-5 w-5 text-primary" />
               Agent Sales Performance
             </CardTitle>
-            <CardDescription>Sales breakdown by agent {effectiveDateRange?.from ? '(filtered period)' : '(all time)'}</CardDescription>
+            <CardDescription>Credited to the agent who closed the sale (sale credit, then payment confirmed, quote sent or payment collected) {effectiveDateRange?.from ? '— filtered period' : '— all time'}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1271,7 +2323,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
                     ))}
                     {/* Totals row */}
                     <tr className="border-t-2 font-semibold">
-                      <td className="py-2 px-2">Total (Assigned)</td>
+                      <td className="py-2 px-2">Total (Credited)</td>
                       <td className="py-2 px-2 text-right">{agentPerformance.reduce((s, a) => s + a.activeSales, 0)}</td>
                       <td className="py-2 px-2 text-right text-green-600">
                         £{agentPerformance.reduce((s, a) => s + a.revenue, 0).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
@@ -1287,6 +2339,8 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
           </CardContent>
         </Card>
       )}
+
+      <AnalyticsSectionHeading id="recent-activity" title="Recent activity" description="The latest orders and status changes across the business." accent="border-stone-500/60" controls={sectionFilters} />
 
       {/* Recent Activity */}
       <Card>
@@ -1336,8 +2390,10 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
         </CardContent>
       </Card>
 
-      {/* Sales by Vehicle Age & Mileage */}
-      <SalesAgeMileageAnalytics customers={filteredCustomers} />
+      {/* Sales by Vehicle Age & Mileage moved to Vehicle Intelligence tab */}
+
+
+      <AnalyticsSectionHeading id="api-connectivity" title="API connectivity" description="Health checks for the external services this dashboard depends on." accent="border-gray-500/60" />
 
       {/* API Connectivity Test Section */}
       <div className="mt-8">

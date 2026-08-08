@@ -49,16 +49,16 @@ ${totalPrice ? `Your quote was £${totalPrice.toFixed(2)} – this price is stil
 Here's a quick reminder of what you'll get:
 ✓ Comprehensive mechanical & electrical cover
 ✓ Fast claims – 94% approved
-✓ 14-day money-back guarantee
+✓ 14-day cooling off period
 ✓ No hidden fees
 
-If you'd like to complete your purchase or have any questions, just reply to this email or give us a call on 0330 229 5045.
+If you'd like to complete your purchase or have any questions, just reply to this email or give us a call on 0330 229 5040.
 
 We're here to help!
 
 Best regards,
-Panda Protect Team
-www.pandaprotect.co.uk`;
+Buy A Warranty Team
+www.buyawarranty.co.uk`;
 };
 
 export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({
@@ -75,7 +75,7 @@ export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({
   const [open, setOpen] = useState(false);
   const [toEmail, setToEmail] = useState(customerEmail);
   const [subject, setSubject] = useState(
-    `Still interested in protecting your ${vehicleMake || 'vehicle'}? – Panda Protect`
+    `Still interested in protecting your ${vehicleMake || 'vehicle'}? – Buy A Warranty`
   );
   const [content, setContent] = useState(
     generateEmailTemplate(customerName, vehicleReg, vehicleMake, vehicleModel, planName, totalPrice)
@@ -116,13 +116,7 @@ export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({
         },
       });
 
-      if (error || (data && data.customerSent === false)) {
-        throw new Error(error?.message || data?.error || 'Failed to send email');
-      }
-
-      if (data?.salesCopySent === false) {
-        toast.warning(`Customer email sent, but copy to ${data?.salesCopyRecipient || 'your account'} failed.`);
-      }
+      if (error) throw error;
 
       // Log the admin follow-up email
       const { error: logError } = await supabase

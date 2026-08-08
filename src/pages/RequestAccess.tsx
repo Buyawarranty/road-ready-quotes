@@ -40,9 +40,6 @@ const RequestAccess = () => {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [confirmationMessage, setConfirmationMessage] = useState(
-    'Thank you for your interest. Our team will review your request and get back to you within 24-48 hours.'
-  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,22 +60,14 @@ const RequestAccess = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke<{
-        success: boolean;
-        requestId: string;
-        message?: string;
-      }>('handle-access-request', {
+      const { error } = await supabase.functions.invoke('handle-access-request', {
         body: formData
       });
 
       if (error) throw error;
 
-      if (data?.message) {
-        setConfirmationMessage(data.message);
-      }
-
       setSubmitted(true);
-      toast.success(data?.message || 'Access request submitted successfully.');
+      toast.success('Access request submitted successfully!');
     } catch (error: any) {
       console.error('Error submitting request:', error);
       toast.error(error.message || 'Failed to submit request. Please try again.');
@@ -95,7 +84,7 @@ const RequestAccess = () => {
             <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-foreground mb-2">Request Submitted!</h2>
             <p className="text-muted-foreground mb-6">
-              {confirmationMessage}
+              Thank you for your interest. Our team will review your request and get back to you within 24-48 hours.
             </p>
             <Button variant="outline" onClick={() => navigate('/')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -116,7 +105,7 @@ const RequestAccess = () => {
           </div>
           <CardTitle className="text-2xl">Request Admin Access</CardTitle>
           <CardDescription>
-            Submit your details to request access to the Panda Protect admin dashboard.
+            Submit your details to request access to the BuyaWarranty admin dashboard.
             Your request will be reviewed by our team.
           </CardDescription>
         </CardHeader>
