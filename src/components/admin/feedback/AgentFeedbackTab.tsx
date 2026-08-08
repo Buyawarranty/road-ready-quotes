@@ -287,7 +287,7 @@ export const AgentFeedbackTab: React.FC<{ userRole: string | null }> = ({ userRo
       };
       if (resolutionNote !== undefined) update.resolution_note = resolutionNote;
 
-      const { error } = await supabase.from('agent_feedback').update(update).eq('id', id);
+      const { error } = await supabase.from('agent_feedback').update(update as any).eq('id', id);
       if (error) throw error;
       toast.success(`Marked as ${STATUS_META[status].label}`);
       fetchFeedback();
