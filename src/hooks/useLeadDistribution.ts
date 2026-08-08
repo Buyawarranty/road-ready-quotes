@@ -9,7 +9,11 @@ interface DistributionSettings {
   solo_agent_id: string | null;
   solo_mode_enabled: boolean;
   distribution_mode: 'round_robin' | 'percentage';
+  flow_mode: 'round_robin' | 'alternating' | 'open_pool_only';
+  alternating_next: 'rr' | 'pool';
+  alternating_counter_date: string | null;
 }
+
 
 export interface OverflowRecipient {
   id: string;
@@ -26,6 +30,7 @@ interface AgentCap {
   last_assigned_at: string | null;
   paused: boolean;
   percentage: number | null;
+  assignment_mode?: 'round_robin' | 'open_pool' | string | null;
   admin_user?: {
     id: string;
     email: string;
@@ -42,6 +47,11 @@ interface AgentPresence {
   is_paused_receiving: boolean;
 }
 
+const DISTRIBUTION_ROLES = ['sales', 'sales_lead', 'claims_agent', 'claims_manager'] as const;
+
+const getDefaultAssignmentMode = (user?: { email?: string | null }) =>
+  user?.email?.toLowerCase() === 'claims@buyawarranty.co.uk' ? 'open_pool' : 'round_robin';
+
 export const useLeadDistribution = () => {
   const [settings, setSettings] = useState<DistributionSettings | null>(null);
   const [agentCaps, setAgentCaps] = useState<AgentCap[]>([]);
@@ -51,6 +61,9 @@ export const useLeadDistribution = () => {
   const [currentAgentCap, setCurrentAgentCap] = useState<AgentCap | null>(null);
   const [todayLeadCounts, setTodayLeadCounts] = useState<Record<string, number>>({});
   const adminUserIdRef = useRef<string | null>(null);
+  const agentCapsRef = useRef<AgentCap[]>([]);
+  // Keep ref in sync with state so toggle actions always see the latest paused values
+  useEffect(() => { agentCapsRef.current = agentCaps; }, [agentCaps]);
 
   // Fetch distribution settings
   const fetchSettings = useCallback(async () => {
@@ -65,9 +78,13 @@ export const useLeadDistribution = () => {
       if (data) {
         setSettings({
           ...data,
-          distribution_mode: (data.distribution_mode as 'round_robin' | 'percentage') || 'round_robin'
+          distribution_mode: (data.distribution_mode as 'round_robin' | 'percentage') || 'round_robin',
+          flow_mode: ((data as any).flow_mode as 'round_robin' | 'alternating' | 'open_pool_only') || 'round_robin',
+          alternating_next: ((data as any).alternating_next as 'rr' | 'pool') || 'rr',
+          alternating_counter_date: (data as any).alternating_counter_date ?? null,
         });
       }
+
     } catch (error) {
       console.error('Error fetching distribution settings:', error);
     }
@@ -194,17 +211,32 @@ export const useLeadDistribution = () => {
   // Remove overflow recipient
   const removeOverflowRecipient = useCallback(async (id: string) => {
     try {
-      const { error } = await supabase
+      setOverflowRecipients(prev => prev.filter(recipient => recipient.id !== id));
+
+      const { error: stateError } = await supabase
+        .from('overflow_round_robin_state')
+        .update({ last_assigned_overflow_id: null })
+        .eq('last_assigned_overflow_id', id);
+
+      if (stateError) throw stateError;
+
+      const { data: removedRows, error } = await supabase
         .from('overflow_recipients')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select('id');
 
       if (error) throw error;
+      if (!removedRows || removedRows.length === 0) {
+        throw new Error('Delete blocked — you may not have permission to change overflow recipients.');
+      }
       await fetchOverflowRecipients();
       toast({ title: 'Overflow recipient removed' });
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing overflow recipient:', error);
+      await fetchOverflowRecipients();
+      toast({ title: 'Error', description: error?.message || 'Failed to remove overflow recipient.', variant: 'destructive' });
       return false;
     }
   }, [fetchOverflowRecipients]);
@@ -234,13 +266,13 @@ export const useLeadDistribution = () => {
   // Update agent cap
   const updateAgentCap = useCallback(async (adminUserId: string, updates: Partial<AgentCap>) => {
     try {
-      // Check if cap record exists
-      const existing = agentCaps.find(cap => cap.admin_user_id === adminUserId);
+      // Check if cap record exists (use ref to avoid stale closure)
+      const existing = agentCapsRef.current.find(cap => cap.admin_user_id === adminUserId);
 
       if (existing) {
         const { data: updatedRows, error } = await supabase
           .from('agent_distribution_caps')
-          .update(updates as any)
+          .update(updates)
           .eq('admin_user_id', adminUserId)
           .select();
 
@@ -252,7 +284,7 @@ export const useLeadDistribution = () => {
       } else {
         const { error } = await supabase
           .from('agent_distribution_caps')
-          .insert({ admin_user_id: adminUserId, ...updates } as any);
+          .insert({ admin_user_id: adminUserId, ...updates });
 
         if (error) throw error;
       }
@@ -270,13 +302,14 @@ export const useLeadDistribution = () => {
       toast({ title: 'Error', description: error?.message || 'Failed to update agent cap.', variant: 'destructive' });
       return false;
     }
-  }, [agentCaps, fetchAgentCaps]);
+  }, [fetchAgentCaps]);
 
-  // Toggle agent pause status
+  // Toggle agent pause status — always read latest paused value from ref to avoid stale closures
   const toggleAgentPause = useCallback(async (adminUserId: string) => {
-    const currentCap = agentCaps.find(cap => cap.admin_user_id === adminUserId);
-    return updateAgentCap(adminUserId, { paused: !currentCap?.paused });
-  }, [agentCaps, updateAgentCap]);
+    const currentCap = agentCapsRef.current.find(cap => cap.admin_user_id === adminUserId);
+    const nextPaused = !(currentCap?.paused ?? false);
+    return updateAgentCap(adminUserId, { paused: nextPaused });
+  }, [updateAgentCap]);
 
   // Delete agent from distribution
   const deleteAgentFromDistribution = useCallback(async (adminUserId: string) => {
@@ -391,11 +424,11 @@ export const useLeadDistribution = () => {
   // Initialize agent caps for all sales agents
   const initializeAgentCaps = useCallback(async () => {
     try {
-      // Get all sales/admin users (including inactive — they show but can be turned off)
+      // Get all lead-capable staff users (including inactive — they show but can be turned off)
       const { data: adminUsers, error } = await supabase
         .from('admin_users')
-        .select('id')
-        .in('role', ['sales', 'sales_lead']);
+        .select('id, email')
+        .in('role', DISTRIBUTION_ROLES);
 
       if (error) throw error;
 
@@ -410,7 +443,8 @@ export const useLeadDistribution = () => {
             admin_user_id: u.id,
             daily_cap: 20, // Default cap - admins can set to NULL for unlimited
             assigned_today: 0,
-            paused: false
+            paused: false,
+            assignment_mode: getDefaultAssignmentMode(u)
           })));
 
         if (insertError) throw insertError;
@@ -431,13 +465,13 @@ export const useLeadDistribution = () => {
 
     loadData();
 
-    // Auto-initialize: after initial load, ensure all sales/sales_lead agents have cap records
+    // Auto-initialize: after initial load, ensure all lead-capable staff have cap records
     const autoInit = async () => {
       try {
         const { data: adminUsers, error } = await supabase
           .from('admin_users')
-          .select('id')
-          .in('role', ['sales', 'sales_lead']);
+          .select('id, email')
+          .in('role', DISTRIBUTION_ROLES);
 
         if (error || !adminUsers) return;
 
@@ -456,7 +490,8 @@ export const useLeadDistribution = () => {
               admin_user_id: u.id,
               daily_cap: 20,
               assigned_today: 0,
-              paused: false
+              paused: false,
+              assignment_mode: getDefaultAssignmentMode(u)
             })));
           // Re-fetch after auto-init
           fetchAgentCaps();
@@ -547,9 +582,10 @@ export const useLeadDistribution = () => {
         .from('agent_distribution_caps')
         .insert({
           admin_user_id: adminUserId,
-          daily_cap: 20,
+        daily_cap: 20,
           assigned_today: 0,
-          paused: false
+        paused: false,
+        assignment_mode: 'round_robin'
         });
 
       if (error) throw error;
