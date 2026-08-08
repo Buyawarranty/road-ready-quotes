@@ -117,7 +117,7 @@ const DealerAdminLayout: React.FC = () => {
     () => Object.fromEntries(navGroups.map((g) => [g.label, true]))
   );
 
-  const bannerCount = activeCalls.length + missedCalls.length;
+  const bannerCount = (ringing ? 1 : 0) + missed.length;
 
   useEffect(() => {
     if (!gateUnlocked) {
