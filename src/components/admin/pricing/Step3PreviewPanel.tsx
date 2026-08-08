@@ -130,9 +130,6 @@ export default function Step3PreviewPanel() {
               /* Same props the real website passes at ?step=3 so the preview shows
                  identical fields and buttons (change vehicle, inline edits). */
               onChangeVehicle={() => setVehicle(null)}
-              onUpdateVehicle={patch =>
-                setVehicle(prev => (prev ? { ...prev, ...patch } : prev))
-              }
               previousLabourRate={70}
               onPlanSelected={(_planId, paymentType, planName) => {
                 toast.info(

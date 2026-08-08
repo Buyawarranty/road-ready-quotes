@@ -329,7 +329,7 @@ export const ClaimsWorkbenchList: React.FC<Props> = ({
     if (field === 'claimed_amount') patch.payment_amount = value;
     const { error } = await supabase
       .from('claims_submissions')
-      .update(patch)
+      .update(patch as any)
       .eq('id', claimId);
     if (error) {
       toast({ title: 'Update failed', description: error.message, variant: 'destructive' });

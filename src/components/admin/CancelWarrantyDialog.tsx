@@ -83,7 +83,7 @@ export const CancelWarrantyDialog: React.FC<CancelWarrantyDialogProps> = ({
 
         const { error: customerError } = await supabase
           .from('customers')
-          .update(customerUpdate)
+          .update(customerUpdate as any)
           .eq('id', policy.customer_id);
 
         if (customerError) {
