@@ -2402,7 +2402,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
         .maybeSingle();
 
       const resendQuoteLink = liveQuote?.access_token
-        ? `https://buyawarranty.co.uk/quote/${liveQuote.access_token}`
+        ? `https://pandaprotect.co.uk/quote/${liveQuote.access_token}`
         : undefined;
 
       if (!resendQuoteLink) {
@@ -2549,7 +2549,7 @@ Cover: ${months} months + ${bonus} FREE
 Claim Limit: £${displayClaimLimit.toLocaleString()}
 
 Complete your purchase here:
-${quoteLink || 'https://buyawarranty.co.uk'}
+${quoteLink || 'https://pandaprotect.co.uk'}
 
 Questions? Call 0330 229 5040`;
 
@@ -5972,7 +5972,7 @@ Questions? Call 0330 229 5040`;
                     </div>
                     <div className="p-5 bg-background">
                       <div className="text-center mb-5">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" className="h-10 mx-auto mb-3" />
+                        <img src="https://pandaprotect.co.uk/panda-protect-logo.png" alt="Buy A Warranty" className="h-10 mx-auto mb-3" />
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Warranty quote ready</p>
                         <h2 className="text-xl font-bold text-foreground mt-1">
                           {vehicleData?.make || 'Vehicle'} {vehicleData?.model || ''} · Platinum cover
@@ -6177,7 +6177,7 @@ Buy A Warranty`;
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 0;"><tr><td align="center">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
 <tr><td style="padding:28px 32px 8px 32px;text-align:center;">
-<img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" style="height:40px;display:inline-block;" />
+<img src="https://pandaprotect.co.uk/panda-protect-logo.png" alt="Buy A Warranty" style="height:40px;display:inline-block;" />
 </td></tr>
 <tr><td style="padding:8px 32px 0 32px;text-align:center;">
 <p style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Warranty quote ready</p>
@@ -6207,7 +6207,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
 <p style="margin:0;">Kind regards,<br/><strong>Buy A Warranty</strong></p>
 </td></tr>
 </table>
-<p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;">Buy A Warranty · buyawarranty.co.uk</p>
+<p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;">Buy A Warranty · pandaprotect.co.uk</p>
 </td></tr></table></body></html>`;
 
                       const copy = async (text: string, label: string) => {
@@ -6451,7 +6451,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                     <div className="p-4 bg-white">
                       {/* Email Header Preview */}
                       <div className="text-center mb-6">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" className="h-12 mx-auto mb-4" />
+                        <img src="https://pandaprotect.co.uk/panda-protect-logo.png" alt="Buy A Warranty" className="h-12 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-gray-900">
                           Here's your {vehicleData?.make} {vehicleData?.model} warranty quote
                         </h2>

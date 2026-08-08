@@ -50,7 +50,7 @@ interface AgentPresence {
 const DISTRIBUTION_ROLES = ['sales', 'sales_lead', 'claims_agent', 'claims_manager'] as const;
 
 const getDefaultAssignmentMode = (user?: { email?: string | null }) =>
-  user?.email?.toLowerCase() === 'claims@buyawarranty.co.uk' ? 'open_pool' : 'round_robin';
+  user?.email?.toLowerCase() === 'claims@pandaprotect.co.uk' ? 'open_pool' : 'round_robin';
 
 export const useLeadDistribution = () => {
   const [settings, setSettings] = useState<DistributionSettings | null>(null);

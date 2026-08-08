@@ -3339,7 +3339,7 @@ export const CustomersTab = ({
     const firstName = selectedCustomer?.first_name || editingCustomer?.first_name || 'there';
     const email = customerCredentials?.email || selectedCustomer?.email || '';
     const password = customerCredentials?.password || '';
-    const dashboardUrl = 'https://buyawarranty.co.uk/customer-dashboard';
+    const dashboardUrl = 'https://pandaprotect.co.uk/customer-dashboard';
 
     if (mode === 'apology') {
       return {
@@ -3716,7 +3716,7 @@ Buyawarranty.co.uk`,
         const customerEmails = emailLogs?.filter(log => log.recipient_email === customer.email) || [];
         statuses[customer.email] = {
           portal_signup: customerEmails.some(log => 
-            log.subject?.toLowerCase().includes('welcome to buyawarranty.co.uk') &&
+            log.subject?.toLowerCase().includes('welcome to pandaprotect.co.uk') || log.subject?.toLowerCase().includes('welcome to pandaprotect.co.uk') &&
             log.subject?.toLowerCase().includes('get you started')
           ),
           policy_documents: customerEmails.some(log => 
@@ -5107,7 +5107,7 @@ Buyawarranty.co.uk`,
                                             <div>
                                               <Label className="text-sm font-medium text-gray-700">Customer Dashboard URL</Label>
                                               <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded block mt-1">
-                                                https://buyawarranty.co.uk/customer-dashboard
+                                                https://pandaprotect.co.uk/customer-dashboard
                                               </code>
                                             </div>
                                             
@@ -5133,7 +5133,7 @@ Buyawarranty.co.uk`,
                                             onClick={() => {
                                               const credentials = `Customer Dashboard Login Details
 
-Dashboard URL: https://buyawarranty.co.uk/customer-dashboard
+Dashboard URL: https://pandaprotect.co.uk/customer-dashboard
 Username: ${customerCredentials.email}
 Password: ${customerCredentials.password}
 
@@ -5207,7 +5207,7 @@ Please log in and change your password after first login.`;
                                               <div>
                                                 <Label className="text-sm font-medium">From</Label>
                                                 <div className="text-sm text-gray-600 mt-1">
-                                                  Buyawarranty Customer Care &lt;noreply@buyawarranty.co.uk&gt;
+                                                  Buyawarranty Customer Care &lt;noreply@pandaprotect.co.uk&gt;
                                                 </div>
                                               </div>
                                               <div>

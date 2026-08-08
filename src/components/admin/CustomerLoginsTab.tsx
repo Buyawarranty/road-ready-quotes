@@ -1100,7 +1100,7 @@ const CustomerLoginsTab = () => {
 
               <p className="text-xs text-muted-foreground">
                 💡 Generate a password, test it works, then send the login details to the customer's email.
-                The customer dashboard URL is: <strong>https://buyawarranty.co.uk/customer-dashboard/</strong>
+                The customer dashboard URL is: <strong>https://pandaprotect.co.uk/customer-dashboard/</strong>
               </p>
             </CardContent>
           </Card>

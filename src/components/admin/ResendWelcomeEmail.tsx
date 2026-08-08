@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const ResendWelcomeEmail = () => {
-  const [email, setEmail] = useState('claims@buyawarranty.co.uk');
+  const [email, setEmail] = useState('claims@pandaprotect.co.uk');
   const [loading, setLoading] = useState(false);
 
   const handleResendEmail = async () => {

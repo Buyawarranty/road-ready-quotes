@@ -58,7 +58,7 @@ We're here to help!
 
 Best regards,
 Buy A Warranty Team
-www.buyawarranty.co.uk`;
+www.pandaprotect.co.uk`;
 };
 
 export const FollowUpEmailDialog: React.FC<FollowUpEmailDialogProps> = ({

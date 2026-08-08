@@ -33,12 +33,12 @@ const VAT_RATE = 0.2;
 
 const COMPANY = {
   name: 'Buy A Warranty',
-  website: 'www.buyawarranty.co.uk',
-  email: 'support@buyawarranty.co.uk',
+  website: 'www.pandaprotect.co.uk',
+  email: 'support@pandaprotect.co.uk',
   phone: '0330 229 5040',
   logoUrl: logoAsset.url,
   /** Absolute URL so the logo also renders inside emailed invoices. */
-  logoAbsoluteUrl: `https://buyawarranty.co.uk${logoAsset.url}`,
+  logoAbsoluteUrl: `https://pandaprotect.co.uk${logoAsset.url}`,
   legalLine1:
     'Buyawarranty.co.uk is a trading name of Buy A Warranty Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863.',
   legalLine2:

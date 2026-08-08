@@ -140,7 +140,7 @@ export const BlogEditor = ({ postId }: BlogEditorProps) => {
         seo_title: seoTitle,
         seo_description: seoDescription,
         seo_keywords: seoKeywords,
-        canonical_url: `https://buyawarranty.co.uk/thewarrantyhub/${slug}`,
+        canonical_url: `https://pandaprotect.co.uk/thewarrantyhub/${slug}`,
         word_count: wordCount,
         read_time_minutes: readTime,
         structured_data: {
@@ -236,7 +236,7 @@ export const BlogEditor = ({ postId }: BlogEditorProps) => {
               placeholder="article-url-slug"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              URL: buyawarranty.co.uk/thewarrantyhub/{slug || 'your-slug'}
+              URL: pandaprotect.co.uk/thewarrantyhub/{slug || 'your-slug'}
             </p>
           </div>
 
