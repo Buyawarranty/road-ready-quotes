@@ -162,6 +162,53 @@ serve(async (req) => {
       if (!resendResponse.ok) {
         console.error("submit-trade-warranty-signup email failed:", await resendResponse.text());
       }
+
+      // Acknowledgement email to the trader
+      const applicantName = payload.contact_name || payload.dealership_name || "there";
+      const applicantHtml = `
+        <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
+          <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+            <div style="background:#1e3a5f;padding:24px;">
+              <h1 style="margin:0;color:#ffffff;font-size:20px;">Panda Protect</h1>
+            </div>
+            <div style="padding:28px;color:#111827;">
+              <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">We've received your interest</h2>
+              <p style="line-height:1.6;">Hi ${esc(applicantName)},</p>
+              <p style="line-height:1.6;">Thanks for registering your interest in becoming a Panda Protect trade partner. Your application has been received and our team is reviewing it now.</p>
+              <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:18px;margin:20px 0;font-size:14px;">
+                <div style="padding:4px 0;"><strong>Dealership:</strong> ${esc(payload.dealership_name) || "-"}</div>
+                <div style="padding:4px 0;"><strong>Contact:</strong> ${esc(payload.contact_name) || "-"}</div>
+                <div style="padding:4px 0;"><strong>Email:</strong> ${esc(payload.email_address)}</div>
+                <div style="padding:4px 0;"><strong>Phone:</strong> ${esc(payload.phone_number)}</div>
+              </div>
+              <p style="line-height:1.6;">We'll be in touch within 1 business day to let you know the outcome. If your application is approved you'll receive your dealer portal login details by email.</p>
+              <p style="line-height:1.6;">Kind regards,<br/>The Panda Protect Trade Team</p>
+            </div>
+            <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
+              Panda Protect · Trade Warranty · hello@pandaprotect.co.uk
+            </div>
+          </div>
+        </div>
+      `;
+
+      const applicantResponse = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "Panda Protect <support@buyawarranty.co.uk>",
+          to: [payload.email_address],
+          reply_to: "hello@pandaprotect.co.uk",
+          subject: "We've received your Panda Protect trade application",
+          html: applicantHtml,
+        }),
+      });
+
+      if (!applicantResponse.ok) {
+        console.error("submit-trade-warranty-signup applicant email failed:", await applicantResponse.text());
+      }
     } else {
       console.warn("RESEND_API_KEY is not configured; skipping trade warranty signup email notification");
     }

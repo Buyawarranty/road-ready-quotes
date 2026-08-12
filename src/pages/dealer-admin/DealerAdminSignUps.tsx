@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
-  Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText,
+  Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
-type Status = 'new' | 'contacted' | 'qualified' | 'closed';
+type Status = 'new' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
 interface Signup {
   id: string;
@@ -34,12 +34,14 @@ interface Signup {
 }
 
 const PAGE_SIZE = 25;
-const STATUS_OPTIONS: Status[] = ['new', 'contacted', 'qualified', 'closed'];
+const STATUS_OPTIONS: Status[] = ['new', 'contacted', 'qualified', 'closed', 'approved', 'rejected'];
 const statusColor: Record<Status, string> = {
   new: 'bg-blue-100 text-blue-800',
   contacted: 'bg-amber-100 text-amber-800',
   qualified: 'bg-emerald-100 text-emerald-800',
   closed: 'bg-gray-200 text-gray-700',
+  approved: 'bg-green-600 text-white',
+  rejected: 'bg-red-100 text-red-800',
 };
 
 const DealerAdminSignUps: React.FC = () => {
@@ -49,6 +51,8 @@ const DealerAdminSignUps: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Signup | null>(null);
+  const [decisionNotes, setDecisionNotes] = useState('');
+  const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const load = async () => {
@@ -109,6 +113,31 @@ const DealerAdminSignUps: React.FC = () => {
       setRows(prev);
     } else {
       toast.success('Status updated');
+    }
+  };
+
+  const decide = async (decision: 'approve' | 'reject') => {
+    if (!selected) return;
+    setDeciding(decision);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
+        body: { signup_id: selected.id, decision, notes: decisionNotes.trim() || null },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const newStatus: Status = decision === 'approve' ? 'approved' : 'rejected';
+      setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, status: newStatus } : row)));
+      setSelected({ ...selected, status: newStatus });
+      setDecisionNotes('');
+      toast.success(
+        decision === 'approve'
+          ? 'Approved — login details emailed to the trader.'
+          : 'Declined — notification email sent.'
+      );
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not complete this action');
+    } finally {
+      setDeciding(null);
     }
   };
 
@@ -323,6 +352,45 @@ const DealerAdminSignUps: React.FC = () => {
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-800 whitespace-pre-wrap min-h-[60px]">
                     {selected.additional_information || <span className="text-gray-400">No additional information provided.</span>}
                   </div>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Decision
+                  </div>
+                  <textarea
+                    value={decisionNotes}
+                    onChange={(e) => setDecisionNotes(e.target.value)}
+                    placeholder="Optional message included in the email to the trader…"
+                    className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm min-h-[70px]"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => decide('approve')}
+                      disabled={deciding !== null}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      {deciding === 'approve'
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <Check className="w-4 h-4 mr-2" />}
+                      Approve & send login details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => decide('reject')}
+                      disabled={deciding !== null}
+                      className="border-red-300 text-red-700 hover:bg-red-50"
+                    >
+                      {deciding === 'reject'
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <Ban className="w-4 h-4 mr-2" />}
+                      Decline
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Approving creates the trader's dealer portal account and emails their login details.
+                    Declining emails them a polite note inviting them to apply again.
+                  </p>
                 </div>
 
                 <div className="flex justify-end pt-2">

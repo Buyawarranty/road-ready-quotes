@@ -220,6 +220,7 @@ const DealerAdminSignUps = lazy(() => import("./pages/dealer-admin/DealerAdminSi
 const DealerAdminOverview = lazy(() => import("./pages/dealer-admin/DealerAdminOverview"));
 const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSales"));
 const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
+const DealerAdminTraders = lazy(() => import("./pages/dealer-admin/DealerAdminTraders"));
 const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminInvoices"));
 const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
 const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdminPlaceholder"));
@@ -398,6 +399,7 @@ const App = () => {
                       <Route path="sign-ups" element={<DealerAdminSignUps />} />
                       <Route path="sales" element={<DealerAdminSales />} />
                       <Route path="dealers" element={<DealerAdminDealers />} />
+                      <Route path="traders" element={<DealerAdminTraders />} />
                       <Route path="invoices" element={<DealerAdminInvoices />} />
                       <Route path="analytics" element={<DealerAdminAnalytics />} />
                       {/* Mirrored retail tabs (dealer-scoped placeholders) */}
