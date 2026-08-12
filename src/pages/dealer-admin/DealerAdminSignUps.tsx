@@ -114,6 +114,31 @@ const DealerAdminSignUps: React.FC = () => {
     }
   };
 
+  const decide = async (decision: 'approve' | 'reject') => {
+    if (!selected) return;
+    setDeciding(decision);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
+        body: { signup_id: selected.id, decision, notes: decisionNotes.trim() || null },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const newStatus: Status = decision === 'approve' ? 'approved' : 'rejected';
+      setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, status: newStatus } : row)));
+      setSelected({ ...selected, status: newStatus });
+      setDecisionNotes('');
+      toast.success(
+        decision === 'approve'
+          ? 'Approved — login details emailed to the trader.'
+          : 'Declined — notification email sent.'
+      );
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not complete this action');
+    } finally {
+      setDeciding(null);
+    }
+  };
+
   const exportCsv = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
