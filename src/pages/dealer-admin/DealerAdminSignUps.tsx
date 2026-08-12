@@ -34,12 +34,14 @@ interface Signup {
 }
 
 const PAGE_SIZE = 25;
-const STATUS_OPTIONS: Status[] = ['new', 'contacted', 'qualified', 'closed'];
+const STATUS_OPTIONS: Status[] = ['new', 'contacted', 'qualified', 'closed', 'approved', 'rejected'];
 const statusColor: Record<Status, string> = {
   new: 'bg-blue-100 text-blue-800',
   contacted: 'bg-amber-100 text-amber-800',
   qualified: 'bg-emerald-100 text-emerald-800',
   closed: 'bg-gray-200 text-gray-700',
+  approved: 'bg-green-600 text-white',
+  rejected: 'bg-red-100 text-red-800',
 };
 
 const DealerAdminSignUps: React.FC = () => {
