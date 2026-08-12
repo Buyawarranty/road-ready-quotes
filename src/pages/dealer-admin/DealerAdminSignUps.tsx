@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
-type Status = 'new' | 'contacted' | 'qualified' | 'closed';
+type Status = 'new' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
 interface Signup {
   id: string;
