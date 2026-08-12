@@ -6303,6 +6303,57 @@ export type Database = {
         }
         Relationships: []
       }
+      erased_customers: {
+        Row: {
+          created_at: string
+          customer_name: string | null
+          customers_archive: Json
+          email: string | null
+          erased_by: string | null
+          erased_by_name: string | null
+          id: string
+          lead_ids: string[]
+          leads_archive: Json
+          other_archive: Json
+          phone: string | null
+          reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name?: string | null
+          customers_archive?: Json
+          email?: string | null
+          erased_by?: string | null
+          erased_by_name?: string | null
+          id?: string
+          lead_ids?: string[]
+          leads_archive?: Json
+          other_archive?: Json
+          phone?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string | null
+          customers_archive?: Json
+          email?: string | null
+          erased_by?: string | null
+          erased_by_name?: string | null
+          id?: string
+          lead_ids?: string[]
+          leads_archive?: Json
+          other_archive?: Json
+          phone?: string | null
+          reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           category: string
@@ -8516,6 +8567,7 @@ export type Database = {
           is_bing_ads: boolean | null
           is_facebook_ads: boolean | null
           is_google_ads: boolean | null
+          is_tiktok_ads: boolean | null
           msclkid: string | null
           page_path: string
           page_title: string | null
@@ -8523,6 +8575,7 @@ export type Database = {
           screen_height: number | null
           screen_width: number | null
           session_id: string | null
+          ttclid: string | null
           user_agent: string | null
           utm_campaign: string | null
           utm_content: string | null
@@ -8539,6 +8592,7 @@ export type Database = {
           is_bing_ads?: boolean | null
           is_facebook_ads?: boolean | null
           is_google_ads?: boolean | null
+          is_tiktok_ads?: boolean | null
           msclkid?: string | null
           page_path: string
           page_title?: string | null
@@ -8546,6 +8600,7 @@ export type Database = {
           screen_height?: number | null
           screen_width?: number | null
           session_id?: string | null
+          ttclid?: string | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
@@ -8562,6 +8617,7 @@ export type Database = {
           is_bing_ads?: boolean | null
           is_facebook_ads?: boolean | null
           is_google_ads?: boolean | null
+          is_tiktok_ads?: boolean | null
           msclkid?: string | null
           page_path?: string
           page_title?: string | null
@@ -8569,6 +8625,7 @@ export type Database = {
           screen_height?: number | null
           screen_width?: number | null
           session_id?: string | null
+          ttclid?: string | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
@@ -9835,6 +9892,12 @@ export type Database = {
           priority_score: number | null
           queue: string | null
           quote_amount: number | null
+          quote_source: string | null
+          quoted_at: string | null
+          quoted_claim_limit: number | null
+          quoted_excess: number | null
+          quoted_labour_rate: number | null
+          quoted_term: string | null
           reason: string | null
           recovery_outcome: string | null
           recovery_worked_at: string | null
@@ -9938,6 +10001,12 @@ export type Database = {
           priority_score?: number | null
           queue?: string | null
           quote_amount?: number | null
+          quote_source?: string | null
+          quoted_at?: string | null
+          quoted_claim_limit?: number | null
+          quoted_excess?: number | null
+          quoted_labour_rate?: number | null
+          quoted_term?: string | null
           reason?: string | null
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
@@ -10041,6 +10110,12 @@ export type Database = {
           priority_score?: number | null
           queue?: string | null
           quote_amount?: number | null
+          quote_source?: string | null
+          quoted_at?: string | null
+          quoted_claim_limit?: number | null
+          quoted_excess?: number | null
+          quoted_labour_rate?: number | null
+          quoted_term?: string | null
           reason?: string | null
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
@@ -11781,6 +11856,45 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_exclusion_versions: {
+        Row: {
+          created_at: string
+          extra_makes: Json
+          extra_model_rules: Json
+          id: string
+          label: string
+          notes: string | null
+          pricing_version_label: string | null
+          published_at: string
+          published_by: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          extra_makes?: Json
+          extra_model_rules?: Json
+          id?: string
+          label: string
+          notes?: string | null
+          pricing_version_label?: string | null
+          published_at?: string
+          published_by?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          extra_makes?: Json
+          extra_model_rules?: Json
+          id?: string
+          label?: string
+          notes?: string | null
+          pricing_version_label?: string | null
+          published_at?: string
+          published_by?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       video_play_tracking: {
         Row: {
           completed: boolean | null
@@ -12546,6 +12660,7 @@ export type Database = {
         Returns: boolean
       }
       has_all_leads_permission: { Args: { _user_id: string }; Returns: boolean }
+      has_price_updates_access: { Args: { _user_id: string }; Returns: boolean }
       has_tab_access: {
         Args: { _tab: string; _user_id: string }
         Returns: boolean
@@ -13129,6 +13244,7 @@ export type Database = {
         | "partner"
         | "other"
         | "bing_ad"
+        | "tiktok_ad"
       lead_status:
         | "new"
         | "contacted"
@@ -13151,6 +13267,8 @@ export type Database = {
         | "bought_elsewhere"
         | "vehicle_sold"
         | "do_not_contact"
+        | "not_eligible"
+        | "unsubscribed"
       mask_level: "none" | "partial" | "full"
       note_purpose:
         | "claim_query"
@@ -13361,6 +13479,7 @@ export const Constants = {
         "partner",
         "other",
         "bing_ad",
+        "tiktok_ad",
       ],
       lead_status: [
         "new",
@@ -13384,6 +13503,8 @@ export const Constants = {
         "bought_elsewhere",
         "vehicle_sold",
         "do_not_contact",
+        "not_eligible",
+        "unsubscribed",
       ],
       mask_level: ["none", "partial", "full"],
       note_purpose: [
