@@ -399,6 +399,7 @@ const App = () => {
                       <Route path="sign-ups" element={<DealerAdminSignUps />} />
                       <Route path="sales" element={<DealerAdminSales />} />
                       <Route path="dealers" element={<DealerAdminDealers />} />
+                      <Route path="traders" element={<DealerAdminTraders />} />
                       <Route path="invoices" element={<DealerAdminInvoices />} />
                       <Route path="analytics" element={<DealerAdminAnalytics />} />
                       {/* Mirrored retail tabs (dealer-scoped placeholders) */}
