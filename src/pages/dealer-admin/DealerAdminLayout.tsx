@@ -6,7 +6,7 @@ import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner';
 import { MissedCallBanner } from '@/components/admin/calls/MissedCallBanner';
 import {
-  Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut,
+  Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut, Building2,
   Target, Calculator, Lightbulb, Receipt, Car, Percent, UserPlus, MessageSquare,
   Star, Mail, ShoppingCart, Clock, Megaphone, Eye, Database, Shield, FolderOpen,
   PenTool, Globe, TestTube, CalendarClock, Trophy, Settings, ChevronDown, ChevronRight,
