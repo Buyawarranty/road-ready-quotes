@@ -327,6 +327,45 @@ const DealerAdminSignUps: React.FC = () => {
                   </div>
                 </div>
 
+                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Decision
+                  </div>
+                  <textarea
+                    value={decisionNotes}
+                    onChange={(e) => setDecisionNotes(e.target.value)}
+                    placeholder="Optional message included in the email to the trader…"
+                    className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm min-h-[70px]"
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={() => decide('approve')}
+                      disabled={deciding !== null}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      {deciding === 'approve'
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <Check className="w-4 h-4 mr-2" />}
+                      Approve & send login details
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => decide('reject')}
+                      disabled={deciding !== null}
+                      className="border-red-300 text-red-700 hover:bg-red-50"
+                    >
+                      {deciding === 'reject'
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <Ban className="w-4 h-4 mr-2" />}
+                      Decline
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Approving creates the trader's dealer portal account and emails their login details.
+                    Declining emails them a polite note inviting them to apply again.
+                  </p>
+                </div>
+
                 <div className="flex justify-end pt-2">
                   <Button variant="outline" onClick={closeDetail}>
                     <X className="w-4 h-4 mr-2" /> Close
