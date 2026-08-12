@@ -51,6 +51,8 @@ const DealerAdminSignUps: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Signup | null>(null);
+  const [decisionNotes, setDecisionNotes] = useState('');
+  const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const load = async () => {
