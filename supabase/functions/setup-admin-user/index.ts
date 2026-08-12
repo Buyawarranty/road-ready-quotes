@@ -31,15 +31,19 @@ serve(async (req) => {
 
     console.log(`Setting up admin user for: ${email}`);
 
-    // Find the auth user
-    const { data: { users }, error: listError } = await supabaseClient.auth.admin.listUsers();
-    
-    if (listError) {
-      console.error("Error listing users:", listError);
-      throw new Error(`Failed to list users: ${listError.message}`);
+    // Find the auth user (paginate through all users)
+    let authUser: any = null;
+    for (let page = 1; page <= 20; page++) {
+      const { data, error: listError } = await supabaseClient.auth.admin.listUsers({ page, perPage: 1000 });
+      if (listError) {
+        console.error("Error listing users:", listError);
+        throw new Error(`Failed to list users: ${listError.message}`);
+      }
+      const found = data?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+      if (found) { authUser = found; break; }
+      if (!data?.users || data.users.length < 1000) break;
     }
 
-    let authUser = users?.find(u => u.email === email);
 
     // If auth user doesn't exist, create it
     if (!authUser) {
