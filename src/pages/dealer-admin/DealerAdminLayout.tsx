@@ -48,6 +48,7 @@ const navGroups: NavGroup[] = [
     items: [
       { to: '/dealer-admin/customers', label: 'Customers', icon: Users },
       { to: '/dealer-admin/dealers', label: 'Dealers', icon: Users },
+      { to: '/dealer-admin/traders', label: 'Traders', icon: Building2 },
       { to: '/dealer-admin/claims', label: 'Claims', icon: MessageSquare },
       { to: '/dealer-admin/reviews', label: 'Reviews', icon: Star },
       { to: '/dealer-admin/contact', label: 'Contact Submissions', icon: Mail },
