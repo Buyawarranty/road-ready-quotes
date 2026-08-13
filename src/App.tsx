@@ -21,6 +21,7 @@ import { PageViewLogger } from "@/components/PageViewLogger";
 import { SeasonalOfferBanner } from "@/components/SeasonalOfferBanner";
 import StickyNavigation from "@/components/StickyNavigation";
 import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
+import DealerHome from "./pages/dealer-portal/DealerHome";
 
 // Component to conditionally render banner only on homepage
 const ConditionalSeasonalBanner = () => {
@@ -185,7 +186,6 @@ const RequestAccess = lazy(() => import("./pages/RequestAccess"));
 const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 
 // Dealer Portal pages
-const DealerHome = lazy(() => import("./pages/dealer-portal/DealerHome"));
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
 const DealerDashboard = lazy(() => import("./pages/dealer-portal/DealerDashboard"));
 const DealerCreateQuote = lazy(() => import("./pages/dealer-portal/DealerCreateQuote"));
