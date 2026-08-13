@@ -226,6 +226,14 @@ serve(async (req) => {
       dealerId = newDealer.id;
     }
 
+    // 2b. give them the trader (dealer) role
+    const { error: roleErr } = await admin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "dealer" }, { onConflict: "user_id,role" });
+    if (roleErr) console.error("dealer role assign failed:", roleErr);
+
+
+
     // 3. mark signup approved
     await admin
       .from("trade_warranty_signups")
