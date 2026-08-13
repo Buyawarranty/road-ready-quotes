@@ -20,6 +20,7 @@ import { PageViewTracker } from "@/components/PageViewTracker";
 import { PageViewLogger } from "@/components/PageViewLogger";
 import { SeasonalOfferBanner } from "@/components/SeasonalOfferBanner";
 import StickyNavigation from "@/components/StickyNavigation";
+import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
 
 // Component to conditionally render banner only on homepage
 const ConditionalSeasonalBanner = () => {
@@ -185,8 +186,6 @@ const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 
 // Dealer Portal pages
 const DealerHome = lazy(() => import("./pages/dealer-portal/DealerHome"));
-const DealerComingSoon = lazy(() => import("./pages/dealer-portal/DealerComingSoon"));
-const DealerSignup = lazy(() => import("./pages/dealer-portal/DealerSignup"));
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
 const DealerDashboard = lazy(() => import("./pages/dealer-portal/DealerDashboard"));
 const DealerCreateQuote = lazy(() => import("./pages/dealer-portal/DealerCreateQuote"));
@@ -370,7 +369,7 @@ const App = () => {
                     <Route path="/dealer-portal/coming-soon" element={<DealerComingSoon />} />
                     <Route path="/dealer-portal/full-warranty" element={<FullWarrantyService />} />
                     <Route path="/dealer-portal/claims-handling" element={<ClaimsHandlingService />} />
-                    <Route path="/dealer-portal/signup" element={<DealerSignup />} />
+                    <Route path="/dealer-portal/signup" element={<DealerComingSoon />} />
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     {/* Dealer portal app routes */}
                     <Route path="/dealer-portal/dashboard" element={<DealerDashboard />} />
