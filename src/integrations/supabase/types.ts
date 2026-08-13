@@ -1229,6 +1229,169 @@ export type Database = {
           },
         ]
       }
+      ai_sandbox_handovers: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          cover_summary: string | null
+          created_at: string
+          created_by: string
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          id: string
+          kind: string
+          quoted_price: number | null
+          reason: string | null
+          registration: string | null
+          status: string
+          thread_id: string
+          transcript: Json
+          updated_at: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          cover_summary?: string | null
+          created_at?: string
+          created_by: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          kind?: string
+          quoted_price?: number | null
+          reason?: string | null
+          registration?: string | null
+          status?: string
+          thread_id: string
+          transcript?: Json
+          updated_at?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          cover_summary?: string | null
+          created_at?: string
+          created_by?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          kind?: string
+          quoted_price?: number | null
+          reason?: string | null
+          registration?: string | null
+          status?: string
+          thread_id?: string
+          transcript?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_sandbox_handovers_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "ai_sandbox_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_sandbox_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          sdk_message_id: string | null
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: string
+          sdk_message_id?: string | null
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          sdk_message_id?: string | null
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_sandbox_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "ai_sandbox_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_sandbox_specialist_presence: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          is_online: boolean
+          last_seen_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          is_online?: boolean
+          last_seen_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          is_online?: boolean
+          last_seen_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_sandbox_threads: {
+        Row: {
+          created_at: string
+          id: string
+          is_sandbox: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_sandbox?: boolean
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_sandbox?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       api_webhook_deliveries: {
         Row: {
           attempts: number
