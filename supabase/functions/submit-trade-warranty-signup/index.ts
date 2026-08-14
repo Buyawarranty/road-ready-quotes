@@ -198,7 +198,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Panda Protect <support@buyawarranty.co.uk>",
+          from: "Panda Protect <hello@pandaprotect.co.uk>",
           to: [payload.email_address],
           reply_to: "hello@pandaprotect.co.uk",
           subject: "We've received your Panda Protect trade application",

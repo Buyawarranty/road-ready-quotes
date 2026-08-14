@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const BRAND = "Panda Protect";
-const FROM = "Panda Protect <support@buyawarranty.co.uk>";
+const FROM = "Panda Protect <hello@pandaprotect.co.uk>";
 const PORTAL_URL = "https://pandaprotect.co.uk/dealer-portal/login";
 
 const esc = (v?: string | null) =>
