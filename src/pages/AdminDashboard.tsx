@@ -22,6 +22,7 @@ import { PendingLeadsPill } from '@/components/admin/PendingLeadsPill';
 
 import { CheckoutStruggleAlertBar } from '@/components/admin/CheckoutStruggleAlertBar';
 import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner';
+import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
@@ -964,6 +965,7 @@ const AdminDashboardInner: React.FC<{
   const { effectiveRole, effectivePermissions, isImpersonating, viewAsAgent } = useViewAs();
   const { collapsed: sidebarCollapsed } = useAdminSidebarCollapsed();
   const { session } = useAuth();
+  const { ringing } = useCallRailPresence();
   const isSuperAdmin = userRole === 'super_admin';
 
   // Use effective (impersonated) role for sidebar and content
@@ -1092,7 +1094,7 @@ const AdminDashboardInner: React.FC<{
 
 
       {/* Real-time incoming CallRail call banner */}
-      <IncomingCallBanner />
+      <IncomingCallBanner ringing={ringing} />
 
       {/* Global missed inbound call bar — visible on every admin tab */}
       <MissedCallAlertBar
