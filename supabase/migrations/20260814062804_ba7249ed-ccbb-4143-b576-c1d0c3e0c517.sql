@@ -1,0 +1,1 @@
+DELETE FROM public.trade_warranty_signups WHERE id = 'e9ba0caf-e000-4c42-94cd-32d7d0874c45';
