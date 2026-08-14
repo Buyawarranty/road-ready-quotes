@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -24,6 +24,40 @@ import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
 import DealerHome from "./pages/dealer-portal/DealerHome";
 import DealerAdminLayout from "./pages/dealer-admin/DealerAdminLayout";
 import DealerAdminSignUps from "./pages/dealer-admin/DealerAdminSignUps";
+import { Button } from "@/components/ui/button";
+
+const RouteLoadingFallback = () => {
+  const [takingTooLong, setTakingTooLong] = useState(false);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setTakingTooLong(true), 8000);
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  if (takingTooLong) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-6 text-center">
+        <div className="max-w-sm space-y-4">
+          <h1 className="text-xl font-semibold text-foreground">This page needs to reload</h1>
+          <p className="text-sm text-muted-foreground">A newer version of Panda Protect is available.</p>
+          <Button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="h-11 w-full"
+          >
+            Reload page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-b-primary" />
+    </div>
+  );
+};
 
 // Component to conditionally render banner only on homepage
 const ConditionalSeasonalBanner = () => {
@@ -299,7 +333,7 @@ const App = () => {
               {/* Global StickyNavigation removed — pages now render <DealerPublicHeader /> directly */}
               <ConditionalSeasonalBanner />
               <ConditionalMain>
-                <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+                <Suspense fallback={<RouteLoadingFallback />}>
                   <Routes>
                     <Route path="/" element={<DealerHome />} />
                     <Route path="/home" element={<DealerHome />} />
