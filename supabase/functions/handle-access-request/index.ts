@@ -133,7 +133,7 @@ const handler = async (req: Request): Promise<Response> => {
       
       try {
         await resend.emails.send({
-          from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
+          from: "Panda Protect <noreply@pandaprotect.co.uk>",
           to: ["hello@pandaprotect.co.uk"],
           reply_to: normalizedEmail,
           subject: `New Access Request from ${body.fullName.trim()} (${ROLE_LABELS[body.requestedRole.trim()] || body.requestedRole.trim()})`,
