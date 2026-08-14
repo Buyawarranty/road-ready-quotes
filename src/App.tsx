@@ -24,6 +24,7 @@ import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
 import DealerHome from "./pages/dealer-portal/DealerHome";
 import DealerAdminLayout from "./pages/dealer-admin/DealerAdminLayout";
 import DealerAdminSignUps from "./pages/dealer-admin/DealerAdminSignUps";
+import { Button } from "@/components/ui/button";
 
 const RouteLoadingFallback = () => {
   const [takingTooLong, setTakingTooLong] = useState(false);
@@ -39,13 +40,13 @@ const RouteLoadingFallback = () => {
         <div className="max-w-sm space-y-4">
           <h1 className="text-xl font-semibold text-foreground">This page needs to reload</h1>
           <p className="text-sm text-muted-foreground">A newer version of Panda Protect is available.</p>
-          <button
+          <Button
             type="button"
             onClick={() => window.location.reload()}
-            className="h-11 w-full rounded-md bg-primary px-5 font-medium text-primary-foreground"
+            className="h-11 w-full"
           >
             Reload page
-          </button>
+          </Button>
         </div>
       </div>
     );
