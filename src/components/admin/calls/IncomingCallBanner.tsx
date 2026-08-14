@@ -1,14 +1,18 @@
 import React from 'react';
 import { PhoneIncoming, X, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCallRailPresence } from '@/hooks/useCallRailPresence';
+import { CallRailCall } from '@/hooks/useCallRailPresence';
 import { useNavigate } from 'react-router-dom';
 
-export const IncomingCallBanner: React.FC = () => {
-  const { ringing, dismissRinging } = useCallRailPresence();
-  const navigate = useNavigate();
+interface IncomingCallBannerProps {
+  ringing: CallRailCall | null;
+}
 
-  if (!ringing) return null;
+export const IncomingCallBanner: React.FC<IncomingCallBannerProps> = ({ ringing }) => {
+  const navigate = useNavigate();
+  const [dismissedCallId, setDismissedCallId] = React.useState<string | null>(null);
+
+  if (!ringing || dismissedCallId === ringing.callrail_call_id) return null;
 
   const displayName = ringing.caller_name || 'Unknown caller';
   const location = [ringing.caller_city, ringing.caller_state].filter(Boolean).join(', ');
@@ -19,7 +23,7 @@ export const IncomingCallBanner: React.FC = () => {
     } else if (ringing.matched_customer_id) {
       navigate(`/admin-dashboard/?tab=customers&customerId=${ringing.matched_customer_id}`);
     }
-    dismissRinging();
+    setDismissedCallId(ringing.callrail_call_id);
   };
 
   return (
@@ -28,7 +32,7 @@ export const IncomingCallBanner: React.FC = () => {
         <PhoneIncoming className="w-4 h-4 animate-pulse" />
         <span className="font-semibold text-sm uppercase tracking-wide">Incoming call</span>
         <button
-          onClick={dismissRinging}
+          onClick={() => setDismissedCallId(ringing.callrail_call_id)}
           className="ml-auto p-1 hover:bg-white/20 rounded"
           aria-label="Dismiss"
         >
