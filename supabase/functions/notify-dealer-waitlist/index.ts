@@ -106,7 +106,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect <noreply@pandaprotect.co.uk>',
+        from: 'Panda Protect <support@buyawarranty.co.uk>',
         to: ['hello@pandaprotect.co.uk', 'info@pandaprotect.co.uk'],
         reply_to: email_address,
         subject,
