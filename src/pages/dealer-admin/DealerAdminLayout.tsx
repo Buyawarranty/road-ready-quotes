@@ -111,6 +111,7 @@ const DealerAdminLayout: React.FC = () => {
   const { user, loading } = useAuth();
   const { ringing, missed, acknowledge } = useCallRailPresence();
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [authTimedOut, setAuthTimedOut] = useState(false);
   const [gateUnlocked, setGateUnlocked] = useState<boolean>(
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
   );
@@ -121,31 +122,54 @@ const DealerAdminLayout: React.FC = () => {
   const bannerCount = (ringing ? 1 : 0) + missed.length;
 
   useEffect(() => {
+    if (!loading) {
+      setAuthTimedOut(false);
+      return;
+    }
+    const timeout = window.setTimeout(() => setAuthTimedOut(true), 8000);
+    return () => window.clearTimeout(timeout);
+  }, [loading]);
+
+  useEffect(() => {
     if (!gateUnlocked) {
       setAllowed(null);
       return;
     }
     const check = async () => {
-      if (loading) return;
+      if (loading && !authTimedOut) return;
       if (!user) { setAllowed(false); return; }
       setAllowed(null);
-      const { data, error } = await supabase
+      const roleRequest = supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id);
+      const timeout = new Promise<never>((_, reject) => {
+        window.setTimeout(() => reject(new Error('Admin role check timed out')), 8000);
+      });
+      let data: { role: string }[] | null = null;
+      let error: { message: string } | null = null;
+      try {
+        const result = await Promise.race([roleRequest, timeout]);
+        data = result.data as { role: string }[] | null;
+        error = result.error;
+      } catch (roleError) {
+        console.error('Dealer admin role check failed:', roleError);
+        setAllowed(false);
+        return;
+      }
       if (error) { console.error('Dealer admin role check failed:', error); setAllowed(false); return; }
       const roles = (data || []).map((r) => r.role as string);
       if (!roles.some((role) => isAdminRole(role))) { setAllowed(false); return; }
       setAllowed(true);
     };
     check();
-  }, [user, loading, navigate, gateUnlocked]);
+  }, [user, loading, authTimedOut, navigate, gateUnlocked]);
 
   if (!gateUnlocked) {
     return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
   }
 
-  if (loading || allowed === null) {
+  if ((loading && !authTimedOut) || allowed === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
