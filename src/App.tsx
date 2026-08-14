@@ -59,6 +59,17 @@ const RouteLoadingFallback = () => {
   );
 };
 
+const RouteSuspenseBoundary = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+
+  // Dealer Admin has its own outlet-level boundary. Keeping it out of the
+  // app-wide boundary prevents a background admin chunk/session refresh from
+  // replacing the entire authenticated dashboard with the global spinner.
+  if (location.pathname.startsWith('/dealer-admin')) return <>{children}</>;
+
+  return <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>;
+};
+
 // Component to conditionally render banner only on homepage
 const ConditionalSeasonalBanner = () => {
   const location = useLocation();
@@ -333,7 +344,7 @@ const App = () => {
               {/* Global StickyNavigation removed — pages now render <DealerPublicHeader /> directly */}
               <ConditionalSeasonalBanner />
               <ConditionalMain>
-                <Suspense fallback={<RouteLoadingFallback />}>
+                <RouteSuspenseBoundary>
                   <Routes>
                     <Route path="/" element={<DealerHome />} />
                     <Route path="/home" element={<DealerHome />} />
@@ -481,7 +492,7 @@ const App = () => {
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                </Suspense>
+                </RouteSuspenseBoundary>
               </ConditionalMain>
               <ConditionalFooter />
             </div>

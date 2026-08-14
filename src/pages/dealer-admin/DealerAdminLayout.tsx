@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useCallRailPresence } from '@/hooks/useCallRailPresence';
@@ -160,7 +160,7 @@ const DealerAdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-muted/20 w-full">
-      <IncomingCallBanner />
+      <IncomingCallBanner ringing={ringing} />
       <MissedCallBanner calls={missed} onAcknowledge={acknowledge} />
 
       <aside className="w-64 bg-card border-r border-border flex flex-col">
@@ -223,7 +223,15 @@ const DealerAdminLayout: React.FC = () => {
 
       <main className={`flex-1 overflow-auto ${bannerCount > 0 ? 'pt-24' : ''}`}>
         <div className="p-6 max-w-[1600px] mx-auto">
-          <Outlet />
+          <Suspense
+            fallback={(
+              <div className="flex min-h-[240px] items-center justify-center" role="status" aria-label="Loading page">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted border-b-primary" />
+              </div>
+            )}
+          >
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>
