@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner';
 import { MissedCallBanner } from '@/components/admin/calls/MissedCallBanner';
 import {
-  Loader2, LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut, Building2,
+  LayoutDashboard, ShoppingBag, Users, FileText, BarChart3, LogOut, Building2,
   Target, Calculator, Lightbulb, Receipt, Car, Percent, UserPlus, MessageSquare,
   Star, Mail, ShoppingCart, Clock, Megaphone, Eye, Database, Shield, FolderOpen,
   PenTool, Globe, TestTube, CalendarClock, Trophy, Settings, ChevronDown, ChevronRight,
@@ -108,10 +107,9 @@ const navGroups: NavGroup[] = [
 
 const DealerAdminLayout: React.FC = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
   const { ringing, missed, acknowledge } = useCallRailPresence();
-  const [allowed, setAllowed] = useState<boolean | null>(null);
-  const [authTimedOut, setAuthTimedOut] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [gateUnlocked, setGateUnlocked] = useState<boolean>(
     () => sessionStorage.getItem('dealerAdminUnlocked') === 'true'
   );
@@ -122,64 +120,43 @@ const DealerAdminLayout: React.FC = () => {
   const bannerCount = (ringing ? 1 : 0) + missed.length;
 
   useEffect(() => {
-    if (!loading) {
-      setAuthTimedOut(false);
-      return;
-    }
-    const timeout = window.setTimeout(() => setAuthTimedOut(true), 8000);
-    return () => window.clearTimeout(timeout);
-  }, [loading]);
-
-  useEffect(() => {
     if (!gateUnlocked) {
-      setAllowed(null);
+      setAllowed(false);
+      setCheckingSession(false);
       return;
     }
+    let cancelled = false;
     const check = async () => {
-      if (loading && !authTimedOut) return;
-      if (!user) { setAllowed(false); return; }
-      setAllowed(null);
-      const roleRequest = supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id);
-      const timeout = new Promise<never>((_, reject) => {
-        window.setTimeout(() => reject(new Error('Admin role check timed out')), 8000);
-      });
-      let data: { role: string }[] | null = null;
-      let error: { message: string } | null = null;
+      setCheckingSession(true);
       try {
-        const result = await Promise.race([roleRequest, timeout]);
-        data = result.data as { role: string }[] | null;
-        error = result.error;
-      } catch (roleError) {
-        console.error('Dealer admin role check failed:', roleError);
-        setAllowed(false);
-        return;
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user || cancelled) return;
+        const { data, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', session.user.id);
+        if (!cancelled && !error) {
+          setAllowed((data || []).some((row) => isAdminRole(row.role as string)));
+        }
+      } catch (error) {
+        console.error('Dealer admin session check failed:', error);
+      } finally {
+        if (!cancelled) setCheckingSession(false);
       }
-      if (error) { console.error('Dealer admin role check failed:', error); setAllowed(false); return; }
-      const roles = (data || []).map((r) => r.role as string);
-      if (!roles.some((role) => isAdminRole(role))) { setAllowed(false); return; }
-      setAllowed(true);
     };
     check();
-  }, [user, loading, authTimedOut, navigate, gateUnlocked]);
+    return () => { cancelled = true; };
+  }, [gateUnlocked]);
 
   if (!gateUnlocked) {
     return <DealerAdminPasswordGate onUnlock={() => setGateUnlocked(true)} />;
   }
 
-  if ((loading && !authTimedOut) || allowed === null) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (!allowed) {
+  if (!allowed && !checkingSession) {
     return <DealerAdminAuthLogin onAuthenticated={() => setAllowed(true)} />;
   }
+
+  if (!allowed) return <DealerAdminAuthLogin onAuthenticated={() => setAllowed(true)} />;
 
   return (
     <div className="min-h-screen flex bg-muted/20 w-full">
