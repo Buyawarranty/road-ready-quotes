@@ -22,6 +22,8 @@ import { SeasonalOfferBanner } from "@/components/SeasonalOfferBanner";
 import StickyNavigation from "@/components/StickyNavigation";
 import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
 import DealerHome from "./pages/dealer-portal/DealerHome";
+import DealerAdminLayout from "./pages/dealer-admin/DealerAdminLayout";
+import DealerAdminSignUps from "./pages/dealer-admin/DealerAdminSignUps";
 
 // Component to conditionally render banner only on homepage
 const ConditionalSeasonalBanner = () => {
@@ -214,8 +216,6 @@ const DealerAdminFinanceRules = lazy(() => import("./pages/dealer-admin/finance/
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
 // Dealer Admin (super_admin / admin)
-const DealerAdminLayout = lazy(() => import("./pages/dealer-admin/DealerAdminLayout"));
-const DealerAdminSignUps = lazy(() => import("./pages/dealer-admin/DealerAdminSignUps"));
 const DealerAdminOverview = lazy(() => import("./pages/dealer-admin/DealerAdminOverview"));
 const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSales"));
 const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
