@@ -456,12 +456,61 @@ export const defaultTabs: Tab[] = [
     description: 'Opt a customer out of all marketing emails by entering their email'
   },
   {
+    id: 'dealer-overview',
+    label: 'Dealer Overview',
+    icon: Building2,
+    description: 'Dealer channel performance at a glance'
+  },
+  {
+    id: 'dealer-signups',
+    label: 'Dealer Signups',
+    icon: UserPlus,
+    description: 'Approve or decline trade warranty signup requests'
+  },
+  {
+    id: 'dealer-dealers',
+    label: 'Dealers',
+    icon: Users,
+    description: 'All registered dealer accounts'
+  },
+  {
+    id: 'dealer-traders',
+    label: 'Traders',
+    icon: Building2,
+    description: 'Approved traders on the network'
+  },
+  {
+    id: 'dealer-sales',
+    label: 'Dealer Sales',
+    icon: ShoppingCart,
+    description: 'Warranty sales made through dealers'
+  },
+  {
+    id: 'dealer-invoices',
+    label: 'Dealer Invoices',
+    icon: Receipt,
+    description: 'Dealer invoicing and payment status'
+  },
+  {
+    id: 'trader-pricing',
+    label: 'Trader Pricing',
+    icon: Calculator,
+    description: 'Trade pricing configuration'
+  },
+  {
+    id: 'dealer-finance',
+    label: 'Dealer Finance',
+    icon: PoundSterling,
+    description: 'Finance applications, lenders, rules and payouts'
+  },
+  {
     id: 'account',
     label: 'Account Settings',
     icon: Settings,
     description: 'Manage your account and password'
   }
 ];
+
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange, userRole, userPermissions }) => {
   const [isOpen, setIsOpen] = useState(false);
