@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_URL_BASE = "https://pandaprotect.co.uk/dealer-admin/signups";
+const ADMIN_URL_BASE = "https://pandaprotect.co.uk/admin-dashboard/?tab=dealer-signups";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
 

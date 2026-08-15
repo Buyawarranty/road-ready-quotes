@@ -20,7 +20,7 @@ interface Payload {
 }
 
 
-const ADMIN_URL_BASE = 'https://pandaprotect.co.uk/dealer-admin/signups';
+const ADMIN_URL_BASE = 'https://pandaprotect.co.uk/admin-dashboard/?tab=dealer-signups';
 
 const row = (label: string, value: string | null | undefined) => `
   <tr>

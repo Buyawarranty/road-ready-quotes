@@ -58,13 +58,6 @@ const RouteLoadingFallback = () => {
 };
 
 const RouteSuspenseBoundary = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-
-  // Dealer Admin has its own outlet-level boundary. Keeping it out of the
-  // app-wide boundary prevents a background admin chunk/session refresh from
-  // replacing the entire authenticated dashboard with the global spinner.
-  if (location.pathname.startsWith('/dealer-admin')) return <>{children}</>;
-
   return <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>;
 };
 
@@ -176,7 +169,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-admin') || location.pathname.startsWith('/dealer-widget') || location.pathname.startsWith('/dealer-portal/coming-soon') || location.pathname.startsWith('/dealer-portal/signup');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget') || location.pathname.startsWith('/dealer-portal/coming-soon') || location.pathname.startsWith('/dealer-portal/signup');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -313,53 +306,8 @@ const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applic
 const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
 const DealerApiDocs = lazy(() => import("./pages/dealer-portal/settings/DealerApiDocs"));
 const DealerWidget = lazy(() => import("./pages/DealerWidget"));
-const DealerAdminFinanceQueue = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceQueue"));
-const DealerAdminFinanceDetail = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceDetail"));
-const DealerAdminFinanceLenders = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceLenders"));
-const DealerAdminFinancePayouts = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinancePayouts"));
-const DealerAdminFinanceRules = lazy(() => import("./pages/dealer-admin/finance/DealerAdminFinanceRules"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
 
-// Dealer Admin (super_admin / admin)
-const DealerAdminOverview = lazy(() => import("./pages/dealer-admin/DealerAdminOverview"));
-const DealerAdminSales = lazy(() => import("./pages/dealer-admin/DealerAdminSales"));
-const DealerAdminDealers = lazy(() => import("./pages/dealer-admin/DealerAdminDealers"));
-const DealerAdminTraders = lazy(() => import("./pages/dealer-admin/DealerAdminTraders"));
-const DealerAdminInvoices = lazy(() => import("./pages/dealer-admin/DealerAdminInvoices"));
-const DealerAdminAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminAnalytics"));
-const DealerAdminPlaceholder = lazy(() => import("./pages/dealer-admin/DealerAdminPlaceholder"));
-const DealerAdminCustomers = lazy(() => import("./pages/dealer-admin/DealerAdminCustomers"));
-const DealerAdminLeads = lazy(() => import("./pages/dealer-admin/DealerAdminLeads"));
-const DealerAdminQuotesOrders = lazy(() => import("./pages/dealer-admin/DealerAdminQuotesOrders"));
-const DealerAdminClaims = lazy(() => import("./pages/dealer-admin/DealerAdminClaims"));
-const DealerAdminPlans = lazy(() => import("./pages/dealer-admin/DealerAdminPlans"));
-const DealerAdminBulkPricing = lazy(() => import("./pages/dealer-admin/DealerAdminBulkPricing"));
-const DealerAdminSalesScript = lazy(() => import("./pages/dealer-admin/DealerAdminSalesScript"));
-const DealerAdminReviews = lazy(() => import("./pages/dealer-admin/DealerAdminReviews"));
-const DealerAdminContact = lazy(() => import("./pages/dealer-admin/DealerAdminContact"));
-const DealerAdminDiscountCodes = lazy(() => import("./pages/dealer-admin/DealerAdminDiscountCodes"));
-const DealerAdminAbandonedCarts = lazy(() => import("./pages/dealer-admin/DealerAdminAbandonedCarts"));
-const DealerAdminPendingRegister = lazy(() => import("./pages/dealer-admin/DealerAdminPendingRegister"));
-const DealerAdminReferrals = lazy(() => import("./pages/dealer-admin/DealerAdminReferrals"));
-const DealerAdminMarketingContacts = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingContacts"));
-const DealerAdminEmailHub = lazy(() => import("./pages/dealer-admin/DealerAdminEmailHub"));
-const DealerAdminBlogWriting = lazy(() => import("./pages/dealer-admin/DealerAdminBlogWriting"));
-const DealerAdminLandingPages = lazy(() => import("./pages/dealer-admin/DealerAdminLandingPages"));
-const DealerAdminTimesheets = lazy(() => import("./pages/dealer-admin/DealerAdminTimesheets"));
-const DealerAdminTesting = lazy(() => import("./pages/dealer-admin/DealerAdminTesting"));
-const DealerAdminAccount = lazy(() => import("./pages/dealer-admin/DealerAdminAccount"));
-const DealerAdminPageAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminPageAnalytics"));
-const DealerAdminVehicleStats = lazy(() => import("./pages/dealer-admin/DealerAdminVehicleStats"));
-const DealerAdminSalesScoreboard = lazy(() => import("./pages/dealer-admin/DealerAdminSalesScoreboard"));
-const DealerAdminDiscountsGiven = lazy(() => import("./pages/dealer-admin/DealerAdminDiscountsGiven"));
-const DealerAdminMarketingAnalytics = lazy(() => import("./pages/dealer-admin/DealerAdminMarketingAnalytics"));
-const DealerAdminLeadBackup = lazy(() => import("./pages/dealer-admin/DealerAdminLeadBackup"));
-const DealerAdminUserPermissions = lazy(() => import("./pages/dealer-admin/DealerAdminUserPermissions"));
-const DealerAdminDocumentMapping = lazy(() => import("./pages/dealer-admin/DealerAdminDocumentMapping"));
-const DealerAdminPolicyLetters = lazy(() => import("./pages/dealer-admin/DealerAdminPolicyLetters"));
-const DealerAdminPostedLettersLog = lazy(() => import("./pages/dealer-admin/DealerAdminPostedLettersLog"));
-const DealerAdminTraderPricing = lazy(() => import("./pages/dealer-admin/DealerAdminTraderPricing"));
-const DealerAdminCallTracking = lazy(() => import("./pages/dealer-admin/DealerAdminCallTracking"));
 
 const queryClient = new QueryClient({
   defaultOptions: {

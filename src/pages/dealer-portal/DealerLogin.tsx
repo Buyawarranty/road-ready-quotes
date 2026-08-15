@@ -59,7 +59,7 @@ const DealerLogin = () => {
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         if (isAdmin) {
           const redirect = searchParams.get('redirect');
-          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-admin');
+          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
           return;
         }
       }
