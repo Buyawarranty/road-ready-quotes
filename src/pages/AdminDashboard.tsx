@@ -103,6 +103,15 @@ const CollectPaymentsTab = lazy(() => import('@/components/admin/CollectPayments
 import { CollectPaymentsBanner } from '@/components/admin/CollectPaymentsBanner';
 import { readAdminAccessCache, writeAdminAccessCache, clearAdminAccessCache } from '@/lib/adminAccessCache';
 
+const DealerAdminOverviewTab = lazy(() => import('@/pages/dealer-admin/DealerAdminOverview'));
+const DealerAdminSignUpsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSignUps'));
+const DealerAdminDealersTab = lazy(() => import('@/pages/dealer-admin/DealerAdminDealers'));
+const DealerAdminTradersTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraders'));
+const DealerAdminSalesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSales'));
+const DealerAdminInvoicesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminInvoices'));
+const DealerAdminTraderPricingTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraderPricing'));
+const DealerFinanceTab = lazy(() => import('@/components/admin/dealer/DealerFinanceTab'));
+
 const SalesAgentTargetsTab = lazy(() => import('@/components/admin/SalesAgentTargetsTab').then(m => ({ default: m.SalesAgentTargetsTab })));
 const ConcessionsTab = lazy(() => import('@/components/admin/ConcessionsTab').then(m => ({ default: m.ConcessionsTab })));
 
@@ -908,6 +917,22 @@ const AdminDashboard = () => {
         return <StaffHubTab />;
       case 'agent-feedback':
         return <AgentFeedbackTab userRole={effectiveUserRole} />;
+      case 'dealer-overview':
+        return <DealerAdminOverviewTab />;
+      case 'dealer-signups':
+        return <DealerAdminSignUpsTab />;
+      case 'dealer-dealers':
+        return <DealerAdminDealersTab />;
+      case 'dealer-traders':
+        return <DealerAdminTradersTab />;
+      case 'dealer-sales':
+        return <DealerAdminSalesTab />;
+      case 'dealer-invoices':
+        return <DealerAdminInvoicesTab />;
+      case 'trader-pricing':
+        return <DealerAdminTraderPricingTab />;
+      case 'dealer-finance':
+        return <DealerFinanceTab />;
       default:
         return <CustomersTab />;
     }

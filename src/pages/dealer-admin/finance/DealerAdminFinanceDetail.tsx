@@ -8,8 +8,9 @@ import { ArrowLeft, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-const DealerAdminFinanceDetail: React.FC = () => {
-  const { id } = useParams();
+const DealerAdminFinanceDetail: React.FC<{ applicationId?: string; backTo?: string }> = ({ applicationId, backTo }) => {
+  const { id: routeId } = useParams();
+  const id = applicationId ?? routeId;
   const qc = useQueryClient();
   const [reason, setReason] = useState('');
   const [message, setMessage] = useState('');
@@ -60,7 +61,7 @@ const DealerAdminFinanceDetail: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <Link to="/dealer-admin/finance" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
+      <Link to={backTo ?? "/dealer-admin/finance"} className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4 mr-1" /> Back to queue
       </Link>
 
