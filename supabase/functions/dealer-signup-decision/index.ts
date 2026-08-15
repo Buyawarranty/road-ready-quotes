@@ -158,7 +158,7 @@ serve(async (req) => {
       user_metadata: {
         full_name: signup.contact_name || "",
         company_name: signup.dealership_name || "",
-        role: "dealer",
+        role: "trader",
       },
     });
 
@@ -229,7 +229,7 @@ serve(async (req) => {
     // 2b. give them the trader (dealer) role
     const { error: roleErr } = await admin
       .from("user_roles")
-      .upsert({ user_id: userId, role: "dealer" }, { onConflict: "user_id,role" });
+      .upsert({ user_id: userId, role: "trader" }, { onConflict: "user_id,role" });
     if (roleErr) console.error("dealer role assign failed:", roleErr);
 
 
