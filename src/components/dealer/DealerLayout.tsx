@@ -22,6 +22,7 @@ import {
   Settings,
   LogOut,
   UserCog,
+  Users,
 } from 'lucide-react';
 
 interface DealerLayoutProps {
@@ -47,6 +48,7 @@ const NAV_ITEMS: NavItem[] = [
     trader: true,
   },
   { to: '/dealer-portal/quotes', label: 'QUOTES', icon: FileText, trader: true },
+  { to: '/dealer-portal/customers', label: 'CUSTOMERS', icon: Users, trader: true },
   { to: '/dealer-portal/applications', label: 'FINANCE', icon: FilePlus2, matchPaths: ['/dealer-portal/applications'] },
   { to: '/dealer-portal/warranties', label: 'DEALER PLANS', icon: Shield, trader: true },
   { to: '/dealer-portal/analytics', label: 'ANALYTICS', icon: BarChart3 },
