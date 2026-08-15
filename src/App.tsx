@@ -58,8 +58,6 @@ const RouteLoadingFallback = () => {
 };
 
 const RouteSuspenseBoundary = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-
   return <Suspense fallback={<RouteLoadingFallback />}>{children}</Suspense>;
 };
 
