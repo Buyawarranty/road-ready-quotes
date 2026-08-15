@@ -16,8 +16,17 @@ export const useDealerAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [dealer, setDealer] = useState<DealerProfile | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const loadRoles = async (userId: string) => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+    return (data || []).map((r: any) => r.role as string);
+  };
 
   useEffect(() => {
     let mounted = true;
