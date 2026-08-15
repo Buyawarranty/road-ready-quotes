@@ -22,8 +22,6 @@ import { SeasonalOfferBanner } from "@/components/SeasonalOfferBanner";
 import StickyNavigation from "@/components/StickyNavigation";
 import DealerComingSoon from "./pages/dealer-portal/DealerComingSoon";
 import DealerHome from "./pages/dealer-portal/DealerHome";
-import DealerAdminLayout from "./pages/dealer-admin/DealerAdminLayout";
-import DealerAdminSignUps from "./pages/dealer-admin/DealerAdminSignUps";
 import { Button } from "@/components/ui/button";
 
 const RouteLoadingFallback = () => {
