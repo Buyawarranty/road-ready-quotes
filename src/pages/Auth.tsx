@@ -42,7 +42,6 @@ const Auth = () => {
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
     if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return null;
-    if (redirect.startsWith('/dealer-admin')) return redirect;
     if (redirect.startsWith('/dealer-portal')) return redirect;
     if (redirect.startsWith('/admin-dashboard')) return redirect;
     if (redirect.startsWith('/customer-dashboard')) return redirect;
@@ -68,11 +67,7 @@ const Auth = () => {
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
-      const canUseRequestedPath = requestedPath
-        && (
-          !requestedPath.startsWith('/dealer-admin')
-          || hasAdminRole
-        );
+      const canUseRequestedPath = Boolean(requestedPath);
       const targetPath = canUseRequestedPath
         ? requestedPath
         : hasAdminRole
