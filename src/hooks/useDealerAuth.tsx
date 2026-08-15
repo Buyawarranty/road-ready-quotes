@@ -39,18 +39,19 @@ export const useDealerAuth = () => {
 
         if (session?.user) {
           setTimeout(async () => {
-            const { data } = await supabase
-              .from('dealers')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .maybeSingle();
+            const [{ data }, userRoles] = await Promise.all([
+              supabase.from('dealers').select('*').eq('user_id', session.user.id).maybeSingle(),
+              loadRoles(session.user.id),
+            ]);
             if (mounted) {
               setDealer(data as DealerProfile | null);
+              setRoles(userRoles);
               setLoading(false);
             }
           }, 0);
         } else {
           setDealer(null);
+          setRoles([]);
           setLoading(false);
         }
       }
