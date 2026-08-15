@@ -88,5 +88,7 @@ export const useDealerAuth = () => {
     navigate('/dealer-portal/login');
   };
 
-  return { user, session, dealer, loading, signOut };
+  const isTrader = roles.includes('trader');
+
+  return { user, session, dealer, roles, isTrader, loading, signOut };
 };
