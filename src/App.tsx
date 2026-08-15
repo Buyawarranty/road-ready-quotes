@@ -98,6 +98,67 @@ const ConditionalCookieBanner = () => {
   return <CookieBanner />;
 };
 
+
+const DEALER_ADMIN_TAB_MAP: Record<string, string> = {
+  '': 'dealer-overview',
+  'signups': 'dealer-signups',
+  'sign-ups': 'dealer-signups',
+  'sales': 'dealer-sales',
+  'dealers': 'dealer-dealers',
+  'traders': 'dealer-traders',
+  'invoices': 'dealer-invoices',
+  'trader-pricing': 'trader-pricing',
+  'finance': 'dealer-finance',
+  'analytics': 'analytics',
+  'new-leads': 'new-leads',
+  'quotes-orders': 'get-quote',
+  'sales-script': 'selling-tips',
+  'customers': 'customers',
+  'plans': 'plans',
+  'bulk-pricing': 'bulk-pricing',
+  'special-plans': 'special-plans',
+  'discount-codes': 'discount-codes',
+  'referrals': 'referrals',
+  'claims': 'claims',
+  'reviews': 'reviews',
+  'contact': 'contact',
+  'abandoned-carts': 'abandoned-carts',
+  'marketing-contacts': 'marketing-audience',
+  'email-hub': 'emails',
+  'page-analytics': 'page-analytics',
+  'marketing-analytics': 'google-ads',
+  'vehicle-stats': 'vehicle-stats',
+  'lead-backup': 'lead-backup',
+  'user-permissions': 'user-permissions',
+  'document-mapping': 'document-mapping',
+  'policy-letters': 'policy-documents',
+  'blog-writing': 'blogs-data',
+  'landing-pages': 'landing-pages',
+  'testing': 'testing',
+  'timesheets': 'timesheets',
+  'sales-scoreboard': 'sales-scoreboard',
+  'discounts-given': 'discounts-given',
+  'call-tracking': 'call-tracking',
+  'account': 'account',
+};
+
+const DealerAdminRedirect: React.FC = () => {
+  const location = useLocation();
+  const sub = location.pathname.replace(/^\/dealer-admin\/?/, '').replace(/\/$/, '');
+  const params = new URLSearchParams(location.search);
+
+  let tab = DEALER_ADMIN_TAB_MAP[sub];
+  if (!tab && sub.startsWith('finance/')) {
+    const rest = sub.slice('finance/'.length);
+    tab = 'dealer-finance';
+    if (!['lenders', 'rules', 'payouts'].includes(rest)) params.set('app', rest);
+  }
+  if (!tab) tab = 'dealer-overview';
+  params.set('tab', tab);
+
+  return <Navigate to={`/admin-dashboard/?${params.toString()}`} replace />;
+};
+
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isWidget = location.pathname.startsWith('/dealer-widget');
@@ -436,56 +497,8 @@ const App = () => {
                     <Route path="/dealer-portal/settings/api" element={<DealerApiKeys />} />
                     <Route path="/dealer-portal/api-docs" element={<DealerApiDocs />} />
 
-                    {/* Dealer Admin (super_admin / admin only) */}
-                    <Route path="/dealer-admin" element={<DealerAdminLayout />}>
-                      <Route index element={<DealerAdminOverview />} />
-                      <Route path="signups" element={<DealerAdminSignUps />} />
-                      <Route path="sign-ups" element={<DealerAdminSignUps />} />
-                      <Route path="sales" element={<DealerAdminSales />} />
-                      <Route path="dealers" element={<DealerAdminDealers />} />
-                      <Route path="traders" element={<DealerAdminTraders />} />
-                      <Route path="invoices" element={<DealerAdminInvoices />} />
-                      <Route path="analytics" element={<DealerAdminAnalytics />} />
-                      {/* Mirrored retail tabs (dealer-scoped placeholders) */}
-                      <Route path="new-leads" element={<DealerAdminLeads />} />
-                      <Route path="quotes-orders" element={<DealerAdminQuotesOrders />} />
-                      <Route path="sales-script" element={<DealerAdminSalesScript />} />
-                      <Route path="customers" element={<DealerAdminCustomers />} />
-                      <Route path="plans" element={<DealerAdminPlans />} />
-                      <Route path="bulk-pricing" element={<DealerAdminBulkPricing />} />
-                      <Route path="special-plans" element={<DealerAdminPlans />} />
-                      <Route path="discount-codes" element={<DealerAdminDiscountCodes />} />
-                      <Route path="referrals" element={<DealerAdminReferrals />} />
-                      <Route path="claims" element={<DealerAdminClaims />} />
-                      <Route path="reviews" element={<DealerAdminReviews />} />
-                      <Route path="contact" element={<DealerAdminContact />} />
-                      <Route path="abandoned-carts" element={<DealerAdminAbandonedCarts />} />
-                      <Route path="pending-register" element={<DealerAdminPendingRegister />} />
-                      <Route path="marketing-contacts" element={<DealerAdminMarketingContacts />} />
-                      <Route path="email-hub" element={<DealerAdminEmailHub />} />
-                      <Route path="page-analytics" element={<DealerAdminPageAnalytics />} />
-                      <Route path="marketing-analytics" element={<DealerAdminMarketingAnalytics />} />
-                      <Route path="vehicle-stats" element={<DealerAdminVehicleStats />} />
-                      <Route path="lead-backup" element={<DealerAdminLeadBackup />} />
-                      <Route path="user-permissions" element={<DealerAdminUserPermissions />} />
-                      <Route path="document-mapping" element={<DealerAdminDocumentMapping />} />
-                      <Route path="policy-letters" element={<DealerAdminPolicyLetters />} />
-                      <Route path="posted-letters-log" element={<DealerAdminPostedLettersLog />} />
-                      <Route path="blog-writing" element={<DealerAdminBlogWriting />} />
-                      <Route path="landing-pages" element={<DealerAdminLandingPages />} />
-                      <Route path="testing" element={<DealerAdminTesting />} />
-                      <Route path="timesheets" element={<DealerAdminTimesheets />} />
-                      <Route path="sales-scoreboard" element={<DealerAdminSalesScoreboard />} />
-                      <Route path="discounts-given" element={<DealerAdminDiscountsGiven />} />
-                      <Route path="account" element={<DealerAdminAccount />} />
-                      <Route path="trader-pricing" element={<DealerAdminTraderPricing />} />
-                      <Route path="finance" element={<DealerAdminFinanceQueue />} />
-                      <Route path="finance/lenders" element={<DealerAdminFinanceLenders />} />
-                      <Route path="finance/rules" element={<DealerAdminFinanceRules />} />
-                      <Route path="finance/payouts" element={<DealerAdminFinancePayouts />} />
-                      <Route path="finance/:id" element={<DealerAdminFinanceDetail />} />
-                      <Route path="call-tracking" element={<DealerAdminCallTracking />} />
-                    </Route>
+                    {/* Dealer Admin merged into /admin-dashboard — redirect legacy links */}
+                    <Route path="/dealer-admin/*" element={<DealerAdminRedirect />} />
 
                     <Route path="/:slug" element={<DynamicLandingPage />} />
                     
