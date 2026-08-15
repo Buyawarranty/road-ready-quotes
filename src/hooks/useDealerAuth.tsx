@@ -16,8 +16,17 @@ export const useDealerAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [dealer, setDealer] = useState<DealerProfile | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const loadRoles = async (userId: string) => {
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId);
+    return (data || []).map((r: any) => r.role as string);
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -30,18 +39,19 @@ export const useDealerAuth = () => {
 
         if (session?.user) {
           setTimeout(async () => {
-            const { data } = await supabase
-              .from('dealers')
-              .select('*')
-              .eq('user_id', session.user.id)
-              .maybeSingle();
+            const [{ data }, userRoles] = await Promise.all([
+              supabase.from('dealers').select('*').eq('user_id', session.user.id).maybeSingle(),
+              loadRoles(session.user.id),
+            ]);
             if (mounted) {
               setDealer(data as DealerProfile | null);
+              setRoles(userRoles);
               setLoading(false);
             }
           }, 0);
         } else {
           setDealer(null);
+          setRoles([]);
           setLoading(false);
         }
       }
@@ -53,13 +63,13 @@ export const useDealerAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const { data } = await supabase
-          .from('dealers')
-          .select('*')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
+        const [{ data }, userRoles] = await Promise.all([
+          supabase.from('dealers').select('*').eq('user_id', session.user.id).maybeSingle(),
+          loadRoles(session.user.id),
+        ]);
         if (mounted) {
           setDealer(data as DealerProfile | null);
+          setRoles(userRoles);
         }
       }
       setLoading(false);
@@ -78,5 +88,7 @@ export const useDealerAuth = () => {
     navigate('/dealer-portal/login');
   };
 
-  return { user, session, dealer, loading, signOut };
+  const isTrader = roles.includes('trader');
+
+  return { user, session, dealer, roles, isTrader, loading, signOut };
 };

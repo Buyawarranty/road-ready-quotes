@@ -33,24 +33,27 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   matchPaths?: string[];
+  /** Visible to users with the `trader` role (sales + plans/pricing only) */
+  trader?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'HOME', icon: Home },
+  { to: '/', label: 'HOME', icon: Home, trader: true },
   {
     to: '/dealer-portal/quote/pricing',
     label: 'NEW QUOTE',
     icon: FilePlus2,
     matchPaths: ['/dealer-portal/quote/', '/dealer-portal/quotes/create'],
+    trader: true,
   },
-  { to: '/dealer-portal/quotes', label: 'QUOTES', icon: FileText },
+  { to: '/dealer-portal/quotes', label: 'QUOTES', icon: FileText, trader: true },
   { to: '/dealer-portal/applications', label: 'FINANCE', icon: FilePlus2, matchPaths: ['/dealer-portal/applications'] },
-  { to: '/dealer-portal/warranties', label: 'DEALER PLANS', icon: Shield },
+  { to: '/dealer-portal/warranties', label: 'DEALER PLANS', icon: Shield, trader: true },
   { to: '/dealer-portal/analytics', label: 'ANALYTICS', icon: BarChart3 },
 ];
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
-  const { user, dealer, loading, signOut } = useDealerAuth();
+  const { user, dealer, isTrader, loading, signOut } = useDealerAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -58,6 +61,15 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   useEffect(() => {
     if (!loading && !user) navigate('/dealer-portal/coming-soon', { replace: true });
   }, [loading, user, navigate]);
+
+  // Traders are limited to sales (quotes) and plans/pricing sections
+  useEffect(() => {
+    if (loading || !isTrader) return;
+    const blocked = ['/dealer-portal/applications', '/dealer-portal/analytics'];
+    if (blocked.some((p) => location.pathname.startsWith(p))) {
+      navigate('/dealer-portal/quotes', { replace: true });
+    }
+  }, [loading, isTrader, location.pathname, navigate]);
 
   if (loading) {
     return (
@@ -101,6 +113,8 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     return false;
   };
 
+  const navItems = isTrader ? NAV_ITEMS.filter((i) => i.trader) : NAV_ITEMS;
+
   const displayName = (dealer?.name || user.email || 'DEALER').toUpperCase();
 
   return (
@@ -124,7 +138,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
             {/* Desktop nav (icon + label) */}
             <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const active = isActive(item);
                 const Icon = item.icon;
                 return (
@@ -193,7 +207,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                       />
                     </div>
                     <nav className="flex flex-col gap-1 flex-1">
-                      {NAV_ITEMS.map((item) => {
+                      {navItems.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item);
                         return (
