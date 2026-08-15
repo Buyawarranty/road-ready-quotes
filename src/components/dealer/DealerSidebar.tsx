@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { LayoutDashboard, FilePlus, FileText, Shield, LogOut, Menu, X } from 'lucide-react';
 
 const dealerTabs = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dealer-portal/dashboard' },
-  { id: 'create-quote', label: 'Create Quote', icon: FilePlus, path: '/dealer-portal/quotes/create' },
-  { id: 'quotes', label: 'Quotes', icon: FileText, path: '/dealer-portal/quotes' },
-  { id: 'warranties', label: 'Warranties', icon: Shield, path: '/dealer-portal/warranties' },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/dealer-portal/dashboard', trader: false },
+  { id: 'create-quote', label: 'Create Quote', icon: FilePlus, path: '/dealer-portal/quotes/create', trader: true },
+  { id: 'quotes', label: 'Quotes', icon: FileText, path: '/dealer-portal/quotes', trader: true },
+  { id: 'warranties', label: 'Warranties', icon: Shield, path: '/dealer-portal/warranties', trader: true },
 ];
 
 interface DealerSidebarProps {
@@ -17,6 +18,8 @@ export const DealerSidebar: React.FC<DealerSidebarProps> = ({ onSignOut }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { isTrader } = useDealerAuth();
+  const visibleTabs = isTrader ? dealerTabs.filter((t) => t.trader) : dealerTabs;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -50,7 +53,7 @@ export const DealerSidebar: React.FC<DealerSidebarProps> = ({ onSignOut }) => {
         </div>
 
         <nav className="mt-4 overflow-y-auto h-[calc(100%-160px)] pb-4">
-          {dealerTabs.map((tab) => (
+          {visibleTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => { navigate(tab.path); setIsOpen(false); }}

@@ -62,6 +62,15 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     if (!loading && !user) navigate('/dealer-portal/coming-soon', { replace: true });
   }, [loading, user, navigate]);
 
+  // Traders are limited to sales (quotes) and plans/pricing sections
+  useEffect(() => {
+    if (loading || !isTrader) return;
+    const blocked = ['/dealer-portal/applications', '/dealer-portal/analytics'];
+    if (blocked.some((p) => location.pathname.startsWith(p))) {
+      navigate('/dealer-portal/quotes', { replace: true });
+    }
+  }, [loading, isTrader, location.pathname, navigate]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
