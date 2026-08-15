@@ -92,7 +92,7 @@ const DealerAdminFinanceQueue: React.FC = () => {
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{a.submitted_at ? format(new Date(a.submitted_at), 'dd MMM yyyy HH:mm') : '—'}</td>
                 <td className="px-4 py-3 text-right">
-                  <Link to={`/dealer-admin/finance/${a.id}`} className="text-primary hover:underline">Open</Link>
+                  <Link to={`/admin-dashboard/?tab=dealer-finance&app=${a.id}`} className="text-primary hover:underline">Open</Link>
                 </td>
               </tr>
             ))}
