@@ -243,28 +243,35 @@ serve(async (req) => {
 
 
 
-    // 3. mark signup approved
-    await admin
-      .from("trade_warranty_signups")
-      .update({
-        status: "approved",
-        approved_at: new Date().toISOString(),
-        rejected_at: null,
-        decision_notes: notes,
-        reviewed_by: userData.user.id,
-        dealer_id: dealerId,
-      })
-      .eq("id", signupId);
+    // 3. mark signup approved (skipped when just resending credentials)
+    if (!isResend) {
+      await admin
+        .from("trade_warranty_signups")
+        .update({
+          status: "approved",
+          approved_at: new Date().toISOString(),
+          rejected_at: null,
+          decision_notes: notes,
+          reviewed_by: userData.user.id,
+          dealer_id: dealerId,
+        })
+        .eq("id", signupId);
+    }
 
-    // 4. welcome email with credentials
+    // 4. welcome / credentials email
+    const sendTo = alternateEmail || email;
     await sendEmail(
-      email,
-      `Welcome to ${BRAND} Trade — your login details`,
+      sendTo,
+      isResend
+        ? `Your ${BRAND} Trade login details`
+        : `Welcome to ${BRAND} Trade — your login details`,
       shell(
-        "Your trade account is live",
+        isResend ? "Your dealer portal login details" : "Your trade account is live",
         `
         <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
-        <p style="line-height:1.6;">Great news — your ${BRAND} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.</p>
+        <p style="line-height:1.6;">${isResend
+          ? `As requested, here are your ${BRAND} dealer portal login details. Your password has been reset to the temporary one below.`
+          : `Great news — your ${BRAND} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid #eb4b00;padding:12px 16px;">${esc(notes)}</p>` : ""}
         <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:20px;margin:22px 0;">
           <div style="padding:6px 0;"><strong>Email:</strong> <span style="font-family:monospace;color:#1e3a5f;">${esc(email)}</span></div>
@@ -274,11 +281,11 @@ serve(async (req) => {
           <a href="${PORTAL_URL}" style="display:inline-block;background:#eb4b00;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
         </div>
         <p style="line-height:1.6;font-size:14px;color:#6b7280;">For security, please change your password after your first login.</p>
-        <p style="line-height:1.6;">Welcome aboard,<br/>The ${BRAND} Trade Team</p>`
+        <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${BRAND} Trade Team</p>`
       )
     );
 
-    return new Response(JSON.stringify({ success: true, status: "approved", dealer_id: dealerId }), {
+    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
