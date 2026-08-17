@@ -23,6 +23,19 @@ import {
   MessageCircle,
   HeartHandshake,
 } from 'lucide-react';
+import {
+  CLAIM_OPTIONS,
+  EXCESS_OPTIONS,
+  LABOUR_OPTIONS,
+  PARTS_OPTIONS,
+  TERM_OPTIONS,
+  TraderClaim,
+  TraderExcess,
+  TraderLabour,
+  TraderParts,
+  TraderTerm,
+  formatClaim,
+} from '@/lib/traderPricingDefaults';
 
 type CustomerMode = 'now' | 'later' | 'collect';
 type Channel = 'whatsapp' | 'email';
