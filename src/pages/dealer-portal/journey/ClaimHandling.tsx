@@ -179,7 +179,7 @@ const ClaimHandlingPage: React.FC = () => {
       });
     }
 
-    const term: 12 | 24 | 36 = duration === 1 ? 12 : duration === 2 ? 24 : 36;
+    const selectedAddOns = Object.keys(addOns).filter((k) => addOns[k]);
     setPlan({
       plan_type: 'gold',
       duration_months: term,
