@@ -27,24 +27,41 @@ import {
 type CustomerMode = 'now' | 'later' | 'collect';
 type Channel = 'whatsapp' | 'email';
 
-type DurationYears = 1 | 2 | 3;
-
-const EXCESS_OPTIONS = [0, 50, 100, 250, 500] as const;
-const CLAIM_LIMIT_OPTIONS = [500, 750, 1000, 2000, 3000, 5000] as const;
-const LABOUR_RATE_OPTIONS = [40, 70, 100, 150, 200] as const;
-const DURATIONS: { key: DurationYears; label: string; sub: string; badge?: string }[] = [
-  { key: 1, label: '1 Year', sub: '12 months cover' },
-  { key: 2, label: '2 Years', sub: '24 months cover', badge: 'Popular' },
-  { key: 3, label: '3 Years', sub: '36 months cover', badge: 'Best value' },
+const ADD_ONS = [
+  'Air-Conditioning',
+  'Turbocharger',
+  'Diagnostic Cover',
+  'Breakdown Recovery',
+  'Vehicle Hire',
+  'European Cover',
+  'EV Battery Cover',
+  'Hybrid Battery Cover',
+  'Emissions',
+  'Suspension',
+  'Handbrake',
+  'Radio / Sat-Nav',
 ];
+
+const termLabel = (t: TraderTerm) =>
+  t === 3
+    ? '3 months'
+    : t === 6
+    ? '6+1 months'
+    : t === 12
+    ? '12+12 months'
+    : t === 24
+    ? '24+12 months'
+    : '36+12 months';
 
 // Quick-select defaults
 const DEFAULT_PRESET = {
-  excess: 50 as (typeof EXCESS_OPTIONS)[number],
-  claimLimit: 1000 as (typeof CLAIM_LIMIT_OPTIONS)[number],
-  labour: 70 as (typeof LABOUR_RATE_OPTIONS)[number],
-  duration: 2 as DurationYears,
+  excess: 50 as TraderExcess,
+  claimLimit: 1000 as TraderClaim,
+  labour: 70 as TraderLabour,
+  parts: 'age_mileage' as TraderParts,
+  term: 12 as TraderTerm,
 };
+
 
 const ClaimHandlingPage: React.FC = () => {
   const navigate = useNavigate();
