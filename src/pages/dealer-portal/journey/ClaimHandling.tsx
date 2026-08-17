@@ -109,6 +109,7 @@ const ClaimHandlingPage: React.FC = () => {
       setExcess(DEFAULT_PRESET.excess);
       setClaimLimit(DEFAULT_PRESET.claimLimit);
       setLabour(DEFAULT_PRESET.labour);
+      setParts(DEFAULT_PRESET.parts);
     }
   }, [useDefault]);
 
