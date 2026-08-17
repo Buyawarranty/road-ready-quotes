@@ -84,10 +84,12 @@ const ClaimHandlingPage: React.FC = () => {
   const { toast } = useToast();
 
   const [useDefault, setUseDefault] = useState(true);
-  const [excess, setExcess] = useState<(typeof EXCESS_OPTIONS)[number]>(DEFAULT_PRESET.excess);
-  const [claimLimit, setClaimLimit] = useState<(typeof CLAIM_LIMIT_OPTIONS)[number]>(DEFAULT_PRESET.claimLimit);
-  const [labour, setLabour] = useState<(typeof LABOUR_RATE_OPTIONS)[number]>(DEFAULT_PRESET.labour);
-  const [duration, setDuration] = useState<DurationYears>(DEFAULT_PRESET.duration);
+  const [excess, setExcess] = useState<TraderExcess>(DEFAULT_PRESET.excess);
+  const [claimLimit, setClaimLimit] = useState<TraderClaim>(DEFAULT_PRESET.claimLimit);
+  const [labour, setLabour] = useState<TraderLabour>(DEFAULT_PRESET.labour);
+  const [parts, setParts] = useState<TraderParts>(DEFAULT_PRESET.parts);
+  const [term, setTerm] = useState<TraderTerm>(DEFAULT_PRESET.term);
+  const [addOns, setAddOns] = useState<Record<string, boolean>>({});
 
   const [form, setForm] = useState({
     name: '',
