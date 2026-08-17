@@ -23,28 +23,58 @@ import {
   MessageCircle,
   HeartHandshake,
 } from 'lucide-react';
+import {
+  CLAIM_OPTIONS,
+  EXCESS_OPTIONS,
+  LABOUR_OPTIONS,
+  PARTS_OPTIONS,
+  TERM_OPTIONS,
+  TraderClaim,
+  TraderExcess,
+  TraderLabour,
+  TraderParts,
+  TraderTerm,
+  formatClaim,
+} from '@/lib/traderPricingDefaults';
 
 type CustomerMode = 'now' | 'later' | 'collect';
 type Channel = 'whatsapp' | 'email';
 
-type DurationYears = 1 | 2 | 3;
-
-const EXCESS_OPTIONS = [0, 50, 100, 250, 500] as const;
-const CLAIM_LIMIT_OPTIONS = [500, 750, 1000, 2000, 3000, 5000] as const;
-const LABOUR_RATE_OPTIONS = [40, 70, 100, 150, 200] as const;
-const DURATIONS: { key: DurationYears; label: string; sub: string; badge?: string }[] = [
-  { key: 1, label: '1 Year', sub: '12 months cover' },
-  { key: 2, label: '2 Years', sub: '24 months cover', badge: 'Popular' },
-  { key: 3, label: '3 Years', sub: '36 months cover', badge: 'Best value' },
+const ADD_ONS = [
+  'Air-Conditioning',
+  'Turbocharger',
+  'Diagnostic Cover',
+  'Breakdown Recovery',
+  'Vehicle Hire',
+  'European Cover',
+  'EV Battery Cover',
+  'Hybrid Battery Cover',
+  'Emissions',
+  'Suspension',
+  'Handbrake',
+  'Radio / Sat-Nav',
 ];
+
+const termLabel = (t: TraderTerm) =>
+  t === 3
+    ? '3 months'
+    : t === 6
+    ? '6+1 months'
+    : t === 12
+    ? '12+12 months'
+    : t === 24
+    ? '24+12 months'
+    : '36+12 months';
 
 // Quick-select defaults
 const DEFAULT_PRESET = {
-  excess: 50 as (typeof EXCESS_OPTIONS)[number],
-  claimLimit: 1000 as (typeof CLAIM_LIMIT_OPTIONS)[number],
-  labour: 70 as (typeof LABOUR_RATE_OPTIONS)[number],
-  duration: 2 as DurationYears,
+  excess: 50 as TraderExcess,
+  claimLimit: 1000 as TraderClaim,
+  labour: 70 as TraderLabour,
+  parts: 'age_mileage' as TraderParts,
+  term: 12 as TraderTerm,
 };
+
 
 const ClaimHandlingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -54,10 +84,12 @@ const ClaimHandlingPage: React.FC = () => {
   const { toast } = useToast();
 
   const [useDefault, setUseDefault] = useState(true);
-  const [excess, setExcess] = useState<(typeof EXCESS_OPTIONS)[number]>(DEFAULT_PRESET.excess);
-  const [claimLimit, setClaimLimit] = useState<(typeof CLAIM_LIMIT_OPTIONS)[number]>(DEFAULT_PRESET.claimLimit);
-  const [labour, setLabour] = useState<(typeof LABOUR_RATE_OPTIONS)[number]>(DEFAULT_PRESET.labour);
-  const [duration, setDuration] = useState<DurationYears>(DEFAULT_PRESET.duration);
+  const [excess, setExcess] = useState<TraderExcess>(DEFAULT_PRESET.excess);
+  const [claimLimit, setClaimLimit] = useState<TraderClaim>(DEFAULT_PRESET.claimLimit);
+  const [labour, setLabour] = useState<TraderLabour>(DEFAULT_PRESET.labour);
+  const [parts, setParts] = useState<TraderParts>(DEFAULT_PRESET.parts);
+  const [term, setTerm] = useState<TraderTerm>(DEFAULT_PRESET.term);
+  const [addOns, setAddOns] = useState<Record<string, boolean>>({});
 
   const [form, setForm] = useState({
     name: '',
@@ -77,6 +109,7 @@ const ClaimHandlingPage: React.FC = () => {
       setExcess(DEFAULT_PRESET.excess);
       setClaimLimit(DEFAULT_PRESET.claimLimit);
       setLabour(DEFAULT_PRESET.labour);
+      setParts(DEFAULT_PRESET.parts);
     }
   }, [useDefault]);
 
@@ -87,7 +120,7 @@ const ClaimHandlingPage: React.FC = () => {
   }, [vehicle, navigate]);
 
   const monthlyFee = 1.2; // flat claim-handling service fee
-  const totalMonths = duration * 12;
+  const totalMonths = term;
   const totalCost = useMemo(() => +(monthlyFee * totalMonths).toFixed(2), [totalMonths]);
 
   if (!loading && !dealer) {
@@ -147,7 +180,7 @@ const ClaimHandlingPage: React.FC = () => {
       });
     }
 
-    const term: 12 | 24 | 36 = duration === 1 ? 12 : duration === 2 ? 24 : 36;
+    const selectedAddOns = Object.keys(addOns).filter((k) => addOns[k]);
     setPlan({
       plan_type: 'gold',
       duration_months: term,
@@ -158,6 +191,8 @@ const ClaimHandlingPage: React.FC = () => {
         product: 'claim_handling',
         excess,
         labour,
+        parts,
+        add_ons: selectedAddOns,
         claim_limit: claimLimit,
         monthly_fee: monthlyFee,
         total_months: totalMonths,
@@ -302,18 +337,7 @@ const ClaimHandlingPage: React.FC = () => {
 
               <div className="space-y-5">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Claim limit</p>
-                  <div className="flex flex-wrap gap-2">
-                    {CLAIM_LIMIT_OPTIONS.map((v) => (
-                      <Pill key={v} value={v} active={claimLimit === v} onClick={() => setClaimLimit(v)}>
-                        £{v.toLocaleString()}
-                      </Pill>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Excess (per claim)</p>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Excess</p>
                   <div className="flex flex-wrap gap-2">
                     {EXCESS_OPTIONS.map((v) => (
                       <Pill key={v} value={v} active={excess === v} onClick={() => setExcess(v)}>
@@ -324,11 +348,33 @@ const ClaimHandlingPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Labour rate (per hour)</p>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Labour rates (per hour)</p>
                   <div className="flex flex-wrap gap-2">
-                    {LABOUR_RATE_OPTIONS.map((v) => (
+                    {LABOUR_OPTIONS.map((v) => (
                       <Pill key={v} value={v} active={labour === v} onClick={() => setLabour(v)}>
                         £{v}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Parts</p>
+                  <div className="flex flex-wrap gap-2">
+                    {PARTS_OPTIONS.map((o) => (
+                      <Pill key={o.key} value={o.key} active={parts === o.key} onClick={() => setParts(o.key)}>
+                        {o.label}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Claim limit</p>
+                  <div className="flex flex-wrap gap-2">
+                    {CLAIM_OPTIONS.map((v) => (
+                      <Pill key={v} value={v} active={claimLimit === v} onClick={() => setClaimLimit(v)}>
+                        {formatClaim(v)}
                       </Pill>
                     ))}
                   </div>
@@ -336,39 +382,58 @@ const ClaimHandlingPage: React.FC = () => {
               </div>
             </section>
 
-            {/* Duration */}
+            {/* Term */}
             <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
               <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">
-                Warranty duration
+                Term
               </h2>
               <p className="text-xs text-gray-500 mb-4">Pick the cover length for the customer.</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {DURATIONS.map((d) => {
-                  const active = duration === d.key;
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {TERM_OPTIONS.map((t) => {
+                  const active = term === t;
                   return (
                     <button
-                      key={d.key}
+                      key={t}
                       type="button"
-                      onClick={() => setDuration(d.key)}
-                      className={`relative text-left rounded-xl border-2 p-4 transition-all ${
-                        active ? 'border-orange-500 bg-orange-50/60 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-300'
+                      onClick={() => setTerm(t)}
+                      className={`px-3 py-2 rounded-lg text-center border-2 transition-all text-xs font-semibold ${
+                        active ? 'bg-yellow-300 border-yellow-400' : 'bg-white border-gray-200 hover:border-orange-300'
                       }`}
                     >
-                      {d.badge && (
-                        <span className="absolute top-2 right-2 text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">
-                          {d.badge}
-                        </span>
-                      )}
-                      <div className="text-lg font-extrabold text-gray-900">{d.label}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{d.sub}</div>
-                      <div className="text-xs font-bold text-orange-600 mt-2">
-                        £{(monthlyFee * d.key * 12).toFixed(2)} total fee
-                      </div>
+                      {termLabel(t)}
                     </button>
                   );
                 })}
               </div>
+              <p className="text-xs font-bold text-orange-600 mt-3">
+                £{(monthlyFee * term).toFixed(2)} total service fee over {term} months
+              </p>
             </section>
+
+            {/* Optional Add-ons */}
+            <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">Optional add-ons</h2>
+              <p className="text-xs text-gray-500 mb-4">Boost the cover with extra protection.</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
+                {ADD_ONS.map((name) => {
+                  const checked = !!addOns[name];
+                  return (
+                    <label key={name} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none">
+                      <span
+                        onClick={() => setAddOns((prev) => ({ ...prev, [name]: !checked }))}
+                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
+                          checked ? 'bg-orange-500 border-orange-500' : 'bg-white border-gray-400'
+                        }`}
+                      >
+                        {checked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                      </span>
+                      <span>{name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </section>
+
 
             {/* Customer details */}
             <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
@@ -544,12 +609,16 @@ const ClaimHandlingPage: React.FC = () => {
 
               <dl className="text-xs space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Duration</dt>
-                  <dd className="font-bold text-gray-900">{duration} year{duration > 1 ? 's' : ''}</dd>
+                  <dt className="text-gray-500">Term</dt>
+                  <dd className="font-bold text-gray-900">{termLabel(term)}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-gray-500">Claim limit</dt>
-                  <dd className="font-bold text-gray-900">£{claimLimit.toLocaleString()}</dd>
+                  <dd className="font-bold text-gray-900">{formatClaim(claimLimit)}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-gray-500">Parts</dt>
+                  <dd className="font-bold text-gray-900">{PARTS_OPTIONS.find((p) => p.key === parts)?.label}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-gray-500">Excess</dt>
