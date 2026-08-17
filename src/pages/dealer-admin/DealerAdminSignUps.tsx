@@ -141,6 +141,34 @@ const DealerAdminSignUps: React.FC = () => {
     }
   };
 
+  const resendCredentials = async () => {
+    if (!selected) return;
+    const alt = resendEmail.trim().toLowerCase();
+    if (alt && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alt)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    setResending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
+        body: {
+          signup_id: selected.id,
+          decision: 'resend',
+          notes: decisionNotes.trim() || null,
+          alternate_email: alt || null,
+        },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success(`Login details sent to ${(data as any)?.sent_to || alt || selected.email_address}`);
+      setResendEmail('');
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not send login details');
+    } finally {
+      setResending(false);
+    }
+  };
+
   const exportCsv = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
