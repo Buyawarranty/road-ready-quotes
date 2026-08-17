@@ -41,7 +41,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'HOME', icon: Home, trader: true },
   {
-    to: '/dealer-portal/quote/pricing',
+    to: '/dealer-portal/quote/vehicle',
     label: 'NEW QUOTE',
     icon: FilePlus2,
     matchPaths: ['/dealer-portal/quote/', '/dealer-portal/quotes/create'],
