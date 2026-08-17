@@ -119,7 +119,7 @@ const ClaimHandlingPage: React.FC = () => {
   }, [vehicle, navigate]);
 
   const monthlyFee = 1.2; // flat claim-handling service fee
-  const totalMonths = duration * 12;
+  const totalMonths = term;
   const totalCost = useMemo(() => +(monthlyFee * totalMonths).toFixed(2), [totalMonths]);
 
   if (!loading && !dealer) {
