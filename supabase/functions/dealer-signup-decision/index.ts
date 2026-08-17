@@ -91,9 +91,18 @@ serve(async (req) => {
     const signupId: string | undefined = body?.signup_id;
     const decision: string | undefined = body?.decision;
     const notes: string | null = body?.notes?.toString().trim() || null;
+    const alternateEmail: string | null =
+      body?.alternate_email?.toString().trim().toLowerCase() || null;
+    const isResend = decision === "resend";
 
-    if (!signupId || (decision !== "approve" && decision !== "reject")) {
-      return new Response(JSON.stringify({ error: "signup_id and decision (approve|reject) are required" }), {
+    if (!signupId || (decision !== "approve" && decision !== "reject" && !isResend)) {
+      return new Response(JSON.stringify({ error: "signup_id and decision (approve|reject|resend) are required" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (alternateEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alternateEmail)) {
+      return new Response(JSON.stringify({ error: "Invalid alternate email address" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
