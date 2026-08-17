@@ -53,6 +53,8 @@ const DealerAdminSignUps: React.FC = () => {
   const [selected, setSelected] = useState<Signup | null>(null);
   const [decisionNotes, setDecisionNotes] = useState('');
   const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
+  const [resendEmail, setResendEmail] = useState('');
+  const [resending, setResending] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const load = async () => {
