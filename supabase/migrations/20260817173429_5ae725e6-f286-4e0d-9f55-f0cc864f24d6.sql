@@ -1,0 +1,10 @@
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.dealer_quotes TO authenticated;
+GRANT ALL ON public.dealer_quotes TO service_role;
+GRANT SELECT ON public.dealers TO authenticated;
+GRANT ALL ON public.dealers TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.dealer_customers TO authenticated;
+GRANT ALL ON public.dealer_customers TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.dealer_warranties TO authenticated;
+GRANT ALL ON public.dealer_warranties TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.dealer_leads TO authenticated;
+GRANT ALL ON public.dealer_leads TO service_role;
