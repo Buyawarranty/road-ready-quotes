@@ -423,6 +423,35 @@ const DealerAdminSignUps: React.FC = () => {
                   </p>
                 </div>
 
+                <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Resend login details
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Didn't receive the credentials email? This resets their password and emails a new
+                    temporary one. Leave blank to send to <strong>{selected.email_address}</strong>, or
+                    enter a different address below.
+                  </p>
+                  <Input
+                    type="email"
+                    value={resendEmail}
+                    onChange={(e) => setResendEmail(e.target.value)}
+                    placeholder={`Alternate email (optional) — default ${selected.email_address}`}
+                    disabled={resending}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={resendCredentials}
+                    disabled={resending}
+                    className="border-[#eb4b00] text-[#eb4b00] hover:bg-orange-50"
+                  >
+                    {resending
+                      ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      : <Mail className="w-4 h-4 mr-2" />}
+                    Send login credentials
+                  </Button>
+                </div>
+
                 <div className="flex justify-end pt-2">
                   <Button variant="outline" onClick={closeDetail}>
                     <X className="w-4 h-4 mr-2" /> Close
