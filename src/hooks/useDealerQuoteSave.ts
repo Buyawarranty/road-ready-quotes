@@ -13,9 +13,22 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
   const { quoteId, setQuoteId, vehicle, customer, plan, discount_pct } = useDealerJourney();
   const [saving, setSaving] = useState(false);
 
+  const resolveDealerId = async (): Promise<string | null> => {
+    if (dealer?.id) return dealer.id;
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth?.user) return null;
+    const { data } = await supabase
+      .from('dealers')
+      .select('id')
+      .eq('user_id', auth.user.id)
+      .maybeSingle();
+    return (data as any)?.id ?? null;
+  };
+
   const save = async (opts?: { silent?: boolean; markStatus?: string }) => {
-    if (!dealer?.id) {
-      if (!opts?.silent) toast.error('Not signed in');
+    const dealerId = await resolveDealerId();
+    if (!dealerId) {
+      if (!opts?.silent) toast.error('Your dealer profile could not be found — please sign in again');
       return null;
     }
     if (!vehicle?.reg) {
@@ -26,7 +39,7 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
     setSaving(true);
     try {
       const payload: any = {
-        dealer_id: dealer.id,
+        dealer_id: dealerId,
         current_step: currentStep,
         status: opts?.markStatus || 'draft',
         vehicle_reg: vehicle.reg,
@@ -48,17 +61,34 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
             }
           : null,
         plan_type: plan?.plan_type || null,
-        warranty_duration: plan ? String(plan.duration_months) : null,
+        warranty_duration: plan ? String(plan.term_months ?? plan.duration_months) : null,
         retail_price: plan?.retail_price ?? null,
         dealer_price: plan?.dealer_price ?? null,
         price: plan?.dealer_price ?? null,
         discount_pct: discount_pct || 0,
+        plan_options: plan?.selected_options ?? null,
       };
 
       let id = quoteId;
       if (id) {
-        const { error } = await supabase.from('dealer_quotes').update(payload).eq('id', id);
+        const { data, error } = await supabase
+          .from('dealer_quotes')
+          .update(payload)
+          .eq('id', id)
+          .select('id')
+          .maybeSingle();
         if (error) throw error;
+        // Row missing (deleted elsewhere) — fall back to creating a new one
+        if (!data) {
+          const { data: created, error: insErr } = await supabase
+            .from('dealer_quotes')
+            .insert(payload)
+            .select('id')
+            .single();
+          if (insErr) throw insErr;
+          id = created.id;
+          setQuoteId(id);
+        }
       } else {
         const { data, error } = await supabase
           .from('dealer_quotes')

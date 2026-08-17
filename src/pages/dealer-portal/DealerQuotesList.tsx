@@ -96,6 +96,8 @@ const DealerQuotesList = () => {
               duration_months: Number(q.warranty_duration) as 3 | 12 | 24 | 36,
               retail_price: Number(q.retail_price || q.price || 0),
               dealer_price: Number(q.dealer_price || q.price || 0),
+              term_months: Number(q.warranty_duration) as any,
+              selected_options: (q as any).plan_options || undefined,
             }
           : null,
       discount_pct: Number(q.discount_pct || 0),

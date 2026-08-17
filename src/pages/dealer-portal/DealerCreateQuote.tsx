@@ -38,7 +38,10 @@ const DealerCreateQuote = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!dealer?.id) return;
+    if (!dealer?.id) {
+      toast({ title: 'Your dealer profile could not be loaded', description: 'Please sign in again and retry.', variant: 'destructive' });
+      return;
+    }
     if (!form.customer_name || !form.vehicle_reg || !form.warranty_duration || !form.plan_type) {
       toast({ title: 'Please fill in all required fields', variant: 'destructive' });
       return;

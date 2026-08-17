@@ -1,0 +1,1 @@
+ALTER TABLE public.dealer_quotes ADD COLUMN IF NOT EXISTS plan_options jsonb;
