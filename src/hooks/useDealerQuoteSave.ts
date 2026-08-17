@@ -61,17 +61,34 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
             }
           : null,
         plan_type: plan?.plan_type || null,
-        warranty_duration: plan ? String(plan.duration_months) : null,
+        warranty_duration: plan ? String(plan.term_months ?? plan.duration_months) : null,
         retail_price: plan?.retail_price ?? null,
         dealer_price: plan?.dealer_price ?? null,
         price: plan?.dealer_price ?? null,
         discount_pct: discount_pct || 0,
+        plan_options: plan?.selected_options ?? null,
       };
 
       let id = quoteId;
       if (id) {
-        const { error } = await supabase.from('dealer_quotes').update(payload).eq('id', id);
+        const { data, error } = await supabase
+          .from('dealer_quotes')
+          .update(payload)
+          .eq('id', id)
+          .select('id')
+          .maybeSingle();
         if (error) throw error;
+        // Row missing (deleted elsewhere) — fall back to creating a new one
+        if (!data) {
+          const { data: created, error: insErr } = await supabase
+            .from('dealer_quotes')
+            .insert(payload)
+            .select('id')
+            .single();
+          if (insErr) throw insErr;
+          id = created.id;
+          setQuoteId(id);
+        }
       } else {
         const { data, error } = await supabase
           .from('dealer_quotes')
