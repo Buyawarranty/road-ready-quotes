@@ -191,6 +191,8 @@ const ClaimHandlingPage: React.FC = () => {
         product: 'claim_handling',
         excess,
         labour,
+        parts,
+        add_ons: selectedAddOns,
         claim_limit: claimLimit,
         monthly_fee: monthlyFee,
         total_months: totalMonths,
