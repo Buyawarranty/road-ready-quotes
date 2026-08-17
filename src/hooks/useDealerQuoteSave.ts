@@ -13,9 +13,22 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
   const { quoteId, setQuoteId, vehicle, customer, plan, discount_pct } = useDealerJourney();
   const [saving, setSaving] = useState(false);
 
+  const resolveDealerId = async (): Promise<string | null> => {
+    if (dealer?.id) return dealer.id;
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth?.user) return null;
+    const { data } = await supabase
+      .from('dealers')
+      .select('id')
+      .eq('user_id', auth.user.id)
+      .maybeSingle();
+    return (data as any)?.id ?? null;
+  };
+
   const save = async (opts?: { silent?: boolean; markStatus?: string }) => {
-    if (!dealer?.id) {
-      if (!opts?.silent) toast.error('Not signed in');
+    const dealerId = await resolveDealerId();
+    if (!dealerId) {
+      if (!opts?.silent) toast.error('Your dealer profile could not be found — please sign in again');
       return null;
     }
     if (!vehicle?.reg) {
@@ -26,7 +39,7 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
     setSaving(true);
     try {
       const payload: any = {
-        dealer_id: dealer.id,
+        dealer_id: dealerId,
         current_step: currentStep,
         status: opts?.markStatus || 'draft',
         vehicle_reg: vehicle.reg,
