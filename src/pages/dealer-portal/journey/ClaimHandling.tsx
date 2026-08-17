@@ -606,12 +606,16 @@ const ClaimHandlingPage: React.FC = () => {
 
               <dl className="text-xs space-y-2">
                 <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Duration</dt>
-                  <dd className="font-bold text-gray-900">{duration} year{duration > 1 ? 's' : ''}</dd>
+                  <dt className="text-gray-500">Term</dt>
+                  <dd className="font-bold text-gray-900">{termLabel(term)}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-gray-500">Claim limit</dt>
-                  <dd className="font-bold text-gray-900">£{claimLimit.toLocaleString()}</dd>
+                  <dd className="font-bold text-gray-900">{formatClaim(claimLimit)}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-gray-500">Parts</dt>
+                  <dd className="font-bold text-gray-900">{PARTS_OPTIONS.find((p) => p.key === parts)?.label}</dd>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <dt className="text-gray-500">Excess</dt>
