@@ -11,8 +11,9 @@ const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, setPlan, discount_pct, setDiscountPct } = useDealerJourney();
+  const { vehicle, setPlan, discount_pct, setDiscountPct, reset } = useDealerJourney();
   const { toast } = useToast();
+  const { save, saving } = useDealerQuoteSave(3);
 
   // Hydrate dealer discount once
   useEffect(() => {
