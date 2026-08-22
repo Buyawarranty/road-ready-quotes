@@ -105,7 +105,7 @@ const termLabel = (t: TraderTerm) =>
 
 type SupportOption = 'claim' | 'warranty' | null;
 
-const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
+const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, savingDraft }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
   const { vehicle, setVehicle } = useDealerJourney();
   const { toast } = useToast();
