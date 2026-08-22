@@ -6,6 +6,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
