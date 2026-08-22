@@ -4,6 +4,7 @@ import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLa
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
+import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle2, FileText } from 'lucide-react';
 
 const Step5Confirmation: React.FC = () => {
@@ -16,8 +17,20 @@ const Step5Confirmation: React.FC = () => {
   useEffect(() => {
     // Clear journey state — order has been written
     reset();
+    // Card payments (Stripe / Worldpay): email warranty details to the dealer's
+    // registered account email. The invoice path is emailed server-side already.
+    if (id && method !== 'invoice') {
+      const key = `dealer_warranty_email_sent_${id}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        supabase.functions
+          .invoke('dealer-warranty-email', { body: { customer_id: id, kind: 'paid' } })
+          .catch((e) => console.error('dealer warranty email failed', e));
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   return (
     <DealerJourneyLayout step={5} title="Order confirmed" subtitle="The warranty is now in your dashboard." showBack={false}>
