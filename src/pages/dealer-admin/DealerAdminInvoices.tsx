@@ -362,6 +362,9 @@ const DealerAdminInvoices: React.FC = () => {
                         )}
                         Payment link
                       </Button>
+                      <Button variant="outline" size="sm" onClick={() => downloadPdf(g)}>
+                        <FileText className="h-3 w-3 mr-1.5" /> PDF
+                      </Button>
                       <Button variant="outline" size="sm" onClick={() => exportCsv(g)}>
                         <Download className="h-3 w-3 mr-1.5" /> CSV
                       </Button>
