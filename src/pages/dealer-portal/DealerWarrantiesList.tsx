@@ -380,6 +380,52 @@ const DealerWarrantiesList = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={!!emailRow} onOpenChange={(o) => !o && setEmailRow(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Email warranty to customer</DialogTitle>
+            <DialogDescription>
+              Sends the warranty details for{' '}
+              <span className="font-semibold uppercase">{emailRow?.registration_plate}</span> straight to your
+              customer. Replies come back to your dealer email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="customer-email">Customer email</Label>
+              <Input
+                id="customer-email"
+                type="email"
+                value={emailTo}
+                onChange={(e) => setEmailTo(e.target.value)}
+                placeholder="customer@example.com"
+                className="bg-gray-100"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-note">Personal message (optional)</Label>
+              <Textarea
+                id="customer-note"
+                value={emailNote}
+                onChange={(e) => setEmailNote(e.target.value)}
+                rows={3}
+                placeholder="Thanks for your purchase — here are your warranty details."
+                className="bg-gray-100"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailRow(null)} disabled={sending}>
+              Cancel
+            </Button>
+            <Button onClick={sendWarrantyToCustomer} disabled={sending} className="bg-orange-500 hover:bg-orange-600 text-white">
+              {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
+              Send warranty
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DealerLayout>
   );
 };
