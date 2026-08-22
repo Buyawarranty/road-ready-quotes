@@ -166,7 +166,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "BuyaWarranty Team <invoices@buyawarranty.co.uk>",
+        from: "Panda Protect <hello@pandaprotect.co.uk>",
         to: [recipientEmail],
         subject: subject || `Invoice from BuyaWarranty`,
         html: emailHtml,
