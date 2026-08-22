@@ -40,7 +40,7 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
       if (!opts?.silent) toast.error('Your dealer profile could not be found — please sign in again');
       return null;
     }
-    if (!vehicle?.reg) {
+    if (!vehicleToSave?.reg) {
       if (!opts?.silent) toast.error('Enter a vehicle registration before saving');
       return null;
     }
@@ -51,31 +51,31 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
         dealer_id: dealerId,
         current_step: currentStep,
         status: opts?.markStatus || 'draft',
-        vehicle_reg: vehicle.reg,
-        vehicle_make: vehicle.make || null,
-        vehicle_model: vehicle.model || null,
-        vehicle_year: vehicle.year || null,
-        vehicle_fuel_type: vehicle.fuel_type || null,
-        vehicle_transmission: vehicle.transmission || null,
-        mileage: vehicle.mileage || null,
-        customer_name: customer?.name || null,
-        customer_email: customer?.email || null,
-        customer_phone: customer?.phone || null,
-        customer_address: customer
+        vehicle_reg: vehicleToSave.reg,
+        vehicle_make: vehicleToSave.make || null,
+        vehicle_model: vehicleToSave.model || null,
+        vehicle_year: vehicleToSave.year || null,
+        vehicle_fuel_type: vehicleToSave.fuel_type || null,
+        vehicle_transmission: vehicleToSave.transmission || null,
+        mileage: vehicleToSave.mileage || null,
+        customer_name: customerToSave?.name || null,
+        customer_email: customerToSave?.email || null,
+        customer_phone: customerToSave?.phone || null,
+        customer_address: customerToSave
           ? {
-              address_line1: customer.address_line1,
-              address_line2: customer.address_line2 || null,
-              town: customer.town,
-              postcode: customer.postcode,
+              address_line1: customerToSave.address_line1,
+              address_line2: customerToSave.address_line2 || null,
+              town: customerToSave.town,
+              postcode: customerToSave.postcode,
             }
           : null,
-        plan_type: plan?.plan_type || null,
-        warranty_duration: plan ? String(plan.term_months ?? plan.duration_months) : null,
-        retail_price: plan?.retail_price ?? null,
-        dealer_price: plan?.dealer_price ?? null,
-        price: plan?.dealer_price ?? null,
+        plan_type: planToSave?.plan_type || null,
+        warranty_duration: planToSave ? String(planToSave.term_months ?? planToSave.duration_months) : null,
+        retail_price: planToSave?.retail_price ?? null,
+        dealer_price: planToSave?.dealer_price ?? null,
+        price: planToSave?.dealer_price ?? null,
         discount_pct: discount_pct || 0,
-        plan_options: plan?.selected_options ?? null,
+        plan_options: planToSave?.selected_options ?? null,
       };
 
       let id = quoteId;
