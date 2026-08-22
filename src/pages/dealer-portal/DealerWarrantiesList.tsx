@@ -233,6 +233,17 @@ const DealerWarrantiesList = () => {
                         <TableCell className="text-gray-700">{fmt(computeEnd(w))}</TableCell>
                         <TableCell className="text-right text-gray-900 font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openEmailDialog(w)}
+                            className="border-orange-500 text-orange-600 hover:bg-orange-50 font-semibold"
+                          >
+                            <Mail className="h-4 w-4 mr-2" />
+                            Email warranty
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
