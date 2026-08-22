@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.send-admin-quote]
 verify_jwt = true
+
+[functions.worldpay-create-payment-page]
+verify_jwt = false

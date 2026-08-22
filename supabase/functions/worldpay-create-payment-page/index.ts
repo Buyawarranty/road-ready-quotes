@@ -99,14 +99,7 @@ Deno.serve(async (req: Request) => {
     const cancelUrl = body.cancel_url || `${origin}/payment-fallback?ref=${transactionReference}`;
 
     const auth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
-    const wpRes = await fetch(`${base}/paymentPages`, {
-      method: 'POST',
-      headers: {
-        Authorization: auth,
-        'Content-Type': 'application/vnd.worldpay.payment_pages-v1.hal+json',
-        Accept: 'application/vnd.worldpay.payment_pages-v1.hal+json',
-      },
-      body: JSON.stringify({
+    const wpBody = JSON.stringify({
         transactionReference,
         merchant: { entity: ENTITY },
         narrative: { line1: description.slice(0, 24) },
@@ -119,8 +112,19 @@ Deno.serve(async (req: Request) => {
           cancelURL: cancelUrl,
           expiryURL: cancelUrl,
         },
-      }),
     });
+
+    // Worldpay Access exposes hosted payment pages at /payment_pages (some
+    // older accounts use /paymentPages) — try both before failing.
+    const wpHeaders = {
+      Authorization: auth,
+      'Content-Type': 'application/vnd.worldpay.payment_pages-v1.hal+json',
+      Accept: 'application/vnd.worldpay.payment_pages-v1.hal+json',
+    };
+    let wpRes = await fetch(`${base}/payment_pages`, { method: 'POST', headers: wpHeaders, body: wpBody });
+    if (wpRes.status === 404) {
+      wpRes = await fetch(`${base}/paymentPages`, { method: 'POST', headers: wpHeaders, body: wpBody });
+    }
 
     const raw = await wpRes.json().catch(() => ({}));
 
@@ -130,7 +134,15 @@ Deno.serve(async (req: Request) => {
         .from('worldpay_transactions')
         .update({ status: 'failed', last_error: JSON.stringify(raw).slice(0, 1000), raw_response: raw })
         .eq('id', txn.id);
-      return json({ error: (raw as any)?.message || 'Worldpay rejected the request' }, 502);
+      return json(
+        {
+          error: (raw as any)?.message || 'Worldpay rejected the request',
+          worldpay_status: wpRes.status,
+          environment: ENVIRONMENT,
+          entity: ENTITY,
+        },
+        502,
+      );
     }
 
     const paymentUrl: string | undefined = (raw as any)?.url || (raw as any)?._links?.['payment_pages:url']?.href;
