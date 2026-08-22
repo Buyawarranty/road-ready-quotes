@@ -168,6 +168,65 @@ const DealerAdminInvoices: React.FC = () => {
     toast({ title: 'Invoice sent', description: `Emailed to ${g.dealer_email}` });
   };
 
+  const downloadPdf = (g: Group, only?: UnpaidRow) => {
+    const target = only ? [only] : g.rows;
+    const total = target.reduce((s, r) => s + Number(r.final_amount ?? 0), 0);
+    const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const invoiceNumber = only
+      ? `PP-${stamp}-${only.id.replace(/-/g, '').slice(0, 6).toUpperCase()}`
+      : `PP-${stamp}-${g.dealer_company.replace(/[^A-Z0-9]/gi, '').slice(0, 6).toUpperCase()}`;
+
+    const doc = new jsPDF();
+    doc.setFillColor(17, 24, 39);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 122, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('INVOICE', 14, 18);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
+    doc.text('hello@pandaprotect.co.uk', 196, 20, { align: 'right' });
+
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Invoice ${invoiceNumber}`, 14, 42);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 49);
+    doc.text(`Billed to: ${g.dealer_company}`, 196, 42, { align: 'right' });
+    if (g.dealer_email) doc.text(g.dealer_email, 196, 49, { align: 'right' });
+
+    autoTable(doc, {
+      startY: 60,
+      head: [['Date', 'Customer', 'Vehicle', 'Plan', 'Amount']],
+      body: target.map((r) => [
+        new Date(r.signup_date).toLocaleDateString('en-GB'),
+        r.name || '—',
+        (r.registration_plate || '—').toUpperCase(),
+        r.plan_type || 'Warranty',
+        money(Number(r.final_amount ?? 0)),
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: [255, 122, 0], textColor: [17, 24, 39], fontStyle: 'bold' },
+      styles: { font: 'helvetica', fontSize: 10, cellPadding: 3 },
+      columnStyles: { 4: { halign: 'right' } },
+    });
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 90;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('Total due', 150, finalY + 14);
+    doc.text(money(total), 196, finalY + 14, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Please settle using the payment link provided, or contact hello@pandaprotect.co.uk.', 14, finalY + 26, { maxWidth: 182 });
+
+    doc.save(`${invoiceNumber}.pdf`);
+  };
+
   const createPaymentLink = async (g: Group, row?: UnpaidRow) => {
     const key = row ? `link-${row.id}` : `link-${g.dealer_id}`;
     const amount = row ? Number(row.final_amount ?? 0) : g.total;
