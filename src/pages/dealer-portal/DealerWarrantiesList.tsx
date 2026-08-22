@@ -10,7 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
-import { Download, FileText, CreditCard, Loader2 } from 'lucide-react';
+import { Download, FileText, CreditCard, Loader2, Mail } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
