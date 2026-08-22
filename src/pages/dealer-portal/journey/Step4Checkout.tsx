@@ -6,9 +6,9 @@ import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLa
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock } from 'lucide-react';
+import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark } from 'lucide-react';
 
-type Method = 'pay_now' | 'invoice';
+type Method = 'pay_now' | 'invoice' | 'worldpay';
 
 const Step4Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const Step4Checkout: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
         body: {
           dealer_id: dealer.id,
-          payment_method: method,
+          payment_method: method === 'worldpay' ? 'worldpay' : method,
           vehicle: {
             reg: vehicle.reg,
             make: vehicle.make,
@@ -55,6 +55,30 @@ const Step4Checkout: React.FC = () => {
       });
 
       if (error) throw new Error(error.message || 'Checkout failed');
+
+      if (method === 'worldpay') {
+        const pendingId = (data as any)?.customer_id || null;
+        const { data: wp, error: wpErr } = await supabase.functions.invoke(
+          'worldpay-create-payment-page',
+          {
+            body: {
+              flow: 'moto',
+              amount_pence: Math.round(total * 100),
+              description: `${planName} warranty · ${vehicle.reg}`,
+              customer_id: pendingId,
+              customer_email: customer.email,
+              customer_phone: customer.phone,
+              success_url: `${window.location.origin}/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`,
+              cancel_url: `${window.location.origin}/dealer-portal/quote/checkout`,
+            },
+          },
+        );
+        if (wpErr) throw new Error(wpErr.message || 'Worldpay is unavailable');
+        const wpUrl = (wp as any)?.payment_url;
+        if (!wpUrl) throw new Error((wp as any)?.error || 'No Worldpay payment URL returned');
+        window.location.href = wpUrl;
+        return;
+      }
 
       if (method === 'pay_now') {
         const url = (data as any)?.checkout_url;
@@ -157,6 +181,18 @@ const Step4Checkout: React.FC = () => {
             </ul>
           </OptionCard>
 
+          <OptionCard
+            value="worldpay"
+            icon={Landmark}
+            title="Pay by card via Worldpay"
+            sub="Secure hosted Worldpay card page. Warranty activates once payment clears."
+          >
+            <ul className="space-y-1.5 text-xs text-gray-600">
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> PCI-safe hosted payment page</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Ideal for card payments taken over the phone</li>
+            </ul>
+          </OptionCard>
+
           <div className="flex items-center justify-between pt-2">
             <Button
               variant="outline"
@@ -176,6 +212,8 @@ const Step4Checkout: React.FC = () => {
                 <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing…</>
               ) : method === 'pay_now' ? (
                 <>Pay £{total.toFixed(2)} now</>
+              ) : method === 'worldpay' ? (
+                <>Pay £{total.toFixed(2)} with Worldpay</>
               ) : (
                 <>Confirm & invoice me</>
               )}

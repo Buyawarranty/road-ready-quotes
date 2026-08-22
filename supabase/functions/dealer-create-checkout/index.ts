@@ -37,7 +37,7 @@ interface PlanPayload {
 
 interface RequestBody {
   dealer_id: string;
-  payment_method: 'pay_now' | 'invoice';
+  payment_method: 'pay_now' | 'invoice' | 'worldpay';
   vehicle: VehiclePayload;
   customer: CustomerPayload;
   plan: PlanPayload;
@@ -82,7 +82,7 @@ Deno.serve(async (req: Request) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    if (!['pay_now', 'invoice'].includes(payment_method)) {
+    if (!['pay_now', 'invoice', 'worldpay'].includes(payment_method)) {
       return new Response(JSON.stringify({ error: 'Invalid payment_method' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -179,6 +179,22 @@ Deno.serve(async (req: Request) => {
         });
       }
       return new Response(JSON.stringify({ customer_id: result.id, method: 'invoice' }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // === WORLDPAY PATH: create the pending customer row, frontend then opens the Worldpay page ===
+    if (payment_method === 'worldpay') {
+      const result = await upsertDealerCustomer();
+      if ('error' in result) {
+        console.error('Worldpay pending upsert error', result.error);
+        return new Response(JSON.stringify({ error: result.error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      return new Response(JSON.stringify({ customer_id: result.id, method: 'worldpay' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

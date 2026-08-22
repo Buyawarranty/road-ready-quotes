@@ -599,6 +599,51 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_ui_events: {
+        Row: {
+          admin_email: string | null
+          admin_user_id: string | null
+          created_at: string
+          detail: Json | null
+          duration_ms: number | null
+          event_type: string
+          id: string
+          label: string | null
+          path: string | null
+          session_id: string | null
+          tab: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          admin_email?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          detail?: Json | null
+          duration_ms?: number | null
+          event_type: string
+          id?: string
+          label?: string | null
+          path?: string | null
+          session_id?: string | null
+          tab?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          admin_email?: string | null
+          admin_user_id?: string | null
+          created_at?: string
+          detail?: Json | null
+          duration_ms?: number | null
+          event_type?: string
+          id?: string
+          label?: string | null
+          path?: string | null
+          session_id?: string | null
+          tab?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_user_access_periods: {
         Row: {
           admin_user_id: string
@@ -728,6 +773,47 @@ export type Database = {
             columns: ["policy_id"]
             isOneToOne: false
             referencedRelation: "permission_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_break_log: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          ended_at: string | null
+          id: string
+          minutes: number | null
+          reason: string | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          minutes?: number | null
+          reason?: string | null
+          started_at?: string
+          status: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          minutes?: number | null
+          reason?: string | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_break_log_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
             referencedColumns: ["id"]
           },
         ]
@@ -899,10 +985,15 @@ export type Database = {
           allowed_sources: string[] | null
           assigned_today: number | null
           assignment_mode: string
+          auto_freeze_enabled: boolean
           can_reassign_leads: boolean
           cap_reset_date: string | null
           created_at: string | null
           daily_cap: number | null
+          freeze_reason: string | null
+          freeze_source: string | null
+          frozen_at: string | null
+          frozen_until: string | null
           id: string
           last_assigned_at: string | null
           paused: boolean | null
@@ -917,10 +1008,15 @@ export type Database = {
           allowed_sources?: string[] | null
           assigned_today?: number | null
           assignment_mode?: string
+          auto_freeze_enabled?: boolean
           can_reassign_leads?: boolean
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
+          freeze_reason?: string | null
+          freeze_source?: string | null
+          frozen_at?: string | null
+          frozen_until?: string | null
           id?: string
           last_assigned_at?: string | null
           paused?: boolean | null
@@ -935,10 +1031,15 @@ export type Database = {
           allowed_sources?: string[] | null
           assigned_today?: number | null
           assignment_mode?: string
+          auto_freeze_enabled?: boolean
           can_reassign_leads?: boolean
           cap_reset_date?: string | null
           created_at?: string | null
           daily_cap?: number | null
+          freeze_reason?: string | null
+          freeze_source?: string | null
+          frozen_at?: string | null
+          frozen_until?: string | null
           id?: string
           last_assigned_at?: string | null
           paused?: boolean | null
@@ -1147,6 +1248,60 @@ export type Database = {
           },
         ]
       }
+      agent_review_claims: {
+        Row: {
+          admin_user_id: string
+          channel: string | null
+          created_at: string
+          customer_id: string | null
+          customer_name: string | null
+          id: string
+          kind: string
+          notes: string | null
+          registration_plate: string | null
+          week_start: string
+        }
+        Insert: {
+          admin_user_id: string
+          channel?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          id?: string
+          kind: string
+          notes?: string | null
+          registration_plate?: string | null
+          week_start: string
+        }
+        Update: {
+          admin_user_id?: string
+          channel?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          registration_plate?: string | null
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_review_claims_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_review_claims_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_schedules: {
         Row: {
           admin_user_id: string
@@ -1347,7 +1502,7 @@ export type Database = {
           claimed_by: string | null
           cover_summary: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
@@ -1366,7 +1521,7 @@ export type Database = {
           claimed_by?: string | null
           cover_summary?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
@@ -1385,7 +1540,7 @@ export type Database = {
           claimed_by?: string | null
           cover_summary?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
@@ -1418,7 +1573,7 @@ export type Database = {
           role: string
           sdk_message_id: string | null
           thread_id: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           content?: string
@@ -1428,7 +1583,7 @@ export type Database = {
           role: string
           sdk_message_id?: string | null
           thread_id: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           content?: string
@@ -1438,7 +1593,7 @@ export type Database = {
           role?: string
           sdk_message_id?: string | null
           thread_id?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1456,6 +1611,7 @@ export type Database = {
           display_name: string | null
           is_online: boolean
           last_seen_at: string
+          override_hours: boolean
           updated_at: string
           user_id: string
         }
@@ -1464,6 +1620,7 @@ export type Database = {
           display_name?: string | null
           is_online?: boolean
           last_seen_at?: string
+          override_hours?: boolean
           updated_at?: string
           user_id: string
         }
@@ -1472,6 +1629,7 @@ export type Database = {
           display_name?: string | null
           is_online?: boolean
           last_seen_at?: string
+          override_hours?: boolean
           updated_at?: string
           user_id?: string
         }
@@ -1480,27 +1638,33 @@ export type Database = {
       ai_sandbox_threads: {
         Row: {
           created_at: string
+          guest_token: string | null
           id: string
           is_sandbox: boolean
+          source: string | null
           title: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
+          guest_token?: string | null
           id?: string
           is_sandbox?: boolean
+          source?: string | null
           title?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
+          guest_token?: string | null
           id?: string
           is_sandbox?: boolean
+          source?: string | null
           title?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2196,6 +2360,83 @@ export type Database = {
           },
         ]
       }
+      career_applications: {
+        Row: {
+          acknowledgement_sent_at: string | null
+          applied_at: string
+          auto_reject_enabled: boolean
+          covering_note: string | null
+          created_at: string
+          cv_file_name: string | null
+          cv_storage_path: string | null
+          decided_at: string | null
+          decided_by: string | null
+          email: string | null
+          full_name: string
+          id: string
+          internal_notes: string | null
+          phone: string | null
+          rejection_due_at: string | null
+          rejection_sent_at: string | null
+          role_applied: string
+          source_ip: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledgement_sent_at?: string | null
+          applied_at?: string
+          auto_reject_enabled?: boolean
+          covering_note?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_storage_path?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          internal_notes?: string | null
+          phone?: string | null
+          rejection_due_at?: string | null
+          rejection_sent_at?: string | null
+          role_applied?: string
+          source_ip?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledgement_sent_at?: string | null
+          applied_at?: string
+          auto_reject_enabled?: boolean
+          covering_note?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_storage_path?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          internal_notes?: string | null
+          phone?: string | null
+          rejection_due_at?: string | null
+          rejection_sent_at?: string | null
+          role_applied?: string
+          source_ip?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_applications_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checkout_struggle_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -2261,38 +2502,59 @@ export type Database = {
       }
       claim_appeals: {
         Row: {
+          appeal_fee: number | null
           claim_id: string
           closed_at: string | null
           created_at: string
           created_by: string | null
+          customer_email: string | null
+          customer_notified: boolean
           id: string
+          independent_reviewer: string | null
           new_evidence: string | null
           outcome: string | null
+          payment_link: string | null
           reason: string | null
+          reviewer_url: string | null
+          sent_at: string | null
           status: string
           updated_at: string
         }
         Insert: {
+          appeal_fee?: number | null
           claim_id: string
           closed_at?: string | null
           created_at?: string
           created_by?: string | null
+          customer_email?: string | null
+          customer_notified?: boolean
           id?: string
+          independent_reviewer?: string | null
           new_evidence?: string | null
           outcome?: string | null
+          payment_link?: string | null
           reason?: string | null
+          reviewer_url?: string | null
+          sent_at?: string | null
           status?: string
           updated_at?: string
         }
         Update: {
+          appeal_fee?: number | null
           claim_id?: string
           closed_at?: string | null
           created_at?: string
           created_by?: string | null
+          customer_email?: string | null
+          customer_notified?: boolean
           id?: string
+          independent_reviewer?: string | null
           new_evidence?: string | null
           outcome?: string | null
+          payment_link?: string | null
           reason?: string | null
+          reviewer_url?: string | null
+          sent_at?: string | null
           status?: string
           updated_at?: string
         }
@@ -4213,7 +4475,13 @@ export type Database = {
           payment_due_date: string | null
           payment_status: string | null
           payment_type: string | null
+          payment_verification_note: string | null
+          payment_verification_ref: string | null
+          payment_verification_source: string | null
+          payment_verification_status: string
           payment_verified: boolean | null
+          payment_verified_at: string | null
+          payment_verified_by: string | null
           phone: string | null
           plan_type: string
           postcode: string | null
@@ -4332,7 +4600,13 @@ export type Database = {
           payment_due_date?: string | null
           payment_status?: string | null
           payment_type?: string | null
+          payment_verification_note?: string | null
+          payment_verification_ref?: string | null
+          payment_verification_source?: string | null
+          payment_verification_status?: string
           payment_verified?: boolean | null
+          payment_verified_at?: string | null
+          payment_verified_by?: string | null
           phone?: string | null
           plan_type: string
           postcode?: string | null
@@ -4451,7 +4725,13 @@ export type Database = {
           payment_due_date?: string | null
           payment_status?: string | null
           payment_type?: string | null
+          payment_verification_note?: string | null
+          payment_verification_ref?: string | null
+          payment_verification_source?: string | null
+          payment_verification_status?: string
           payment_verified?: boolean | null
+          payment_verified_at?: string | null
+          payment_verified_by?: string | null
           phone?: string | null
           plan_type?: string
           postcode?: string | null
@@ -7725,6 +8005,54 @@ export type Database = {
           },
         ]
       }
+      lead_freeze_log: {
+        Row: {
+          acknowledged_at: string | null
+          action: string
+          admin_user_id: string
+          created_at: string
+          freeze_days: number | null
+          frozen_until: string | null
+          id: string
+          monthly_target: number | null
+          pro_rata_target: number | null
+          reason: string | null
+          revenue_mtd: number | null
+          sales_in_window: number | null
+          window_days: string[] | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          action: string
+          admin_user_id: string
+          created_at?: string
+          freeze_days?: number | null
+          frozen_until?: string | null
+          id?: string
+          monthly_target?: number | null
+          pro_rata_target?: number | null
+          reason?: string | null
+          revenue_mtd?: number | null
+          sales_in_window?: number | null
+          window_days?: string[] | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          freeze_days?: number | null
+          frozen_until?: string | null
+          id?: string
+          monthly_target?: number | null
+          pro_rata_target?: number | null
+          reason?: string | null
+          revenue_mtd?: number | null
+          sales_in_window?: number | null
+          window_days?: string[] | null
+        }
+        Relationships: []
+      }
       lead_quick_notes: {
         Row: {
           created_at: string | null
@@ -7769,6 +8097,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lead_reassign_requests: {
+        Row: {
+          created_at: string
+          current_owner_id: string | null
+          id: string
+          lead_id: string
+          lead_label: string | null
+          lead_reg: string | null
+          manager_note: string | null
+          reason: string
+          requested_by: string
+          requested_to: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_owner_id?: string | null
+          id?: string
+          lead_id: string
+          lead_label?: string | null
+          lead_reg?: string | null
+          manager_note?: string | null
+          reason: string
+          requested_by: string
+          requested_to: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_owner_id?: string | null
+          id?: string
+          lead_id?: string
+          lead_label?: string | null
+          lead_reg?: string | null
+          manager_note?: string | null
+          reason?: string
+          requested_by?: string
+          requested_to?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       lead_reminders: {
         Row: {
@@ -10183,6 +10562,7 @@ export type Database = {
           follow_up_status: string | null
           hidden_from_agent_ids: string[]
           id: string
+          inbound_spoken_at: string | null
           intake_class: string | null
           is_callback: boolean | null
           is_paid: boolean | null
@@ -10204,6 +10584,7 @@ export type Database = {
           next_action_at: string | null
           next_action_date: string | null
           next_action_type: string | null
+          no_callback_until: string | null
           notes: string | null
           original_assigned_to: string | null
           original_source: string | null
@@ -10251,6 +10632,12 @@ export type Database = {
           recovery_outcome: string | null
           recovery_worked_at: string | null
           resubmission_count: number | null
+          save_cancellation: boolean
+          save_reason: string | null
+          save_requested_at: string | null
+          save_requested_by: string | null
+          save_reward_amount: number | null
+          save_source_customer_id: string | null
           status: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at: string | null
           updated_at: string
@@ -10292,6 +10679,7 @@ export type Database = {
           follow_up_status?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
+          inbound_spoken_at?: string | null
           intake_class?: string | null
           is_callback?: boolean | null
           is_paid?: boolean | null
@@ -10313,6 +10701,7 @@ export type Database = {
           next_action_at?: string | null
           next_action_date?: string | null
           next_action_type?: string | null
+          no_callback_until?: string | null
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
@@ -10360,6 +10749,12 @@ export type Database = {
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
           resubmission_count?: number | null
+          save_cancellation?: boolean
+          save_reason?: string | null
+          save_requested_at?: string | null
+          save_requested_by?: string | null
+          save_reward_amount?: number | null
+          save_source_customer_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at?: string | null
           updated_at?: string
@@ -10401,6 +10796,7 @@ export type Database = {
           follow_up_status?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
+          inbound_spoken_at?: string | null
           intake_class?: string | null
           is_callback?: boolean | null
           is_paid?: boolean | null
@@ -10422,6 +10818,7 @@ export type Database = {
           next_action_at?: string | null
           next_action_date?: string | null
           next_action_type?: string | null
+          no_callback_until?: string | null
           notes?: string | null
           original_assigned_to?: string | null
           original_source?: string | null
@@ -10469,6 +10866,12 @@ export type Database = {
           recovery_outcome?: string | null
           recovery_worked_at?: string | null
           resubmission_count?: number | null
+          save_cancellation?: boolean
+          save_reason?: string | null
+          save_requested_at?: string | null
+          save_requested_by?: string | null
+          save_reward_amount?: number | null
+          save_source_customer_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at?: string | null
           updated_at?: string
@@ -12745,6 +13148,10 @@ export type Database = {
       }
     }
     Functions: {
+      add_working_days: {
+        Args: { _days: number; _from: string }
+        Returns: string
+      }
       adjust_sales_lead_call_count: {
         Args: { p_delta: number; p_lead_id: string }
         Returns: number
@@ -12866,6 +13273,28 @@ export type Database = {
       enforce_agent_cap: {
         Args: { p_agent_id: string; p_override?: boolean }
         Returns: Json
+      }
+      evaluate_agent_lead_freeze: {
+        Args: never
+        Returns: {
+          admin_user_id: string
+          freeze_days: number
+          frozen_until: string
+          monthly_target: number
+          outcome: string
+          pro_rata_target: number
+          reason: string
+          revenue_mtd: number
+          sales_in_window: number
+        }[]
+      }
+      find_lead_owner_by_contact: {
+        Args: { _email?: string; _phone9?: string }
+        Returns: {
+          assigned_to: string
+          created_at: string
+          id: string
+        }[]
       }
       find_open_cart_id_by_reg: {
         Args: { _vehicle_reg: string }
@@ -13507,6 +13936,14 @@ export type Database = {
         }[]
       }
       rota_sync_in_progress: { Args: never; Returns: boolean }
+      set_agent_auto_freeze: {
+        Args: { _admin_user_id: string; _enabled: boolean }
+        Returns: undefined
+      }
+      set_agent_lead_allocation: {
+        Args: { _admin_user_id: string; _enabled: boolean }
+        Returns: undefined
+      }
       set_user_offline: { Args: never; Returns: undefined }
       shark_tank_agent_stats: {
         Args: never
@@ -13539,6 +13976,8 @@ export type Database = {
           lead_id: string
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       simulate_lead_routing: { Args: { p_source: string }; Returns: Json }
       snapshot_agent_daily_stats: { Args: { p_date: string }; Returns: number }
       snapshot_daily_lead_counts: {

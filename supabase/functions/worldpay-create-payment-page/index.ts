@@ -1,0 +1,160 @@
+// Creates a Worldpay Access hosted payment page (MOTO / virtual terminal or pay-by-link)
+// and records the attempt in public.worldpay_transactions.
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+
+interface Body {
+  flow?: 'moto' | 'link';
+  amount_pence?: number;
+  description?: string;
+  currency?: string;
+  sales_lead_id?: string | null;
+  customer_id?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  success_url?: string | null;
+  cancel_url?: string | null;
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  try {
+    const USERNAME = Deno.env.get('WORLDPAY_USERNAME');
+    const PASSWORD = Deno.env.get('WORLDPAY_PASSWORD');
+    const ENTITY = Deno.env.get('WORLDPAY_ENTITY') ?? 'default';
+    const ENVIRONMENT = (Deno.env.get('WORLDPAY_ENVIRONMENT') ?? 'sandbox').toLowerCase() === 'live'
+      ? 'live'
+      : 'sandbox';
+
+    if (!USERNAME || !PASSWORD) {
+      return json(
+        { error: 'Worldpay is not configured yet. Add WORLDPAY_USERNAME, WORLDPAY_PASSWORD and WORLDPAY_ENTITY.' },
+        503,
+      );
+    }
+
+    let body: Body;
+    try {
+      body = await req.json();
+    } catch {
+      return json({ error: 'Invalid JSON body' }, 400);
+    }
+
+    const flow = body.flow === 'link' ? 'link' : 'moto';
+    const amountPence = Math.round(Number(body.amount_pence ?? 0));
+    if (!Number.isFinite(amountPence) || amountPence <= 0) {
+      return json({ error: 'amount_pence must be a positive number' }, 400);
+    }
+    const currency = (body.currency || 'GBP').toUpperCase();
+    const description = (body.description || 'Vehicle warranty payment').slice(0, 200);
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    );
+
+    // Create the pending transaction row first so we have a reference to poll on.
+    const { data: txn, error: txnErr } = await supabase
+      .from('worldpay_transactions')
+      .insert({
+        flow,
+        amount_pence: amountPence,
+        currency,
+        description,
+        environment: ENVIRONMENT,
+        status: 'pending',
+        sales_lead_id: body.sales_lead_id || null,
+        customer_id: body.customer_id || null,
+        customer_email: body.customer_email || null,
+        customer_phone: body.customer_phone || null,
+      })
+      .select('id')
+      .single();
+
+    if (txnErr || !txn) {
+      console.error('worldpay txn insert error', txnErr);
+      return json({ error: txnErr?.message || 'Could not create transaction' }, 500);
+    }
+
+    const transactionReference = `PP-${txn.id}`;
+    const base = ENVIRONMENT === 'live'
+      ? 'https://access.worldpay.com'
+      : 'https://try.access.worldpay.com';
+
+    const origin = req.headers.get('origin') || 'https://pandaprotect.co.uk';
+    const successUrl = body.success_url || `${origin}/payment-received?ref=${transactionReference}`;
+    const cancelUrl = body.cancel_url || `${origin}/payment-fallback?ref=${transactionReference}`;
+
+    const auth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
+    const wpRes = await fetch(`${base}/paymentPages`, {
+      method: 'POST',
+      headers: {
+        Authorization: auth,
+        'Content-Type': 'application/vnd.worldpay.payment_pages-v1.hal+json',
+        Accept: 'application/vnd.worldpay.payment_pages-v1.hal+json',
+      },
+      body: JSON.stringify({
+        transactionReference,
+        merchant: { entity: ENTITY },
+        narrative: { line1: description.slice(0, 24) },
+        value: { currency, amount: amountPence },
+        resultURLs: {
+          successURL: successUrl,
+          pendingURL: successUrl,
+          failureURL: cancelUrl,
+          errorURL: cancelUrl,
+          cancelURL: cancelUrl,
+          expiryURL: cancelUrl,
+        },
+      }),
+    });
+
+    const raw = await wpRes.json().catch(() => ({}));
+
+    if (!wpRes.ok) {
+      console.error('Worldpay API error', wpRes.status, raw);
+      await supabase
+        .from('worldpay_transactions')
+        .update({ status: 'failed', last_error: JSON.stringify(raw).slice(0, 1000), raw_response: raw })
+        .eq('id', txn.id);
+      return json({ error: (raw as any)?.message || 'Worldpay rejected the request' }, 502);
+    }
+
+    const paymentUrl: string | undefined = (raw as any)?.url || (raw as any)?._links?.['payment_pages:url']?.href;
+    if (!paymentUrl) {
+      await supabase
+        .from('worldpay_transactions')
+        .update({ status: 'failed', last_error: 'No payment URL returned', raw_response: raw })
+        .eq('id', txn.id);
+      return json({ error: 'Worldpay did not return a payment URL' }, 502);
+    }
+
+    await supabase
+      .from('worldpay_transactions')
+      .update({ worldpay_link_url: paymentUrl, raw_response: raw, last_event: 'page_created' })
+      .eq('id', txn.id);
+
+    return json({
+      transaction_id: txn.id,
+      transaction_reference: transactionReference,
+      payment_url: paymentUrl,
+      environment: ENVIRONMENT,
+    });
+  } catch (err: any) {
+    console.error('worldpay-create-payment-page error', err);
+    return json({ error: err?.message || 'Internal error' }, 500);
+  }
+});
