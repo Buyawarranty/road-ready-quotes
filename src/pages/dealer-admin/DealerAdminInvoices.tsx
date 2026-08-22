@@ -424,6 +424,21 @@ const DealerAdminInvoices: React.FC = () => {
                                   <Button
                                     size="sm"
                                     variant="outline"
+                                    disabled={busy === `email-${r.id}`}
+                                    onClick={() => emailInvoice(g, r)}
+                                  >
+                                    {busy === `email-${r.id}` ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <><Mail className="h-3 w-3 mr-1" /> Send</>
+                                    )}
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={() => downloadPdf(g, r)}>
+                                    <FileText className="h-3 w-3 mr-1" /> PDF
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
                                     disabled={busy === `link-${r.id}`}
                                     onClick={() => createPaymentLink(g, r)}
                                   >
