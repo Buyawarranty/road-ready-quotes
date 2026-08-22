@@ -25,7 +25,16 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
     return (data as any)?.id ?? null;
   };
 
-  const save = async (opts?: { silent?: boolean; markStatus?: string }) => {
+  const save = async (opts?: {
+    silent?: boolean;
+    markStatus?: string;
+    overridePlan?: any;
+    overrideVehicle?: any;
+    overrideCustomer?: any;
+  }) => {
+    const planToSave = opts?.overridePlan ?? plan;
+    const vehicleToSave = opts?.overrideVehicle ?? vehicle;
+    const customerToSave = opts?.overrideCustomer ?? customer;
     const dealerId = await resolveDealerId();
     if (!dealerId) {
       if (!opts?.silent) toast.error('Your dealer profile could not be found — please sign in again');
