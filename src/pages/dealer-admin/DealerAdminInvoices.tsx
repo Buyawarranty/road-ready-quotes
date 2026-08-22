@@ -156,7 +156,7 @@ const DealerAdminInvoices: React.FC = () => {
     const { data, error } = await supabase.functions.invoke('send-invoice-email', {
       body: {
         recipientEmail: g.dealer_email,
-        subject: `Panda Protect invoice — ${g.dealer_company} (${money(g.total)} outstanding)`,
+        subject: `Panda Protect invoice — ${g.dealer_company} (${money(total)} outstanding)`,
         invoices,
       },
     });
