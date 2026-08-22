@@ -25,6 +25,40 @@ const DealerWarrantiesList = () => {
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [paying, setPaying] = useState(false);
+  const [emailRow, setEmailRow] = useState<DealerPdfRow | null>(null);
+  const [emailTo, setEmailTo] = useState('');
+  const [emailNote, setEmailNote] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const openEmailDialog = (r: DealerPdfRow) => {
+    setEmailRow(r);
+    setEmailTo(r.email || '');
+    setEmailNote('');
+  };
+
+  const sendWarrantyToCustomer = async () => {
+    if (!emailRow) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailTo.trim())) {
+      toast.error('Enter a valid customer email address');
+      return;
+    }
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-send-customer-warranty', {
+        body: { customer_id: emailRow.id, to_email: emailTo.trim(), message: emailNote.trim() || undefined },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success(`Warranty emailed to ${emailTo.trim()}`);
+      setEmailRow(null);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'Failed to send warranty email');
+    } finally {
+      setSending(false);
+    }
+  };
+
 
   // Toast on Stripe redirect back
   React.useEffect(() => {
