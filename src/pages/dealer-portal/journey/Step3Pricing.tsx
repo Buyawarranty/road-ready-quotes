@@ -6,13 +6,15 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, setPlan, discount_pct, setDiscountPct } = useDealerJourney();
+  const { vehicle, setPlan, discount_pct, setDiscountPct, reset } = useDealerJourney();
   const { toast } = useToast();
+  const { save, saving } = useDealerQuoteSave(3);
 
   // Hydrate dealer discount once
   useEffect(() => {
@@ -35,6 +37,44 @@ const Step3Pricing: React.FC = () => {
   if (!loading && !dealer) {
     return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
+
+  const buildPlan = (sel: TraderSelection) => {
+    const retail = sel.gross;
+    const dealer_price = +(retail * (1 - (discount_pct || 0) / 100)).toFixed(2);
+    const ctxMonths: 3 | 12 | 24 | 36 =
+      sel.term === 3 ? 3 : sel.term === 24 ? 24 : sel.term === 36 ? 36 : 12;
+    return {
+      plan_type: 'gold' as const,
+      duration_months: ctxMonths,
+      retail_price: retail,
+      dealer_price,
+      term_months: sel.term,
+      selected_options: {
+        excess: sel.excess,
+        labour: sel.labour,
+        parts: sel.parts,
+        claim: sel.claim,
+        ex_vat: sel.exVat,
+        gross: sel.gross,
+        vat: sel.vat,
+        monthly_equiv: sel.monthlyEquivalent,
+      },
+    };
+  };
+
+  const handleSaveDraft = async (sel: TraderSelection) => {
+    if (!vehicle?.reg) {
+      toast({ title: 'Vehicle required', description: 'Enter the vehicle registration before saving.', variant: 'destructive' });
+      return;
+    }
+    const nextPlan = buildPlan(sel);
+    setPlan(nextPlan as any);
+    const id = await save({ overridePlan: nextPlan });
+    if (id) {
+      reset();
+      navigate('/dealer-portal/quotes');
+    }
+  };
 
   const handleContinue = (sel: TraderSelection) => {
     if (!vehicle?.reg) {
@@ -67,7 +107,12 @@ const Step3Pricing: React.FC = () => {
 
   return (
     <DealerLayout>
-      <TraderPricingTable onContinue={handleContinue} onBack={() => navigate('/dealer-portal/dashboard')} />
+      <TraderPricingTable
+        onContinue={handleContinue}
+        onSaveDraft={handleSaveDraft}
+        savingDraft={saving}
+        onBack={() => navigate('/dealer-portal/dashboard')}
+      />
     </DealerLayout>
   );
 };

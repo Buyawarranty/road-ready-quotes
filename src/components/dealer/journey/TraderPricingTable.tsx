@@ -51,6 +51,8 @@ export interface TraderSelection {
 interface Props {
   onContinue: (sel: TraderSelection) => void;
   onBack?: () => void;
+  onSaveDraft?: (sel: TraderSelection) => void;
+  savingDraft?: boolean;
 }
 
 const JOURNEY_STEPS = [
@@ -103,7 +105,7 @@ const termLabel = (t: TraderTerm) =>
 
 type SupportOption = 'claim' | 'warranty' | null;
 
-const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
+const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, savingDraft }) => {
   const { data: config, isLoading } = useTraderPricingConfig();
   const { vehicle, setVehicle } = useDealerJourney();
   const { toast } = useToast();
@@ -728,6 +730,30 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack }) => {
             >
               Continue <ArrowRight className="w-4 h-4 ml-1" />
             </Button>
+
+            {onSaveDraft && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={savingDraft}
+                onClick={() =>
+                  onSaveDraft({
+                    term,
+                    excess,
+                    labour,
+                    parts,
+                    claim,
+                    exVat: activeExVat,
+                    gross: activeGross,
+                    vat: activeVat,
+                    monthlyEquivalent: activeGross,
+                  })
+                }
+                className="w-full mt-2 rounded-lg h-11 font-bold border-orange-500/40 text-orange-600 hover:bg-orange-50"
+              >
+                {savingDraft ? 'Saving…' : 'Save draft & exit'}
+              </Button>
+            )}
 
             {onBack && (
               <button
