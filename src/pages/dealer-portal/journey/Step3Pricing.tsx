@@ -107,7 +107,12 @@ const Step3Pricing: React.FC = () => {
 
   return (
     <DealerLayout>
-      <TraderPricingTable onContinue={handleContinue} onBack={() => navigate('/dealer-portal/dashboard')} />
+      <TraderPricingTable
+        onContinue={handleContinue}
+        onSaveDraft={handleSaveDraft}
+        savingDraft={saving}
+        onBack={() => navigate('/dealer-portal/dashboard')}
+      />
     </DealerLayout>
   );
 };
