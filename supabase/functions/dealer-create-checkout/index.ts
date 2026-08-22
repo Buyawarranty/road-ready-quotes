@@ -168,6 +168,22 @@ Deno.serve(async (req: Request) => {
       return { id: inserted.id } as const;
     };
 
+    // Fire-and-await a dealer-facing email to the dealer's REGISTERED email.
+    const notifyDealer = async (customerId: string, kind: 'invoice' | 'paid') => {
+      try {
+        await fetch(`${SUPABASE_URL}/functions/v1/dealer-warranty-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${SERVICE_KEY}`,
+          },
+          body: JSON.stringify({ customer_id: customerId, kind }),
+        });
+      } catch (e) {
+        console.error('dealer-warranty-email notify failed', e);
+      }
+    };
+
     // === INVOICE PATH ===
     if (payment_method === 'invoice') {
       const result = await upsertDealerCustomer();
@@ -178,11 +194,13 @@ Deno.serve(async (req: Request) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+      await notifyDealer(result.id, 'invoice');
       return new Response(JSON.stringify({ customer_id: result.id, method: 'invoice' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
 
     // === WORLDPAY PATH: create the pending customer row, frontend then opens the Worldpay page ===
     if (payment_method === 'worldpay') {
