@@ -102,7 +102,13 @@ Deno.serve(async (req: Request) => {
     const wpBody = JSON.stringify({
         transactionReference,
         merchant: { entity: ENTITY },
-        narrative: { line1: description.slice(0, 24) },
+        narrative: {
+          line1: (String(description || 'Panda Protect')
+            .replace(/[^a-zA-Z0-9\-., ]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .slice(0, 24)) || 'Panda Protect',
+        },
         value: { currency, amount: amountPence },
         resultURLs: {
           successURL: successUrl,
