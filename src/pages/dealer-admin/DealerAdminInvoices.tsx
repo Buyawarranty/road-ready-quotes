@@ -122,14 +122,16 @@ const DealerAdminInvoices: React.FC = () => {
     setRows((prev) => prev.filter((r) => r.id !== row.id));
   };
 
-  const emailInvoice = async (g: Group) => {
+  const emailInvoice = async (g: Group, only?: UnpaidRow) => {
     if (!g.dealer_email) {
       toast({ title: 'No dealer email', description: 'This dealer has no email address on file.', variant: 'destructive' });
       return;
     }
-    setBusy(`email-${g.dealer_id}`);
+    const target = only ? [only] : g.rows;
+    const total = target.reduce((s, r) => s + Number(r.final_amount ?? 0), 0);
+    setBusy(only ? `email-${only.id}` : `email-${g.dealer_id}`);
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const invoices = g.rows.map((r, i) => {
+    const invoices = target.map((r, i) => {
       const invoiceNumber = `PP-${stamp}-${String(i + 1).padStart(3, '0')}`;
       return {
         customerId: r.id,
