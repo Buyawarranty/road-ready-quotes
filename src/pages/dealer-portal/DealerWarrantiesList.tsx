@@ -10,7 +10,11 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
-import { Download, FileText, CreditCard, Loader2 } from 'lucide-react';
+import { Download, FileText, CreditCard, Loader2, Mail } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
 const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
@@ -21,6 +25,40 @@ const DealerWarrantiesList = () => {
   const [searchParams] = useSearchParams();
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [paying, setPaying] = useState(false);
+  const [emailRow, setEmailRow] = useState<DealerPdfRow | null>(null);
+  const [emailTo, setEmailTo] = useState('');
+  const [emailNote, setEmailNote] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const openEmailDialog = (r: DealerPdfRow) => {
+    setEmailRow(r);
+    setEmailTo(r.email || '');
+    setEmailNote('');
+  };
+
+  const sendWarrantyToCustomer = async () => {
+    if (!emailRow) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailTo.trim())) {
+      toast.error('Enter a valid customer email address');
+      return;
+    }
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-send-customer-warranty', {
+        body: { customer_id: emailRow.id, to_email: emailTo.trim(), message: emailNote.trim() || undefined },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success(`Warranty emailed to ${emailTo.trim()}`);
+      setEmailRow(null);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'Failed to send warranty email');
+    } finally {
+      setSending(false);
+    }
+  };
+
 
   // Toast on Stripe redirect back
   React.useEffect(() => {
@@ -172,6 +210,7 @@ const DealerWarrantiesList = () => {
                       <TableHead className="text-gray-700 font-bold">End</TableHead>
                       <TableHead className="text-gray-700 font-bold text-right">Amount</TableHead>
                       <TableHead className="text-gray-700 font-bold">Status</TableHead>
+                      <TableHead className="text-gray-700 font-bold text-right">Send to customer</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -194,6 +233,17 @@ const DealerWarrantiesList = () => {
                         <TableCell className="text-gray-700">{fmt(computeEnd(w))}</TableCell>
                         <TableCell className="text-right text-gray-900 font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openEmailDialog(w)}
+                            className="border-orange-500 text-orange-600 hover:bg-orange-50 font-semibold"
+                          >
+                            <Mail className="h-4 w-4 mr-2" />
+                            Email warranty
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -330,6 +380,52 @@ const DealerWarrantiesList = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      <Dialog open={!!emailRow} onOpenChange={(o) => !o && setEmailRow(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Email warranty to customer</DialogTitle>
+            <DialogDescription>
+              Sends the warranty details for{' '}
+              <span className="font-semibold uppercase">{emailRow?.registration_plate}</span> straight to your
+              customer. Replies come back to your dealer email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="customer-email">Customer email</Label>
+              <Input
+                id="customer-email"
+                type="email"
+                value={emailTo}
+                onChange={(e) => setEmailTo(e.target.value)}
+                placeholder="customer@example.com"
+                className="bg-gray-100"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer-note">Personal message (optional)</Label>
+              <Textarea
+                id="customer-note"
+                value={emailNote}
+                onChange={(e) => setEmailNote(e.target.value)}
+                rows={3}
+                placeholder="Thanks for your purchase — here are your warranty details."
+                className="bg-gray-100"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailRow(null)} disabled={sending}>
+              Cancel
+            </Button>
+            <Button onClick={sendWarrantyToCustomer} disabled={sending} className="bg-orange-500 hover:bg-orange-600 text-white">
+              {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
+              Send warranty
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DealerLayout>
   );
 };

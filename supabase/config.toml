@@ -29,3 +29,7 @@ verify_jwt = false
 
 [functions.dealer-warranty-email]
 verify_jwt = false
+
+[functions.dealer-send-customer-warranty]
+verify_jwt = false
+
