@@ -413,8 +413,8 @@ const DealerAdminInvoices: React.FC = () => {
               Yes, payment received
             </AlertDialogAction>
           </AlertDialogFooter>
-        </AlertDialogFooter>
         </AlertDialogContent>
+
       </AlertDialog>
     </div>
   );
