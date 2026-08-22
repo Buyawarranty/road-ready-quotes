@@ -210,6 +210,7 @@ const DealerWarrantiesList = () => {
                       <TableHead className="text-gray-700 font-bold">End</TableHead>
                       <TableHead className="text-gray-700 font-bold text-right">Amount</TableHead>
                       <TableHead className="text-gray-700 font-bold">Status</TableHead>
+                      <TableHead className="text-gray-700 font-bold text-right">Send to customer</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
