@@ -51,6 +51,8 @@ export interface TraderSelection {
 interface Props {
   onContinue: (sel: TraderSelection) => void;
   onBack?: () => void;
+  onSaveDraft?: (sel: TraderSelection) => void;
+  savingDraft?: boolean;
 }
 
 const JOURNEY_STEPS = [
