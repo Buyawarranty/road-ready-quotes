@@ -3,7 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, Download, Mail, Link2, Copy } from 'lucide-react';
+import { Loader2, CheckCircle, Download, Mail, Link2, Copy, FileText } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -120,14 +122,16 @@ const DealerAdminInvoices: React.FC = () => {
     setRows((prev) => prev.filter((r) => r.id !== row.id));
   };
 
-  const emailInvoice = async (g: Group) => {
+  const emailInvoice = async (g: Group, only?: UnpaidRow) => {
     if (!g.dealer_email) {
       toast({ title: 'No dealer email', description: 'This dealer has no email address on file.', variant: 'destructive' });
       return;
     }
-    setBusy(`email-${g.dealer_id}`);
+    const target = only ? [only] : g.rows;
+    const total = target.reduce((s, r) => s + Number(r.final_amount ?? 0), 0);
+    setBusy(only ? `email-${only.id}` : `email-${g.dealer_id}`);
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const invoices = g.rows.map((r, i) => {
+    const invoices = target.map((r, i) => {
       const invoiceNumber = `PP-${stamp}-${String(i + 1).padStart(3, '0')}`;
       return {
         customerId: r.id,
@@ -152,7 +156,7 @@ const DealerAdminInvoices: React.FC = () => {
     const { data, error } = await supabase.functions.invoke('send-invoice-email', {
       body: {
         recipientEmail: g.dealer_email,
-        subject: `Panda Protect invoice — ${g.dealer_company} (${money(g.total)} outstanding)`,
+        subject: `Panda Protect invoice — ${g.dealer_company} (${money(total)} outstanding)`,
         invoices,
       },
     });
@@ -162,6 +166,65 @@ const DealerAdminInvoices: React.FC = () => {
       return;
     }
     toast({ title: 'Invoice sent', description: `Emailed to ${g.dealer_email}` });
+  };
+
+  const downloadPdf = (g: Group, only?: UnpaidRow) => {
+    const target = only ? [only] : g.rows;
+    const total = target.reduce((s, r) => s + Number(r.final_amount ?? 0), 0);
+    const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const invoiceNumber = only
+      ? `PP-${stamp}-${only.id.replace(/-/g, '').slice(0, 6).toUpperCase()}`
+      : `PP-${stamp}-${g.dealer_company.replace(/[^A-Z0-9]/gi, '').slice(0, 6).toUpperCase()}`;
+
+    const doc = new jsPDF();
+    doc.setFillColor(17, 24, 39);
+    doc.rect(0, 0, 210, 28, 'F');
+    doc.setTextColor(255, 122, 0);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('INVOICE', 14, 18);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
+    doc.text('hello@pandaprotect.co.uk', 196, 20, { align: 'right' });
+
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Invoice ${invoiceNumber}`, 14, 42);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 49);
+    doc.text(`Billed to: ${g.dealer_company}`, 196, 42, { align: 'right' });
+    if (g.dealer_email) doc.text(g.dealer_email, 196, 49, { align: 'right' });
+
+    autoTable(doc, {
+      startY: 60,
+      head: [['Date', 'Customer', 'Vehicle', 'Plan', 'Amount']],
+      body: target.map((r) => [
+        new Date(r.signup_date).toLocaleDateString('en-GB'),
+        r.name || '—',
+        (r.registration_plate || '—').toUpperCase(),
+        r.plan_type || 'Warranty',
+        money(Number(r.final_amount ?? 0)),
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: [255, 122, 0], textColor: [17, 24, 39], fontStyle: 'bold' },
+      styles: { font: 'helvetica', fontSize: 10, cellPadding: 3 },
+      columnStyles: { 4: { halign: 'right' } },
+    });
+
+    const finalY = (doc as any).lastAutoTable?.finalY || 90;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('Total due', 150, finalY + 14);
+    doc.text(money(total), 196, finalY + 14, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    doc.text('Please settle using the payment link provided, or contact hello@pandaprotect.co.uk.', 14, finalY + 26, { maxWidth: 182 });
+
+    doc.save(`${invoiceNumber}.pdf`);
   };
 
   const createPaymentLink = async (g: Group, row?: UnpaidRow) => {
@@ -299,6 +362,9 @@ const DealerAdminInvoices: React.FC = () => {
                         )}
                         Payment link
                       </Button>
+                      <Button variant="outline" size="sm" onClick={() => downloadPdf(g)}>
+                        <FileText className="h-3 w-3 mr-1.5" /> PDF
+                      </Button>
                       <Button variant="outline" size="sm" onClick={() => exportCsv(g)}>
                         <Download className="h-3 w-3 mr-1.5" /> CSV
                       </Button>
@@ -355,6 +421,21 @@ const DealerAdminInvoices: React.FC = () => {
                                       <Copy className="h-3 w-3 mr-1" /> Copy link
                                     </Button>
                                   )}
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={busy === `email-${r.id}`}
+                                    onClick={() => emailInvoice(g, r)}
+                                  >
+                                    {busy === `email-${r.id}` ? (
+                                      <Loader2 className="h-3 w-3 animate-spin" />
+                                    ) : (
+                                      <><Mail className="h-3 w-3 mr-1" /> Send</>
+                                    )}
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={() => downloadPdf(g, r)}>
+                                    <FileText className="h-3 w-3 mr-1" /> PDF
+                                  </Button>
                                   <Button
                                     size="sm"
                                     variant="outline"
