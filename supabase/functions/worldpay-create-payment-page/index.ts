@@ -134,7 +134,15 @@ Deno.serve(async (req: Request) => {
         .from('worldpay_transactions')
         .update({ status: 'failed', last_error: JSON.stringify(raw).slice(0, 1000), raw_response: raw })
         .eq('id', txn.id);
-      return json({ error: (raw as any)?.message || 'Worldpay rejected the request' }, 502);
+      return json(
+        {
+          error: (raw as any)?.message || 'Worldpay rejected the request',
+          worldpay_status: wpRes.status,
+          environment: ENVIRONMENT,
+          entity: ENTITY,
+        },
+        502,
+      );
     }
 
     const paymentUrl: string | undefined = (raw as any)?.url || (raw as any)?._links?.['payment_pages:url']?.href;
