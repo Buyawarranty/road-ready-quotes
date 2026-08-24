@@ -209,13 +209,11 @@ const ClaimHandlingPage: React.FC = () => {
   };
 
   // Atoms ------------------------------------------------------------------
-  const Pill = <T extends string | number>({
-    value,
+  const SegBtn = ({
     active,
     onClick,
     children,
   }: {
-    value: T;
     active: boolean;
     onClick: () => void;
     children: React.ReactNode;
@@ -223,15 +221,39 @@ const ClaimHandlingPage: React.FC = () => {
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2.5 rounded-lg text-sm font-bold border-2 transition-all whitespace-nowrap ${
+      className={`flex-1 px-3 py-2 text-sm font-semibold border transition-colors first:rounded-l-md last:rounded-r-md -ml-px first:ml-0 ${
         active
-          ? 'border-orange-500 bg-orange-50 text-gray-900 shadow-sm'
-          : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300'
-      } ${!active && useDefault ? 'opacity-60' : ''}`}
-      disabled={useDefault}
+          ? 'bg-yellow-300 text-gray-900 border-yellow-400 z-10 relative'
+          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+      }`}
     >
       {children}
     </button>
+  );
+
+  const SegGroup = <T extends string | number>({
+    label,
+    options,
+    value,
+    onChange,
+    format,
+  }: {
+    label: string;
+    options: readonly T[];
+    value: T;
+    onChange: (v: T) => void;
+    format?: (v: T) => string;
+  }) => (
+    <div>
+      <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">{label}</p>
+      <div className="flex">
+        {options.map((o) => (
+          <SegBtn key={String(o)} active={value === o} onClick={() => onChange(o)}>
+            {format ? format(o) : String(o)}
+          </SegBtn>
+        ))}
+      </div>
+    </div>
   );
 
   const inputClass =
@@ -299,116 +321,119 @@ const ClaimHandlingPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
           {/* MAIN COLUMN */}
           <div className="space-y-5">
-            {/* Quick select / custom toggle */}
+            {/* Customize — identical options to the Fully Covered pricing page */}
             <section className="bg-white border-2 border-orange-200 rounded-2xl p-5 sm:p-6 ring-1 ring-orange-100/60 shadow-sm">
-              <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-                <div>
-                  <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-orange-500" /> Configure the warranty terms
-                  </h2>
-                  <p className="text-xs text-gray-500 mt-0.5">Quick-select our default, or tailor each option.</p>
-                </div>
-                <div className="inline-flex rounded-lg overflow-hidden border border-gray-300">
-                  <button
-                    type="button"
-                    onClick={() => setUseDefault(true)}
-                    className={`text-xs font-bold px-3 py-2 ${useDefault ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
-                  >
-                    Use default
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUseDefault(false)}
-                    className={`text-xs font-bold px-3 py-2 border-l border-gray-300 ${!useDefault ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
-                  >
-                    Customise
-                  </button>
-                </div>
+              <div className="mb-4">
+                <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-orange-500" /> Customize your warranty
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Tailor each option — you pay a flat £{monthlyFee.toFixed(2)}/month claim-handling fee.
+                </p>
               </div>
 
-              {useDefault && (
-                <div className="mb-4 rounded-lg bg-orange-50 border border-orange-200 px-3 py-2 flex items-start gap-2">
-                  <Info className="w-4 h-4 text-orange-600 mt-0.5 shrink-0" />
-                  <p className="text-xs text-gray-700">
-                    Default preset: <strong>£50 excess</strong>, <strong>£1,000 claim limit</strong>, <strong>£70/hour labour</strong>. Switch to <em>Customise</em> to change.
-                  </p>
+              <div className="mb-5 rounded-xl border border-orange-200 bg-orange-50/50 p-3">
+                <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> Quick select · Default warranty presets
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: '1 Year', term: 12 as TraderTerm },
+                    { label: '2 Year', term: 24 as TraderTerm },
+                    { label: '3 Year', term: 36 as TraderTerm },
+                  ].map((p) => {
+                    const active = term === p.term && useDefault;
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        onClick={() => {
+                          setUseDefault(true);
+                          setTerm(p.term);
+                          setExcess(DEFAULT_PRESET.excess);
+                          setLabour(DEFAULT_PRESET.labour);
+                          setParts(DEFAULT_PRESET.parts);
+                          setClaimLimit(DEFAULT_PRESET.claimLimit);
+                        }}
+                        className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
+                          active
+                            ? 'bg-orange-500 border-orange-500 text-white shadow'
+                            : 'bg-white border-orange-200 text-gray-900 hover:border-orange-400'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
+                <p className="text-[10px] text-gray-500 mt-2">
+                  One-click defaults — pick a term and we'll set sensible excess, labour &amp; claim limit.
+                </p>
+              </div>
 
               <div className="space-y-5">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Excess</p>
-                  <div className="flex flex-wrap gap-2">
-                    {EXCESS_OPTIONS.map((v) => (
-                      <Pill key={v} value={v} active={excess === v} onClick={() => setExcess(v)}>
-                        £{v}
-                      </Pill>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Labour rates (per hour)</p>
-                  <div className="flex flex-wrap gap-2">
-                    {LABOUR_OPTIONS.map((v) => (
-                      <Pill key={v} value={v} active={labour === v} onClick={() => setLabour(v)}>
-                        £{v}
-                      </Pill>
-                    ))}
-                  </div>
-                </div>
-
+                <SegGroup
+                  label="Excess"
+                  options={EXCESS_OPTIONS}
+                  value={excess}
+                  onChange={(v) => { setUseDefault(false); setExcess(v as TraderExcess); }}
+                  format={(v) => `£${v}`}
+                />
+                <SegGroup
+                  label="Labour rates (per hour)"
+                  options={LABOUR_OPTIONS}
+                  value={labour}
+                  onChange={(v) => { setUseDefault(false); setLabour(v as TraderLabour); }}
+                  format={(v) => `£${v}`}
+                />
                 <div>
                   <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Parts</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex">
                     {PARTS_OPTIONS.map((o) => (
-                      <Pill key={o.key} value={o.key} active={parts === o.key} onClick={() => setParts(o.key)}>
+                      <SegBtn
+                        key={o.key}
+                        active={parts === o.key}
+                        onClick={() => { setUseDefault(false); setParts(o.key); }}
+                      >
                         {o.label}
-                      </Pill>
+                      </SegBtn>
                     ))}
                   </div>
                 </div>
+                <SegGroup
+                  label="Claim limit"
+                  options={CLAIM_OPTIONS}
+                  value={claimLimit}
+                  onChange={(v) => { setUseDefault(false); setClaimLimit(v as TraderClaim); }}
+                  format={(v) => formatClaim(Number(v))}
+                />
 
                 <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Claim limit</p>
-                  <div className="flex flex-wrap gap-2">
-                    {CLAIM_OPTIONS.map((v) => (
-                      <Pill key={v} value={v} active={claimLimit === v} onClick={() => setClaimLimit(v)}>
-                        {formatClaim(v)}
-                      </Pill>
-                    ))}
+                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Term</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {TERM_OPTIONS.map((t) => {
+                      const active = term === t;
+                      return (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => setTerm(t)}
+                          className={`px-3 py-2 rounded-lg text-center border-2 transition-all text-xs font-semibold ${
+                            active ? 'bg-yellow-300 border-yellow-400' : 'bg-white border-gray-200 hover:border-orange-300'
+                          }`}
+                        >
+                          {termLabel(t)}
+                        </button>
+                      );
+                    })}
                   </div>
+                  <p className="text-xs font-bold text-orange-600 mt-3">
+                    £{(monthlyFee * term).toFixed(2)} total service fee over {term} months
+                  </p>
                 </div>
               </div>
             </section>
 
-            {/* Term */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">
-                Term
-              </h2>
-              <p className="text-xs text-gray-500 mb-4">Pick the cover length for the customer.</p>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                {TERM_OPTIONS.map((t) => {
-                  const active = term === t;
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setTerm(t)}
-                      className={`px-3 py-2 rounded-lg text-center border-2 transition-all text-xs font-semibold ${
-                        active ? 'bg-yellow-300 border-yellow-400' : 'bg-white border-gray-200 hover:border-orange-300'
-                      }`}
-                    >
-                      {termLabel(t)}
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="text-xs font-bold text-orange-600 mt-3">
-                £{(monthlyFee * term).toFixed(2)} total service fee over {term} months
-              </p>
-            </section>
 
             {/* Optional Add-ons */}
             <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
