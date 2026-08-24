@@ -119,7 +119,7 @@ const ClaimHandlingPage: React.FC = () => {
     }
   }, [vehicle, navigate]);
 
-  const monthlyFee = 1.2; // flat claim-handling service fee
+  const monthlyFee = 1.0; // flat claim-handling service fee
   const totalMonths = term;
   const totalCost = useMemo(() => +(monthlyFee * totalMonths).toFixed(2), [totalMonths]);
 
@@ -294,7 +294,7 @@ const ClaimHandlingPage: React.FC = () => {
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-white/95">
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> Full claims management</span>
                 <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> You keep the margin</span>
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> Just £1.20/month per warranty</span>
+                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> Just £1/month per warranty</span>
               </div>
             </div>
           </div>
