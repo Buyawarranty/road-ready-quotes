@@ -64,8 +64,21 @@ const Step4Checkout: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (method === 'worldpay' && !billingReady) {
+      setShowBillingErrors(true);
+      toast({
+        title: 'Billing address needed',
+        description: 'Complete the billing address so the card page is prefilled.',
+        variant: 'destructive',
+      });
+      return;
+    }
     setSubmitting(true);
     try {
+      if (method === 'worldpay' && saveToProfile) {
+        await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
+      }
+
       const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
         body: {
           dealer_id: dealer.id,
