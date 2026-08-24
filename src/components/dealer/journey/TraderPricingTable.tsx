@@ -188,11 +188,15 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mileage]);
 
-  const [term, setTerm] = useState<TraderTerm>(12);
-  const [excess, setExcess] = useState<TraderExcess>(50);
-  const [labour, setLabour] = useState<TraderLabour>(70);
-  const [parts, setParts] = useState<TraderParts>('age_mileage');
-  const [claim, setClaim] = useState<TraderClaim>(1000);
+  const savedDefaults = useMemo(() => loadDealerDefaults(), []);
+  const initial = savedDefaults ?? FACTORY_DEFAULTS;
+  const [term, setTerm] = useState<TraderTerm>(initial.term);
+  const [excess, setExcess] = useState<TraderExcess>(initial.excess);
+  const [labour, setLabour] = useState<TraderLabour>(initial.labour);
+  const [parts, setParts] = useState<TraderParts>(initial.parts);
+  const [claim, setClaim] = useState<TraderClaim>(initial.claim);
+  const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
+
   const [dealerView, setDealerView] = useState<boolean>(true); // true = Wholesale (Trade)
   const [support, setSupport] = useState<SupportOption>(null);
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
