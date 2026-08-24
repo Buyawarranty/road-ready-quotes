@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark } from 'lucide-react';
+import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark, MapPin } from 'lucide-react';
+import BillingAddressFields from '@/components/dealer/BillingAddressFields';
+import {
+  BillingAddress,
+  billingErrors,
+  billingFromDealer,
+  billingToDealerColumns,
+  isBillingComplete,
+} from '@/lib/dealerBilling';
 
 type Method = 'pay_now' | 'invoice' | 'worldpay';
 
@@ -18,6 +27,18 @@ const Step4Checkout: React.FC = () => {
 
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
+  const [billing, setBilling] = useState<BillingAddress>(() => billingFromDealer(dealer));
+  const [billingTouched, setBillingTouched] = useState(false);
+  const [saveToProfile, setSaveToProfile] = useState(true);
+  const [showBillingErrors, setShowBillingErrors] = useState(false);
+
+  // Prefill from the dealer profile once it loads (unless the dealer edited it).
+  useEffect(() => {
+    if (dealer && !billingTouched) setBilling(billingFromDealer(dealer));
+  }, [dealer, billingTouched]);
+
+  const errors = useMemo(() => billingErrors(billing), [billing]);
+  const billingReady = isBillingComplete(billing);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -28,6 +49,7 @@ const Step4Checkout: React.FC = () => {
 
   const total = plan.dealer_price;
   const planName = DEALER_PLAN_LABELS[plan.plan_type];
+
 
   const readFnError = async (error: any, data: any, fallback: string) => {
     if (data?.error) return String(data.error);
