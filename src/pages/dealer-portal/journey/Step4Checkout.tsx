@@ -242,6 +242,39 @@ const Step4Checkout: React.FC = () => {
             </ul>
           </OptionCard>
 
+          {method === 'worldpay' && (
+            <div className="rounded-xl border-2 border-gray-200 bg-white p-5 space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">Billing address</h3>
+                  <p className="text-sm text-gray-600">
+                    Prefilled from your dealer profile — edit anything that's different. The Worldpay page
+                    then only asks for card number, expiry and CVV.
+                  </p>
+                </div>
+              </div>
+
+              <BillingAddressFields
+                value={billing}
+                onChange={(next) => { setBilling(next); setBillingTouched(true); }}
+                errors={showBillingErrors ? errors : {}}
+                disabled={submitting}
+              />
+
+              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                <Checkbox
+                  checked={saveToProfile}
+                  onCheckedChange={(v) => setSaveToProfile(v === true)}
+                  disabled={submitting}
+                />
+                Save this address to my dealer profile for next time
+              </label>
+            </div>
+          )}
+
+
+
           <div className="flex items-center justify-between pt-2">
             <Button
               variant="outline"
