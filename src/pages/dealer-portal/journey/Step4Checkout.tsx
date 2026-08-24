@@ -29,6 +29,18 @@ const Step4Checkout: React.FC = () => {
   const total = plan.dealer_price;
   const planName = DEALER_PLAN_LABELS[plan.plan_type];
 
+  const readFnError = async (error: any, data: any, fallback: string) => {
+    if (data?.error) return String(data.error);
+    try {
+      const ctx = error?.context;
+      if (ctx && typeof ctx.json === 'function') {
+        const body = await ctx.json();
+        if (body?.error) return String(body.error);
+      }
+    } catch { /* ignore */ }
+    return error?.message || fallback;
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
