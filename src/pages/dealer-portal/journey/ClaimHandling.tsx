@@ -82,13 +82,23 @@ const ClaimHandlingPage: React.FC = () => {
   const { vehicle, setPlan, setCustomer } = useDealerJourney();
   const { toast } = useToast();
 
-  const [useDefault, setUseDefault] = useState(true);
-  const [excess, setExcess] = useState<TraderExcess>(DEFAULT_PRESET.excess);
-  const [claimLimit, setClaimLimit] = useState<TraderClaim>(DEFAULT_PRESET.claimLimit);
-  const [labour, setLabour] = useState<TraderLabour>(DEFAULT_PRESET.labour);
-  const [parts, setParts] = useState<TraderParts>(DEFAULT_PRESET.parts);
-  const [term, setTerm] = useState<TraderTerm>(DEFAULT_PRESET.term);
+  const savedDefaults = React.useMemo(() => loadDealerDefaults(), []);
+  const initial = savedDefaults ?? {
+    term: DEFAULT_PRESET.term,
+    excess: DEFAULT_PRESET.excess,
+    labour: DEFAULT_PRESET.labour,
+    parts: DEFAULT_PRESET.parts,
+    claim: DEFAULT_PRESET.claimLimit,
+  };
+  const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
+  const [useDefault, setUseDefault] = useState(!savedDefaults);
+  const [excess, setExcess] = useState<TraderExcess>(initial.excess);
+  const [claimLimit, setClaimLimit] = useState<TraderClaim>(initial.claim);
+  const [labour, setLabour] = useState<TraderLabour>(initial.labour);
+  const [parts, setParts] = useState<TraderParts>(initial.parts);
+  const [term, setTerm] = useState<TraderTerm>(initial.term);
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
+
 
   const [form, setForm] = useState({
     name: '',
