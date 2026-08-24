@@ -177,7 +177,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   <DropdownMenuItem className="focus:bg-gray-100 focus:text-gray-900 cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
                     <UserCog className="h-4 w-4 mr-2" /> Manage Account
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-gray-100 focus:text-gray-900 cursor-pointer" onClick={() => navigate('/dealer-portal/dashboard')}>
+                  <DropdownMenuItem className="focus:bg-gray-100 focus:text-gray-900 cursor-pointer" onClick={() => navigate('/dealer-portal/settings/profile')}>
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-gray-100" />

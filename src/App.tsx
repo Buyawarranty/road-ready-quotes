@@ -304,6 +304,7 @@ const FinanceApplicationsList = lazy(() => import("./pages/dealer-portal/applica
 const FinanceApplicationNew = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationNew"));
 const FinanceApplicationDetail = lazy(() => import("./pages/dealer-portal/applications/FinanceApplicationDetail"));
 const DealerApiKeys = lazy(() => import("./pages/dealer-portal/settings/DealerApiKeys"));
+const DealerProfileSettings = lazy(() => import("./pages/dealer-portal/settings/DealerProfile"));
 const DealerApiDocs = lazy(() => import("./pages/dealer-portal/settings/DealerApiDocs"));
 const DealerWidget = lazy(() => import("./pages/DealerWidget"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
@@ -443,6 +444,7 @@ const App = () => {
                     <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
                     <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
                     <Route path="/dealer-portal/settings/api" element={<DealerApiKeys />} />
+                    <Route path="/dealer-portal/settings/profile" element={<DealerProfileSettings />} />
                     <Route path="/dealer-portal/api-docs" element={<DealerApiDocs />} />
 
                     {/* Dealer Admin merged into /admin-dashboard — redirect legacy links */}
