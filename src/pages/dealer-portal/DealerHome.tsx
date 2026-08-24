@@ -336,7 +336,7 @@ const DealerHome = () => {
                 we look after every customer call.
               </p>
               <ul className="space-y-2 mb-6">
-                {['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1.20/month per policy'].map((f) => (
+                {['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1/month per policy'].map((f) => (
                   <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
                     <Check className="w-4 h-4 text-green-600 shrink-0" strokeWidth={3} />
                     {f}
