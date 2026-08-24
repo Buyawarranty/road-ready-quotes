@@ -152,7 +152,7 @@ const ClaimHandlingPage: React.FC = () => {
         town: form.town || 'To be confirmed',
         postcode: form.postcode.toUpperCase(),
       });
-    } else if (customerMode === 'later') {
+    } else {
       const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'Email';
       setCustomer({
         name: 'Pending customer details',
@@ -160,20 +160,6 @@ const ClaimHandlingPage: React.FC = () => {
         phone: '',
         address_line1: 'To be confirmed',
         address_line2: `[Pending: ${dealerName} to send details via ${channelLabel}]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
-        town: 'To be confirmed',
-        postcode: 'TBC',
-      });
-    } else {
-      if (!form.name.trim() || !form.phone.trim()) {
-        setError('We need at least the customer name and phone so we can contact them.');
-        return;
-      }
-      setCustomer({
-        name: form.name,
-        email: form.email || placeholderEmail,
-        phone: form.phone,
-        address_line1: 'To be collected by Buyawarranty',
-        address_line2: `[Buyawarranty to collect details from customer]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
         town: 'To be confirmed',
         postcode: 'TBC',
       });
