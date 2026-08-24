@@ -35,6 +35,14 @@ import {
   TraderTerm,
   formatClaim,
 } from '@/lib/traderPricingDefaults';
+import {
+  loadDealerDefaults,
+  saveDealerDefaults,
+  clearDealerDefaults,
+  describeDefaults,
+  DealerWarrantyDefaults,
+} from '@/lib/dealerWarrantyDefaults';
+
 
 type CustomerMode = 'now' | 'later';
 type Channel = 'whatsapp' | 'email';
@@ -82,13 +90,23 @@ const ClaimHandlingPage: React.FC = () => {
   const { vehicle, setPlan, setCustomer } = useDealerJourney();
   const { toast } = useToast();
 
-  const [useDefault, setUseDefault] = useState(true);
-  const [excess, setExcess] = useState<TraderExcess>(DEFAULT_PRESET.excess);
-  const [claimLimit, setClaimLimit] = useState<TraderClaim>(DEFAULT_PRESET.claimLimit);
-  const [labour, setLabour] = useState<TraderLabour>(DEFAULT_PRESET.labour);
-  const [parts, setParts] = useState<TraderParts>(DEFAULT_PRESET.parts);
-  const [term, setTerm] = useState<TraderTerm>(DEFAULT_PRESET.term);
+  const savedDefaults = React.useMemo(() => loadDealerDefaults(), []);
+  const initial = savedDefaults ?? {
+    term: DEFAULT_PRESET.term,
+    excess: DEFAULT_PRESET.excess,
+    labour: DEFAULT_PRESET.labour,
+    parts: DEFAULT_PRESET.parts,
+    claim: DEFAULT_PRESET.claimLimit,
+  };
+  const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
+  const [useDefault, setUseDefault] = useState(!savedDefaults);
+  const [excess, setExcess] = useState<TraderExcess>(initial.excess);
+  const [claimLimit, setClaimLimit] = useState<TraderClaim>(initial.claim);
+  const [labour, setLabour] = useState<TraderLabour>(initial.labour);
+  const [parts, setParts] = useState<TraderParts>(initial.parts);
+  const [term, setTerm] = useState<TraderTerm>(initial.term);
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
+
 
   const [form, setForm] = useState({
     name: '',
@@ -354,6 +372,54 @@ const ClaimHandlingPage: React.FC = () => {
                 <p className="text-[10px] text-gray-500 mt-2">
                   One-click defaults — pick a term and we'll set sensible excess, labour &amp; claim limit.
                 </p>
+
+                {/* My saved default plan */}
+                <div className="mt-3 pt-3 border-t border-orange-200">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const d: DealerWarrantyDefaults = { term, excess, labour, parts, claim: claimLimit };
+                        saveDealerDefaults(d);
+                        setMyDefaults(d);
+                        toast({ title: 'Default plan saved', description: describeDefaults(d) });
+                      }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-300 bg-white text-orange-700 hover:border-orange-500"
+                    >
+                      Save as my default plan
+                    </button>
+                    {myDefaults && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUseDefault(false);
+                            setTerm(myDefaults.term);
+                            setExcess(myDefaults.excess);
+                            setLabour(myDefaults.labour);
+                            setParts(myDefaults.parts);
+                            setClaimLimit(myDefaults.claim);
+                            toast({ title: 'Your default plan applied' });
+                          }}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-500 bg-orange-500 text-white"
+                        >
+                          Use my default
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { clearDealerDefaults(); setMyDefaults(null); }}
+                          className="px-2 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800"
+                        >
+                          Clear
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  {myDefaults && (
+                    <p className="text-[10px] text-gray-500 mt-1.5">Saved: {describeDefaults(myDefaults)}</p>
+                  )}
+                </div>
+
               </div>
 
               <div className="space-y-5">
