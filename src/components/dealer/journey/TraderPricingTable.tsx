@@ -214,6 +214,9 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   const [showCustomize, setShowCustomize] = useState(true);
   const [customerPrice, setCustomerPrice] = useState<string>('');
   const [customerPriceTouched, setCustomerPriceTouched] = useState(false);
+  const [customerViewOpen, setCustomerViewOpen] = useState(false);
+  const [customerPriceSource, setCustomerPriceSource] = useState<'retail' | 'own'>('retail');
+
 
   const effectiveConfig = useMemo(() => {
     if (!config) return config;
