@@ -15,6 +15,18 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 
+interface Billing {
+  first_name?: string | null;
+  last_name?: string | null;
+  address1?: string | null;
+  address2?: string | null;
+  address3?: string | null;
+  city?: string | null;
+  county?: string | null;
+  postal_code?: string | null;
+  country_code?: string | null;
+}
+
 interface Body {
   flow?: 'moto' | 'link';
   amount_pence?: number;
@@ -26,7 +38,44 @@ interface Body {
   customer_phone?: string | null;
   success_url?: string | null;
   cancel_url?: string | null;
+  billing?: Billing | null;
 }
+
+// Worldpay rejects unexpected characters; keep it to plain address text.
+const clean = (v: unknown, max = 50) =>
+  String(v ?? '')
+    .replace(/[^a-zA-Z0-9\-.,'/& ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+
+function buildBillingAddress(billing?: Billing | null) {
+  if (!billing) return undefined;
+  const address1 = clean(billing.address1);
+  const city = clean(billing.city);
+  const postalCode = clean(billing.postal_code, 12).toUpperCase();
+  // Worldpay requires address1 + city + postalCode + countryCode together.
+  if (!address1 || !city || !postalCode) return undefined;
+
+  const out: Record<string, string> = {
+    address1,
+    city,
+    postalCode,
+    countryCode: (clean(billing.country_code, 2) || 'GB').toUpperCase(),
+  };
+  const address2 = clean(billing.address2);
+  if (address2) out.address2 = address2;
+  const address3 = clean(billing.address3);
+  if (address3) out.address3 = address3;
+  const first = clean(billing.first_name, 30);
+  if (first) out.firstName = first;
+  const last = clean(billing.last_name, 30);
+  if (last) out.lastName = last;
+  const county = clean(billing.county, 30);
+  if (county) out.state = county;
+  return out;
+}
+
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
