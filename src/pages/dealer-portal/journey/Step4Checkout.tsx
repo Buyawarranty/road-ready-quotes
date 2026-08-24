@@ -115,8 +115,10 @@ const Step4Checkout: React.FC = () => {
               customer_id: pendingId,
               customer_email: customer.email,
               customer_phone: customer.phone,
+              billing,
               success_url: `${window.location.origin}/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`,
               cancel_url: `${window.location.origin}/dealer-portal/quote/checkout`,
+
             },
           },
         );
