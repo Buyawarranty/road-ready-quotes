@@ -1,83 +1,31 @@
+# Make the Worldpay payment page painless
 
-# CallRail Integration for Admin Panel
+The screen in the screenshot is Worldpay's own hosted page — we can't restyle its markup, but we can stop it from asking for anything the customer/dealer has already given us. When billing details are sent with the payment request, Worldpay renders the page with those fields prefilled (and the collapsed "Billing address" panel already satisfied), so in most cases the customer only types card number, expiry and CVV.
 
-Bring CallRail calls into the admin so sales agents see a big incoming-call banner in real time and a persistent missed-call alert they must acknowledge — routed to the agent CallRail assigned the tracking number to.
+## What changes
 
-## 1. Data model (Supabase)
+1. **Prefill billing details on every Worldpay request**
+   Send first name, last name, address lines, town, postcode and country (GB) plus email/phone along with the amount, so the hosted page opens with the billing address already filled and collapsed.
 
-New tables in `public`:
+2. **Source the data automatically per flow**
+   - Dealer quote checkout: use the customer captured in Step 2 (name, address 1, address 2, town, postcode), falling back to the dealer's own account details when the customer address is blank.
+   - Admin virtual terminal / pay-by-link panel: pass through whatever customer record is in context; where a panel currently has no address, add the option to pass one in.
+   - Admin invoice payment links: prefill from the dealer's registered billing details.
 
-- `callrail_tracking_numbers`
-  - `id uuid pk`, `callrail_tracker_id text unique`, `phone_e164 text`, `label text`
-  - `assigned_admin_user_id uuid` → maps tracking number → sales agent
-  - `active boolean default true`, timestamps
-- `callrail_calls`
-  - `id uuid pk`, `callrail_call_id text unique`
-  - `direction text` (`inbound`/`outbound`), `status text` (`ringing` | `in_progress` | `completed` | `missed` | `voicemail`)
-  - `caller_number text`, `caller_name text`, `caller_city text`, `tracker_id text`, `tracked_number text`
-  - `assigned_admin_user_id uuid` (resolved from tracking number → agent)
-  - `matched_lead_id uuid null`, `matched_customer_id uuid null` (phone-number match against `sales_leads` / `customers`)
-  - `started_at timestamptz`, `answered_at timestamptz`, `ended_at timestamptz`
-  - `duration_seconds int`, `recording_url text`, `raw jsonb`
-  - `acknowledged_at timestamptz null`, `acknowledged_by uuid null` (for missed-call dismissal)
-  - `callback_lead_id uuid null` (link if callback lead created)
-- Enable Realtime on `callrail_calls`; RLS: sales agents see calls where `assigned_admin_user_id = auth.uid()` OR unassigned; admins see all.
-- GRANTs per project rules; `service_role` full access for the edge function.
+3. **Only ask for what's missing**
+   If a required billing field (address 1, town, postcode) is empty before we call Worldpay, show a small inline "Confirm billing address" block in our own UI — same styling as the rest of the dealer forms, with postcode-style validation — instead of letting Worldpay's bare form ask for it. Once complete, the hosted page has nothing left to collect.
 
-## 2. CallRail webhook edge function
-
-New public edge function `callrail-webhook` (verify_jwt = false, HMAC-verified via `CALLRAIL_WEBHOOK_SECRET`):
-
-- Handles CallRail's Pre-Call (ringing), Post-Call (completed/missed), and Call-Modified events.
-- Upserts one row per `callrail_call_id`, updating status transitions.
-- Looks up tracking number → `assigned_admin_user_id`.
-- Attempts phone-match against `sales_leads.mobile` / `customers.phone` to populate `matched_lead_id` / `matched_customer_id`.
-- On `missed` / `no-answer` / `voicemail`, ensures `status='missed'` and leaves `acknowledged_at` null.
-- On completed answered call, writes to existing `lead_call_logs` if a lead match exists.
-- Requires two secrets: `CALLRAIL_WEBHOOK_SECRET` and `CALLRAIL_API_KEY` (for fetching call detail / recordings when needed).
-
-Setup step for the user: in CallRail, add company-level webhooks for Pre-Call, Post-Call, and Call-Modified pointing to the deployed function URL.
-
-## 3. Admin realtime hook + UI
-
-New `src/hooks/useCallRailPresence.ts`:
-- Subscribes via Supabase Realtime to `callrail_calls` scoped to `assigned_admin_user_id = currentAdminId` (plus unassigned).
-- Exposes: `activeIncomingCall` (status `ringing`/`in_progress`, unended), `missedCalls` (status `missed` AND `acknowledged_at is null`).
-
-New components under `src/components/admin/calls/`:
-- `IncomingCallBanner.tsx` — full-width fixed banner at top of the admin layout, orange/blue high-contrast. Shows caller number, matched lead/customer name + link, tracking number label, ring animation. Plays ringtone (`/sounds/ringtone.mp3`) and fires a `Notification` if permission granted. Buttons: “Open lead”, “Answered”, “Mark missed”.
-- `MissedCallBanner.tsx` — sticky red bar below the incoming banner. Lists up to 3 recent unacknowledged missed calls with “Call back” (tel: link + creates callback reminder in `lead_reminders`) and “Dismiss” (sets `acknowledged_at`). A counter chip in `NotificationBell` shows total missed.
-- Both mounted from the admin layout so they're visible on every admin route.
-
-Integration:
-- Mount banners in the admin shell (same layer as `MaintenanceBanner`).
-- Extend `NotificationBell` to include a “Missed calls” tab.
-- Request `Notification.requestPermission()` on first admin load.
-
-## 4. Admin management screen
-
-New route `Dealer Admin → Call Tracking` (`src/pages/dealer-admin/DealerAdminCallTracking.tsx`):
-- Table of `callrail_tracking_numbers` with inline assign-to-agent dropdown (from `admin_users`).
-- Recent calls table (filterable by agent, status, date) sourced from `callrail_calls`, with recording playback, matched lead link, and manual re-assign.
-- One-time “Sync from CallRail” button that calls a `callrail-sync-numbers` edge function to pull the tracker list via CallRail API.
-
-## 5. Secrets required
-
-Requested via `add_secret` once the plan is approved:
-- `CALLRAIL_API_KEY` (Account API token)
-- `CALLRAIL_ACCOUNT_ID`
-- `CALLRAIL_WEBHOOK_SECRET` (shared signing secret you enter in CallRail webhook settings)
+4. **Tidy our side of the handoff**
+   - Clear payment summary (plan, reg, amount inc VAT) shown above the "Continue to Worldpay" action so the hosted page is the last step, not a surprise.
+   - Keep the existing success/cancel return URLs and the pending-status polling untouched.
 
 ## Technical notes
 
-- Realtime channel filter: `postgres_changes` on `public.callrail_calls` filtered by `assigned_admin_user_id=eq.{adminId}` inside `useEffect` with `removeChannel` cleanup, per project realtime rules.
-- Ringtone asset added to `public/sounds/ringtone.mp3`.
-- Missed-call visibility persists across page reloads because state lives in `callrail_calls.acknowledged_at`, not local state.
-- No changes to existing lead-distribution logic; CallRail only decorates leads and creates callback reminders.
-- Follows project memory: no negative wording, high-contrast banner styling per `high-contrast-visual-standards`, uses existing `lead_reminders` for callbacks.
+- `supabase/functions/worldpay-create-payment-page/index.ts`: accept an optional `billing` object (`first_name`, `last_name`, `address1`, `address2`, `city`, `postal_code`, `country_code`) and include it as `billingAddress` (plus `customer`/`shopper` identifiers) in the `/payment_pages` request body. Values are sanitised and length-capped like the existing narrative field; missing fields are simply omitted so the request never fails validation.
+- `src/pages/dealer-portal/journey/Step4Checkout.tsx`: build `billing` from `DealerJourneyContext.customer`, falling back to `useDealerAuth().dealer`, and gate submission on the three required fields with an inline confirm block.
+- `src/components/admin/WorldpayPaymentPanel.tsx` and `src/pages/dealer-admin/DealerAdminInvoices.tsx`: pass the same `billing` shape from the records they already load.
+- Worldpay's hosted page styling itself (fonts, colours, logo) is configured in the Worldpay dashboard, not via API — worth doing separately if you want it brand-matched.
 
-## Out of scope (can add later)
+## Note on the "hidden" alternative
 
-- Click-to-dial through CallRail (currently uses `tel:` + existing Zoiper flow).
-- Whisper/coaching messages, SMS.
-- Automated agent status → CallRail routing (agents are static-mapped per tracker for v1).
+Worldpay also offers an embedded card-fields component (card number/expiry/CVV rendered inside our page, PCI-safe). That would remove the redirect entirely and let us control the whole design, but it's a different integration and needs the card-payments API enabling on the account. Say the word if you'd rather go that route than prefilling the hosted page.
