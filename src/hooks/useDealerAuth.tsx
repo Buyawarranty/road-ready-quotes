@@ -10,7 +10,16 @@ interface DealerProfile {
   email: string;
   phone: string | null;
   company_name: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  city?: string | null;
+  county?: string | null;
+  postcode?: string | null;
+  country_code?: string | null;
 }
+
 
 export const useDealerAuth = () => {
   const [user, setUser] = useState<User | null>(null);
