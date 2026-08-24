@@ -30,7 +30,16 @@ import {
   TraderTerm,
   formatClaim,
 } from '@/lib/traderPricingDefaults';
+import {
+  loadDealerDefaults,
+  saveDealerDefaults,
+  clearDealerDefaults,
+  describeDefaults,
+  FACTORY_DEFAULTS,
+  DealerWarrantyDefaults,
+} from '@/lib/dealerWarrantyDefaults';
 import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
+
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
