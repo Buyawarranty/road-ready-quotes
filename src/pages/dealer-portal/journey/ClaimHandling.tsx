@@ -21,7 +21,6 @@ import {
   Info,
   Clock,
   MessageCircle,
-  HeartHandshake,
 } from 'lucide-react';
 import {
   CLAIM_OPTIONS,
@@ -37,7 +36,7 @@ import {
   formatClaim,
 } from '@/lib/traderPricingDefaults';
 
-type CustomerMode = 'now' | 'later' | 'collect';
+type CustomerMode = 'now' | 'later';
 type Channel = 'whatsapp' | 'email';
 
 const ADD_ONS = [
@@ -466,15 +465,14 @@ const ClaimHandlingPage: React.FC = () => {
                 Customer details
               </h2>
               <p className="text-xs text-gray-500 mb-4">
-                Add details now, send them later, or let us collect them from your customer for you.
+                Add details now or send them later.
               </p>
 
               {/* Mode tabs */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
                 {([
                   { key: 'now', icon: User, title: 'Add now', sub: "Fill in the customer's details." },
                   { key: 'later', icon: Clock, title: 'Send later', sub: 'Share via WhatsApp / email later.' },
-                  { key: 'collect', icon: HeartHandshake, title: 'We collect for you', sub: 'We contact the customer directly.' },
                 ] as const).map(({ key, icon: Icon, title, sub }) => {
                   const active = customerMode === key;
                   return (
