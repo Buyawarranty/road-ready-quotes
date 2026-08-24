@@ -550,6 +550,14 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                   Retail
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={() => setCustomerViewOpen(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800"
+              >
+                <Eye className="w-3.5 h-3.5" /> Customer view
+              </button>
+
             </div>
 
             {dealerView && (
