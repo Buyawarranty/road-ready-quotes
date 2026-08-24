@@ -21,6 +21,7 @@ import {
   Info,
   Clock,
   MessageCircle,
+  Eye,
 } from 'lucide-react';
 import {
   CLAIM_OPTIONS,
@@ -35,6 +36,9 @@ import {
   TraderTerm,
   formatClaim,
 } from '@/lib/traderPricingDefaults';
+import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
+import { calcTraderPrice } from '@/lib/traderPricing';
+import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
 import {
   loadDealerDefaults,
   saveDealerDefaults,
@@ -135,6 +139,26 @@ const ClaimHandlingPage: React.FC = () => {
       navigate('/dealer-portal/quote/pricing', { replace: true });
     }
   }, [vehicle, navigate]);
+
+  const [customerViewOpen, setCustomerViewOpen] = useState(false);
+  const [customerPriceSource, setCustomerPriceSource] = useState<'retail' | 'own'>('retail');
+  const [customerPrice, setCustomerPrice] = useState('');
+
+  const { data: config } = useTraderPricingConfig();
+  const recommendedRetail = useMemo(() => {
+    const res = calcTraderPrice({
+      term,
+      excess,
+      labour,
+      parts,
+      claim: claimLimit,
+      config: config ? { ...config, dealer_pct: 1 } : undefined,
+    });
+    return res.gross;
+  }, [term, excess, labour, parts, claimLimit, config]);
+  const ownPrice = Number(customerPrice) || 0;
+  const customerFacingPrice =
+    customerPriceSource === 'own' && ownPrice > 0 ? ownPrice : recommendedRetail;
 
   const monthlyFee = 1.0; // flat claim-handling service fee
   const totalMonths = term;
@@ -679,6 +703,49 @@ const ClaimHandlingPage: React.FC = () => {
                 Over {totalMonths} months · Dealer pays claim payouts.
               </p>
 
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">
+                  Price shown in customer view
+                </p>
+                <div className="inline-flex w-full rounded-lg overflow-hidden border border-gray-300">
+                  <button
+                    type="button"
+                    onClick={() => setCustomerPriceSource('retail')}
+                    className={`flex-1 text-xs font-bold px-2 py-2 ${customerPriceSource === 'retail' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
+                  >
+                    Recommended £{recommendedRetail.toFixed(2)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCustomerPriceSource('own')}
+                    className={`flex-1 text-xs font-bold px-2 py-2 border-l border-gray-300 ${customerPriceSource === 'own' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
+                  >
+                    My price {ownPrice > 0 ? `£${ownPrice.toFixed(2)}` : ''}
+                  </button>
+                </div>
+                <div className="mt-2 flex items-center rounded-lg border-2 border-gray-200 bg-white overflow-hidden focus-within:border-orange-400">
+                  <span className="px-3 text-sm font-extrabold text-gray-600">£</span>
+                  <input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.01"
+                    min="0"
+                    value={customerPrice}
+                    onChange={(e) => { setCustomerPrice(e.target.value); setCustomerPriceSource('own'); }}
+                    placeholder="Your price to the customer"
+                    className="flex-1 py-2 text-sm font-bold text-gray-900 outline-none bg-transparent"
+                  />
+                  <span className="pr-3 text-[11px] text-gray-500">/ month</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCustomerViewOpen(true)}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
+                >
+                  <Eye className="w-3.5 h-3.5" /> Show customer view
+                </button>
+              </div>
+
               <Button
                 onClick={handleContinue}
                 className="w-full mt-4 rounded-lg bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold"
@@ -696,6 +763,26 @@ const ClaimHandlingPage: React.FC = () => {
           </aside>
         </div>
       </div>
+
+      <CustomerQuoteView
+        open={customerViewOpen}
+        onClose={() => setCustomerViewOpen(false)}
+        vehicle={vehicle}
+        coverTitle="Vehicle warranty cover"
+        coverSubtitle="Mechanical & electrical protection, claims managed for you"
+        price={customerFacingPrice}
+        secondaryLabel="Cover term"
+        secondaryValue={`${term} months`}
+        specs={[
+          { label: 'Cover term', value: termLabel(term) },
+          { label: 'Claim limit', value: formatClaim(claimLimit) },
+          { label: 'Excess', value: `£${excess}` },
+          { label: 'Labour rate', value: `£${labour}/hr` },
+          { label: 'Parts contribution', value: PARTS_OPTIONS.find((p) => p.key === parts)?.label || '' },
+        ]}
+        included={Object.keys(addOns).filter((k) => addOns[k])}
+        dealerName={dealer?.company_name || dealer?.name || undefined}
+      />
     </DealerLayout>
   );
 };
