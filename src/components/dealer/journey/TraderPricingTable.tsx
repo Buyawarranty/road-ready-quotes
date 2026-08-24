@@ -355,6 +355,48 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
             Choose which type of warranty you'd like to offer your customer.
           </p>
         </div>
+        {/* Vehicle reg entry */}
+        <section className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
+            <div>
+              <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">
+                Vehicle registration
+              </label>
+              <div className="flex items-stretch rounded-md overflow-hidden border-2 border-gray-900 shadow-sm">
+                <div className="bg-blue-700 text-yellow-300 text-xs font-bold flex items-center justify-center px-3">GB</div>
+                <input
+                  value={reg}
+                  onChange={(e) => handleRegChange(e.target.value)}
+                  onBlur={() => reg && performLookup(reg)}
+                  placeholder="ENTER REG"
+                  maxLength={10}
+                  aria-label="Vehicle registration number"
+                  className="bg-yellow-300 flex-1 text-center font-black text-xl sm:text-2xl tracking-widest py-3 text-gray-900 placeholder:text-gray-900/40 outline-none uppercase"
+                />
+                <div className="bg-yellow-300 px-3 flex items-center">
+                  {isLookingUp ? <Loader2 className="h-5 w-5 animate-spin text-gray-900" /> : <Search className="h-5 w-5 text-gray-900/60" />}
+                </div>
+              </div>
+              {vehicle?.make && (
+                <p className="text-xs text-gray-500 mt-2 uppercase font-semibold">
+                  {vehicle.make} {vehicle.model} {vehicle.year ? `· ${vehicle.year}` : ''}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">Mileage</label>
+              <div className="relative">
+                <Input
+                  value={mileage}
+                  onChange={(e) => setMileage(e.target.value.replace(/[^\d]/g, ''))}
+                  placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'}
+                  className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500 pr-10"
+                />
+                {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
+              </div>
+            </div>
+          </div>
+        </section>
         {TypeSelector}
         <p className="text-xs text-gray-400 text-center mt-4">
           Pick an option above to continue.
