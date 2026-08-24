@@ -66,7 +66,7 @@ const Step4Checkout: React.FC = () => {
         },
       });
 
-      if (error) throw new Error(error.message || 'Checkout failed');
+      if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
 
       if (method === 'worldpay') {
         const pendingId = (data as any)?.customer_id || null;
