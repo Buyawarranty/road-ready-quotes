@@ -239,6 +239,17 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   const activeMonthly = activeGross; // displayed as monthly
   const activeMonthlyExVat = activeExVat;
 
+  // Recommended retail (no dealer discount) — what the customer would normally pay
+  const retailResult = useMemo(
+    () => calcTraderPrice({ term, excess, labour, parts, claim, config: config ? { ...config, dealer_pct: 1 } : config }),
+    [term, excess, labour, parts, claim, config],
+  );
+  const recommendedRetail = support === 'warranty' ? retailResult.gross : CLAIM_FLAT_GROSS * 1.3;
+  const ownPrice = Number(customerPrice) || 0;
+  const customerFacingPrice =
+    customerPriceSource === 'own' && ownPrice > 0 ? ownPrice : recommendedRetail;
+
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
