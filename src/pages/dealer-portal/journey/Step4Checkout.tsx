@@ -29,6 +29,18 @@ const Step4Checkout: React.FC = () => {
   const total = plan.dealer_price;
   const planName = DEALER_PLAN_LABELS[plan.plan_type];
 
+  const readFnError = async (error: any, data: any, fallback: string) => {
+    if (data?.error) return String(data.error);
+    try {
+      const ctx = error?.context;
+      if (ctx && typeof ctx.json === 'function') {
+        const body = await ctx.json();
+        if (body?.error) return String(body.error);
+      }
+    } catch { /* ignore */ }
+    return error?.message || fallback;
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
@@ -54,7 +66,7 @@ const Step4Checkout: React.FC = () => {
         },
       });
 
-      if (error) throw new Error(error.message || 'Checkout failed');
+      if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
 
       if (method === 'worldpay') {
         const pendingId = (data as any)?.customer_id || null;
@@ -73,7 +85,7 @@ const Step4Checkout: React.FC = () => {
             },
           },
         );
-        if (wpErr) throw new Error(wpErr.message || 'Worldpay is unavailable');
+        if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
         const wpUrl = (wp as any)?.payment_url;
         if (!wpUrl) throw new Error((wp as any)?.error || 'No Worldpay payment URL returned');
         window.location.href = wpUrl;
