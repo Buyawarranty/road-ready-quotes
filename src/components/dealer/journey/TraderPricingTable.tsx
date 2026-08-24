@@ -921,7 +921,27 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
           </div>
         </aside>
       </div>
+
+      <CustomerQuoteView
+        open={customerViewOpen}
+        onClose={() => setCustomerViewOpen(false)}
+        vehicle={{ reg: vehicle?.reg || reg, make: vehicle?.make, model: vehicle?.model, year: vehicle?.year, mileage }}
+        coverTitle={support === 'warranty' ? 'Fully covered warranty' : 'Warranty cover'}
+        coverSubtitle="Comprehensive mechanical & electrical protection"
+        price={customerFacingPrice}
+        secondaryLabel="Cover term"
+        secondaryValue={`${term} months`}
+        specs={[
+          { label: 'Cover term', value: `${term} months` },
+          { label: 'Claim limit', value: formatClaim(claim) },
+          { label: 'Excess', value: `£${excess}` },
+          { label: 'Labour rate', value: `£${labour}/hr` },
+          { label: 'Parts contribution', value: parts === 'none' ? 'None' : 'Age & mileage' },
+        ]}
+        included={Object.keys(addOns).filter((k) => addOns[k])}
+      />
     </div>
+
   );
 };
 
