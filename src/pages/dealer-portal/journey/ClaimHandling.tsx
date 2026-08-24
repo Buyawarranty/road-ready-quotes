@@ -144,7 +144,7 @@ const ClaimHandlingPage: React.FC = () => {
   const [customerPriceSource, setCustomerPriceSource] = useState<'retail' | 'own'>('retail');
   const [customerPrice, setCustomerPrice] = useState('');
 
-  const { config } = useTraderPricingConfig();
+  const { data: config } = useTraderPricingConfig();
   const recommendedRetail = useMemo(() => {
     const res = calcTraderPrice({
       term,
