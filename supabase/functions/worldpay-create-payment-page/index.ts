@@ -189,10 +189,22 @@ Deno.serve(async (req: Request) => {
       'Content-Type': 'application/vnd.worldpay.payment_pages-v1.hal+json',
       Accept: 'application/vnd.worldpay.payment_pages-v1.hal+json',
     };
-    let wpRes = await fetch(`${base}/payment_pages`, { method: 'POST', headers: wpHeaders, body: wpBody });
-    if (wpRes.status === 404) {
-      wpRes = await fetch(`${base}/paymentPages`, { method: 'POST', headers: wpHeaders, body: wpBody });
+    const post = async (payload: string) => {
+      let res = await fetch(`${base}/payment_pages`, { method: 'POST', headers: wpHeaders, body: payload });
+      if (res.status === 404) {
+        res = await fetch(`${base}/paymentPages`, { method: 'POST', headers: wpHeaders, body: payload });
+      }
+      return res;
+    };
+
+    let wpRes = await post(wpBody);
+    // If the account rejects the prefill payload, fall back to the bare page
+    // rather than failing the payment outright.
+    if (!wpRes.ok && billingAddress && wpRes.status >= 400 && wpRes.status < 500) {
+      console.warn('Worldpay rejected billing prefill, retrying without it', wpRes.status);
+      wpRes = await post(buildPayload(false));
     }
+
 
     const raw = await wpRes.json().catch(() => ({}));
 
