@@ -4570,6 +4570,7 @@ export type Database = {
           mileage: string | null
           mot_fee: boolean | null
           mot_repair: boolean | null
+          msclkid: string | null
           name: string
           ni_verified: boolean
           ni_verified_at: string | null
@@ -4621,6 +4622,7 @@ export type Database = {
           trustpilot_review_completed_at: string | null
           trustpilot_review_requested: boolean | null
           trustpilot_review_requested_at: string | null
+          ttclid: string | null
           tyre_cover: boolean | null
           updated_at: string
           utm_campaign: string | null
@@ -4695,6 +4697,7 @@ export type Database = {
           mileage?: string | null
           mot_fee?: boolean | null
           mot_repair?: boolean | null
+          msclkid?: string | null
           name: string
           ni_verified?: boolean
           ni_verified_at?: string | null
@@ -4746,6 +4749,7 @@ export type Database = {
           trustpilot_review_completed_at?: string | null
           trustpilot_review_requested?: boolean | null
           trustpilot_review_requested_at?: string | null
+          ttclid?: string | null
           tyre_cover?: boolean | null
           updated_at?: string
           utm_campaign?: string | null
@@ -4820,6 +4824,7 @@ export type Database = {
           mileage?: string | null
           mot_fee?: boolean | null
           mot_repair?: boolean | null
+          msclkid?: string | null
           name?: string
           ni_verified?: boolean
           ni_verified_at?: string | null
@@ -4871,6 +4876,7 @@ export type Database = {
           trustpilot_review_completed_at?: string | null
           trustpilot_review_requested?: boolean | null
           trustpilot_review_requested_at?: string | null
+          ttclid?: string | null
           tyre_cover?: boolean | null
           updated_at?: string
           utm_campaign?: string | null
@@ -10740,10 +10746,13 @@ export type Database = {
           recovery_worked_at: string | null
           resubmission_count: number | null
           save_cancellation: boolean
+          save_commission_pct: number | null
+          save_online_sale: boolean
           save_reason: string | null
           save_requested_at: string | null
           save_requested_by: string | null
           save_reward_amount: number | null
+          save_sale_value: number | null
           save_source_customer_id: string | null
           status: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at: string | null
@@ -10857,10 +10866,13 @@ export type Database = {
           recovery_worked_at?: string | null
           resubmission_count?: number | null
           save_cancellation?: boolean
+          save_commission_pct?: number | null
+          save_online_sale?: boolean
           save_reason?: string | null
           save_requested_at?: string | null
           save_requested_by?: string | null
           save_reward_amount?: number | null
+          save_sale_value?: number | null
           save_source_customer_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at?: string | null
@@ -10974,10 +10986,13 @@ export type Database = {
           recovery_worked_at?: string | null
           resubmission_count?: number | null
           save_cancellation?: boolean
+          save_commission_pct?: number | null
+          save_online_sale?: boolean
           save_reason?: string | null
           save_requested_at?: string | null
           save_requested_by?: string | null
           save_reward_amount?: number | null
+          save_sale_value?: number | null
           save_source_customer_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
           step_two_completed_at?: string | null
@@ -11223,6 +11238,47 @@ export type Database = {
             foreignKeyName: "salesperson_stats_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      save_online_sale_agents: {
+        Row: {
+          admin_user_id: string
+          authorised_at: string
+          authorised_by: string | null
+          commission_pct: number
+          created_at: string
+          enabled: boolean
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          admin_user_id: string
+          authorised_at?: string
+          authorised_by?: string | null
+          commission_pct?: number
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_user_id?: string
+          authorised_at?: string
+          authorised_by?: string | null
+          commission_pct?: number
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "save_online_sale_agents_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: true
             referencedRelation: "admin_users"
             referencedColumns: ["id"]
           },
@@ -13641,6 +13697,7 @@ export type Database = {
         Returns: string
       }
       make_user_admin: { Args: { user_email: string }; Returns: undefined }
+      marketing_customer_state: { Args: { _email: string }; Returns: string }
       migrate_orphan_carts_to_leads: { Args: never; Returns: Json }
       missed_call_pass: { Args: { p_call_id: string }; Returns: boolean }
       missed_call_rotate_offers: { Args: never; Returns: number }
