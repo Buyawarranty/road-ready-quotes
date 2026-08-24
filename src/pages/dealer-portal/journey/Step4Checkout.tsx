@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark } from 'lucide-react';
+import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark, MapPin } from 'lucide-react';
+import BillingAddressFields from '@/components/dealer/BillingAddressFields';
+import {
+  BillingAddress,
+  billingErrors,
+  billingFromDealer,
+  billingToDealerColumns,
+  isBillingComplete,
+} from '@/lib/dealerBilling';
 
 type Method = 'pay_now' | 'invoice' | 'worldpay';
 
@@ -18,6 +27,18 @@ const Step4Checkout: React.FC = () => {
 
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
+  const [billing, setBilling] = useState<BillingAddress>(() => billingFromDealer(dealer));
+  const [billingTouched, setBillingTouched] = useState(false);
+  const [saveToProfile, setSaveToProfile] = useState(true);
+  const [showBillingErrors, setShowBillingErrors] = useState(false);
+
+  // Prefill from the dealer profile once it loads (unless the dealer edited it).
+  useEffect(() => {
+    if (dealer && !billingTouched) setBilling(billingFromDealer(dealer));
+  }, [dealer, billingTouched]);
+
+  const errors = useMemo(() => billingErrors(billing), [billing]);
+  const billingReady = isBillingComplete(billing);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -28,6 +49,7 @@ const Step4Checkout: React.FC = () => {
 
   const total = plan.dealer_price;
   const planName = DEALER_PLAN_LABELS[plan.plan_type];
+
 
   const readFnError = async (error: any, data: any, fallback: string) => {
     if (data?.error) return String(data.error);
@@ -42,8 +64,21 @@ const Step4Checkout: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    if (method === 'worldpay' && !billingReady) {
+      setShowBillingErrors(true);
+      toast({
+        title: 'Billing address needed',
+        description: 'Complete the billing address so the card page is prefilled.',
+        variant: 'destructive',
+      });
+      return;
+    }
     setSubmitting(true);
     try {
+      if (method === 'worldpay' && saveToProfile) {
+        await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
+      }
+
       const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
         body: {
           dealer_id: dealer.id,
@@ -80,8 +115,10 @@ const Step4Checkout: React.FC = () => {
               customer_id: pendingId,
               customer_email: customer.email,
               customer_phone: customer.phone,
+              billing,
               success_url: `${window.location.origin}/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`,
               cancel_url: `${window.location.origin}/dealer-portal/quote/checkout`,
+
             },
           },
         );
@@ -204,6 +241,39 @@ const Step4Checkout: React.FC = () => {
               <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Ideal for card payments taken over the phone</li>
             </ul>
           </OptionCard>
+
+          {method === 'worldpay' && (
+            <div className="rounded-xl border-2 border-gray-200 bg-white p-5 space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">Billing address</h3>
+                  <p className="text-sm text-gray-600">
+                    Prefilled from your dealer profile — edit anything that's different. The Worldpay page
+                    then only asks for card number, expiry and CVV.
+                  </p>
+                </div>
+              </div>
+
+              <BillingAddressFields
+                value={billing}
+                onChange={(next) => { setBilling(next); setBillingTouched(true); }}
+                errors={showBillingErrors ? errors : {}}
+                disabled={submitting}
+              />
+
+              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                <Checkbox
+                  checked={saveToProfile}
+                  onCheckedChange={(v) => setSaveToProfile(v === true)}
+                  disabled={submitting}
+                />
+                Save this address to my dealer profile for next time
+              </label>
+            </div>
+          )}
+
+
 
           <div className="flex items-center justify-between pt-2">
             <Button

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { BillingAddress, billingFromDealer } from '@/lib/dealerBilling';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,12 +32,14 @@ interface UnpaidRow {
   dealer_id: string;
   dealer_company?: string;
   dealer_email?: string | null;
+  dealer_billing?: BillingAddress | null;
 }
 
 interface Group {
   dealer_id: string;
   dealer_company: string;
   dealer_email: string | null;
+  dealer_billing: BillingAddress | null;
   rows: UnpaidRow[];
   total: number;
 }
@@ -71,7 +74,9 @@ const DealerAdminInvoices: React.FC = () => {
         .select('id, name, email, registration_plate, signup_date, final_amount, payment_status, plan_type, payment_type, dealer_id')
         .not('dealer_id', 'is', null)
         .order('signup_date', { ascending: false }),
-      supabase.from('dealers').select('id, company_name, email'),
+      supabase
+        .from('dealers')
+        .select('id, company_name, email, first_name, last_name, address_line1, address_line2, city, county, postcode, country_code'),
     ]);
     const dealerMap = new Map((dealers || []).map((d: any) => [d.id, d]));
     const unpaid = (customers || [])
@@ -80,6 +85,7 @@ const DealerAdminInvoices: React.FC = () => {
         ...c,
         dealer_company: dealerMap.get(c.dealer_id)?.company_name || '—',
         dealer_email: dealerMap.get(c.dealer_id)?.email || null,
+        dealer_billing: dealerMap.get(c.dealer_id) ? billingFromDealer(dealerMap.get(c.dealer_id)) : null,
       }));
     setRows(unpaid);
     setLoading(false);
@@ -94,6 +100,7 @@ const DealerAdminInvoices: React.FC = () => {
         dealer_id: r.dealer_id,
         dealer_company: r.dealer_company || '—',
         dealer_email: r.dealer_email || null,
+        dealer_billing: r.dealer_billing || null,
         rows: [],
         total: 0,
       };
@@ -245,6 +252,7 @@ const DealerAdminInvoices: React.FC = () => {
           : `Invoice ${g.dealer_company}`,
         customer_id: row?.id || null,
         customer_email: g.dealer_email,
+        billing: g.dealer_billing,
       },
     });
     setBusy(null);
