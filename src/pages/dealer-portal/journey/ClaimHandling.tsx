@@ -565,46 +565,6 @@ const ClaimHandlingPage: React.FC = () => {
                 </div>
               )}
 
-              {customerMode === 'collect' && (
-                <div className="space-y-4">
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
-                    <HeartHandshake className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
-                    <p className="text-xs text-gray-700">
-                      Hand it over to us — our team will contact your customer to collect their full details and confirm the cover. Just give us a name and phone (or email) so we know who to call.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5 text-gray-400" /> Customer name *
-                      </label>
-                      <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
-                      </label>
-                      <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-gray-400" /> Email (optional)
-                      </label>
-                      <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 block">Best time to call / note (optional)</label>
-                    <Textarea
-                      rows={3}
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder="e.g. Call after 5pm, customer collects car on Saturday."
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-              )}
 
               {error && <p className="text-sm text-red-600 font-medium mt-3">{error}</p>}
             </section>
