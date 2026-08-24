@@ -835,6 +835,36 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
               </>
             )}
 
+            {/* What the customer sees in presentation mode */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">
+                Price shown in customer view
+              </p>
+              <div className="inline-flex w-full rounded-lg overflow-hidden border border-gray-300">
+                <button
+                  type="button"
+                  onClick={() => setCustomerPriceSource('retail')}
+                  className={`flex-1 text-xs font-bold px-2 py-2 ${customerPriceSource === 'retail' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
+                >
+                  Recommended £{recommendedRetail.toFixed(2)}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomerPriceSource('own')}
+                  className={`flex-1 text-xs font-bold px-2 py-2 border-l border-gray-300 ${customerPriceSource === 'own' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
+                >
+                  My price {ownPrice > 0 ? `£${ownPrice.toFixed(2)}` : ''}
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCustomerViewOpen(true)}
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
+              >
+                <Eye className="w-3.5 h-3.5" /> Show customer view
+              </button>
+            </div>
+
 
             <Button
               onClick={() =>
