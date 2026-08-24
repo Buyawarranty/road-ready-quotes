@@ -148,7 +148,10 @@ Deno.serve(async (req: Request) => {
     const cancelUrl = body.cancel_url || `${origin}/payment-fallback?ref=${transactionReference}`;
 
     const auth = 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`);
-    const wpBody = JSON.stringify({
+    const billingAddress = buildBillingAddress(body.billing);
+
+    const buildPayload = (withBilling: boolean) => {
+      const payload: Record<string, unknown> = {
         transactionReference,
         merchant: { entity: ENTITY },
         narrative: {
@@ -167,7 +170,17 @@ Deno.serve(async (req: Request) => {
           cancelURL: cancelUrl,
           expiryURL: cancelUrl,
         },
-    });
+      };
+      if (withBilling && billingAddress) {
+        payload.billingAddress = billingAddress;
+        const email = body.customer_email ? String(body.customer_email).slice(0, 120) : '';
+        if (email) payload.shopper = { shopperEmailAddress: email };
+      }
+      return JSON.stringify(payload);
+    };
+
+    const wpBody = buildPayload(true);
+
 
     // Worldpay Access exposes hosted payment pages at /payment_pages (some
     // older accounts use /paymentPages) — try both before failing.
