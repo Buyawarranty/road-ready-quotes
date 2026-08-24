@@ -35,6 +35,14 @@ import {
   TraderTerm,
   formatClaim,
 } from '@/lib/traderPricingDefaults';
+import {
+  loadDealerDefaults,
+  saveDealerDefaults,
+  clearDealerDefaults,
+  describeDefaults,
+  DealerWarrantyDefaults,
+} from '@/lib/dealerWarrantyDefaults';
+
 
 type CustomerMode = 'now' | 'later';
 type Channel = 'whatsapp' | 'email';
