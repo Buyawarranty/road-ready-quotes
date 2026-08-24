@@ -16,6 +16,8 @@ import {
   Star,
 } from 'lucide-react';
 import CarProgressBar from './CarProgressBar';
+import CustomerQuoteView from './CustomerQuoteView';
+
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
   CLAIM_OPTIONS,
