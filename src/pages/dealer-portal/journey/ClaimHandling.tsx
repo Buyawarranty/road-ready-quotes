@@ -21,7 +21,6 @@ import {
   Info,
   Clock,
   MessageCircle,
-  HeartHandshake,
 } from 'lucide-react';
 import {
   CLAIM_OPTIONS,
@@ -37,7 +36,7 @@ import {
   formatClaim,
 } from '@/lib/traderPricingDefaults';
 
-type CustomerMode = 'now' | 'later' | 'collect';
+type CustomerMode = 'now' | 'later';
 type Channel = 'whatsapp' | 'email';
 
 const ADD_ONS = [
@@ -153,7 +152,7 @@ const ClaimHandlingPage: React.FC = () => {
         town: form.town || 'To be confirmed',
         postcode: form.postcode.toUpperCase(),
       });
-    } else if (customerMode === 'later') {
+    } else {
       const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'Email';
       setCustomer({
         name: 'Pending customer details',
@@ -161,20 +160,6 @@ const ClaimHandlingPage: React.FC = () => {
         phone: '',
         address_line1: 'To be confirmed',
         address_line2: `[Pending: ${dealerName} to send details via ${channelLabel}]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
-        town: 'To be confirmed',
-        postcode: 'TBC',
-      });
-    } else {
-      if (!form.name.trim() || !form.phone.trim()) {
-        setError('We need at least the customer name and phone so we can contact them.');
-        return;
-      }
-      setCustomer({
-        name: form.name,
-        email: form.email || placeholderEmail,
-        phone: form.phone,
-        address_line1: 'To be collected by Buyawarranty',
-        address_line2: `[Buyawarranty to collect details from customer]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
         town: 'To be confirmed',
         postcode: 'TBC',
       });
@@ -466,15 +451,14 @@ const ClaimHandlingPage: React.FC = () => {
                 Customer details
               </h2>
               <p className="text-xs text-gray-500 mb-4">
-                Add details now, send them later, or let us collect them from your customer for you.
+                Add details now or send them later.
               </p>
 
               {/* Mode tabs */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
                 {([
                   { key: 'now', icon: User, title: 'Add now', sub: "Fill in the customer's details." },
                   { key: 'later', icon: Clock, title: 'Send later', sub: 'Share via WhatsApp / email later.' },
-                  { key: 'collect', icon: HeartHandshake, title: 'We collect for you', sub: 'We contact the customer directly.' },
                 ] as const).map(({ key, icon: Icon, title, sub }) => {
                   const active = customerMode === key;
                   return (
@@ -581,46 +565,6 @@ const ClaimHandlingPage: React.FC = () => {
                 </div>
               )}
 
-              {customerMode === 'collect' && (
-                <div className="space-y-4">
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-orange-50 border border-orange-200">
-                    <HeartHandshake className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
-                    <p className="text-xs text-gray-700">
-                      Hand it over to us — our team will contact your customer to collect their full details and confirm the cover. Just give us a name and phone (or email) so we know who to call.
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <User className="w-3.5 h-3.5 text-gray-400" /> Customer name *
-                      </label>
-                      <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
-                      </label>
-                      <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                        <Mail className="w-3.5 h-3.5 text-gray-400" /> Email (optional)
-                      </label>
-                      <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 block">Best time to call / note (optional)</label>
-                    <Textarea
-                      rows={3}
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder="e.g. Call after 5pm, customer collects car on Saturday."
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-              )}
 
               {error && <p className="text-sm text-red-600 font-medium mt-3">{error}</p>}
             </section>
