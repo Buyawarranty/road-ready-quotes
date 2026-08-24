@@ -85,7 +85,7 @@ const Step4Checkout: React.FC = () => {
             },
           },
         );
-        if (wpErr) throw new Error(wpErr.message || 'Worldpay is unavailable');
+        if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
         const wpUrl = (wp as any)?.payment_url;
         if (!wpUrl) throw new Error((wp as any)?.error || 'No Worldpay payment URL returned');
         window.location.href = wpUrl;
