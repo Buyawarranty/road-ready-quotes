@@ -13622,6 +13622,15 @@ export type Database = {
         | { Args: { p_exclude_agent_id?: string }; Returns: string }
       get_next_sales_user: { Args: never; Returns: string }
       get_next_warranty_serial: { Args: never; Returns: number }
+      get_scoreboard_reconciliation: {
+        Args: { p_end: string; p_start: string }
+        Returns: {
+          bucket: string
+          label: string
+          revenue: number
+          sales_count: number
+        }[]
+      }
       get_team_scoreboard: {
         Args: { p_end: string; p_start: string }
         Returns: {
@@ -13672,6 +13681,7 @@ export type Database = {
       }
       is_blog_writer: { Args: { user_id: string }; Returns: boolean }
       is_ip_blocked: { Args: { check_ip: unknown }; Returns: boolean }
+      is_known_fake_phone: { Args: { _phone: string }; Returns: boolean }
       is_management: { Args: { _user_id: string }; Returns: boolean }
       is_phone_logs_manager: { Args: { _user_id: string }; Returns: boolean }
       is_sales_lead: { Args: { _user_id: string }; Returns: boolean }
@@ -14085,6 +14095,15 @@ export type Database = {
       }
       reset_agent_caps_daily: { Args: never; Returns: undefined }
       reset_daily_caps: { Args: never; Returns: undefined }
+      resolve_sale_credit: {
+        Args: {
+          _assigned_to: string
+          _payment_confirmed_by: string
+          _quote_sent_by: string
+          _sale_credit: string
+        }
+        Returns: string
+      }
       restore_agent_offboarding_backup: {
         Args: { _event_id: string; _restore_to_admin_user_id?: string }
         Returns: Json
