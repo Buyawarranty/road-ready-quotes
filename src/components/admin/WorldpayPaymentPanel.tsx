@@ -41,7 +41,9 @@ const WorldpayPaymentPanel: React.FC<Props> = ({
   const [result, setResult] = useState<Record<'moto' | 'link', WorldpayResponse | null>>({ moto: null, link: null });
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<string>('');
+  const [motoOutcome, setMotoOutcome] = useState<{ ok: boolean; detail: string } | null>(null);
   const pollRef = useRef<number | null>(null);
+
 
   useEffect(() => {
     setAmount(String(amountPounds || 0));
