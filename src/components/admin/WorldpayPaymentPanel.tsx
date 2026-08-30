@@ -150,38 +150,60 @@ const WorldpayPaymentPanel: React.FC<Props> = ({
 
         <TabsContent value="moto" className="space-y-3 pt-3">
           <p className="text-xs text-red-800">
-            Agent takes the card on the phone. Worldpay's hosted card form opens below — nothing is typed into our servers (PCI-safe).
+            Agent takes the card on the phone. Card fields are hosted by Worldpay inside our form — nothing is typed into our servers (PCI-safe).
           </p>
-          {!active && (
-            <Button
-              disabled={loading === 'moto'}
-              onClick={() => create('moto')}
-              className="w-full bg-red-600 hover:bg-red-700 text-white"
+          {motoOutcome ? (
+            <div
+              className={`rounded-md border p-3 text-sm ${
+                motoOutcome.ok
+                  ? 'border-green-300 bg-green-50 text-green-900'
+                  : 'border-red-300 bg-red-50 text-red-900'
+              }`}
             >
-              {loading === 'moto' ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CreditCard className="w-4 h-4 mr-2" />}
-              Open card form
-            </Button>
-          )}
-          {active && (
-            <div className="space-y-2">
-              <iframe
-                src={active.payment_url}
-                title="Worldpay virtual terminal"
-                className="w-full h-[520px] rounded border border-red-200 bg-white"
-              />
-              <div className="flex items-center gap-2 text-xs text-red-800">
-                <RefreshCw className={`w-3 h-3 ${status === 'pending' ? 'animate-spin' : ''}`} />
-                Status: <strong className="font-mono">{status || 'pending'}</strong>
-                <button
-                  className="ml-auto underline"
-                  onClick={() => { setResult((r) => ({ ...r, moto: null })); cleanupPoll(); setStatus(''); }}
-                >
-                  Start again
-                </button>
+              <div className="font-semibold">
+                {motoOutcome.ok ? 'Payment authorised' : 'Payment not taken'}
               </div>
+              <div className="text-xs mt-0.5">{motoOutcome.detail}</div>
+              <button className="mt-2 text-xs underline" onClick={() => setMotoOutcome(null)}>
+                Take another payment
+              </button>
             </div>
+          ) : (
+            <WorldpayCardForm
+              amountPounds={Number(amount) || 0}
+              onSession={async (sessionHref, cardholderName) => {
+                const pounds = Number(amount);
+                if (!pounds || pounds <= 0) throw new Error('Enter an amount first');
+                const { data, error } = await supabase.functions.invoke('worldpay-create-payment', {
+                  body: {
+                    session_href: sessionHref,
+                    cardholder_name: cardholderName || null,
+                    amount_pence: Math.round(pounds * 100),
+                    description: desc || 'Vehicle warranty payment',
+                    sales_lead_id: salesLeadId || null,
+                    customer_id: customerId || null,
+                    customer_email: customerEmail || null,
+                    customer_phone: customerPhone || null,
+                  },
+                });
+                if (error) throw new Error((data as any)?.error || error.message);
+                if ((data as any)?.error) throw new Error((data as any).error);
+                const res = data as { outcome: string; last_four?: string | null; refusal_description?: string | null };
+                const ok = res.outcome === 'authorized';
+                setStatus(res.outcome);
+                setMotoOutcome({
+                  ok,
+                  detail: ok
+                    ? `£${pounds.toFixed(2)} authorised${res.last_four ? ` on card ending ${res.last_four}` : ''}.`
+                    : res.refusal_description || `Worldpay returned "${res.outcome}".`,
+                });
+                if (!ok) throw new Error(res.refusal_description || `Payment ${res.outcome}`);
+                toast({ title: 'Payment authorised' });
+              }}
+            />
           )}
         </TabsContent>
+
 
         <TabsContent value="link" className="space-y-3 pt-3">
           <p className="text-xs text-red-800">
