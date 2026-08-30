@@ -103,8 +103,17 @@ Deno.serve(async (req: Request) => {
     const user = userData?.user;
     if (userErr || !user) return json({ error: 'Not authenticated' }, 401);
 
-    const { data: allowed, error: roleErr } = await supabase.rpc('is_admin_or_sales', { _user_id: user.id });
-    if (roleErr || !allowed) return json({ error: 'Not authorised to take payments' }, 403);
+    const { data: allowed } = await supabase.rpc('is_admin_or_sales', { _user_id: user.id });
+    if (!allowed) {
+      // Dealers may also take a card payment for their own purchase.
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (!dealer) return json({ error: 'Not authorised to take payments' }, 403);
+    }
+
 
     // --- Input -------------------------------------------------------------
     let body: Body;
