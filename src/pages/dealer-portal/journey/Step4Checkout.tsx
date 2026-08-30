@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark, MapPin } from 'lucide-react';
 import BillingAddressFields from '@/components/dealer/BillingAddressFields';
+import WorldpayCardForm from '@/components/payments/WorldpayCardForm';
+
 import {
   BillingAddress,
   billingErrors,
@@ -63,71 +65,69 @@ const Step4Checkout: React.FC = () => {
     return error?.message || fallback;
   };
 
-  const handleSubmit = async () => {
-    if (method === 'worldpay' && !billingReady) {
+  const createRecord = async () => {
+    const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
+      body: {
+        dealer_id: dealer.id,
+        payment_method: method,
+        vehicle: {
+          reg: vehicle.reg,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: vehicle.year,
+          mileage: vehicle.mileage,
+        },
+        customer,
+        plan: {
+          plan_type: plan.plan_type,
+          duration_months: plan.duration_months,
+          retail_price: plan.retail_price,
+          dealer_price: plan.dealer_price,
+        },
+        discount_pct,
+      },
+    });
+    if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
+    return data as any;
+  };
+
+  // Embedded Worldpay card form: capture the session, then authorise.
+  const handleCardSession = async (sessionHref: string, cardholderName: string) => {
+    if (!billingReady) {
       setShowBillingErrors(true);
-      toast({
-        title: 'Billing address needed',
-        description: 'Complete the billing address so the card page is prefilled.',
-        variant: 'destructive',
-      });
-      return;
+      throw new Error('Complete the billing address first.');
     }
+    if (saveToProfile) {
+      await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
+    }
+    const record = await createRecord();
+    const pendingId = record?.customer_id || null;
+
+    const { data: wp, error: wpErr } = await supabase.functions.invoke('worldpay-create-payment', {
+      body: {
+        session_href: sessionHref,
+        cardholder_name: cardholderName || null,
+        amount_pence: Math.round(total * 100),
+        description: `${planName} warranty ${vehicle.reg}`,
+        customer_id: pendingId,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        billing,
+      },
+    });
+    if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
+    if ((wp as any)?.error) throw new Error((wp as any).error);
+    if ((wp as any)?.outcome !== 'authorized') {
+      throw new Error((wp as any)?.refusal_description || 'Payment was not authorised. Please try another card.');
+    }
+    toast({ title: 'Payment authorised' });
+    navigate(`/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`);
+  };
+
+  const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      if (method === 'worldpay' && saveToProfile) {
-        await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
-      }
-
-      const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
-        body: {
-          dealer_id: dealer.id,
-          payment_method: method === 'worldpay' ? 'worldpay' : method,
-          vehicle: {
-            reg: vehicle.reg,
-            make: vehicle.make,
-            model: vehicle.model,
-            year: vehicle.year,
-            mileage: vehicle.mileage,
-          },
-          customer,
-          plan: {
-            plan_type: plan.plan_type,
-            duration_months: plan.duration_months,
-            retail_price: plan.retail_price,
-            dealer_price: plan.dealer_price,
-          },
-          discount_pct,
-        },
-      });
-
-      if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-
-      if (method === 'worldpay') {
-        const pendingId = (data as any)?.customer_id || null;
-        const { data: wp, error: wpErr } = await supabase.functions.invoke(
-          'worldpay-create-payment-page',
-          {
-            body: {
-              flow: 'moto',
-              amount_pence: Math.round(total * 100),
-              description: `${planName} warranty · ${vehicle.reg}`,
-              customer_id: pendingId,
-              customer_email: customer.email,
-              customer_phone: customer.phone,
-              billing,
-              success_url: `${window.location.origin}/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`,
-              cancel_url: `${window.location.origin}/dealer-portal/quote/checkout`,
-
-            },
-          },
-        );
-        if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
-        const wpUrl = (wp as any)?.payment_url;
-        if (!wpUrl) throw new Error((wp as any)?.error || 'No Worldpay payment URL returned');
-        window.location.href = wpUrl;
-        return;
-      }
+      const data = await createRecord();
 
       if (method === 'pay_now') {
         const url = (data as any)?.checkout_url;
@@ -149,6 +149,7 @@ const Step4Checkout: React.FC = () => {
       setSubmitting(false);
     }
   };
+
 
   const OptionCard = ({
     value, icon: Icon, title, sub, badge, children,
@@ -234,11 +235,11 @@ const Step4Checkout: React.FC = () => {
             value="worldpay"
             icon={Landmark}
             title="Pay by card via Worldpay"
-            sub="Secure hosted Worldpay card page. Warranty activates once payment clears."
+            sub="Enter the card details right here. Warranty activates once payment clears."
           >
             <ul className="space-y-1.5 text-xs text-gray-600">
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> PCI-safe hosted payment page</li>
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Ideal for card payments taken over the phone</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Card fields are hosted by Worldpay — PCI-safe</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> No redirect, no extra forms to fill in</li>
             </ul>
           </OptionCard>
 
@@ -249,8 +250,7 @@ const Step4Checkout: React.FC = () => {
                 <div>
                   <h3 className="font-bold text-gray-900 text-base">Billing address</h3>
                   <p className="text-sm text-gray-600">
-                    Prefilled from your dealer profile — edit anything that's different. The Worldpay page
-                    then only asks for card number, expiry and CVV.
+                    Prefilled from your dealer profile — edit anything that's different.
                   </p>
                 </div>
               </div>
@@ -270,10 +270,17 @@ const Step4Checkout: React.FC = () => {
                 />
                 Save this address to my dealer profile for next time
               </label>
+
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="font-bold text-gray-900 text-base mb-3">Card details</h3>
+                <WorldpayCardForm
+                  amountPounds={total}
+                  submitLabel={`Pay £${total.toFixed(2)}`}
+                  onSession={handleCardSession}
+                />
+              </div>
             </div>
           )}
-
-
 
           <div className="flex items-center justify-between pt-2">
             <Button
@@ -285,22 +292,23 @@ const Step4Checkout: React.FC = () => {
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 min-w-[180px]"
-            >
-              {submitting ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing…</>
-              ) : method === 'pay_now' ? (
-                <>Pay £{total.toFixed(2)} now</>
-              ) : method === 'worldpay' ? (
-                <>Pay £{total.toFixed(2)} with Worldpay</>
-              ) : (
-                <>Confirm & invoice me</>
-              )}
-            </Button>
+            {method !== 'worldpay' && (
+              <Button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 min-w-[180px]"
+              >
+                {submitting ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing…</>
+                ) : method === 'pay_now' ? (
+                  <>Pay £{total.toFixed(2)} now</>
+                ) : (
+                  <>Confirm & invoice me</>
+                )}
+              </Button>
+            )}
           </div>
+
         </div>
 
         {/* Order summary */}
