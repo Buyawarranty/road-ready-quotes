@@ -233,11 +233,11 @@ const Step4Checkout: React.FC = () => {
             value="worldpay"
             icon={Landmark}
             title="Pay by card via Worldpay"
-            sub="Secure hosted Worldpay card page. Warranty activates once payment clears."
+            sub="Enter the card details right here. Warranty activates once payment clears."
           >
             <ul className="space-y-1.5 text-xs text-gray-600">
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> PCI-safe hosted payment page</li>
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Ideal for card payments taken over the phone</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Card fields are hosted by Worldpay — PCI-safe</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> No redirect, no extra forms to fill in</li>
             </ul>
           </OptionCard>
 
@@ -248,8 +248,7 @@ const Step4Checkout: React.FC = () => {
                 <div>
                   <h3 className="font-bold text-gray-900 text-base">Billing address</h3>
                   <p className="text-sm text-gray-600">
-                    Prefilled from your dealer profile — edit anything that's different. The Worldpay page
-                    then only asks for card number, expiry and CVV.
+                    Prefilled from your dealer profile — edit anything that's different.
                   </p>
                 </div>
               </div>
@@ -269,10 +268,17 @@ const Step4Checkout: React.FC = () => {
                 />
                 Save this address to my dealer profile for next time
               </label>
+
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="font-bold text-gray-900 text-base mb-3">Card details</h3>
+                <WorldpayCardForm
+                  amountPounds={total}
+                  submitLabel={`Pay £${total.toFixed(2)}`}
+                  onSession={handleCardSession}
+                />
+              </div>
             </div>
           )}
-
-
 
           <div className="flex items-center justify-between pt-2">
             <Button
@@ -284,22 +290,23 @@ const Step4Checkout: React.FC = () => {
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
 
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 min-w-[180px]"
-            >
-              {submitting ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing…</>
-              ) : method === 'pay_now' ? (
-                <>Pay £{total.toFixed(2)} now</>
-              ) : method === 'worldpay' ? (
-                <>Pay £{total.toFixed(2)} with Worldpay</>
-              ) : (
-                <>Confirm & invoice me</>
-              )}
-            </Button>
+            {method !== 'worldpay' && (
+              <Button
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 min-w-[180px]"
+              >
+                {submitting ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing…</>
+                ) : method === 'pay_now' ? (
+                  <>Pay £{total.toFixed(2)} now</>
+                ) : (
+                  <>Confirm & invoice me</>
+                )}
+              </Button>
+            )}
           </div>
+
         </div>
 
         {/* Order summary */}
