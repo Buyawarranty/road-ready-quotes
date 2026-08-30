@@ -120,8 +120,9 @@ const WorldpayPaymentPanel: React.FC<Props> = ({
         <CreditCard className="w-5 h-5 text-red-600" />
         <h4 className="font-semibold text-red-900">Worldpay</h4>
         <span className="ml-auto text-[10px] uppercase tracking-wide px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300">
-          Sandbox
+          {WORLDPAY_ENVIRONMENT === 'live' ? 'Live' : 'Sandbox'}
         </span>
+
       </div>
 
       <div className="grid grid-cols-2 gap-3">
