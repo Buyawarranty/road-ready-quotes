@@ -24,6 +24,10 @@ verify_jwt = true
 [functions.worldpay-create-payment-page]
 verify_jwt = false
 
+[functions.worldpay-create-payment]
+verify_jwt = false
+
+
 [functions.send-invoice-email]
 verify_jwt = false
 

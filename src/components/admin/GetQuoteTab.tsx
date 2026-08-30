@@ -5896,22 +5896,15 @@ Questions? Call 0330 229 5040`;
                     />
 
 
-                    {/* Worldpay — temporarily disabled */}
-                    <div className="p-5 rounded-lg border-2 border-slate-200 bg-slate-50/60 space-y-3 opacity-80">
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-slate-500" />
-                        <h4 className="font-semibold text-slate-700">Worldpay</h4>
-                        <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
-                          Coming soon
-                        </span>
-                      </div>
-                      <p className="text-sm text-slate-600">
-                        Virtual Terminal and Pay by Link — integration in progress.
-                      </p>
-                      <Button disabled className="w-full">
-                        Coming soon
-                      </Button>
-                    </div>
+                    <WorldpayPaymentPanel
+                      amountPounds={currentPrice.payInFullPrice || Math.ceil(currentPrice.totalPrice * 0.9)}
+                      description={`Vehicle warranty${customerFirstName ? ` — ${customerFirstName} ${customerLastName}`.trim() : ''}`}
+                      salesLeadId={selectedLeadId}
+                      customerId={null}
+                      customerEmail={customerEmail}
+                      customerPhone={editableCustomerPhone || customerPhone}
+                    />
+
                   </div>
                 </details>
 
