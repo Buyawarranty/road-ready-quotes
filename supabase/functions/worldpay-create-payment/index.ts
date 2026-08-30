@@ -214,18 +214,47 @@ Deno.serve(async (req: Request) => {
 
     if (!wpRes.ok) {
       console.error('Worldpay payment error', wpRes.status, raw);
-      await supabase
-        .from('worldpay_transactions')
-        .update({
-          status: 'failed',
-          last_error: JSON.stringify(raw).slice(0, 1000),
-          last_event: 'authorization_failed',
-          raw_response: raw,
-        })
-        .eq('id', txn.id);
+
+      // Diagnose 401 accessDenied: are the credentials valid for this
+      // environment at all, and does the card session match it?
+      let diagnosis: string | null = null;
+      if (wpRes.status === 401) {
+        const otherBase =
+          ENVIRONMENT === 'live' ? 'https://try.access.worldpay.com' : 'https://access.worldpay.com';
+        const probe = async (b: string) => {
+          try {
+            const r = await fetch(`${b}/api`, {
+              headers: {
+                Authorization: 'Basic ' + btoa(`${USERNAME}:${PASSWORD}`),
+                Accept: 'application/json',
+              },
+            });
+            return r.status;
+          } catch {
+            return 0;
+          }
+        };
+        const [thisEnv, other] = await Promise.all([probe(base), probe(otherBase)]);
+        console.error('Worldpay credential probe', { base, thisEnv, otherBase, other });
+
+        const sessionIsSandbox = /try\.access\.worldpay\.com/i.test(sessionHref);
+        if (sessionIsSandbox !== (ENVIRONMENT === 'sandbox')) {
+          diagnosis =
+            `Card session was created in ${sessionIsSandbox ? 'sandbox (Try)' : 'live'} mode but the server is set to ${ENVIRONMENT}. ` +
+            `Make VITE_WORLDPAY_ENVIRONMENT and WORLDPAY_ENVIRONMENT match.`;
+        } else if (thisEnv === 401 && other !== 401 && other !== 0) {
+          diagnosis =
+            `Your Worldpay API credentials are not valid for the ${ENVIRONMENT} environment (they appear to belong to the other one). Update WORLDPAY_USERNAME / WORLDPAY_PASSWORD or WORLDPAY_ENVIRONMENT.`;
+        } else {
+          diagnosis =
+            `Worldpay denied access for entity "${ENTITY}". This usually means the Payments API (direct authorization) and/or the MOTO channel is not enabled on this merchant entity, or the entity reference is wrong. Ask Worldpay support to enable "Payments API + MOTO" for ${ENTITY}.`;
+        }
+      }
+
       return json(
         {
           error:
+            diagnosis ||
             (raw as any)?.message ||
             (raw as any)?.errorName ||
             'Worldpay declined the request',
@@ -236,6 +265,7 @@ Deno.serve(async (req: Request) => {
         502,
       );
     }
+
 
     const outcome = String((raw as any)?.outcome || '').trim();
     const paymentId = (raw as any)?.paymentId || null;
