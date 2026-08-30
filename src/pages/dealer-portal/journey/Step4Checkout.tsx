@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark, MapPin } from 'lucide-react';
 import BillingAddressFields from '@/components/dealer/BillingAddressFields';
+import WorldpayCardForm from '@/components/payments/WorldpayCardForm';
+
 import {
   BillingAddress,
   billingErrors,
