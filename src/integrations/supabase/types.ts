@@ -696,6 +696,7 @@ export type Database = {
       }
       admin_users: {
         Row: {
+          access_expires_at: string | null
           archived_at: string | null
           blocked_promos: string[]
           callrail_banner_enabled: boolean
@@ -708,6 +709,7 @@ export type Database = {
           invited_at: string | null
           invited_by: string | null
           is_active: boolean
+          is_temp_access: boolean
           last_login: string | null
           last_name: string | null
           max_discount_pct: number | null
@@ -720,6 +722,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          access_expires_at?: string | null
           archived_at?: string | null
           blocked_promos?: string[]
           callrail_banner_enabled?: boolean
@@ -732,6 +735,7 @@ export type Database = {
           invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
+          is_temp_access?: boolean
           last_login?: string | null
           last_name?: string | null
           max_discount_pct?: number | null
@@ -744,6 +748,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          access_expires_at?: string | null
           archived_at?: string | null
           blocked_promos?: string[]
           callrail_banner_enabled?: boolean
@@ -756,6 +761,7 @@ export type Database = {
           invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
+          is_temp_access?: boolean
           last_login?: string | null
           last_name?: string | null
           max_discount_pct?: number | null
@@ -1123,6 +1129,47 @@ export type Database = {
           {
             foreignKeyName: "agent_feedback_submitted_by_fkey"
             columns: ["submitted_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agent_leave_periods: {
+        Row: {
+          admin_user_id: string
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          leave_type: string
+          note: string | null
+          start_date: string
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          leave_type?: string
+          note?: string | null
+          start_date: string
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          leave_type?: string
+          note?: string | null
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_leave_periods_admin_user_id_fkey"
+            columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "admin_users"
             referencedColumns: ["id"]
@@ -4558,6 +4605,7 @@ export type Database = {
           google_review_requested_at: string | null
           id: string
           is_deleted: boolean | null
+          is_direct_website_sale: boolean | null
           is_manual_entry: boolean | null
           is_test_cancellation: boolean
           labour_rate: number | null
@@ -4685,6 +4733,7 @@ export type Database = {
           google_review_requested_at?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_direct_website_sale?: boolean | null
           is_manual_entry?: boolean | null
           is_test_cancellation?: boolean
           labour_rate?: number | null
@@ -4812,6 +4861,7 @@ export type Database = {
           google_review_requested_at?: string | null
           id?: string
           is_deleted?: boolean | null
+          is_direct_website_sale?: boolean | null
           is_manual_entry?: boolean | null
           is_test_cancellation?: boolean
           labour_rate?: number | null
@@ -8725,6 +8775,36 @@ export type Database = {
           vehicle_year?: string | null
           viewed_at?: string | null
           warranty_start_date?: string | null
+        }
+        Relationships: []
+      }
+      manager_discount_access: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          enabled: boolean
+          id: string
+          note: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          enabled?: boolean
+          id?: string
+          note?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          enabled?: boolean
+          id?: string
+          note?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -13343,6 +13423,10 @@ export type Database = {
         Args: { p_delta: number; p_lead_id: string }
         Returns: number
       }
+      agent_on_leave: {
+        Args: { p_admin_user_id: string; p_on_date?: string }
+        Returns: boolean
+      }
       agent_works_new_leads: {
         Args: { p_admin_user_id: string }
         Returns: boolean
@@ -13475,6 +13559,7 @@ export type Database = {
           sales_in_window: number
         }[]
       }
+      expire_temp_admin_logins: { Args: never; Returns: number }
       find_lead_owner_by_contact: {
         Args: { _email?: string; _phone9?: string }
         Returns: {
@@ -13657,6 +13742,10 @@ export type Database = {
         Returns: boolean
       }
       has_all_leads_permission: { Args: { _user_id: string }; Returns: boolean }
+      has_manager_discount_access: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_price_updates_access: { Args: { _user_id: string }; Returns: boolean }
       has_tab_access: {
         Args: { _tab: string; _user_id: string }
@@ -13704,6 +13793,19 @@ export type Database = {
           new_assigned_to: string
           old_assigned_to: string
           still_on_new_count: number
+        }[]
+      }
+      list_scoreboard_unattributed_sales: {
+        Args: { p_end: string; p_start: string }
+        Returns: {
+          amount: number
+          bucket: string
+          current_admin_user_id: string
+          current_label: string
+          customer_id: string
+          customer_name: string
+          registration_plate: string
+          signup_date: string
         }[]
       }
       log_agent_interaction: {
@@ -14151,6 +14253,19 @@ export type Database = {
         Args: { _admin_user_id: string; _enabled: boolean }
         Returns: undefined
       }
+      set_sale_credit_agent:
+        | {
+            Args: { p_admin_user_id: string; p_customer_id: string }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_admin_user_id: string
+              p_customer_id: string
+              p_direct_website_sale?: boolean
+            }
+            Returns: undefined
+          }
       set_user_offline: { Args: never; Returns: undefined }
       shark_tank_agent_stats: {
         Args: never
