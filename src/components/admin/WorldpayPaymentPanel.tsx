@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import WorldpayCardForm from '@/components/payments/WorldpayCardForm';
+
 
 interface Props {
   amountPounds: number;
