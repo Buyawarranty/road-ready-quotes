@@ -63,71 +63,69 @@ const Step4Checkout: React.FC = () => {
     return error?.message || fallback;
   };
 
-  const handleSubmit = async () => {
-    if (method === 'worldpay' && !billingReady) {
+  const createRecord = async () => {
+    const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
+      body: {
+        dealer_id: dealer.id,
+        payment_method: method,
+        vehicle: {
+          reg: vehicle.reg,
+          make: vehicle.make,
+          model: vehicle.model,
+          year: vehicle.year,
+          mileage: vehicle.mileage,
+        },
+        customer,
+        plan: {
+          plan_type: plan.plan_type,
+          duration_months: plan.duration_months,
+          retail_price: plan.retail_price,
+          dealer_price: plan.dealer_price,
+        },
+        discount_pct,
+      },
+    });
+    if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
+    return data as any;
+  };
+
+  // Embedded Worldpay card form: capture the session, then authorise.
+  const handleCardSession = async (sessionHref: string, cardholderName: string) => {
+    if (!billingReady) {
       setShowBillingErrors(true);
-      toast({
-        title: 'Billing address needed',
-        description: 'Complete the billing address so the card page is prefilled.',
-        variant: 'destructive',
-      });
-      return;
+      throw new Error('Complete the billing address first.');
     }
+    if (saveToProfile) {
+      await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
+    }
+    const record = await createRecord();
+    const pendingId = record?.customer_id || null;
+
+    const { data: wp, error: wpErr } = await supabase.functions.invoke('worldpay-create-payment', {
+      body: {
+        session_href: sessionHref,
+        cardholder_name: cardholderName || null,
+        amount_pence: Math.round(total * 100),
+        description: `${planName} warranty ${vehicle.reg}`,
+        customer_id: pendingId,
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        billing,
+      },
+    });
+    if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
+    if ((wp as any)?.error) throw new Error((wp as any).error);
+    if ((wp as any)?.outcome !== 'authorized') {
+      throw new Error((wp as any)?.refusal_description || 'Payment was not authorised. Please try another card.');
+    }
+    toast({ title: 'Payment authorised' });
+    navigate(`/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`);
+  };
+
+  const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      if (method === 'worldpay' && saveToProfile) {
-        await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
-      }
-
-      const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
-        body: {
-          dealer_id: dealer.id,
-          payment_method: method === 'worldpay' ? 'worldpay' : method,
-          vehicle: {
-            reg: vehicle.reg,
-            make: vehicle.make,
-            model: vehicle.model,
-            year: vehicle.year,
-            mileage: vehicle.mileage,
-          },
-          customer,
-          plan: {
-            plan_type: plan.plan_type,
-            duration_months: plan.duration_months,
-            retail_price: plan.retail_price,
-            dealer_price: plan.dealer_price,
-          },
-          discount_pct,
-        },
-      });
-
-      if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-
-      if (method === 'worldpay') {
-        const pendingId = (data as any)?.customer_id || null;
-        const { data: wp, error: wpErr } = await supabase.functions.invoke(
-          'worldpay-create-payment-page',
-          {
-            body: {
-              flow: 'moto',
-              amount_pence: Math.round(total * 100),
-              description: `${planName} warranty · ${vehicle.reg}`,
-              customer_id: pendingId,
-              customer_email: customer.email,
-              customer_phone: customer.phone,
-              billing,
-              success_url: `${window.location.origin}/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`,
-              cancel_url: `${window.location.origin}/dealer-portal/quote/checkout`,
-
-            },
-          },
-        );
-        if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
-        const wpUrl = (wp as any)?.payment_url;
-        if (!wpUrl) throw new Error((wp as any)?.error || 'No Worldpay payment URL returned');
-        window.location.href = wpUrl;
-        return;
-      }
+      const data = await createRecord();
 
       if (method === 'pay_now') {
         const url = (data as any)?.checkout_url;
@@ -149,6 +147,7 @@ const Step4Checkout: React.FC = () => {
       setSubmitting(false);
     }
   };
+
 
   const OptionCard = ({
     value, icon: Icon, title, sub, badge, children,
