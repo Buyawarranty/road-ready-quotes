@@ -255,7 +255,31 @@ const Step1Vehicle: React.FC = () => {
                   <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'} className={`${inputClass} pr-10`} />
                   {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
                 </div>
-                {motMileage && <p className="text-xs text-gray-500 mt-1">Auto-filled from latest MOT.</p>}
+                {motMileage != null && (
+                  <div className="mt-1 space-y-1">
+                    {String(motMileage) !== mileage.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => setMileage(String(motMileage))}
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 underline"
+                      >
+                        Use last recorded mileage ({motMileage.toLocaleString()})
+                      </button>
+                    )}
+                    {String(motMileage) === mileage.trim() && (
+                      <p className="text-xs text-gray-500">
+                        Auto-filled from the {motSource === 'live' ? 'latest DVSA MOT' : 'latest MOT'} record.
+                      </p>
+                    )}
+                    {mileageBelowMot && (
+                      <p className="text-xs text-amber-700 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" /> Lower than the last MOT reading of{' '}
+                        {motMileage.toLocaleString()} miles — please double-check.
+                      </p>
+                    )}
+                  </div>
+                )}
+
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
