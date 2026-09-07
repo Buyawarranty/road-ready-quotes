@@ -608,6 +608,7 @@ const ClaimHandlingPage: React.FC = () => {
                     <AddressAutocomplete
                       placeholder="Start typing postcode or address..."
                       className={inputClass}
+                      provider="postcoder"
                       onAddressSelect={(addr) =>
                         setForm((p) => ({
                           ...p,

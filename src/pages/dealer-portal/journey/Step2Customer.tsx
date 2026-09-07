@@ -137,6 +137,7 @@ const Step2Customer: React.FC = () => {
                 placeholder="Start typing postcode or address..."
                 initialValue={form.postcode}
                 className={inputClass}
+                provider="postcoder"
                 onAddressSelect={(addr) =>
                   setForm((p) => ({
                     ...p,

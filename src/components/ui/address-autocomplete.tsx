@@ -18,6 +18,13 @@ interface AutocompleteSuggestion {
   address: string;
   url: string;
   id: string;
+  line_1?: string;
+  line_2?: string;
+  town?: string;
+  county?: string;
+  postcode?: string;
+  building_number?: string;
+  building_name?: string;
 }
 
 interface AddressAutocompleteProps {
@@ -29,6 +36,7 @@ interface AddressAutocompleteProps {
   disabled?: boolean;
   onLookupError?: (hasError: boolean) => void;
   onPostcodeValidation?: (isValid: boolean, postcode: string) => void;
+  provider?: 'getaddress' | 'postcoder';
 }
 
 // UK postcode validation regex
@@ -47,6 +55,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   disabled = false,
   onLookupError,
   onPostcodeValidation,
+  provider = 'getaddress',
 }) => {
   // IMPORTANT: Never clear inputValue except when user types - this preserves partial entries
   const [inputValue, setInputValue] = useState(initialValue);
@@ -102,7 +111,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     };
   }, []);
 
-  // Fetch suggestions from getaddress.io via edge function
+  // Fetch suggestions from getaddress.io or Postcoder via edge function
   // IMPORTANT: This function NEVER clears or modifies inputValue
   const fetchSuggestions = useCallback(async (term: string) => {
     // Don't search for very short terms
@@ -117,9 +126,12 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     // Don't reset lookupFailed here - only set it on actual failure
     
     try {
-      const { data, error } = await supabase.functions.invoke('getaddress-lookup', {
-        body: { action: 'autocomplete', term }
-      });
+      const functionName = provider === 'postcoder' ? 'postcoder-lookup' : 'getaddress-lookup';
+      const body = provider === 'postcoder'
+        ? { action: 'autocomplete', term }
+        : { action: 'autocomplete', term };
+
+      const { data, error } = await supabase.functions.invoke(functionName, { body });
 
       if (error) {
         // API call failed - show fallback message but NEVER clear input
@@ -129,7 +141,19 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         onLookupError?.(true);
       } else if (data?.suggestions && Array.isArray(data.suggestions) && data.suggestions.length > 0) {
         // Success - show suggestions
-        setSuggestions(data.suggestions);
+        const mapped = data.suggestions.map((s: any, i: number) => ({
+          id: s.id || `${functionName}-${i}`,
+          address: s.address || s.summaryline || `${s.line_1 || s.addressline1 || ''}, ${s.postcode || ''}`,
+          url: s.url || '',
+          line_1: s.line_1 || s.addressline1 || '',
+          line_2: s.line_2 || s.addressline2 || '',
+          town: s.town || s.town_or_city || s.posttown || '',
+          county: s.county || '',
+          postcode: s.postcode || '',
+          building_number: s.building_number || s.buildingnumber || '',
+          building_name: s.building_name || s.buildingname || '',
+        }));
+        setSuggestions(mapped);
         setShowDropdown(true);
         setLookupFailed(false);
         onLookupError?.(false);
@@ -158,7 +182,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }, [onLookupError]);
+  }, [onLookupError, provider]);
 
   // Handle input change with debounce
   // IMPORTANT: User input is ALWAYS preserved - we only update inputValue, never clear it
@@ -204,6 +228,26 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setInputValue(suggestion.address);
 
     try {
+      if (provider === 'postcoder' && suggestion.line_1) {
+        // Postcoder already returns full address details
+        const addressData: AddressData = {
+          line_1: suggestion.line_1 || '',
+          line_2: suggestion.line_2 || '',
+          town: suggestion.town || '',
+          county: suggestion.county || '',
+          postcode: suggestion.postcode || '',
+          building_number: suggestion.building_number || '',
+          building_name: suggestion.building_name || '',
+        };
+
+        setHasSelected(true);
+        setLookupFailed(false);
+        onLookupError?.(false);
+        onAddressSelect(addressData);
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('getaddress-lookup', {
         body: { action: 'get', id: suggestion.id }
       });
