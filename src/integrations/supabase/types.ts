@@ -8285,6 +8285,45 @@ export type Database = {
           },
         ]
       }
+      lead_quick_notes_backup: {
+        Row: {
+          backed_up_at: string
+          backup_id: string
+          created_by: string | null
+          is_pinned: boolean | null
+          lead_id: string
+          note_created_at: string | null
+          note_id: string
+          note_text: string | null
+          note_updated_at: string | null
+          operation: string
+        }
+        Insert: {
+          backed_up_at?: string
+          backup_id?: string
+          created_by?: string | null
+          is_pinned?: boolean | null
+          lead_id: string
+          note_created_at?: string | null
+          note_id: string
+          note_text?: string | null
+          note_updated_at?: string | null
+          operation: string
+        }
+        Update: {
+          backed_up_at?: string
+          backup_id?: string
+          created_by?: string | null
+          is_pinned?: boolean | null
+          lead_id?: string
+          note_created_at?: string | null
+          note_id?: string
+          note_text?: string | null
+          note_updated_at?: string | null
+          operation?: string
+        }
+        Relationships: []
+      }
       lead_reassign_requests: {
         Row: {
           created_at: string
@@ -9360,6 +9399,33 @@ export type Database = {
         }
         Relationships: []
       }
+      orr_manager_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          alert_type: string
+          created_at: string
+          id: string
+          lead_id: string
+          message: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          alert_type?: string
+          created_at?: string
+          id?: string
+          lead_id: string
+          message: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          alert_type?: string
+          created_at?: string
+          id?: string
+          lead_id?: string
+          message?: string
+        }
+        Relationships: []
+      }
       orr_manager_overrides: {
         Row: {
           allowed_extra_call: boolean
@@ -9432,6 +9498,36 @@ export type Database = {
           lead_id?: string | null
           reason?: string
           released_at?: string
+        }
+        Relationships: []
+      }
+      orr_sandbox_allocations: {
+        Row: {
+          created_by: string | null
+          id: string
+          lead_id: string
+          reason: string | null
+          run_id: string | null
+          simulated_agent_id: string | null
+          simulated_at: string
+        }
+        Insert: {
+          created_by?: string | null
+          id?: string
+          lead_id: string
+          reason?: string | null
+          run_id?: string | null
+          simulated_agent_id?: string | null
+          simulated_at?: string
+        }
+        Update: {
+          created_by?: string | null
+          id?: string
+          lead_id?: string
+          reason?: string | null
+          run_id?: string | null
+          simulated_agent_id?: string | null
+          simulated_at?: string
         }
         Relationships: []
       }
@@ -10530,6 +10626,105 @@ export type Database = {
           },
         ]
       }
+      renewal_lead_links: {
+        Row: {
+          assigned_to: string | null
+          assignment_reason: string
+          attached_to_existing: boolean
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          id: string
+          lead_id: string | null
+          policy_id: string
+          renewal_year: number
+        }
+        Insert: {
+          assigned_to?: string | null
+          assignment_reason?: string
+          attached_to_existing?: boolean
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          lead_id?: string | null
+          policy_id: string
+          renewal_year: number
+        }
+        Update: {
+          assigned_to?: string | null
+          assignment_reason?: string
+          attached_to_existing?: boolean
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          id?: string
+          lead_id?: string | null
+          policy_id?: string
+          renewal_year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renewal_lead_links_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_lead_links_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "customer_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      renewal_milestone_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          lead_id: string | null
+          milestone_days: number
+          policy_id: string
+          renewal_year: number
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          milestone_days: number
+          policy_id: string
+          renewal_year: number
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          milestone_days?: number
+          policy_id?: string
+          renewal_year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renewal_milestone_log_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "sales_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_milestone_log_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "customer_policies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       renewal_offers: {
         Row: {
           active: boolean
@@ -10777,6 +10972,7 @@ export type Database = {
           fake_reason_note: string | null
           first_name: string | null
           follow_up_status: string | null
+          gclid: string | null
           hidden_from_agent_ids: string[]
           id: string
           inbound_spoken_at: string | null
@@ -10815,6 +11011,7 @@ export type Database = {
           orr_first_call_notified_at: string | null
           orr_last_attempt_at: string | null
           orr_locked_until: string | null
+          orr_manager_alerted_at: string | null
           orr_next_release_at: string | null
           orr_offer_expires_at: string | null
           orr_offer_passed_by: string[]
@@ -10897,6 +11094,7 @@ export type Database = {
           fake_reason_note?: string | null
           first_name?: string | null
           follow_up_status?: string | null
+          gclid?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
           inbound_spoken_at?: string | null
@@ -10935,6 +11133,7 @@ export type Database = {
           orr_first_call_notified_at?: string | null
           orr_last_attempt_at?: string | null
           orr_locked_until?: string | null
+          orr_manager_alerted_at?: string | null
           orr_next_release_at?: string | null
           orr_offer_expires_at?: string | null
           orr_offer_passed_by?: string[]
@@ -11017,6 +11216,7 @@ export type Database = {
           fake_reason_note?: string | null
           first_name?: string | null
           follow_up_status?: string | null
+          gclid?: string | null
           hidden_from_agent_ids?: string[]
           id?: string
           inbound_spoken_at?: string | null
@@ -11055,6 +11255,7 @@ export type Database = {
           orr_first_call_notified_at?: string | null
           orr_last_attempt_at?: string | null
           orr_locked_until?: string | null
+          orr_manager_alerted_at?: string | null
           orr_next_release_at?: string | null
           orr_offer_expires_at?: string | null
           orr_offer_passed_by?: string[]
@@ -13431,6 +13632,17 @@ export type Database = {
         Args: { p_admin_user_id: string }
         Returns: boolean
       }
+      apply_customer_risk_tag: {
+        Args: {
+          p_actor?: string
+          p_email?: string
+          p_phone?: string
+          p_reason: string
+          p_reg?: string
+          p_tag_name: string
+        }
+        Returns: number
+      }
       archive_admin_user_preserve_sales: {
         Args: { p_admin_user_id: string }
         Returns: undefined
@@ -13524,6 +13736,11 @@ export type Database = {
         }
         Returns: Json
       }
+      create_renewal_lead_for_policy: {
+        Args: { p_actor?: string; p_force?: boolean; p_policy_id: string }
+        Returns: string
+      }
+      create_renewal_leads: { Args: { p_days?: number }; Returns: number }
       current_admin_user_id: { Args: never; Returns: string }
       current_dealer_id: { Args: never; Returns: string }
       current_policy_pdf_urls: {
@@ -13532,6 +13749,10 @@ export type Database = {
           platinum_url: string
           terms_url: string
         }[]
+      }
+      customer_cover_block_reason: {
+        Args: { p_email?: string; p_phone?: string; p_reg?: string }
+        Returns: string
       }
       delete_admin_user_cascade: {
         Args: { p_admin_user_id: string }
@@ -13688,6 +13909,14 @@ export type Database = {
           version: string
         }[]
       }
+      get_lead_agent_activity: {
+        Args: { p_lead_ids: string[] }
+        Returns: {
+          last_at: string
+          lead_id: string
+          source: string
+        }[]
+      }
       get_lead_quick_note_counts: {
         Args: { p_lead_ids: string[] }
         Returns: {
@@ -13714,6 +13943,18 @@ export type Database = {
           label: string
           revenue: number
           sales_count: number
+        }[]
+      }
+      get_social_analytics: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          leads: number
+          platform: string
+          quotes_started: number
+          revenue: number
+          sales: number
+          visitors: number
+          visits: number
         }[]
       }
       get_team_scoreboard: {
@@ -13759,6 +14000,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_sales: { Args: { _user_id: string }; Returns: boolean }
       is_agent_on_duty: { Args: { p_admin_user_id: string }; Returns: boolean }
+      is_agent_on_orr_team: { Args: { _agent: string }; Returns: boolean }
       is_agent_on_team_blue: { Args: { _agent: string }; Returns: boolean }
       is_agent_open_pool_restricted: {
         Args: { _agent_id: string }
@@ -13833,7 +14075,30 @@ export type Database = {
         Returns: string
       }
       make_user_admin: { Args: { user_email: string }; Returns: undefined }
+      mark_claim_misrepresented: {
+        Args: { p_claim_id: string; p_reason?: string }
+        Returns: number
+      }
       marketing_customer_state: { Args: { _email: string }; Returns: string }
+      match_repeat_customers: {
+        Args: {
+          p_emails?: string[]
+          p_names?: string[]
+          p_phone_tails?: string[]
+          p_regs?: string[]
+        }
+        Returns: {
+          email: string
+          id: string
+          name: string
+          phone: string
+          plan_type: string
+          registration_plate: string
+          signup_date: string
+          status: string
+          warranty_number: string
+        }[]
+      }
       migrate_orphan_carts_to_leads: { Args: never; Returns: Json }
       missed_call_pass: { Args: { p_call_id: string }; Returns: boolean }
       missed_call_rotate_offers: { Args: never; Returns: number }
@@ -13999,6 +14264,7 @@ export type Database = {
         }[]
       }
       orr_customer_for_lead: { Args: { _lead_id: string }; Returns: string }
+      orr_enabled_team: { Args: never; Returns: string }
       orr_expire_stale_customer_locks: { Args: never; Returns: number }
       orr_is_agent_available: { Args: { _agent_id: string }; Returns: boolean }
       orr_is_business_day: { Args: { _d: string }; Returns: boolean }
@@ -14068,6 +14334,12 @@ export type Database = {
         }[]
       }
       orr_pick_weekend_agent: { Args: { _d: string }; Returns: string }
+      orr_pool_waiting_count:
+        | { Args: { _idle_minutes?: number }; Returns: number }
+        | {
+            Args: { _idle_minutes?: number; _within_minutes?: number }
+            Returns: number
+          }
       orr_queue_dashboard_snapshot: { Args: never; Returns: Json }
       orr_reassign_callback: {
         Args: {
@@ -14082,11 +14354,50 @@ export type Database = {
         Args: { _agent_id: string; _phone_normalized: string; _reason: string }
         Returns: boolean
       }
+      orr_release_pool_to_round_robin:
+        | {
+            Args: {
+              _idle_minutes?: number
+              _max_leads?: number
+              _team_id?: string
+            }
+            Returns: number
+          }
+        | {
+            Args: {
+              _idle_minutes?: number
+              _max_leads?: number
+              _newest_first?: boolean
+              _team_id?: string
+              _within_minutes?: number
+            }
+            Returns: number
+          }
       orr_release_retry_hold: {
         Args: { _lead_id: string; _reason: string }
         Returns: boolean
       }
       orr_rollover_uncalled_queues: { Args: never; Returns: Json }
+      orr_rr_waiting_count:
+        | { Args: { _idle_minutes?: number }; Returns: number }
+        | {
+            Args: { _idle_minutes?: number; _within_minutes?: number }
+            Returns: number
+          }
+      orr_send_rr_leads_to_pool:
+        | {
+            Args: { _idle_minutes?: number; _max_leads?: number }
+            Returns: number
+          }
+        | {
+            Args: {
+              _idle_minutes?: number
+              _max_leads?: number
+              _newest_first?: boolean
+              _within_minutes?: number
+            }
+            Returns: number
+          }
       orr_sweep_attempt_one_expiries: { Args: never; Returns: Json }
       orr_sweep_expired_offers: { Args: never; Returns: number }
       orr_sweep_retry_expiries: { Args: never; Returns: Json }
@@ -14184,6 +14495,10 @@ export type Database = {
           released_count: number
         }[]
       }
+      renewal_blocked_reason: {
+        Args: { p_customer_id: string }
+        Returns: string
+      }
       renewal_pool_get_next: {
         Args: { _agent: string }
         Returns: {
@@ -14245,6 +14560,26 @@ export type Database = {
         }[]
       }
       rota_sync_in_progress: { Args: never; Returns: boolean }
+      run_renewal_milestones: { Args: never; Returns: number }
+      search_import_leads: {
+        Args: { p_limit?: number; p_term: string }
+        Returns: {
+          assigned_to: string
+          created_at: string
+          email: string
+          first_name: string
+          last_name: string
+          mileage: string
+          phone: string
+          plan_interest: string
+          row_id: string
+          source: string
+          vehicle_make: string
+          vehicle_model: string
+          vehicle_reg: string
+          vehicle_year: string
+        }[]
+      }
       set_agent_auto_freeze: {
         Args: { _admin_user_id: string; _enabled: boolean }
         Returns: undefined
@@ -14468,12 +14803,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -14497,11 +14832,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -14522,11 +14857,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -14547,11 +14882,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -14564,11 +14899,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

@@ -4,22 +4,11 @@ import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyCo
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock, Landmark, MapPin } from 'lucide-react';
-import BillingAddressFields from '@/components/dealer/BillingAddressFields';
-import WorldpayCardForm from '@/components/payments/WorldpayCardForm';
+import { CreditCard, FileText, Check, Loader2, ChevronLeft, ShieldCheck, Clock } from 'lucide-react';
 
-import {
-  BillingAddress,
-  billingErrors,
-  billingFromDealer,
-  billingToDealerColumns,
-  isBillingComplete,
-} from '@/lib/dealerBilling';
-
-type Method = 'pay_now' | 'invoice' | 'worldpay';
+type Method = 'pay_now' | 'invoice';
 
 const Step4Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -29,18 +18,6 @@ const Step4Checkout: React.FC = () => {
 
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
-  const [billing, setBilling] = useState<BillingAddress>(() => billingFromDealer(dealer));
-  const [billingTouched, setBillingTouched] = useState(false);
-  const [saveToProfile, setSaveToProfile] = useState(true);
-  const [showBillingErrors, setShowBillingErrors] = useState(false);
-
-  // Prefill from the dealer profile once it loads (unless the dealer edited it).
-  useEffect(() => {
-    if (dealer && !billingTouched) setBilling(billingFromDealer(dealer));
-  }, [dealer, billingTouched]);
-
-  const errors = useMemo(() => billingErrors(billing), [billing]);
-  const billingReady = isBillingComplete(billing);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -89,39 +66,6 @@ const Step4Checkout: React.FC = () => {
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
     return data as any;
-  };
-
-  // Embedded Worldpay card form: capture the session, then authorise.
-  const handleCardSession = async (sessionHref: string, cardholderName: string) => {
-    if (!billingReady) {
-      setShowBillingErrors(true);
-      throw new Error('Complete the billing address first.');
-    }
-    if (saveToProfile) {
-      await supabase.from('dealers').update(billingToDealerColumns(billing)).eq('id', dealer.id);
-    }
-    const record = await createRecord();
-    const pendingId = record?.customer_id || null;
-
-    const { data: wp, error: wpErr } = await supabase.functions.invoke('worldpay-create-payment', {
-      body: {
-        session_href: sessionHref,
-        cardholder_name: cardholderName || null,
-        amount_pence: Math.round(total * 100),
-        description: `${planName} warranty ${vehicle.reg}`,
-        customer_id: pendingId,
-        customer_email: customer.email,
-        customer_phone: customer.phone,
-        billing,
-      },
-    });
-    if (wpErr) throw new Error(await readFnError(wpErr, wp, 'Worldpay is unavailable'));
-    if ((wp as any)?.error) throw new Error((wp as any).error);
-    if ((wp as any)?.outcome !== 'authorized') {
-      throw new Error((wp as any)?.refusal_description || 'Payment was not authorised. Please try another card.');
-    }
-    toast({ title: 'Payment authorised' });
-    navigate(`/dealer-portal/quote/confirmation?method=worldpay${pendingId ? `&id=${pendingId}` : ''}`);
   };
 
   const handleSubmit = async () => {
@@ -231,57 +175,6 @@ const Step4Checkout: React.FC = () => {
             </ul>
           </OptionCard>
 
-          <OptionCard
-            value="worldpay"
-            icon={Landmark}
-            title="Pay by card via Worldpay"
-            sub="Enter the card details right here. Warranty activates once payment clears."
-          >
-            <ul className="space-y-1.5 text-xs text-gray-600">
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> Card fields are hosted by Worldpay — PCI-safe</li>
-              <li className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5 text-orange-500" /> No redirect, no extra forms to fill in</li>
-            </ul>
-          </OptionCard>
-
-          {method === 'worldpay' && (
-            <div className="rounded-xl border-2 border-gray-200 bg-white p-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-orange-500 mt-0.5" />
-                <div>
-                  <h3 className="font-bold text-gray-900 text-base">Billing address</h3>
-                  <p className="text-sm text-gray-600">
-                    Prefilled from your dealer profile — edit anything that's different.
-                  </p>
-                </div>
-              </div>
-
-              <BillingAddressFields
-                value={billing}
-                onChange={(next) => { setBilling(next); setBillingTouched(true); }}
-                errors={showBillingErrors ? errors : {}}
-                disabled={submitting}
-              />
-
-              <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <Checkbox
-                  checked={saveToProfile}
-                  onCheckedChange={(v) => setSaveToProfile(v === true)}
-                  disabled={submitting}
-                />
-                Save this address to my dealer profile for next time
-              </label>
-
-              <div className="border-t border-gray-200 pt-4">
-                <h3 className="font-bold text-gray-900 text-base mb-3">Card details</h3>
-                <WorldpayCardForm
-                  amountPounds={total}
-                  submitLabel={`Pay £${total.toFixed(2)}`}
-                  onSession={handleCardSession}
-                />
-              </div>
-            </div>
-          )}
-
           <div className="flex items-center justify-between pt-2">
             <Button
               variant="outline"
@@ -292,8 +185,7 @@ const Step4Checkout: React.FC = () => {
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
 
-            {method !== 'worldpay' && (
-              <Button
+            <Button
                 onClick={handleSubmit}
                 disabled={submitting}
                 className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 min-w-[180px]"
@@ -305,8 +197,7 @@ const Step4Checkout: React.FC = () => {
                 ) : (
                   <>Confirm & invoice me</>
                 )}
-              </Button>
-            )}
+            </Button>
           </div>
 
         </div>
