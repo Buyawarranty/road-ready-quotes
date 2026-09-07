@@ -4,6 +4,7 @@ import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLa
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { User, Clock, MessageCircle, Mail, ChevronRight, Info } from 'lucide-react';
@@ -129,6 +130,23 @@ const Step2Customer: React.FC = () => {
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">Phone *</label>
               <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">Find address</label>
+              <AddressAutocomplete
+                placeholder="Start typing postcode or address..."
+                initialValue={form.postcode}
+                className={inputClass}
+                onAddressSelect={(addr) =>
+                  setForm((p) => ({
+                    ...p,
+                    address_line1: addr.line_1,
+                    address_line2: addr.line_2,
+                    town: addr.town,
+                    postcode: addr.postcode,
+                  }))
+                }
+              />
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 block mb-1">Address line 1 *</label>
