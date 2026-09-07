@@ -6,9 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CarFront, Gauge, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMotMileage } from '@/hooks/useMotMileage';
+
+const formatMotDate = (iso: string | null) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+};
 
 const Step1Vehicle: React.FC = () => {
   const navigate = useNavigate();
@@ -23,12 +30,14 @@ const Step1Vehicle: React.FC = () => {
   const [fuelType, setFuelType] = useState(vehicle?.fuel_type || '');
   const [transmission, setTransmission] = useState(vehicle?.transmission || '');
   const [mileage, setMileage] = useState(vehicle?.mileage || '');
+  const [colour, setColour] = useState('');
+  const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
   const lookupTimer = useRef<number | null>(null);
 
-  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+  const { motMileage, motDate, source: motSource, isLoading: isMotLoading } = useMotMileage(reg);
 
   // Auto-fill mileage from MOT when fetched
   useEffect(() => {
@@ -37,6 +46,13 @@ const Step1Vehicle: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motMileage]);
+
+  const recognised = Boolean(make || model);
+  const enteredMileage = Number(mileage);
+  const mileageBelowMot =
+    motMileage != null && mileage.trim() !== '' && !isNaN(enteredMileage) && enteredMileage < motMileage;
+  const motDateLabel = formatMotDate(motDate);
+
 
   // Keep journey context in sync with form so Save & exit always has latest values
   useEffect(() => {
@@ -59,12 +75,14 @@ const Step1Vehicle: React.FC = () => {
     setLookupReg(cleaned);
     setIsLookingUp(true);
     setError(null);
+    setNotFound(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('dvla-vehicle-lookup', {
         body: { registrationNumber: cleaned, skipAgeCheck: true },
       });
       if (fnError) throw fnError;
       if (!data || (!data.make && !data.found)) {
+        setNotFound(true);
         toast({
           title: 'Vehicle not found',
           description: 'We could not find this registration. Please enter details manually.',
@@ -76,6 +94,8 @@ const Step1Vehicle: React.FC = () => {
       setYear(data.yearOfManufacture ? String(data.yearOfManufacture) : '');
       setFuelType(data.fuelType || '');
       setTransmission(data.transmission || '');
+      setColour(data.colour || data.primaryColour || '');
+
     } catch (err: any) {
       console.error('DVLA lookup failed:', err);
       toast({
@@ -161,8 +181,59 @@ const Step1Vehicle: React.FC = () => {
                   <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Make, model and year auto-fill from DVLA.</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {isLookingUp ? 'Looking up with DVLA…' : 'Make, model and year auto-fill from DVLA.'}
+              </p>
             </div>
+
+            {/* Vehicle recognition panel */}
+            {recognised && (
+              <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                <div className="flex items-start gap-3">
+                  <CarFront className="h-5 w-5 text-green-700 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-green-900 flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4" /> Vehicle recognised
+                    </p>
+                    <p className="text-base font-bold text-gray-900 mt-0.5">
+                      {[make, model].filter(Boolean).join(' ')}
+                    </p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-gray-700">
+                      {year && <span>{year}</span>}
+                      {fuelType && <span>{fuelType}</span>}
+                      {transmission && <span>{transmission}</span>}
+                      {colour && <span>{colour}</span>}
+                      {year && !isNaN(Number(year)) && (
+                        <span>{Math.max(0, new Date().getFullYear() - Number(year))} years old</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Last recorded mileage */}
+                <div className="mt-3 pt-3 border-t border-green-200 flex items-start gap-2 text-sm">
+                  <Gauge className="h-4 w-4 text-green-700 mt-0.5 flex-shrink-0" />
+                  {isMotLoading ? (
+                    <span className="text-gray-600">Checking the DVSA MOT record…</span>
+                  ) : motMileage ? (
+                    <span className="text-gray-800">
+                      <span className="font-semibold">{motMileage.toLocaleString()} miles</span> recorded at MOT
+                      {motDateLabel ? ` on ${motDateLabel}` : ''}.
+                    </span>
+                  ) : (
+                    <span className="text-gray-600">No MOT mileage on record — please enter it below.</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {notFound && !recognised && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 flex items-start gap-2 text-sm text-amber-900">
+                <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>We couldn't find that registration — you can still enter the details manually.</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-1">Make</label>
@@ -184,7 +255,31 @@ const Step1Vehicle: React.FC = () => {
                   <Input value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'} className={`${inputClass} pr-10`} />
                   {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
                 </div>
-                {motMileage && <p className="text-xs text-gray-500 mt-1">Auto-filled from latest MOT.</p>}
+                {motMileage != null && (
+                  <div className="mt-1 space-y-1">
+                    {String(motMileage) !== mileage.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => setMileage(String(motMileage))}
+                        className="text-xs font-semibold text-orange-600 hover:text-orange-700 underline"
+                      >
+                        Use last recorded mileage ({motMileage.toLocaleString()})
+                      </button>
+                    )}
+                    {String(motMileage) === mileage.trim() && (
+                      <p className="text-xs text-gray-500">
+                        Auto-filled from the {motSource === 'live' ? 'latest DVSA MOT' : 'latest MOT'} record.
+                      </p>
+                    )}
+                    {mileageBelowMot && (
+                      <p className="text-xs text-amber-700 flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" /> Lower than the last MOT reading of{' '}
+                        {motMileage.toLocaleString()} miles — please double-check.
+                      </p>
+                    )}
+                  </div>
+                )}
+
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
