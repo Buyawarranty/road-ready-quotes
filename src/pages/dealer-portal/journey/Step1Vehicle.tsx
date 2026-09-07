@@ -6,9 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CarFront, Gauge, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMotMileage } from '@/hooks/useMotMileage';
+
+const formatMotDate = (iso: string | null) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+};
 
 const Step1Vehicle: React.FC = () => {
   const navigate = useNavigate();
@@ -23,12 +30,14 @@ const Step1Vehicle: React.FC = () => {
   const [fuelType, setFuelType] = useState(vehicle?.fuel_type || '');
   const [transmission, setTransmission] = useState(vehicle?.transmission || '');
   const [mileage, setMileage] = useState(vehicle?.mileage || '');
+  const [colour, setColour] = useState('');
+  const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
   const lookupTimer = useRef<number | null>(null);
 
-  const { motMileage, isLoading: isMotLoading } = useMotMileage(reg);
+  const { motMileage, motDate, source: motSource, isLoading: isMotLoading } = useMotMileage(reg);
 
   // Auto-fill mileage from MOT when fetched
   useEffect(() => {
@@ -37,6 +46,13 @@ const Step1Vehicle: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motMileage]);
+
+  const recognised = Boolean(make || model);
+  const enteredMileage = Number(mileage);
+  const mileageBelowMot =
+    motMileage != null && mileage.trim() !== '' && !isNaN(enteredMileage) && enteredMileage < motMileage;
+  const motDateLabel = formatMotDate(motDate);
+
 
   // Keep journey context in sync with form so Save & exit always has latest values
   useEffect(() => {
