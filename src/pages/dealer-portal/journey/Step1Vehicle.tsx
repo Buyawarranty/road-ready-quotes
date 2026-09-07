@@ -75,12 +75,14 @@ const Step1Vehicle: React.FC = () => {
     setLookupReg(cleaned);
     setIsLookingUp(true);
     setError(null);
+    setNotFound(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('dvla-vehicle-lookup', {
         body: { registrationNumber: cleaned, skipAgeCheck: true },
       });
       if (fnError) throw fnError;
       if (!data || (!data.make && !data.found)) {
+        setNotFound(true);
         toast({
           title: 'Vehicle not found',
           description: 'We could not find this registration. Please enter details manually.',
@@ -92,6 +94,8 @@ const Step1Vehicle: React.FC = () => {
       setYear(data.yearOfManufacture ? String(data.yearOfManufacture) : '');
       setFuelType(data.fuelType || '');
       setTransmission(data.transmission || '');
+      setColour(data.colour || data.primaryColour || '');
+
     } catch (err: any) {
       console.error('DVLA lookup failed:', err);
       toast({
