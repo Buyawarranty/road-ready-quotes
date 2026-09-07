@@ -7,6 +7,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import {
   Headphones,
   ShieldCheck,
@@ -599,6 +600,23 @@ const ClaimHandlingPage: React.FC = () => {
                       <MapPin className="w-3.5 h-3.5 text-gray-400" /> Postcode *
                     </label>
                     <Input value={form.postcode} onChange={(e) => update('postcode', e.target.value.toUpperCase())} className={`uppercase ${inputClass}`} placeholder="SW1A 1AA" />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-gray-400" /> Find address
+                    </label>
+                    <AddressAutocomplete
+                      placeholder="Start typing postcode or address..."
+                      className={inputClass}
+                      onAddressSelect={(addr) =>
+                        setForm((p) => ({
+                          ...p,
+                          address_line1: addr.line_1,
+                          town: addr.town,
+                          postcode: (addr.postcode || '').toUpperCase(),
+                        }))
+                      }
+                    />
                   </div>
                   <div className="sm:col-span-2">
                     <label className="text-xs font-bold text-gray-700 mb-1 block">Address line 1</label>
