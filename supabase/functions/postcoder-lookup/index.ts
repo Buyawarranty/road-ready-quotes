@@ -23,8 +23,7 @@ serve(async (req) => {
     const { action, term, postcode } = await req.json();
     console.log("postcoder-lookup called with action:", action);
 
-    let url: string;
-    let response: Response;
+    let searchTerm: string;
 
     switch (action) {
       case "autocomplete": {
@@ -34,11 +33,7 @@ serve(async (req) => {
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        // Postcoder address lookup supports partial postcode / address search
-        const cleanTerm = term.trim().replace(/\s+/g, " ");
-        url = `https://api.postcoder.com/pc/v2/${encodeURIComponent(cleanTerm)}/address?apikey=${apiKey}&lines=2`;
-        console.log("Calling Postcoder address lookup for term:", cleanTerm);
-        response = await fetch(url);
+        searchTerm = term.trim().replace(/\s+/g, " ");
         break;
       }
 
@@ -49,10 +44,7 @@ serve(async (req) => {
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
-        const cleanPostcode = postcode.replace(/\s+/g, "").toUpperCase();
-        url = `https://api.postcoder.com/pc/v2/${encodeURIComponent(cleanPostcode)}/address?apikey=${apiKey}&lines=2`;
-        console.log("Calling Postcoder address lookup for postcode:", cleanPostcode);
-        response = await fetch(url);
+        searchTerm = postcode.replace(/\s+/g, "").toUpperCase();
         break;
       }
 
@@ -62,6 +54,17 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
     }
+
+    // Postcoder endpoint format: https://ws.postcoder.com/pcw/{apikey}/{search}/address?format=json&lines=2
+    const url = `https://ws.postcoder.com/pcw/${encodeURIComponent(apiKey)}/${encodeURIComponent(searchTerm)}/address?format=json&lines=2`;
+    console.log("Calling Postcoder address lookup for term:", searchTerm);
+
+    const response = await fetch(url, {
+      headers: {
+        "Accept": "application/json",
+        "User-Agent": "PandaProtect/1.0",
+      },
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -79,7 +82,7 @@ serve(async (req) => {
     if (Array.isArray(data)) {
       const suggestions = data.map((addr: any, index: number) => ({
         id: `${action}-${index}`,
-        address: addr.summaryline || `${addr.addressline1}, ${addr.postcode}`,
+        address: addr.summaryline || `${addr.addressline1 || ''}, ${addr.postcode || ''}`,
         line_1: addr.addressline1 || "",
         line_2: addr.addressline2 || "",
         town: addr.posttown || "",
