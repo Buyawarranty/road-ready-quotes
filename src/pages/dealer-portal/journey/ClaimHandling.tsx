@@ -7,6 +7,7 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import {
   Headphones,
   ShieldCheck,
