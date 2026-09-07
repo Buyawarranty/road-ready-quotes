@@ -181,8 +181,59 @@ const Step1Vehicle: React.FC = () => {
                   <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />
                 )}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Make, model and year auto-fill from DVLA.</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {isLookingUp ? 'Looking up with DVLA…' : 'Make, model and year auto-fill from DVLA.'}
+              </p>
             </div>
+
+            {/* Vehicle recognition panel */}
+            {recognised && (
+              <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                <div className="flex items-start gap-3">
+                  <CarFront className="h-5 w-5 text-green-700 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-green-900 flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4" /> Vehicle recognised
+                    </p>
+                    <p className="text-base font-bold text-gray-900 mt-0.5">
+                      {[make, model].filter(Boolean).join(' ')}
+                    </p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-gray-700">
+                      {year && <span>{year}</span>}
+                      {fuelType && <span>{fuelType}</span>}
+                      {transmission && <span>{transmission}</span>}
+                      {colour && <span>{colour}</span>}
+                      {year && !isNaN(Number(year)) && (
+                        <span>{Math.max(0, new Date().getFullYear() - Number(year))} years old</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Last recorded mileage */}
+                <div className="mt-3 pt-3 border-t border-green-200 flex items-start gap-2 text-sm">
+                  <Gauge className="h-4 w-4 text-green-700 mt-0.5 flex-shrink-0" />
+                  {isMotLoading ? (
+                    <span className="text-gray-600">Checking the DVSA MOT record…</span>
+                  ) : motMileage ? (
+                    <span className="text-gray-800">
+                      <span className="font-semibold">{motMileage.toLocaleString()} miles</span> recorded at MOT
+                      {motDateLabel ? ` on ${motDateLabel}` : ''}.
+                    </span>
+                  ) : (
+                    <span className="text-gray-600">No MOT mileage on record — please enter it below.</span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {notFound && !recognised && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 flex items-start gap-2 text-sm text-amber-900">
+                <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>We couldn't find that registration — you can still enter the details manually.</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-1">Make</label>
