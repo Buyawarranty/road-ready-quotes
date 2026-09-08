@@ -32,12 +32,20 @@ const Step1Vehicle: React.FC = () => {
   const [mileage, setMileage] = useState(vehicle?.mileage || '');
   const [colour, setColour] = useState('');
   const [notFound, setNotFound] = useState(false);
+  const [blockReason, setBlockReason] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
+  const [dvlaMotMileage, setDvlaMotMileage] = useState<number | null>(null);
+  const [dvlaMotDate, setDvlaMotDate] = useState<string | null>(null);
   const lookupTimer = useRef<number | null>(null);
 
-  const { motMileage, motDate, source: motSource, isLoading: isMotLoading } = useMotMileage(reg);
+  const { motMileage: cachedMotMileage, motDate: cachedMotDate, source: motSource, isLoading: isMotLoading } =
+    useMotMileage(reg);
+
+  // Prefer the reading returned with the DVLA/DVSA lookup, fall back to the MOT history record
+  const motMileage = dvlaMotMileage ?? cachedMotMileage;
+  const motDate = dvlaMotMileage != null ? dvlaMotDate : cachedMotDate;
 
   // Auto-fill mileage from MOT when fetched
   useEffect(() => {
@@ -76,6 +84,9 @@ const Step1Vehicle: React.FC = () => {
     setIsLookingUp(true);
     setError(null);
     setNotFound(false);
+    setBlockReason(null);
+    setDvlaMotMileage(null);
+    setDvlaMotDate(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('dvla-vehicle-lookup', {
         body: { registrationNumber: cleaned, skipAgeCheck: true },
@@ -89,12 +100,26 @@ const Step1Vehicle: React.FC = () => {
         });
         return;
       }
+      // A blocked result can carry placeholder details — show the notice instead of filling them in
+      const isPlaceholder = /premium vehicle/i.test(String(data.make || ''));
+      if (data.blocked) {
+        setBlockReason(data.blockReason || 'This vehicle is not eligible for cover.');
+      }
+      if (isPlaceholder) {
+        setNotFound(true);
+        return;
+      }
       setMake(data.make || '');
       setModel(data.model || '');
       setYear(data.yearOfManufacture ? String(data.yearOfManufacture) : '');
       setFuelType(data.fuelType || '');
       setTransmission(data.transmission || '');
       setColour(data.colour || data.primaryColour || '');
+      if (data.motMileage && Number(data.motMileage) > 0) {
+        setDvlaMotMileage(Number(data.motMileage));
+        setDvlaMotDate(data.motMileageDate || null);
+      }
+
 
     } catch (err: any) {
       console.error('DVLA lookup failed:', err);
@@ -231,6 +256,13 @@ const Step1Vehicle: React.FC = () => {
               <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 flex items-start gap-2 text-sm text-amber-900">
                 <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
                 <span>We couldn't find that registration — you can still enter the details manually.</span>
+              </div>
+            )}
+
+            {blockReason && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3 flex items-start gap-2 text-sm text-red-800">
+                <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <span>{blockReason}</span>
               </div>
             )}
 

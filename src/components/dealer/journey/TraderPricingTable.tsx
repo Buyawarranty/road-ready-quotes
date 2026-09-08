@@ -160,10 +160,13 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
         body: { registrationNumber: cleaned, skipAgeCheck: true },
       });
       if (error) throw error;
-      if (!data || (!data.make && !data.found)) {
-        toast({ title: 'Vehicle not found', description: 'Please check the registration and try again.' });
+      const isPlaceholder = /premium vehicle/i.test(String(data?.make || ''));
+      if (!data || (!data.make && !data.found) || isPlaceholder) {
+        toast({ title: 'Vehicle not found', description: 'Please check the registration or enter the details manually.' });
         return;
       }
+      const motFromLookup = data.motMileage && Number(data.motMileage) > 0 ? String(Number(data.motMileage)) : '';
+      if (motFromLookup && !mileage) setMileage(motFromLookup);
       setVehicle({
         reg: cleaned,
         make: data.make || '',
@@ -171,9 +174,12 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
         year: data.yearOfManufacture ? String(data.yearOfManufacture) : '',
         fuel_type: data.fuelType || '',
         transmission: data.transmission || '',
-        mileage: mileage || '',
+        mileage: mileage || motFromLookup || '',
       });
       setEditingVehicle(false);
+      if (data.blocked && data.blockReason) {
+        toast({ title: 'Cover not available', description: data.blockReason, variant: 'destructive' });
+      }
     } catch (err) {
       console.error('DVLA lookup failed:', err);
       toast({ title: 'Lookup failed', description: 'Please try again or continue manually.', variant: 'destructive' });
