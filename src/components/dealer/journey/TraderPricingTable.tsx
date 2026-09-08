@@ -424,7 +424,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                 </p>
               )}
             </div>
-            <div className="flex flex-col justify-center h-full">
+            <div>
               <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">Mileage</label>
               <div className="relative">
                 <Input
