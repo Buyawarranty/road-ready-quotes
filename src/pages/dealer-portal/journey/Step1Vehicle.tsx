@@ -84,6 +84,9 @@ const Step1Vehicle: React.FC = () => {
     setIsLookingUp(true);
     setError(null);
     setNotFound(false);
+    setBlockReason(null);
+    setDvlaMotMileage(null);
+    setDvlaMotDate(null);
     try {
       const { data, error: fnError } = await supabase.functions.invoke('dvla-vehicle-lookup', {
         body: { registrationNumber: cleaned, skipAgeCheck: true },
@@ -97,12 +100,26 @@ const Step1Vehicle: React.FC = () => {
         });
         return;
       }
+      // A blocked result can carry placeholder details — show the notice instead of filling them in
+      const isPlaceholder = /premium vehicle/i.test(String(data.make || ''));
+      if (data.blocked) {
+        setBlockReason(data.blockReason || 'This vehicle is not eligible for cover.');
+      }
+      if (isPlaceholder) {
+        setNotFound(true);
+        return;
+      }
       setMake(data.make || '');
       setModel(data.model || '');
       setYear(data.yearOfManufacture ? String(data.yearOfManufacture) : '');
       setFuelType(data.fuelType || '');
       setTransmission(data.transmission || '');
       setColour(data.colour || data.primaryColour || '');
+      if (data.motMileage && Number(data.motMileage) > 0) {
+        setDvlaMotMileage(Number(data.motMileage));
+        setDvlaMotDate(data.motMileageDate || null);
+      }
+
 
     } catch (err: any) {
       console.error('DVLA lookup failed:', err);
