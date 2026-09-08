@@ -155,8 +155,54 @@ const DealerCreateQuote = () => {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">Vehicle Registration *</label>
-                <Input value={form.vehicle_reg} onChange={(e) => update('vehicle_reg', e.target.value)} placeholder="AB12 CDE" required className={`uppercase ${inputClass}`} />
+                <div className="relative">
+                  <Input
+                    value={form.vehicle_reg}
+                    onChange={(e) => handleRegChange(e.target.value)}
+                    onBlur={() => form.vehicle_reg && performLookup(form.vehicle_reg)}
+                    placeholder="AB12 CDE"
+                    required
+                    maxLength={10}
+                    className={`uppercase pr-10 ${inputClass}`}
+                  />
+                  {isLookingUp && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {isLookingUp ? 'Looking up with DVLA…' : 'Make, model and last recorded mileage fill in automatically.'}
+                </p>
               </div>
+
+              {recognised && (
+                <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm">
+                  <p className="font-semibold text-green-900 flex items-center gap-1.5">
+                    <CheckCircle2 className="h-4 w-4" /> Vehicle recognised
+                  </p>
+                  <p className="font-bold text-gray-900 mt-0.5 flex items-center gap-1.5">
+                    <CarFront className="h-4 w-4 text-green-700" />
+                    {[form.vehicle_make, form.vehicle_model].filter(Boolean).join(' ')}
+                  </p>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-xs text-gray-700">
+                    {recognised.year && <span>{recognised.year}</span>}
+                    {recognised.fuel && <span>{recognised.fuel}</span>}
+                    {recognised.colour && <span>{recognised.colour}</span>}
+                  </div>
+                  {motInfo && (
+                    <p className="text-xs text-gray-700 mt-2">
+                      <span className="font-semibold">{motInfo.mileage.toLocaleString()} miles</span> recorded at MOT
+                      {motDateLabel ? ` on ${motDateLabel}` : ''}.
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {lookupNotice && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 flex items-start gap-2 text-sm text-amber-900">
+                  <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <span>{lookupNotice}</span>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700">Make</label>
