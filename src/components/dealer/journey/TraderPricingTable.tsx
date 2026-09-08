@@ -392,7 +392,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
         </div>
         {/* Vehicle reg entry */}
         <section className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-sm mb-4">
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_220px] gap-4 items-end">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4 items-start">
             <div>
               <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">
                 Vehicle registration
@@ -403,6 +403,12 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                   value={reg}
                   onChange={(e) => handleRegChange(e.target.value)}
                   onBlur={() => reg && performLookup(reg)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && reg) {
+                      e.preventDefault();
+                      performLookup(reg);
+                    }
+                  }}
                   placeholder="ENTER REG"
                   maxLength={10}
                   aria-label="Vehicle registration number"
@@ -418,14 +424,14 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                 </p>
               )}
             </div>
-            <div>
+            <div className="flex flex-col justify-center h-full">
               <label className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2 block">Mileage</label>
               <div className="relative">
                 <Input
                   value={mileage}
                   onChange={(e) => setMileage(e.target.value.replace(/[^\d]/g, ''))}
                   placeholder={isMotLoading ? 'Fetching from MOT…' : 'e.g. 45000'}
-                  className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500 pr-10"
+                  className="bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500 pr-10 h-[54px] text-lg"
                 />
                 {isMotLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-orange-500" />}
               </div>
