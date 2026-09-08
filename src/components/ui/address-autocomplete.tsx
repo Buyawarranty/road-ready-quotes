@@ -73,6 +73,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false); // Prevent closing during selection
+  const queryRef = useRef(initialValue); // Last typed query (needed by Postcoder retrieve)
 
   // Check postcode validity whenever input changes
   useEffect(() => {
@@ -225,32 +226,59 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // Fetch full address details when user selects a suggestion
   // IMPORTANT: If this fails, we keep whatever the user typed - never clear
   const handleSelectAddress = async (suggestion: AutocompleteSuggestion) => {
+    // Postcoder "group" result: drill down into the addresses it contains
+    if (provider === 'postcoder' && suggestion.type === 'group') {
+      setIsLoading(true);
+      await fetchSuggestions(queryRef.current || inputValue, suggestion.id);
+      setIsLoading(false);
+      setShowDropdown(true);
+      return;
+    }
+
     setIsLoading(true);
     setShowDropdown(false);
-    
+
     // Update display value to show selected address
     setInputValue(suggestion.address);
 
     try {
-      if (provider === 'postcoder' && suggestion.line_1) {
-        // Postcoder already returns full address details
-        const addressData: AddressData = {
-          line_1: suggestion.line_1 || '',
-          line_2: suggestion.line_2 || '',
-          town: suggestion.town || '',
-          county: suggestion.county || '',
-          postcode: suggestion.postcode || '',
-          building_number: suggestion.building_number || '',
-          building_name: suggestion.building_name || '',
-        };
+      if (provider === 'postcoder') {
+        if (suggestion.line_1) {
+          const addressData: AddressData = {
+            line_1: suggestion.line_1 || '',
+            line_2: suggestion.line_2 || '',
+            town: suggestion.town || '',
+            county: suggestion.county || '',
+            postcode: suggestion.postcode || '',
+            building_number: suggestion.building_number || '',
+            building_name: suggestion.building_name || '',
+          };
+          setHasSelected(true);
+          setLookupFailed(false);
+          onLookupError?.(false);
+          onAddressSelect(addressData);
+          setIsLoading(false);
+          return;
+        }
 
-        setHasSelected(true);
-        setLookupFailed(false);
-        onLookupError?.(false);
-        onAddressSelect(addressData);
+        const { data, error } = await supabase.functions.invoke('postcoder-lookup', {
+          body: { action: 'get', id: suggestion.id, term: queryRef.current || inputValue },
+        });
+
+        if (error || !data?.address) {
+          console.error('Error retrieving Postcoder address:', error || data?.error);
+          setLookupFailed(true);
+          onLookupError?.(true);
+        } else {
+          setHasSelected(true);
+          setLookupFailed(false);
+          onLookupError?.(false);
+          onAddressSelect(data.address as AddressData);
+        }
         setIsLoading(false);
         return;
       }
+
 
       const { data, error } = await supabase.functions.invoke('getaddress-lookup', {
         body: { action: 'get', id: suggestion.id }
