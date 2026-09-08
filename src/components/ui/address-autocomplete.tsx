@@ -18,6 +18,8 @@ interface AutocompleteSuggestion {
   address: string;
   url: string;
   id: string;
+  type?: 'address' | 'group';
+  count?: number;
   line_1?: string;
   line_2?: string;
   town?: string;
