@@ -115,7 +115,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   // Fetch suggestions from getaddress.io or Postcoder via edge function
   // IMPORTANT: This function NEVER clears or modifies inputValue
-  const fetchSuggestions = useCallback(async (term: string) => {
+  const fetchSuggestions = useCallback(async (term: string, pathfilter?: string) => {
     // Don't search for very short terms
     if (term.length < 3) {
       setSuggestions([]);
@@ -129,8 +129,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     
     try {
       const functionName = provider === 'postcoder' ? 'postcoder-lookup' : 'getaddress-lookup';
-      const body = provider === 'postcoder'
-        ? { action: 'autocomplete', term }
+      const body: Record<string, unknown> = provider === 'postcoder'
+        ? { action: 'autocomplete', term, pathfilter: pathfilter || undefined }
         : { action: 'autocomplete', term };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
@@ -145,6 +145,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         // Success - show suggestions
         const mapped = data.suggestions.map((s: any, i: number) => ({
           id: s.id || `${functionName}-${i}`,
+          type: s.type === 'group' ? 'group' : 'address',
+          count: s.count,
           address: s.address || s.summaryline || `${s.line_1 || s.addressline1 || ''}, ${s.postcode || ''}`,
           url: s.url || '',
           line_1: s.line_1 || s.addressline1 || '',
