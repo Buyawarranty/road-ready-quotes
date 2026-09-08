@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Loader2, Check, AlertCircle } from 'lucide-react';
+import { Loader2, Check, AlertCircle, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface AddressData {
@@ -18,6 +18,8 @@ interface AutocompleteSuggestion {
   address: string;
   url: string;
   id: string;
+  type?: 'address' | 'group';
+  count?: number;
   line_1?: string;
   line_2?: string;
   town?: string;
@@ -71,6 +73,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false); // Prevent closing during selection
+  const queryRef = useRef(initialValue); // Last typed query (needed by Postcoder retrieve)
 
   // Check postcode validity whenever input changes
   useEffect(() => {
@@ -113,7 +116,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
   // Fetch suggestions from getaddress.io or Postcoder via edge function
   // IMPORTANT: This function NEVER clears or modifies inputValue
-  const fetchSuggestions = useCallback(async (term: string) => {
+  const fetchSuggestions = useCallback(async (term: string, pathfilter?: string) => {
     // Don't search for very short terms
     if (term.length < 3) {
       setSuggestions([]);
@@ -127,8 +130,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     
     try {
       const functionName = provider === 'postcoder' ? 'postcoder-lookup' : 'getaddress-lookup';
-      const body = provider === 'postcoder'
-        ? { action: 'autocomplete', term }
+      const body: Record<string, unknown> = provider === 'postcoder'
+        ? { action: 'autocomplete', term, pathfilter: pathfilter || undefined }
         : { action: 'autocomplete', term };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
@@ -143,6 +146,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         // Success - show suggestions
         const mapped = data.suggestions.map((s: any, i: number) => ({
           id: s.id || `${functionName}-${i}`,
+          type: s.type === 'group' ? 'group' : 'address',
+          count: s.count,
           address: s.address || s.summaryline || `${s.line_1 || s.addressline1 || ''}, ${s.postcode || ''}`,
           url: s.url || '',
           line_1: s.line_1 || s.addressline1 || '',
@@ -190,6 +195,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     try {
       const value = e.target.value;
       setInputValue(value); // Always preserve what user types
+      queryRef.current = value;
       setHasSelected(false);
       setSelectedIndex(-1);
       
@@ -221,32 +227,59 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // Fetch full address details when user selects a suggestion
   // IMPORTANT: If this fails, we keep whatever the user typed - never clear
   const handleSelectAddress = async (suggestion: AutocompleteSuggestion) => {
+    // Postcoder "group" result: drill down into the addresses it contains
+    if (provider === 'postcoder' && suggestion.type === 'group') {
+      setIsLoading(true);
+      await fetchSuggestions(queryRef.current || inputValue, suggestion.id);
+      setIsLoading(false);
+      setShowDropdown(true);
+      return;
+    }
+
     setIsLoading(true);
     setShowDropdown(false);
-    
+
     // Update display value to show selected address
     setInputValue(suggestion.address);
 
     try {
-      if (provider === 'postcoder' && suggestion.line_1) {
-        // Postcoder already returns full address details
-        const addressData: AddressData = {
-          line_1: suggestion.line_1 || '',
-          line_2: suggestion.line_2 || '',
-          town: suggestion.town || '',
-          county: suggestion.county || '',
-          postcode: suggestion.postcode || '',
-          building_number: suggestion.building_number || '',
-          building_name: suggestion.building_name || '',
-        };
+      if (provider === 'postcoder') {
+        if (suggestion.line_1) {
+          const addressData: AddressData = {
+            line_1: suggestion.line_1 || '',
+            line_2: suggestion.line_2 || '',
+            town: suggestion.town || '',
+            county: suggestion.county || '',
+            postcode: suggestion.postcode || '',
+            building_number: suggestion.building_number || '',
+            building_name: suggestion.building_name || '',
+          };
+          setHasSelected(true);
+          setLookupFailed(false);
+          onLookupError?.(false);
+          onAddressSelect(addressData);
+          setIsLoading(false);
+          return;
+        }
 
-        setHasSelected(true);
-        setLookupFailed(false);
-        onLookupError?.(false);
-        onAddressSelect(addressData);
+        const { data, error } = await supabase.functions.invoke('postcoder-lookup', {
+          body: { action: 'get', id: suggestion.id, term: queryRef.current || inputValue },
+        });
+
+        if (error || !data?.address) {
+          console.error('Error retrieving Postcoder address:', error || data?.error);
+          setLookupFailed(true);
+          onLookupError?.(true);
+        } else {
+          setHasSelected(true);
+          setLookupFailed(false);
+          onLookupError?.(false);
+          onAddressSelect(data.address as AddressData);
+        }
         setIsLoading(false);
         return;
       }
+
 
       const { data, error } = await supabase.functions.invoke('getaddress-lookup', {
         body: { action: 'get', id: suggestion.id }
@@ -430,7 +463,12 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 setTimeout(() => { isSelectingRef.current = false; }, 300);
               }}
             >
-              <span className="text-foreground">{suggestion.address}</span>
+              <span className="flex items-center justify-between gap-3">
+                <span className="text-foreground">{suggestion.address}</span>
+                {suggestion.type === 'group' && (
+                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                )}
+              </span>
             </button>
           ))}
         </div>
