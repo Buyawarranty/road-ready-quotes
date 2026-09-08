@@ -38,7 +38,9 @@ interface AddressAutocompleteProps {
   disabled?: boolean;
   onLookupError?: (hasError: boolean) => void;
   onPostcodeValidation?: (isValid: boolean, postcode: string) => void;
+  onInputChange?: (value: string) => void;
   provider?: 'getaddress' | 'postcoder';
+  displaySelectedPostcode?: boolean;
 }
 
 // UK postcode validation regex
@@ -57,7 +59,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   disabled = false,
   onLookupError,
   onPostcodeValidation,
+  onInputChange,
   provider = 'getaddress',
+  displaySelectedPostcode = false,
 }) => {
   // IMPORTANT: Never clear inputValue except when user types - this preserves partial entries
   const [inputValue, setInputValue] = useState(initialValue);
@@ -195,6 +199,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     try {
       const value = e.target.value;
       setInputValue(value); // Always preserve what user types
+      onInputChange?.(value);
       queryRef.current = value;
       setHasSelected(false);
       setSelectedIndex(-1);
@@ -239,7 +244,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     setIsLoading(true);
     setShowDropdown(false);
 
-    // Update display value to show selected address
+    // Keep the chosen result visible while its full details are retrieved.
     setInputValue(suggestion.address);
 
     try {
@@ -257,6 +262,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           setHasSelected(true);
           setLookupFailed(false);
           onLookupError?.(false);
+          if (displaySelectedPostcode && addressData.postcode) {
+            setInputValue(addressData.postcode);
+          }
           onAddressSelect(addressData);
           setIsLoading(false);
           return;
@@ -274,7 +282,11 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           setHasSelected(true);
           setLookupFailed(false);
           onLookupError?.(false);
-          onAddressSelect(data.address as AddressData);
+          const addressData = data.address as AddressData;
+          if (displaySelectedPostcode && addressData.postcode) {
+            setInputValue(addressData.postcode);
+          }
+          onAddressSelect(addressData);
         }
         setIsLoading(false);
         return;
@@ -306,6 +318,9 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         setHasSelected(true);
         setLookupFailed(false);
         onLookupError?.(false);
+        if (displaySelectedPostcode && addressData.postcode) {
+          setInputValue(addressData.postcode);
+        }
         onAddressSelect(addressData);
       }
     } catch (err) {
