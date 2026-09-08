@@ -195,6 +195,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     try {
       const value = e.target.value;
       setInputValue(value); // Always preserve what user types
+      queryRef.current = value;
       setHasSelected(false);
       setSelectedIndex(-1);
       
