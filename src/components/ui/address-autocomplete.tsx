@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Loader2, Check, AlertCircle } from 'lucide-react';
+import { Loader2, Check, AlertCircle, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface AddressData {
@@ -463,7 +463,12 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
                 setTimeout(() => { isSelectingRef.current = false; }, 300);
               }}
             >
-              <span className="text-foreground">{suggestion.address}</span>
+              <span className="flex items-center justify-between gap-3">
+                <span className="text-foreground">{suggestion.address}</span>
+                {suggestion.type === 'group' && (
+                  <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                )}
+              </span>
             </button>
           ))}
         </div>
