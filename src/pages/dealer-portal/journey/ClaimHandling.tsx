@@ -599,16 +599,13 @@ const ClaimHandlingPage: React.FC = () => {
                     <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5 text-gray-400" /> Postcode *
                     </label>
-                    <Input value={form.postcode} onChange={(e) => update('postcode', e.target.value.toUpperCase())} className={`uppercase ${inputClass}`} placeholder="SW1A 1AA" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-gray-400" /> Find address
-                    </label>
                     <AddressAutocomplete
-                      placeholder="Start typing postcode or address..."
-                      className={inputClass}
+                      placeholder="Start typing postcode..."
+                      initialValue={form.postcode}
+                      className={`uppercase ${inputClass}`}
                       provider="postcoder"
+                      displaySelectedPostcode
+                      onInputChange={(value) => update('postcode', value.toUpperCase())}
                       onAddressSelect={(addr) =>
                         setForm((p) => ({
                           ...p,
