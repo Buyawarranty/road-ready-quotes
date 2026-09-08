@@ -32,12 +32,20 @@ const Step1Vehicle: React.FC = () => {
   const [mileage, setMileage] = useState(vehicle?.mileage || '');
   const [colour, setColour] = useState('');
   const [notFound, setNotFound] = useState(false);
+  const [blockReason, setBlockReason] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupReg, setLookupReg] = useState<string | null>(null); // last reg we looked up
+  const [dvlaMotMileage, setDvlaMotMileage] = useState<number | null>(null);
+  const [dvlaMotDate, setDvlaMotDate] = useState<string | null>(null);
   const lookupTimer = useRef<number | null>(null);
 
-  const { motMileage, motDate, source: motSource, isLoading: isMotLoading } = useMotMileage(reg);
+  const { motMileage: cachedMotMileage, motDate: cachedMotDate, source: motSource, isLoading: isMotLoading } =
+    useMotMileage(reg);
+
+  // Prefer the reading returned with the DVLA/DVSA lookup, fall back to the MOT history record
+  const motMileage = dvlaMotMileage ?? cachedMotMileage;
+  const motDate = dvlaMotMileage != null ? dvlaMotDate : cachedMotDate;
 
   // Auto-fill mileage from MOT when fetched
   useEffect(() => {
