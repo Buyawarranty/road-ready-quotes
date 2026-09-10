@@ -175,6 +175,53 @@ const DealerCreateQuote = () => {
     <DealerLayout>
       <div className="max-w-2xl">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Quote</h1>
+
+        <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50/50 p-4">
+          <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
+            <Bookmark className="w-3.5 h-3.5" /> Start from a template
+          </p>
+          {templates.length > 0 ? (
+            <div className="space-y-2">
+              {templates.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center gap-2 rounded-lg border-2 border-orange-200 bg-white p-2"
+                >
+                  <button
+                    type="button"
+                    onClick={() => applyTemplate(t)}
+                    className="flex-1 text-left"
+                  >
+                    <span className="block text-sm font-bold text-gray-900">{t.name}</span>
+                    <span className="block text-xs text-gray-600">{describeTemplate(t)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeTemplate(t)}
+                    aria-label={`Remove ${t.name}`}
+                    className="p-1.5 rounded-md text-gray-400 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-600">
+              No templates yet — pick your cover options on a pricing page and choose "Save as template".
+            </p>
+          )}
+          {lastQuote && (
+            <button
+              type="button"
+              onClick={applyLastQuote}
+              className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+            >
+              <History className="w-3.5 h-3.5" /> Use my last quote
+            </button>
+          )}
+        </div>
+
         <Card className="bg-white border-gray-200">
           <CardHeader>
             <CardTitle className="text-lg text-gray-900">Vehicle & Customer Details</CardTitle>
