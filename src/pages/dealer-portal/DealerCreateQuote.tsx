@@ -16,6 +16,7 @@ const DealerCreateQuote = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { templates, lastQuote, deleteTemplate } = useDealerQuoteTemplates();
   const [loading, setLoading] = useState(false);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupNotice, setLookupNotice] = useState<string | null>(null);
@@ -137,6 +138,36 @@ const DealerCreateQuote = () => {
   };
 
   const update = (field: string, value: string) => setForm({ ...form, [field]: value });
+
+  const applyTemplate = (t: DealerQuoteTemplate) => {
+    setForm((prev) => ({
+      ...prev,
+      warranty_duration: String(t.term_months),
+      plan_type: t.plan_type || 'gold',
+      price: typeof t.price === 'number' ? String(t.price) : prev.price,
+    }));
+    toast({ title: `"${t.name}" applied`, description: describeTemplate(t) });
+  };
+
+  const applyLastQuote = () => {
+    if (!lastQuote) return;
+    setForm((prev) => ({
+      ...prev,
+      warranty_duration: lastQuote.warranty_duration || prev.warranty_duration,
+      plan_type: lastQuote.plan_type || prev.plan_type,
+      price: lastQuote.price != null ? String(lastQuote.price) : prev.price,
+    }));
+    toast({ title: 'Last quote settings applied' });
+  };
+
+  const removeTemplate = async (t: DealerQuoteTemplate) => {
+    try {
+      await deleteTemplate(t.id);
+      toast({ title: 'Template removed' });
+    } catch (err: any) {
+      toast({ title: 'Could not remove template', description: err.message, variant: 'destructive' });
+    }
+  };
 
   const inputClass = "bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500";
 
