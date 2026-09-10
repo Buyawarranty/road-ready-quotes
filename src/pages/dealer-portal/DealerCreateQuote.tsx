@@ -8,13 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, CarFront } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, CarFront, Bookmark, History, X } from 'lucide-react';
+import { useDealerQuoteTemplates, describeTemplate, DealerQuoteTemplate } from '@/hooks/useDealerQuoteTemplates';
 
 const DealerCreateQuote = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { templates, lastQuote, deleteTemplate } = useDealerQuoteTemplates();
   const [loading, setLoading] = useState(false);
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [lookupNotice, setLookupNotice] = useState<string | null>(null);
@@ -137,12 +139,89 @@ const DealerCreateQuote = () => {
 
   const update = (field: string, value: string) => setForm({ ...form, [field]: value });
 
+  const applyTemplate = (t: DealerQuoteTemplate) => {
+    setForm((prev) => ({
+      ...prev,
+      warranty_duration: String(t.term_months),
+      plan_type: t.plan_type || 'gold',
+      price: typeof t.price === 'number' ? String(t.price) : prev.price,
+    }));
+    toast({ title: `"${t.name}" applied`, description: describeTemplate(t) });
+  };
+
+  const applyLastQuote = () => {
+    if (!lastQuote) return;
+    setForm((prev) => ({
+      ...prev,
+      warranty_duration: lastQuote.warranty_duration || prev.warranty_duration,
+      plan_type: lastQuote.plan_type || prev.plan_type,
+      price: lastQuote.price != null ? String(lastQuote.price) : prev.price,
+    }));
+    toast({ title: 'Last quote settings applied' });
+  };
+
+  const removeTemplate = async (t: DealerQuoteTemplate) => {
+    try {
+      await deleteTemplate(t.id);
+      toast({ title: 'Template removed' });
+    } catch (err: any) {
+      toast({ title: 'Could not remove template', description: err.message, variant: 'destructive' });
+    }
+  };
+
   const inputClass = "bg-gray-100 border-gray-300 text-gray-900 placeholder:text-gray-500";
 
   return (
     <DealerLayout>
       <div className="max-w-2xl">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Quote</h1>
+
+        <div className="mb-6 rounded-xl border border-orange-200 bg-orange-50/50 p-4">
+          <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
+            <Bookmark className="w-3.5 h-3.5" /> Start from a template
+          </p>
+          {templates.length > 0 ? (
+            <div className="space-y-2">
+              {templates.map((t) => (
+                <div
+                  key={t.id}
+                  className="flex items-center gap-2 rounded-lg border-2 border-orange-200 bg-white p-2"
+                >
+                  <button
+                    type="button"
+                    onClick={() => applyTemplate(t)}
+                    className="flex-1 text-left"
+                  >
+                    <span className="block text-sm font-bold text-gray-900">{t.name}</span>
+                    <span className="block text-xs text-gray-600">{describeTemplate(t)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeTemplate(t)}
+                    aria-label={`Remove ${t.name}`}
+                    className="p-1.5 rounded-md text-gray-400 hover:text-gray-800 hover:bg-gray-100"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-600">
+              No templates yet — pick your cover options on a pricing page and choose "Save as template".
+            </p>
+          )}
+          {lastQuote && (
+            <button
+              type="button"
+              onClick={applyLastQuote}
+              className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-500 bg-orange-500 text-white hover:bg-orange-600"
+            >
+              <History className="w-3.5 h-3.5" /> Use my last quote
+            </button>
+          )}
+        </div>
+
         <Card className="bg-white border-gray-200">
           <CardHeader>
             <CardTitle className="text-lg text-gray-900">Vehicle & Customer Details</CardTitle>
