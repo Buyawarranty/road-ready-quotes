@@ -706,6 +706,7 @@ export type Database = {
           email: string
           first_name: string | null
           id: string
+          in_training: boolean
           invited_at: string | null
           invited_by: string | null
           is_active: boolean
@@ -732,6 +733,7 @@ export type Database = {
           email: string
           first_name?: string | null
           id?: string
+          in_training?: boolean
           invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
@@ -758,6 +760,7 @@ export type Database = {
           email?: string
           first_name?: string | null
           id?: string
+          in_training?: boolean
           invited_at?: string | null
           invited_by?: string | null
           is_active?: boolean
@@ -14206,6 +14209,17 @@ export type Database = {
       missed_call_rotate_offers: { Args: never; Returns: number }
       normalize_phone_uk: { Args: { p: string }; Returns: string }
       normalize_uk_phone: { Args: { raw_phone: string }; Returns: string }
+      offboard_agent_handover: {
+        Args: {
+          _also_deactivate?: boolean
+          _extra_lead_ids?: string[]
+          _notes?: string
+          _reset_to_new?: boolean
+          _source_admin_user_id: string
+          _target_admin_user_ids: string[]
+        }
+        Returns: Json
+      }
       offline_campaign_monthly_stats: {
         Args: { _from: string; _prefixes: string[]; _to: string }
         Returns: {
