@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CheckCircle2, AlertTriangle, CarFront } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertTriangle, CarFront, Bookmark, History, X } from 'lucide-react';
+import { useDealerQuoteTemplates, describeTemplate, DealerQuoteTemplate } from '@/hooks/useDealerQuoteTemplates';
 
 const DealerCreateQuote = () => {
   const { dealer } = useDealerAuth();
