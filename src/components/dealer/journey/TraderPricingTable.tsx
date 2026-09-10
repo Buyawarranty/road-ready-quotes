@@ -641,6 +641,17 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                     >
                       Save as my default plan
                     </button>
+                    <SaveQuoteTemplateButton
+                      getSelection={() => ({
+                        term,
+                        excess,
+                        labour,
+                        parts,
+                        claim,
+                        plan_type: 'gold',
+                        price: customerFacingPrice,
+                      })}
+                    />
                     {myDefaults && (
                       <>
                         <button

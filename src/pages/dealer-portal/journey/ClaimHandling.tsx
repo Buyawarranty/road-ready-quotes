@@ -413,6 +413,17 @@ const ClaimHandlingPage: React.FC = () => {
                     >
                       Save as my default plan
                     </button>
+                    <SaveQuoteTemplateButton
+                      getSelection={() => ({
+                        term,
+                        excess,
+                        labour,
+                        parts,
+                        claim: claimLimit,
+                        plan_type: 'gold',
+                        price: customerFacingPrice,
+                      })}
+                    />
                     {myDefaults && (
                       <>
                         <button
