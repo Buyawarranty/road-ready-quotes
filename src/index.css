@@ -2187,7 +2187,12 @@ body {
   font-weight: 900;
 }
 .public-dealer-home .home-hero h1 span { color: hsl(var(--home-orange)); }
-.public-dealer-home .home-hero-description { max-width: 600px; margin: 1rem 0 1.35rem; color: hsl(var(--home-copy)); font-size: 1rem; line-height: 1.6; }
+.public-dealer-home .home-hero-bullets { max-width: 600px; display: grid; gap: 0.5rem; margin: 1.1rem 0 0.4rem; padding: 0; list-style: none; }
+.public-dealer-home .home-hero-bullets li { display: flex; align-items: center; gap: 0.6rem; color: hsl(var(--home-ink)); font-size: 1.05rem; font-weight: 700; }
+.public-dealer-home .home-hero-bullets svg { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; color: hsl(145 63% 42%); }
+.public-dealer-home .home-bullet-sep { color: hsl(var(--home-copy) / 0.55); font-weight: 400; margin-inline: 0.1rem; }
+.public-dealer-home .home-hero-eligibility { max-width: 600px; margin: 0 0 1.1rem; color: hsl(var(--home-copy)); font-size: 0.92rem; }
+.public-dealer-home .home-hero-eligibility strong { color: hsl(var(--home-ink)); }
 .public-dealer-home .home-reg-form { max-width: 540px; display: grid; gap: 0.55rem; }
 .public-dealer-home .home-reg-input { min-height: 60px; display: flex; overflow: hidden; border: 2px solid hsl(var(--home-ink)); border-radius: 0.32rem; }
 .public-dealer-home .home-reg-country { width: 48px; flex: 0 0 48px; display: grid; place-content: center; text-align: center; color: hsl(var(--home-surface)); background: hsl(225 74% 46%); font-size: 0.72rem; font-weight: 800; line-height: 1; }
@@ -2357,7 +2362,9 @@ body {
 @media (max-width: 1023px) {
   .public-dealer-home .home-hero-grid { grid-template-columns: 1fr; }
   .public-dealer-home .home-hero-copy { max-width: 680px; margin-inline: auto; text-align: center; }
-  .public-dealer-home .home-hero-description { margin-inline: auto; }
+  .public-dealer-home .home-hero-bullets { margin-inline: auto; text-align: center; }
+  .public-dealer-home .home-hero-bullets li { display: inline-flex; text-align: left; }
+  .public-dealer-home .home-hero-eligibility { margin-inline: auto; }
   .public-dealer-home .home-reg-form,
   .public-dealer-home .home-support-card { margin-inline: auto; }
   .public-dealer-home .home-hero-visual img { max-height: 370px; }
