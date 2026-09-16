@@ -580,6 +580,18 @@
   color: inherit;
 }
 
+/* Keep the dark dashboard-preview sidebar and the hero badge readable */
+.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child [class*="bg-[#0f1729]"],
+.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child [class*="bg-[#0f1729]"] :where(div, span) {
+  color: hsl(var(--marketing-surface) / 0.82);
+}
+
+.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child [class*="bg-[#0f1729]"] [class*="text-white"] {
+  color: hsl(var(--marketing-surface));
+}
+
+
+
 .public-dealer-home > section:first-of-type h1 span:first-child {
   color: hsl(var(--marketing-ink));
 }
@@ -1974,4 +1986,24 @@ body {
 
 .public-static-footer :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-orange-5"], [class*="bg-orange-6"]):hover {
   background: hsl(var(--public-orange-strong));
+}
+
+/* Light dealer strip: dark outline login link */
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) a[class*="border-white"] {
+  border-color: hsl(var(--marketing-ink) / 0.25);
+  color: hsl(var(--marketing-ink));
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) a[class*="border-white"]:hover {
+  border-color: hsl(var(--marketing-orange));
+  color: hsl(var(--marketing-orange));
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) a[class*="bg-[#eb4b00]"],
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) a[class*="bg-[#eb4b00]"] :where(span, div) {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) [class*="border-white/10"] {
+  border-color: hsl(var(--marketing-line));
 }
