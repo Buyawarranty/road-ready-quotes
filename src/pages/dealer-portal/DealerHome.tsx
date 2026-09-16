@@ -31,7 +31,7 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
-import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
+import twoWaysImage from '@/assets/two-ways-cover.png';
 import dealerGrowthImage from '@/assets/panda-dealer-growth.png';
 import coveredPartsImage from '@/assets/panda-covered-parts.png';
 import pandaHeroImage from '@/assets/panda-hero.png';
@@ -294,29 +294,36 @@ const DealerHome = () => {
       </section>
 
       <section className="home-cover-intro">
-        <div className="home-shell">
-          <header className="home-section-heading home-section-heading-left">
-            <p>Two ways to work with us</p>
-            <h2>Pick the service that fits your business</h2>
-            <span>Whether you want a fully insured warranty or just expert claims handling — we've got you covered.</span>
-          </header>
-          <div className="home-cover-grid">
-            <article>
-              <Shield aria-hidden="true" />
-              <h3>Full Warranty Cover</h3>
-              <p>We handle claims AND pay the repairs</p>
-              <ul>{serviceRows[0].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
-            </article>
-            <article>
-              <Headphones aria-hidden="true" />
-              <h3>Claims Handling Only</h3>
-              <p>We handle claims · You fund the repairs</p>
-              <ul>{serviceRows[1].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
-            </article>
-            <aside>
-              <OptimizedImage src={pandaVehiclesImage} alt="Panda Protect dealer warranty services" width={1200} height={800} />
-              <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
-            </aside>
+        <div className="home-shell home-cover-split">
+          <div className="home-cover-content">
+            <header className="home-section-heading home-section-heading-left">
+              <p>Two ways to work with us</p>
+              <h2>Pick the service that fits your business</h2>
+              <span>Whether you want a fully insured warranty or just expert claims handling — we've got you covered.</span>
+            </header>
+            <div className="home-cover-grid">
+              <article>
+                <Shield aria-hidden="true" />
+                <h3>Full Warranty Cover</h3>
+                <p>We handle claims AND pay the repairs</p>
+                <ul>{serviceRows[0].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
+              </article>
+              <article>
+                <Headphones aria-hidden="true" />
+                <h3>Claims Handling Only</h3>
+                <p>We handle claims · You fund the repairs</p>
+                <ul>{serviceRows[1].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
+              </article>
+            </div>
+            <Button asChild className="home-primary-button home-cover-cta"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
+          </div>
+          <div className="home-cover-visual">
+            <OptimizedImage
+              src={twoWaysImage}
+              alt="Car showing the parts covered by Panda Protect dealer warranties"
+              width={1200}
+              height={857}
+            />
           </div>
         </div>
       </section>
