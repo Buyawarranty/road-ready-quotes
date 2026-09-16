@@ -6,6 +6,9 @@ import {
   Award,
   BarChart2,
   BarChart3,
+  BatteryCharging,
+  Bike,
+  Car,
   Check,
   ChevronDown,
   Clock,
@@ -16,11 +19,14 @@ import {
   MessageCircle,
   Phone,
   PoundSterling,
+  Settings,
   Shield,
+  ShieldCheck,
   TrendingUp,
   UserCircle2,
   Users,
   Wrench,
+  X,
   Zap,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
@@ -57,11 +63,99 @@ const HOME_FAQS: { q: string; a: string }[] = [
   },
 ];
 
+const COVERAGE_ROWS = [
+  {
+    icon: Car,
+    title: 'Petrol & Diesel Vehicles',
+    tone: 'black',
+    items: [
+      'Engine & turbo unit — pistons, crankshaft, timing chains, rocker assembly and more',
+      'Gearbox, clutch and differential — all internal components',
+      'Drive shafts, C.V. joints and braking system',
+      'Cooling system, fuel system and engine electrics',
+    ],
+    note: 'Turbo cover ceases at 7 years or 80,000 miles. One clutch repair per warranty period.',
+  },
+  {
+    icon: BatteryCharging,
+    title: 'Hybrid & PHEV Vehicles',
+    tone: 'slate',
+    items: [
+      'Everything listed for petrol & diesel vehicles',
+      'Hybrid battery pack and battery management system',
+      'Inverter, converter and hybrid drive motor',
+      'Regenerative braking components',
+    ],
+    note: 'Cover applies to manufacturer-fitted hybrid systems.',
+  },
+  {
+    icon: Zap,
+    title: 'Electric vehicles (EVs)',
+    tone: 'orange',
+    items: [
+      'Electric drive motor and reduction gearbox',
+      'High-voltage battery and battery management system',
+      'On-board charger and charging port',
+      'EV cooling and power electronics',
+    ],
+    note: 'Battery degradation from normal use is not covered.',
+  },
+  {
+    icon: Bike,
+    title: 'Motorcycles (Petrol, Hybrid, EV)',
+    tone: 'green',
+    items: [
+      'Engine internals — pistons, crankshaft, valves and cam chain',
+      'Gearbox, clutch and final drive',
+      'Electrical system, ECU and ignition',
+      'Cooling and fuel systems',
+    ],
+    note: 'Cover available for road-registered bikes within age and mileage limits.',
+  },
+  {
+    icon: X,
+    title: "What's not covered",
+    tone: 'pink',
+    items: [
+      'Wear and tear items — tyres, brake pads, wipers and bulbs',
+      'Routine servicing and periodic replacement parts',
+      'Accidental damage, frost or overheating damage',
+      'Dual mass flywheel, wiring looms, alarms and immobilisers',
+    ],
+    note: 'Full exclusions list is provided with every policy document.',
+  },
+  {
+    icon: Settings,
+    title: 'Modifications and Your Cover',
+    tone: 'cream',
+    items: [
+      'Manufacturer-approved accessories are covered as standard',
+      'Non-approved or customised parts are excluded from cover',
+      'Performance tuning or remapping may affect eligibility',
+      'Always declare modifications at quote stage',
+    ],
+    note: 'Undeclared modifications can invalidate a claim.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Exclusions: High-Performance Cars',
+    tone: 'blue',
+    items: [
+      'High-performance, high-end and luxury models are excluded',
+      'Includes Audi R8, RS models and e-tron GT',
+      'Similar specification or servicing requirements also excluded',
+      'Newer versions of excluded models are not eligible',
+    ],
+    note: 'Unsure about a vehicle? Run the registration through the quote tool.',
+  },
+] as const;
+
 const DealerHome = () => {
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openService, setOpenService] = useState<number | null>(0);
+  const [openCoverage, setOpenCoverage] = useState<number | null>(null);
 
   const handleRegSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -251,6 +345,39 @@ const DealerHome = () => {
             })}
           </div>
           <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Quick dealer sign-up <ArrowRight aria-hidden="true" /></Link></Button>
+        </div>
+      </section>
+
+      <section className="home-coverage-section">
+        <div className="home-shell home-narrow">
+          <header className="home-section-heading">
+            <p className="home-coverage-badge"><ShieldCheck aria-hidden="true" />Full Coverage Details</p>
+            <h2><span>Every Part Covered.</span> Drive Worry-Free</h2>
+            <small>From engine to electrics, see exactly what's protected</small>
+          </header>
+          <div className="home-coverage-rows">
+            {COVERAGE_ROWS.map((row, index) => {
+              const open = openCoverage === index;
+              const Icon = row.icon;
+              return (
+                <article key={row.title} className={`home-coverage-row home-coverage-row-${row.tone}`}>
+                  <button type="button" onClick={() => setOpenCoverage(open ? null : index)} aria-expanded={open}>
+                    <span><Icon aria-hidden="true" />{row.title}</span>
+                    <ChevronDown className={open ? 'rotate-180' : ''} aria-hidden="true" />
+                  </button>
+                  {open && (
+                    <div>
+                      <ul>
+                        {row.items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}
+                      </ul>
+                      <p className="home-coverage-note">{row.note}</p>
+                      <Link to="/warranty-plan">Full cover details <ArrowRight aria-hidden="true" /></Link>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
 
