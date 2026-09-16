@@ -37,7 +37,7 @@ export const DealerPublicHeader: React.FC = () => {
               <OptimizedImage
                 src={buyawarrantyLogo}
                 alt="Panda Protect"
-                className="h-14 sm:h-20 w-auto object-contain"
+                className="h-11 sm:h-14 w-auto object-contain shrink-0"
                 priority={true}
                 width={340}
                 height={80}
@@ -47,12 +47,12 @@ export const DealerPublicHeader: React.FC = () => {
 
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6">
+          <nav className="hidden lg:flex items-center gap-2 xl:gap-4">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className="relative text-gray-700 hover:text-gray-900 font-medium text-sm xl:text-base after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+                className="relative whitespace-nowrap text-gray-700 hover:text-gray-900 font-medium text-sm after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-orange-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
               >
                 {item.label}
               </Link>
@@ -61,7 +61,7 @@ export const DealerPublicHeader: React.FC = () => {
             {/* Call Us Hover Card */}
             <HoverCard openDelay={0} closeDelay={200}>
               <HoverCardTrigger asChild>
-                <button className="text-orange-500 hover:text-orange-600 font-semibold text-sm xl:text-base p-2 h-auto flex items-center gap-1 bg-transparent border-none cursor-pointer">
+                <button className="whitespace-nowrap text-orange-500 hover:text-orange-600 font-semibold text-sm p-2 h-auto flex items-center gap-1 bg-transparent border-none cursor-pointer">
                   <Phone className="h-4 w-4 text-orange-500" />
                   Call Us
                 </button>
@@ -88,7 +88,7 @@ export const DealerPublicHeader: React.FC = () => {
               href="https://wa.me/message/SPQPJ6O3UBF5B1"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#25D366] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#20BA5A] transition-colors whitespace-nowrap"
+              className="inline-flex items-center px-3 py-2 bg-[#25D366] text-white text-sm font-semibold rounded-lg hover:bg-[#20BA5A] transition-colors whitespace-nowrap"
             >
               WhatsApp Us
             </a>
@@ -96,7 +96,7 @@ export const DealerPublicHeader: React.FC = () => {
             {/* Start Today CTA */}
             <Link
               to="/dealer-portal/signup"
-              className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#eb4b00] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
+              className="inline-flex items-center px-3 py-2 bg-[#eb4b00] text-white text-sm font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
             >
               Start Today
             </Link>
@@ -104,7 +104,7 @@ export const DealerPublicHeader: React.FC = () => {
             {/* Motor Trade Login - high contrast B2B CTA */}
             <Link
               to="/dealer-portal/login"
-              className="inline-flex items-center gap-1.5 px-3 xl:px-4 py-2 bg-slate-900 text-white text-sm xl:text-base font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap"
               aria-label="Motor Trade Login for dealer partners"
             >
               <LogIn className="h-4 w-4" />
