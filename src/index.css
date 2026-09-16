@@ -227,6 +227,251 @@
   }
 }
 
+/* Batch 2: public dealer marketing only. The explicit wrapper prevents these
+   rules from reaching dealer login, quote tools, dashboards or admin routes. */
+.public-marketing-page {
+  --marketing-ink: 220 20% 14%;
+  --marketing-copy: 220 9% 38%;
+  --marketing-canvas: 210 20% 98%;
+  --marketing-surface: 0 0% 100%;
+  --marketing-line: 220 14% 86%;
+  --marketing-orange: 18 100% 47%;
+  --marketing-orange-strong: 17 100% 41%;
+  --marketing-green: 145 63% 39%;
+  --marketing-navy: 216 45% 20%;
+  color: hsl(var(--marketing-ink));
+  background: hsl(var(--marketing-surface));
+}
+
+.public-marketing-page :where(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: 0;
+}
+
+.public-marketing-page :where(a, button, input, textarea) {
+  border-radius: 0.375rem;
+}
+
+.public-marketing-page :where(a, button):focus-visible {
+  outline: 3px solid hsl(var(--marketing-orange) / 0.3);
+  outline-offset: 3px;
+}
+
+.public-marketing-page > header {
+  box-shadow: none;
+  border-bottom: 1px solid hsl(var(--marketing-line));
+}
+
+.public-marketing-page > header nav > a[class*="bg-"],
+.public-marketing-page > header nav > a[class*="border-"] {
+  border-radius: 0.375rem;
+}
+
+.public-marketing-page > section {
+  position: relative;
+}
+
+.public-marketing-page > section:first-of-type {
+  background: hsl(var(--marketing-navy));
+  color: hsl(var(--marketing-surface));
+}
+
+.public-marketing-page > section:first-of-type :where(h1, h2, p) {
+  color: inherit;
+}
+
+.public-marketing-page > section:first-of-type h1 span:first-child {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-marketing-page > section:first-of-type h1 span:last-child,
+.public-marketing-page > section:first-of-type [class*="text-[#eb4b00]"] {
+  color: hsl(var(--marketing-orange));
+}
+
+.public-marketing-page > section:first-of-type form + div {
+  color: hsl(var(--marketing-surface) / 0.72);
+}
+
+.public-marketing-page :where([class*="rounded-2xl"], [class*="rounded-xl"]) {
+  border-radius: 0.5rem;
+}
+
+.public-marketing-page :where([class*="shadow-2xl"], [class*="shadow-xl"], [class*="shadow-lg"]) {
+  box-shadow: 0 12px 32px hsl(var(--marketing-ink) / 0.12);
+}
+
+.public-marketing-page > section:not(:first-of-type):nth-of-type(even) {
+  background: hsl(var(--marketing-canvas));
+}
+
+.public-marketing-page > section:not(:first-of-type):nth-of-type(odd) {
+  background: hsl(var(--marketing-surface));
+}
+
+.public-marketing-page section :where(article, a, div)[class*="border"][class*="bg-white"] {
+  border-color: hsl(var(--marketing-line));
+}
+
+.public-marketing-page section :where(article, a, div)[class*="border"][class*="bg-white"]:hover {
+  border-color: hsl(var(--marketing-orange) / 0.7);
+}
+
+.public-marketing-page section :where(a, button)[class*="bg-[#eb4b00]"] {
+  background: hsl(var(--marketing-orange));
+  box-shadow: none;
+}
+
+.public-marketing-page section :where(a, button)[class*="bg-[#eb4b00]"]:hover {
+  background: hsl(var(--marketing-orange-strong));
+}
+
+.public-dealer-home > section:first-of-type {
+  padding-top: 4.25rem;
+  padding-bottom: 4.5rem;
+}
+
+.public-dealer-home > section:first-of-type > div > div:first-child {
+  align-items: center;
+}
+
+.public-dealer-home > section:first-of-type > div > div:first-child > div:first-child > div:first-child {
+  border: 1px solid hsl(var(--marketing-surface) / 0.3);
+  background: hsl(var(--marketing-surface) / 0.1);
+}
+
+.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child > div:first-child {
+  border-color: hsl(var(--marketing-surface) / 0.22);
+  box-shadow: 0 24px 56px hsl(220 35% 7% / 0.3);
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) {
+  margin-top: 3rem;
+  border: 1px solid hsl(var(--marketing-surface) / 0.16);
+  background: hsl(218 43% 15%);
+  box-shadow: 0 14px 34px hsl(220 35% 7% / 0.22);
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
+  border: 1px solid hsl(var(--marketing-surface) / 0.18);
+  background: hsl(var(--marketing-surface) / 0.08);
+  box-shadow: none;
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(3) :where(.text-gray-900, .text-gray-600) {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-home > section:nth-of-type(2) a[class*="border-2"],
+.public-dealer-home > section:nth-of-type(3) article,
+.public-dealer-home > section:nth-of-type(4) div[class*="border"],
+.public-dealer-home > section:nth-of-type(6) div[class*="rounded-xl"],
+.public-dealer-home > section:nth-of-type(7) a[class*="border"] {
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.public-dealer-home > section:nth-of-type(2) a[class*="border-2"]:hover,
+.public-dealer-home > section:nth-of-type(7) a[class*="border"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px hsl(var(--marketing-ink) / 0.09);
+}
+
+.public-dealer-home > section:nth-of-type(8) {
+  background: hsl(var(--marketing-navy));
+}
+
+.public-dealer-service > section:first-of-type {
+  padding-block: 5rem;
+}
+
+.public-dealer-service > section:first-of-type > div > div:first-child {
+  color: hsl(var(--marketing-surface));
+  border: 1px solid hsl(var(--marketing-surface) / 0.24);
+  background: hsl(var(--marketing-surface) / 0.1);
+}
+
+.public-dealer-service > section:first-of-type a:last-child {
+  color: hsl(var(--marketing-surface));
+  border-color: hsl(var(--marketing-surface) / 0.45);
+}
+
+.public-dealer-service > section:not(:first-of-type) [class*="rounded-2xl"],
+.public-dealer-service > section:not(:first-of-type) [class*="rounded-xl"] {
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.public-dealer-service > section:last-of-type {
+  background: hsl(var(--marketing-navy));
+}
+
+.public-dealer-signup > section:first-of-type {
+  padding-block: 1rem 2rem;
+}
+
+.public-dealer-signup > section:first-of-type > div > div > div:first-child :where(h1, p) {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-signup > section:first-of-type > div > div > div:first-child > span {
+  color: hsl(var(--marketing-surface));
+  border: 1px solid hsl(var(--marketing-surface) / 0.24);
+  background: hsl(var(--marketing-surface) / 0.1);
+}
+
+.public-dealer-signup > section:first-of-type > div > div > div:last-child > div:first-child {
+  border-radius: 0.5rem;
+  border-color: hsl(var(--marketing-line));
+  box-shadow: 0 18px 45px hsl(220 35% 7% / 0.25);
+}
+
+.public-dealer-signup > section:first-of-type > div > div > div:last-child > div:not(:first-child) :where(h3, p, li) {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-signup > section:nth-of-type(2) div[class*="rounded-full"],
+.public-dealer-signup > section:nth-of-type(3) div[class*="rounded-full"] {
+  box-shadow: none;
+}
+
+.public-dealer-signup > section:nth-of-type(4) > div > div {
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.public-dealer-signup > footer {
+  margin-top: 0;
+  background: hsl(var(--marketing-navy));
+}
+
+@media (max-width: 1023px) {
+  .public-dealer-home > section:first-of-type {
+    padding-top: 3rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .public-marketing-page > header img {
+    height: 3.5rem;
+  }
+
+  .public-dealer-home > section:first-of-type,
+  .public-dealer-service > section:first-of-type {
+    padding-block: 2.75rem;
+  }
+
+  .public-dealer-home > section:first-of-type h1,
+  .public-dealer-service > section:first-of-type h1,
+  .public-dealer-signup > section:first-of-type h1 {
+    font-size: 2.25rem;
+    line-height: 1.08;
+  }
+
+  .public-dealer-home > section:first-of-type > div > div:nth-child(2) {
+    margin-top: 2rem;
+  }
+}
+
 /* Custom car animation */
 @keyframes gentle-bounce {
   0%, 20%, 50%, 80%, 100% {

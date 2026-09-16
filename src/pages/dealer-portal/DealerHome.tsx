@@ -101,7 +101,7 @@ const DealerHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="public-marketing-page public-dealer-home min-h-screen bg-white">
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
