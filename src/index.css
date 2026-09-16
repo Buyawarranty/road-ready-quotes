@@ -1622,3 +1622,91 @@ body {
     line-height: 1.12;
   }
 }
+
+/* ===== Batch 5: public quote and cart screens ===== */
+/* Scoped strictly to public quote/cart wrappers; no shared or protected styles. */
+.public-quote-page {
+  --quote-ink: 220 20% 14%;
+  --quote-copy: 220 9% 38%;
+  --quote-canvas: 210 20% 98%;
+  --quote-surface: 0 0% 100%;
+  --quote-line: 220 14% 86%;
+  --quote-orange: 18 100% 47%;
+  --quote-orange-strong: 17 100% 41%;
+  --quote-green: 145 63% 39%;
+  --quote-navy: 216 45% 20%;
+  color: hsl(var(--quote-ink));
+}
+
+.public-quote-page :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(var(--quote-ink));
+  letter-spacing: 0;
+}
+
+.public-quote-page :where(a, button, input, textarea, select) {
+  border-radius: 0.375rem;
+}
+
+.public-quote-page :where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid hsl(var(--quote-orange) / 0.3);
+  outline-offset: 3px;
+}
+
+.public-quote-page :where([class*="rounded-3xl"], [class*="rounded-2xl"], [class*="rounded-xl"]) {
+  border-radius: 0.5rem;
+}
+
+.public-quote-page :where([class*="shadow-2xl"], [class*="shadow-xl"], [class*="shadow-lg"], [class*="shadow-md"]) {
+  box-shadow: 0 10px 28px hsl(var(--quote-ink) / 0.09);
+}
+
+.public-quote-page :where([class*="border-gray-200"], [class*="border-gray-300"], [class*="border-slate-200"]) {
+  border-color: hsl(var(--quote-line));
+}
+
+.public-quote-page :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-[#eb4b00]"]) {
+  background: hsl(var(--quote-orange));
+}
+
+.public-quote-page :where(.bg-primary, [class*="bg-brand-orange"]):hover {
+  background: hsl(var(--quote-orange-strong));
+}
+
+.public-quote-page :where(.text-primary, [class*="text-brand-orange"]) {
+  color: hsl(var(--quote-orange));
+}
+
+.public-cart-page {
+  background: hsl(var(--quote-canvas));
+}
+
+.public-cart-page [class*="bg-white"] {
+  border-color: hsl(var(--quote-line));
+}
+
+.public-cart-page :where(button)[class*="bg-green"] {
+  background: hsl(var(--quote-green));
+}
+
+.public-cart-page :where(p, span:not([class*="text-brand"]):not([class*="text-white"])) {
+  letter-spacing: 0;
+}
+
+.public-live-quote {
+  background: hsl(var(--quote-canvas));
+}
+
+.public-live-quote main > * {
+  border-radius: 0.5rem;
+}
+
+.public-live-quote [class*="bg-white"] {
+  border-color: hsl(var(--quote-line));
+}
+
+@media (max-width: 640px) {
+  .public-quote-page h1 {
+    font-size: 1.875rem;
+    line-height: 1.15;
+  }
+}

@@ -33,7 +33,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
 
   if (items.length === 0) {
     return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="public-quote-page public-cart-page bg-gray-50 min-h-screen flex items-center justify-center">
         <div className="max-w-md mx-auto text-center">
           <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Your cart is empty</h2>
@@ -139,7 +139,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-2 sm:pt-0">
+    <div className="public-quote-page public-cart-page bg-gray-50 min-h-screen pt-2 sm:pt-0">
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Back button - inline with content */}

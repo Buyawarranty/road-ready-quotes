@@ -977,7 +977,7 @@ export default function LiveQuotePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#e8f4fb]">
+    <div className="public-quote-page public-live-quote min-h-screen bg-[#e8f4fb]">
       {/* Header */}
       <DealerPublicHeader />
 
