@@ -320,6 +320,66 @@ const TradeOnlyPage: React.FC = () => {
           </div>
         </section>
 
+        {/* Why Us FAQs — colourful accordion bars (only on /warranty-plan) */}
+        {isWhyUs && (
+          <section className="py-16 sm:py-20">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-3">
+                  Why us? Your questions answered
+                </h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  The things dealers ask us most before joining the programme.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {WHY_US_FAQS.map((item, idx) => {
+                  const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
+                  const open = openFaq === idx;
+                  return (
+                    <div
+                      key={item.q}
+                      className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
+                    >
+                      <button
+                        onClick={() => setOpenFaq(open ? null : idx)}
+                        className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                        aria-expanded={open}
+                      >
+                        <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
+                        <ChevronDown
+                          className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                            open ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+                      <div
+                        className={`overflow-hidden transition-all duration-200 ease-out ${
+                          open ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
+                          {item.a}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="text-center mt-8">
+                <Button asChild size="lg" className="bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold">
+                  <Link to="/faq/traders">
+                    View all dealer FAQs
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Checklist */}
         <section className="py-16 sm:py-20 bg-muted/30">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
