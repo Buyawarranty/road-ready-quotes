@@ -2182,8 +2182,8 @@ body {
   max-width: 680px;
   margin: 0;
   color: hsl(var(--home-ink));
-  font-size: clamp(2.5rem, 4.7vw, 4.25rem);
-  line-height: 0.98;
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 1.05;
   font-weight: 900;
 }
 .public-dealer-home .home-hero h1 span { color: hsl(var(--home-orange)); }
@@ -2374,7 +2374,7 @@ body {
 
 @media (max-width: 767px) {
   .public-dealer-home > .home-hero { padding: 2.5rem 0 1.5rem; }
-  .public-dealer-home .home-hero h1 { font-size: 2.65rem; }
+  .public-dealer-home .home-hero h1 { font-size: 2.1rem; }
   .public-dealer-home .home-hero-visual img { max-height: 280px; }
   .public-dealer-home .home-benefit-row { grid-template-columns: repeat(2, 1fr); }
   .public-dealer-home .home-cover-grid,
@@ -2394,7 +2394,7 @@ body {
 }
 
 @media (max-width: 479px) {
-  .public-dealer-home .home-hero h1 { font-size: 2.25rem; }
+  .public-dealer-home .home-hero h1 { font-size: 1.8rem; }
   .public-dealer-home .home-support-card { align-items: center; flex-direction: column; }
   .public-dealer-home .home-benefit-row,
   .public-dealer-home .home-stats-grid { grid-template-columns: 1fr; }
