@@ -6,4 +6,4 @@
 - [x] Batch 4: blog and supporting content
 - [x] Batch 5: quote and cart
 - [x] Batch 6: checkout, payment, and confirmation
-- [ ] Batch 7: customer widget
+- [x] Batch 7: customer widget

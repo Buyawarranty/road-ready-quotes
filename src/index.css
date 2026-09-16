@@ -1786,3 +1786,63 @@ body {
     line-height: 1.18;
   }
 }
+
+/* Batch 7: customer quote widget (route-scoped) */
+.public-widget-page {
+  --widget-ink: 218 33% 18%;
+  --widget-line: 220 14% 90%;
+  --widget-orange: 18 100% 46%;
+  --widget-orange-strong: 18 100% 40%;
+  background: 0 0% 100%;
+  color: hsl(var(--widget-ink));
+  font-family: Helvetica, "Segoe UI", Arial, sans-serif;
+}
+
+.public-widget-page :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(var(--widget-ink));
+  letter-spacing: 0;
+}
+
+.public-widget-page :where([class*="rounded-3xl"], [class*="rounded-2xl"], [class*="rounded-xl"]) {
+  border-radius: 0.5rem;
+}
+
+.public-widget-page :where([class*="shadow-2xl"], [class*="shadow-xl"], [class*="shadow-lg"], [class*="shadow-md"]) {
+  box-shadow: 0 10px 28px hsl(var(--widget-ink) / 0.09);
+}
+
+.public-widget-page :where([class*="border-gray-200"], [class*="border-gray-300"], [class*="border-slate-200"]) {
+  border-color: hsl(var(--widget-line));
+}
+
+.public-widget-page :where(input, textarea, select) {
+  border-color: hsl(var(--widget-line));
+}
+
+.public-widget-page :where(a, button, input, textarea, select) {
+  border-radius: 0.375rem;
+}
+
+.public-widget-page :where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid hsl(var(--widget-orange) / 0.3);
+  outline-offset: 3px;
+}
+
+.public-widget-page :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-[#eb4b00]"]) {
+  background: hsl(var(--widget-orange));
+}
+
+.public-widget-page :where(.bg-primary, [class*="bg-brand-orange"]):hover {
+  background: hsl(var(--widget-orange-strong));
+}
+
+.public-widget-page :where(.text-primary, [class*="text-brand-orange"]) {
+  color: hsl(var(--widget-orange));
+}
+
+@media (max-width: 640px) {
+  .public-widget-page h1 {
+    font-size: 1.6rem;
+    line-height: 1.2;
+  }
+}
