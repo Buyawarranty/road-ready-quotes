@@ -227,6 +227,193 @@
   }
 }
 
+/* Batch 3: warranty, vehicle, brand and database-driven landing pages.
+   These tokens activate only on explicit public landing wrappers. */
+.public-landing-page {
+  --landing-ink: 220 20% 14%;
+  --landing-copy: 220 9% 38%;
+  --landing-canvas: 210 20% 98%;
+  --landing-surface: 0 0% 100%;
+  --landing-line: 220 14% 86%;
+  --landing-orange: 18 100% 47%;
+  --landing-orange-strong: 17 100% 41%;
+  --landing-green: 145 63% 39%;
+  --landing-navy: 216 45% 20%;
+  color: hsl(var(--landing-ink));
+  background: hsl(var(--landing-surface));
+}
+
+.public-landing-page :where(h1, h2, h3, h4, h5, h6) {
+  color: hsl(var(--landing-ink));
+  letter-spacing: 0;
+}
+
+.public-landing-page :where(a, button, input, textarea, select) {
+  border-radius: 0.375rem;
+}
+
+.public-landing-page :where(a, button, input, textarea, select):focus-visible {
+  outline: 3px solid hsl(var(--landing-orange) / 0.3);
+  outline-offset: 3px;
+}
+
+.public-landing-page :where([class*="rounded-2xl"], [class*="rounded-xl"]) {
+  border-radius: 0.5rem;
+}
+
+.public-landing-page :where([class*="shadow-2xl"], [class*="shadow-xl"], [class*="shadow-lg"]) {
+  box-shadow: 0 12px 32px hsl(var(--landing-ink) / 0.11);
+}
+
+.public-landing-page :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-[#eb4b00]"]) {
+  background: hsl(var(--landing-orange));
+}
+
+.public-landing-page :where(.text-primary, [class*="text-brand-orange"], [class*="text-[#eb4b00]"]) {
+  color: hsl(var(--landing-orange));
+}
+
+.public-warranty-landing > section:first-of-type {
+  padding-block: 5rem;
+  color: hsl(var(--landing-surface));
+  background: hsl(var(--landing-navy));
+}
+
+.public-warranty-landing > section:first-of-type :where(h1, p) {
+  color: inherit;
+}
+
+.public-warranty-landing > section:first-of-type > div > div:first-child {
+  color: hsl(var(--landing-surface));
+  border: 1px solid hsl(var(--landing-surface) / 0.25);
+  background: hsl(var(--landing-surface) / 0.1);
+}
+
+.public-warranty-landing > section:first-of-type a[class*="border"] {
+  color: hsl(var(--landing-surface));
+  border-color: hsl(var(--landing-surface) / 0.45);
+  background: transparent;
+}
+
+.public-warranty-landing > section:nth-of-type(2) {
+  background: hsl(var(--landing-canvas));
+}
+
+.public-warranty-landing > section:nth-of-type(2) > div > div:last-child > div {
+  border-color: hsl(var(--landing-line));
+  background: hsl(var(--landing-surface));
+  box-shadow: none;
+}
+
+.public-warranty-landing > section:nth-of-type(2) > div > div:last-child > div:hover {
+  border-color: hsl(var(--landing-orange) / 0.65);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px hsl(var(--landing-ink) / 0.08);
+}
+
+.public-warranty-landing > section:nth-of-type(3) {
+  background: hsl(var(--landing-surface));
+}
+
+.public-warranty-landing > section:nth-last-of-type(2) > div > div {
+  border-color: hsl(var(--landing-line));
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.public-warranty-landing > section:last-of-type {
+  color: hsl(var(--landing-surface));
+  background: hsl(var(--landing-navy));
+}
+
+.public-warranty-landing > section:last-of-type :where(h2, p) {
+  color: inherit;
+}
+
+.public-warranty-landing > section:last-of-type a[class*="border"] {
+  color: hsl(var(--landing-surface));
+  border-color: hsl(var(--landing-surface) / 0.45);
+  background: transparent;
+}
+
+.public-warranty-landing > footer {
+  border-color: hsl(var(--landing-line));
+  background: hsl(var(--landing-canvas));
+}
+
+.public-brand-landing > section:first-of-type {
+  padding-block: 4rem;
+  background: hsl(var(--landing-navy));
+}
+
+.public-brand-landing > section:first-of-type :where(h1, p, span:not([class*="text-brand-orange"])) {
+  color: hsl(var(--landing-surface));
+}
+
+.public-brand-landing > section:first-of-type > div > div > div:first-child > div:first-child {
+  max-width: 36rem;
+}
+
+.public-brand-landing > section:first-of-type [class*="border-black"] {
+  border-color: hsl(var(--landing-surface) / 0.7);
+  box-shadow: 0 14px 30px hsl(220 35% 7% / 0.24);
+}
+
+.public-brand-landing > section:first-of-type [class*="text-black"] {
+  color: hsl(var(--landing-surface));
+}
+
+.public-brand-landing > section:first-of-type [class*="text-gray-700"] {
+  color: hsl(var(--landing-surface) / 0.82);
+}
+
+.public-brand-landing > section:first-of-type img {
+  border-radius: 0.5rem;
+}
+
+.public-brand-landing > section:not(:first-of-type):nth-of-type(even) {
+  background: hsl(var(--landing-canvas));
+}
+
+.public-brand-landing > section:not(:first-of-type):nth-of-type(odd) {
+  background: hsl(var(--landing-surface));
+}
+
+.public-brand-landing > section :where([class*="border"], [class*="shadow"])[class*="bg-white"] {
+  border-color: hsl(var(--landing-line));
+}
+
+.public-brand-landing > section :where(button, a)[class*="bg-brand-orange"] {
+  background: hsl(var(--landing-orange));
+  box-shadow: none;
+}
+
+.public-brand-landing > section :where(button, a)[class*="bg-brand-orange"]:hover {
+  background: hsl(var(--landing-orange-strong));
+}
+
+.public-brand-landing > section :where(button, a)[class*="bg-brand-deep-blue"] {
+  background: hsl(var(--landing-navy));
+  box-shadow: none;
+}
+
+.public-brand-landing > section[class*="bg-gradient"] {
+  background: hsl(var(--landing-canvas));
+}
+
+@media (max-width: 640px) {
+  .public-warranty-landing > section:first-of-type,
+  .public-brand-landing > section:first-of-type {
+    padding-block: 2.75rem;
+  }
+
+  .public-warranty-landing > section:first-of-type h1,
+  .public-brand-landing > section:first-of-type h1 {
+    font-size: 2.25rem;
+    line-height: 1.08;
+  }
+}
+
 /* Batch 2: public dealer marketing only. The explicit wrapper prevents these
    rules from reaching dealer login, quote tools, dashboards or admin routes. */
 .public-marketing-page {
