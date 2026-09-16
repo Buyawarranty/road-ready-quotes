@@ -32,8 +32,8 @@ import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
 import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
-import dealerGrowthAsset from '@/assets/panda-dealer-growth.png.asset.json';
-import coveredPartsAsset from '@/assets/panda-covered-parts.png.asset.json';
+import dealerGrowthImage from '@/assets/panda-dealer-growth.png';
+import coveredPartsImage from '@/assets/panda-covered-parts.png';
 import pandaHeroImage from '@/assets/panda-hero.png';
 
 const HOME_FAQS: { q: string; a: string }[] = [
@@ -383,7 +383,7 @@ const DealerHome = () => {
 
       <section id="why-us" className="home-story-section">
         <div className="home-shell home-story-grid">
-          <div className="home-story-image"><OptimizedImage src={dealerGrowthAsset.url} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={1200} height={800} /></div>
+          <div className="home-story-image"><OptimizedImage src={dealerGrowthImage} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={1200} height={800} /></div>
           <div>
             <p className="home-eyebrow">Grow sales with dealer extended warranties</p>
             <h2>Grow Sales with Dealer Extended Warranties</h2>
@@ -416,7 +416,7 @@ const DealerHome = () => {
               ].map(({ icon: Icon, title, body }) => <li key={title}><Icon aria-hidden="true" /><span><strong>{title}</strong>{body}</span></li>)}
             </ul>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={coveredPartsAsset.url} alt="Car showing covered mechanical and electrical parts" width={1200} height={800} /></div>
+          <div className="home-plan-image"><OptimizedImage src={coveredPartsImage} alt="Car showing covered mechanical and electrical parts" width={1200} height={800} /></div>
         </div>
       </section>
 
