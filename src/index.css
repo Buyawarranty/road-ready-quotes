@@ -2245,7 +2245,8 @@ body {
 .public-dealer-home .home-section-heading > span,
 .public-dealer-home .home-section-heading > p:not(:first-child) { color: hsl(var(--home-copy)); }
 
-.public-dealer-home .home-cover-split { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: 3.5rem; }
+.public-dealer-home .home-cover-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; gap: 3.5rem; }
+.public-dealer-home .home-cover-visual { order: -1; }
 .public-dealer-home .home-cover-content .home-section-heading { margin-bottom: 1.75rem; }
 .public-dealer-home .home-cover-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 .public-dealer-home .home-cover-grid article { padding: 1.4rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.45rem; background: hsl(var(--home-surface)); }
