@@ -169,5 +169,8 @@ export const DealerPublicHeader: React.FC = () => {
         )}
       </div>
     </header>
+    {/* Spacer keeps page content below the fixed header */}
+    <div aria-hidden="true" className="h-[60px] sm:h-[76px]" />
+    </>
   );
 };
