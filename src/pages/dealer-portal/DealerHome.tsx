@@ -348,6 +348,39 @@ const DealerHome = () => {
         </div>
       </section>
 
+      <section className="home-coverage-section">
+        <div className="home-shell home-narrow">
+          <header className="home-section-heading">
+            <p className="home-coverage-badge"><ShieldCheck aria-hidden="true" />Full Coverage Details</p>
+            <h2><span>Every Part Covered.</span> Drive Worry-Free</h2>
+            <small>From engine to electrics, see exactly what's protected</small>
+          </header>
+          <div className="home-coverage-rows">
+            {COVERAGE_ROWS.map((row, index) => {
+              const open = openCoverage === index;
+              const Icon = row.icon;
+              return (
+                <article key={row.title} className={`home-coverage-row home-coverage-row-${row.tone}`}>
+                  <button type="button" onClick={() => setOpenCoverage(open ? null : index)} aria-expanded={open}>
+                    <span><Icon aria-hidden="true" />{row.title}</span>
+                    <ChevronDown className={open ? 'rotate-180' : ''} aria-hidden="true" />
+                  </button>
+                  {open && (
+                    <div>
+                      <ul>
+                        {row.items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}
+                      </ul>
+                      <p className="home-coverage-note">{row.note}</p>
+                      <Link to="/warranty-plan">Full cover details <ArrowRight aria-hidden="true" /></Link>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       <section id="why-us" className="home-story-section">
         <div className="home-shell home-story-grid">
           <div className="home-story-image"><OptimizedImage src={pandaVehiclesImage} alt="Panda Protect supporting UK motor dealers" width={1200} height={800} /></div>
