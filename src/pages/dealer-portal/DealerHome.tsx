@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Check,
+  ChevronDown,
   ArrowRight,
   Phone,
   Mail,
@@ -31,9 +32,48 @@ import pandaMechanicImage from '@/assets/car-warranty-panda-vehicles.png';
  * Dealer home (/dealer-portal/) — trade-focused landing page.
  * SEO targets: dealer extended warranties, motor trade warranty, dealer programme UK.
  */
+
+// Bold coloured bars for FAQ accordions (matches dealer FAQs page)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
+const HOME_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How do I register my dealership for a trade account?',
+    a: 'Complete our online dealer application form. Once we verify your motor trade business, your account is usually activated within 24 hours with full access to the dealer portal, pricing tools and resources.',
+  },
+  {
+    q: 'How quickly can I issue a warranty to a customer?',
+    a: 'Once your account is approved, you can generate a warranty policy in under 60 seconds from your dealer dashboard — ready for same-day handover with the vehicle.',
+  },
+  {
+    q: 'Do you require minimum monthly sales volumes?',
+    a: 'No. Our partner programme is flexible — there are no minimum sales volumes or long-term commitments. Full dealer terms are available in the portal after registration.',
+  },
+  {
+    q: 'How do claims and payouts work?',
+    a: 'Claims are handled quickly with instant payouts to any VAT-registered UK garage. Your customers can use their own local garage, keeping them happy and your reputation strong.',
+  },
+  {
+    q: 'What vehicles can I cover?',
+    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 15 years old and 150,000 miles. Enter a registration in the quote tool for instant pricing.',
+  },
+  {
+    q: 'Can I set my own margins and pricing?',
+    a: 'Yes. The dealer portal includes pricing and margin controls so you can set customer-facing prices that work for your business, with performance tracking built in.',
+  },
+];
+
 const DealerHome = () => {
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -517,6 +557,65 @@ const DealerHome = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dealer FAQs — colourful accordion bars */}
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 text-center">
+            Dealer FAQs
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 text-center">
+            Quick answers to the questions we hear most from motor traders.
+          </p>
+
+          <div className="space-y-3">
+            {HOME_FAQS.map((item, idx) => {
+              const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
+              const open = openFaq === idx;
+              return (
+                <div
+                  key={item.q}
+                  className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
+                >
+                  <button
+                    onClick={() => setOpenFaq(open ? null : idx)}
+                    className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                    aria-expanded={open}
+                  >
+                    <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
+                    <ChevronDown
+                      className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                        open ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-200 ease-out ${
+                      open ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
+                      {item.a}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link to="/faq/traders">
+              <Button
+                size="lg"
+                className="bg-[#eb4b00] hover:bg-[#d63f00] text-white px-8 py-3 font-semibold"
+              >
+                View all dealer FAQs
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
