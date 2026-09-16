@@ -567,6 +567,75 @@
   background: hsl(var(--marketing-navy));
 }
 
+/* Light homepage restyle: airy white/soft-grey surfaces with dark text,
+   scoped to the public dealer homepage only. */
+.public-dealer-home > section:first-of-type,
+.public-marketing-page.public-dealer-home > section:first-of-type {
+  background: linear-gradient(180deg, hsl(var(--marketing-surface)) 0%, hsl(var(--marketing-canvas)) 100%);
+  color: hsl(var(--marketing-ink));
+  border-bottom: 1px solid hsl(var(--marketing-line));
+}
+
+.public-dealer-home > section:first-of-type :where(h1, h2, h3, p, span, div, li) {
+  color: inherit;
+}
+
+.public-dealer-home > section:first-of-type h1 span:first-child {
+  color: hsl(var(--marketing-ink));
+}
+
+.public-dealer-home > section:first-of-type h1 span:last-child,
+.public-dealer-home > section:first-of-type [class*="text-[#eb4b00]"],
+.public-dealer-home > section:first-of-type [class*="text-orange"] {
+  color: hsl(var(--marketing-orange));
+}
+
+.public-dealer-home > section:first-of-type p {
+  color: hsl(var(--marketing-copy));
+}
+
+.public-dealer-home > section:first-of-type form + div {
+  color: hsl(var(--marketing-copy));
+}
+
+/* Badge above the headline */
+.public-dealer-home > section:first-of-type > div > div:first-child > div:first-child > div:first-child {
+  border: 1px solid hsl(var(--marketing-line));
+  background: hsl(var(--marketing-canvas));
+  color: hsl(var(--marketing-copy));
+}
+
+/* Dashboard mockup frame */
+.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child > div:first-child {
+  border: 1px solid hsl(var(--marketing-line));
+  box-shadow: 0 24px 56px hsl(var(--marketing-ink) / 0.12);
+}
+
+/* Dealer login / join strip */
+.public-dealer-home > section:first-of-type > div > div:nth-child(2) {
+  margin-top: 3rem;
+  border: 1px solid hsl(var(--marketing-line));
+  background: hsl(var(--marketing-surface));
+  box-shadow: 0 10px 26px hsl(var(--marketing-ink) / 0.06);
+  color: hsl(var(--marketing-ink));
+}
+
+/* Benefit cards row */
+.public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
+  border: 1px solid hsl(var(--marketing-line));
+  background: hsl(var(--marketing-surface));
+  box-shadow: none;
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(3) :where(.text-gray-900) {
+  color: hsl(var(--marketing-ink));
+}
+
+.public-dealer-home > section:first-of-type > div > div:nth-child(3) :where(.text-gray-600) {
+  color: hsl(var(--marketing-copy));
+}
+
+
 .public-dealer-service > section:first-of-type {
   padding-block: 5rem;
 }
