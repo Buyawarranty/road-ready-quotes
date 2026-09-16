@@ -522,6 +522,65 @@ const DealerHome = () => {
         </div>
       </section>
 
+      {/* Dealer FAQs — colourful accordion bars */}
+      <section className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 text-center">
+            Dealer FAQs
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 text-center">
+            Quick answers to the questions we hear most from motor traders.
+          </p>
+
+          <div className="space-y-3">
+            {HOME_FAQS.map((item, idx) => {
+              const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
+              const open = openFaq === idx;
+              return (
+                <div
+                  key={item.q}
+                  className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
+                >
+                  <button
+                    onClick={() => setOpenFaq(open ? null : idx)}
+                    className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                    aria-expanded={open}
+                  >
+                    <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
+                    <ChevronDown
+                      className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                        open ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  <div
+                    className={`overflow-hidden transition-all duration-200 ease-out ${
+                      open ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
+                      {item.a}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link to="/faq/traders">
+              <Button
+                size="lg"
+                className="bg-[#eb4b00] hover:bg-[#d63f00] text-white px-8 py-3 font-semibold"
+              >
+                View all dealer FAQs
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Resources / Trust */}
       <section id="resources" className="py-16 bg-gray-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
