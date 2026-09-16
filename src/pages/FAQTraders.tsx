@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import WebsiteFooter from '@/components/WebsiteFooter';
-import pandaVehicleImage from '@/assets/car-warranty-panda-vehicles.png';
+import pandaVehicleImage from '@/assets/panda-vehicles.png';
 
 type FAQItem = { q: string; a: React.ReactNode; plain: string };
 type Pillar = {
