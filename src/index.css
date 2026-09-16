@@ -2283,6 +2283,28 @@ body {
 .public-dealer-home .home-service-row > div p { margin: 0 0 0.6rem; }
 .public-dealer-home .home-service-row > div a { display: inline-flex; align-items: center; gap: 0.35rem; color: hsl(var(--home-orange)); font-weight: 800; }
 
+.public-dealer-home .home-coverage-section { background: hsl(var(--home-surface)); }
+.public-dealer-home .home-coverage-badge { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 1.1rem; border-radius: 999px; background: #e9f8ef; border: 1px solid #bfe8cd; color: #15803d; font-weight: 700; font-size: 0.9rem; }
+.public-dealer-home .home-coverage-badge svg { width: 1rem; height: 1rem; }
+.public-dealer-home .home-coverage-rows { display: grid; gap: 0.85rem; text-align: left; }
+.public-dealer-home .home-coverage-row { overflow: hidden; border-radius: 0.75rem; color: #fff; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08); }
+.public-dealer-home .home-coverage-row-black { background: #111827; }
+.public-dealer-home .home-coverage-row-slate { background: #475569; }
+.public-dealer-home .home-coverage-row-orange { background: #ea580c; }
+.public-dealer-home .home-coverage-row-green { background: #16a34a; }
+.public-dealer-home .home-coverage-row-pink { background: #fde8e8; color: #b91c1c; border: 1px solid #f6c8c8; }
+.public-dealer-home .home-coverage-row-cream { background: #fef9e0; color: #92400e; border: 1px solid #f3e5ab; }
+.public-dealer-home .home-coverage-row-blue { background: #e7f3fd; color: #1d4ed8; border: 1px solid #c4dff8; }
+.public-dealer-home .home-coverage-row > button { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1.05rem 1.25rem; color: inherit; font-weight: 700; font-size: 1.05rem; }
+.public-dealer-home .home-coverage-row button span { display: flex; align-items: center; gap: 0.65rem; }
+.public-dealer-home .home-coverage-row button svg { width: 1.15rem; height: 1.15rem; transition: transform .2s ease; }
+.public-dealer-home .home-coverage-row > div { padding: 1.1rem 1.25rem; background: hsl(var(--home-surface)); color: hsl(var(--home-copy)); border: 1px solid hsl(var(--home-line)); border-top: 0; border-radius: 0 0 0.75rem 0.75rem; }
+.public-dealer-home .home-coverage-row > div ul { display: grid; gap: 0.5rem; margin: 0 0 0.85rem; padding: 0; list-style: none; }
+.public-dealer-home .home-coverage-row > div li { display: flex; align-items: flex-start; gap: 0.55rem; }
+.public-dealer-home .home-coverage-row > div li svg { width: 1rem; height: 1rem; flex: 0 0 auto; margin-top: 0.2rem; color: hsl(var(--home-green)); stroke-width: 3; }
+.public-dealer-home .home-coverage-note { margin: 0 0 0.75rem; font-size: 0.9rem; color: hsl(var(--home-copy)); opacity: 0.8; font-style: italic; }
+.public-dealer-home .home-coverage-row > div a { display: inline-flex; align-items: center; gap: 0.35rem; color: hsl(var(--home-orange)); font-weight: 800; }
+
 .public-dealer-home .home-story-grid,
 .public-dealer-home .home-plan-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: clamp(2rem, 7vw, 6rem); }
 .public-dealer-home .home-story-image,
