@@ -10,6 +10,10 @@ interface NavItem {
   to: string;
 }
 
+interface DealerPublicHeaderProps {
+  homepageStyle?: boolean;
+}
+
 const NAV_ITEMS: NavItem[] = [
   { label: 'Home', to: '/' },
   { label: 'Why Us', to: '/warranty-plan' },
@@ -18,15 +22,23 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Contact', to: '/contact-us' },
 ];
 
-export const DealerPublicHeader: React.FC = () => {
+const HOMEPAGE_NAV_ITEMS: NavItem[] = [
+  { label: "What's Covered", to: '/what-is-covered/' },
+  { label: 'Make a Claim', to: '/make-a-claim/' },
+  { label: 'FAQs', to: '/faq/traders/' },
+  { label: 'Contact Us', to: '/contact-us/' },
+];
+
+export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepageStyle = false }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isPublicChrome = !location.pathname.startsWith('/dealer-portal/login');
+  const navItems = homepageStyle ? HOMEPAGE_NAV_ITEMS : NAV_ITEMS;
 
   return (
-    <header className={`${isPublicChrome ? 'public-site-header ' : ''}bg-white shadow-sm py-1 sm:py-2 sticky top-0 z-50`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className={`${isPublicChrome ? 'public-site-header ' : ''}${homepageStyle ? 'home-reference-header ' : ''}bg-white shadow-sm py-1 sm:py-2 sticky top-0 z-50`}>
+      <div className={homepageStyle ? 'home-reference-header-shell' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
@@ -48,7 +60,7 @@ export const DealerPublicHeader: React.FC = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-2 xl:gap-4">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -93,22 +105,27 @@ export const DealerPublicHeader: React.FC = () => {
               WhatsApp Us
             </a>
 
-            {/* Start Today CTA */}
-            <Link
-              to="/dealer-portal/signup"
-              className="inline-flex items-center px-3 py-2 bg-[#eb4b00] text-white text-sm font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
-            >
-              Start Today
-            </Link>
+            {homepageStyle ? (
+              <a href="#hero-reg" className="home-header-quote-link whitespace-nowrap">
+                Get my quote
+              </a>
+            ) : (
+              <Link
+                to="/dealer-portal/signup"
+                className="inline-flex items-center px-3 py-2 bg-[#eb4b00] text-white text-sm font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
+              >
+                Start Today
+              </Link>
+            )}
 
             {/* Motor Trade Login - high contrast B2B CTA */}
             <Link
               to="/dealer-portal/login"
-              className="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap"
+              className={homepageStyle ? 'home-header-login-link whitespace-nowrap' : 'inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap'}
               aria-label="Motor Trade Login for dealer partners"
             >
               <LogIn className="h-4 w-4" />
-              Motor Trade Login
+              {homepageStyle ? 'Login' : 'Motor Trade Login'}
             </Link>
           </nav>
 
@@ -126,7 +143,7 @@ export const DealerPublicHeader: React.FC = () => {
         {/* Mobile Nav */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-gray-200 mt-2 py-3 space-y-1">
-            {NAV_ITEMS.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -153,19 +170,29 @@ export const DealerPublicHeader: React.FC = () => {
               >
                 WhatsApp Us
               </a>
-              <Link
-                to="/dealer-portal/signup"
-                onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-              >
-                Start Today
-              </Link>
+              {homepageStyle ? (
+                <a
+                  href="#hero-reg"
+                  onClick={() => setMobileOpen(false)}
+                  className="home-header-quote-link"
+                >
+                  Get my quote
+                </a>
+              ) : (
+                <Link
+                  to="/dealer-portal/signup"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
+                >
+                  Start Today
+                </Link>
+              )}
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className="inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors"
+                className={homepageStyle ? 'home-header-login-link' : 'inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors'}
               >
-                <LogIn className="h-4 w-4" /> Motor Trade Login
+                <LogIn className="h-4 w-4" /> {homepageStyle ? 'Login' : 'Motor Trade Login'}
               </Link>
             </div>
           </div>
