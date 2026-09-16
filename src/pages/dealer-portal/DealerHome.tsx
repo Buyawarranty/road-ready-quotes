@@ -32,6 +32,8 @@ import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
 import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
+import dealerGrowthAsset from '@/assets/panda-dealer-growth.png.asset.json';
+import coveredPartsAsset from '@/assets/panda-covered-parts.png.asset.json';
 import pandaHeroImage from '@/assets/panda-hero.png';
 
 const HOME_FAQS: { q: string; a: string }[] = [
