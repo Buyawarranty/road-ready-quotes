@@ -16,6 +16,16 @@ type Pillar = {
   items: FAQItem[];
 };
 
+// Bold coloured bars for FAQ accordions (cycles per question)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
 const PILLARS: Pillar[] = [
   {
     id: 'account-setup',
@@ -433,20 +443,21 @@ const FAQTraders: React.FC = () => {
                     {p.items.map((item, idx) => {
                       const key = `${p.id}-${idx}`;
                       const open = !!openItems[key];
+                      const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
                       return (
                         <div
                           key={key}
-                          className="bg-white border border-slate-200 border-l-4 border-l-orange-300 rounded-xl overflow-hidden hover:border-orange-300 transition-colors"
+                          className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
                         >
                           <button
                             onClick={() => toggle(key)}
                             className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
                             aria-expanded={open}
                           >
-                            <span className="font-semibold text-slate-900 pr-2">{item.q}</span>
+                            <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
                             <ChevronDown
-                              className={`h-5 w-5 flex-shrink-0 text-slate-500 transition-transform ${
-                                open ? 'rotate-180 text-orange-600' : ''
+                              className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                                open ? 'rotate-180' : ''
                               }`}
                             />
                           </button>
@@ -455,7 +466,7 @@ const FAQTraders: React.FC = () => {
                               open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                             }`}
                           >
-                            <div className="px-5 pb-5 pt-1 text-slate-700 leading-relaxed border-t border-slate-100">
+                            <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
                               {item.a}
                             </div>
                           </div>
