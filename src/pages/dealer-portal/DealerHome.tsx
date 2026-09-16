@@ -63,6 +63,93 @@ const HOME_FAQS: { q: string; a: string }[] = [
   },
 ];
 
+const COVERAGE_ROWS = [
+  {
+    icon: Car,
+    title: 'Petrol & Diesel Vehicles',
+    tone: 'black',
+    items: [
+      'Engine & turbo unit — pistons, crankshaft, timing chains, rocker assembly and more',
+      'Gearbox, clutch and differential — all internal components',
+      'Drive shafts, C.V. joints and braking system',
+      'Cooling system, fuel system and engine electrics',
+    ],
+    note: 'Turbo cover ceases at 7 years or 80,000 miles. One clutch repair per warranty period.',
+  },
+  {
+    icon: BatteryCharging,
+    title: 'Hybrid & PHEV Vehicles',
+    tone: 'slate',
+    items: [
+      'Everything listed for petrol & diesel vehicles',
+      'Hybrid battery pack and battery management system',
+      'Inverter, converter and hybrid drive motor',
+      'Regenerative braking components',
+    ],
+    note: 'Cover applies to manufacturer-fitted hybrid systems.',
+  },
+  {
+    icon: Zap,
+    title: 'Electric vehicles (EVs)',
+    tone: 'orange',
+    items: [
+      'Electric drive motor and reduction gearbox',
+      'High-voltage battery and battery management system',
+      'On-board charger and charging port',
+      'EV cooling and power electronics',
+    ],
+    note: 'Battery degradation from normal use is not covered.',
+  },
+  {
+    icon: Bike,
+    title: 'Motorcycles (Petrol, Hybrid, EV)',
+    tone: 'green',
+    items: [
+      'Engine internals — pistons, crankshaft, valves and cam chain',
+      'Gearbox, clutch and final drive',
+      'Electrical system, ECU and ignition',
+      'Cooling and fuel systems',
+    ],
+    note: 'Cover available for road-registered bikes within age and mileage limits.',
+  },
+  {
+    icon: X,
+    title: "What's not covered",
+    tone: 'pink',
+    items: [
+      'Wear and tear items — tyres, brake pads, wipers and bulbs',
+      'Routine servicing and periodic replacement parts',
+      'Accidental damage, frost or overheating damage',
+      'Dual mass flywheel, wiring looms, alarms and immobilisers',
+    ],
+    note: 'Full exclusions list is provided with every policy document.',
+  },
+  {
+    icon: Settings,
+    title: 'Modifications and Your Cover',
+    tone: 'cream',
+    items: [
+      'Manufacturer-approved accessories are covered as standard',
+      'Non-approved or customised parts are excluded from cover',
+      'Performance tuning or remapping may affect eligibility',
+      'Always declare modifications at quote stage',
+    ],
+    note: 'Undeclared modifications can invalidate a claim.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Exclusions: High-Performance Cars',
+    tone: 'blue',
+    items: [
+      'High-performance, high-end and luxury models are excluded',
+      'Includes Audi R8, RS models and e-tron GT',
+      'Similar specification or servicing requirements also excluded',
+      'Newer versions of excluded models are not eligible',
+    ],
+    note: 'Unsure about a vehicle? Run the registration through the quote tool.',
+  },
+] as const;
+
 const DealerHome = () => {
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
