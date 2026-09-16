@@ -238,6 +238,17 @@ const TradeOnlyPage: React.FC = () => {
   const copy = copyForPath(pathname);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const isWhyUs = pathname.replace(/\/+$/, '') === '/warranty-plan';
+  const staticInformationPaths = new Set([
+    '/faq',
+    '/what-is-covered',
+    '/claims',
+    '/make-a-claim',
+    '/cancel-warranty',
+    '/warranty-transfer',
+    '/contact-us',
+    '/complaints',
+  ]);
+  const isStaticInformationPage = staticInformationPaths.has(pathname.replace(/\/+$/, '') || '/');
 
   const canonical = `https://pandaprotect.co.uk${pathname.endsWith('/') ? pathname : pathname + '/'}`;
 
@@ -256,7 +267,7 @@ const TradeOnlyPage: React.FC = () => {
 
       <DealerPublicHeader />
 
-      <main className="bg-background min-h-screen">
+      <main className={`${isStaticInformationPage ? 'public-static-page public-trade-info-page' : ''} bg-background min-h-screen`}>
         {/* Hero */}
         <section className="bg-gradient-to-br from-primary/5 via-background to-accent/5 py-16 sm:py-24">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

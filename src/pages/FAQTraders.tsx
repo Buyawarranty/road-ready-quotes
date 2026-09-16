@@ -282,7 +282,7 @@ const FAQTraders: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="public-static-page public-faq-page min-h-screen bg-background">
       <SEOHead
         title="Motor Trade Dealer FAQs | Panda Protect"
         description="Motor trade dealer FAQs covering account setup, dealer portal integration with AutoTrader, quick claims, fast payouts, warranty variants and UK dealer support."

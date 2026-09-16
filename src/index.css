@@ -5,6 +5,228 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Public static-page reskin. Kept behind explicit page classes so internal
+   admin, customer and dealer applications retain their existing UI. */
+.public-static-page,
+.public-static-footer {
+  --public-ink: 220 20% 14%;
+  --public-copy: 220 9% 38%;
+  --public-canvas: 210 20% 98%;
+  --public-surface: 0 0% 100%;
+  --public-line: 220 14% 88%;
+  --public-orange: 18 100% 47%;
+  --public-orange-strong: 17 100% 41%;
+  --public-green: 145 63% 39%;
+  --public-navy: 216 45% 20%;
+  color: hsl(var(--public-ink));
+  background: hsl(var(--public-canvas));
+}
+
+.public-static-page h1,
+.public-static-page h2,
+.public-static-page h3,
+.public-static-page h4,
+.public-static-page h5,
+.public-static-page h6,
+.public-static-footer h2,
+.public-static-footer h3 {
+  color: inherit;
+  letter-spacing: 0;
+}
+
+.public-static-page p,
+.public-static-footer p {
+  color: inherit;
+}
+
+.public-static-page :where(a, button, input, textarea) {
+  border-radius: 0.375rem;
+}
+
+.public-static-page :where(a, button):focus-visible,
+.public-static-footer :where(a, button):focus-visible {
+  outline: 3px solid hsl(var(--public-orange) / 0.28);
+  outline-offset: 3px;
+}
+
+/* Compact Drive Bright-style mastheads and content rhythm. */
+.public-static-page > section:first-of-type,
+.public-static-page > div + section:first-of-type {
+  background: hsl(var(--public-navy));
+  color: hsl(var(--public-surface));
+}
+
+.public-static-page > section:first-of-type h1,
+.public-static-page > div + section:first-of-type h1,
+.public-static-page > section:first-of-type p,
+.public-static-page > div + section:first-of-type p {
+  color: inherit;
+}
+
+.public-legal-page > section:first-of-type {
+  padding-block: 3.5rem;
+}
+
+.public-legal-page > main {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.public-legal-page > main > :where(section, div) {
+  border: 1px solid hsl(var(--public-line));
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 24px hsl(var(--public-ink) / 0.05);
+}
+
+.public-legal-page > main > section:last-child {
+  background: hsl(var(--public-navy));
+  color: hsl(var(--public-surface));
+  border-color: transparent;
+}
+
+.public-legal-page > main > section:last-child :where(h2, h3, p, a, span) {
+  color: inherit;
+}
+
+.public-legal-page a:not([class*="bg-"]) {
+  color: hsl(var(--public-orange-strong));
+}
+
+.public-legal-page img {
+  filter: saturate(0.9);
+}
+
+/* Terms keeps its interaction and data loading, but adopts the same quiet rows. */
+.public-legal-page .bg-brand-orange {
+  background: hsl(var(--public-surface));
+  border-color: hsl(var(--public-line));
+  box-shadow: none;
+}
+
+.public-legal-page .bg-brand-orange > button {
+  color: hsl(var(--public-ink));
+  background: hsl(var(--public-surface));
+}
+
+.public-legal-page .bg-brand-orange > button:hover {
+  background: hsl(var(--public-canvas));
+}
+
+.public-legal-page .bg-brand-orange > button svg {
+  color: hsl(var(--public-orange));
+}
+
+/* Dealer FAQ: crisp navigation, dense question rows and a restrained CTA. */
+.public-faq-page > section:first-of-type {
+  background: hsl(var(--public-navy));
+}
+
+.public-faq-page > section:first-of-type .bg-primary,
+.public-faq-page section:last-of-type .bg-primary {
+  background: hsl(var(--public-orange));
+}
+
+.public-faq-page section:last-of-type > div > div {
+  column-gap: 2.5rem;
+}
+
+.public-faq-page aside nav,
+.public-faq-page section:last-of-type [class*="divide-y"] {
+  border-color: hsl(var(--public-line));
+  border-radius: 0.375rem;
+  box-shadow: none;
+}
+
+.public-faq-page section:last-of-type [class*="divide-y"] button:hover {
+  background: hsl(var(--public-canvas));
+}
+
+.public-faq-page section:last-of-type [class*="bg-primary/10"] {
+  background: hsl(var(--public-orange) / 0.08);
+}
+
+/* Shared TradeOnly informational routes only; sales landing routes are excluded. */
+.public-trade-info-page > section:first-of-type {
+  background: hsl(var(--public-navy));
+  color: hsl(var(--public-surface));
+  padding-block: 4.5rem;
+}
+
+.public-trade-info-page > section:first-of-type :where(h1, p) {
+  color: inherit;
+}
+
+.public-trade-info-page > section:first-of-type [class*="bg-primary/10"] {
+  color: hsl(var(--public-surface));
+  background: hsl(var(--public-surface) / 0.12);
+}
+
+.public-trade-info-page > section:nth-of-type(2) [class*="rounded-xl"],
+.public-trade-info-page > section:nth-of-type(3) [class*="rounded-2xl"] {
+  border-color: hsl(var(--public-line));
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+.public-trade-info-page .bg-primary,
+.public-trade-info-page a[class*="bg-primary"] {
+  background: hsl(var(--public-orange));
+}
+
+/* Footer treatment is activated only for the Batch 1 static routes. */
+.public-static-footer > section {
+  background: hsl(var(--public-navy));
+}
+
+.public-static-footer footer {
+  background: hsl(var(--public-surface));
+  border-top: 1px solid hsl(var(--public-line));
+}
+
+.public-static-footer footer h2,
+.public-static-footer footer h3 {
+  color: hsl(var(--public-ink));
+}
+
+.public-static-footer footer :where(p, li) {
+  color: hsl(var(--public-copy));
+}
+
+.public-static-footer footer a {
+  color: hsl(var(--public-ink));
+}
+
+.public-static-footer footer a:hover {
+  color: hsl(var(--public-orange-strong));
+}
+
+@media (max-width: 640px) {
+  .public-legal-page > section:first-of-type {
+    padding-block: 2.75rem;
+  }
+
+  .public-legal-page > main {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+  }
+
+  .public-legal-page > main > :where(section, div) {
+    padding: 1.25rem;
+  }
+
+  .public-legal-page :where(.flex.items-start.space-x-6) {
+    display: block;
+  }
+
+  .public-legal-page :where(.flex.items-start.space-x-6) > img {
+    margin-bottom: 1rem;
+  }
+
+  .public-static-footer footer {
+    padding-bottom: 3rem;
+  }
+}
+
 /* Custom car animation */
 @keyframes gentle-bounce {
   0%, 20%, 50%, 80%, 100% {

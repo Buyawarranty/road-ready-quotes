@@ -117,7 +117,7 @@ const Terms = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="public-static-page public-legal-page min-h-screen bg-gray-50">
       <DealerPublicHeader />
       <SEOHead 
         title="Terms & Conditions | Panda Protect - Vehicle Warranty Terms"

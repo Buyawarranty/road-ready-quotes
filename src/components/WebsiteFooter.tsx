@@ -10,12 +10,27 @@ const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-
 const WebsiteFooter = () => {
   const location = useLocation();
   const path = location.pathname.replace(/\/+$/, '') || '/';
+  const staticFooterPaths = new Set([
+    '/faq',
+    '/faq/traders',
+    '/terms',
+    '/privacy',
+    '/cookies',
+    '/what-is-covered',
+    '/claims',
+    '/make-a-claim',
+    '/cancel-warranty',
+    '/warranty-transfer',
+    '/contact-us',
+    '/complaints',
+  ]);
+  const usePublicStaticStyle = staticFooterPaths.has(path);
   const isDealerRoute = path === '/' || path.startsWith('/dealer-portal') || path.startsWith('/home');
   const isTradersFaq = path === '/faq/traders';
   const hideCtaSection = pagesWithOwnCTA.includes(location.pathname) || isTradersFaq || isDealerRoute;
 
   return (
-    <div className="relative">
+    <div className={`relative ${usePublicStaticStyle ? 'public-static-footer' : ''}`}>
       {/* CTA Section */}
       {!hideCtaSection && (
       <section className="bg-[#1e3a5f] py-12">
