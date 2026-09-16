@@ -1971,20 +1971,20 @@ body {
   color: hsl(var(--header-orange));
 }
 
-/* Nav links stay plain text with an orange underline on hover */
-.public-site-header nav > a {
+/* Text nav links stay plain; button-style links keep their own colours */
+.public-site-header nav > a:not([class*="bg-"]) {
   background: transparent;
   color: hsl(var(--header-ink));
   font-weight: 500;
 }
 
-.public-site-header nav > a:hover {
+.public-site-header nav > a:not([class*="bg-"]):hover {
   color: hsl(var(--header-orange));
 }
 
-/* Centre the nav between logo and CTAs, like the reference layout */
+/* Breathing room between the logo and the nav, like the reference layout */
 .public-site-header nav {
-  gap: 1.25rem;
+  margin-left: 1.5rem;
 }
 
 /* Public site footer chrome */
