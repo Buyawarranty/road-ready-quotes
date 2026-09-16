@@ -580,7 +580,7 @@ const ThankYou = () => {
   // Customer data already extracted at the top of component
 
   return (
-    <div className="bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
+    <div className="public-checkout-page public-confirmation-page bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
       <DealerPublicHeader />
       <SEOHead 
         title="Thank You! Your Warranty is Active | Buy-A-Warranty"

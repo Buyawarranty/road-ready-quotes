@@ -124,7 +124,7 @@ const StripePayment: React.FC = () => {
 
   if (isLoading || !paymentData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30 flex items-center justify-center">
+      <div className="public-checkout-page min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50/30 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
           <p className="text-muted-foreground">Loading secure checkout...</p>
@@ -136,7 +136,7 @@ const StripePayment: React.FC = () => {
   // Success state - full page celebration
   if (paymentStatus === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50/30 flex items-center justify-center p-4">
+      <div className="public-checkout-page public-confirmation-page min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50/30 flex items-center justify-center p-4">
         <div className="text-center max-w-md animate-fade-in">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-scale-in">
             <CheckCircle className="w-14 h-14 text-green-600" />
@@ -165,7 +165,7 @@ const StripePayment: React.FC = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-slate-50">
+      <div className="public-checkout-page min-h-screen bg-slate-50">
         {/* Header */}
         <header className="bg-white border-b border-border sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">

@@ -211,7 +211,7 @@ const PaymentFallback = () => {
 
   if (fetchingData) {
     return (
-      <div className="bg-[#e8f4fb] min-h-screen flex items-center justify-center">
+      <div className="public-checkout-page bg-[#e8f4fb] min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your order details...</p>
@@ -221,7 +221,7 @@ const PaymentFallback = () => {
   }
 
   return (
-    <div className="bg-[#e8f4fb] min-h-screen flex flex-col">
+    <div className="public-checkout-page bg-[#e8f4fb] min-h-screen flex flex-col">
       {/* Trustpilot header */}
       <div className="w-full px-4 pt-4">
         <div className="max-w-6xl mx-auto">

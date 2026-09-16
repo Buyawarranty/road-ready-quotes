@@ -95,7 +95,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
   // Show error if cart is empty after restoration attempt
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
+      <div className="public-checkout-page min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
@@ -654,7 +654,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="public-checkout-page bg-gray-50 min-h-screen">
       {/* Main content starts directly - no duplicate back button row */}
       <div className="max-w-6xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8">
