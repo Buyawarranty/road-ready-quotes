@@ -2362,8 +2362,8 @@ body {
 @media (max-width: 1023px) {
   .public-dealer-home .home-hero-grid { grid-template-columns: 1fr; }
   .public-dealer-home .home-hero-copy { max-width: 680px; margin-inline: auto; text-align: center; }
-  .public-dealer-home .home-hero-bullets { margin-inline: auto; }
-  .public-dealer-home .home-hero-bullets li { justify-content: center; }
+  .public-dealer-home .home-hero-bullets { margin-inline: auto; text-align: center; }
+  .public-dealer-home .home-hero-bullets li { display: inline-flex; text-align: left; }
   .public-dealer-home .home-hero-eligibility { margin-inline: auto; }
   .public-dealer-home .home-reg-form,
   .public-dealer-home .home-support-card { margin-inline: auto; }
