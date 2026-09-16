@@ -19,7 +19,7 @@ const PaymentReceived = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">
+      <div className="public-checkout-page public-confirmation-page min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">
         <div className="max-w-lg w-full space-y-6">
           {/* Success Icon */}
           <div className="text-center">
