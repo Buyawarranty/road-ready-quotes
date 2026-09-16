@@ -186,6 +186,43 @@ const BENEFITS = [
   },
 ];
 
+// Bold coloured bars for FAQ accordions (matches dealer FAQs page)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
+const WHY_US_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'Why should our dealership choose Panda Protect?',
+    a: 'Panda Protect is built exclusively for the motor trade. You get branded warranty packs, instant quotes, claims paid direct to your workshop, and dealer-friendly margins — with no retail competition from us, ever.',
+  },
+  {
+    q: 'How does Panda Protect protect our margin?',
+    a: 'Cover pays the repairer rather than the customer, eliminating comeback costs and after-sale workshop hits. Volume tiers and onboarding offers keep your cost per car low while you add a high-margin revenue stream.',
+  },
+  {
+    q: 'How fast are claims settled?',
+    a: 'Funds are released on authorisation — typically within 24 hours — not on completion. Cars keep moving, your workshop gets paid directly, and your customers stay happy.',
+  },
+  {
+    q: 'Can we sell warranties under our own brand?',
+    a: 'Yes. Panda Protect is white-label friendly: sell cover under your forecourt brand while we handle the underwriting, documentation and claims behind the scenes.',
+  },
+  {
+    q: 'Is the programme compliant with FCA expectations?',
+    a: 'Our cover and sales process aligns with FCA Consumer Duty expectations for warranty distribution, and we provide FCA-aligned sales and cover documentation as standard.',
+  },
+  {
+    q: 'What does it cost to join?',
+    a: 'Joining is free with no setup fees and no long-term contracts. Pricing is shown inside the dealer portal once your account is approved — usually within 24 hours of registering.',
+  },
+];
+
 function copyForPath(pathname: string): RouteCopy {
   const cleaned = pathname.replace(/\/+$/, '') || '/';
   // direct hit
