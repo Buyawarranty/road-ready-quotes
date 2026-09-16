@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+    <div className="public-static-page public-legal-page min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <SEOHead 
         title="Privacy Policy | Panda Protect UK"
         description="Learn how Panda Protect protects your privacy and handles your personal data. Understand your rights under UK GDPR and how we use your information."

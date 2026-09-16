@@ -12,7 +12,7 @@ const CookiePolicy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
+    <div className="public-static-page public-legal-page min-h-screen bg-gradient-to-br from-slate-50 to-white">
       <DealerPublicHeader />
       <SEOHead 
         title="Cookie Policy | Panda Protect UK"
