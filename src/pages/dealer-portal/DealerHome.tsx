@@ -12,13 +12,16 @@ import {
   Check,
   ChevronDown,
   Clock,
+  Globe,
   HandshakeIcon,
   Headphones,
+  LifeBuoy,
   Lock,
   Mail,
   MessageCircle,
   Phone,
   PoundSterling,
+  Repeat,
   Settings,
   Shield,
   ShieldCheck,
@@ -443,14 +446,19 @@ const DealerHome = () => {
 
       <section className="home-stats-section">
         <div className="home-shell">
-          <header className="home-section-heading"><h2>Dealer support that keeps business moving</h2></header>
+          <header className="home-section-heading">
+            <p>Extra protection</p>
+            <h2>Additional <span>Cover Options</span></h2>
+            <p>Bolt-on extras you can add to any warranty quote.</p>
+          </header>
           <div className="home-stats-grid">
             {[
-              { icon: Clock, label: '60s Sign-Up' },
-              { icon: Wrench, label: '1,400+ Parts' },
-              { icon: Award, label: '5-Star Rated' },
-              { icon: Users, label: '20k+ Customers' },
-            ].map(({ icon: Icon, label }) => <article key={label}><Icon aria-hidden="true" /><strong>{label}</strong></article>)}
+              { icon: LifeBuoy, title: 'Vehicle Recovery', body: 'Help whenever you need it.' },
+              { icon: Globe, title: 'Europe Cover', body: 'Drive with confidence across Europe.' },
+              { icon: Car, title: 'Vehicle Rental', body: 'Replacement vehicle when yours is off the road.' },
+              { icon: Repeat, title: 'Transfer Cover', body: 'Coverage continues when you change ownership.' },
+              { icon: Settings, title: 'Bespoke Warranty', body: 'Tailored cover for your specific needs.' },
+            ].map(({ icon: Icon, title, body }) => <article key={title}><Icon aria-hidden="true" /><h3>{title}</h3><p>{body}</p></article>)}
           </div>
         </div>
       </section>
