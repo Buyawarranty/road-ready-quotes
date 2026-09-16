@@ -27,6 +27,8 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
+import pandaHeroAsset from '@/assets/panda-hero.png.asset.json';
+const pandaHeroImage = pandaHeroAsset.url;
 
 const HOME_FAQS: { q: string; a: string }[] = [
   {
