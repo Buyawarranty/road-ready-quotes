@@ -2027,11 +2027,13 @@ body {
   text-decoration: none;
 }
 
+.public-site-header.home-reference-header nav > a.home-header-quote-link,
 .home-reference-header .home-header-quote-link {
   background: hsl(var(--header-orange));
   color: hsl(var(--public-surface, 0 0% 100%));
 }
 
+.public-site-header.home-reference-header nav > a.home-header-quote-link:hover,
 .home-reference-header .home-header-quote-link:hover {
   background: hsl(var(--header-orange-strong));
   color: hsl(var(--public-surface, 0 0% 100%));
