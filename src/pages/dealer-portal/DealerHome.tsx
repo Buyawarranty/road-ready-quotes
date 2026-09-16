@@ -236,7 +236,11 @@ const DealerHome = () => {
             <h1>
               Sell more warranties. <span>Grow your business.</span>
             </h1>
-            <p className="home-hero-description">Instant quotes. Flexible cover. Fast issuance. Everything you need to protect your customers and boost your bottom line.</p>
+            <ul className="home-hero-bullets" aria-label="Dealer benefits">
+              <li><Check aria-hidden="true" />Instant quotes <span className="home-bullet-sep">•</span> Flexible cover <span className="home-bullet-sep">•</span> Fast payouts</li>
+              <li><Check aria-hidden="true" />Protect your customers <span className="home-bullet-sep">•</span> Boost your bottom line</li>
+            </ul>
+            <p className="home-hero-eligibility">Cover for vehicles up to <strong>150,000 miles</strong> and <strong>15 years old</strong>.</p>
 
             <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
               <div className="home-reg-input">
