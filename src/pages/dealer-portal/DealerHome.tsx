@@ -320,9 +320,9 @@ const DealerHome = () => {
           <div className="home-cover-visual">
             <OptimizedImage
               src={twoWaysImage}
-              alt="Car showing the parts covered by Panda Protect dealer warranties"
-              width={1200}
-              height={857}
+              alt="Panda Protect mechanic with a wrench beside a car with its bonnet open"
+              width={1400}
+              height={920}
             />
           </div>
         </div>
