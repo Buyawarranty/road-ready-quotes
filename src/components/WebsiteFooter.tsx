@@ -24,7 +24,14 @@ const WebsiteFooter = () => {
     '/contact-us',
     '/complaints',
   ]);
-  const usePublicStaticStyle = staticFooterPaths.has(path);
+  const isInternalRoute = path.startsWith('/admin')
+    || path.startsWith('/admin-dashboard')
+    || path.startsWith('/dealer-widget')
+    || path.startsWith('/customer-dashboard')
+    || path.startsWith('/sales-login')
+    || path.startsWith('/auth');
+  // Public site chrome uses the refreshed look; internal apps keep their own.
+  const usePublicStaticStyle = staticFooterPaths.has(path) || !isInternalRoute;
   const isDealerRoute = path === '/' || path.startsWith('/dealer-portal') || path.startsWith('/home');
   const isTradersFaq = path === '/faq/traders';
   const hideCtaSection = pagesWithOwnCTA.includes(location.pathname) || isTradersFaq || isDealerRoute;
