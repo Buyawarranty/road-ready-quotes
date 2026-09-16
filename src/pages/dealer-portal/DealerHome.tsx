@@ -189,11 +189,11 @@ const DealerHome = () => {
   };
 
   const benefits = [
-    { icon: PoundSterling, title: 'High Profit Margins', body: 'Competitive rates and great commission' },
-    { icon: Zap, title: 'Fast & Simple', body: 'Quote, issue and manage policies in minutes' },
-    { icon: Shield, title: 'Flexible Products', body: 'A range of levels to suit every customer' },
-    { icon: Headphones, title: 'Dealer Support', body: 'Dedicated account managers' },
-    { icon: BarChart2, title: 'Powerful Tools', body: 'Track performance and grow your sales' },
+    { icon: PoundSterling, title: 'High Profit Margins' },
+    { icon: Zap, title: 'Fast & Simple' },
+    { icon: Shield, title: 'Flexible Products' },
+    { icon: Headphones, title: 'Dealer Support' },
+    { icon: BarChart2, title: 'Powerful Tools' },
   ];
 
   const serviceRows = [
@@ -284,10 +284,10 @@ const DealerHome = () => {
 
       <section className="home-trust-strip" aria-label="Why dealers choose Panda Protect">
         <div className="home-shell home-benefit-row">
-          {benefits.map(({ icon: Icon, title, body }) => (
+          {benefits.map(({ icon: Icon, title }) => (
             <article key={title}>
-              <Icon aria-hidden="true" />
-              <div><h2>{title}</h2><p>{body}</p></div>
+              <span className="home-benefit-icon"><Icon aria-hidden="true" /></span>
+              <h2>{title}</h2>
             </article>
           ))}
         </div>
