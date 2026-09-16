@@ -29,7 +29,8 @@ const WebsiteFooter = () => {
     || path.startsWith('/dealer-widget')
     || path.startsWith('/customer-dashboard')
     || path.startsWith('/sales-login')
-    || path.startsWith('/auth');
+    || path.startsWith('/auth')
+    || path.startsWith('/dealer-portal/login');
   // Public site chrome uses the refreshed look; internal apps keep their own.
   const usePublicStaticStyle = staticFooterPaths.has(path) || !isInternalRoute;
   const isDealerRoute = path === '/' || path.startsWith('/dealer-portal') || path.startsWith('/home');
