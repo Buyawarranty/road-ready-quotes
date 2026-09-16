@@ -123,7 +123,7 @@ const BlogArticle = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="public-content-page public-blog-article min-h-screen bg-background flex flex-col">
         <SEOHead 
           title="Article Not Found | The Warranty Hub"
           description="The article you're looking for doesn't exist."
@@ -184,7 +184,7 @@ const BlogArticle = () => {
     : (typeof post.content === 'string' ? post.content : '');
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="public-content-page public-blog-article min-h-screen bg-background">
       <SEOHead 
         title={post.seo_title || `${post.title} | The Warranty Hub`}
         description={post.seo_description || post.excerpt || ''}
