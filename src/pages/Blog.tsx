@@ -91,7 +91,7 @@ const Blog = () => {
 
       <script type="application/ld+json">{JSON.stringify(schemaMarkup)}</script>
 
-      <div className="min-h-screen bg-white">
+      <div className="public-content-page public-blog-index min-h-screen bg-white">
         {/* Hero */}
         <section className="relative bg-white py-16 md:py-20 border-b border-gray-200">
           <div className="container mx-auto px-4">
