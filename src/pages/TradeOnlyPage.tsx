@@ -236,6 +236,8 @@ function copyForPath(pathname: string): RouteCopy {
 const TradeOnlyPage: React.FC = () => {
   const { pathname } = useLocation();
   const copy = copyForPath(pathname);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const isWhyUs = pathname.replace(/\/+$/, '') === '/warranty-plan';
 
   const canonical = `https://pandaprotect.co.uk${pathname.endsWith('/') ? pathname : pathname + '/'}`;
 
