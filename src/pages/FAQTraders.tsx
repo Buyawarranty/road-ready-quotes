@@ -16,6 +16,16 @@ type Pillar = {
   items: FAQItem[];
 };
 
+// Bold coloured bars for FAQ accordions (cycles per question)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
 const PILLARS: Pillar[] = [
   {
     id: 'account-setup',
