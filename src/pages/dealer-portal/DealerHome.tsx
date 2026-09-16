@@ -38,7 +38,7 @@ const HOME_FAQS: { q: string; a: string }[] = [
     a: 'Once your account is approved, you can generate a warranty policy in under 60 seconds from your dealer dashboard — ready for same-day handover with the vehicle.',
   },
   {
-    q:gah 'Do you require minimum monthly sales volumes?',
+    q: 'Do you require minimum monthly sales volumes?',
     a: 'No. Our partner programme is flexible — there are no minimum sales volumes or long-term commitments. Full dealer terms are available in the portal after registration.',
   },
   {
