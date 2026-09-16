@@ -480,13 +480,20 @@ const DealerHome = () => {
 
       <section id="resources" className="home-resource-section">
         <div className="home-shell">
-          <header className="home-section-heading"><p>Dealer support & resources</p><h2>Everything you need in one place</h2></header>
+          <header className="home-section-heading"><p>Dealer support &amp; resources</p><h2>Everything you need in one place</h2><p>Guides, plan documents and answers — built for motor traders.</p></header>
           <div className="home-resource-grid">
             {[
-              { title: 'Dealer Benefits & Pricing', body: 'Trade pricing, margins and commission structures explained.', to: '/dealer-portal/full-warranty' },
-              { title: 'Plan Documents & Cover', body: 'What is covered, terms and conditions and policy wording.', to: '/what-is-covered' },
-              { title: 'Claims & Dealer FAQs', body: 'How claims work, payout timings and answers for motor traders.', to: '/faq/traders' },
-            ].map((item) => <Link key={item.title} to={item.to}><h3>{item.title}</h3><p>{item.body}</p><span>View resource <ArrowRight aria-hidden="true" /></span></Link>)}
+              { icon: PoundSterling, tone: 'orange', title: 'Dealer Benefits & Pricing', body: 'Trade pricing, margins and commission structures explained.', to: '/dealer-portal/full-warranty' },
+              { icon: ShieldCheck, tone: 'green', title: 'Plan Documents & Cover', body: 'What is covered, terms and conditions and policy wording.', to: '/what-is-covered' },
+              { icon: LifeBuoy, tone: 'blue', title: 'Claims & Dealer FAQs', body: 'How claims work, payout timings and answers for motor traders.', to: '/faq/traders' },
+            ].map((item) => (
+              <Link key={item.title} to={item.to} className={`home-resource-card home-resource-card-${item.tone}`}>
+                <span className="home-resource-icon"><item.icon aria-hidden="true" /></span>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <span className="home-resource-link">View resource <ArrowRight aria-hidden="true" /></span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
