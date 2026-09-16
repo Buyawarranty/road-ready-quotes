@@ -383,7 +383,7 @@ const DealerHome = () => {
 
       <section id="why-us" className="home-story-section">
         <div className="home-shell home-story-grid">
-          <div className="home-story-image"><OptimizedImage src={pandaVehiclesImage} alt="Panda Protect supporting UK motor dealers" width={1200} height={800} /></div>
+          <div className="home-story-image"><OptimizedImage src={dealerGrowthAsset.url} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={1200} height={800} /></div>
           <div>
             <p className="home-eyebrow">Grow sales with dealer extended warranties</p>
             <h2>Grow Sales with Dealer Extended Warranties</h2>
