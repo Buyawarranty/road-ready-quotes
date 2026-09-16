@@ -2214,7 +2214,7 @@ body {
 .public-dealer-home > .home-trust-strip { padding: 1.5rem 0; background: hsl(var(--home-canvas)); border-block: 1px solid hsl(var(--home-line)); }
 .public-dealer-home .home-benefit-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
 .public-dealer-home .home-benefit-row article { min-width: 0; display: flex; align-items: center; gap: 0.65rem; padding: 0.25rem 0; }
-.public-dealer-home .home-benefit-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; flex: 0 0 auto; border-radius: 9999px; background: hsl(var(--home-soft)); color: hsl(var(--home-orange)); }
+.public-dealer-home .home-benefit-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.4rem; height: 2.4rem; flex: 0 0 auto; border-radius: 9999px; background: hsl(var(--home-orange) / 0.1); color: hsl(var(--home-orange)); }
 .public-dealer-home .home-benefit-icon svg { width: 1.1rem; height: 1.1rem; }
 .public-dealer-home .home-benefit-row h2 { margin: 0; color: hsl(var(--home-ink)); font-size: 0.8rem; line-height: 1.25; font-weight: 700; white-space: nowrap; }
 
