@@ -161,11 +161,11 @@ const DealerHome = () => {
 
           <div className="home-hero-visual">
             <OptimizedImage
-              src={pandaVehiclesImage}
+              src={pandaHeroImage}
               alt="Panda Protect warranty cover for cars, vans and motorbikes"
               priority
-              width={1200}
-              height={800}
+              width={1500}
+              height={1000}
             />
             <div className="home-vehicle-types" aria-label="Eligible vehicle types">
               <span>Cars</span><span>Vans</span><span>Hybrid</span><span>EV</span><span>Motorbikes</span>
