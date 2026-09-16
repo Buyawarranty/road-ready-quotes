@@ -26,6 +26,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import { supabase } from '@/integrations/supabase/client';
 import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
 import pandaHeroImage from '@/assets/panda-hero.png';
 
