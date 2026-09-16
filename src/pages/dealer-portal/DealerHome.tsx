@@ -338,16 +338,24 @@ const DealerHome = () => {
           <div className="home-service-rows">
             {serviceRows.map((service, index) => {
               const open = openService === index;
+              const RowIcon = index === 0 ? Shield : Headphones;
               return (
-                <article key={service.title} className={`home-service-row home-service-row-${index + 1}`}>
+                <article key={service.title} className={`home-service-row home-service-row-${index + 1}${open ? ' is-open' : ''}`}>
                   <button type="button" onClick={() => setOpenService(open ? null : index)} aria-expanded={open}>
-                    <span><Shield aria-hidden="true" />{service.title}</span>
-                    <ChevronDown className={open ? 'rotate-180' : ''} aria-hidden="true" />
+                    <span className="home-service-row-head">
+                      <span className="home-service-row-icon"><RowIcon aria-hidden="true" /></span>
+                      <span className="home-service-row-text">
+                        <strong>{service.title}</strong>
+                        <small>{service.subtitle}</small>
+                      </span>
+                    </span>
+                    <span className="home-service-row-toggle">{open ? 'Hide details' : 'Show details'}<ChevronDown aria-hidden="true" /></span>
                   </button>
                   {open && (
-                    <div>
-                      <p><strong>{service.subtitle}</strong> {service.body}</p>
-                      <Link to={service.to}>Explore this service <ArrowRight aria-hidden="true" /></Link>
+                    <div className="home-service-row-body">
+                      <p>{service.body}</p>
+                      <ul>{service.items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
+                      <Link to={service.to} className="home-service-row-link">Explore this service <ArrowRight aria-hidden="true" /></Link>
                     </div>
                   )}
                 </article>
