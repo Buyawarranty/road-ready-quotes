@@ -125,14 +125,11 @@ const DealerHome = () => {
         <div className="home-shell home-hero-grid">
           <div className="home-hero-copy">
             <p className="home-eyebrow">For UK motor dealers</p>
+            <p className="home-kicker">Trader Warranty Solutions</p>
             <h1>
-              Dealer warranties your customers can trust in <span>60 seconds!</span>
+              Sell more warranties. <span>Grow your business.</span>
             </h1>
-            <ul className="home-hero-points" aria-label="Dealer warranty benefits">
-              <li><Check aria-hidden="true" /> Instant quotes and fast issuance</li>
-              <li><Check aria-hidden="true" /> Flexible cover for cars, vans and motorbikes</li>
-              <li><Check aria-hidden="true" /> Dedicated UK dealer support</li>
-            </ul>
+            <p className="home-hero-description">Instant quotes. Flexible cover. Fast issuance. Everything you need to protect your customers and boost your bottom line.</p>
 
             <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
               <div className="home-reg-input">
@@ -149,14 +146,14 @@ const DealerHome = () => {
                 />
               </div>
               <Button type="submit" className="home-primary-button">
-                Get my quote <ArrowRight aria-hidden="true" />
+                Get Quote <ArrowRight aria-hidden="true" />
               </Button>
             </form>
             <p className="home-secure-copy"><Lock aria-hidden="true" /> Secure DVLA lookup – no manual data entry</p>
 
             <div className="home-support-card">
-              <a href="tel:03302295045"><Phone aria-hidden="true" /> 0330 229 5045</a>
-              <Link to="/dealer-portal/signup">Become a dealer <ArrowRight aria-hidden="true" /></Link>
+              <Link to="/dealer-portal/login"><UserCircle2 aria-hidden="true" /> Already a dealer? Dealer Login</Link>
+              <Link to="/dealer-portal/signup">Not signed up yet? Become a Dealer <ArrowRight aria-hidden="true" /></Link>
             </div>
           </div>
 
@@ -189,9 +186,9 @@ const DealerHome = () => {
       <section className="home-cover-intro">
         <div className="home-shell">
           <header className="home-section-heading home-section-heading-left">
-            <p>Complete dealer warranty solutions</p>
+            <p>Two ways to work with us</p>
             <h2>Pick the service that fits your business</h2>
-            <span>Flexible products, clear pricing and a simple journey from quote to cover.</span>
+            <span>Whether you want a fully insured warranty or just expert claims handling — we've got you covered.</span>
           </header>
           <div className="home-cover-grid">
             <article>
@@ -249,14 +246,16 @@ const DealerHome = () => {
           <div className="home-story-image"><OptimizedImage src={pandaVehiclesImage} alt="Panda Protect supporting UK motor dealers" width={1200} height={800} /></div>
           <div>
             <p className="home-eyebrow">Grow sales with dealer extended warranties</p>
-            <h2>Reliable warranty support for your dealership</h2>
+            <h2>Grow Sales with Dealer Extended Warranties</h2>
             <p>Unlock extra profit on every car. Our dealer programme is designed to maximise dealer margins and drive more sales — easily.</p>
             <ul>
               {[
-                'Exclusive trade warranty pricing and competitive commissions',
-                'Quote, issue and manage policies in minutes',
-                'Cover for 1,400+ mechanical and electrical parts',
-                'Real-time tracking and analytics in one place',
+                'Exclusive trade warranty pricing and competitive commissions on every policy you sell.',
+                'Adding a warranty closes deals faster and increases customer confidence at point of sale.',
+                '60-second onboarding via the dealer portal — start selling warranties the same day.',
+                'Cover for 1,400+ mechanical and electrical parts, backed by a 5-star rated UK provider.',
+                'Premium dealer pricing, bulk discounts and a dealer programme that pays.',
+                'Manage quotes, warranties and claims in one place. Real-time tracking and analytics.',
               ].map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}
             </ul>
             <Button asChild className="home-secondary-button"><Link to="/warranty-plan">Discover why dealers choose us <ArrowRight aria-hidden="true" /></Link></Button>
@@ -267,14 +266,13 @@ const DealerHome = () => {
       <section className="home-plan-section">
         <div className="home-shell home-plan-grid">
           <div>
-            <p className="home-eyebrow">Flexible warranty plans</p>
-            <h2>Built around your business</h2>
+            <p className="home-eyebrow">Three simple steps</p>
+            <h2>Join Our Dealer Programme – Start Earning Today</h2>
             <ul>
               {[
-                { icon: TrendingUp, title: 'Maximise Dealer Margins', body: 'Premium dealer pricing and competitive commissions.' },
-                { icon: Zap, title: 'Quick Dealer Sign-Up', body: '60-second onboarding via the dealer portal.' },
-                { icon: HandshakeIcon, title: 'Exclusive Trade Warranty', body: 'Flexible options for every customer and vehicle.' },
-                { icon: BarChart3, title: 'Dealer Dashboard', body: 'Manage quotes, warranties and claims in one place.' },
+                { icon: UserCircle2, title: 'Free Dealer Sign-Up', body: 'Register your dealership in 60 seconds. No setup fees, no contracts.' },
+                { icon: Zap, title: 'Quote in Seconds', body: 'Use the dealer portal to generate instant warranty quotes for any vehicle.' },
+                { icon: TrendingUp, title: 'Start Earning', body: 'Sell warranties from 20p a day and grow your dealership profits.' },
               ].map(({ icon: Icon, title, body }) => <li key={title}><Icon aria-hidden="true" /><span><strong>{title}</strong>{body}</span></li>)}
             </ul>
           </div>
@@ -285,14 +283,14 @@ const DealerHome = () => {
       <section className="home-included-section">
         <div className="home-shell">
           <header className="home-section-heading">
-            <h2>What's <span>Included?</span></h2>
-            <p>Everything dealers need to offer reliable protection with confidence.</p>
+            <h2>Easy Claims, <span>Fast Payouts</span></h2>
+            <p>Claims made easy and quick — keep your customers happy and your reputation strong. No hassle, instant payouts to VAT-registered UK garages.</p>
           </header>
           <div className="home-included-grid">
-            {[
-              { icon: Shield, title: 'Complete Protection', body: 'Flexible cover across cars, vans and motorbikes.' },
-              { icon: Zap, title: 'Instant Claims', body: 'Fast claims handling from an experienced UK team.' },
-              { icon: Clock, title: 'Clear Terms', body: 'Simple, transparent cover that is easy to explain.' },
+              {[
+              { icon: Zap, title: 'Quick claims', body: 'Quick claims with instant payouts' },
+              { icon: Wrench, title: 'Local repairs', body: 'Repairs at any VAT-registered UK garage' },
+              { icon: Shield, title: 'Unlimited claims', body: 'Unlimited claims during cover period' },
             ].map(({ icon: Icon, title, body }) => <article key={title}><Icon aria-hidden="true" /><h3>{title}</h3><p>{body}</p></article>)}
           </div>
           <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Become a dealer <ArrowRight aria-hidden="true" /></Link></Button>
@@ -348,7 +346,7 @@ const DealerHome = () => {
 
       <section id="contact" className="home-closing-cta">
         <div className="home-shell">
-          <h2>Ready to grow your warranty business?</h2>
+          <h2>Partner with a Trusted UK Warranty Provider</h2>
           <p>Talk to our dealer team about exclusive motor trade warranty deals and onboarding.</p>
           <div>
             <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Dealer programme sign up <ArrowRight aria-hidden="true" /></Link></Button>
