@@ -1959,16 +1959,63 @@ body {
   border-radius: 0.375rem;
 }
 
-.public-site-header :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-orange-5"], [class*="bg-orange-6"]) {
+.public-site-header :where(.bg-primary, .bg-brand-orange, .bg-orange-500, .bg-orange-600) {
   background: hsl(var(--header-orange));
 }
 
-.public-site-header :where(.bg-primary, [class*="bg-brand-orange"], [class*="bg-orange-5"], [class*="bg-orange-6"]):hover {
+.public-site-header :where(.bg-primary, .bg-brand-orange, .bg-orange-500, .bg-orange-600):hover {
   background: hsl(var(--header-orange-strong));
 }
 
-.public-site-header :where(.text-primary, [class*="text-brand-orange"], [class*="text-orange-5"], [class*="text-orange-6"]) {
+.public-site-header :where(.text-primary, .text-brand-orange, .text-orange-500, .text-orange-600) {
   color: hsl(var(--header-orange));
+}
+
+/* Nav links stay plain text with an orange underline on hover */
+.public-site-header nav > a {
+  background: transparent;
+  color: hsl(var(--header-ink));
+  font-weight: 500;
+}
+
+.public-site-header nav > a:hover {
+  color: hsl(var(--header-orange));
+}
+
+/* Centre the nav between logo and CTAs, like the reference layout */
+.public-site-header nav {
+  gap: 1.25rem;
+}
+
+/* Public site footer chrome */
+.public-static-footer {
+  font-family: Helvetica, "Segoe UI", Arial, sans-serif;
+  border-top: 1px solid hsl(var(--public-line, 220 14% 90%));
+}
+
+.public-static-footer h3,
+.public-static-footer h4 {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.public-static-footer a:hover {
+  color: hsl(var(--public-orange));
+}
+
+/* Final contact band keeps the navy reference treatment */
+.public-dealer-home section#contact {
+  background: hsl(var(--marketing-navy)) !important;
+}
+
+.public-dealer-home section#contact :where(h1, h2, h3, p, a, span) {
+  color: hsl(0 0% 100%);
+}
+
+.public-dealer-home section#contact a[class*="bg-[#eb4b00]"],
+.public-dealer-home section#contact a[class*="bg-primary"] {
+  background: hsl(var(--marketing-orange));
+  color: hsl(0 0% 100%);
 }
 
 /* Footer refinements shared across public pages */
