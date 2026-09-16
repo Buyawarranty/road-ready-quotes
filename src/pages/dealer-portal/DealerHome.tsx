@@ -84,6 +84,9 @@ const DealerHome = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#0f1729] px-3 py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-white">
+                For UK motor dealers
+              </div>
               <div className="text-xs sm:text-sm font-bold tracking-[0.2em] text-[#eb4b00] uppercase">
                 Trader Warranty Solutions
               </div>
