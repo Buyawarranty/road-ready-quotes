@@ -580,15 +580,16 @@
   color: inherit;
 }
 
-/* Keep the dark dashboard-preview sidebar readable */
-.public-dealer-home > section:first-of-type [class*="bg-[#0f1729]"],
-.public-dealer-home > section:first-of-type [class*="bg-[#0f1729]"] :where(div, span) {
+/* Keep the dark dashboard-preview sidebar and the hero badge readable */
+.public-dealer-home > section:first-of-type > div > div:first-child [class*="bg-[#0f1729]"],
+.public-dealer-home > section:first-of-type > div > div:first-child [class*="bg-[#0f1729]"] :where(div, span) {
   color: hsl(var(--marketing-surface) / 0.82);
 }
 
-.public-dealer-home > section:first-of-type [class*="bg-[#0f1729]"] [class*="text-white"] {
+.public-dealer-home > section:first-of-type > div > div:first-child [class*="bg-[#0f1729]"] [class*="text-white"] {
   color: hsl(var(--marketing-surface));
 }
+
 
 
 .public-dealer-home > section:first-of-type h1 span:first-child {
