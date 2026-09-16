@@ -446,7 +446,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="public-landing-page public-brand-landing min-h-screen bg-white overflow-x-hidden">
         {/* Voucher Banner for returning customers */}
         {showVoucherBanner && (
           <div className="bg-green-50 border-b border-green-200 py-3">
