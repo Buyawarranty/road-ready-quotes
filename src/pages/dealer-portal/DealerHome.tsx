@@ -423,17 +423,21 @@ const DealerHome = () => {
       <section className="home-included-section">
         <div className="home-shell">
           <header className="home-section-heading">
+            <p>Dealer benefits</p>
             <h2>Easy Claims, <span>Fast Payouts</span></h2>
             <p>Claims made easy and quick — keep your customers happy and your reputation strong. No hassle, instant payouts to VAT-registered UK garages.</p>
           </header>
           <div className="home-included-grid">
               {[
-              { icon: Zap, title: 'Quick claims', body: 'Quick claims with instant payouts' },
-              { icon: Wrench, title: 'Local repairs', body: 'Repairs at any VAT-registered UK garage' },
-              { icon: Shield, title: 'Unlimited claims', body: 'Unlimited claims during cover period' },
+              { icon: Zap, title: 'Quick claims', body: 'Instant payouts to the repairing garage — no long waits or paperwork.' },
+              { icon: Wrench, title: 'Local repairs', body: 'Your customers can use any VAT-registered UK garage, wherever they are.' },
+              { icon: Shield, title: 'Unlimited claims', body: 'As many claims as needed while the vehicle is under cover.' },
             ].map(({ icon: Icon, title, body }) => <article key={title}><Icon aria-hidden="true" /><h3>{title}</h3><p>{body}</p></article>)}
           </div>
-          <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Become a dealer <ArrowRight aria-hidden="true" /></Link></Button>
+          <div className="home-included-cta">
+            <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Become a dealer <ArrowRight aria-hidden="true" /></Link></Button>
+            <p>Free to join · No setup fees · 60-second sign-up</p>
+          </div>
         </div>
       </section>
 

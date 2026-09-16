@@ -2324,11 +2324,13 @@ body {
 .public-dealer-home .home-plan-section li strong { display: block; margin-bottom: 0.15rem; color: hsl(var(--home-ink)); }
 
 .public-dealer-home .home-included-section { text-align: center; }
-.public-dealer-home .home-included-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
-.public-dealer-home .home-included-grid article { padding: 1rem; }
-.public-dealer-home .home-included-grid svg { width: 2.2rem; height: 2.2rem; padding: 0.55rem; border-radius: 50%; background: hsl(var(--home-orange)); color: hsl(var(--home-surface)); }
-.public-dealer-home .home-included-grid h3 { margin: 0.65rem 0 0.3rem; color: hsl(var(--home-ink)); font-size: 0.95rem; font-weight: 850; }
-.public-dealer-home .home-included-grid p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.78rem; }
+.public-dealer-home .home-included-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; max-width: 980px; margin-inline: auto; }
+.public-dealer-home .home-included-grid article { display: flex; flex-direction: column; align-items: center; padding: 2rem 1.5rem 1.75rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.5rem; background: hsl(var(--home-surface)); box-shadow: 0 2px 6px hsl(var(--home-ink) / 0.04); }
+.public-dealer-home .home-included-grid svg { width: 2.4rem; height: 2.4rem; padding: 0.6rem; border-radius: 50%; background: hsl(var(--home-orange)); color: hsl(var(--home-surface)); }
+.public-dealer-home .home-included-grid h3 { margin: 0.85rem 0 0.4rem; color: hsl(var(--home-ink)); font-size: 1.05rem; font-weight: 850; }
+.public-dealer-home .home-included-grid p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.85rem; line-height: 1.5; max-width: 26ch; }
+.public-dealer-home .home-included-cta { display: flex; flex-direction: column; align-items: center; gap: 0.7rem; }
+.public-dealer-home .home-included-cta p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.8rem; font-weight: 600; }
 
 .public-dealer-home .home-stats-section { background: hsl(var(--home-surface)); }
 .public-dealer-home .home-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
