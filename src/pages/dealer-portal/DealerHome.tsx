@@ -416,7 +416,7 @@ const DealerHome = () => {
               ].map(({ icon: Icon, title, body }) => <li key={title}><Icon aria-hidden="true" /><span><strong>{title}</strong>{body}</span></li>)}
             </ul>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={pandaVehiclesImage} alt="Flexible Panda Protect warranty plans" width={1200} height={800} /></div>
+          <div className="home-plan-image"><OptimizedImage src={coveredPartsAsset.url} alt="Car showing covered mechanical and electrical parts" width={1200} height={800} /></div>
         </div>
       </section>
 
