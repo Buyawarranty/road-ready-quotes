@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import WebsiteFooter from '@/components/WebsiteFooter';
+import pandaVehicleImage from '@/assets/panda-vehicles.png';
 
 type FAQItem = { q: string; a: React.ReactNode; plain: string };
 type Pillar = {
@@ -15,16 +16,6 @@ type Pillar = {
   icon: React.ComponentType<{ className?: string }>;
   items: FAQItem[];
 };
-
-// Bold coloured bars for FAQ accordions (cycles per question)
-const FAQ_BAR_STYLES = [
-  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
-  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
-  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
-  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
-  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
-  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
-];
 
 const PILLARS: Pillar[] = [
   {
@@ -291,7 +282,7 @@ const FAQTraders: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <SEOHead
         title="Motor Trade Dealer FAQs | Panda Protect"
         description="Motor trade dealer FAQs covering account setup, dealer portal integration with AutoTrader, quick claims, fast payouts, warranty variants and UK dealer support."
@@ -302,37 +293,37 @@ const FAQTraders: React.FC = () => {
       <DealerPublicHeader />
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+      <section className="relative overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 lg:py-11 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-white text-xs font-semibold tracking-wide uppercase mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold uppercase mb-3">
                 For Motor Trade Dealers
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight text-white">
+              <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold leading-tight text-sidebar-primary-foreground">
                 Dealer FAQs &amp; Trade Partner Resources
               </h1>
-              <p className="mt-4 text-base sm:text-lg text-white max-w-2xl">
+              <p className="mt-2 text-sm sm:text-base text-sidebar-primary-foreground/85 max-w-2xl">
                 Everything UK motor trade dealers need to know about onboarding, portal integration, quick claims, fast
                 payouts and commercial cover with Panda Protect.
               </p>
-              <div className="mt-3 text-sm text-white">
+              <div className="mt-2 text-sm text-sidebar-primary-foreground/80">
                 Looking for retail customer FAQs?{' '}
-                <Link to="/faq/" className="underline font-semibold text-white hover:text-orange-200">
+                <Link to="/faq/" className="underline font-semibold text-sidebar-primary-foreground hover:text-primary">
                   Switch to consumer FAQs →
                 </Link>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col gap-3 lg:min-w-56 lg:mr-4">
               <Link
                 to="/dealer-portal/login"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-slate-900 font-bold hover:bg-orange-100 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-card text-card-foreground font-bold hover:bg-secondary transition-colors"
               >
                 <LogIn className="h-5 w-5" /> Motor Trade Login
               </Link>
               <Link
                 to="/dealer-portal/signup"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-colors"
               >
                 Become a Dealer Partner <ArrowRight className="h-5 w-5" />
               </Link>
@@ -340,22 +331,27 @@ const FAQTraders: React.FC = () => {
           </div>
 
           {/* Search */}
-          <div className="mt-8 max-w-2xl">
+          <div className="mt-6 max-w-2xl">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search dealer FAQs… e.g. AutoTrader, payouts, claim limit"
-                className="pl-12 h-12 bg-white text-slate-900 border-0 rounded-lg shadow-lg"
+                className="pl-12 h-12 bg-card text-card-foreground border-0 rounded-md shadow-lg"
               />
             </div>
           </div>
         </div>
+        <img
+          src={pandaVehicleImage}
+          alt="Panda Protect vehicle warranty support"
+          className="hidden xl:block absolute right-0 bottom-0 h-[92%] w-[34%] object-contain object-bottom opacity-90 pointer-events-none"
+        />
       </section>
 
       {/* Pillar tabs (mobile) */}
-      <div className="lg:hidden border-b border-slate-200 sticky top-[64px] bg-white z-30">
+      <div className="lg:hidden border-b border-border sticky top-[64px] bg-background z-30">
         <div className="overflow-x-auto">
           <div className="flex gap-2 px-4 py-3 min-w-max">
             {PILLARS.map((p) => (
@@ -363,7 +359,7 @@ const FAQTraders: React.FC = () => {
                 key={p.id}
                 onClick={() => scrollTo(p.id)}
                 className={`px-3 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
-                  activePillar === p.id ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-700'
+                  activePillar === p.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
                 }`}
               >
                 {p.title}
@@ -374,13 +370,13 @@ const FAQTraders: React.FC = () => {
       </div>
 
       {/* Content */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-        <div className="grid lg:grid-cols-[260px_1fr] gap-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-9">
+        <div className="grid lg:grid-cols-[260px_1fr] gap-8">
           {/* Sidebar pillars */}
           <aside className="hidden lg:block">
-            <div className="sticky top-28">
-              <div className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4">B2B Pillars</div>
-              <nav className="space-y-1">
+            <div className="sticky top-28 space-y-4">
+              <nav className="rounded-md border border-border bg-card p-2 shadow-sm">
+                <div className="px-3 pt-2 pb-2 text-xs font-bold uppercase text-muted-foreground">B2B Pillars</div>
                 {PILLARS.map((p) => {
                   const Icon = p.icon;
                   const active = activePillar === p.id;
@@ -388,16 +384,16 @@ const FAQTraders: React.FC = () => {
                     <button
                       key={p.id}
                       onClick={() => scrollTo(p.id)}
-                      className={`group w-full text-left flex items-start gap-3 px-3 py-3 rounded-lg transition-all duration-200 border-l-4 ${
+                      className={`group w-full text-left flex items-start gap-3 px-3 py-3 rounded-md transition-colors border-l-2 ${
                         active
-                          ? 'border-orange-500 bg-orange-50 text-slate-900 shadow-sm'
-                          : 'border-transparent text-slate-700 hover:border-orange-400 hover:bg-orange-50/70 hover:text-slate-900 hover:translate-x-0.5'
+                          ? 'border-primary bg-primary/10 text-foreground'
+                          : 'border-transparent text-foreground hover:border-primary/60 hover:bg-secondary'
                       }`}
                     >
-                      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 transition-colors ${active ? 'text-orange-600' : 'text-slate-500 group-hover:text-orange-600'}`} />
+                      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 transition-colors ${active ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
                       <span>
                         <span className="block font-semibold text-sm leading-tight">{p.title}</span>
-                        <span className={`block text-xs mt-0.5 transition-colors ${active ? 'text-slate-600' : 'text-slate-500 group-hover:text-slate-700'}`}>{p.short}</span>
+                        <span className="block text-xs mt-0.5 text-muted-foreground">{p.short}</span>
                       </span>
                     </button>
                   );
@@ -405,10 +401,10 @@ const FAQTraders: React.FC = () => {
               </nav>
 
               {/* Support card */}
-              <div className="mt-6 rounded-xl bg-slate-900 text-white p-5">
+              <div className="rounded-md bg-sidebar-primary text-sidebar-primary-foreground p-5 shadow-sm">
                 <div className="text-sm font-bold mb-1">UK Dealer Support</div>
-                <p className="text-xs text-slate-300 mb-3">Mon–Fri 9am to 5:30pm</p>
-                <a href="tel:03302295045" className="flex items-center gap-2 text-orange-300 font-bold">
+                <p className="text-xs text-sidebar-primary-foreground/70 mb-3">Mon–Fri 9am to 5:30pm</p>
+                <a href="tel:03302295045" className="flex items-center gap-2 text-primary font-bold">
                   <Phone className="h-4 w-4" /> 0330 229 5045
                 </a>
               </div>
@@ -416,9 +412,9 @@ const FAQTraders: React.FC = () => {
           </aside>
 
           {/* Pillars */}
-          <div className="space-y-12">
+          <div className="space-y-8">
             {filtered.length === 0 && (
-              <div className="rounded-xl border border-slate-200 p-8 text-center text-slate-600">
+              <div className="rounded-md border border-border p-8 text-center text-muted-foreground">
                 No FAQs match <strong>"{query}"</strong>. Try a different search term.
               </div>
             )}
@@ -432,31 +428,30 @@ const FAQTraders: React.FC = () => {
                   ref={(el) => (sectionRefs.current[p.id] = el)}
                   className="scroll-mt-28"
                 >
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{p.title}</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-foreground">{p.title}</h2>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="rounded-md border border-border bg-card divide-y divide-border shadow-sm overflow-hidden">
                     {p.items.map((item, idx) => {
                       const key = `${p.id}-${idx}`;
                       const open = !!openItems[key];
-                      const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
                       return (
                         <div
                           key={key}
-                          className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
+                          className="bg-card"
                         >
                           <button
                             onClick={() => toggle(key)}
-                            className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                            className="w-full min-h-12 text-left px-4 py-3 flex items-center justify-between gap-4 text-foreground hover:bg-secondary transition-colors"
                             aria-expanded={open}
                           >
-                            <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
+                            <span className="font-medium text-sm sm:text-base pr-2">{item.q}</span>
                             <ChevronDown
-                              className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                              className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform ${
                                 open ? 'rotate-180' : ''
                               }`}
                             />
@@ -466,7 +461,7 @@ const FAQTraders: React.FC = () => {
                               open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                             }`}
                           >
-                            <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
+                            <div className="px-4 pb-5 pt-4 text-muted-foreground leading-relaxed bg-secondary/40 border-t border-border">
                               {item.a}
                             </div>
                           </div>
@@ -479,24 +474,24 @@ const FAQTraders: React.FC = () => {
             })}
 
             {/* CTA */}
-            <div className="rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 text-white p-8 lg:p-10 mt-8">
+            <div className="rounded-md bg-primary/10 border border-primary/20 p-6 lg:p-8 mt-8">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">Ready to join the Panda Protect dealer network?</h3>
-                  <p className="text-orange-50 max-w-xl">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">Ready to join the Panda Protect dealer network?</h3>
+                  <p className="text-muted-foreground max-w-xl">
                     Activate your dealer account in 24 hours and start issuing warranties from the same day.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Link
                     to="/dealer-portal/signup"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white text-orange-600 font-bold hover:bg-orange-50"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-bold hover:bg-primary/90"
                   >
                     Apply Now <ArrowRight className="h-5 w-5" />
                   </Link>
                   <Link
                     to="/dealer-portal/login"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-slate-900 text-white font-bold hover:bg-slate-800"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-card text-card-foreground border border-border font-bold hover:bg-secondary"
                   >
                     <LogIn className="h-5 w-5" /> Motor Trade Login
                   </Link>
@@ -507,7 +502,7 @@ const FAQTraders: React.FC = () => {
         </div>
       </section>
 
-      
+      <WebsiteFooter />
     </div>
   );
 };
