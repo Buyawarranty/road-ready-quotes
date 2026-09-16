@@ -1475,6 +1475,60 @@ export type Database = {
           },
         ]
       }
+      ai_chat_answer_library: {
+        Row: {
+          answer: string
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          keywords: string[]
+          last_used_at: string | null
+          normalized_question: string | null
+          notes: string | null
+          question: string
+          source_thread_id: string | null
+          status: string
+          times_used: number
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keywords?: string[]
+          last_used_at?: string | null
+          normalized_question?: string | null
+          notes?: string | null
+          question: string
+          source_thread_id?: string | null
+          status?: string
+          times_used?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keywords?: string[]
+          last_used_at?: string | null
+          normalized_question?: string | null
+          notes?: string | null
+          question?: string
+          source_thread_id?: string | null
+          status?: string
+          times_used?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ai_chat_events: {
         Row: {
           created_at: string
@@ -4660,6 +4714,9 @@ export type Database = {
           sale_discount_amount: number | null
           sale_discount_pct: number | null
           sale_price_basis: string | null
+          sale_pricing_version_id: string | null
+          sale_pricing_version_label: string | null
+          sale_quoted_at: string | null
           sale_quoted_total: number | null
           seasonal_bonus_months: number | null
           signup_date: string
@@ -4788,6 +4845,9 @@ export type Database = {
           sale_discount_amount?: number | null
           sale_discount_pct?: number | null
           sale_price_basis?: string | null
+          sale_pricing_version_id?: string | null
+          sale_pricing_version_label?: string | null
+          sale_quoted_at?: string | null
           sale_quoted_total?: number | null
           seasonal_bonus_months?: number | null
           signup_date?: string
@@ -4916,6 +4976,9 @@ export type Database = {
           sale_discount_amount?: number | null
           sale_discount_pct?: number | null
           sale_price_basis?: string | null
+          sale_pricing_version_id?: string | null
+          sale_pricing_version_label?: string | null
+          sale_quoted_at?: string | null
           sale_quoted_total?: number | null
           seasonal_bonus_months?: number | null
           signup_date?: string
@@ -8298,6 +8361,7 @@ export type Database = {
       }
       lead_quick_notes: {
         Row: {
+          author_name: string | null
           created_at: string | null
           created_by: string
           id: string
@@ -8307,6 +8371,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          author_name?: string | null
           created_at?: string | null
           created_by: string
           id?: string
@@ -8316,6 +8381,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          author_name?: string | null
           created_at?: string | null
           created_by?: string
           id?: string
@@ -8343,6 +8409,7 @@ export type Database = {
       }
       lead_quick_notes_backup: {
         Row: {
+          author_name: string | null
           backed_up_at: string
           backup_id: string
           created_by: string | null
@@ -8355,6 +8422,7 @@ export type Database = {
           operation: string
         }
         Insert: {
+          author_name?: string | null
           backed_up_at?: string
           backup_id?: string
           created_by?: string | null
@@ -8367,6 +8435,7 @@ export type Database = {
           operation: string
         }
         Update: {
+          author_name?: string | null
           backed_up_at?: string
           backup_id?: string
           created_by?: string | null
@@ -11121,6 +11190,7 @@ export type Database = {
           vehicle_reg: string | null
           vehicle_type: string | null
           vehicle_year: string | null
+          whatsapp_conversation_id: string | null
         }
         Insert: {
           abandoned_cart_id?: string | null
@@ -11243,6 +11313,7 @@ export type Database = {
           vehicle_reg?: string | null
           vehicle_type?: string | null
           vehicle_year?: string | null
+          whatsapp_conversation_id?: string | null
         }
         Update: {
           abandoned_cart_id?: string | null
@@ -11365,6 +11436,7 @@ export type Database = {
           vehicle_reg?: string | null
           vehicle_type?: string | null
           vehicle_year?: string | null
+          whatsapp_conversation_id?: string | null
         }
         Relationships: [
           {
@@ -13571,6 +13643,249 @@ export type Database = {
           },
         ]
       }
+      whatsapp_auto_message_queue: {
+        Row: {
+          attempts: number
+          batch_label: string | null
+          conversation_id: string | null
+          created_at: string
+          display_name: string | null
+          force_send: boolean
+          id: string
+          last_error: string | null
+          lead_id: string
+          next_attempt_at: string
+          phone_normalized: string
+          sent_at: string | null
+          status: string
+          template_name: string | null
+          updated_at: string
+          wati_message_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          batch_label?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          force_send?: boolean
+          id?: string
+          last_error?: string | null
+          lead_id: string
+          next_attempt_at?: string
+          phone_normalized: string
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          updated_at?: string
+          wati_message_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          batch_label?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          display_name?: string | null
+          force_send?: boolean
+          id?: string
+          last_error?: string | null
+          lead_id?: string
+          next_attempt_at?: string
+          phone_normalized?: string
+          sent_at?: string | null
+          status?: string
+          template_name?: string | null
+          updated_at?: string
+          wati_message_id?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_auto_message_settings: {
+        Row: {
+          away_reply_enabled: boolean
+          away_reply_text: string
+          away_weekends_closed: boolean
+          created_at: string
+          id: string
+          is_enabled: boolean
+          office_close_time: string
+          office_open_time: string
+          template_language: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          away_reply_enabled?: boolean
+          away_reply_text?: string
+          away_weekends_closed?: boolean
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          office_close_time?: string
+          office_open_time?: string
+          template_language?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Update: {
+          away_reply_enabled?: boolean
+          away_reply_text?: string
+          away_weekends_closed?: boolean
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          office_close_time?: string
+          office_open_time?: string
+          template_language?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_conversation_tags: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversation_tags_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversation_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_conversations: {
+        Row: {
+          assigned_to: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_id: string | null
+          display_name: string | null
+          first_response_seconds: number | null
+          heat: string
+          heat_reason: string | null
+          id: string
+          is_open: boolean
+          last_agent_reply_at: string | null
+          last_away_reply_at: string | null
+          last_direction: string | null
+          last_message_at: string | null
+          last_message_preview: string | null
+          lead_id: string | null
+          lead_source: string | null
+          next_follow_up_at: string | null
+          opt_out_reason: string | null
+          opted_out_at: string | null
+          phone: string
+          phone_normalized: string
+          pipeline_status: string
+          unread_count: number
+          updated_at: string
+          wati_contact_id: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          customer_id?: string | null
+          display_name?: string | null
+          first_response_seconds?: number | null
+          heat?: string
+          heat_reason?: string | null
+          id?: string
+          is_open?: boolean
+          last_agent_reply_at?: string | null
+          last_away_reply_at?: string | null
+          last_direction?: string | null
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          lead_id?: string | null
+          lead_source?: string | null
+          next_follow_up_at?: string | null
+          opt_out_reason?: string | null
+          opted_out_at?: string | null
+          phone: string
+          phone_normalized: string
+          pipeline_status?: string
+          unread_count?: number
+          updated_at?: string
+          wati_contact_id?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          customer_id?: string | null
+          display_name?: string | null
+          first_response_seconds?: number | null
+          heat?: string
+          heat_reason?: string | null
+          id?: string
+          is_open?: boolean
+          last_agent_reply_at?: string | null
+          last_away_reply_at?: string | null
+          last_direction?: string | null
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          lead_id?: string | null
+          lead_source?: string | null
+          next_follow_up_at?: string | null
+          opt_out_reason?: string | null
+          opted_out_at?: string | null
+          phone?: string
+          phone_normalized?: string
+          pipeline_status?: string
+          unread_count?: number
+          updated_at?: string
+          wati_contact_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversations_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversations_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       whatsapp_message_log: {
         Row: {
           abandoned_cart_id: string | null
@@ -13624,6 +13939,140 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      whatsapp_messages: {
+        Row: {
+          body: string | null
+          conversation_id: string
+          created_at: string
+          direction: string
+          id: string
+          media_type: string | null
+          media_url: string | null
+          raw: Json | null
+          sent_by_admin_id: string | null
+          status: string | null
+          wati_message_id: string | null
+          wati_timestamp: string | null
+        }
+        Insert: {
+          body?: string | null
+          conversation_id: string
+          created_at?: string
+          direction: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          raw?: Json | null
+          sent_by_admin_id?: string | null
+          status?: string | null
+          wati_message_id?: string | null
+          wati_timestamp?: string | null
+        }
+        Update: {
+          body?: string | null
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          raw?: Json | null
+          sent_by_admin_id?: string | null
+          status?: string | null
+          wati_message_id?: string | null
+          wati_timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_sent_by_admin_id_fkey"
+            columns: ["sent_by_admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_status_events: {
+        Row: {
+          changed_by: string | null
+          conversation_id: string
+          created_at: string
+          from_assigned_to: string | null
+          from_status: string | null
+          id: string
+          note: string | null
+          to_assigned_to: string | null
+          to_status: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          conversation_id: string
+          created_at?: string
+          from_assigned_to?: string | null
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_assigned_to?: string | null
+          to_status?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          conversation_id?: string
+          created_at?: string
+          from_assigned_to?: string | null
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_assigned_to?: string | null
+          to_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_status_events_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_tags: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       worldpay_transactions: {
         Row: {
@@ -13852,6 +14301,7 @@ export type Database = {
       }
       can_manage_claim_reminders: { Args: never; Returns: boolean }
       can_manage_lead_routing: { Args: { _user_id: string }; Returns: boolean }
+      can_view_chatbot_data: { Args: { _user_id: string }; Returns: boolean }
       can_view_staff_hub_doc: {
         Args: { _allowed_roles: string[]; _allowed_team_ids: string[] }
         Returns: boolean
@@ -13875,6 +14325,44 @@ export type Database = {
         Returns: {
           claimed_id: string
         }[]
+      }
+      claim_whatsapp_conversation: {
+        Args: { _agent_id: string; _conversation_id: string }
+        Returns: {
+          assigned_to: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_id: string | null
+          display_name: string | null
+          first_response_seconds: number | null
+          heat: string
+          heat_reason: string | null
+          id: string
+          is_open: boolean
+          last_agent_reply_at: string | null
+          last_away_reply_at: string | null
+          last_direction: string | null
+          last_message_at: string | null
+          last_message_preview: string | null
+          lead_id: string | null
+          lead_source: string | null
+          next_follow_up_at: string | null
+          opt_out_reason: string | null
+          opted_out_at: string | null
+          phone: string
+          phone_normalized: string
+          pipeline_status: string
+          unread_count: number
+          updated_at: string
+          wati_contact_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "whatsapp_conversations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       count_recontact_leads_available: {
         Args: never
@@ -13916,6 +14404,7 @@ export type Database = {
         Args: { p_admin_user_id: string }
         Returns: undefined
       }
+      delete_chat_thread: { Args: { _thread_id: string }; Returns: boolean }
       derive_lead_source: {
         Args: { p_cart_metadata: Json }
         Returns: Database["public"]["Enums"]["lead_source"]
@@ -14136,6 +14625,32 @@ export type Database = {
         }[]
       }
       get_user_permissions: { Args: { p_user_id: string }; Returns: Json }
+      get_whatsapp_reply_notifications: {
+        Args: { _since?: string }
+        Returns: {
+          conversation_id: string
+          customer_name: string
+          lead_id: string
+          message_id: string
+          message_preview: string
+          phone: string
+          replied_at: string
+        }[]
+      }
+      get_whatsapp_template_stats: {
+        Args: { _from?: string; _to?: string }
+        Returns: {
+          delivered: number
+          failed: number
+          last_sent_at: string
+          queued: number
+          read_count: number
+          replied: number
+          sent: number
+          skipped: number
+          template_name: string
+        }[]
+      }
       has_admin_permission: {
         Args: { permission_key: string; user_id: string }
         Returns: boolean
@@ -14636,6 +15151,44 @@ export type Database = {
         Args: { _version_id: string }
         Returns: undefined
       }
+      reassign_whatsapp_conversation: {
+        Args: { _agent_id: string; _conversation_id: string }
+        Returns: {
+          assigned_to: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          customer_id: string | null
+          display_name: string | null
+          first_response_seconds: number | null
+          heat: string
+          heat_reason: string | null
+          id: string
+          is_open: boolean
+          last_agent_reply_at: string | null
+          last_away_reply_at: string | null
+          last_direction: string | null
+          last_message_at: string | null
+          last_message_preview: string | null
+          lead_id: string | null
+          lead_source: string | null
+          next_follow_up_at: string | null
+          opt_out_reason: string | null
+          opted_out_at: string | null
+          phone: string
+          phone_normalized: string
+          pipeline_status: string
+          unread_count: number
+          updated_at: string
+          wati_contact_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "whatsapp_conversations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       recompute_sales_lead_call_count: {
         Args: { p_lead_id: string }
         Returns: undefined
@@ -14695,6 +15248,10 @@ export type Database = {
         Returns: Json
       }
       restore_customer: { Args: { customer_uuid: string }; Returns: undefined }
+      restore_lead_notes_from_backup: {
+        Args: { p_lead_id: string }
+        Returns: number
+      }
       restore_lead_to_snapshot: {
         Args: { p_changelog_id: string; p_restored_by?: string }
         Returns: Json
@@ -14730,6 +15287,25 @@ export type Database = {
       }
       rota_sync_in_progress: { Args: never; Returns: boolean }
       run_renewal_milestones: { Args: never; Returns: number }
+      save_lead_quick_note: {
+        Args: { p_lead_id: string; p_note_text: string }
+        Returns: {
+          author_name: string | null
+          created_at: string | null
+          created_by: string
+          id: string
+          is_pinned: boolean | null
+          lead_id: string
+          note_text: string
+          updated_at: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lead_quick_notes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       search_import_leads: {
         Args: { p_limit?: number; p_term: string }
         Returns: {
