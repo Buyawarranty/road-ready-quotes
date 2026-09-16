@@ -2371,6 +2371,7 @@ body {
   .public-dealer-home .home-cover-grid aside { flex-direction: column; gap: 1rem; }
   .public-dealer-home .home-cover-grid aside img { width: 100%; }
   .public-dealer-home .home-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .public-dealer-home .home-stats-grid article { align-items: flex-start; text-align: left; }
 }
 
 @media (max-width: 479px) {
