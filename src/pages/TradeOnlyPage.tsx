@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import {
   Check,
+  ChevronDown,
   ArrowRight,
   Mail,
   Phone,
@@ -185,6 +186,43 @@ const BENEFITS = [
   },
 ];
 
+// Bold coloured bars for FAQ accordions (matches dealer FAQs page)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
+const WHY_US_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'Why should our dealership choose Panda Protect?',
+    a: 'Panda Protect is built exclusively for the motor trade. You get branded warranty packs, instant quotes, claims paid direct to your workshop, and dealer-friendly margins — with no retail competition from us, ever.',
+  },
+  {
+    q: 'How does Panda Protect protect our margin?',
+    a: 'Cover pays the repairer rather than the customer, eliminating comeback costs and after-sale workshop hits. Volume tiers and onboarding offers keep your cost per car low while you add a high-margin revenue stream.',
+  },
+  {
+    q: 'How fast are claims settled?',
+    a: 'Funds are released on authorisation — typically within 24 hours — not on completion. Cars keep moving, your workshop gets paid directly, and your customers stay happy.',
+  },
+  {
+    q: 'Can we sell warranties under our own brand?',
+    a: 'Yes. Panda Protect is white-label friendly: sell cover under your forecourt brand while we handle the underwriting, documentation and claims behind the scenes.',
+  },
+  {
+    q: 'Is the programme compliant with FCA expectations?',
+    a: 'Our cover and sales process aligns with FCA Consumer Duty expectations for warranty distribution, and we provide FCA-aligned sales and cover documentation as standard.',
+  },
+  {
+    q: 'What does it cost to join?',
+    a: 'Joining is free with no setup fees and no long-term contracts. Pricing is shown inside the dealer portal once your account is approved — usually within 24 hours of registering.',
+  },
+];
+
 function copyForPath(pathname: string): RouteCopy {
   const cleaned = pathname.replace(/\/+$/, '') || '/';
   // direct hit
@@ -198,6 +236,8 @@ function copyForPath(pathname: string): RouteCopy {
 const TradeOnlyPage: React.FC = () => {
   const { pathname } = useLocation();
   const copy = copyForPath(pathname);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const isWhyUs = pathname.replace(/\/+$/, '') === '/warranty-plan';
 
   const canonical = `https://pandaprotect.co.uk${pathname.endsWith('/') ? pathname : pathname + '/'}`;
 
@@ -279,6 +319,66 @@ const TradeOnlyPage: React.FC = () => {
             </div>
           </div>
         </section>
+
+        {/* Why Us FAQs — colourful accordion bars (only on /warranty-plan) */}
+        {isWhyUs && (
+          <section className="py-16 sm:py-20">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-3">
+                  Why us? Your questions answered
+                </h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  The things dealers ask us most before joining the programme.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {WHY_US_FAQS.map((item, idx) => {
+                  const bar = FAQ_BAR_STYLES[idx % FAQ_BAR_STYLES.length];
+                  const open = openFaq === idx;
+                  return (
+                    <div
+                      key={item.q}
+                      className={`rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-md ${bar.bar}`}
+                    >
+                      <button
+                        onClick={() => setOpenFaq(open ? null : idx)}
+                        className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                        aria-expanded={open}
+                      >
+                        <span className={`font-semibold pr-2 ${bar.text}`}>{item.q}</span>
+                        <ChevronDown
+                          className={`h-5 w-5 flex-shrink-0 transition-transform ${bar.chevron} ${
+                            open ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </button>
+                      <div
+                        className={`overflow-hidden transition-all duration-200 ease-out ${
+                          open ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="px-5 pb-5 pt-4 text-slate-700 leading-relaxed bg-white border-t border-slate-100">
+                          {item.a}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="text-center mt-8">
+                <Button asChild size="lg" className="bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold">
+                  <Link to="/faq/traders">
+                    View all dealer FAQs
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Checklist */}
         <section className="py-16 sm:py-20 bg-muted/30">
