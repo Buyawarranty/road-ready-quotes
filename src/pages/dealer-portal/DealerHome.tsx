@@ -32,9 +32,48 @@ import pandaMechanicImage from '@/assets/car-warranty-panda-vehicles.png';
  * Dealer home (/dealer-portal/) — trade-focused landing page.
  * SEO targets: dealer extended warranties, motor trade warranty, dealer programme UK.
  */
+
+// Bold coloured bars for FAQ accordions (matches dealer FAQs page)
+const FAQ_BAR_STYLES = [
+  { bar: 'bg-slate-700', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-orange-500', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-green-600', text: 'text-white', chevron: 'text-white' },
+  { bar: 'bg-red-100', text: 'text-red-700', chevron: 'text-red-500' },
+  { bar: 'bg-amber-100', text: 'text-orange-700', chevron: 'text-orange-500' },
+  { bar: 'bg-blue-100', text: 'text-blue-800', chevron: 'text-blue-500' },
+];
+
+const HOME_FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How do I register my dealership for a trade account?',
+    a: 'Complete our online dealer application form. Once we verify your motor trade business, your account is usually activated within 24 hours with full access to the dealer portal, pricing tools and resources.',
+  },
+  {
+    q: 'How quickly can I issue a warranty to a customer?',
+    a: 'Once your account is approved, you can generate a warranty policy in under 60 seconds from your dealer dashboard — ready for same-day handover with the vehicle.',
+  },
+  {
+    q: 'Do you require minimum monthly sales volumes?',
+    a: 'No. Our partner programme is flexible — there are no minimum sales volumes or long-term commitments. Full dealer terms are available in the portal after registration.',
+  },
+  {
+    q: 'How do claims and payouts work?',
+    a: 'Claims are handled quickly with instant payouts to any VAT-registered UK garage. Your customers can use their own local garage, keeping them happy and your reputation strong.',
+  },
+  {
+    q: 'What vehicles can I cover?',
+    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 15 years old and 150,000 miles. Enter a registration in the quote tool for instant pricing.',
+  },
+  {
+    q: 'Can I set my own margins and pricing?',
+    a: 'Yes. The dealer portal includes pricing and margin controls so you can set customer-facing prices that work for your business, with performance tracking built in.',
+  },
+];
+
 const DealerHome = () => {
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
