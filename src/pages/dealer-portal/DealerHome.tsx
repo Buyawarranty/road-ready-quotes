@@ -26,6 +26,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import { supabase } from '@/integrations/supabase/client';
 import pandaVehiclesImage from '@/assets/car-warranty-panda-vehicles.png';
 import pandaHeroImage from '@/assets/panda-hero.png';
 
@@ -62,10 +63,21 @@ const DealerHome = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openService, setOpenService] = useState<number | null>(0);
 
-  const handleRegSubmit = (event: React.FormEvent) => {
+  const handleRegSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const cleaned = reg.trim().toUpperCase().replace(/\s+/g, ' ');
-    navigate(`/dealer-portal/coming-soon${cleaned ? `?reg=${encodeURIComponent(cleaned)}` : ''}`);
+    if (cleaned) {
+      localStorage.setItem('dealerPendingReg', cleaned.replace(/\s+/g, ''));
+    }
+    const regParam = cleaned ? `?reg=${encodeURIComponent(cleaned)}` : '';
+    // If the visitor is already signed in, take them straight into the dealer
+    // portal quote flow; otherwise send them to dealer registration.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      navigate(`/dealer-portal/quote/vehicle${regParam}`);
+    } else {
+      navigate(`/dealer-portal/signup${regParam}`);
+    }
   };
 
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
