@@ -6,6 +6,9 @@ import {
   Award,
   BarChart2,
   BarChart3,
+  BatteryCharging,
+  Bike,
+  Car,
   Check,
   ChevronDown,
   Clock,
@@ -16,11 +19,14 @@ import {
   MessageCircle,
   Phone,
   PoundSterling,
+  Settings,
   Shield,
+  ShieldCheck,
   TrendingUp,
   UserCircle2,
   Users,
   Wrench,
+  X,
   Zap,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
@@ -62,6 +68,7 @@ const DealerHome = () => {
   const [reg, setReg] = useState('');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openService, setOpenService] = useState<number | null>(0);
+  const [openCoverage, setOpenCoverage] = useState<number | null>(null);
 
   const handleRegSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
