@@ -231,8 +231,7 @@ const DealerHome = () => {
       <section className="home-hero">
         <div className="home-shell home-hero-grid">
           <div className="home-hero-copy">
-            <p className="home-eyebrow">For UK motor dealers</p>
-            <p className="home-kicker">Trader Warranty Solutions</p>
+            <p className="home-kicker">Trade Warranties for UK Motor Dealers</p>
             <h1>
               Sell more warranties. <span>Grow your business.</span>
             </h1>
