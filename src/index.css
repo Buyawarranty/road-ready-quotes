@@ -1987,6 +1987,92 @@ body {
   margin-left: 1.5rem;
 }
 
+/* Homepage navigation mirrors the approved compact Buy A Warranty header. */
+.home-reference-header .home-reference-header-shell {
+  width: min(1240px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.home-reference-header .home-reference-header-shell > div {
+  min-height: 66px;
+}
+
+.home-reference-header img {
+  max-height: 48px;
+}
+
+.home-reference-header nav {
+  flex: 1;
+  justify-content: flex-end;
+  gap: clamp(0.65rem, 1.35vw, 1.35rem);
+  margin-left: clamp(1rem, 3vw, 3rem);
+}
+
+.home-reference-header nav > a:not([class*="bg-"]),
+.home-reference-header nav button {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.home-reference-header .home-header-quote-link,
+.home-reference-header .home-header-login-link {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.public-site-header.home-reference-header nav > a.home-header-quote-link,
+.home-reference-header .home-header-quote-link {
+  background: hsl(var(--header-orange));
+  color: hsl(var(--public-surface, 0 0% 100%));
+}
+
+.public-site-header.home-reference-header nav > a.home-header-quote-link:hover,
+.home-reference-header .home-header-quote-link:hover {
+  background: hsl(var(--header-orange-strong));
+  color: hsl(var(--public-surface, 0 0% 100%));
+}
+
+.home-reference-header .home-header-login-link {
+  padding-inline: 0.5rem;
+  color: hsl(var(--header-ink));
+}
+
+.home-reference-header .home-header-login-link:hover {
+  color: hsl(var(--header-orange));
+}
+
+@media (max-width: 1150px) {
+  .home-reference-header nav {
+    gap: 0.55rem;
+    margin-left: 1rem;
+  }
+
+  .home-reference-header nav > a:not([class*="bg-"]),
+  .home-reference-header nav button,
+  .home-reference-header .home-header-quote-link,
+  .home-reference-header .home-header-login-link {
+    font-size: 0.8rem;
+  }
+
+  .home-reference-header .home-header-quote-link {
+    padding-inline: 0.75rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .home-reference-header .home-header-quote-link,
+  .home-reference-header .home-header-login-link {
+    width: 100%;
+  }
+}
+
 /* Public site footer chrome */
 .public-static-footer {
   font-family: Helvetica, "Segoe UI", Arial, sans-serif;
