@@ -2315,9 +2315,11 @@ body {
 .public-dealer-home .home-included-cta p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.8rem; font-weight: 600; }
 
 .public-dealer-home .home-stats-section { background: hsl(var(--home-surface)); }
-.public-dealer-home .home-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-.public-dealer-home .home-stats-grid article { display: flex; align-items: center; justify-content: center; gap: 0.7rem; padding: 1.3rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.4rem; }
-.public-dealer-home .home-stats-grid svg { color: hsl(var(--home-orange)); }
+.public-dealer-home .home-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+.public-dealer-home .home-stats-grid article { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; padding: 1.5rem 1.1rem; text-align: center; background: #fff; border: 1px solid hsl(var(--home-line)); border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05); }
+.public-dealer-home .home-stats-grid svg { width: 1.6rem; height: 1.6rem; color: hsl(var(--home-orange)); }
+.public-dealer-home .home-stats-grid h3 { margin: 0; font-size: 1.02rem; font-weight: 800; color: hsl(var(--home-copy)); }
+.public-dealer-home .home-stats-grid p { margin: 0; font-size: 0.92rem; line-height: 1.45; color: hsl(var(--home-copy)); opacity: 0.75; }
 
 .public-dealer-home .home-faq-section { text-align: center; }
 .public-dealer-home .home-faq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 0.65rem 0.9rem; margin-bottom: 1.5rem; text-align: left; }
