@@ -152,7 +152,7 @@ const DealerComingSoon = () => {
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
         <meta name="description" content="Offer trade warranties to your customers without the paperwork. Register for early dealer access to Panda Protect — UK motor trade warranty for cars, vans, EVs and motorcycles." />
