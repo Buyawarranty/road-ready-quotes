@@ -531,12 +531,6 @@
   box-shadow: 0 24px 56px hsl(220 35% 7% / 0.3);
 }
 
-.public-dealer-home > section:first-of-type > div > div:nth-child(2) {
-  margin-top: 3rem;
-  border: 1px solid hsl(var(--marketing-surface) / 0.16);
-  background: hsl(218 43% 15%);
-  box-shadow: 0 14px 34px hsl(220 35% 7% / 0.22);
-}
 
 .public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
   border: 1px solid hsl(var(--marketing-surface) / 0.18);
@@ -623,14 +617,6 @@
   box-shadow: 0 24px 56px hsl(var(--marketing-ink) / 0.12);
 }
 
-/* Dealer login / join strip */
-.public-dealer-home > section:first-of-type > div > div:nth-child(2) {
-  margin-top: 3rem;
-  border: 1px solid hsl(var(--marketing-line));
-  background: hsl(var(--marketing-surface));
-  box-shadow: 0 10px 26px hsl(var(--marketing-ink) / 0.06);
-  color: hsl(var(--marketing-ink));
-}
 
 /* Benefit cards row */
 .public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
@@ -733,10 +719,6 @@
   .public-dealer-signup > section:first-of-type h1 {
     font-size: 2.25rem;
     line-height: 1.08;
-  }
-
-  .public-dealer-home > section:first-of-type > div > div:nth-child(2) {
-    margin-top: 2rem;
   }
 }
 
