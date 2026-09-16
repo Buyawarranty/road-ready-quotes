@@ -226,7 +226,7 @@ const DealerHome = () => {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      <DealerPublicHeader homepageStyle />
+      <DealerPublicHeader />
 
       <section className="home-hero">
         <div className="home-shell home-hero-grid">

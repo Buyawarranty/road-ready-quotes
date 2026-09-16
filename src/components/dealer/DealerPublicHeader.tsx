@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Phone, Clock, PhoneCall, LogIn, Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Phone, Clock, LogIn, Menu, X } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
@@ -10,34 +10,24 @@ interface NavItem {
   to: string;
 }
 
-interface DealerPublicHeaderProps {
-  homepageStyle?: boolean;
-}
-
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Home', to: '/' },
-  { label: 'Why Us', to: '/warranty-plan' },
-  { label: 'FAQs', to: '/faq/traders' },
-  { label: 'Contact', to: '/contact-us' },
-];
-
-const HOMEPAGE_NAV_ITEMS: NavItem[] = [
   { label: "What's Covered", to: '/what-is-covered/' },
   { label: 'Make a Claim', to: '/make-a-claim/' },
   { label: 'FAQs', to: '/faq/traders/' },
   { label: 'Contact Us', to: '/contact-us/' },
 ];
 
-export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepageStyle = false }) => {
+export const DealerPublicHeader: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isPublicChrome = !location.pathname.startsWith('/dealer-portal/login');
-  const navItems = homepageStyle ? HOMEPAGE_NAV_ITEMS : NAV_ITEMS;
+  const isHome = location.pathname === '/';
+  const quoteHref = isHome ? '#hero-reg' : '/#hero-reg';
 
   return (
-    <header className={`${isPublicChrome ? 'public-site-header ' : ''}${homepageStyle ? 'home-reference-header ' : ''}bg-white shadow-sm py-1 sm:py-2 sticky top-0 z-50`}>
-      <div className={homepageStyle ? 'home-reference-header-shell' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}>
+    <>
+    <header className={`${isPublicChrome ? 'public-site-header ' : ''}home-reference-header bg-white shadow-sm py-1 sm:py-2 fixed top-0 left-0 right-0 z-50`}>
+      <div className="home-reference-header-shell">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
@@ -59,7 +49,7 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepage
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-2 xl:gap-4">
-            {navItems.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -104,27 +94,18 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepage
               WhatsApp Us
             </a>
 
-            {homepageStyle ? (
-              <a href="#hero-reg" className="home-header-quote-link whitespace-nowrap">
-                Get my quote
-              </a>
-            ) : (
-              <Link
-                to="/dealer-portal/signup"
-                className="inline-flex items-center px-3 py-2 bg-[#eb4b00] text-white text-sm font-semibold rounded-lg hover:bg-[#d63f00] transition-colors whitespace-nowrap"
-              >
-                Start Today
-              </Link>
-            )}
+            <a href={quoteHref} className="home-header-quote-link whitespace-nowrap">
+              Get my quote
+            </a>
 
-            {/* Motor Trade Login - high contrast B2B CTA */}
+            {/* Login - high contrast B2B CTA */}
             <Link
               to="/dealer-portal/login"
-              className={homepageStyle ? 'home-header-login-link whitespace-nowrap' : 'inline-flex items-center gap-1.5 px-3 py-2 bg-slate-900 text-white text-sm font-bold rounded-lg hover:bg-black border-2 border-slate-900 transition-colors whitespace-nowrap'}
+              className="home-header-login-link whitespace-nowrap"
               aria-label="Motor Trade Login for dealer partners"
             >
               <LogIn className="h-4 w-4" />
-              {homepageStyle ? 'Login' : 'Motor Trade Login'}
+              Login
             </Link>
           </nav>
 
@@ -142,7 +123,7 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepage
         {/* Mobile Nav */}
         {mobileOpen && (
           <div className="lg:hidden border-t border-gray-200 mt-2 py-3 space-y-1">
-            {navItems.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -169,34 +150,27 @@ export const DealerPublicHeader: React.FC<DealerPublicHeaderProps> = ({ homepage
               >
                 WhatsApp Us
               </a>
-              {homepageStyle ? (
-                <a
-                  href="#hero-reg"
-                  onClick={() => setMobileOpen(false)}
-                  className="home-header-quote-link"
-                >
-                  Get my quote
-                </a>
-              ) : (
-                <Link
-                  to="/dealer-portal/signup"
-                  onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center bg-[#eb4b00] hover:bg-[#d63f00] text-white font-semibold rounded-lg px-4 h-10 text-sm transition-colors"
-                >
-                  Start Today
-                </Link>
-              )}
+              <a
+                href={quoteHref}
+                onClick={() => setMobileOpen(false)}
+                className="home-header-quote-link"
+              >
+                Get my quote
+              </a>
               <Link
                 to="/dealer-portal/login"
                 onClick={() => setMobileOpen(false)}
-                className={homepageStyle ? 'home-header-login-link' : 'inline-flex items-center justify-center gap-1.5 bg-slate-900 text-white font-bold rounded-lg px-4 h-10 text-sm hover:bg-black transition-colors'}
+                className="home-header-login-link"
               >
-                <LogIn className="h-4 w-4" /> {homepageStyle ? 'Login' : 'Motor Trade Login'}
+                <LogIn className="h-4 w-4" /> Login
               </Link>
             </div>
           </div>
         )}
       </div>
     </header>
+    {/* Spacer keeps page content below the fixed header */}
+    <div aria-hidden="true" className="h-[60px] sm:h-[76px]" />
+    </>
   );
 };
