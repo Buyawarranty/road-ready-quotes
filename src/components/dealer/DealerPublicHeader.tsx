@@ -14,6 +14,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Home', to: '/' },
   { label: 'Why Us', to: '/warranty-plan' },
   { label: 'Resources', to: '/faq' },
+  { label: 'FAQs', to: '/faq/traders' },
   { label: 'Contact', to: '/contact-us' },
 ];
 
@@ -35,10 +36,10 @@ export const DealerPublicHeader: React.FC = () => {
               <OptimizedImage
                 src={buyawarrantyLogo}
                 alt="Panda Protect"
-                className="h-10 sm:h-14 w-auto object-contain"
+                className="h-14 sm:h-20 w-auto object-contain"
                 priority={true}
-                width={240}
-                height={56}
+                width={340}
+                height={80}
               />
             </a>
           </div>

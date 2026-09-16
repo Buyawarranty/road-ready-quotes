@@ -84,6 +84,9 @@ const DealerHome = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#0f1729] px-3 py-1.5 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] text-white">
+                For UK motor dealers
+              </div>
               <div className="text-xs sm:text-sm font-bold tracking-[0.2em] text-[#eb4b00] uppercase">
                 Trader Warranty Solutions
               </div>
@@ -532,22 +535,44 @@ const DealerHome = () => {
             {[
               {
                 title: 'Dealer Benefits & Pricing',
-                body: 'Premium trade pricing that maximises your margins on every sale.',
+                body: 'Trade pricing, margins and commission structures explained.',
+                to: '/dealer-portal/full-warranty',
+                cta: 'View pricing guide',
               },
               {
-                title: 'Dealer Partnership Solutions',
-                body: 'Flexible programmes that increase profitability for any size dealership.',
+                title: 'Plan Documents & Cover',
+                body: 'What is covered, terms and conditions and policy wording.',
+                to: '/what-is-covered',
+                cta: 'Read plan documents',
               },
               {
-                title: 'Trusted Warranty Provider UK',
-                body: 'Backed by a 5-star rated UK warranty provider with proven claims handling.',
+                title: 'Claims & Dealer FAQs',
+                body: 'How claims work, payout timings and answers for motor traders.',
+                to: '/faq/traders',
+                cta: 'Open dealer FAQs',
               },
             ].map((c) => (
-              <div key={c.title} className="bg-white rounded-2xl p-6 border border-gray-200">
+              <Link
+                key={c.title}
+                to={c.to}
+                className="group bg-white rounded-2xl p-6 border border-gray-200 hover:border-[#eb4b00] hover:shadow-lg transition-all block"
+              >
                 <h3 className="font-bold text-gray-900 mb-2">{c.title}</h3>
-                <p className="text-gray-600 text-sm">{c.body}</p>
-              </div>
+                <p className="text-gray-700 text-sm mb-3">{c.body}</p>
+                <span className="inline-flex items-center gap-1.5 text-[#eb4b00] font-semibold text-sm group-hover:gap-2.5 transition-all">
+                  {c.cta} <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
             ))}
+          </div>
+          <div className="mt-8">
+            <Link
+              to="/faq"
+              className="inline-flex items-center gap-2 border-2 border-[#0f1729] text-[#0f1729] font-bold px-6 py-3 rounded-lg hover:bg-[#0f1729] hover:text-white transition-colors"
+            >
+              See all dealer resources &amp; downloads
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
