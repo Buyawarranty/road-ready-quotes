@@ -3,7 +3,7 @@ import { SEOHead } from '@/components/SEOHead';
 
 export default function Widget() {
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="public-widget-page min-h-screen bg-white flex items-center justify-center p-4">
       <SEOHead 
         title="Car Warranty Widget | Embed Vehicle Warranty Quotes"
         description="Embed our car warranty widget on your website. Instant quotes for vehicles with competitive pricing and comprehensive coverage options."
