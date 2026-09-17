@@ -77,7 +77,7 @@ serve(async (req: Request) => {
       .update({ is_responded: true })
       .eq("id", request.id);
 
-    // Send notification email to claims@buyawarranty.co.uk
+    // Send notification email to claims@pandaprotect.co.uk
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const regPlate = request.vehicle_registration?.toUpperCase() || "N/A";
@@ -118,8 +118,8 @@ serve(async (req: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "BuyaWarranty Claims <claims@buyawarranty.co.uk>",
-          to: ["claims@buyawarranty.co.uk"],
+          from: "Panda Protect Claims <claims@pandaprotect.co.uk>",
+          to: ["claims@pandaprotect.co.uk"],
           subject: `Claim Update Received: ${regPlate} — ${statusUpdate || "Update submitted"}`,
           html: notificationHtml,
         }),

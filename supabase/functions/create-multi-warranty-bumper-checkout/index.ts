@@ -40,7 +40,7 @@ serve(async (req) => {
 
     // Get authenticated user
     let user = null;
-    let customerEmail = customerData?.email || "guest@buyawarranty.co.uk";
+    let customerEmail = customerData?.email || "guest@pandaprotect.co.uk";
     
     const authHeader = req.headers.get("Authorization");
     if (authHeader && authHeader !== "Bearer null") {
@@ -137,7 +137,7 @@ serve(async (req) => {
       currency: "GBP",
       order_reference: `MULTI-VW-${Date.now()}`,
       invoice_number: `INV-MULTI-${Date.now()}`,
-      user_email: "info@buyawarranty.co.uk",
+      user_email: "info@pandaprotect.co.uk",
       first_name: customerData.first_name,
       last_name: customerData.last_name,
       email: customerData.email,
@@ -194,7 +194,7 @@ serve(async (req) => {
       currency: "GBP",
       order_reference: `MULTI-VW-${Date.now()}`,
       invoice_number: `INV-MULTI-${Date.now()}`,
-      user_email: "info@buyawarranty.co.uk",
+      user_email: "info@pandaprotect.co.uk",
       first_name: customerData.first_name,
       last_name: customerData.last_name,
       email: customerData.email,

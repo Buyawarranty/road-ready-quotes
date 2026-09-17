@@ -68,7 +68,7 @@ serve(async (req) => {
 
     // Get authenticated user
     let user = null;
-    let customerEmail = customerData?.email || vehicleData?.email || "guest@buyawarranty.co.uk";
+    let customerEmail = customerData?.email || vehicleData?.email || "guest@pandaprotect.co.uk";
     
     const authHeader = req.headers.get("Authorization");
     if (authHeader && authHeader !== "Bearer null") {
