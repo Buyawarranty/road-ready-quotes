@@ -393,7 +393,7 @@ const App = () => {
                     <Route path="/make-a-claim/" element={<TradeOnlyPage />} />
                     <Route path="/cancel-warranty" element={<TradeOnlyPage />} />
                     <Route path="/warranty-transfer/" element={<TradeOnlyPage />} />
-                    <Route path="/contact-us/" element={<TradeOnlyPage />} />
+                    <Route path="/contact-us/" element={<ContactUs />} />
                     <Route path="/complaints/" element={<TradeOnlyPage />} />
                     <Route path="/thewarrantyhub/" element={<Blog />} />
                     <Route path="/thewarrantyhub/:slug/" element={<BlogArticle />} />
