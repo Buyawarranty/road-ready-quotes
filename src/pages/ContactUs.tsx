@@ -1,358 +1,318 @@
-import React, { useState } from 'react';
-import { MessageCircle, Mail, Clock, Upload, X, ArrowRight, Phone, Rocket, TrendingUp, ShieldCheck, Zap, PoundSterling, Users, Check } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
-
+import {
+  ArrowRight,
+  CheckCircle2,
+  Clock3,
+  FileText,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Upload,
+  X,
+} from 'lucide-react';
 import { SEOHead } from '@/components/SEOHead';
+import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import TrustpilotMicroStarWidget from '@/components/TrustpilotMicroStarWidget';
+import contactSupportPanda from '@/assets/contact-support-panda.png';
 
-import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+const acceptedTypes = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+  'image/jpg',
+];
 
 const ContactUs = () => {
   const { toast } = useToast();
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
+  const [callbackData, setCallbackData] = useState({ phone: '', preferredTime: 'Anytime' });
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCallbackSubmitting, setIsCallbackSubmitting] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [showCallbackModal, setShowCallbackModal] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (name === 'phone') {
-      const filteredValue = value.replace(/[^\d\s\-+]/g, '');
-      setFormData({ ...formData, [name]: filteredValue });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+  const isOpenNow = useMemo(() => {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/London',
+      weekday: 'short',
+      hour: '2-digit',
+      hour12: false,
+    }).formatToParts(new Date());
+    const weekday = parts.find((part) => part.type === 'weekday')?.value;
+    const hour = Number(parts.find((part) => part.type === 'hour')?.value ?? 0);
+    return weekday !== 'Sun' && hour >= 9 && hour < 18;
+  }, []);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({
+      ...current,
+      [name]: name === 'phone' ? value.replace(/[^\d\s\-+]/g, '') : value,
+    }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.size > 20 * 1024 * 1024) {
-        toast({ title: 'File too large', description: 'Please upload a file smaller than 20MB.', variant: 'destructive' });
-        return;
-      }
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/jpg'];
-      if (!allowedTypes.includes(selectedFile.type)) {
-        toast({ title: 'Invalid file type', description: 'Please upload a PDF, DOC, DOCX, JPG, or PNG file.', variant: 'destructive' });
-        return;
-      }
-      setFile(selectedFile);
+  const validateFile = (selectedFile: File) => {
+    if (selectedFile.size > 20 * 1024 * 1024) {
+      toast({ title: 'File too large', description: 'Please upload a file smaller than 20MB.', variant: 'destructive' });
+      return false;
     }
+    if (!acceptedTypes.includes(selectedFile.type)) {
+      toast({ title: 'Invalid file type', description: 'Please upload a PDF, DOC, DOCX, JPG, or PNG file.', variant: 'destructive' });
+      return false;
+    }
+    return true;
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile && validateFile(selectedFile)) setFile(selectedFile);
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const selectedFile = event.dataTransfer.files?.[0];
+    if (selectedFile && validateFile(selectedFile)) setFile(selectedFile);
   };
 
   const removeFile = () => {
     setFile(null);
-    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    const input = document.getElementById('contact-file') as HTMLInputElement | null;
+    if (input) input.value = '';
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); };
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); };
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); e.stopPropagation(); setIsDragging(false);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      const droppedFile = files[0];
-      if (droppedFile.size > 20 * 1024 * 1024) {
-        toast({ title: 'File too large', description: 'Please upload a file smaller than 20MB.', variant: 'destructive' });
-        return;
-      }
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png', 'image/jpg'];
-      if (!allowedTypes.includes(droppedFile.type)) {
-        toast({ title: 'Invalid file type', description: 'Please upload a PDF, DOC, DOCX, JPG, or PNG file.', variant: 'destructive' });
-        return;
-      }
-      setFile(droppedFile);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.name || !formData.email) {
-      toast({ title: 'Missing Information', description: 'Please fill in your name and email address.', variant: 'destructive' });
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim()) {
+      toast({ title: 'Please complete the required fields', description: 'Enter your name and email address.', variant: 'destructive' });
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       let fileData = null;
       if (file) {
         const reader = new FileReader();
-        const fileBase64 = await new Promise<string>((resolve, reject) => {
+        const data = await new Promise<string>((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string);
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
-        fileData = { name: file.name, size: file.size, type: file.type, data: fileBase64 };
+        fileData = { name: file.name, size: file.size, type: file.type, data };
       }
 
-      const message = `[Dealer Enquiry]${formData.company ? ` Company: ${formData.company}.` : ''}\n\n${formData.message || ''}`.trim();
-
       const response = await supabase.functions.invoke('submit-contact', {
-        body: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          message,
-          file: fileData
-        }
+        body: { ...formData, file: fileData },
       });
+      if (response.error) throw new Error(response.error.message || 'Unable to send your message');
 
-      if (response.error) throw new Error(response.error.message || 'Failed to submit dealer enquiry');
-
-      toast({
-        title: 'Enquiry sent successfully',
-        description: 'Thanks for getting in touch. Our dealer team will be back to you within 1 business day.',
-      });
-
-      setFormData({ name: '', email: '', phone: '', company: '', message: '' });
-      setFile(null);
-    } catch (error: any) {
-      console.error('Submission error:', error);
-      toast({ title: 'Submission failed', description: error.message || 'Please try again or call us at 0330 229 5045.', variant: 'destructive' });
+      toast({ title: 'Message sent', description: 'Thank you. Our team will reply within 1–2 business days.' });
+      setFormData({ name: '', email: '', phone: '', message: '' });
+      removeFile();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Please try again or call us.';
+      toast({ title: 'Message not sent', description: message, variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const benefits = [
-    { icon: PoundSterling, title: 'Warranties from 20p a day', desc: 'Sharp trade pricing designed to boost dealer margins on every car you sell.' },
-    { icon: Zap, title: '60-second onboarding', desc: 'Fast dealer sign-up via the dealer portal. Start selling extended warranties today.' },
-    { icon: TrendingUp, title: 'Boost sales & profit', desc: 'Add a high-margin product to every deal and unlock exclusive trade account pricing.' },
-    { icon: ShieldCheck, title: 'Trusted UK provider', desc: 'Reliable motor trade warranty solutions backed by full claims and dealer support.' },
-    { icon: Users, title: 'Dedicated dealer support', desc: 'Real people, real resources — designed to help you maximise warranty sales.' },
-    { icon: Rocket, title: 'Dealer dashboard', desc: 'Manage quotes, warranties and customers from one easy dealer portal.' },
-  ];
+  const handleCallback = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const phone = callbackData.phone.replace(/\D/g, '');
+    if (phone.length < 10 || phone.length > 11) {
+      toast({ title: 'Check your phone number', description: 'Enter a valid UK phone number.', variant: 'destructive' });
+      return;
+    }
+
+    setIsCallbackSubmitting(true);
+    try {
+      const { error } = await supabase.from('abandoned_carts').insert({
+        email: `callback_${Date.now()}@callback.temp`,
+        phone: callbackData.phone,
+        full_name: 'Contact page callback request',
+        step_abandoned: 0,
+        contact_status: 'new',
+        contact_notes: `Callback requested from contact page. Preferred time: ${callbackData.preferredTime}`,
+        cart_metadata: { source: 'contact_page', priority: 'urgent', request_type: 'callback' },
+      });
+      if (error) throw error;
+      toast({ title: 'Callback requested', description: 'Our team will call you during business hours.' });
+      setCallbackData({ phone: '', preferredTime: 'Anytime' });
+    } catch (error) {
+      console.error('Callback request error:', error);
+      toast({ title: 'Request not sent', description: 'Please call us on 0330 912 2402.', variant: 'destructive' });
+    } finally {
+      setIsCallbackSubmitting(false);
+    }
+  };
+
+  const availability = isOpenNow ? 'We’re open — call us now' : 'We’re closed right now — call back during opening hours';
 
   return (
     <>
-      <DealerPublicHeader />
       <SEOHead
-        title="Dealer Warranty Programme | Trade Account Sign Up | Panda Protect"
-        description="Increase revenue with dealer car warranties from 20p a day. Fast 60-second onboarding via our dealer portal. Join the UK motor trade warranty programme today."
-        keywords="dealer car warranties, dealer van warranties, motor trade warranty provider, trade account car warranties, dealer extended warranties, dealer portal, dealer programme, dealer sign up, motor trade warranties, dealer warranty programme"
+        title="Contact Panda Protect | Warranty Support & Claims"
+        description="Contact Panda Protect for warranty support, claims help, WhatsApp assistance or a callback from our friendly UK team."
       />
+      <DealerPublicHeader />
 
-      <div className="min-h-screen bg-white">
-        {/* 1 — Hero (white) */}
-        <section className="bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold tracking-wide uppercase mb-5">
-              Dealer Programme
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 leading-[1.05]">
-              Vehicle warranties for the trade.{' '}
-              <span className="text-orange-500">From 20p a day.</span>
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto mt-5 leading-relaxed">
-              Boost dealer profits with car, van and vehicle warranties. Simple sign-up, exclusive trade pricing and full support to help you sell more cars.
+      <main className="contact-page">
+        <section className="contact-intro">
+          <div className="contact-shell">
+            <p className="contact-eyebrow">Contact Us</p>
+            <h1>We're Here to Help</h1>
+            <p className="contact-lead">
+              Whether you have a question, need to make a claim, or just want to chat about your warranty options — our friendly team is ready to help.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-              <Link
-                to="/dealer-portal/signup"
-                className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3.5 rounded-lg transition-colors"
-              >
-                Free dealer sign-up <ArrowRight className="w-4 h-4" />
-              </Link>
-              <a
-                href="tel:03302295045"
-                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-900 font-semibold px-6 py-3.5 rounded-lg transition-colors"
-              >
-                <Phone className="w-4 h-4" /> 0330 229 5045
-              </a>
+
+            <div className="contact-channel-grid">
+              <article className="contact-channel-card">
+                <div className="contact-channel-heading">
+                  <span className="contact-icon contact-icon-orange"><Phone /></span>
+                  <div><h2>Customer support</h2><p>Quotes, cover questions and anything about your policy.</p></div>
+                </div>
+                <a className="contact-detail-link" href="tel:03309122402"><Phone />0330 912 2402</a>
+                <a className="contact-detail-link" href="mailto:support@buyawarranty.co.uk"><Mail />support@buyawarranty.co.uk</a>
+                <Button asChild className="contact-action contact-action-orange"><a href="mailto:support@buyawarranty.co.uk">Email us <ArrowRight /></a></Button>
+                <p className="contact-availability"><Clock3 />{availability}</p>
+              </article>
+
+              <article className="contact-channel-card">
+                <div className="contact-channel-heading">
+                  <span className="contact-icon contact-icon-orange"><FileText /></span>
+                  <div><h2>Claims &amp; repairs</h2><p>Start a claim or check progress with our claims team.</p></div>
+                </div>
+                <a className="contact-detail-link" href="tel:03302295045"><Phone />0330 229 5045</a>
+                <a className="contact-detail-link" href="mailto:claims@buyawarranty.co.uk"><Mail />claims@buyawarranty.co.uk</a>
+                <Button asChild className="contact-action contact-action-navy"><a href="mailto:claims@buyawarranty.co.uk">Email us <ArrowRight /></a></Button>
+                <p className="contact-availability"><Clock3 />{availability}</p>
+              </article>
+
+              <article className="contact-channel-card">
+                <div className="contact-channel-heading">
+                  <span className="contact-icon contact-icon-green"><MessageCircle /></span>
+                  <div><h2>WhatsApp</h2><p>Quick question? Message us and we'll be right with you.</p></div>
+                </div>
+                <Button asChild className="contact-action contact-action-green"><a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">Start chat <ArrowRight /></a></Button>
+                <a className="contact-email-shortcut" href="mailto:support@buyawarranty.co.uk">Email us</a>
+                <p className="contact-availability"><Clock3 />Replies during opening hours</p>
+              </article>
+            </div>
+
+            <div className="contact-hours-strip">
+              <span><Clock3 />Customer support: Monday – Saturday · 9am to 6pm</span>
+              <span><Clock3 />Claims &amp; repairs: Monday – Friday · 9am to 5pm</span>
+              <span className="contact-rating">Excellent <strong>★★★★★</strong></span>
             </div>
           </div>
         </section>
 
-        {/* 2 — Contact strip (grey) */}
-        <section className="bg-gray-50 border-y border-gray-200">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { icon: Phone, label: 'Dealer support', value: '0330 229 5045', sub: 'Trade account & onboarding', href: 'tel:03302295045' },
-              { icon: Mail, label: 'Dealer email', value: 'dealers@pandaprotect.co.uk', sub: 'Programme enquiries', href: 'mailto:dealers@pandaprotect.co.uk' },
-              { icon: Clock, label: 'Opening hours', value: 'Mon–Fri · 9am–5:30pm', sub: 'Request a callback →', onClick: () => setShowCallbackModal(true) },
-            ].map(({ icon: Icon, label, value, sub, href, onClick }) => (
-              <div key={label} className="flex items-start gap-4 p-5 rounded-xl border border-gray-200 bg-white">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 text-orange-500 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-wider text-gray-500 font-semibold">{label}</p>
-                  {href ? (
-                    <a href={href} className="text-base font-semibold text-gray-900 hover:text-orange-500 break-all">{value}</a>
-                  ) : (
-                    <p className="text-base font-semibold text-gray-900">{value}</p>
-                  )}
-                  {onClick ? (
-                    <button onClick={onClick} className="text-sm text-orange-500 hover:text-orange-600 font-medium mt-0.5">{sub}</button>
-                  ) : (
-                    <p className="text-sm text-gray-500">{sub}</p>
-                  )}
-                </div>
+        <section className="contact-form-section">
+          <div className="contact-shell contact-form-grid">
+            <div className="contact-message-card">
+              <div className="contact-section-heading">
+                <h2>Drop us a message</h2>
+                <p>We'd love to hear from you — we'll get back to you within 1–2 business days.</p>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* 3 — Benefits (white) */}
-        <section className="bg-white">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-            <div className="text-center max-w-2xl mx-auto mb-12">
-              <p className="text-gray-500 text-xs font-semibold tracking-wider uppercase mb-2">Dealer benefits</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-                Built for the motor trade.
-              </h2>
-              <p className="text-gray-600 mt-3 text-lg">
-                Exclusive warranty deals, competitive pricing and a fast setup tailored for your business.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {benefits.map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="rounded-xl border border-gray-200 bg-white p-6">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 text-orange-500 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-semibold text-gray-900 text-base mb-1.5">{title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+              <form onSubmit={handleSubmit} className="contact-message-form">
+                <div className="contact-field contact-field-full">
+                  <Label htmlFor="contact-name">Name <span>*</span></Label>
+                  <Input id="contact-name" name="name" value={formData.name} onChange={handleInputChange} required />
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 4 — Form (grey) */}
-        <section className="bg-gray-50 border-y border-gray-200">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-            <div className="text-center mb-10">
-              <p className="text-gray-500 text-xs font-semibold tracking-wider uppercase mb-2">Talk to our dealer team</p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-                Apply for a dealer account.
-              </h2>
-              <p className="text-gray-600 mt-3 text-lg">
-                Tell us about your dealership and we'll get you set up with trade pricing and dealer portal access.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name" className="text-gray-700 font-medium text-sm">Your name <span className="text-orange-500">*</span></Label>
-                    <Input id="name" name="name" type="text" placeholder="Full name" value={formData.name} onChange={handleInputChange} required className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="company" className="text-gray-700 font-medium text-sm">Dealership name</Label>
-                    <Input id="company" name="company" type="text" placeholder="e.g. Smith Motors Ltd" value={formData.company} onChange={handleInputChange} className="mt-1.5" />
-                  </div>
+                <div className="contact-field">
+                  <Label htmlFor="contact-email">Email <span>*</span></Label>
+                  <Input id="contact-email" name="email" type="email" value={formData.email} onChange={handleInputChange} required />
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="email" className="text-gray-700 font-medium text-sm">Business email <span className="text-orange-500">*</span></Label>
-                    <Input id="email" name="email" type="email" placeholder="you@dealership.co.uk" value={formData.email} onChange={handleInputChange} required className="mt-1.5" />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone" className="text-gray-700 font-medium text-sm">Phone number</Label>
-                    <Input id="phone" name="phone" type="tel" placeholder="07…" value={formData.phone} onChange={handleInputChange} pattern="[\d\s\-+]*" className="mt-1.5" />
-                  </div>
+                <div className="contact-field">
+                  <Label htmlFor="contact-phone">Phone <small>(optional)</small></Label>
+                  <Input id="contact-phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} />
                 </div>
-
-                <div>
-                  <Label htmlFor="message" className="text-gray-700 font-medium text-sm">Tell us about your dealership</Label>
-                  <Textarea id="message" name="message" placeholder="Number of cars sold per month, current warranty provider, what you're looking for…" value={formData.message} onChange={handleInputChange} rows={4} className="mt-1.5" />
-                </div>
-
-                <div>
-                  <Label htmlFor="file-upload" className="text-gray-700 font-medium text-sm">Attach a file (optional)</Label>
+                <div className="contact-field contact-field-full">
+                  <Label htmlFor="contact-file">Attachment <small>(optional)</small></Label>
+                  <p className="contact-field-help">Accepted formats: PDF, DOC, DOCX, JPG, PNG — up to 20MB</p>
                   {!file ? (
-                    <div className="mt-1.5">
-                      <label htmlFor="file-upload" className="cursor-pointer">
-                        <div
-                          className={`border-2 border-dashed rounded-lg p-5 text-center transition-colors ${isDragging ? 'border-orange-500 bg-orange-50' : 'border-gray-300 hover:border-gray-400 bg-gray-50'}`}
-                          onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}
-                        >
-                          <Upload className="mx-auto h-6 w-6 text-gray-400" />
-                          <p className="mt-2 text-sm text-gray-600">Click to upload or drag &amp; drop</p>
-                          <p className="text-xs text-gray-500">PDF, DOC, JPG, PNG up to 20MB</p>
-                        </div>
-                      </label>
-                      <input id="file-upload" name="file-upload" type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} />
-                    </div>
-                  ) : (
-                    <div className="mt-1.5 p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
-                      <div className="flex items-center space-x-3 min-w-0">
-                        <Upload className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-                          <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                        </div>
+                    <label htmlFor="contact-file" className={`contact-upload ${isDragging ? 'is-dragging' : ''}`}>
+                      <div onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop}>
+                        <Upload />
+                        <span>Click to upload or drag and drop</span>
                       </div>
-                      <Button type="button" variant="ghost" size="sm" onClick={removeFile} className="text-gray-500 hover:text-orange-500">
-                        <X className="h-4 w-4" />
-                      </Button>
+                      <input id="contact-file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} />
+                    </label>
+                  ) : (
+                    <div className="contact-uploaded-file">
+                      <span><FileText />{file.name}</span>
+                      <Button type="button" variant="ghost" size="icon" onClick={removeFile} aria-label="Remove attachment"><X /></Button>
                     </div>
                   )}
                 </div>
-
-                <Button
-                  type="submit" disabled={isSubmitting}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-3 text-base rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? 'Sending…' : (<>Send dealer enquiry <ArrowRight className="w-4 h-4" /></>)}
-                </Button>
-
-                <p className="text-xs text-gray-500 text-center pt-1">By submitting you agree to be contacted about our dealer programme.</p>
+                <div className="contact-field contact-field-full">
+                  <Label htmlFor="contact-message">Message</Label>
+                  <Textarea id="contact-message" name="message" rows={6} placeholder="How can we help?" value={formData.message} onChange={handleInputChange} />
+                </div>
+                <div className="contact-submit-row">
+                  <Button type="submit" disabled={isSubmitting} className="contact-action contact-action-orange">
+                    {isSubmitting ? 'Sending…' : <>Send message <ArrowRight /></>}
+                  </Button>
+                </div>
               </form>
             </div>
+
+            <aside className="contact-side-column">
+              <form className="contact-callback-card" onSubmit={handleCallback}>
+                <div className="contact-callback-heading">
+                  <span className="contact-icon contact-icon-soft"><Phone /></span>
+                  <div><h2>Prefer us to call you?</h2><p>Leave your number and we'll call you back at a time that suits you.</p></div>
+                </div>
+                <div className="contact-field">
+                  <Label htmlFor="callback-phone">Phone number <span>*</span></Label>
+                  <Input id="callback-phone" type="tel" placeholder="e.g. 07123 456789" value={callbackData.phone} onChange={(event) => setCallbackData((current) => ({ ...current, phone: event.target.value.replace(/[^\d\s\-+]/g, '') }))} required />
+                </div>
+                <div className="contact-field">
+                  <Label htmlFor="callback-time">Preferred time</Label>
+                  <select id="callback-time" value={callbackData.preferredTime} onChange={(event) => setCallbackData((current) => ({ ...current, preferredTime: event.target.value }))}>
+                    <option>Anytime</option>
+                    <option>Morning</option>
+                    <option>Afternoon</option>
+                    <option>Early evening</option>
+                  </select>
+                </div>
+                <Button type="submit" disabled={isCallbackSubmitting} className="contact-action contact-action-callback">
+                  {isCallbackSubmitting ? 'Requesting…' : <>Request a callback <ArrowRight /></>}
+                </Button>
+                <p className="contact-callback-note"><Clock3 />We'll call you within business hours (Mon – Sat, 9am to 6pm).</p>
+              </form>
+
+              <img className="contact-panda" src={contactSupportPanda} alt="Panda Protect customer support panda at a desk answering the phone" loading="lazy" width={1024} height={1024} />
+            </aside>
           </div>
         </section>
 
-        {/* 5 — Final CTA (white) */}
-        <section className="bg-white">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 tracking-tight">
-              Boost profits with dealer warranties.
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto mb-7 text-lg">
-              Join our dealer programme — start earning today with motor trade warranty solutions tailored for your business.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-3">
-              <Link
-                to="/dealer-portal/signup"
-                className="inline-flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-7 py-3.5 rounded-lg transition-colors"
-              >
-                Start dealer sign-up <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to="/dealer-portal/login"
-                className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-900 font-semibold px-7 py-3.5 rounded-lg"
-              >
-                Dealer login
-              </Link>
-            </div>
+        <section className="contact-location-section">
+          <div className="contact-shell contact-location-grid">
+            <article><Clock3 /><div><h2>Opening hours</h2><p>Customer support: Monday – Saturday, 9am to 6pm</p><p>Claims &amp; repairs: Monday – Friday, 9am to 5pm</p></div></article>
+            <article><MapPin /><div><h2>Postal address</h2><p>Buy A Warranty Limited, Warranty House, 62 Berkhamsted Avenue, Wembley, London, HA9 6DT, United Kingdom</p></div></article>
           </div>
         </section>
-      </div>
 
-      <RequestCallbackModal isOpen={showCallbackModal} onClose={() => setShowCallbackModal(false)} />
+        <section className="contact-quote-band">
+          <div className="contact-shell">
+            <div className="contact-quote-copy"><span className="contact-quote-icon"><MessageCircle /></span><div><h2>Looking for warranty cover instead?</h2><p>Get a personalised quote in under 60 seconds.</p></div></div>
+            <Button asChild className="contact-action contact-action-orange"><Link to="/#hero-reg">Get my quote <ArrowRight /></Link></Button>
+            <p>Drive with<br /><strong>confidence.</strong></p>
+          </div>
+        </section>
+      </main>
     </>
   );
 };
