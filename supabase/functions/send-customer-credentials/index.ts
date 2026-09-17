@@ -44,7 +44,7 @@ serve(async (req) => {
           <!-- Header -->
           <tr>
             <td style="padding: 30px 40px; background-color: #1a365d; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">Buy A Warranty</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">Panda Protect</h1>
             </td>
           </tr>
           
@@ -96,7 +96,7 @@ serve(async (req) => {
           <tr>
             <td style="padding: 24px 40px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
               <p style="margin: 0; color: #999999; font-size: 12px; text-align: center;">
-                Buy A Warranty Ltd | support@buyawarranty.co.uk | 0800 093 4456
+                Panda Protect Ltd | support@pandaprotect.co.uk | 0800 093 4456
               </p>
             </td>
           </tr>
@@ -115,9 +115,9 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Buy A Warranty <noreply@buyawarranty.co.uk>',
+        from: 'Panda Protect <noreply@pandaprotect.co.uk>',
         to: [email],
-        subject: 'Your Buy A Warranty Dashboard Login Details',
+        subject: 'Your Panda Protect Dashboard Login Details',
         html: emailHtml,
       }),
     });

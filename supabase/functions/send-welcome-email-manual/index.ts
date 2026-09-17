@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Check environment variables at startup
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
     // Use verified domain email address
-    const resendFrom = 'Buyawarranty Customer Care <info@buyawarranty.co.uk>';
+    const resendFrom = 'Panda Protect Customer Care <info@pandaprotect.co.uk>';
     
     console.log(JSON.stringify({ 
       evt: "env.check", 
@@ -579,12 +579,12 @@ const handler = async (req: Request): Promise<Response> => {
       new Date(policy.policy_start_date) > new Date();
     
     const emailSubject = isFutureActivation 
-      ? `Your Buy A Warranty Policy – Future Activation Confirmed 🚗`
-      : `Your Buy A Warranty Policy Is Now Active 🚗`;
+      ? `Your Panda Protect Policy – Future Activation Confirmed 🚗`
+      : `Your Panda Protect Policy Is Now Active 🚗`;
     
     const introText = isFutureActivation
-      ? `Thanks for choosing Buy A Warranty to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${formatDate(policy.policy_start_date)}</strong>.`
-      : `Thanks for choosing Buy A Warranty to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
+      ? `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${formatDate(policy.policy_start_date)}</strong>.`
+      : `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
 
     const emailPayload = {
       from: resendFrom,
@@ -597,7 +597,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Buy A Warranty" style="max-width: 300px; height: auto;" />
+            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
           </div>
 
           <div style="margin-bottom: 30px;">
@@ -723,7 +723,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Customer Sales and Support</strong></p>
               <p style="color: #333; margin-bottom: 3px;">
-                Email: <a href="mailto:support@buyawarranty.co.uk" style="color: #ff6b35; text-decoration: none;">support@buyawarranty.co.uk</a>
+                Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #ff6b35; text-decoration: none;">support@pandaprotect.co.uk</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
                 Phone: <a href="tel:03302295040" style="color: #ff6b35; text-decoration: none;">0330 229 5040</a>
@@ -733,7 +733,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Claims and Repairs</strong></p>
               <p style="color: #333; margin-bottom: 3px;">
-                Email: <a href="mailto:claims@buyawarranty.co.uk" style="color: #ff6b35; text-decoration: none;">claims@buyawarranty.co.uk</a>
+                Email: <a href="mailto:claims@pandaprotect.co.uk" style="color: #ff6b35; text-decoration: none;">claims@pandaprotect.co.uk</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
                 Phone: <a href="tel:03302295045" style="color: #ff6b35; text-decoration: none;">0330 229 5045</a>
@@ -747,14 +747,14 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="margin-bottom: 25px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
             <p style="color: #333; margin: 0; font-size: 16px;">
-              Thanks again for choosing Buy A Warranty — we're here to keep you covered and give you peace of mind on the road.
+              Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.
             </p>
           </div>
 
           <div style="text-align: left; margin-bottom: 25px;">
             <p style="color: #333; margin: 0; font-size: 16px;">
               Best regards,<br>
-              <strong>The Buy A Warranty Team</strong>
+              <strong>The Panda Protect Team</strong>
             </p>
           </div>
 
@@ -765,7 +765,7 @@ const handler = async (req: Request): Promise<Response> => {
             <hr style="border: none; border-top: 1px solid #dee2e6; margin: 20px 0;">
             
             <p style="color: #666; font-size: 12px; line-height: 1.4; margin: 0;">
-              Buy A Warranty Limited. Registered in the UK under Company number: 10314863 since 2016.<br>
+              Panda Protect Limited. Registered in the UK under Company number: 10314863 since 2016.<br>
               Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England.
             </p>
           </div>

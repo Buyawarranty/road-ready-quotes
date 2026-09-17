@@ -48,7 +48,7 @@ function getReviewEmailHtml(firstName: string): string {
           <!-- Logo -->
           <tr>
             <td style="text-align:center; padding-bottom:30px;">
-              <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Buy A Warranty" style="max-width:200px; height:auto;" />
+              <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width:200px; height:auto;" />
             </td>
           </tr>
           
@@ -64,7 +64,7 @@ function getReviewEmailHtml(firstName: string): string {
             <td class="text" style="font-size:16px; color:#444; line-height:1.6;">
               This is just a quick final reminder.
               <br><br>
-              If you haven't had the chance yet, we'd be grateful if you could share a brief review of your experience with <strong>BuyAWarranty.co.uk</strong>.
+              If you haven't had the chance yet, we'd be grateful if you could share a brief review of your experience with <strong>Panda Protect</strong>.
               <br><br>
               Even a few words help other drivers make informed decisions.
             </td>
@@ -85,7 +85,7 @@ function getReviewEmailHtml(firstName: string): string {
           <tr>
             <td class="text" style="font-size:16px; color:#444; line-height:1.6;">
               Thanks for taking the time,<br>
-              <strong>The BuyAWarranty.co.uk Team</strong>
+              <strong>The Panda Protect Team</strong>
             </td>
           </tr>
 
@@ -94,7 +94,7 @@ function getReviewEmailHtml(firstName: string): string {
           <tr>
             <td style="border-top:1px solid #e5e5e5; padding-top:25px; text-align:center;">
               <p style="margin:0; color:#888888; font-size:13px;">Your trusted warranty partner</p>
-              <p style="margin:5px 0 0 0; color:#888888; font-size:13px;">BuyAWarranty.co.uk</p>
+              <p style="margin:5px 0 0 0; color:#888888; font-size:13px;">Panda Protect</p>
             </td>
           </tr>
         </table>
@@ -190,7 +190,7 @@ serve(async (req: Request) => {
           const firstName = customer?.first_name || "Valued Customer";
 
           const emailResult = await resend.emails.send({
-            from: "BuyAWarranty.co.uk <reviews@buyawarranty.co.uk>",
+            from: "Panda Protect <reviews@pandaprotect.co.uk>",
             to: [policy.email],
             subject: "Before we close your request…",
             html: getReviewEmailHtml(firstName),

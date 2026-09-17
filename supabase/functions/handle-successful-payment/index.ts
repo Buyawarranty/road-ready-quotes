@@ -398,7 +398,7 @@ serve(async (req) => {
       gclid: trackingData?.gclid || metadata?.gclid || null,
       ga_client_id: trackingData?.clientId || metadata?.ga_client_id || null,
       purchase_source: (trackingData?.gclid || metadata?.gclid) ? 'google_ads' : (effectiveBumperOrderId ? 'bumper' : (stripeSessionId ? 'stripe' : 'website')),
-      // Default all website sales to support@buyawarranty.co.uk
+      // Default all website sales to support@pandaprotect.co.uk
       assigned_to: 'e39499b8-f88c-4963-9f0d-63e1addb3025',
       // Customer date of birth for identity verification
       customer_dob: customerData?.customer_dob || metadata?.customer_dob || null
@@ -1099,8 +1099,8 @@ serve(async (req) => {
         `;
 
         await resend.emails.send({
-          from: 'BuyaWarranty Team <notifications@buyawarranty.co.uk>',
-          to: ['info@buyawarranty.co.uk', 'accounts@buyawarranty.co.uk'],
+          from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
+          to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
           subject: `New Sale ${detectedAdSource === 'google' ? 'G' : detectedAdSource === 'facebook' ? 'F' : 'Web'}: ${regPlate} - ${planName} - ${saleValueDisplay} via ${paymentMethod} - ${warrantyReference}`,
           html: salesEmailHtml
         });
@@ -1206,8 +1206,8 @@ serve(async (req) => {
           `;
 
           await resend.emails.send({
-            from: 'BuyaWarranty Team <notifications@buyawarranty.co.uk>',
-            to: ['info@buyawarranty.co.uk', 'accounts@buyawarranty.co.uk'],
+            from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
+            to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
             subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValueDisplay} - Converted by ${agentName}`,
             html: agentSaleHtml,
           });

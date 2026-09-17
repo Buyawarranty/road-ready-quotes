@@ -191,7 +191,7 @@ const handler = async (req: Request): Promise<Response> => {
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; margin-bottom: 64px;">
     <!-- Header -->
     <div style="padding: 24px; text-align: center;">
-      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="200" alt="Buy A Warranty" style="margin: 0 auto;" />
+      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
     </div>
     
     <!-- Content -->
@@ -279,14 +279,14 @@ const handler = async (req: Request): Promise<Response> => {
 
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
         Best regards,<br/>
-        The Buy A Warranty Team
+        The Panda Protect Team
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
         <a href="https://buyawarranty.co.uk" style="color: #0066cc; text-decoration: underline;">buyawarranty.co.uk</a>
       </p>
 
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0;">
-        📧 support@buyawarranty.co.uk
+        📧 support@pandaprotect.co.uk
       </p>
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0 48px 0;">
         📞 0330 229 5040
@@ -314,7 +314,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Buyawarranty Customer Care <info@buyawarranty.co.uk>",
+        from: "Panda Protect Customer Care <info@pandaprotect.co.uk>",
         to: [emailRequest.email],
         subject: subject,
         html: htmlContent,

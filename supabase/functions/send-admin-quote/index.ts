@@ -154,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
                       <a href="https://buyawarranty.co.uk" target="_blank">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
                       </a>
                     </td>
                   </tr>
@@ -491,7 +491,7 @@ const handler = async (req: Request): Promise<Response> => {
       : null;
 
     const customerSendPromise = resend.emails.send({
-      from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <quotes@pandaprotect.co.uk>",
       to: [to],
       cc: ccRecipients.length > 0 ? ccRecipients : undefined,
       subject: subject,
@@ -500,7 +500,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const salesCopySendPromise = shouldSendSalesCopy
       ? resend.emails.send({
-          from: "Buyawarranty Customer Care <quotes@buyawarranty.co.uk>",
+          from: "Panda Protect Customer Care <quotes@pandaprotect.co.uk>",
           to: [salesUser!.email],
           subject: `[Copy] ${subject}`,
           html: finalHtml,

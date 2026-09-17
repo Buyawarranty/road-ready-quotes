@@ -76,8 +76,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'BuyaWarranty Team <support@buyawarranty.co.uk>',
-        to: ['support@buyawarranty.co.uk'],
+        from: 'Panda Protect Team <support@pandaprotect.co.uk>',
+        to: ['support@pandaprotect.co.uk'],
         subject: `[FORWARDED] New Contact from ${submission.name}`,
         html: emailHtml,
       }),

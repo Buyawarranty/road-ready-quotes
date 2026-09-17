@@ -77,7 +77,7 @@ serve(async (req) => {
       );
     }
 
-    // Send notification email to info@buyawarranty.co.uk
+    // Send notification email to info@pandaprotect.co.uk
     const emailSubject = `Admin Credential Change Alert - ${changeType === 'password' ? 'Password' : 'Email'} Updated`;
     const emailHtml = `
       <!DOCTYPE html>
@@ -124,7 +124,7 @@ serve(async (req) => {
             </p>
             
             <div class="footer">
-              <p>This is an automated security notification from BuyAWarranty.co.uk Admin System</p>
+              <p>This is an automated security notification from Panda Protect Admin System</p>
               <p>© ${new Date().getFullYear()} Buy a Warranty. All rights reserved.</p>
             </div>
           </div>
@@ -145,13 +145,13 @@ serve(async (req) => {
       
       If you did not authorize this change or if this activity seems suspicious, please investigate immediately.
       
-      This is an automated security notification from BuyAWarranty.co.uk Admin System
+      This is an automated security notification from Panda Protect Admin System
     `;
 
     logStep('Sending notification email');
     const emailResponse = await resend.emails.send({
-      from: 'BuyaWarranty Team <support@buyawarranty.co.uk>',
-      to: ['info@buyawarranty.co.uk'],
+      from: 'Panda Protect Team <support@pandaprotect.co.uk>',
+      to: ['info@pandaprotect.co.uk'],
       subject: emailSubject,
       html: emailHtml,
       text: emailText,
@@ -174,7 +174,7 @@ serve(async (req) => {
     await supabaseClient
       .from('email_logs')
       .insert({
-        recipient_email: 'info@buyawarranty.co.uk',
+        recipient_email: 'info@pandaprotect.co.uk',
         subject: emailSubject,
         content: emailHtml,
         status: 'sent',

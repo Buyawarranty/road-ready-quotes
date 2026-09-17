@@ -151,7 +151,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "BuyaWarranty Claims <claims@buyawarranty.co.uk>",
+        from: "BuyaWarranty Claims <claims@pandaprotect.co.uk>",
         to: [recipientEmail],
         subject: `Urgent claims update: ${firstRegPlate}${claims.length > 1 ? ` (+${claims.length - 1} more)` : ""}`,
         html: emailHtml,

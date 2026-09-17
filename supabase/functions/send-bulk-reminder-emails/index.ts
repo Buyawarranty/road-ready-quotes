@@ -87,14 +87,14 @@ const handler = async (req: Request): Promise<Response> => {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="background-color: #f97316; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-            <h1 style="color: white; margin: 0;">Buy A Warranty</h1>
+            <h1 style="color: white; margin: 0;">Panda Protect</h1>
           </div>
           
           <div style="background-color: #ffffff; padding: 30px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
             <h2 style="color: #1f2937; margin-top: 0;">Hi ${firstName},</h2>
             
             <p style="font-size: 16px; line-height: 1.8;">
-              Just a quick reminder — you were moments away from securing your car warranty with Buy A Warranty, 
+              Just a quick reminder — you were moments away from securing your car warranty with Panda Protect, 
               but it looks like the checkout wasn't completed.
             </p>
             
@@ -122,9 +122,9 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
               <p style="margin: 5px 0;"><strong>Cheers,</strong></p>
-              <p style="margin: 5px 0;">The Buy A Warranty Team</p>
+              <p style="margin: 5px 0;">The Panda Protect Team</p>
               <p style="margin: 5px 0;">📞 0330 229 5040</p>
-              <p style="margin: 5px 0;">📧 info@buyawarranty.co.uk</p>
+              <p style="margin: 5px 0;">📧 info@pandaprotect.co.uk</p>
               <p style="margin: 5px 0;">🌐 <a href="https://www.buyawarranty.co.uk" style="color: #f97316;">www.buyawarranty.co.uk</a></p>
             </div>
           </div>
@@ -139,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       try {
         const { data, error } = await resend.emails.send({
-          from: "BuyaWarranty Team <info@buyawarranty.co.uk>",
+          from: "Panda Protect Team <info@pandaprotect.co.uk>",
           to: [customer.email],
           subject: "Your car's warranty is almost ready – just one more step!",
           html: htmlContent,

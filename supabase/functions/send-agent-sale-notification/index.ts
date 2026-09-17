@@ -152,8 +152,8 @@ serve(async (req: Request) => {
 
     const resend = new Resend(resendApiKey);
     await resend.emails.send({
-      from: "BuyaWarranty Team <notifications@buyawarranty.co.uk>",
-      to: ["info@buyawarranty.co.uk", "accounts@buyawarranty.co.uk"],
+      from: "Panda Protect Team <notifications@pandaprotect.co.uk>",
+      to: ["info@pandaprotect.co.uk", "accounts@pandaprotect.co.uk"],
       subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValueDisplay} - Converted by ${agentName}`,
       html: emailHtml,
     });

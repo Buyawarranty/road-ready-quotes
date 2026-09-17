@@ -44,7 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (unsubError) {
       console.error("Error unsubscribing:", unsubError);
-      return new Response(renderPage("Error", "Something went wrong. Please try again or contact support@buyawarranty.co.uk."), {
+      return new Response(renderPage("Error", "Something went wrong. Please try again or contact support@pandaprotect.co.uk."), {
         status: 500,
         headers: { "Content-Type": "text/html; charset=utf-8" },
       });
@@ -61,7 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       renderPage(
         "Unsubscribed Successfully",
-        `<strong>${email}</strong> has been removed from our marketing email list.<br><br>You will no longer receive promotional emails from Buy A Warranty.<br><br>If this was a mistake, please contact us at <a href="mailto:support@buyawarranty.co.uk" style="color: #FF7A00;">support@buyawarranty.co.uk</a>.`
+        `<strong>${email}</strong> has been removed from our marketing email list.<br><br>You will no longer receive promotional emails from Panda Protect.<br><br>If this was a mistake, please contact us at <a href="mailto:support@pandaprotect.co.uk" style="color: #FF7A00;">support@pandaprotect.co.uk</a>.`
       ),
       {
         status: 200,
@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error) {
     console.error("Unsubscribe error:", error);
-    return new Response(renderPage("Error", "Something went wrong. Please contact support@buyawarranty.co.uk."), {
+    return new Response(renderPage("Error", "Something went wrong. Please contact support@pandaprotect.co.uk."), {
       status: 500,
       headers: { "Content-Type": "text/html; charset=utf-8" },
     });
@@ -83,11 +83,11 @@ function renderPage(title: string, message: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${title} - Buy A Warranty</title>
+  <title>${title} - Panda Protect</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f6f9fc; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
   <div style="max-width: 500px; margin: 40px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 48px; text-align: center;">
-    <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="180" alt="Buy A Warranty" style="margin-bottom: 32px;" />
+    <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="180" alt="Panda Protect" style="margin-bottom: 32px;" />
     <h1 style="color: #1a1a1a; font-size: 24px; font-weight: 700; margin: 0 0 16px 0;">${title}</h1>
     <p style="color: #484848; font-size: 16px; line-height: 24px; margin: 0;">${message}</p>
     <div style="margin-top: 32px;">

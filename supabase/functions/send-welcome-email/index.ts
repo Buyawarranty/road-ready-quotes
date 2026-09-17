@@ -227,7 +227,7 @@ serve(async (req) => {
 
     // Get environment variables for email
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const resendFrom = 'Buyawarranty Customer Care <noreply@buyawarranty.co.uk>';
+    const resendFrom = 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>';
     
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY not configured');
@@ -357,7 +357,7 @@ serve(async (req) => {
       from: resendFrom,
       to: [email],
       bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'],
-      reply_to: 'support@buyawarranty.co.uk',
+      reply_to: 'support@pandaprotect.co.uk',
       subject: `${finalCustomerName}, your warranty is now active`,
       headers: {
         'X-Entity-Ref-ID': `welcome-${policyNumber}-${Date.now()}`,
@@ -368,13 +368,13 @@ serve(async (req) => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Buy A Warranty" style="max-width: 300px; height: auto;" />
+            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
           </div>
 
           <!-- Greeting -->
           <div style="margin-bottom: 25px;">
             <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">Hi <strong>${finalCustomerName}</strong>,</p>
-            <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0;">Thanks for choosing Buy A Warranty to protect your vehicle — we're pleased to let you know that your warranty is now active!</p>
+            <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0;">Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!</p>
           </div>
 
           ${seasonalBonusMonths > 0 ? `
@@ -456,13 +456,13 @@ serve(async (req) => {
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Customer Sales and Support</strong></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:support@buyawarranty.co.uk" style="color: #1a73e8; text-decoration: none;">support@buyawarranty.co.uk</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #1a73e8; text-decoration: none;">support@pandaprotect.co.uk</a></p>
               <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:03302295040" style="color: #1a73e8; text-decoration: none;">0330 229 5040</a></p>
             </div>
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Claims and Repairs</strong></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:claims@buyawarranty.co.uk" style="color: #1a73e8; text-decoration: none;">claims@buyawarranty.co.uk</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:claims@pandaprotect.co.uk" style="color: #1a73e8; text-decoration: none;">claims@pandaprotect.co.uk</a></p>
               <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:03302295045" style="color: #1a73e8; text-decoration: none;">0330 229 5045</a></p>
               <p style="color: #555555; font-size: 14px; margin: 5px 0 0 0;">Hours: Monday to Friday, 9am – 5:30pm</p>
             </div>
@@ -470,13 +470,13 @@ serve(async (req) => {
 
           <!-- Closing -->
           <div style="margin-bottom: 25px;">
-            <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0;">Thanks again for choosing Buy A Warranty — we're here to keep you covered and give you peace of mind on the road.</p>
+            <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0;">Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.</p>
           </div>
 
           <!-- Footer -->
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
             <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Best regards,</strong></p>
-            <p style="color: #333333; font-size: 15px; margin: 0;">The Buy A Warranty Team</p>
+            <p style="color: #333333; font-size: 15px; margin: 0;">The Panda Protect Team</p>
           </div>
         </div>
       `

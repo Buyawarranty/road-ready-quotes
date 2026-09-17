@@ -113,7 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send invitation email
     const emailResult = await resend.emails.send({
-      from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
       to: [email],
       subject: "Admin Account Invitation Resent - BuyaWarranty",
       html: `
@@ -124,7 +124,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p style="color: #666; margin-bottom: 20px;">Hello ${adminUser.first_name || ''},</p>
             
             <p style="color: #666; margin-bottom: 20px;">
-              Your admin account invitation has been resent. You can now access the Buy A Warranty admin dashboard.
+              Your admin account invitation has been resent. You can now access the Panda Protect admin dashboard.
             </p>
             
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
@@ -150,17 +150,17 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="color: #666; font-size: 14px; margin-top: 20px;">
-              If you have any questions, please contact support at info@buyawarranty.co.uk
+              If you have any questions, please contact support at info@pandaprotect.co.uk
             </p>
           </div>
         </div>
       `,
       text: `
-        Admin Account Invitation Resent - Buy A Warranty
+        Admin Account Invitation Resent - Panda Protect
         
         Hello ${adminUser.first_name || ''},
         
-        Your admin account invitation has been resent. You can now access the Buy A Warranty admin dashboard.
+        Your admin account invitation has been resent. You can now access the Panda Protect admin dashboard.
         
         Login Credentials:
         Email: ${email}
@@ -170,7 +170,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         Please change your password after your first login for security purposes.
         
-        If you have any questions, please contact support at info@buyawarranty.co.uk
+        If you have any questions, please contact support at info@pandaprotect.co.uk
       `
     });
 
@@ -179,7 +179,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from('email_logs')
       .insert({
         recipient_email: email,
-        subject: 'Admin Account Invitation Resent - Buy A Warranty',
+        subject: 'Admin Account Invitation Resent - Panda Protect',
         status: 'sent',
         metadata: { 
           resend_message_id: emailResult.data?.id,

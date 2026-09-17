@@ -166,10 +166,10 @@ serve(async (req) => {
                     
                     <div style="color: #6b7280; font-size: 13px; line-height: 1.6;">
                       <div style="margin-bottom: 5px;">
-                        <strong>Claims line:</strong> 0330 229 5045 | claims@buyawarranty.co.uk
+                        <strong>Claims line:</strong> 0330 229 5045 | claims@pandaprotect.co.uk
                       </div>
                       <div>
-                        <strong>Customer support:</strong> 0330 229 5040 | support@buyawarranty.co.uk
+                        <strong>Customer support:</strong> 0330 229 5040 | support@pandaprotect.co.uk
                       </div>
                     </div>
                   </td>
@@ -184,7 +184,7 @@ serve(async (req) => {
 
     try {
       await resend.emails.send({
-        from: 'Buyawarranty Customer Care <noreply@buyawarranty.co.uk>',
+        from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
         to: [email],
         subject: 'Reset Your BuyaWarranty Portal Password',
         html: emailHtml,

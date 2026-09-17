@@ -211,7 +211,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     Prefer to speak to us?
                   </p>
                   <p style="font-size: 14px; color: #555555; margin: 0 0 4px 0;">
-                    Email: <a href="mailto:support@buyawarranty.co.uk" style="color: #FF7A00; text-decoration: none;">support@buyawarranty.co.uk</a>
+                    Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #FF7A00; text-decoration: none;">support@pandaprotect.co.uk</a>
                   </p>
                   <p style="font-size: 14px; color: #555555; margin: 0;">
                     Phone: <a href="tel:03302295040" style="color: #FF7A00; text-decoration: none;">0330 229 5040</a>
@@ -230,7 +230,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #999999; text-decoration: underline;">Unsubscribe</a>
                   </p>
                   <p style="font-size: 11px; color: #AAAAAA; margin: 0; line-height: 1.5; text-align: center;">
-                    Buyawarranty.co.uk is a trading name of Buy A Warranty Limited. Established 2016.<br/>
+                    Buyawarranty.co.uk is a trading name of Panda Protect Limited. Established 2016.<br/>
                     Registered in the United Kingdom under Company number: 10314863<br/>
                     Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
                   </p>
@@ -320,9 +320,9 @@ const handler = async (req: Request): Promise<Response> => {
       : `Your ${data.vehicleData.regNumber} warranty quote is ready`;
     
     const emailResponse = await resend.emails.send({
-      from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
       to: [data.email],
-      reply_to: 'support@buyawarranty.co.uk',
+      reply_to: 'support@pandaprotect.co.uk',
       subject: emailSubject,
       headers: {
         'X-Entity-Ref-ID': `quote-${quoteId}-${Date.now()}`,

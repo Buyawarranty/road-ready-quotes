@@ -66,13 +66,13 @@ const generateEmailHTML = (invoices: InvoiceData[]): string => {
     </head>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 700px; margin: 0 auto; padding: 20px;">
       <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #f97316; padding-bottom: 20px;">
-        <img src="https://buyawarranty.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png" alt="Buy A Warranty" style="max-width: 200px; height: auto;" />
+        <img src="https://buyawarranty.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png" alt="Panda Protect" style="max-width: 200px; height: auto;" />
       </div>
       
       <h1 style="color: #f97316; font-size: 24px; margin-bottom: 20px;">Invoice${invoiceCount > 1 ? 's' : ''} Attached</h1>
       
       <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
-        Please find attached ${invoiceCount} invoice${invoiceCount > 1 ? 's' : ''} from Buy A Warranty.
+        Please find attached ${invoiceCount} invoice${invoiceCount > 1 ? 's' : ''} from Panda Protect.
       </p>
       
       <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
@@ -110,9 +110,9 @@ const generateEmailHTML = (invoices: InvoiceData[]): string => {
       </div>
       
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center; color: #666; font-size: 12px;">
-        <p style="margin: 5px 0;"><strong>Buy A Warranty</strong></p>
+        <p style="margin: 5px 0;"><strong>Panda Protect</strong></p>
         <p style="margin: 5px 0;">www.buyawarranty.co.uk</p>
-        <p style="margin: 5px 0;">support@buyawarranty.co.uk | 0330 229 5040</p>
+        <p style="margin: 5px 0;">support@pandaprotect.co.uk | 0330 229 5040</p>
       </div>
     </body>
     </html>

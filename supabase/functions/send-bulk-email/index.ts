@@ -33,7 +33,7 @@ serve(async (req) => {
     // Use custom content if provided, otherwise fetch template
     let emailSubject = customSubject;
     let emailContent = customContent;
-    let fromEmail = 'support@buyawarranty.co.uk';
+    let fromEmail = 'support@pandaprotect.co.uk';
 
     if (!emailSubject || !emailContent) {
       // Get template
