@@ -133,8 +133,8 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       const emailResponse = await resend.emails.send({
-        from: 'BuyaWarranty Team <noreply@buyawarranty.co.uk>',
-        to: ['support@buyawarranty.co.uk'],
+        from: 'Panda Protect Team <noreply@pandaprotect.co.uk>',
+        to: ['support@pandaprotect.co.uk'],
         subject: `New Contact Form Submission from ${body.name}`,
         html: emailContent,
       });
@@ -149,7 +149,7 @@ const handler = async (req: Request): Promise<Response> => {
         ${body.message ? `<p><strong>Your message:</strong><br>${body.message.replace(/\n/g, '<br>')}</p>` : ''}
         <p>If you have any urgent queries, please don't hesitate to contact us:</p>
         <ul>
-          <li>Email: support@buyawarranty.co.uk</li>
+          <li>Email: support@pandaprotect.co.uk</li>
           <li>Phone: 0330 229 5040</li>
         </ul>
         <p>Best regards,<br>The Buy a Warranty Team</p>
@@ -158,7 +158,7 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       const confirmationResponse = await resend.emails.send({
-        from: 'Buyawarranty Customer Care <support@buyawarranty.co.uk>',
+        from: 'Panda Protect Customer Care <support@pandaprotect.co.uk>',
         to: [body.email],
         subject: 'Thank you for contacting BuyaWarranty',
         html: confirmationEmailContent,

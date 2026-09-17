@@ -95,7 +95,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
   const vehicleInfo = `${request.vehicleMake || ''} ${request.vehicleModel || ''}`.trim() || 'your vehicle';
   const vehicleReg = request.vehicleReg || '';
   
-  let subject = `${vehicleReg} - Your warranty quote from Buy A Warranty`;
+  let subject = `${vehicleReg} - Your warranty quote from Panda Protect`;
   let heading = `Your Warranty Quote for ${vehicleInfo}`;
   let intro = `You requested a warranty quote for your ${vehicleInfo}${vehicleReg ? ` (${vehicleReg})` : ''}.`;
   let body = "We've saved your quote details. You can review and complete your application whenever you're ready.";
@@ -136,7 +136,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; margin-bottom: 64px;">
     <!-- Header -->
     <div style="padding: 24px; text-align: center;">
-      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="200" alt="Buy A Warranty" style="margin: 0 auto;" />
+      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
     </div>
     
     <!-- Content -->
@@ -185,14 +185,14 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
         Best regards,
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
-        The Buy A Warranty Team
+        The Panda Protect Team
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
         <a href="https://buyawarranty.co.uk" style="color: #0066cc; text-decoration: underline;">buyawarranty.co.uk</a>
       </p>
 
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0;">
-        📧 support@buyawarranty.co.uk
+        📧 support@pandaprotect.co.uk
       </p>
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0 24px 0;">
         📞 0330 229 5040
@@ -200,7 +200,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
 
       <div style="border-top: 1px solid #e6ebf1; padding-top: 16px; margin-top: 16px; text-align: center;">
         <p style="color: #aab7c4; font-size: 11px; line-height: 16px; margin: 0;">
-          You're receiving this email because you requested a warranty quote from Buy A Warranty.<br>
+          You're receiving this email because you requested a warranty quote from Panda Protect.<br>
           <a href="${Deno.env.get('SUPABASE_URL')}/functions/v1/handle-email-unsubscribe?email=${encodeURIComponent(request.email)}&token=${btoa(request.email.trim().toLowerCase() + '_baw_unsub_2024')}" style="color: #aab7c4; text-decoration: underline;">Unsubscribe</a> from future emails.
         </p>
       </div>
@@ -316,7 +316,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailPayload = {
-      from: "Buyawarranty Customer Care <info@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <info@pandaprotect.co.uk>",
       to: [emailRequest.email],
       subject: subject,
       html: htmlContent,

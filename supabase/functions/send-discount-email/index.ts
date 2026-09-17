@@ -37,7 +37,7 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(resendApiKey);
 
     const emailResponse = await resend.emails.send({
-      from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
       to: [email],
       subject: `Your £${discountAmount} Discount Code - ${discountCode}`,
       html: `
@@ -84,7 +84,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
             <p style="font-size: 12px; color: #64748b;">
-              This discount code is valid for a limited time. Questions? Contact us at info@buyawarranty.co.uk
+              This discount code is valid for a limited time. Questions? Contact us at info@pandaprotect.co.uk
             </p>
           </div>
         </body>

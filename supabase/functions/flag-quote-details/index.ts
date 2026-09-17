@@ -53,7 +53,7 @@ serve(async (req) => {
 
     logStep("Detail issue recorded in database");
 
-    // 2. Send email to support@buyawarranty.co.uk
+    // 2. Send email to support@pandaprotect.co.uk
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
@@ -103,11 +103,11 @@ serve(async (req) => {
       try {
         await resend.emails.send({
           from: "BuyAWarranty Alerts <alerts@notify.buyawarranty.co.uk>",
-          to: ["support@buyawarranty.co.uk"],
+          to: ["support@pandaprotect.co.uk"],
           subject,
           html: htmlContent,
         });
-        logStep("Alert email sent to support@buyawarranty.co.uk");
+        logStep("Alert email sent to support@pandaprotect.co.uk");
       } catch (emailError) {
         logStep("Failed to send email (non-blocking)", { error: String(emailError) });
       }

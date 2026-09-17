@@ -7,3 +7,7 @@
 - [x] Batch 5: quote and cart
 - [x] Batch 6: checkout, payment, and confirmation
 - [x] Batch 7: customer widget
+
+## Follow-ups (Sep 17)
+- [ ] Update all email addresses to @pandaprotect.co.uk (contact page, edge functions, DB email templates)
+- [ ] Replace contact page support image with new uploaded panda + support agent artwork

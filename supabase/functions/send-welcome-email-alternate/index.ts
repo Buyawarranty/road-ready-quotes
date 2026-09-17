@@ -222,7 +222,7 @@ serve(async (req) => {
 
     // Send email via Resend
     const emailPayload: any = {
-      from: 'Buyawarranty Customer Care <info@buyawarranty.co.uk>',
+      from: 'Panda Protect Customer Care <info@pandaprotect.co.uk>',
       to: [alternateEmail],
       subject: `Your Warranty Confirmation - ${policy.policy_number}`,
       html: emailHtml,

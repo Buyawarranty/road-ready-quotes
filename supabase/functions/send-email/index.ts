@@ -88,7 +88,7 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
 <body>
   <div class="container">
     <div class="logo-header">
-      <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Buy A Warranty" />
+      <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Panda Protect" />
     </div>
     <div class="content">
       <p class="greeting">${processedGreeting}</p>
@@ -97,8 +97,8 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
       </div>
       <div class="contact-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Need help?</p>
-        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> support@buyawarranty.co.uk | 0330 229 5040</p>
-        <p style="margin: 4px 0;"><strong>Claims:</strong> claims@buyawarranty.co.uk | 0330 229 5045</p>
+        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> support@pandaprotect.co.uk | 0330 229 5040</p>
+        <p style="margin: 4px 0;"><strong>Claims:</strong> claims@pandaprotect.co.uk | 0330 229 5045</p>
         <p style="margin: 4px 0; color: #666;">Monday to Friday, 9am – 5:30pm</p>
       </div>
       <div class="trustpilot-section">
@@ -109,9 +109,9 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
       </div>
     </div>
     <div class="footer">
-      <p><strong>Buy A Warranty Ltd</strong> | Protecting Your Journey</p>
+      <p><strong>Panda Protect Ltd</strong> | Protecting Your Journey</p>
       <p>This email was sent to ${recipientEmail}</p>
-      <p>&copy; ${new Date().getFullYear()} Buy A Warranty. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} Panda Protect. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -154,7 +154,7 @@ serve(async (req) => {
     }
     logStep("Resend API key found");
 
-    let subject = customSubject || "Your Buy A Warranty Policy Is Now Active 🚗";
+    let subject = customSubject || "Your Panda Protect Policy Is Now Active 🚗";
     let htmlContent = customHtml || "";
     
     if (templateId === 'policy_documents' || templateId === 'welcome_email') {
@@ -162,13 +162,13 @@ serve(async (req) => {
       const isFutureActivation = variables?.isFutureActivation === 'true' || variables?.isFutureActivation === true;
       
       subject = customSubject || (isFutureActivation 
-        ? `Your Buy A Warranty Policy – Future Activation Confirmed 🚗`
-        : `Your Buy A Warranty Policy Is Now Active 🚗`);
+        ? `Your Panda Protect Policy – Future Activation Confirmed 🚗`
+        : `Your Panda Protect Policy Is Now Active 🚗`);
       
       const headerText = isFutureActivation ? 'Future Activation Confirmed!' : 'Your Policy Is Now Active!';
       const introText = isFutureActivation
-        ? `Thanks for choosing Buy A Warranty to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${variables?.policyStartDate || 'N/A'}</strong>.`
-        : `Thanks for choosing Buy A Warranty to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
+        ? `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${variables?.policyStartDate || 'N/A'}</strong>.`
+        : `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
       const startDateLabel = isFutureActivation ? 'Activation Date' : 'Start Date';
       const endDateLabel = isFutureActivation ? 'Expiry Date' : 'End Date';
       
@@ -209,7 +209,7 @@ serve(async (req) => {
         <body>
           <div class="container">
             <div class="logo-header">
-              <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Buy A Warranty" />
+              <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Panda Protect" />
             </div>
             <div class="header"><h1>${headerText}</h1></div>
             <div class="content">
@@ -258,17 +258,17 @@ serve(async (req) => {
               <div class="contact-section">
                 <h3 style="margin-top: 0; color: #1a365d;">📞 Need a hand?</h3>
                 <p>If you've got any questions or need help, feel free to reach out:</p>
-                <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> support@buyawarranty.co.uk</div><div><strong>Phone:</strong> 0330 229 5040</div></div>
-                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><div><strong>Email:</strong> claims@buyawarranty.co.uk</div><div><strong>Phone:</strong> 0330 229 5045</div></div>
+                <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> support@pandaprotect.co.uk</div><div><strong>Phone:</strong> 0330 229 5040</div></div>
+                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><div><strong>Email:</strong> claims@pandaprotect.co.uk</div><div><strong>Phone:</strong> 0330 229 5045</div></div>
                 <div style="margin-top: 10px; color: #666;"><strong>Hours:</strong> Monday to Friday, 9am – 5:30pm</div>
               </div>
-              <p>Thanks again for choosing Buy A Warranty — we're here to keep you covered and give you peace of mind on the road.</p>
-              <p style="margin-top: 30px;">Best regards,<br><strong>The Buy A Warranty Team</strong></p>
+              <p>Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.</p>
+              <p style="margin-top: 30px;">Best regards,<br><strong>The Panda Protect Team</strong></p>
             </div>
             <div class="footer">
-              <p><strong>Buy A Warranty Ltd</strong> | Protecting Your Journey</p>
+              <p><strong>Panda Protect Ltd</strong> | Protecting Your Journey</p>
               <p>This email was sent to ${recipientEmail}</p>
-              <p>&copy; ${new Date().getFullYear()} Buy A Warranty. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} Panda Protect. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -329,7 +329,7 @@ serve(async (req) => {
         const firstName = variables?.firstName || variables?.customerName?.split(' ')[0] || 'Valued Customer';
         htmlContent = buildTemplateHtml(
           `Hi ${firstName},`,
-          'Thank you for contacting Buy A Warranty. We wanted to reach out regarding your vehicle warranty.\n\nIf you have any questions, please don\'t hesitate to contact us.',
+          'Thank you for contacting Panda Protect. We wanted to reach out regarding your vehicle warranty.\n\nIf you have any questions, please don\'t hesitate to contact us.',
           recipientEmail,
           variables || {}
         );
@@ -342,7 +342,7 @@ serve(async (req) => {
       const firstName = variables?.firstName || variables?.customerName?.split(' ')[0] || 'Valued Customer';
       htmlContent = buildTemplateHtml(
         `Hi ${firstName},`,
-        'Thank you for your interest in Buy A Warranty. We are here to help protect your vehicle.',
+        'Thank you for your interest in Panda Protect. We are here to help protect your vehicle.',
         recipientEmail,
         variables || {}
       );
@@ -352,7 +352,7 @@ serve(async (req) => {
     // Add Trustpilot BCC for welcome/policy emails only
     const isWelcomeEmail = templateId === 'policy_documents' || templateId === 'welcome_email';
     const emailPayload: any = {
-      from: "BuyaWarranty Team <support@buyawarranty.co.uk>",
+      from: "Panda Protect Team <support@pandaprotect.co.uk>",
       to: [recipientEmail],
       ...(isWelcomeEmail && { bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'] }),
       subject: subject,

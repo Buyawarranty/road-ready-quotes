@@ -88,7 +88,7 @@ serve(async (req: Request) => {
           <tr>
             <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
               <a href="https://buyawarranty.co.uk" target="_blank">
-                <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy A Warranty" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+                <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
               </a>
             </td>
           </tr>
@@ -111,7 +111,7 @@ serve(async (req: Request) => {
               
               <!-- Main Message -->
               <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                We hope you're getting on well since purchasing your warranty with Buy A Warranty.
+                We hope you're getting on well since purchasing your warranty with Panda Protect.
               </p>
               
               <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
@@ -153,7 +153,7 @@ serve(async (req: Request) => {
               
               <!-- Closing -->
               <p style="margin: 0 0 8px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                Thanks again for choosing Buy A Warranty. If you ever need help, our UK-based team is always here.
+                Thanks again for choosing Panda Protect. If you ever need help, our UK-based team is always here.
               </p>
               
               <p style="margin: 28px 0 0 0; color: #333333; font-size: 16px; line-height: 1.6;">
@@ -163,7 +163,7 @@ serve(async (req: Request) => {
                 Customer Care Team
               </p>
               <p style="margin: 4px 0 0 0; color: #666666; font-size: 15px;">
-                BuyAWarranty.co.uk
+                Panda Protect
               </p>
               <p style="margin: 4px 0 0 0;">
                 <a href="tel:03302295040" style="color: #00b67a; font-size: 15px; text-decoration: none; font-weight: 500;">0330 229 5040</a>
@@ -221,7 +221,7 @@ serve(async (req: Request) => {
     logStep("Sending email via Resend", { to: customerEmail });
     
     const emailResult = await resend.emails.send({
-      from: "Buy A Warranty <hello@buyawarranty.co.uk>",
+      from: "Panda Protect <hello@pandaprotect.co.uk>",
       to: [customerEmail],
       subject: subject,
       html: htmlContent,

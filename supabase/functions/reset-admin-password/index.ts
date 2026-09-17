@@ -100,14 +100,14 @@ serve(async (req) => {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset - Buy A Warranty Admin</title>
+    <title>Password Reset - Panda Protect Admin</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px 20px; text-align: center;">
             <h1 style="margin: 0; font-size: 28px; font-weight: bold;">🔐 Password Reset</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Buy A Warranty Admin Dashboard</p>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Panda Protect Admin Dashboard</p>
         </div>
 
         <!-- Main Content -->
@@ -148,11 +148,11 @@ serve(async (req) => {
         <!-- Footer -->
         <div style="background-color: #1f2937; color: #d1d5db; padding: 25px 20px; text-align: center;">
             <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">Kind regards,</p>
-            <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">Buy A Warranty</p>
+            <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">Panda Protect</p>
             <p style="margin: 0 0 15px 0; font-size: 14px;">IT Administration Team</p>
             
             <div style="border-top: 1px solid #374151; padding-top: 15px; margin-top: 20px; font-size: 12px; color: #9ca3af;">
-                <p style="margin: 0 0 5px 0;">© Buy A Warranty. All rights reserved.</p>
+                <p style="margin: 0 0 5px 0;">© Panda Protect. All rights reserved.</p>
                 <p style="margin: 0;">This is an automated system email.</p>
             </div>
         </div>
@@ -160,7 +160,7 @@ serve(async (req) => {
 </body>
 </html>`;
 
-    const textVersion = `Password Reset - Buy A Warranty Admin Dashboard
+    const textVersion = `Password Reset - Panda Protect Admin Dashboard
 
 Hello ${adminUser.first_name || 'Admin User'},
 
@@ -177,10 +177,10 @@ IMPORTANT SECURITY NOTICE:
 - If you didn't request this reset, please contact an administrator immediately.
 
 Kind regards,
-Buy A Warranty IT Administration Team`;
+Panda Protect IT Administration Team`;
 
     const emailResponse = await resend.emails.send({
-      from: "BuyaWarranty Team <support@buyawarranty.co.uk>",
+      from: "Panda Protect Team <support@pandaprotect.co.uk>",
       to: [email],
       subject: "🔐 Admin Password Reset - BuyaWarranty",
       html: emailHtml,
@@ -204,7 +204,7 @@ Buy A Warranty IT Administration Team`;
       .from('email_logs')
       .insert({
         recipient_email: email,
-        subject: '🔐 Admin Password Reset - Buy A Warranty',
+        subject: '🔐 Admin Password Reset - Panda Protect',
         status: 'sent',
         metadata: {
           user_id: userId,

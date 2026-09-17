@@ -151,7 +151,7 @@ serve(async (req) => {
               <tr>
                 <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
                   <p style="font-size: 12px; color: #9ca3af; margin: 0;">
-                    © ${new Date().getFullYear()} BuyAWarranty.co.uk | All rights reserved
+                    © ${new Date().getFullYear()} Panda Protect | All rights reserved
                   </p>
                   <p style="font-size: 12px; color: #9ca3af; margin: 5px 0 0 0;">
                     <a href="https://buyawarranty.co.uk" style="color: #f59e0b; text-decoration: none;">Visit our website</a>
@@ -167,7 +167,7 @@ serve(async (req) => {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
       to: [customerEmail],
       subject: `✨ Your Warranty for ${registrationPlate} Has Been Upgraded`,
       html: htmlContent,

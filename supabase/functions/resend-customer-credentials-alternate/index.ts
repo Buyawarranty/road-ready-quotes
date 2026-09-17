@@ -100,7 +100,7 @@ serve(async (req) => {
 
     // Prepare email content
     const loginUrl = "https://buyawarranty.co.uk/customer-dashboard";
-    const supportEmail = "support@buyawarranty.co.uk";
+    const supportEmail = "support@pandaprotect.co.uk";
     
     const emailHtml = `
     <!DOCTYPE html>
@@ -187,7 +187,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Buyawarranty Customer Care <info@buyawarranty.co.uk>',
+        from: 'Panda Protect Customer Care <info@pandaprotect.co.uk>',
         to: [alternateEmail],
         subject: 'Your Customer Dashboard Login Details',
         html: emailHtml,

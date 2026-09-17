@@ -98,7 +98,7 @@ const handler = async (req: Request): Promise<Response> => {
                       </div>
 
                       <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 30px 0 0; padding-top: 20px; border-top: 1px solid #e5e5e5;">
-                        Questions? Contact our team at <a href="mailto:support@buyawarranty.co.uk" style="color: #f97316;">support@buyawarranty.co.uk</a>
+                        Questions? Contact our team at <a href="mailto:support@pandaprotect.co.uk" style="color: #f97316;">support@pandaprotect.co.uk</a>
                       </p>
                     </td>
                   </tr>
@@ -107,7 +107,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="background-color: #f9fafb; padding: 20px 40px; text-align: center; border-top: 1px solid #e5e5e5;">
                       <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                        © ${new Date().getFullYear()} Buy A Warranty. All rights reserved.
+                        © ${new Date().getFullYear()} Panda Protect. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -120,7 +120,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Buyawarranty Customer Care <support@buyawarranty.co.uk>",
+      from: "Panda Protect Customer Care <support@pandaprotect.co.uk>",
       to: [email],
       subject,
       html: emailHtml,

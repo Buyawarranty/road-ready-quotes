@@ -150,8 +150,8 @@ serve(async (req: Request) => {
       : `New Sale ${saleType}`;
 
     await resend.emails.send({
-      from: "BuyaWarranty Team <notifications@buyawarranty.co.uk>",
-      to: ["info@buyawarranty.co.uk", "accounts@buyawarranty.co.uk"],
+      from: "Panda Protect Team <notifications@pandaprotect.co.uk>",
+      to: ["info@pandaprotect.co.uk", "accounts@pandaprotect.co.uk"],
       subject: `${subjectPrefix}: ${reg} - ${plan} - ${saleValueDisplay} via ${payment}${isAgentSale ? ` - Converted by ${resolvedAgentName}` : ''}`,
       html: salesEmailHtml,
     });

@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
           const unsubUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/handle-email-unsubscribe?email=${encodeURIComponent(cleanEmail)}&token=${encodeURIComponent(unsubToken)}`;
           
           return resend.emails.send({
-            from: "Buyawarranty Customer Care <marketing@buyawarranty.co.uk>",
+            from: "Panda Protect Customer Care <marketing@pandaprotect.co.uk>",
             to: [recipientEmail],
             subject: subject,
             html: `
@@ -107,8 +107,8 @@ const handler = async (req: Request): Promise<Response> => {
                 <div style="margin-bottom: 30px;">${htmlContent}</div>
                 
                 <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; color: #666; font-size: 12px;">
-                  <p>You're receiving this email because you've interacted with Buy A Warranty.</p>
-                  <p>Buy A Warranty Ltd - Your trusted warranty provider</p>
+                  <p>You're receiving this email because you've interacted with Panda Protect.</p>
+                  <p>Panda Protect Ltd - Your trusted warranty provider</p>
                   <p style="margin-top: 12px;">
                     <a href="${unsubUrl}" style="color: #999; text-decoration: underline; font-size: 11px;">Unsubscribe</a> from future emails.
                   </p>

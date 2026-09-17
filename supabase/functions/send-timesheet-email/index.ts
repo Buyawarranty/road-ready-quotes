@@ -45,8 +45,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Buy A Warranty', email: 'noreply@buyawarranty.co.uk' },
-        to: [{ email: 'accounts@buyawarranty.co.uk', name: 'Accounts' }],
+        sender: { name: 'Panda Protect', email: 'noreply@pandaprotect.co.uk' },
+        to: [{ email: 'accounts@pandaprotect.co.uk', name: 'Accounts' }],
         subject,
         htmlContent: html,
         replyTo: { email: userEmail },
