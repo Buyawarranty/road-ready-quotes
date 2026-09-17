@@ -11,3 +11,4 @@
 ## Follow-ups (Sep 17)
 - [ ] Update all email addresses to @pandaprotect.co.uk (contact page, edge functions, DB email templates)
 - [ ] Replace contact page support image with new uploaded panda + support agent artwork
+- [ ] Replace homepage "Join Our Dealer Programme" section image with Transparent_panda_8.png upload
