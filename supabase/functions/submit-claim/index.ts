@@ -321,8 +321,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Prepare email with attachment
     const emailPayload: any = {
-      from: "Buyawarranty Customer Care <noreply@buyawarranty.co.uk>",
-      to: ["support@buyawarranty.co.uk", "support@warranties2000.co.uk"],
+      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      to: ["support@pandaprotect.co.uk", "support@warranties2000.co.uk"],
       subject: emailSubject,
       html: emailHtml,
     };
@@ -364,7 +364,7 @@ const handler = async (req: Request): Promise<Response> => {
         <p>If you need urgent assistance during these hours, you can:</p>
         <ul style="margin: 10px 0; padding-left: 20px;">
           <li style="margin-bottom: 8px;"><strong>Call us:</strong> 0330 229 5045</li>
-          <li><strong>Email us:</strong> <a href="mailto:claims@buyawarranty.co.uk" style="color: #eb4b00;">claims@buyawarranty.co.uk</a></li>
+          <li><strong>Email us:</strong> <a href="mailto:claims@pandaprotect.co.uk" style="color: #eb4b00;">claims@pandaprotect.co.uk</a></li>
         </ul>
         
         <p>Thank you for your patience – we're here to help!</p>
@@ -375,7 +375,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     await resend.emails.send({
-      from: "Buyawarranty Customer Care <claims@buyawarranty.co.uk>",
+      from: "Panda Protect Claims Team <claims@pandaprotect.co.uk>",
       to: [email],
       subject: "Claim Submission Received",
       html: customerEmailHtml,

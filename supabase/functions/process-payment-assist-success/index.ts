@@ -324,8 +324,8 @@ serve(async (req) => {
         `;
 
         await resend.emails.send({
-          from: 'BuyaWarranty Team <notifications@buyawarranty.co.uk>',
-          to: ['info@buyawarranty.co.uk', 'accounts@buyawarranty.co.uk'],
+          from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
+          to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
           subject: `New Sale ${saleType}: ${regPlate} - ${planName} - ${saleValue} via ${paymentMethod}`,
           html: salesEmailHtml,
         });
@@ -398,8 +398,8 @@ serve(async (req) => {
           `;
 
           await resend.emails.send({
-            from: 'BuyaWarranty Team <notifications@buyawarranty.co.uk>',
-            to: ['info@buyawarranty.co.uk', 'accounts@buyawarranty.co.uk'],
+            from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
+            to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
             subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValue} - Converted by ${agentName}`,
             html: agentSaleHtml,
           });

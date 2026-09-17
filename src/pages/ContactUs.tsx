@@ -182,8 +182,8 @@ const ContactUs = () => {
                   <div><h2>Customer support</h2><p>Quotes, cover questions and anything about your policy.</p></div>
                 </div>
                 <a className="contact-detail-link" href="tel:03309122402"><Phone />0330 912 2402</a>
-                <a className="contact-detail-link" href="mailto:support@buyawarranty.co.uk"><Mail />support@buyawarranty.co.uk</a>
-                <Button asChild className="contact-action contact-action-orange"><a href="mailto:support@buyawarranty.co.uk">Email us <ArrowRight /></a></Button>
+                <a className="contact-detail-link" href="mailto:support@pandaprotect.co.uk"><Mail />support@pandaprotect.co.uk</a>
+                <Button asChild className="contact-action contact-action-orange"><a href="mailto:support@pandaprotect.co.uk">Email us <ArrowRight /></a></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>
               </article>
 
@@ -193,8 +193,8 @@ const ContactUs = () => {
                   <div><h2>Claims &amp; repairs</h2><p>Start a claim or check progress with our claims team.</p></div>
                 </div>
                 <a className="contact-detail-link" href="tel:03302295045"><Phone />0330 229 5045</a>
-                <a className="contact-detail-link" href="mailto:claims@buyawarranty.co.uk"><Mail />claims@buyawarranty.co.uk</a>
-                <Button asChild className="contact-action contact-action-navy"><a href="mailto:claims@buyawarranty.co.uk">Email us <ArrowRight /></a></Button>
+                <a className="contact-detail-link" href="mailto:claims@pandaprotect.co.uk"><Mail />claims@pandaprotect.co.uk</a>
+                <Button asChild className="contact-action contact-action-navy"><a href="mailto:claims@pandaprotect.co.uk">Email us <ArrowRight /></a></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>
               </article>
 
@@ -204,7 +204,7 @@ const ContactUs = () => {
                   <div><h2>WhatsApp</h2><p>Quick question? Message us and we'll be right with you.</p></div>
                 </div>
                 <Button asChild className="contact-action contact-action-green"><a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">Start chat <ArrowRight /></a></Button>
-                <a className="contact-email-shortcut" href="mailto:support@buyawarranty.co.uk">Email us</a>
+                <a className="contact-email-shortcut" href="mailto:support@pandaprotect.co.uk">Email us</a>
                 <p className="contact-availability"><Clock3 />Replies during opening hours</p>
               </article>
             </div>
