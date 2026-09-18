@@ -432,7 +432,12 @@ const DealerHome = () => {
                 { icon: UserCircle2, title: 'Free Dealer Sign-Up', body: 'Register your dealership in 60 seconds. No setup fees, no contracts.' },
                 { icon: Zap, title: 'Quote in Seconds', body: 'Use the dealer portal to generate instant warranty quotes for any vehicle.' },
                 { icon: TrendingUp, title: 'Start Earning', body: 'Sell warranties from 20p a day and grow your dealership profits.' },
-              ].map(({ icon: Icon, title, body }) => <li key={title}><Icon aria-hidden="true" /><span><strong>{title}</strong>{body}</span></li>)}
+              ].map(({ icon: Icon, title, body }) => (
+                <li key={title} className="home-plan-step">
+                  <span className="home-plan-step-icon"><Icon aria-hidden="true" /></span>
+                  <span className="home-plan-step-text"><strong>{title}</strong>{body}</span>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="home-plan-image"><OptimizedImage src={coveredPartsImage} alt="Panda Protect mascot beside a branded roll-up banner" width={1200} height={800} /></div>
