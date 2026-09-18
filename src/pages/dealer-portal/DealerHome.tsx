@@ -56,7 +56,7 @@ const HOME_FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'What vehicles can I cover?',
-    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 15 years old and 150,000 miles. Enter a registration in the quote tool for instant pricing.',
+    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 12 years old and 100,000 miles. Enter a registration in the quote tool for instant pricing.',
   },
   {
     q: 'Can I set my own margins and pricing?',
@@ -240,7 +240,7 @@ const DealerHome = () => {
               <li><Check aria-hidden="true" /><span>Instant quotes <span className="home-bullet-sep">•</span> Flexible cover <span className="home-bullet-sep">•</span> Fast payouts</span></li>
               <li><Check aria-hidden="true" /><span>Protect your customers <span className="home-bullet-sep">•</span> Boost your bottom line</span></li>
             </ul>
-            <p className="home-hero-eligibility">Cover for vehicles up to <strong>150,000 miles</strong> and <strong>15 years old</strong>.</p>
+            <p className="home-hero-eligibility">Cover for vehicles up to <strong>100,000 miles</strong> and <strong>12 years old</strong>.</p>
 
             <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
               <div className="home-reg-input">
