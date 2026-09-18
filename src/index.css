@@ -2328,10 +2328,14 @@ body {
 .public-dealer-home .home-story-section .home-story-grid > div:last-child { order: 2; }
 .public-dealer-home .home-plan-section .home-plan-grid > div:first-child { order: 1; }
 .public-dealer-home .home-plan-section .home-plan-image { order: 2; justify-items: end; }
-.public-dealer-home .home-plan-section li { display: flex; align-items: flex-start; gap: 0.75rem; }
-.public-dealer-home .home-plan-section li > svg { width: 1.3rem; height: 1.3rem; flex: 0 0 auto; color: hsl(var(--home-green)); }
-.public-dealer-home .home-plan-section li span { color: hsl(var(--home-copy)); }
-.public-dealer-home .home-plan-section li strong { display: block; margin-bottom: 0.15rem; color: hsl(var(--home-ink)); }
+.public-dealer-home .home-plan-section li { counter-increment: plan-steps; display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.9rem 1rem; background: hsl(var(--home-card)); border: 1px solid hsl(var(--home-line) / 0.7); border-radius: 1rem; box-shadow: 0 1px 2px rgb(15 23 42 / 0.04); transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+.public-dealer-home .home-plan-section li:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -14px rgb(15 23 42 / 0.22); border-color: hsl(var(--home-line)); }
+.public-dealer-home .home-plan-section .home-plan-step-icon { position: relative; display: grid; place-items: center; width: 2.6rem; height: 2.6rem; flex: 0 0 auto; border-radius: 0.8rem; background: hsl(var(--home-orange) / 0.12); color: hsl(var(--home-orange)); }
+.public-dealer-home .home-plan-section .home-plan-step-icon::after { content: counter(plan-steps); position: absolute; top: -0.45rem; right: -0.45rem; display: grid; place-items: center; width: 1.15rem; height: 1.15rem; border-radius: 999px; background: hsl(var(--home-orange)); color: #fff; font-size: 0.68rem; font-weight: 800; line-height: 1; }
+.public-dealer-home .home-plan-section .home-plan-step-icon svg { width: 1.35rem; height: 1.35rem; }
+.public-dealer-home .home-plan-section .home-plan-step-text { color: hsl(var(--home-copy)); }
+.public-dealer-home .home-plan-section .home-plan-step-text strong { display: block; margin-bottom: 0.2rem; color: hsl(var(--home-ink)); }
+
 
 .public-dealer-home .home-included-section { text-align: center; }
 .public-dealer-home .home-included-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem; max-width: 980px; margin-inline: auto; }
