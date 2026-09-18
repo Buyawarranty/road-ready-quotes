@@ -95,7 +95,7 @@ export const DealerPublicHeader: React.FC = () => {
             </a>
 
             <a href={quoteHref} className="home-header-quote-link whitespace-nowrap">
-              Get my quote
+              Register
             </a>
 
             {/* Login - high contrast B2B CTA */}
@@ -155,7 +155,7 @@ export const DealerPublicHeader: React.FC = () => {
                 onClick={() => setMobileOpen(false)}
                 className="home-header-quote-link"
               >
-                Get my quote
+                Register
               </a>
               <Link
                 to="/dealer-portal/login"
