@@ -8,7 +8,7 @@
 - [x] Batch 6: checkout, payment, and confirmation
 - [x] Batch 7: customer widget
 
-## Follow-ups (Sep 17)
-- [ ] Update all email addresses to @pandaprotect.co.uk (contact page, edge functions, DB email templates)
-- [ ] Replace contact page support image with new uploaded panda + support agent artwork
-- [ ] Replace homepage "Join Our Dealer Programme" section image with Transparent_panda_8.png upload
+## Follow-ups (Sep 17) — complete
+- [x] Update all email addresses to @pandaprotect.co.uk (contact page, edge functions, DB email templates). Note: `update-admin-credentials` intentionally still references the old admin login email.
+- [x] Replace contact page support image with new uploaded panda + support agent artwork (`panda_protect_proper_5.png`, verified on hosted preview).
+- [x] Replace homepage "Join Our Dealer Programme" section image with Transparent_panda_8.png upload (checkerboard background removed; verified).
