@@ -11148,6 +11148,7 @@ export type Database = {
           orr_retry_deadline: string | null
           orr_retry_missed_at: string | null
           orr_retry_missed_by: string | null
+          orr_retry_preferred_agent: string | null
           owner_agent: string | null
           payment_amount: number | null
           payment_date: string | null
@@ -11271,6 +11272,7 @@ export type Database = {
           orr_retry_deadline?: string | null
           orr_retry_missed_at?: string | null
           orr_retry_missed_by?: string | null
+          orr_retry_preferred_agent?: string | null
           owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
@@ -11394,6 +11396,7 @@ export type Database = {
           orr_retry_deadline?: string | null
           orr_retry_missed_at?: string | null
           orr_retry_missed_by?: string | null
+          orr_retry_preferred_agent?: string | null
           owner_agent?: string | null
           payment_amount?: number | null
           payment_date?: string | null
@@ -14837,6 +14840,7 @@ export type Database = {
       }
       open_pool_manager_alerts_sweep: { Args: never; Returns: number }
       open_pool_mark_paid: { Args: { _lead_id: string }; Returns: undefined }
+      open_pool_next_call_slot: { Args: never; Returns: string }
       open_pool_next_working_day_9am: { Args: never; Returns: string }
       open_pool_promote_overnight: { Args: never; Returns: number }
       open_pool_reap_expired_locks: { Args: never; Returns: number }
