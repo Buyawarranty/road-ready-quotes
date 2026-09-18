@@ -2320,8 +2320,8 @@ body {
 .public-dealer-home .home-story-image img,
 .public-dealer-home .home-plan-image img { width: 100%; max-height: 390px; object-fit: contain; }
 .public-dealer-home .home-story-section > div > div:last-child > p:not(.home-eyebrow) { color: hsl(var(--home-copy)); font-size: 1rem; line-height: 1.65; }
-.public-dealer-home .home-story-section ul,
-.public-dealer-home .home-plan-section ul { display: grid; gap: 0.65rem; margin: 1.25rem 0 1.6rem; padding: 0; list-style: none; }
+.public-dealer-home .home-story-section ul { display: grid; gap: 0.65rem; margin: 1.25rem 0 1.6rem; padding: 0; list-style: none; }
+.public-dealer-home .home-plan-section ul { display: grid; gap: 0.75rem; margin: 1.25rem 0 1.6rem; padding: 0; list-style: none; counter-reset: plan-steps; }
 .public-dealer-home .home-story-section li { display: flex; align-items: center; gap: 0.55rem; color: hsl(var(--home-copy)); }
 .public-dealer-home .home-story-section li svg { width: 1rem; height: 1rem; color: hsl(var(--home-green)); stroke-width: 3; }
 .public-dealer-home .home-story-section .home-story-image { order: 1; justify-items: start; }
