@@ -33,7 +33,8 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
 import twoWaysImage from '@/assets/two-ways-cover.png';
 import dealerGrowthImage from '@/assets/panda-dealer-growth.png';
-import coveredPartsImage from '@/assets/panda-covered-parts.png';
+import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
+const coveredPartsImage = programmeBannerAsset.url;
 import pandaHeroImage from '@/assets/panda-hero.png';
 
 const HOME_FAQS: { q: string; a: string }[] = [
@@ -434,7 +435,7 @@ const DealerHome = () => {
               ].map(({ icon: Icon, title, body }) => <li key={title}><Icon aria-hidden="true" /><span><strong>{title}</strong>{body}</span></li>)}
             </ul>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={coveredPartsImage} alt="Car showing covered mechanical and electrical parts" width={1200} height={800} /></div>
+          <div className="home-plan-image"><OptimizedImage src={coveredPartsImage} alt="Panda Protect mascot beside a branded roll-up banner" width={1200} height={800} /></div>
         </div>
       </section>
 
