@@ -12,3 +12,8 @@
 - [x] Update all email addresses to @pandaprotect.co.uk (contact page, edge functions, DB email templates). Note: `update-admin-credentials` intentionally still references the old admin login email.
 - [x] Replace contact page support image with new uploaded panda + support agent artwork (`panda_protect_proper_5.png`, verified on hosted preview).
 - [x] Replace homepage "Join Our Dealer Programme" section image with Transparent_panda_8.png upload (checkerboard background removed; verified).
+
+## Navigation refresh (Sep 19)
+- [x] Standardise public navigation labels and calls to action.
+- [x] Add quote, claims and callback options to Call Us.
+- [x] Verify the shared header across desktop and mobile public pages.
