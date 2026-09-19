@@ -292,7 +292,7 @@ const TradeOnlyPage: React.FC = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-base">
+              <Button asChild size="lg" variant="outline" className="text-base border-white/70 bg-white text-foreground hover:bg-white/90">
                 <a href="mailto:hello@pandaprotect.co.uk">
                   <Mail className="mr-2 h-5 w-5" />
                   hello@pandaprotect.co.uk
