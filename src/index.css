@@ -2139,6 +2139,9 @@ body {
 }
 
 .public-call-menu {
+  --header-ink: 220 20% 14%;
+  --header-line: 220 14% 90%;
+  --header-orange: 18 100% 47%;
   width: 292px;
   padding: 1rem;
   border-color: hsl(var(--header-line));
@@ -2191,7 +2194,14 @@ body {
 .public-callback-option { min-height: 72px; margin-top: 0.35rem; background: hsl(var(--header-orange) / 0.09); }
 .public-callback-option:hover { background: hsl(var(--header-orange) / 0.15); }
 
-.public-mobile-menu { font-family: Helvetica, "Segoe UI", Arial, sans-serif; }
+.public-mobile-menu {
+  --header-ink: 220 20% 14%;
+  --header-line: 220 14% 90%;
+  --header-orange: 18 100% 47%;
+  width: 90vw;
+  max-width: 380px;
+  font-family: Helvetica, "Segoe UI", Arial, sans-serif;
+}
 .public-mobile-nav-link {
   display: flex;
   min-height: 48px;

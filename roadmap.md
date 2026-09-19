@@ -16,4 +16,4 @@
 ## Navigation refresh (Sep 19)
 - [x] Standardise public navigation labels and calls to action.
 - [x] Add quote, claims and callback options to Call Us.
-- [ ] Verify the shared header across desktop and mobile public pages.
+- [x] Verify the shared header across desktop and mobile public pages.
