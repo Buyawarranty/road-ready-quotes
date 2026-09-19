@@ -2519,7 +2519,7 @@ body {
 .contact-icon-orange { color: hsl(var(--contact-surface)); background: hsl(var(--contact-orange)); }
 .contact-icon-green { color: hsl(var(--contact-surface)); background: hsl(var(--contact-green)); }
 .contact-icon-soft { color: hsl(var(--contact-orange)); background: hsl(var(--contact-orange) / .12); }
-.contact-detail-link { display: flex; align-items: center; gap: .4rem; margin: .2rem 0; overflow-wrap: anywhere; color: hsl(var(--contact-ink)); font-size: .76rem; font-weight: 750; }
+.contact-detail-link { display: flex; align-items: center; gap: .4rem; margin: .2rem 0; overflow-wrap: break-word; color: hsl(var(--contact-ink)); font-size: .76rem; font-weight: 750; }
 .contact-detail-link svg { width: .8rem; height: .8rem; color: hsl(var(--contact-orange)); }
 .contact-action { min-height: 42px; margin-top: .85rem; border-radius: .4rem; font-weight: 800; }
 .contact-action-orange { color: hsl(var(--contact-surface)); background: hsl(var(--contact-orange)); }
@@ -2559,7 +2559,7 @@ body {
 .contact-upload span { font-size: .7rem; }
 .contact-upload input { display: none; }
 .contact-uploaded-file { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: .4rem .7rem; border: 1px solid hsl(var(--contact-line)); border-radius: .35rem; background: hsl(var(--contact-canvas)); }
-.contact-uploaded-file > span { display: flex; align-items: center; gap: .45rem; min-width: 0; overflow-wrap: anywhere; font-size: .72rem; }
+.contact-uploaded-file > span { display: flex; align-items: center; gap: .45rem; min-width: 0; overflow-wrap: break-word; font-size: .72rem; }
 .contact-uploaded-file svg { width: 1rem; height: 1rem; color: hsl(var(--contact-orange)); }
 .contact-submit-row { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
 .contact-submit-row .contact-action { min-width: 180px; margin: 0; }
@@ -2620,7 +2620,7 @@ img, video { height: auto; }
   button, [role="button"], a[role="button"] { touch-action: manipulation; }
 
   /* Long URLs/emails wrap instead of overflowing */
-  p, li, td, a { overflow-wrap: anywhere; }
+  p, li, td, a { overflow-wrap: break-word; }
 
   /* Avoid the iOS double-tap delay & grey flash */
   a, button { -webkit-tap-highlight-color: transparent; }
