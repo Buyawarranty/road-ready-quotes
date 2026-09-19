@@ -316,9 +316,9 @@ const WhatsCovered: React.FC = () => {
                       className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
                       aria-expanded={open}
                     >
-                      <span className="font-semibold text-white pr-2">{item.title}</span>
+                      <span className={`font-semibold pr-2 ${item.text}`}>{item.title}</span>
                       <ChevronDown
-                        className={`h-5 w-5 flex-shrink-0 text-white transition-transform ${open ? 'rotate-180' : ''}`}
+                        className={`h-5 w-5 flex-shrink-0 ${item.text} transition-transform ${open ? 'rotate-180' : ''}`}
                       />
                     </button>
                     <div
