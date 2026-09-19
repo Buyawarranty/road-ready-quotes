@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
+  Building2, User, Mail, Phone, Globe,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
@@ -437,33 +438,51 @@ const DealerComingSoon = () => {
                 </div>
               ) : (
                 <>
-                  <h2 className="text-xl font-bold text-slate-900">Request dealer access</h2>
-                  <p className="text-sm text-slate-500 mt-1">Five quick details — no obligation.</p>
+                  <div className="text-center">
+                    <h2 className="inline-flex items-center justify-center gap-2.5 text-2xl sm:text-[1.75rem] font-black text-slate-900 leading-tight">
+                      <span aria-hidden="true" className="w-10 h-10 rounded-full bg-[#eb4b00] text-white flex items-center justify-center text-xl shadow-md shrink-0">🚀</span>
+                      Request dealer access
+                    </h2>
+                    <p className="text-sm text-slate-500 mt-2">⚡ Five quick details — no obligation</p>
+                  </div>
+
+                  {pendingReg && (
+                    <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
+                      <span className="bg-yellow-300 text-slate-900 font-black text-sm tracking-[0.08em] px-2.5 py-1 rounded-md border-2 border-slate-900 shrink-0">
+                        {pendingReg.toUpperCase()}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-slate-900">Your saved registration</p>
+                        <p className="text-xs text-slate-500">Your quote picks up right where you left off.</p>
+                      </div>
+                    </div>
+                  )}
 
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
-                    <Field label="Dealership name">
+                    <Field label="Dealership name" icon={Building2}>
                       <input
                         type="text"
                         value={form.dealership_name}
                         onChange={(e) => set('dealership_name', e.target.value)}
-                        placeholder="Enter dealership name"
-                        className={inputCls}
+                        placeholder="e.g. ABC Motors Ltd"
+                        className={regInputCls}
                       />
                     </Field>
 
-                    <Field label="Contact name">
+                    <Field label="Contact name" icon={User}>
                       <input
                         type="text"
                         value={form.contact_name}
                         onChange={(e) => set('contact_name', e.target.value)}
-                        placeholder="Enter your full name"
-                        className={inputCls}
+                        placeholder="e.g. John Smith"
+                        className={regInputCls}
                       />
                     </Field>
 
                     <Field
                       label="Email address"
                       required
+                      icon={Mail}
                       error={touched.email ? errors.email : undefined}
                       valid={emailValid}
                     >
@@ -476,14 +495,15 @@ const DealerComingSoon = () => {
                         value={form.email_address}
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                        placeholder="you@dealership.co.uk"
-                        className={`${inputCls} pr-12 ${touched.email && errors.email ? 'border-rose-500' : ''}`}
+                        placeholder="e.g. you@dealership.co.uk"
+                        className={`${regInputCls} ${touched.email && errors.email ? 'border-rose-400' : ''}`}
                       />
                     </Field>
 
                     <Field
                       label="Phone number"
                       required
+                      icon={Phone}
                       error={touched.phone ? errors.phone : undefined}
                       valid={phoneValid}
                     >
@@ -496,15 +516,17 @@ const DealerComingSoon = () => {
                         value={form.phone_number}
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
-                        placeholder="07700 900000"
-                        className={`${inputCls} pr-12 ${touched.phone && errors.phone ? 'border-rose-500' : ''}`}
+                        placeholder="UK mobile or landline"
+                        className={`${regInputCls} ${touched.phone && errors.phone ? 'border-rose-400' : ''}`}
                       />
                     </Field>
+                    <p className="text-xs text-slate-500 -mt-2 pl-1">Unlock exclusive trade pricing and expert advice</p>
 
                     <Field
                       label="Where do you sell vehicles?"
                       required
                       hint="(Website or listing URL)"
+                      icon={Globe}
                       error={touched.url ? errors.url : undefined}
                       valid={urlValid}
                     >
@@ -518,24 +540,28 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
                         placeholder="https://www.autotrader.co.uk/dealers/..."
-                        className={`${inputCls} pr-12 ${touched.url && errors.url ? 'border-rose-500' : ''}`}
+                        className={`${regInputCls} ${touched.url && errors.url ? 'border-rose-400' : ''}`}
                       />
                     </Field>
 
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="animate-breathing w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base"
-                      style={{ minHeight: 52 }}
+                      className="animate-breathing w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#f97316] to-[#eb4b00] hover:from-[#ea580c] hover:to-[#d63f00] disabled:opacity-60 text-white font-extrabold px-5 py-4 rounded-xl text-base sm:text-lg shadow-lg shadow-orange-500/25 transition-all"
+                      style={{ minHeight: 56 }}
                     >
                       {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
                     </button>
 
-                    <p className="text-center text-xs text-slate-500">
-                      We'll only contact you about Trade Warranty.
-                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 pt-1">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">⚡ Quote in seconds</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">🚗 Sell more per vehicle</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">✅ No obligation</span>
+                    </div>
 
-                    <div className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
+                    <p className="text-center text-xs text-slate-500">🔒 We'll only contact you about Trade Warranty.</p>
+
+                    <div className="text-center text-sm text-slate-600 pt-3 border-t border-slate-100">
                       Already a dealer?{' '}
                       <button
                         type="button"
@@ -544,9 +570,6 @@ const DealerComingSoon = () => {
                       >
                         Log in instead <ArrowRight className="w-3.5 h-3.5" />
                       </button>
-                      <span className="block text-xs text-slate-500 mt-1">
-                        Your saved registration and quote pick up right where you left off.
-                      </span>
                     </div>
                   </form>
                 </>
@@ -652,22 +675,31 @@ const DealerComingSoon = () => {
 const inputCls =
   'w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-white text-slate-900 placeholder:text-slate-400';
 
+const regInputCls =
+  'w-full pl-11 pr-12 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#eb4b00] focus:ring-2 focus:ring-[#eb4b00]/20 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-colors';
+
 const Field: React.FC<{
   label: string;
   required?: boolean;
   hint?: string;
   error?: string;
   valid?: boolean;
+  icon?: React.ElementType;
   children: React.ReactNode;
-}> = ({ label, required, hint, error, valid, children }) => (
+}> = ({ label, required, hint, error, valid, icon: Icon, children }) => (
   <label className="block">
-    <div className="flex items-center gap-1 mb-1.5">
-      <span className="text-sm font-semibold text-slate-800">
+    <div className="flex items-baseline gap-1 mb-1.5">
+      <span className="text-[15px] font-bold text-slate-900">
         {label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}
       </span>
       {hint && <span className="text-xs text-slate-500">{hint}</span>}
     </div>
     <div className="relative">
+      {Icon && (
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+          <Icon className="w-5 h-5" />
+        </span>
+      )}
       {children}
       {valid && !error && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 pointer-events-none">
