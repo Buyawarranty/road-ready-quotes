@@ -327,6 +327,97 @@ const DealerComingSoon = () => {
             <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Quote in seconds</li>
           </ul>
 
+          {showLogin && (
+            <div
+              ref={loginRef}
+              className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24 max-w-md mx-auto w-full"
+            >
+              <h2 className="text-xl font-bold text-slate-900">Log in to your portal</h2>
+              <p className="text-sm text-slate-500 mt-1">Welcome back — enter your dealer sign-in details.</p>
+
+              <form onSubmit={handleLogin} className="mt-5 space-y-4" noValidate>
+                <label className="block">
+                  <span className="block text-sm font-semibold text-slate-800 mb-1.5">Email address</span>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    autoCapitalize="none"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="you@dealership.co.uk"
+                    className={inputCls}
+                  />
+                </label>
+
+                <label className="block">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-semibold text-slate-800">Password</span>
+                    <Link
+                      to="/forgot-password/"
+                      className="text-xs font-semibold text-[#eb4b00] hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className={`${inputCls} pr-11`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword((v) => !v)}
+                      aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                      className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-700"
+                    >
+                      {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </label>
+
+                {unconfirmedEmail && (
+                  <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+                    <p className="mb-2">
+                      Your email <strong>{unconfirmedEmail}</strong> hasn't been confirmed yet. Check your inbox for
+                      the confirmation link.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      className="font-medium underline hover:text-amber-700"
+                    >
+                      Resend confirmation email
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loggingIn}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base"
+                  style={{ minHeight: 52 }}
+                >
+                  {loggingIn ? 'Signing in…' : (<>Log in to my portal <ArrowRight className="w-5 h-5" /></>)}
+                </button>
+
+                <p className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
+                  New dealer?{' '}
+                  <button
+                    type="button"
+                    onClick={revealForm}
+                    className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
+                  >
+                    Register instead <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </p>
+              </form>
+            </div>
+          )}
+
           {showForm && (
             <div ref={formRef} className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
               {submitted ? (
