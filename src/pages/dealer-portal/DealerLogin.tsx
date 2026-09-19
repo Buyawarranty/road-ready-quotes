@@ -116,9 +116,9 @@ const DealerLogin = () => {
       <DealerPublicHeader />
 
       <main className="flex-1 px-4 py-10 sm:py-14">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.05fr] gap-8 items-stretch">
-          {/* Left — Login Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-7 sm:p-9 order-2 lg:order-1">
+        <div className="max-w-2xl mx-auto space-y-8">
+          {/* Top — Login Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-7 sm:p-9">
             <div className="mb-6">
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-orange-600 bg-orange-100 px-2.5 py-1 rounded uppercase mb-3">
                 Dealer Portal
