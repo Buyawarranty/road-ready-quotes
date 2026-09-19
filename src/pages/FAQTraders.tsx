@@ -424,10 +424,6 @@ const FAQTraders: React.FC = () => {
             <p className="text-slate-600 text-[15px] mt-1">
               Our UK-based team is here to help. Get in touch and we'll be happy to assist.
             </p>
-            <p className="text-sm text-slate-500 mt-2">
-              Looking for retail customer FAQs?{' '}
-              <Link to="/faq/" className="text-[#eb4b00] underline font-semibold">Switch to consumer FAQs</Link>
-            </p>
           </div>
           <div className="flex flex-col gap-2.5 sm:items-end">
             <Link
