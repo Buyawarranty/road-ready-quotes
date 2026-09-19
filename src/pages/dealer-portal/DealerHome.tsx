@@ -294,7 +294,7 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-cover-intro">
+      <section id="warranty-cover" className="home-cover-intro scroll-mt-24">
         <div className="home-shell home-cover-split">
           <div className="home-cover-content">
             <header className="home-section-heading home-section-heading-left">
@@ -329,7 +329,7 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-service-accordion">
+      <section id="how-it-works" className="home-service-accordion scroll-mt-24">
         <div className="home-shell home-narrow">
           <header className="home-section-heading">
             <p>Two ways to work with us</p>
@@ -400,7 +400,7 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section id="why-us" className="home-story-section">
+      <section id="dealer-benefits" className="home-story-section scroll-mt-24">
         <div className="home-shell home-story-grid">
           <div className="home-story-image"><OptimizedImage src={dealerGrowthImage} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={1200} height={800} /></div>
           <div>
@@ -444,7 +444,7 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-included-section">
+      <section id="claims" className="home-included-section scroll-mt-24">
         <div className="home-shell">
           <header className="home-section-heading">
             <p>Dealer benefits</p>
@@ -484,7 +484,7 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-faq-section">
+      <section id="faqs" className="home-faq-section scroll-mt-24">
         <div className="home-shell home-narrow">
           <header className="home-section-heading"><h2>FAQ<span>'s</span></h2><p>Quick answers to the questions we hear most from motor traders.</p></header>
           <div className="home-faq-grid">

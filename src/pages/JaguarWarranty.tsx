@@ -19,7 +19,6 @@ import jaguarFPaceImage from '@/assets/jaguar-fpace.png';
 import jaguarXEImage from '@/assets/jaguar-xe.png';
 import jaguarFTypeImage from '@/assets/jaguar-ftype.png';
 import jaguarIPaceImage from '@/assets/jaguar-ipace.png';
-import StickyNavigation from '@/components/StickyNavigation';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const JaguarWarranty = () => {
@@ -112,8 +111,6 @@ const JaguarWarranty = () => {
       />
 
       <div className="min-h-screen flex flex-col">
-        <StickyNavigation />
-        
         <main className="flex-grow">
           <TrustpilotHeader />
 
