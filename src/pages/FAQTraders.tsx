@@ -436,7 +436,7 @@ const FAQTraders: React.FC = () => {
               to="/dealer-portal/signup"
               className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-white text-[#14213d] border border-slate-200 font-bold hover:border-[#eb4b00] transition-colors text-sm"
             >
-              Become a dealer partner
+              Dealer Sign Up
             </Link>
           </div>
         </div>
