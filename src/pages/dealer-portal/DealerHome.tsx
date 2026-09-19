@@ -264,7 +264,7 @@ const DealerHome = () => {
 
             <div className="home-support-card">
               <Link to="/dealer-portal/login"><UserCircle2 aria-hidden="true" /> Already a dealer? Dealer Login</Link>
-              <Link to="/dealer-portal/signup">Not signed up yet? Become a Dealer <ArrowRight aria-hidden="true" /></Link>
+              <Link to="/dealer-portal/signup">Not signed up yet? Dealer Sign Up <ArrowRight aria-hidden="true" /></Link>
             </div>
           </div>
 

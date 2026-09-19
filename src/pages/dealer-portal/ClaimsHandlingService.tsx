@@ -247,7 +247,7 @@ const ClaimsHandlingService = () => {
             to="/dealer-portal/signup?plan=claims-handling"
             className="inline-flex items-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-7 py-3.5 rounded-lg transition-colors"
           >
-            Become a Dealer <ArrowRight className="w-4 h-4" />
+            Dealer Sign Up <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
