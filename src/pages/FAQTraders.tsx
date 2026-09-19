@@ -1,12 +1,8 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Search, UserCog, Plug, Wrench, FileText, LifeBuoy, LogIn, ArrowRight, Phone, Users } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { ChevronDown, Search, UserCog, Plug, Wrench, FileText, LifeBuoy, Users, ArrowRight, Mail, Info } from 'lucide-react';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
-
-import pandaVehicleImage from '@/assets/panda-vehicles.png';
 
 type FAQItem = { q: string; a: React.ReactNode; plain: string };
 type Pillar = {
@@ -30,7 +26,7 @@ const PILLARS: Pillar[] = [
         a: (
           <>
             To register for a Panda Protect dealer account, simply complete our{' '}
-            <Link to="/dealer-portal/signup" className="text-primary underline font-semibold">online dealer application form</Link>.
+            <Link to="/dealer-portal/signup" className="text-[#eb4b00] underline font-semibold">online dealer application form</Link>.
             Once we verify your motor trade business and dealership details, your account is usually activated within{' '}
             <strong>24 hours</strong>. After approval, you will have full access to our dealer portal, partner programme,
             warranty tools, and dealer resources.
@@ -43,7 +39,7 @@ const PILLARS: Pillar[] = [
         a: (
           <>
             You can access the{' '}
-            <Link to="/dealer-portal/login" className="text-primary underline font-semibold">motor trade login</Link>{' '}
+            <Link to="/dealer-portal/login" className="text-[#eb4b00] underline font-semibold">motor trade login</Link>{' '}
             from the Panda Protect website. After entering your approved login details, you will be taken to your dealer
             dashboard. From there, you can issue warranties, manage claims, view policy information, track performance,
             and access dealer support.
@@ -99,7 +95,7 @@ const PILLARS: Pillar[] = [
         a: (
           <>
             To start a claim, simply navigate to the dedicated{' '}
-            <Link to="/make-a-claim/" className="text-primary underline font-semibold">"Make a Claim"</Link>{' '}
+            <Link to="/make-a-claim/" className="text-[#eb4b00] underline font-semibold">"Make a Claim"</Link>{' '}
             section located directly on our website's homepage. Dealers and approved VAT-registered repairers can access
             this submission portal <strong>24/7</strong>. Our engineering team reviews all submitted data promptly to
             deliver swift repair authorisations and minimise customer vehicle downtime.
@@ -218,7 +214,7 @@ const PILLARS: Pillar[] = [
             <p className="mt-3">
               If you are a private consumer, individual driver, or retail customer looking to secure an extended warranty
               for your personal car, van, EV, or motorcycle, please visit our consumer retail site{' '}
-              <a href="https://pandaprotect.co.uk/" target="_blank" rel="noopener noreferrer" className="text-primary underline font-semibold">Buy A Warranty</a>.
+              <a href="https://pandaprotect.co.uk/" target="_blank" rel="noopener noreferrer" className="text-[#eb4b00] underline font-semibold">Buy A Warranty</a>.
             </p>
             <p className="mt-3">Buy A Warranty provides direct-to-consumer vehicle protection plans with transparent retail pricing.</p>
           </>
@@ -229,36 +225,22 @@ const PILLARS: Pillar[] = [
 ];
 
 const FAQTraders: React.FC = () => {
-  const [activePillar, setActivePillar] = useState<string>(PILLARS[0].id);
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({ 'account-setup-0': true });
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState('');
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const toggle = (id: string) => setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
+  const togglePillar = (id: string) => setCollapsed((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const scrollTo = (id: string) => {
-    setActivePillar(id);
+    setCollapsed((prev) => ({ ...prev, [id]: false }));
     const el = sectionRefs.current[id];
     if (el) {
       const y = el.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
-
-  // Scroll-spy
-  useEffect(() => {
-    const onScroll = () => {
-      const offsets = PILLARS.map((p) => {
-        const el = sectionRefs.current[p.id];
-        if (!el) return { id: p.id, top: Infinity };
-        return { id: p.id, top: Math.abs(el.getBoundingClientRect().top - 120) };
-      });
-      offsets.sort((a, b) => a.top - b.top);
-      if (offsets[0]) setActivePillar(offsets[0].id);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return PILLARS;
@@ -282,7 +264,7 @@ const FAQTraders: React.FC = () => {
   };
 
   return (
-    <div className="public-static-page public-faq-page min-h-screen bg-background">
+    <div className="public-static-page public-faq-page min-h-screen bg-[#f6f8fb]">
       <SEOHead
         title="Motor Trade Dealer FAQs | Panda Protect"
         description="Motor trade dealer FAQs covering account setup, dealer portal integration with AutoTrader, quick claims, fast payouts, warranty variants and UK dealer support."
@@ -292,168 +274,125 @@ const FAQTraders: React.FC = () => {
 
       <DealerPublicHeader />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-sidebar-primary text-sidebar-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 lg:py-11 relative z-10">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-primary text-primary-foreground text-xs font-semibold uppercase mb-3">
-                For Motor Trade Dealers
-              </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold leading-tight text-sidebar-primary-foreground">
-                Dealer FAQs &amp; Trade Partner Resources
-              </h1>
-              <p className="mt-2 text-sm sm:text-base text-sidebar-primary-foreground/85 max-w-2xl">
-                Everything UK motor trade dealers need to know about onboarding, portal integration, quick claims, fast
-                payouts and commercial cover with Panda Protect.
-              </p>
-              <div className="mt-2 text-sm text-sidebar-primary-foreground/80">
-                Looking for retail customer FAQs?{' '}
-                <Link to="/faq/" className="underline font-semibold text-sidebar-primary-foreground hover:text-primary">
-                  Switch to consumer FAQs →
-                </Link>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 lg:min-w-56 lg:mr-4">
-              <Link
-                to="/dealer-portal/login"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-card text-card-foreground font-bold hover:bg-secondary transition-colors"
-              >
-                <LogIn className="h-5 w-5" /> Motor Trade Login
-              </Link>
-              <Link
-                to="/dealer-portal/signup"
-                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-bold hover:bg-primary/90 transition-colors"
-              >
-                Become a Dealer Partner <ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Search */}
-          <div className="mt-6 max-w-2xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search dealer FAQs… e.g. AutoTrader, payouts, claim limit"
-                className="pl-12 h-12 bg-card text-card-foreground border-0 rounded-md shadow-lg"
-              />
-            </div>
-          </div>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        {/* Heading */}
+        <div className="text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#14213d] tracking-tight">
+            Frequently asked questions
+          </h1>
+          <p className="mt-3 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+            Quick answers for motor trade dealers — onboarding, the portal, claims, payouts and support.
+          </p>
         </div>
-        <img
-          src={pandaVehicleImage}
-          alt="Panda Protect vehicle warranty support"
-          className="hidden xl:block absolute right-0 bottom-0 h-[92%] w-[34%] object-contain object-bottom opacity-90 pointer-events-none"
-        />
-      </section>
 
-      {/* Pillar tabs (mobile) */}
-      <div className="lg:hidden border-b border-border sticky top-[64px] bg-background z-30">
-        <div className="overflow-x-auto">
-          <div className="flex gap-2 px-4 py-3 min-w-max">
-            {PILLARS.map((p) => (
+        {/* Search */}
+        <form
+          className="mt-7 flex items-stretch gap-3 max-w-3xl mx-auto"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search for a question… (e.g. payouts, AutoTrader, claims)"
+              className="w-full h-13 pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-white text-[15px] text-slate-900 placeholder:text-slate-400 shadow-sm focus:border-[#eb4b00] focus:ring-2 focus:ring-[#eb4b00]/20 outline-none transition-colors"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-6 sm:px-8 rounded-xl bg-[#eb4b00] text-white font-bold text-[15px] shadow-sm hover:bg-[#d43f00] transition-colors"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* Category cards */}
+        <div className="mt-6 flex gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-3 lg:grid-cols-6 sm:overflow-visible">
+          {PILLARS.map((p) => {
+            const Icon = p.icon;
+            return (
               <button
                 key={p.id}
                 onClick={() => scrollTo(p.id)}
-                className={`px-3 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
-                  activePillar === p.id ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
-                }`}
+                className="flex-shrink-0 min-w-[150px] sm:min-w-0 text-left rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm hover:border-[#eb4b00] hover:shadow transition-all"
               >
-                {p.title}
+                <div className="h-9 w-9 rounded-lg bg-[#fff1e8] text-[#eb4b00] flex items-center justify-center">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="mt-2 font-bold text-[13px] leading-snug text-[#14213d]">{p.title}</div>
+                <div className="text-xs text-slate-500 mt-0.5">{p.items.length} questions</div>
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Content */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-9">
-        <div className="grid lg:grid-cols-[260px_1fr] gap-8">
-          {/* Sidebar pillars */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-28 space-y-4">
-              <nav className="rounded-md border border-border bg-card p-2 shadow-sm">
-                <div className="px-3 pt-2 pb-2 text-xs font-bold uppercase text-muted-foreground">B2B Pillars</div>
-                {PILLARS.map((p) => {
-                  const Icon = p.icon;
-                  const active = activePillar === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => scrollTo(p.id)}
-                      className={`group w-full text-left flex items-start gap-3 px-3 py-3 rounded-md transition-colors border-l-2 ${
-                        active
-                          ? 'border-primary bg-primary/10 text-foreground'
-                          : 'border-transparent text-foreground hover:border-primary/60 hover:bg-secondary'
-                      }`}
-                    >
-                      <Icon className={`h-5 w-5 mt-0.5 flex-shrink-0 transition-colors ${active ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
-                      <span>
-                        <span className="block font-semibold text-sm leading-tight">{p.title}</span>
-                        <span className="block text-xs mt-0.5 text-muted-foreground">{p.short}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </nav>
+        <p className="mt-4 flex items-center gap-1.5 text-sm text-slate-500">
+          <Info className="h-4 w-4" /> Click a question to expand and see the answer.
+        </p>
 
-              {/* Support card */}
-              <div className="rounded-md bg-sidebar-primary text-sidebar-primary-foreground p-5 shadow-sm">
-                <div className="text-sm font-bold mb-1">UK Dealer Support</div>
-                <p className="text-xs text-sidebar-primary-foreground/70 mb-3">Mon–Fri 9am to 5:30pm</p>
-                <a href="tel:03302295045" className="flex items-center gap-2 text-primary font-bold">
-                  <Phone className="h-4 w-4" /> 0330 229 5045
-                </a>
-              </div>
+        {/* Pillars */}
+        <div className="mt-5 space-y-5">
+          {filtered.length === 0 && (
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+              No FAQs match <strong>"{query}"</strong>. Try a different search term.
             </div>
-          </aside>
+          )}
 
-          {/* Pillars */}
-          <div className="space-y-8">
-            {filtered.length === 0 && (
-              <div className="rounded-md border border-border p-8 text-center text-muted-foreground">
-                No FAQs match <strong>"{query}"</strong>. Try a different search term.
-              </div>
-            )}
-
-            {filtered.map((p) => {
-              const Icon = p.icon;
-              return (
-                <div
-                  key={p.id}
-                  id={p.id}
-                  ref={(el) => (sectionRefs.current[p.id] = el)}
-                  className="scroll-mt-28"
+          {filtered.map((p) => {
+            const Icon = p.icon;
+            const isCollapsed = !query.trim() && !!collapsed[p.id];
+            return (
+              <div
+                key={p.id}
+                id={p.id}
+                ref={(el) => (sectionRefs.current[p.id] = el)}
+                className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden"
+              >
+                {/* Pillar header */}
+                <button
+                  onClick={() => togglePillar(p.id)}
+                  className="w-full text-left px-5 sm:px-6 py-5 flex items-center gap-4 hover:bg-slate-50 transition-colors"
+                  aria-expanded={!isCollapsed}
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-9 w-9 rounded-md bg-primary/10 text-primary flex items-center justify-center">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-foreground">{p.title}</h2>
+                  <div className="h-11 w-11 rounded-xl bg-[#fff1e8] text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+                    <Icon className="h-6 w-6" />
                   </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-lg sm:text-xl font-extrabold text-[#14213d]">{p.title}</h2>
+                    <p className="text-sm text-slate-500 mt-0.5">{p.short}</p>
+                  </div>
+                  <span className="hidden sm:block text-sm font-semibold text-slate-500 mr-2 whitespace-nowrap">
+                    {p.items.length} questions
+                  </span>
+                  <ChevronDown
+                    className={`h-5 w-5 text-slate-400 flex-shrink-0 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
+                  />
+                </button>
 
-                  <div className="rounded-md border border-border bg-card divide-y divide-border shadow-sm overflow-hidden">
+                {/* Questions */}
+                {!isCollapsed && (
+                  <div className="px-5 sm:px-6 pb-5 space-y-2.5">
                     {p.items.map((item, idx) => {
                       const key = `${p.id}-${idx}`;
                       const open = !!openItems[key];
                       return (
                         <div
                           key={key}
-                          className="bg-card"
+                          className={`rounded-xl border transition-colors ${
+                            open
+                              ? 'border-[#eb4b00] bg-[#fff8f3]'
+                              : 'border-slate-200 bg-white hover:border-[#eb4b00]/50'
+                          }`}
                         >
                           <button
                             onClick={() => toggle(key)}
-                            className="w-full min-h-12 text-left px-4 py-3 flex items-center justify-between gap-4 text-foreground hover:bg-secondary transition-colors"
+                            className="w-full min-h-12 text-left px-4 sm:px-5 py-3.5 flex items-center justify-between gap-4"
                             aria-expanded={open}
                           >
-                            <span className="font-medium text-sm sm:text-base pr-2">{item.q}</span>
+                            <span className="font-bold text-[15px] text-[#14213d] pr-2">{item.q}</span>
                             <ChevronDown
-                              className={`h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform ${
-                                open ? 'rotate-180' : ''
-                              }`}
+                              className={`h-5 w-5 flex-shrink-0 text-[#eb4b00] transition-transform ${open ? 'rotate-180' : ''}`}
                             />
                           </button>
                           <div
@@ -461,7 +400,7 @@ const FAQTraders: React.FC = () => {
                               open ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
                             }`}
                           >
-                            <div className="px-4 pb-5 pt-4 text-muted-foreground leading-relaxed bg-secondary/40 border-t border-border">
+                            <div className="px-4 sm:px-5 pb-5 text-[15px] text-slate-600 leading-relaxed">
                               {item.a}
                             </div>
                           </div>
@@ -469,39 +408,39 @@ const FAQTraders: React.FC = () => {
                       );
                     })}
                   </div>
-                </div>
-              );
-            })}
-
-            {/* CTA */}
-            <div className="rounded-md bg-primary/10 border border-primary/20 p-6 lg:p-8 mt-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Ready to join the Panda Protect dealer network?</h3>
-                  <p className="text-muted-foreground max-w-xl">
-                    Activate your dealer account in 24 hours and start issuing warranties from the same day.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    to="/dealer-portal/signup"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-primary text-primary-foreground font-bold hover:bg-primary/90"
-                  >
-                    Apply Now <ArrowRight className="h-5 w-5" />
-                  </Link>
-                  <Link
-                    to="/dealer-portal/login"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-card text-card-foreground border border-border font-bold hover:bg-secondary"
-                  >
-                    <LogIn className="h-5 w-5" /> Motor Trade Login
-                  </Link>
-                </div>
+                )}
               </div>
-            </div>
+            );
+          })}
+        </div>
+
+        {/* Still need help */}
+        <div className="mt-8 rounded-2xl bg-[#ffe9dd] p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-5">
+          <div className="h-11 w-11 rounded-xl bg-white/70 text-[#eb4b00] flex items-center justify-center flex-shrink-0">
+            <Mail className="h-6 w-6" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-extrabold text-[#14213d]">Still need help?</h3>
+            <p className="text-slate-600 text-[15px] mt-1">
+              Our UK-based team is here to help. Get in touch and we'll be happy to assist.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2.5 sm:items-end">
+            <Link
+              to="/contact-us/"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#eb4b00] text-white font-bold hover:bg-[#d43f00] transition-colors shadow-sm"
+            >
+              Contact us <ArrowRight className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/dealer-portal/signup"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-white text-[#14213d] border border-slate-200 font-bold hover:border-[#eb4b00] transition-colors text-sm"
+            >
+              Become a dealer partner
+            </Link>
           </div>
         </div>
-      </section>
-
+      </main>
     </div>
   );
 };
