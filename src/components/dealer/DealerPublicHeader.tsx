@@ -9,7 +9,7 @@ import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 
 const NAV_ITEMS = [
-  { label: 'Warranty Cover', to: '/#warranty-cover' },
+  { label: "What's covered", to: '/#warranty-cover' },
   { label: 'How It Works', to: '/#how-it-works' },
   { label: 'Dealer Benefits', to: '/#dealer-benefits' },
   { label: 'Claims', to: '/#claims' },
