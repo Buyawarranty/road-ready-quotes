@@ -189,6 +189,7 @@ const ConditionalFooter = () => {
 
 const TradeOnlyPage = lazy(() => import("./pages/TradeOnlyPage"));
 const WhatsCovered = lazy(() => import("./pages/WhatsCovered"));
+const MakeAClaim = lazy(() => import("./pages/MakeAClaim"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
@@ -391,7 +392,7 @@ const App = () => {
                         Bespoke trade pages can replace any individual route below as needed. */}
                     <Route path="/what-is-covered/" element={<WhatsCovered />} />
                     <Route path="/claims/" element={<TradeOnlyPage />} />
-                    <Route path="/make-a-claim/" element={<TradeOnlyPage />} />
+                    <Route path="/make-a-claim/" element={<MakeAClaim />} />
                     <Route path="/cancel-warranty" element={<TradeOnlyPage />} />
                     <Route path="/warranty-transfer/" element={<TradeOnlyPage />} />
                     <Route path="/contact-us/" element={<ContactUs />} />
