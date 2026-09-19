@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock3, LogIn, Menu, Phone, PhoneCall } from 'lucide-react';
+import { ArrowRight, Clock3, LogIn, Menu, MessageCircle, Phone, PhoneCall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -69,6 +69,15 @@ export const DealerPublicHeader: React.FC = () => {
                     <PhoneCall aria-hidden="true" />
                     <span><strong>Request Call-Back</strong><small>We'll call you back</small></span>
                   </Button>
+                  <a
+                    href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="public-whatsapp-option"
+                  >
+                    <MessageCircle aria-hidden="true" />
+                    <span><strong>WhatsApp Us</strong><small>Start a chat</small></span>
+                  </a>
                 </PopoverContent>
               </Popover>
 
@@ -102,6 +111,7 @@ export const DealerPublicHeader: React.FC = () => {
                     <a href="tel:03309122535" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 912 2535</small></span></a>
                     <a href="tel:03302295045" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Make a Claim</strong><small>0330 229 5045</small></span></a>
                     <Button type="button" variant="ghost" className="public-callback-option" onClick={openCallback}><PhoneCall aria-hidden="true" /><span><strong>Request Call-Back</strong><small>We'll call you back</small></span></Button>
+                    <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="public-whatsapp-option"><MessageCircle aria-hidden="true" /><span><strong>WhatsApp Us</strong><small>Start a chat</small></span></a>
                   </div>
 
                   <div className="mt-auto grid gap-3 pt-6">
