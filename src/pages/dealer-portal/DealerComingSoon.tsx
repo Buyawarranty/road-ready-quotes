@@ -10,7 +10,7 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import vwId3 from '@/assets/panda-with-vw.png.asset.json';
+import whyDealersPanda from '@/assets/why-dealers-panda.png.asset.json';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
