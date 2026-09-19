@@ -2142,6 +2142,7 @@ body {
   --header-ink: 220 20% 14%;
   --header-line: 220 14% 90%;
   --header-orange: 18 100% 47%;
+  --public-surface: 0 0% 100%;
   width: 292px;
   padding: 1rem;
   border-color: hsl(var(--header-line));
@@ -2198,6 +2199,7 @@ body {
   --header-ink: 220 20% 14%;
   --header-line: 220 14% 90%;
   --header-orange: 18 100% 47%;
+  --public-surface: 0 0% 100%;
   width: 90vw;
   max-width: 380px;
   font-family: Helvetica, "Segoe UI", Arial, sans-serif;
