@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, Headphones, Sparkles, LogIn,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
@@ -155,7 +155,14 @@ const DealerComingSoon = () => {
     }
   };
 
-  const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const [showForm, setShowForm] = useState(false);
+
+  const revealForm = () => {
+    setShowForm(true);
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
 
   return (
     <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
