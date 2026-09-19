@@ -39,6 +39,16 @@
   color: inherit;
 }
 
+/* Navy CTA band keeps white text despite the reskin's inherit rules. */
+.public-static-footer .footer-cta-navy,
+.public-static-footer .footer-cta-navy h2,
+.public-static-footer .footer-cta-navy h3,
+.public-static-footer .footer-cta-navy p,
+.public-static-footer .footer-cta-navy a,
+.public-static-footer .footer-cta-navy button {
+  color: #fff;
+}
+
 .public-static-page :where(a, button, input, textarea) {
   border-radius: 0.375rem;
 }
