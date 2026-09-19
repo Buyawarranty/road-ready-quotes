@@ -652,12 +652,13 @@ const WhatsCovered: React.FC = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-base font-semibold border-white/40 text-white hover:bg-white/10 hover:text-white">
-                <a href="tel:03302295040">
-                  <Phone className="mr-2 h-5 w-5" />
-                  0330 229 5040
-                </a>
-              </Button>
+              <a
+                href="tel:03302295040"
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-white/40 bg-transparent px-8 py-3 text-base font-semibold text-white hover:bg-white/10 transition-colors"
+              >
+                <Phone className="h-5 w-5" />
+                0330 229 5040
+              </a>
             </div>
 
             <div className="mt-12 pt-8 border-t border-white/15 grid sm:grid-cols-3 gap-6 text-white/80 text-sm">
