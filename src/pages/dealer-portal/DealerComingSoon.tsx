@@ -205,9 +205,9 @@ const DealerComingSoon = () => {
             {/* Log in */}
             <Link
               to={loginHref}
-              className="group rounded-2xl border-2 border-slate-200 bg-white p-6 transition hover:border-[#eb4b00]/60 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+              className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
             >
-              <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center transition group-hover:bg-[#eb4b00]/10 group-hover:text-[#eb4b00]">
+              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
                 <LogIn className="w-6 h-6" />
               </div>
               <h2 className="mt-4 text-xl font-black text-slate-900">Log in</h2>
@@ -223,9 +223,9 @@ const DealerComingSoon = () => {
             <button
               type="button"
               onClick={revealForm}
-              className="group rounded-2xl border-2 border-[#eb4b00] bg-white p-6 text-left transition hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+              className="signup-choice signup-choice-primary group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
             >
-              <div className="w-12 h-12 rounded-xl bg-[#eb4b00] text-white flex items-center justify-center">
+              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
                 <UserPlus className="w-6 h-6" />
               </div>
               <h2 className="mt-4 text-xl font-black text-slate-900">Register</h2>
@@ -238,14 +238,14 @@ const DealerComingSoon = () => {
             </button>
           </div>
 
-          <ul className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-600">
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Free dealer sign-up</li>
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> No setup fees, no contracts</li>
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Quote in seconds</li>
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-white/75">
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Free dealer sign-up</li>
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> No setup fees, no contracts</li>
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Quote in seconds</li>
           </ul>
 
           {showForm && (
-            <div ref={formRef} className="mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
+            <div ref={formRef} className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
                   <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
