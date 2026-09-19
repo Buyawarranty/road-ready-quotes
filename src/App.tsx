@@ -388,7 +388,7 @@ const App = () => {
                     <Route path="/privacy/" element={<PrivacyPolicy />} />
                     {/* Former retail public pages — all now served by the trade-only Panda Protect landing.
                         Bespoke trade pages can replace any individual route below as needed. */}
-                    <Route path="/what-is-covered/" element={<TradeOnlyPage />} />
+                    <Route path="/what-is-covered/" element={<WhatsCovered />} />
                     <Route path="/claims/" element={<TradeOnlyPage />} />
                     <Route path="/make-a-claim/" element={<TradeOnlyPage />} />
                     <Route path="/cancel-warranty" element={<TradeOnlyPage />} />
