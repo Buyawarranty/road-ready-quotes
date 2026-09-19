@@ -2603,3 +2603,25 @@ body {
   .contact-panda { max-width: 220px; }
   .contact-submit-row .contact-action { width: 100%; }
 }
+
+/* ===== Mobile friendliness (phones) ===== */
+img, video, svg { max-width: 100%; }
+img, video { height: auto; }
+
+@media (max-width: 768px) {
+  /* Stop iOS auto-zoom: inputs must render at 16px minimum */
+  input, select, textarea { font-size: 16px !important; }
+
+  /* Wide data tables (portal lists) scroll sideways instead of breaking the page */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table thead, table tbody { display: table; min-width: 560px; }
+
+  /* Comfortable tap targets */
+  button, [role="button"], a[role="button"] { touch-action: manipulation; }
+
+  /* Long URLs/emails wrap instead of overflowing */
+  p, li, td, a { overflow-wrap: anywhere; }
+
+  /* Avoid the iOS double-tap delay & grey flash */
+  a, button { -webkit-tap-highlight-color: transparent; }
+}
