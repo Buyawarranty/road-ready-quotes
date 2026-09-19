@@ -264,7 +264,7 @@ const DealerHome = () => {
 
             <div className="home-support-card">
               <Link to="/dealer-portal/login"><UserCircle2 aria-hidden="true" /> Already a dealer? Dealer Login</Link>
-              <Link to="/dealer-portal/signup">Not signed up yet? Become a Dealer <ArrowRight aria-hidden="true" /></Link>
+              <Link to="/dealer-portal/signup">Not signed up yet? Dealer Sign Up <ArrowRight aria-hidden="true" /></Link>
             </div>
           </div>
 
@@ -459,7 +459,7 @@ const DealerHome = () => {
             ].map(({ icon: Icon, title, body }) => <article key={title}><Icon aria-hidden="true" /><h3>{title}</h3><p>{body}</p></article>)}
           </div>
           <div className="home-included-cta">
-            <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Become a dealer <ArrowRight aria-hidden="true" /></Link></Button>
+            <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Dealer Sign Up <ArrowRight aria-hidden="true" /></Link></Button>
             <p>Free to join · No setup fees · 60-second sign-up</p>
           </div>
         </div>

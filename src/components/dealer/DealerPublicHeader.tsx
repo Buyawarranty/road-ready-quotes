@@ -82,7 +82,7 @@ export const DealerPublicHeader: React.FC = () => {
               </Popover>
 
               <Link to="/dealer-portal/signup" className="home-header-quote-link">
-                Become a Dealer <ArrowRight aria-hidden="true" />
+                Dealer Sign Up <ArrowRight aria-hidden="true" />
               </Link>
               <Link to="/dealer-portal/login" className="home-header-login-link">
                 <LogIn aria-hidden="true" /> Login
@@ -115,7 +115,7 @@ export const DealerPublicHeader: React.FC = () => {
                   </div>
 
                   <div className="mt-auto grid gap-3 pt-6">
-                    <Button asChild className="home-header-quote-link"><Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Become a Dealer <ArrowRight /></Link></Button>
+                    <Button asChild className="home-header-quote-link"><Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Dealer Sign Up <ArrowRight /></Link></Button>
                     <Button asChild variant="outline" className="home-header-login-link"><Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)}><LogIn /> Login</Link></Button>
                   </div>
                 </div>

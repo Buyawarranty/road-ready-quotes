@@ -180,7 +180,7 @@ const DealerWidget: React.FC = () => {
                 onClick={() => openTop('/dealer-portal/signup')}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors"
               >
-                Become a Dealer <ArrowRight className="h-4 w-4" />
+                Dealer Sign Up <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </div>
