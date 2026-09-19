@@ -226,8 +226,8 @@ const DealerLogin = () => {
             </div>
           </div>
 
-          {/* Right — Benefits / First-time visitor panel */}
-          <aside className="rounded-2xl bg-gradient-to-br from-[#1e3a5f] via-[#284185] to-[#1e3a5f] text-white p-7 sm:p-10 order-1 lg:order-2 flex flex-col justify-between">
+          {/* Below — Benefits / First-time visitor panel */}
+          <aside className="rounded-2xl bg-gradient-to-br from-[#1e3a5f] via-[#284185] to-[#1e3a5f] text-white p-7 sm:p-10 flex flex-col justify-between">
             <div>
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] bg-white/10 backdrop-blur px-2.5 py-1 rounded uppercase mb-4">
                 For Motor Trade Dealers
