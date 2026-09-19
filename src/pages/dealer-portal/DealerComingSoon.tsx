@@ -40,6 +40,12 @@ const PLAN_LABELS: Record<string, string> = {
 
 const DealerComingSoon = () => {
   const [searchParams] = useSearchParams();
+  const pendingReg =
+    searchParams.get('reg')?.trim() ||
+    (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : '');
+  const loginHref = pendingReg
+    ? `/dealer-portal/login?reg=${encodeURIComponent(pendingReg)}`
+    : '/dealer-portal/login';
   const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
   const [form, setForm] = useState(initialForm);
@@ -209,6 +215,19 @@ const DealerComingSoon = () => {
                 </div>
               ) : (
                 <>
+                  {pendingReg && (
+                    <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 text-sm text-slate-700">
+                      <span>
+                        Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
+                      </span>
+                      <Link
+                        to={loginHref}
+                        className="ml-auto inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
+                      >
+                        <LogIn className="w-4 h-4" /> Log in to continue
+                      </Link>
+                    </div>
+                  )}
                   <h2 className="text-xl font-bold text-slate-900">Request dealer access</h2>
                   <p className="text-sm text-slate-500 mt-1">Five quick details — no obligation.</p>
 
@@ -307,6 +326,19 @@ const DealerComingSoon = () => {
                     <p className="text-center text-xs text-slate-500">
                       We'll only contact you about Trade Warranty.
                     </p>
+
+                    <div className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
+                      Already a dealer?{' '}
+                      <Link
+                        to={loginHref}
+                        className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
+                      >
+                        Log in instead <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                      <span className="block text-xs text-slate-500 mt-1">
+                        Your saved registration and quote pick up right where you left off.
+                      </span>
+                    </div>
                   </form>
                 </>
               )}
