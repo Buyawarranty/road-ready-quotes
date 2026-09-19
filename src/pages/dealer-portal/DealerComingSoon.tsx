@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, Headphones, Sparkles, LogIn,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
@@ -155,7 +155,14 @@ const DealerComingSoon = () => {
     }
   };
 
-  const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const [showForm, setShowForm] = useState(false);
+
+  const revealForm = () => {
+    setShowForm(true);
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
 
   return (
     <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
@@ -167,37 +174,78 @@ const DealerComingSoon = () => {
 
       <DealerPublicHeader />
 
-      {/* HERO */}
-      <section className="relative bg-gradient-to-br from-orange-50 via-white to-white">
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-14 items-start">
-            {/* Left */}
-            <div>
-              <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase mb-5">
-                Early dealer access now open
+      {/* HERO — simple log in / register choice */}
+      <section className="relative bg-gradient-to-b from-orange-50 via-white to-white">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 py-10 sm:py-14 lg:py-16 text-center">
+          <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase">
+            Dealer portal
+          </span>
+          <h1 className="mt-4 text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-tight tracking-tight text-slate-900">
+            Trade Warranties for UK Motor Dealers
+          </h1>
+          <p className="mt-3 text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
+            Already a dealer? Log in to your portal — or register your dealership and start quoting in minutes.
+          </p>
+
+          {pendingReg && (
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-slate-700">
+              <span>
+                Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
               </span>
-              <h1 className="text-[2rem] sm:text-5xl lg:text-[3.25rem] font-black leading-[1.1] tracking-tight text-slate-900">
-                Offer Trade Warranties{' '}
-                <span className="text-[#eb4b00]">Without the Paperwork</span>
-              </h1>
-              <p className="text-slate-600 mt-4 sm:mt-5 text-base sm:text-lg leading-relaxed max-w-xl">
-                Add extra profit to every warranty sale and give your customers the confidence of complete warranty cover.
-              </p>
-
-              <div className="mt-7 flex flex-wrap gap-3">
-                <button
-                  onClick={scrollToForm}
-                  className="animate-breathing inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-6 py-3.5 rounded-lg text-base"
-                  style={{ minHeight: 52 }}
-                >
-                  Register My Interest <ArrowRight className="w-5 h-5" />
-                </button>
-              </div>
+              <Link
+                to={loginHref}
+                className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
+              >
+                <LogIn className="w-4 h-4" /> Log in to continue
+              </Link>
             </div>
+          )}
 
-            {/* Right — Form */}
-            <div>
-              <div ref={formRef} className="bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8">
+          <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
+            {/* Log in */}
+            <Link
+              to={loginHref}
+              className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+            >
+              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
+                <LogIn className="w-6 h-6" />
+              </div>
+              <h2 className="mt-4 text-xl font-black text-slate-900">Log in</h2>
+              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                I already have a dealer account — take me to my portal.
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
+                Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+
+            {/* Register */}
+            <button
+              type="button"
+              onClick={revealForm}
+              className="signup-choice signup-choice-primary group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+            >
+              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
+                <UserPlus className="w-6 h-6" />
+              </div>
+              <h2 className="mt-4 text-xl font-black text-slate-900">Register</h2>
+              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                New here? Register your dealership in 60 seconds — free.
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
+                Register your interest <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </button>
+          </div>
+
+          <ul className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-white/75">
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Free dealer sign-up</li>
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> No setup fees, no contracts</li>
+            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Quote in seconds</li>
+          </ul>
+
+          {showForm && (
+            <div ref={formRef} className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
                   <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
@@ -215,19 +263,6 @@ const DealerComingSoon = () => {
                 </div>
               ) : (
                 <>
-                  {pendingReg && (
-                    <div className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2.5 text-sm text-slate-700">
-                      <span>
-                        Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
-                      </span>
-                      <Link
-                        to={loginHref}
-                        className="ml-auto inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
-                      >
-                        <LogIn className="w-4 h-4" /> Log in to continue
-                      </Link>
-                    </div>
-                  )}
                   <h2 className="text-xl font-bold text-slate-900">Request dealer access</h2>
                   <p className="text-sm text-slate-500 mt-1">Five quick details — no obligation.</p>
 
@@ -322,7 +357,6 @@ const DealerComingSoon = () => {
                       {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
                     </button>
 
-
                     <p className="text-center text-xs text-slate-500">
                       We'll only contact you about Trade Warranty.
                     </p>
@@ -342,52 +376,8 @@ const DealerComingSoon = () => {
                   </form>
                 </>
               )}
-              </div>
-
-              <div className="mt-6 space-y-6">
-                <div className="text-center">
-                  <p className="text-xs font-bold tracking-[0.18em] text-[#eb4b00] uppercase">For Motor Trade Dealers</p>
-                  <h3 className="mt-1 text-xl sm:text-2xl font-black text-slate-900 leading-tight">
-                    Sell more cars with extended warranties from 20p a day
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                    Join hundreds of UK dealers boosting margins with Panda Protect. Quote, sell and manage warranties from one simple portal.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div>
-                    <p className="text-base sm:text-lg font-black text-slate-900">Sign up in 60 seconds</p>
-                    <p className="text-xs text-slate-500 mt-0.5">No setup fees, no contracts.</p>
-                  </div>
-                  <div>
-                    <p className="text-base sm:text-lg font-black text-slate-900">Earn from 20p a day</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Exclusive trade pricing on every policy.</p>
-                  </div>
-                  <div>
-                    <p className="text-base sm:text-lg font-black text-slate-900">Trusted UK partner</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Easy claims, fast payouts to any UK garage.</p>
-                  </div>
-                </div>
-
-                <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-slate-600">
-                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Free dealer sign-up</li>
-                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Exclusive trade pricing</li>
-                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Easy claims, fast payouts</li>
-                  <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-600" /> Dedicated UK support</li>
-                </ul>
-
-                <div className="text-center">
-                  <button
-                    onClick={scrollToForm}
-                    className="inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-6 py-3 rounded-lg text-sm"
-                  >
-                    Get started — Free dealer sign-up <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -441,10 +431,10 @@ const DealerComingSoon = () => {
               ))}
             </ul>
             <button
-              onClick={scrollToForm}
+              onClick={revealForm}
               className="mt-8 inline-flex items-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-6 py-3 rounded-lg"
             >
-              Register My Interest <ArrowRight className="w-4 h-4" />
+              Register your interest <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <div className="flex justify-center">

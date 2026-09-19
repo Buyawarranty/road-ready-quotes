@@ -698,6 +698,58 @@
   background: hsl(var(--marketing-navy));
 }
 
+/* Sign-up: log in / register choice cards (glass on navy hero) */
+.public-dealer-signup .signup-choice {
+  background: hsl(var(--marketing-surface) / 0.08);
+  border-color: hsl(var(--marketing-surface) / 0.22);
+  box-shadow: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.public-dealer-signup .signup-choice:hover {
+  background: hsl(var(--marketing-surface) / 0.12);
+  border-color: hsl(var(--marketing-orange) / 0.8);
+  transform: translateY(-2px);
+}
+
+.public-dealer-signup .signup-choice h2 {
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-signup .signup-choice p {
+  color: hsl(var(--marketing-surface) / 0.75);
+}
+
+.public-dealer-signup .signup-choice-icon {
+  background: hsl(var(--marketing-surface) / 0.14);
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-signup .signup-choice:hover .signup-choice-icon {
+  background: hsl(var(--marketing-orange) / 0.9);
+  color: hsl(var(--marketing-surface));
+}
+
+.public-dealer-signup .signup-choice-primary,
+.public-dealer-signup .signup-choice-primary:hover {
+  border-color: hsl(var(--marketing-orange) / 0.85);
+}
+
+/* Sign-up: registration form panel (light card on navy hero) */
+.public-dealer-signup .signup-form-panel {
+  background: hsl(var(--marketing-surface));
+  border-color: hsl(var(--marketing-line));
+}
+
+.public-dealer-signup .signup-form-panel h2,
+.public-dealer-signup .signup-form-panel h3 {
+  color: hsl(var(--marketing-ink));
+}
+
+.public-dealer-signup .signup-form-panel p:not(.text-rose-600) {
+  color: hsl(var(--marketing-copy));
+}
+
 @media (max-width: 1023px) {
   .public-dealer-home > section:first-of-type {
     padding-top: 3rem;
