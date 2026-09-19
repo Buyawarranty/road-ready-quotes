@@ -21,8 +21,7 @@ export const DealerPublicHeader: React.FC = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const isPublicChrome = !location.pathname.startsWith('/dealer-portal/login');
-  const isHome = location.pathname === '/';
-  const quoteHref = isHome ? '#hero-reg' : '/#hero-reg';
+  const quoteHref = '/dealer-portal/signup';
 
   return (
     <>
