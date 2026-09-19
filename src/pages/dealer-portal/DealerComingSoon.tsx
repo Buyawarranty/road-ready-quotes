@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, Headphones, Sparkles,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, Headphones, Sparkles, LogIn,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
