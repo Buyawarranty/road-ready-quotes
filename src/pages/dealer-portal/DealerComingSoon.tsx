@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
 } from 'lucide-react';
+import { isAdminRole } from '@/lib/adminRoles';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
@@ -43,9 +44,6 @@ const DealerComingSoon = () => {
   const pendingReg =
     searchParams.get('reg')?.trim() ||
     (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : '');
-  const loginHref = pendingReg
-    ? `/dealer-portal/login?reg=${encodeURIComponent(pendingReg)}`
-    : '/dealer-portal/login';
   const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
   const [form, setForm] = useState(initialForm);
@@ -164,6 +162,89 @@ const DealerComingSoon = () => {
     }, 80);
   };
 
+  // Inline login — no navigation away from this page
+  const [showLogin, setShowLogin] = useState(false);
+  const loginRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
+
+  const revealLogin = () => {
+    setShowLogin(true);
+    setTimeout(() => {
+      loginRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoggingIn(true);
+    setUnconfirmedEmail(null);
+    try {
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+      if (error) {
+        if (error.message?.toLowerCase().includes('email not confirmed')) {
+          setUnconfirmedEmail(loginEmail);
+          toast.error('Please click the confirmation link we emailed you, then sign in.');
+          return;
+        }
+        throw error;
+      }
+
+      const userId = signInData.session?.user?.id;
+      if (userId) {
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
+        if ((roles || []).some((r: any) => isAdminRole(r.role as string))) {
+          const redirect = searchParams.get('redirect');
+          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
+          return;
+        }
+      }
+
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', userId as string)
+        .maybeSingle();
+      if (!dealer) {
+        await supabase.auth.signOut();
+        toast.error('No dealer account found for this email.');
+        return;
+      }
+
+      const redirect = searchParams.get('redirect');
+      if (redirect) {
+        navigate(pendingReg ? `${redirect}?reg=${encodeURIComponent(pendingReg)}` : redirect);
+      } else {
+        navigate('/dealer-portal/dashboard');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Login failed. Please check your details and try again.');
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!unconfirmedEmail) return;
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: unconfirmedEmail,
+      options: { emailRedirectTo: `${window.location.origin}/dealer-portal/login` },
+    });
+    if (error) toast.error(error.message);
+    else toast.success('Confirmation email sent — check your inbox (and spam folder).');
+  };
+
   return (
     <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
       <Helmet>
@@ -192,19 +273,21 @@ const DealerComingSoon = () => {
               <span>
                 Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
               </span>
-              <Link
-                to={loginHref}
+              <button
+                type="button"
+                onClick={revealLogin}
                 className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
               >
                 <LogIn className="w-4 h-4" /> Log in to continue
-              </Link>
+              </button>
             </div>
           )}
 
           <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
             {/* Log in */}
-            <Link
-              to={loginHref}
+            <button
+              type="button"
+              onClick={revealLogin}
               className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
             >
               <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
@@ -217,7 +300,7 @@ const DealerComingSoon = () => {
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
                 Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
-            </Link>
+            </button>
 
             {/* Register */}
             <button
@@ -243,6 +326,97 @@ const DealerComingSoon = () => {
             <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> No setup fees, no contracts</li>
             <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Quote in seconds</li>
           </ul>
+
+          {showLogin && (
+            <div
+              ref={loginRef}
+              className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24 max-w-md mx-auto w-full"
+            >
+              <h2 className="text-xl font-bold text-slate-900">Log in to your portal</h2>
+              <p className="text-sm text-slate-500 mt-1">Welcome back — enter your dealer sign-in details.</p>
+
+              <form onSubmit={handleLogin} className="mt-5 space-y-4" noValidate>
+                <label className="block">
+                  <span className="block text-sm font-semibold text-slate-800 mb-1.5">Email address</span>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    autoCapitalize="none"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="you@dealership.co.uk"
+                    className={inputCls}
+                  />
+                </label>
+
+                <label className="block">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-semibold text-slate-800">Password</span>
+                    <Link
+                      to="/forgot-password/"
+                      className="text-xs font-semibold text-[#eb4b00] hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      autoComplete="current-password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      className={`${inputCls} pr-11`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword((v) => !v)}
+                      aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                      className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-700"
+                    >
+                      {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </label>
+
+                {unconfirmedEmail && (
+                  <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+                    <p className="mb-2">
+                      Your email <strong>{unconfirmedEmail}</strong> hasn't been confirmed yet. Check your inbox for
+                      the confirmation link.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      className="font-medium underline hover:text-amber-700"
+                    >
+                      Resend confirmation email
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loggingIn}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base"
+                  style={{ minHeight: 52 }}
+                >
+                  {loggingIn ? 'Signing in…' : (<>Log in to my portal <ArrowRight className="w-5 h-5" /></>)}
+                </button>
+
+                <p className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
+                  New dealer?{' '}
+                  <button
+                    type="button"
+                    onClick={revealForm}
+                    className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
+                  >
+                    Register instead <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </p>
+              </form>
+            </div>
+          )}
 
           {showForm && (
             <div ref={formRef} className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
@@ -363,12 +537,13 @@ const DealerComingSoon = () => {
 
                     <div className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
                       Already a dealer?{' '}
-                      <Link
-                        to={loginHref}
+                      <button
+                        type="button"
+                        onClick={revealLogin}
                         className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
                       >
                         Log in instead <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      </button>
                       <span className="block text-xs text-slate-500 mt-1">
                         Your saved registration and quote pick up right where you left off.
                       </span>
