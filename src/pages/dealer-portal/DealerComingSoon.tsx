@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
 } from 'lucide-react';
+import { isAdminRole } from '@/lib/adminRoles';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
@@ -43,9 +44,6 @@ const DealerComingSoon = () => {
   const pendingReg =
     searchParams.get('reg')?.trim() ||
     (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : '');
-  const loginHref = pendingReg
-    ? `/dealer-portal/login?reg=${encodeURIComponent(pendingReg)}`
-    : '/dealer-portal/login';
   const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
   const [form, setForm] = useState(initialForm);
@@ -164,6 +162,89 @@ const DealerComingSoon = () => {
     }, 80);
   };
 
+  // Inline login — no navigation away from this page
+  const [showLogin, setShowLogin] = useState(false);
+  const loginRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
+
+  const revealLogin = () => {
+    setShowLogin(true);
+    setTimeout(() => {
+      loginRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoggingIn(true);
+    setUnconfirmedEmail(null);
+    try {
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+      if (error) {
+        if (error.message?.toLowerCase().includes('email not confirmed')) {
+          setUnconfirmedEmail(loginEmail);
+          toast.error('Please click the confirmation link we emailed you, then sign in.');
+          return;
+        }
+        throw error;
+      }
+
+      const userId = signInData.session?.user?.id;
+      if (userId) {
+        const { data: roles } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId);
+        if ((roles || []).some((r: any) => isAdminRole(r.role as string))) {
+          const redirect = searchParams.get('redirect');
+          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
+          return;
+        }
+      }
+
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', userId as string)
+        .maybeSingle();
+      if (!dealer) {
+        await supabase.auth.signOut();
+        toast.error('No dealer account found for this email.');
+        return;
+      }
+
+      const redirect = searchParams.get('redirect');
+      if (redirect) {
+        navigate(pendingReg ? `${redirect}?reg=${encodeURIComponent(pendingReg)}` : redirect);
+      } else {
+        navigate('/dealer-portal/dashboard');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Login failed. Please check your details and try again.');
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!unconfirmedEmail) return;
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: unconfirmedEmail,
+      options: { emailRedirectTo: `${window.location.origin}/dealer-portal/login` },
+    });
+    if (error) toast.error(error.message);
+    else toast.success('Confirmation email sent — check your inbox (and spam folder).');
+  };
+
   return (
     <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
       <Helmet>
@@ -192,19 +273,21 @@ const DealerComingSoon = () => {
               <span>
                 Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
               </span>
-              <Link
-                to={loginHref}
+              <button
+                type="button"
+                onClick={revealLogin}
                 className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
               >
                 <LogIn className="w-4 h-4" /> Log in to continue
-              </Link>
+              </button>
             </div>
           )}
 
           <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
             {/* Log in */}
-            <Link
-              to={loginHref}
+            <button
+              type="button"
+              onClick={revealLogin}
               className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
             >
               <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
@@ -217,7 +300,7 @@ const DealerComingSoon = () => {
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
                 Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
-            </Link>
+            </button>
 
             {/* Register */}
             <button
