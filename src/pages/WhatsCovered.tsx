@@ -41,40 +41,47 @@ const WHATSAPP_URL = 'https://wa.me/message/SPQPJ6O3UBF5B1';
 
 /* ---------- Vehicle-type accordions ---------- */
 
-const VEHICLE_ACCORDIONS: { title: string; bar: string; body: React.ReactNode }[] = [
+const VEHICLE_ACCORDIONS: { title: string; bar: string; text: string; body: React.ReactNode }[] = [
   {
     title: 'Petrol & Diesel Vehicles',
     bar: 'bg-slate-800',
+    text: 'text-white',
     body: 'Complete mechanical and electrical cover for petrol and diesel cars — engine, gearbox, turbo, fuel system, cooling, steering, electrics and more. Parts and labour included, paid directly to your garage.',
   },
   {
     title: 'Hybrid & PHEV Vehicles',
     bar: 'bg-slate-600',
+    text: 'text-white',
     body: 'Everything included for petrol and diesel vehicles, plus hybrid battery management systems, power electronics, inverters and electric drive components.',
   },
   {
     title: 'Electric Vehicles (EVs)',
     bar: 'bg-orange-500',
+    text: 'text-white',
     body: 'Cover for the EV drive unit, high-voltage battery management system, onboard charger, charging connection and thermal management — plus all standard electrical systems.',
   },
   {
     title: 'Motorcycles (Petrol, Hybrid, EV)',
     bar: 'bg-green-600',
+    text: 'text-white',
     body: 'Engine, gearbox, electrical and fuel system cover for petrol, hybrid and electric motorcycles — built for the way bikes are ridden.',
   },
   {
     title: "What's not covered",
-    bar: 'bg-red-50 text-red-800',
+    bar: 'bg-red-100',
+    text: 'text-red-800',
     body: 'Routine servicing and consumables (tyres, brake pads, etc.), accidental or cosmetic damage, pre-existing faults, negligence or lack of servicing, modifications that affect covered parts, hire or reward use, and flood, fire, theft or weather damage.',
   },
   {
     title: 'Modifications and Your Cover',
-    bar: 'bg-amber-50 text-amber-800',
+    bar: 'bg-amber-100',
+    text: 'text-amber-800',
     body: 'Standard modifications that do not affect covered components are fine. If a modification affects a part we cover, that part may not be claimable — check with us before you buy and we will confirm exactly what is included.',
   },
   {
     title: 'Exclusions: High-Performance Cars',
-    bar: 'bg-blue-50 text-blue-800',
+    bar: 'bg-blue-100',
+    text: 'text-blue-800',
     body: 'High-performance and track-use cars sit outside standard cover. Contact us and we will confirm whether your vehicle can be covered under a specialist policy.',
   },
 ];
