@@ -285,24 +285,6 @@ const DealerComingSoon = () => {
           )}
 
           <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
-            {/* Log in */}
-            <button
-              type="button"
-              onClick={revealLogin}
-              className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
-            >
-              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
-                <LogIn className="w-6 h-6" />
-              </div>
-              <h2 className="mt-4 text-xl font-black text-slate-900">Log in</h2>
-              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
-                I already have a dealer account — take me to my portal.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
-                Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </button>
-
             {/* Register */}
             <button
               type="button"
@@ -318,6 +300,24 @@ const DealerComingSoon = () => {
               </p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
                 Register your interest <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </button>
+
+            {/* Log in */}
+            <button
+              type="button"
+              onClick={revealLogin}
+              className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+            >
+              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
+                <LogIn className="w-6 h-6" />
+              </div>
+              <h2 className="mt-4 text-xl font-black text-slate-900">Log in</h2>
+              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                I already have a dealer account — take me to my portal.
+              </p>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
+                Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </button>
           </div>
