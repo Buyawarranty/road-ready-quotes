@@ -4638,6 +4638,18 @@ export type Database = {
           created_at: string
           customer_dob: string | null
           dealer_id: string | null
+          deferred_agent_reminders_sent: Json
+          deferred_bumper_link: string | null
+          deferred_chase_count: number
+          deferred_created_at: string | null
+          deferred_created_by: string | null
+          deferred_last_chased_at: string | null
+          deferred_paid_at: string | null
+          deferred_payment_due_date: string | null
+          deferred_payment_link: string | null
+          deferred_reminders_sent: Json
+          deferred_start_date: string | null
+          deferred_status: string | null
           deleted_at: string | null
           deleted_by: string | null
           deposit_amount: number | null
@@ -4769,6 +4781,18 @@ export type Database = {
           created_at?: string
           customer_dob?: string | null
           dealer_id?: string | null
+          deferred_agent_reminders_sent?: Json
+          deferred_bumper_link?: string | null
+          deferred_chase_count?: number
+          deferred_created_at?: string | null
+          deferred_created_by?: string | null
+          deferred_last_chased_at?: string | null
+          deferred_paid_at?: string | null
+          deferred_payment_due_date?: string | null
+          deferred_payment_link?: string | null
+          deferred_reminders_sent?: Json
+          deferred_start_date?: string | null
+          deferred_status?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           deposit_amount?: number | null
@@ -4900,6 +4924,18 @@ export type Database = {
           created_at?: string
           customer_dob?: string | null
           dealer_id?: string | null
+          deferred_agent_reminders_sent?: Json
+          deferred_bumper_link?: string | null
+          deferred_chase_count?: number
+          deferred_created_at?: string | null
+          deferred_created_by?: string | null
+          deferred_last_chased_at?: string | null
+          deferred_paid_at?: string | null
+          deferred_payment_due_date?: string | null
+          deferred_payment_link?: string | null
+          deferred_reminders_sent?: Json
+          deferred_start_date?: string | null
+          deferred_status?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           deposit_amount?: number | null
