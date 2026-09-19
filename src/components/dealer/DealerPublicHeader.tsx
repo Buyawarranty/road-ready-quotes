@@ -10,8 +10,7 @@ import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 
 const NAV_ITEMS = [
   { label: "What's covered", to: '/#warranty-cover' },
-  { label: 'How It Works', to: '/#how-it-works' },
-  { label: 'Dealer Benefits', to: '/#dealer-benefits' },
+  { label: 'Why Choose Us', to: '/#why-choose-us' },
   { label: 'Claims', to: '/#claims' },
   { label: 'FAQs', to: '/faq/traders/' },
   { label: 'Contact', to: '/contact-us/' },
