@@ -459,29 +459,30 @@ const DealerComingSoon = () => {
                   )}
 
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
-                    <Field label="Dealership name">
+                    <Field label="Dealership name" icon={Building2}>
                       <input
                         type="text"
                         value={form.dealership_name}
                         onChange={(e) => set('dealership_name', e.target.value)}
-                        placeholder="Enter dealership name"
-                        className={inputCls}
+                        placeholder="e.g. ABC Motors Ltd"
+                        className={regInputCls}
                       />
                     </Field>
 
-                    <Field label="Contact name">
+                    <Field label="Contact name" icon={User}>
                       <input
                         type="text"
                         value={form.contact_name}
                         onChange={(e) => set('contact_name', e.target.value)}
-                        placeholder="Enter your full name"
-                        className={inputCls}
+                        placeholder="e.g. John Smith"
+                        className={regInputCls}
                       />
                     </Field>
 
                     <Field
                       label="Email address"
                       required
+                      icon={Mail}
                       error={touched.email ? errors.email : undefined}
                       valid={emailValid}
                     >
@@ -494,8 +495,8 @@ const DealerComingSoon = () => {
                         value={form.email_address}
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                        placeholder="you@dealership.co.uk"
-                        className={`${inputCls} pr-12 ${touched.email && errors.email ? 'border-rose-500' : ''}`}
+                        placeholder="e.g. you@dealership.co.uk"
+                        className={`${regInputCls} ${touched.email && errors.email ? 'border-rose-400' : ''}`}
                       />
                     </Field>
 
