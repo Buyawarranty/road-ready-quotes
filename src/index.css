@@ -741,7 +741,8 @@
   border-color: hsl(var(--marketing-line));
 }
 
-.public-dealer-signup .signup-form-panel :where(h2, h3) {
+.public-dealer-signup .signup-form-panel h2,
+.public-dealer-signup .signup-form-panel h3 {
   color: hsl(var(--marketing-ink));
 }
 
