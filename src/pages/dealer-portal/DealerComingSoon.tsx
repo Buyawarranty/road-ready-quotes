@@ -446,12 +446,13 @@ const DealerComingSoon = () => {
 
                     <div className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
                       Already a dealer?{' '}
-                      <Link
-                        to={loginHref}
+                      <button
+                        type="button"
+                        onClick={revealLogin}
                         className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
                       >
                         Log in instead <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      </button>
                       <span className="block text-xs text-slate-500 mt-1">
                         Your saved registration and quote pick up right where you left off.
                       </span>
