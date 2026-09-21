@@ -10,6 +10,17 @@ const corsHeaders = {
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+type BillableCustomer = {
+  id: string;
+  name: string | null;
+  registration_plate: string | null;
+  plan_type: string | null;
+  payment_type: string | null;
+  final_amount: number | null;
+  payment_status: string | null;
+  dealer_id: string | null;
+};
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -56,7 +67,8 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'No matching plans' }, 404);
     }
 
-    const billable = rows.filter((r: any) => r.payment_status !== 'paid');
+    const typedRows = rows as BillableCustomer[];
+    const billable = typedRows.filter((r) => r.payment_status !== 'paid');
     if (billable.length === 0) return json({ error: 'Nothing to pay — all selected plans are already paid' }, 400);
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
@@ -66,7 +78,7 @@ Deno.serve(async (req: Request) => {
       : '/dealer-portal/warranties';
     const separator = safeReturnPath.includes('?') ? '&' : '?';
 
-    const line_items = billable.map((r: any) => ({
+    const line_items = billable.map((r) => ({
       price_data: {
         currency: 'gbp',
         product_data: {
@@ -88,14 +100,14 @@ Deno.serve(async (req: Request) => {
       metadata: {
         source: 'dealer_invoice_batch',
         dealer_id,
-        customer_ids: billable.map((r: any) => r.id).join(','),
+        customer_ids: billable.map((r) => r.id).join(','),
       },
     });
 
     return json({ checkout_url: session.url, session_id: session.id }, 200);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('dealer-pay-invoices error', err);
-    return json({ error: err?.message || 'Internal error' }, 500);
+    return json({ error: err instanceof Error ? err.message : 'Internal error' }, 500);
   }
 });
 
