@@ -133,15 +133,22 @@ const DealerDashboard = () => {
                 <p className="mt-3 hidden text-sm font-semibold italic text-foreground/70 sm:block">Stronger dealerships together.</p>
               </div>
               <div className="flex items-center border-t border-crm-line bg-card/90 p-4 lg:border-l lg:border-t-0">
-                <form onSubmit={handleRegSubmit} className="w-full rounded-md border border-crm-line bg-card p-4 crm-panel-shadow">
+                <form onSubmit={handleRegSubmit} className="w-full rounded-lg border border-crm-line bg-card p-4 crm-panel-shadow">
                   <h2 className="text-sm font-bold">Get a quote</h2>
                   <p className="mb-3 text-xs text-muted-foreground">Enter a vehicle registration to start</p>
-                  <div className="flex gap-2">
-                    <div className="flex min-w-0 flex-1 overflow-hidden rounded-md border-2 border-crm-amber bg-crm-amber-soft">
-                      <span className="flex w-9 items-center justify-center bg-crm-blue text-[10px] font-bold text-primary-foreground">GB</span>
-                      <Input value={reg} onChange={(event) => setReg(event.target.value.toUpperCase())} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="h-10 min-w-0 border-0 bg-transparent text-center text-sm font-black tracking-widest focus-visible:ring-0" />
+                  <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                    <div className="vehicle-reg-plate vehicle-reg-plate--quote min-w-0">
+                      <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
+                      <Input
+                        value={reg}
+                        onChange={(event) => setReg(event.target.value.toUpperCase())}
+                        placeholder="ENTER REG"
+                        aria-label="Vehicle registration"
+                        maxLength={10}
+                        className="vehicle-reg-plate__input"
+                      />
                     </div>
-                    <Button type="submit" className="h-10 shrink-0 px-4">Get quote <ArrowRight className="ml-1 h-4 w-4" /></Button>
+                    <Button type="submit" className="h-14 shrink-0 rounded-lg px-5 text-sm font-bold sm:h-auto">Get quote <ArrowRight className="ml-1 h-4 w-4" /></Button>
                   </div>
                   <Button type="button" variant="link" size="sm" className="mt-1 h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/vehicle')}>Or start a full quote <ArrowRight className="ml-1 h-3 w-3" /></Button>
                 </form>
