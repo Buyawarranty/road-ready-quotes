@@ -696,7 +696,7 @@ const DealerCustomersList = () => {
     setPaying(true);
     try {
       const { data, error } = await supabase.functions.invoke('dealer-pay-invoices', {
-        body: { dealer_id: dealer.id, customer_ids: customerIds },
+        body: { dealer_id: dealer.id, customer_ids: customerIds, return_path: '/dealer-portal/customers' },
       });
       if (error) throw error;
       if (data?.checkout_url) {
