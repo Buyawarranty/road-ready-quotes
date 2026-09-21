@@ -2355,7 +2355,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
             </Collapsible>
             
             <Collapsible>
-              <CollapsibleTrigger className="flex items-center justify-between w-full text-left bg-orange-500 text-gray-900 hover:bg-orange-600 font-semibold py-4 px-6 rounded-lg transition-colors group">
+              <CollapsibleTrigger className="flex items-center justify-between w-full text-left bg-orange-500 text-white hover:bg-orange-600 font-semibold py-4 px-6 rounded-lg transition-colors group">
                 <div className="flex items-center gap-3">
                   <Zap className="w-6 h-6" />
                   <span className="text-lg">Electric vehicles (EVs)</span>
