@@ -624,7 +624,7 @@ const DealerCustomersList = () => {
     queryKey: ['dealer-customers-warranty-list', dealer?.id],
     queryFn: async () => {
       if (!dealer?.id) return [];
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('customers')
         .select(SELECTED_CUSTOMER_FIELDS)
         .eq('dealer_id', dealer.id)
@@ -704,8 +704,9 @@ const DealerCustomersList = () => {
         return;
       }
       throw new Error('No checkout URL returned');
-    } catch (err: any) {
-      toast.error(err?.message || 'Unable to open invoice payment');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unable to open invoice payment';
+      toast.error(message);
       setPaying(false);
     }
   };
