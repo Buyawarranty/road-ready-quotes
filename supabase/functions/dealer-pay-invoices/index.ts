@@ -1,5 +1,5 @@
 // Dealer pays multiple outstanding (invoice_pending) customer plans via Stripe Checkout.
-// Body: { dealer_id: string, customer_ids: string[] }
+// Body: { dealer_id: string, customer_ids: string[], return_path?: string }
 // Returns: { checkout_url, session_id }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
@@ -29,7 +29,7 @@ Deno.serve(async (req: Request) => {
     if (userErr || !user) return json({ error: 'Unauthorized' }, 401);
 
     const body = await req.json();
-    const { dealer_id, customer_ids } = body as { dealer_id: string; customer_ids: string[] };
+    const { dealer_id, customer_ids, return_path } = body as { dealer_id: string; customer_ids: string[]; return_path?: string };
     if (!dealer_id || !Array.isArray(customer_ids) || customer_ids.length === 0) {
       return json({ error: 'Missing dealer_id or customer_ids' }, 400);
     }
@@ -61,6 +61,10 @@ Deno.serve(async (req: Request) => {
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
     const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
+    const safeReturnPath = typeof return_path === 'string' && return_path.startsWith('/dealer-portal/')
+      ? return_path
+      : '/dealer-portal/warranties';
+    const separator = safeReturnPath.includes('?') ? '&' : '?';
 
     const line_items = billable.map((r: any) => ({
       price_data: {
@@ -79,8 +83,8 @@ Deno.serve(async (req: Request) => {
       payment_method_types: ['card'],
       customer_email: dealer.email,
       line_items,
-      success_url: `${origin}/dealer-portal/warranties?paid=1&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/dealer-portal/warranties?paid=0`,
+      success_url: `${origin}${safeReturnPath}${separator}paid=1&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}${safeReturnPath}${separator}paid=0`,
       metadata: {
         source: 'dealer_invoice_batch',
         dealer_id,
