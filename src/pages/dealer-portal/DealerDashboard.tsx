@@ -130,7 +130,6 @@ const DealerDashboard = () => {
                 <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
                   Let's keep your dealership moving. Get a quote, manage warranties, check claims and more — all in one place.
                 </p>
-                <p className="mt-3 hidden text-sm font-semibold italic text-foreground/70 sm:block">Stronger dealerships together.</p>
               </div>
               <div className="flex items-center border-t border-crm-line bg-card/90 p-4 lg:border-l lg:border-t-0">
                 <form onSubmit={handleRegSubmit} className="w-full rounded-lg border border-crm-line bg-card p-4 crm-panel-shadow">
