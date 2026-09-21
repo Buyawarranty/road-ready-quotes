@@ -17,7 +17,6 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import audiQ5Image from '@/assets/audi-q5-used-car-warranty.png';
 import {
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   Car,
