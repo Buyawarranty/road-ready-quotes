@@ -72,7 +72,11 @@ Deno.serve(async (req: Request) => {
     const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
     const ref = String(c.id).replace(/-/g, '').slice(0, 8).toUpperCase();
     const dealerName = dealer.company_name || dealer.name || 'your dealer';
-    const start = c.warranty_start_date || c.signup_date;
+    const start = c.signup_date;
+    const months = Number.parseInt(String(c.payment_type || ''), 10);
+    const endDate = start && Number.isFinite(months)
+      ? (() => { const d = new Date(start); d.setMonth(d.getMonth() + months); return d.toISOString(); })()
+      : null;
     const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
 
     const rows = `
@@ -80,7 +84,7 @@ Deno.serve(async (req: Request) => {
       <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.registration_plate || '—')}${vehicle ? ` · ${esc(vehicle)}` : ''}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(String(c.plan_type || '').toUpperCase())} · ${esc(c.payment_type || '')} months</td></tr>
       <tr><td style="padding:8px 0;color:#666">Start date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(start)}</td></tr>
-      ${c.policy_end_date ? `<tr><td style="padding:8px 0;color:#666">End date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(c.policy_end_date)}</td></tr>` : ''}
+      ${endDate ? `<tr><td style="padding:8px 0;color:#666">End date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(endDate)}</td></tr>` : ''}
       <tr><td style="padding:8px 0;color:#666">Cover value</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${money(Number(c.final_amount ?? 0))}</td></tr>
     `;
 
