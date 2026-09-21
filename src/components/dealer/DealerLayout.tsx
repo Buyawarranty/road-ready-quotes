@@ -57,7 +57,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   { to: '/dealer-portal/quotes', label: 'Quotes', icon: FileText, trader: true },
   { to: '/dealer-portal/warranties', label: 'Warranties', icon: Shield, trader: true },
-  { to: '/dealer-portal/coming-soon?section=claims', label: 'Claims', icon: Wrench, trader: true },
+  { to: '/dealer-portal/claims', label: 'Claims', icon: Wrench, trader: true, matchPaths: ['/dealer-portal/claims'] },
   { to: '/dealer-portal/customers', label: 'Customers', icon: Users, trader: true },
   { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
   { to: '/dealer-portal/analytics', label: 'Reports', icon: BarChart3 },
