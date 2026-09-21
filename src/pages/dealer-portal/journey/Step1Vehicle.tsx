@@ -171,12 +171,12 @@ const Step1Vehicle: React.FC = () => {
   const activePlan = useMemo(() => buildPlan(selectedPlan), [selectedPlan]);
 
   useEffect(() => {
-    if (!normaliseReg(reg) && !manualMode) {
+    if (!normaliseReg(reg)) {
       setLookupState('default');
       return;
     }
 
-    if (!manualMode && normaliseReg(reg).length >= 4) {
+    if (normaliseReg(reg).length >= 4) {
       const timer = window.setTimeout(() => {
         setLookupState('loading');
         window.setTimeout(() => {
@@ -192,7 +192,7 @@ const Step1Vehicle: React.FC = () => {
       }, 250);
       return () => window.clearTimeout(timer);
     }
-  }, [reg, manualMode]);
+  }, [reg]);
 
   useEffect(() => {
     if (!canContinue) return;
@@ -214,35 +214,16 @@ const Step1Vehicle: React.FC = () => {
     setValidation((current) => ({ ...current, reg: '' }));
   };
 
-  const handleManualFieldChange = (field: keyof ManualVehicleFields, value: string) => {
-    setManualFields((current) => ({ ...current, [field]: value }));
-    setValidation((current) => ({ ...current, [field]: '' }));
-  };
-
-  const showManualMode = () => {
-    setManualMode(true);
+  const editVehicle = () => {
     setLookupState('default');
-    setValidation({});
-  };
-
-  const showRegMode = () => {
-    setManualMode(false);
-    setLookupState(reg ? 'success' : 'default');
-    setValidation({});
+    regInputRef.current?.focus();
+    regInputRef.current?.select();
   };
 
   const validate = () => {
     const errors: Record<string, string> = {};
-    if (manualMode) {
-      if (!manualFields.make.trim()) errors.make = 'Enter the vehicle make.';
-      if (!manualFields.model.trim()) errors.model = 'Enter the vehicle model.';
-      if (!manualFields.year.trim()) errors.year = 'Enter the vehicle year.';
-      if (!manualFields.fuelType.trim()) errors.fuelType = 'Enter the fuel type.';
-      if (!manualFields.mileage.trim()) errors.mileage = "Enter the vehicle's current mileage.";
-    } else {
-      if (!isValidReg(reg)) errors.reg = 'Enter a valid UK vehicle registration.';
-      if (!mileage.trim()) errors.mileage = "Enter the vehicle's current mileage.";
-    }
+    if (!isValidReg(reg)) errors.reg = 'Enter a valid UK vehicle registration.';
+    if (!mileage.trim()) errors.mileage = "Enter the vehicle's current mileage.";
     if (!selectedPlan) errors.plan = 'Choose a warranty plan to continue.';
     setValidation(errors);
     return Object.keys(errors).length === 0;
