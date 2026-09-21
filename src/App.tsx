@@ -291,6 +291,8 @@ const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
 const DealerDashboard = lazy(() => import("./pages/dealer-portal/DealerDashboard"));
 const DealerQuotesList = lazy(() => import("./pages/dealer-portal/DealerQuotesList"));
 const DealerWarrantiesList = lazy(() => import("./pages/dealer-portal/DealerWarrantiesList"));
+const DealerClaimsList = lazy(() => import("./pages/dealer-portal/claims/DealerClaimsList"));
+const DealerStartClaim = lazy(() => import("./pages/dealer-portal/claims/StartClaim"));
 const DealerAnalytics = lazy(() => import("./pages/dealer-portal/DealerAnalytics"));
 const DealerCustomersList = lazy(() => import("./pages/dealer-portal/DealerCustomersList"));
 const DealerJourneyStep1 = lazy(() => import("./pages/dealer-portal/journey/Step1Vehicle"));
