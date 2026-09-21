@@ -26,8 +26,6 @@ import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/li
 import { cn } from '@/lib/utils';
 import {
   AlertTriangle,
-  CalendarDays,
-  Car,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -40,12 +38,10 @@ import {
   FileText,
   Loader2,
   MoreHorizontal,
-  Phone,
   Plus,
   Search,
   ShieldCheck,
   Upload,
-  UserRound,
   Users,
   XCircle,
 } from 'lucide-react';
@@ -142,8 +138,6 @@ const SELECTED_CUSTOMER_FIELDS = `
   payment_status,
   payment_due_date,
   payment_collected_at,
-  warranty_start_date,
-  policy_end_date,
   signup_date,
   status,
   claim_limit,
