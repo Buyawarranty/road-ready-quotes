@@ -64,7 +64,7 @@ const DealerDashboard = () => {
       label: 'Quick quote',
       desc: 'Fast price without saving a customer',
       icon: FilePlus,
-      onClick: () => navigate('/dealer-portal/quotes/create'),
+      onClick: () => navigate('/dealer-portal/quote/vehicle'),
     },
     {
       label: 'View quotes',
