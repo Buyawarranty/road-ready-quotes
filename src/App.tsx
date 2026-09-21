@@ -431,6 +431,8 @@ const App = () => {
                     <Route path="/dealer-portal/quotes/create" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quotes" element={<DealerJourneyProvider><DealerQuotesList /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
+                    <Route path="/dealer-portal/claims" element={<DealerClaimsList />} />
+                    <Route path="/dealer-portal/claims/new" element={<DealerStartClaim />} />
                     <Route path="/dealer-portal/customers" element={<DealerCustomersList />} />
                     <Route path="/dealer-portal/analytics" element={<DealerAnalytics />} />
                     {/* Dealer multi-step quote journey */}
