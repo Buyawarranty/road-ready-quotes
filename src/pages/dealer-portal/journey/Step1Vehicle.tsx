@@ -246,13 +246,6 @@ const Step1Vehicle: React.FC = () => {
                   })}
                 </div>
               </div>
-              <div className="relative hidden overflow-hidden border-t border-crm-line bg-crm-orange-soft lg:block lg:border-l lg:border-t-0">
-                <img src={audiQ5Image} alt="Audi Q5" className="absolute bottom-0 right-0 h-[168px] w-[260px] object-contain" />
-                <img src={supportPanda.url} alt="Panda Protect mascot" className="absolute bottom-0 left-5 h-[150px] w-auto object-contain" />
-                <p className="absolute right-[196px] top-8 max-w-[115px] -rotate-6 text-center text-xl font-black italic leading-none text-crm-navy">
-                  Stronger dealerships together.
-                </p>
-              </div>
             </div>
           </CardContent>
         </Card>
