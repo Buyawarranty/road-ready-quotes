@@ -1,5 +1,5 @@
 // Dealer pays multiple outstanding (invoice_pending) customer plans via Stripe Checkout.
-// Body: { dealer_id: string, customer_ids: string[] }
+// Body: { dealer_id: string, customer_ids: string[], return_path?: string }
 // Returns: { checkout_url, session_id }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
@@ -8,6 +8,17 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
+};
+
+type BillableCustomer = {
+  id: string;
+  name: string | null;
+  registration_plate: string | null;
+  plan_type: string | null;
+  payment_type: string | null;
+  final_amount: number | null;
+  payment_status: string | null;
+  dealer_id: string | null;
 };
 
 Deno.serve(async (req: Request) => {
@@ -29,7 +40,7 @@ Deno.serve(async (req: Request) => {
     if (userErr || !user) return json({ error: 'Unauthorized' }, 401);
 
     const body = await req.json();
-    const { dealer_id, customer_ids } = body as { dealer_id: string; customer_ids: string[] };
+    const { dealer_id, customer_ids, return_path } = body as { dealer_id: string; customer_ids: string[]; return_path?: string };
     if (!dealer_id || !Array.isArray(customer_ids) || customer_ids.length === 0) {
       return json({ error: 'Missing dealer_id or customer_ids' }, 400);
     }
@@ -56,13 +67,18 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'No matching plans' }, 404);
     }
 
-    const billable = rows.filter((r: any) => r.payment_status !== 'paid');
+    const typedRows = rows as BillableCustomer[];
+    const billable = typedRows.filter((r) => r.payment_status !== 'paid');
     if (billable.length === 0) return json({ error: 'Nothing to pay — all selected plans are already paid' }, 400);
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
     const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
+    const safeReturnPath = typeof return_path === 'string' && return_path.startsWith('/dealer-portal/')
+      ? return_path
+      : '/dealer-portal/warranties';
+    const separator = safeReturnPath.includes('?') ? '&' : '?';
 
-    const line_items = billable.map((r: any) => ({
+    const line_items = billable.map((r) => ({
       price_data: {
         currency: 'gbp',
         product_data: {
@@ -79,19 +95,19 @@ Deno.serve(async (req: Request) => {
       payment_method_types: ['card'],
       customer_email: dealer.email,
       line_items,
-      success_url: `${origin}/dealer-portal/warranties?paid=1&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/dealer-portal/warranties?paid=0`,
+      success_url: `${origin}${safeReturnPath}${separator}paid=1&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}${safeReturnPath}${separator}paid=0`,
       metadata: {
         source: 'dealer_invoice_batch',
         dealer_id,
-        customer_ids: billable.map((r: any) => r.id).join(','),
+        customer_ids: billable.map((r) => r.id).join(','),
       },
     });
 
     return json({ checkout_url: session.url, session_id: session.id }, 200);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('dealer-pay-invoices error', err);
-    return json({ error: err?.message || 'Internal error' }, 500);
+    return json({ error: err instanceof Error ? err.message : 'Internal error' }, 500);
   }
 });
 
