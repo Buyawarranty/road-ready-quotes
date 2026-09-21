@@ -287,7 +287,6 @@ const OverviewBlock = ({
 const CustomerDetailDrawer = ({
   customer,
   claims,
-  allCustomers,
   open,
   onOpenChange,
   dealerName,
@@ -296,7 +295,6 @@ const CustomerDetailDrawer = ({
 }: {
   customer: CustomerRow | null;
   claims: ClaimRow[];
-  allCustomers: CustomerRow[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   dealerName?: string | null;
@@ -922,7 +920,6 @@ const DealerCustomersList = () => {
       <CustomerDetailDrawer
         customer={selectedCustomer}
         claims={claims}
-        allCustomers={customers}
         open={!!selectedCustomer}
         onOpenChange={(open) => !open && setSelectedCustomer(null)}
         dealerName={dealer?.name || dealer?.company_name}
