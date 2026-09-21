@@ -57,7 +57,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: c } = await supabase
       .from('customers')
-      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, warranty_start_date, policy_end_date, signup_date, dealer_id, warranty_number')
+      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number')
       .eq('id', customerId)
       .maybeSingle();
 
