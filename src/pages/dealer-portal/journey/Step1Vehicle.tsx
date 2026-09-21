@@ -17,7 +17,6 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import audiQ5Image from '@/assets/audi-q5-used-car-warranty.png';
 import {
-  AlertCircle,
   ArrowLeft,
   ArrowRight,
   BarChart3,
@@ -31,7 +30,6 @@ import {
   Shield,
   Sparkles,
   Users,
-  Wrench,
 } from 'lucide-react';
 
 type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
