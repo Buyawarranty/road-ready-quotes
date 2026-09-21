@@ -72,8 +72,6 @@ type CustomerRow = {
   payment_status: string | null;
   payment_due_date: string | null;
   payment_collected_at: string | null;
-  warranty_start_date?: string | null;
-  policy_end_date?: string | null;
   signup_date: string | null;
   status: string | null;
   claim_limit: number | null;
@@ -187,9 +185,8 @@ const addMonths = (value: string | null | undefined, months: number) => {
   return date.toISOString();
 };
 
-const getStartDate = (customer: CustomerRow) => customer.warranty_start_date || customer.signup_date;
-const getEndDate = (customer: CustomerRow) =>
-  customer.policy_end_date || addMonths(getStartDate(customer), Number(customer.payment_type || 0));
+const getStartDate = (customer: CustomerRow) => customer.signup_date;
+const getEndDate = (customer: CustomerRow) => addMonths(getStartDate(customer), Number(customer.payment_type || 0));
 
 const getCustomerName = (customer: CustomerRow) =>
   customer.name || [customer.first_name, customer.last_name].filter(Boolean).join(' ') || 'Unnamed customer';
