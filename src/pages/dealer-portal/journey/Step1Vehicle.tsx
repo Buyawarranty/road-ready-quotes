@@ -95,16 +95,6 @@ const warrantyPlans = [
   },
 ];
 
-const emptyManualFields: ManualVehicleFields = {
-  make: '',
-  model: '',
-  year: '',
-  fuelType: '',
-  engineSize: '',
-  transmission: '',
-  mileage: '',
-};
-
 const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 const isValidReg = (value: string) => /^[A-Z0-9]{4,8}$/.test(normaliseReg(value));
 
