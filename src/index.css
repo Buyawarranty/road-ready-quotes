@@ -9,8 +9,8 @@
 .dealer-crm {
   --crm-navy: 215 61% 16%;
   --crm-navy-soft: 215 48% 22%;
-  --crm-orange: 18 100% 50%;
-  --crm-orange-soft: 24 100% 95%;
+  --crm-orange: 20 89% 43%;
+  --crm-orange-soft: 20 100% 95%;
   --crm-green: 151 81% 38%;
   --crm-green-soft: 151 60% 94%;
   --crm-blue: 213 94% 55%;
@@ -27,17 +27,17 @@
   --foreground: 215 61% 16%;
   --card: 0 0% 100%;
   --card-foreground: 215 61% 16%;
-  --primary: 18 100% 50%;
+  --primary: 20 89% 43%;
   --primary-foreground: 0 0% 100%;
   --secondary: 213 100% 95%;
   --secondary-foreground: 215 61% 16%;
   --muted: 210 22% 94%;
   --muted-foreground: 215 14% 42%;
-  --accent: 24 100% 95%;
-  --accent-foreground: 18 100% 42%;
+  --accent: 20 100% 95%;
+  --accent-foreground: 20 89% 35%;
   --border: 214 24% 89%;
   --input: 214 24% 89%;
-  --ring: 18 100% 50%;
+  --ring: 20 89% 43%;
 }
 
 .dealer-crm .crm-panel-shadow {
