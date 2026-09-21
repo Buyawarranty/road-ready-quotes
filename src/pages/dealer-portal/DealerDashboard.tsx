@@ -13,17 +13,14 @@ import {
   FileText,
   Shield,
   ArrowRight,
-  Car,
   Users,
   Wrench,
   ChevronRight,
   TrendingUp,
   AlertCircle,
-  Clock3,
   Settings2,
   BookOpen,
   BarChart3,
-  CircleCheck,
   Send,
 } from 'lucide-react';
 
@@ -294,7 +291,7 @@ const DealerDashboard = () => {
                   <span className="min-w-0 flex-1"><span className="block truncate text-[11px] font-bold">{item.title}</span><span className="block truncate text-[10px] text-muted-foreground">{item.detail}</span></span><span className="whitespace-nowrap text-[9px] text-muted-foreground">{item.time}</span>
                 </div>
               ); })}</div>
-            </div>
+            </CardContent>
           </Card>
         </div>
 

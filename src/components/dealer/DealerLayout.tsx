@@ -30,7 +30,6 @@ import {
   FolderOpen,
   BookOpen,
   Headphones,
-  X,
 } from 'lucide-react';
 
 interface DealerLayoutProps {
