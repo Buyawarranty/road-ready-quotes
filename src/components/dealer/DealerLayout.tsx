@@ -113,7 +113,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-gray-200 p-8 text-center space-y-5">
-          <div className="w-14 h-14 rounded-full bg-[#eb4b00]/10 text-[#eb4b00] mx-auto flex items-center justify-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange">
             <UserCog className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-black text-gray-900">Account pending approval</h1>
@@ -123,7 +123,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               : "Your account isn't linked to an approved dealer profile yet. Our team will be in touch shortly."}
           </p>
           <p className="text-xs text-gray-500">
-            Questions? Email <a className="text-[#eb4b00] font-semibold" href="mailto:hello@pandaprotect.co.uk">hello@pandaprotect.co.uk</a>
+            Questions? Email <a className="font-semibold text-crm-orange" href="mailto:hello@pandaprotect.co.uk">hello@pandaprotect.co.uk</a>
           </p>
           <Button onClick={signOut} variant="outline" className="w-full">Sign out</Button>
         </div>

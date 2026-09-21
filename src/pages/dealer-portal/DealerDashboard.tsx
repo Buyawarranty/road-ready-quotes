@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -39,58 +37,14 @@ const statusStyles: Record<string, string> = {
   Expired: 'bg-crm-red-soft text-crm-red',
 };
 
+const sparkHeights = ['h-[28%]', 'h-[40%]', 'h-[52%]', 'h-[65%]', 'h-[78%]', 'h-[94%]'];
+const sparkOpacity = ['opacity-40', 'opacity-50', 'opacity-60', 'opacity-70', 'opacity-80', 'opacity-100'];
+
 const DealerDashboard = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
 
-  const { data: quotes = [] } = useQuery({
-    queryKey: ['dealer-quotes', dealer?.id],
-    queryFn: async () => {
-      if (!dealer?.id) return [];
-      const { data } = await supabase
-        .from('dealer_quotes')
-        .select('*')
-        .eq('dealer_id', dealer.id)
-        .order('created_at', { ascending: false });
-      return data || [];
-    },
-    enabled: !!dealer?.id,
-  });
-
-  const { data: dealerOrders = [] } = useQuery({
-    queryKey: ['dealer-orders', dealer?.id],
-    queryFn: async () => {
-      if (!dealer?.id) return [];
-      const { data } = await supabase
-        .from('customers')
-        .select('id, name, email, registration_plate, plan_type, payment_type, final_amount, payment_status, status, signup_date, policy_end_date')
-        .eq('dealer_id', dealer.id)
-        .order('signup_date', { ascending: false })
-        .limit(20);
-      return data || [];
-    },
-    enabled: !!dealer?.id,
-  });
-
-  const dealerRegs = dealerOrders
-    .map((o: any) => (o.registration_plate || '').toString().replace(/\s+/g, '').toUpperCase())
-    .filter(Boolean);
-
-  const { data: activeClaimsData = [] } = useQuery({
-    queryKey: ['dealer-active-claims', dealer?.id, dealerRegs.join(',')],
-    queryFn: async () => {
-      if (!dealer?.id || dealerRegs.length === 0) return [];
-      const { data } = await supabase
-        .from('claims_submissions')
-        .select('id, status, vehicle_registration')
-        .in('status', ['new', 'in_review', 'pending', 'open', 'in_progress', 'approved']);
-      return (data || []).filter((c: any) =>
-        dealerRegs.includes((c.vehicle_registration || '').toString().replace(/\s+/g, '').toUpperCase())
-      );
-    },
-    enabled: !!dealer?.id && dealerRegs.length > 0,
-  });
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleaned = reg.trim().toUpperCase();
@@ -299,8 +253,8 @@ const DealerDashboard = () => {
           <Card className="crm-panel-shadow border-crm-line">
             <CardContent className="p-3">
               <div className="mb-3 flex items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-sm font-bold"><BarChart3 className="h-4 w-4" /> Your dealership performance</h2><p className="text-[10px] text-muted-foreground">A quick look at your activity over the last 6 months.</p></div><select aria-label="Performance period" className="h-8 rounded-md border border-input bg-card px-2 text-[10px]"><option>Last 6 months</option></select></div>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">{performance.map((metric, metricIndex) => (
-                <div key={metric.label} className="flex items-end justify-between rounded-md border border-crm-line p-2"><div><p className="text-lg font-bold leading-none">{metric.value}</p><p className="mt-1 text-[10px] text-muted-foreground">{metric.label}</p></div><div className="flex h-8 items-end gap-1">{[35, 48, 56, 68, 78, 95].map((height, index) => <span key={height} className={`w-1.5 rounded-t-sm ${metric.colour}`} style={{ height: `${Math.max(18, height - metricIndex * 4 + index)}%`, opacity: 0.35 + index * 0.11 }} />)}</div></div>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">{performance.map((metric) => (
+                <div key={metric.label} className="flex items-end justify-between rounded-md border border-crm-line p-2"><div><p className="text-lg font-bold leading-none">{metric.value}</p><p className="mt-1 text-[10px] text-muted-foreground">{metric.label}</p></div><div className="flex h-8 items-end gap-1">{sparkHeights.map((height, index) => <span key={height} className={`w-1.5 rounded-t-sm ${metric.colour} ${height} ${sparkOpacity[index]}`} />)}</div></div>
               ))}</div>
             </CardContent>
           </Card>
