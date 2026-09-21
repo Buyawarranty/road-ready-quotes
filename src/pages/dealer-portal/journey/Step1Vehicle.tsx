@@ -36,15 +36,6 @@ type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
 type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
 type SaveState = 'idle' | 'saving' | 'saved';
 
-interface ManualVehicleFields {
-  make: string;
-  model: string;
-  year: string;
-  fuelType: string;
-  engineSize: string;
-  transmission: string;
-  mileage: string;
-}
 
 const reassurance = [
   { label: 'Quick & simple', icon: Sparkles },
