@@ -289,7 +289,6 @@ const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 // Dealer Portal pages
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
 const DealerDashboard = lazy(() => import("./pages/dealer-portal/DealerDashboard"));
-const DealerCreateQuote = lazy(() => import("./pages/dealer-portal/DealerCreateQuote"));
 const DealerQuotesList = lazy(() => import("./pages/dealer-portal/DealerQuotesList"));
 const DealerWarrantiesList = lazy(() => import("./pages/dealer-portal/DealerWarrantiesList"));
 const DealerAnalytics = lazy(() => import("./pages/dealer-portal/DealerAnalytics"));
