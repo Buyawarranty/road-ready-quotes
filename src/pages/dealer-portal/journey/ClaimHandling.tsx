@@ -1,816 +1,620 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Textarea } from '@/components/ui/textarea';
-import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
+import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import {
-  Headphones,
-  ShieldCheck,
-  Sparkles,
-  Check,
-  ArrowRight,
   ArrowLeft,
-  User,
-  Mail,
-  Phone,
-  MapPin,
+  ArrowRight,
+  Calendar,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ClipboardList,
+  Coins,
+  Headphones,
   Info,
-  Clock,
-  MessageCircle,
-  Eye,
+  Layers,
+  Pencil,
+  Plus,
+  Settings,
+  Wrench,
 } from 'lucide-react';
-import {
-  CLAIM_OPTIONS,
-  EXCESS_OPTIONS,
-  LABOUR_OPTIONS,
-  PARTS_OPTIONS,
-  TERM_OPTIONS,
-  TraderClaim,
-  TraderExcess,
-  TraderLabour,
-  TraderParts,
-  TraderTerm,
-  formatClaim,
-} from '@/lib/traderPricingDefaults';
-import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
-import { calcTraderPrice } from '@/lib/traderPricing';
-import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
-import {
-  loadDealerDefaults,
-  saveDealerDefaults,
-  clearDealerDefaults,
-  describeDefaults,
-  DealerWarrantyDefaults,
-} from '@/lib/dealerWarrantyDefaults';
-import SaveQuoteTemplateButton from '@/components/dealer/journey/SaveQuoteTemplateButton';
 
-
-type CustomerMode = 'now' | 'later';
-type Channel = 'whatsapp' | 'email';
-
-const ADD_ONS = [
-  'Air-Conditioning',
-  'Turbocharger',
-  'Diagnostic Cover',
-  'Breakdown Recovery',
-  'Vehicle Hire',
-  'European Cover',
-  'EV Battery Cover',
-  'Hybrid Battery Cover',
-  'Emissions',
-  'Suspension',
-  'Handbrake',
-  'Radio / Sat-Nav',
+const termOptions = [
+  { value: '3', label: '3 months', months: 3 },
+  { value: '6', label: '6 months', months: 6 },
+  { value: '12', label: '12 months', months: 12 },
+  { value: '24', label: '24 months', months: 24 },
+  { value: '36', label: '36 months', months: 36 },
 ];
 
-const termLabel = (t: TraderTerm) =>
-  t === 3
-    ? '3 months'
-    : t === 6
-    ? '6+1 months'
-    : t === 12
-    ? '12+12 months'
-    : t === 24
-    ? '24+12 months'
-    : '36+12 months';
+const excessOptions = [
+  { value: '0', label: '£0' },
+  { value: '50', label: '£50' },
+  { value: '100', label: '£100' },
+  { value: '250', label: '£250' },
+  { value: '500', label: '£500' },
+];
 
-// Quick-select defaults
-const DEFAULT_PRESET = {
-  excess: 50 as TraderExcess,
-  claimLimit: 1000 as TraderClaim,
-  labour: 70 as TraderLabour,
-  parts: 'age_mileage' as TraderParts,
-  term: 12 as TraderTerm,
-};
+const labourOptions = [
+  { value: '40', label: '£40/hr' },
+  { value: '70', label: '£70/hr' },
+  { value: '100', label: '£100/hr' },
+  { value: '150', label: '£150/hr' },
+  { value: '200', label: '£200/hr' },
+];
 
+const partsOptions = [
+  { value: 'age-mileage', label: 'Age & Mileage' },
+  { value: 'none', label: 'No contribution' },
+];
+
+const claimOptions = [
+  { value: '750', label: '£750' },
+  { value: '1000', label: '£1,000' },
+  { value: '2000', label: '£2,000' },
+  { value: '3000', label: '£3,000' },
+];
+
+const addOns = [
+  { key: 'air-con', label: 'Air-conditioning', price: 0.2 },
+  { key: 'turbo', label: 'Turbocharger', price: 0.2 },
+  { key: 'diagnostics', label: 'Diagnostic cover', price: 0.3 },
+  { key: 'breakdown', label: 'Breakdown recovery', price: 0.5 },
+];
+
+const BASE_FEE = 1.2;
+
+const steps = [
+  { n: 1, label: 'Enter Reg Plate', state: 'done' as const },
+  { n: 2, label: 'Vehicle Details', state: 'done' as const },
+  { n: 3, label: 'Choose Your Plan', state: 'current' as const },
+  { n: 4, label: 'Review & Pay', state: 'todo' as const },
+];
+
+const howItWorks = [
+  'Customer makes a claim',
+  'Panda Protect manages the claim',
+  'Your dealership funds the approved repair',
+];
+
+const claimFlow = [
+  'Customer contacts Panda Protect',
+  'We assess and manage the claim',
+  'Repair is authorised',
+  'Your dealership funds the approved repair',
+];
+
+const included = [
+  'Claims managed by Panda Protect',
+  'UK claims support',
+  'Simple dealer process',
+  'Customer support included',
+];
+
+const gbp = (n: number) =>
+  n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: 2 });
+
+interface OptionRowProps {
+  icon: React.ElementType;
+  label: string;
+  helper: string;
+  tooltip?: string;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+}
+
+const OptionRow: React.FC<OptionRowProps> = ({ icon: Icon, label, helper, tooltip, options, value, onChange, error }) => (
+  <div className="grid gap-3 border-t border-crm-line py-4 first:border-t-0 lg:grid-cols-[230px_minmax(0,1fr)] lg:items-center">
+    <div className="flex items-start gap-2.5">
+      <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+      </span>
+      <div>
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+          {label}
+          {tooltip && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button type="button" aria-label={`About ${label}`} className="text-muted-foreground">
+                  <Info className="h-3.5 w-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[240px] text-xs">{tooltip}</TooltipContent>
+            </Tooltip>
+          )}
+        </p>
+        <p className="text-xs leading-snug text-muted-foreground">{helper}</p>
+      </div>
+    </div>
+    <div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex lg:flex-wrap">
+        {options.map((option) => {
+          const active = option.value === value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onChange(option.value)}
+              aria-pressed={active}
+              className={`min-w-[92px] flex-1 rounded-md border px-3 py-2 text-xs font-semibold transition-colors ${
+                active
+                  ? 'border-crm-orange bg-crm-orange text-white'
+                  : 'border-crm-line bg-card text-foreground hover:border-crm-orange/50 hover:bg-muted'
+              }`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
+      {error && <p className="mt-2 text-xs font-medium text-destructive">{error}</p>}
+    </div>
+  </div>
+);
 
 const ClaimHandlingPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, setPlan, setCustomer } = useDealerJourney();
+  const { vehicle, setPlan, reset } = useDealerJourney();
   const { toast } = useToast();
+  const { save, saving } = useDealerQuoteSave(3);
 
-  const savedDefaults = React.useMemo(() => loadDealerDefaults(), []);
-  const initial = savedDefaults ?? {
-    term: DEFAULT_PRESET.term,
-    excess: DEFAULT_PRESET.excess,
-    labour: DEFAULT_PRESET.labour,
-    parts: DEFAULT_PRESET.parts,
-    claim: DEFAULT_PRESET.claimLimit,
-  };
-  const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
-  const [useDefault, setUseDefault] = useState(!savedDefaults);
-  const [excess, setExcess] = useState<TraderExcess>(initial.excess);
-  const [claimLimit, setClaimLimit] = useState<TraderClaim>(initial.claim);
-  const [labour, setLabour] = useState<TraderLabour>(initial.labour);
-  const [parts, setParts] = useState<TraderParts>(initial.parts);
-  const [term, setTerm] = useState<TraderTerm>(initial.term);
-  const [addOns, setAddOns] = useState<Record<string, boolean>>({});
+  const [term, setTerm] = useState('12');
+  const [excess, setExcess] = useState('50');
+  const [labour, setLabour] = useState('70');
+  const [parts, setParts] = useState('age-mileage');
+  const [claim, setClaim] = useState('1000');
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [addOnsOpen, setAddOnsOpen] = useState(false);
+  const [breakdownOpen, setBreakdownOpen] = useState(false);
+  const [priceState, setPriceState] = useState<'idle' | 'updating'>('idle');
+  const [error, setError] = useState('');
 
+  const termOption = termOptions.find((o) => o.value === term)!;
+  const excessOption = excessOptions.find((o) => o.value === excess)!;
+  const labourOption = labourOptions.find((o) => o.value === labour)!;
+  const partsOption = partsOptions.find((o) => o.value === parts)!;
+  const claimOption = claimOptions.find((o) => o.value === claim)!;
 
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address_line1: '',
-    town: '',
-    postcode: '',
-  });
-  const [customerMode, setCustomerMode] = useState<CustomerMode>('now');
-  const [channel, setChannel] = useState<Channel>('whatsapp');
-  const [note, setNote] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const fee = useMemo(() => {
+    const extras = selectedAddOns.reduce(
+      (sum, key) => sum + (addOns.find((a) => a.key === key)?.price ?? 0),
+      0,
+    );
+    return +(BASE_FEE + extras).toFixed(2);
+  }, [selectedAddOns]);
 
   useEffect(() => {
-    if (useDefault) {
-      setExcess(DEFAULT_PRESET.excess);
-      setClaimLimit(DEFAULT_PRESET.claimLimit);
-      setLabour(DEFAULT_PRESET.labour);
-      setParts(DEFAULT_PRESET.parts);
-    }
-  }, [useDefault]);
-
-  useEffect(() => {
-    if (!vehicle?.reg) {
-      navigate('/dealer-portal/quote/pricing', { replace: true });
-    }
-  }, [vehicle, navigate]);
-
-  const [customerViewOpen, setCustomerViewOpen] = useState(false);
-  const [customerPriceSource, setCustomerPriceSource] = useState<'retail' | 'own'>('retail');
-  const [customerPrice, setCustomerPrice] = useState('');
-
-  const { data: config } = useTraderPricingConfig();
-  const recommendedRetail = useMemo(() => {
-    const res = calcTraderPrice({
-      term,
-      excess,
-      labour,
-      parts,
-      claim: claimLimit,
-      config: config ? { ...config, dealer_pct: 1 } : undefined,
-    });
-    return res.gross;
-  }, [term, excess, labour, parts, claimLimit, config]);
-  const ownPrice = Number(customerPrice) || 0;
-  const customerFacingPrice =
-    customerPriceSource === 'own' && ownPrice > 0 ? ownPrice : recommendedRetail;
-
-  const monthlyFee = 1.0; // flat claim-handling service fee
-  const totalMonths = term;
-  const totalCost = useMemo(() => +(monthlyFee * totalMonths).toFixed(2), [totalMonths]);
+    setPriceState('updating');
+    const timer = window.setTimeout(() => setPriceState('idle'), 400);
+    return () => window.clearTimeout(timer);
+  }, [fee, term, excess, labour, parts, claim]);
 
   if (!loading && !dealer) {
     return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
-  const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+  const toggleAddOn = (key: string) =>
+    setSelectedAddOns((current) =>
+      current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
+    );
 
-  const handleContinue = () => {
-    setError(null);
+  const buildPlan = () => ({
+    plan_type: 'basic' as const,
+    duration_months: termOption.months as never,
+    retail_price: fee,
+    dealer_price: fee,
+    term_months: termOption.months as never,
+    selected_options: {
+      warranty_type: 'dealer-paid',
+      label: 'Dealer-Paid Warranty',
+      term: termOption.label,
+      excess: Number(excess),
+      labour: Number(labour),
+      parts: partsOption.label,
+      claim: Number(claim),
+      add_ons: selectedAddOns,
+      monthly_fee: fee,
+      repairs_funded_by: 'dealer',
+    },
+  });
 
-    const dealerName = dealer?.company_name || dealer?.name || 'Dealer';
-    const placeholderEmail = dealer?.email || 'pending@dealer.local';
-
-    if (customerMode === 'now') {
-      if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.postcode.trim()) {
-        setError('Please complete the customer name, email, phone and postcode.');
-        return;
-      }
-      if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-        setError('Enter a valid email address.');
-        return;
-      }
-      setCustomer({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        address_line1: form.address_line1 || 'To be confirmed',
-        address_line2: `[Claim Handling Only — dealer pays claim payouts]`,
-        town: form.town || 'To be confirmed',
-        postcode: form.postcode.toUpperCase(),
-      });
-    } else {
-      const channelLabel = channel === 'whatsapp' ? 'WhatsApp' : 'Email';
-      setCustomer({
-        name: 'Pending customer details',
-        email: placeholderEmail,
-        phone: '',
-        address_line1: 'To be confirmed',
-        address_line2: `[Pending: ${dealerName} to send details via ${channelLabel}]${note ? ` — ${note}` : ''} [Claim Handling Only]`,
-        town: 'To be confirmed',
-        postcode: 'TBC',
-      });
+  const validate = () => {
+    if (!vehicle?.reg) {
+      setError('Select a vehicle before continuing.');
+      return false;
     }
-
-    const selectedAddOns = Object.keys(addOns).filter((k) => addOns[k]);
-    setPlan({
-      plan_type: 'gold',
-      duration_months: term,
-      retail_price: totalCost,
-      dealer_price: totalCost,
-      term_months: term,
-      selected_options: {
-        product: 'claim_handling',
-        excess,
-        labour,
-        parts,
-        add_ons: selectedAddOns,
-        claim_limit: claimLimit,
-        monthly_fee: monthlyFee,
-        total_months: totalMonths,
-        gross: totalCost,
-        ex_vat: +(totalCost / 1.2).toFixed(2),
-        vat: +(totalCost - totalCost / 1.2).toFixed(2),
-        monthly_equiv: monthlyFee,
-        custom_terms: !useDefault,
-      },
-    } as any);
-
-    toast({ title: 'Claim handling configured', description: 'Continue to checkout to finalise.' });
-    navigate('/dealer-portal/quote/checkout');
+    if (!claim) {
+      setError('Choose a claim limit to continue.');
+      return false;
+    }
+    setError('');
+    return true;
   };
 
-  // Atoms ------------------------------------------------------------------
-  const SegBtn = ({
-    active,
-    onClick,
-    children,
-  }: {
-    active: boolean;
-    onClick: () => void;
-    children: React.ReactNode;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex-1 px-3 py-2 text-sm font-semibold border transition-colors first:rounded-l-md last:rounded-r-md -ml-px first:ml-0 ${
-        active
-          ? 'bg-yellow-300 text-gray-900 border-yellow-400 z-10 relative'
-          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-      }`}
-    >
-      {children}
-    </button>
-  );
+  const handleContinue = async () => {
+    if (!validate()) return;
+    const plan = buildPlan();
+    setPlan(plan as never);
+    await save({ silent: true, overridePlan: plan as never });
+    navigate('/dealer-portal/quote/customer');
+  };
 
-  const SegGroup = <T extends string | number>({
-    label,
-    options,
-    value,
-    onChange,
-    format,
-  }: {
-    label: string;
-    options: readonly T[];
-    value: T;
-    onChange: (v: T) => void;
-    format?: (v: T) => string;
-  }) => (
-    <div>
-      <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">{label}</p>
-      <div className="flex">
-        {options.map((o) => (
-          <SegBtn key={String(o)} active={value === o} onClick={() => onChange(o)}>
-            {format ? format(o) : String(o)}
-          </SegBtn>
-        ))}
-      </div>
-    </div>
-  );
+  const handleSaveDraft = async () => {
+    if (!validate()) return;
+    const plan = buildPlan();
+    setPlan(plan as never);
+    const id = await save({ overridePlan: plan as never });
+    if (id) {
+      toast({ title: 'Draft saved' });
+      reset();
+      navigate('/dealer-portal/quotes');
+    }
+  };
 
-  const inputClass =
-    'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500';
+  const vehicleName = [vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'AUDI Q5';
+
+  const summaryRows = [
+    { label: 'Warranty', value: 'Dealer-Paid Warranty' },
+    { label: 'Vehicle', value: vehicleName },
+    { label: 'Term', value: termOption.label },
+    { label: 'Customer excess', value: excessOption.label },
+    { label: 'Labour rate', value: labourOption.label },
+    { label: 'Claim limit', value: claimOption.label },
+    { label: 'Parts', value: partsOption.label },
+  ];
 
   return (
     <DealerLayout>
-      <div className="max-w-5xl mx-auto pb-24">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <button
-            onClick={() => navigate('/dealer-portal/quote/pricing')}
-            className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1 font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to pricing
-          </button>
-          <div className="text-xs uppercase tracking-wider text-orange-600 font-bold flex items-center gap-1.5">
-            <Headphones className="w-4 h-4" />
-            Claim Handling Service
-          </div>
+      <div className="mx-auto max-w-[1500px] space-y-3">
+        {/* Stepper */}
+        <Card className="crm-panel-shadow border-crm-line bg-card">
+          <CardContent className="p-4">
+            <ol className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {steps.map((step) => (
+                <li key={step.n} className="flex items-center gap-2">
+                  <span
+                    className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
+                      step.state === 'done'
+                        ? 'bg-crm-green-soft text-green-700'
+                        : step.state === 'current'
+                          ? 'bg-crm-orange text-white'
+                          : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {step.state === 'done' ? <CheckCircle2 className="h-4 w-4" /> : step.n}
+                  </span>
+                  <span
+                    className={`text-xs font-semibold ${
+                      step.state === 'todo' ? 'text-muted-foreground' : 'text-foreground'
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+
+        {/* Page title */}
+        <div>
+          <p className="text-[11px] font-bold tracking-[0.16em] text-crm-orange">DEALER-PAID WARRANTY</p>
+          <h1 className="text-xl font-bold leading-tight sm:text-2xl">Configure Dealer-Paid Warranty</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            We manage the claims process and support your customer. Your dealership funds approved repairs.
+          </p>
         </div>
 
-        {/* Hero info card */}
-        <section className="rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white p-5 sm:p-7 mb-5 shadow-md">
-          <div className="flex items-start gap-4">
-            <div className="hidden sm:flex w-12 h-12 rounded-xl bg-white/20 items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6" />
+        {/* Vehicle strip */}
+        <Card className="crm-panel-shadow border-crm-line bg-card">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex overflow-hidden rounded-md border border-crm-line text-sm font-bold">
+                <span className="bg-blue-700 px-1.5 py-1 text-[10px] font-bold text-white">GB</span>
+                <span className="bg-yellow-400 px-3 py-1 tracking-wide text-black">{vehicle?.reg || 'B11CSD'}</span>
+              </span>
+              <span className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{vehicleName}</span> · {vehicle?.year || '2018'} ·{' '}
+                {vehicle?.fuel_type || 'Diesel'} · {Number(vehicle?.mileage || 101782).toLocaleString('en-GB')} miles
+              </span>
             </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                You set the terms — we handle the claims
-              </h1>
-              <p className="text-sm text-white/90 mt-1 max-w-2xl leading-relaxed">
-                Choose your own claim limit, excess and labour rate (or use our recommended defaults).
-                <strong className="font-bold"> Your dealership pays the claim payouts</strong> — we manage the
-                customer experience, paperwork and approvals end-to-end.
-              </p>
-              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold text-white/95">
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> Full claims management</span>
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> You keep the margin</span>
-                <span className="flex items-center gap-1.5"><Check className="w-3.5 h-3.5" /> Just £1/month per warranty</span>
-              </div>
-            </div>
-          </div>
-        </section>
+            <button
+              type="button"
+              onClick={() => navigate('/dealer-portal/quote/vehicle')}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-orange hover:underline"
+            >
+              <Pencil className="h-3.5 w-3.5" /> Edit vehicle
+            </button>
+          </CardContent>
+        </Card>
 
-        {/* Vehicle banner */}
-        {vehicle?.make && (
-          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 mb-5 flex items-center justify-between gap-4 text-sm">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="inline-flex items-stretch rounded-sm overflow-hidden border border-gray-900 shrink-0">
-                <div className="bg-blue-700 text-yellow-300 text-[9px] font-bold flex items-center px-1.5">GB</div>
-                <div className="bg-yellow-300 text-gray-900 font-black tracking-widest text-sm px-2 py-0.5">
-                  {vehicle?.reg}
-                </div>
-              </div>
-              <div className="truncate">
-                <span className="font-bold text-gray-900 uppercase">{vehicle?.make} {vehicle?.model}</span>
-                <span className="text-gray-500"> · {vehicle?.year || '—'} · {vehicle?.fuel_type || '—'}</span>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* How it works */}
+        <div className="rounded-lg border border-crm-orange/30 bg-crm-orange-soft p-4">
+          <p className="text-sm font-bold">How Dealer-Paid Warranty works</p>
+          <ol className="mt-2 grid gap-2 sm:grid-cols-3">
+            {howItWorks.map((item, index) => (
+              <li key={item} className="flex items-start gap-2 text-xs font-medium text-foreground">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-crm-orange text-[10px] font-bold text-white">
+                  {index + 1}
+                </span>
+                {item}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            Panda Protect handles the administration and customer support, helping you provide a professional warranty
+            experience without purchasing fully insured repair cover.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
-          {/* MAIN COLUMN */}
-          <div className="space-y-5">
-            {/* Customize — identical options to the Fully Covered pricing page */}
-            <section className="bg-white border-2 border-orange-200 rounded-2xl p-5 sm:p-6 ring-1 ring-orange-100/60 shadow-sm">
-              <div className="mb-4">
-                <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-orange-500" /> Customize your warranty
-                </h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Tailor each option — you pay a flat £{monthlyFee.toFixed(2)}/month claim-handling fee.
-                </p>
-              </div>
-
-              <div className="mb-5 rounded-xl border border-orange-200 bg-orange-50/50 p-3">
-                <p className="text-[11px] uppercase tracking-wider text-orange-700 font-bold mb-2 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" /> Quick select · Default warranty presets
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { label: '1 Year', term: 12 as TraderTerm },
-                    { label: '2 Year', term: 24 as TraderTerm },
-                    { label: '3 Year', term: 36 as TraderTerm },
-                  ].map((p) => {
-                    const active = term === p.term && useDefault;
-                    return (
-                      <button
-                        key={p.label}
-                        type="button"
-                        onClick={() => {
-                          setUseDefault(true);
-                          setTerm(p.term);
-                          setExcess(DEFAULT_PRESET.excess);
-                          setLabour(DEFAULT_PRESET.labour);
-                          setParts(DEFAULT_PRESET.parts);
-                          setClaimLimit(DEFAULT_PRESET.claimLimit);
-                        }}
-                        className={`px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all ${
-                          active
-                            ? 'bg-orange-500 border-orange-500 text-white shadow'
-                            : 'bg-white border-orange-200 text-gray-900 hover:border-orange-400'
-                        }`}
-                      >
-                        {p.label}
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="text-[10px] text-gray-500 mt-2">
-                  One-click defaults — pick a term and we'll set sensible excess, labour &amp; claim limit.
-                </p>
-
-                {/* My saved default plan */}
-                <div className="mt-3 pt-3 border-t border-orange-200">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const d: DealerWarrantyDefaults = { term, excess, labour, parts, claim: claimLimit };
-                        saveDealerDefaults(d);
-                        setMyDefaults(d);
-                        toast({ title: 'Default plan saved', description: describeDefaults(d) });
-                      }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-300 bg-white text-orange-700 hover:border-orange-500"
-                    >
-                      Save as my default plan
-                    </button>
-                    <SaveQuoteTemplateButton
-                      getSelection={() => ({
-                        term,
-                        excess,
-                        labour,
-                        parts,
-                        claim: claimLimit,
-                        plan_type: 'gold',
-                        price: customerFacingPrice,
-                      })}
-                    />
-                    {myDefaults && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setUseDefault(false);
-                            setTerm(myDefaults.term);
-                            setExcess(myDefaults.excess);
-                            setLabour(myDefaults.labour);
-                            setParts(myDefaults.parts);
-                            setClaimLimit(myDefaults.claim);
-                            toast({ title: 'Your default plan applied' });
-                          }}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-500 bg-orange-500 text-white"
-                        >
-                          Use my default
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { clearDealerDefaults(); setMyDefaults(null); }}
-                          className="px-2 py-1.5 rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800"
-                        >
-                          Clear
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  {myDefaults && (
-                    <p className="text-[10px] text-gray-500 mt-1.5">Saved: {describeDefaults(myDefaults)}</p>
-                  )}
-                </div>
-
-              </div>
-
-              <div className="space-y-5">
-                <SegGroup
-                  label="Excess"
-                  options={EXCESS_OPTIONS}
-                  value={excess}
-                  onChange={(v) => { setUseDefault(false); setExcess(v as TraderExcess); }}
-                  format={(v) => `£${v}`}
-                />
-                <SegGroup
-                  label="Labour rates (per hour)"
-                  options={LABOUR_OPTIONS}
-                  value={labour}
-                  onChange={(v) => { setUseDefault(false); setLabour(v as TraderLabour); }}
-                  format={(v) => `£${v}`}
-                />
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Parts</p>
-                  <div className="flex">
-                    {PARTS_OPTIONS.map((o) => (
-                      <SegBtn
-                        key={o.key}
-                        active={parts === o.key}
-                        onClick={() => { setUseDefault(false); setParts(o.key); }}
-                      >
-                        {o.label}
-                      </SegBtn>
-                    ))}
+        {/* Main layout */}
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="space-y-3">
+            <Card className="crm-panel-shadow border-crm-line bg-card">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">
+                    <Settings className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <h2 className="text-base font-bold">Configure your warranty</h2>
+                    <p className="text-xs text-muted-foreground">Set the cover you want to provide to your customer.</p>
                   </div>
                 </div>
-                <SegGroup
-                  label="Claim limit"
-                  options={CLAIM_OPTIONS}
-                  value={claimLimit}
-                  onChange={(v) => { setUseDefault(false); setClaimLimit(v as TraderClaim); }}
-                  format={(v) => formatClaim(Number(v))}
-                />
 
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">Term</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                    {TERM_OPTIONS.map((t) => {
-                      const active = term === t;
+                <div className="mt-3">
+                  <OptionRow
+                    icon={Calendar}
+                    label="Warranty term"
+                    helper="How long would you like the customer to be covered?"
+                    options={termOptions}
+                    value={term}
+                    onChange={setTerm}
+                  />
+                  <OptionRow
+                    icon={Layers}
+                    label="Customer excess"
+                    helper="The amount the customer contributes towards an approved claim."
+                    options={excessOptions}
+                    value={excess}
+                    onChange={setExcess}
+                  />
+                  <OptionRow
+                    icon={Wrench}
+                    label="Labour rate"
+                    helper="The maximum hourly labour rate used when assessing an approved repair."
+                    tooltip="The labour rate is used when reviewing repair costs during a claim."
+                    options={labourOptions}
+                    value={labour}
+                    onChange={setLabour}
+                  />
+                  <OptionRow
+                    icon={Settings}
+                    label="Parts"
+                    helper="Choose how replacement parts are assessed."
+                    tooltip="Age & Mileage applies a contribution based on the vehicle's age and mileage."
+                    options={partsOptions}
+                    value={parts}
+                    onChange={setParts}
+                  />
+                  <OptionRow
+                    icon={Coins}
+                    label="Claim limit"
+                    helper="The maximum approved repair amount per claim."
+                    options={claimOptions}
+                    value={claim}
+                    onChange={setClaim}
+                    error={error && !error.includes('vehicle') ? error : undefined}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Optional add-ons */}
+            <Card className="crm-panel-shadow border-crm-line bg-card">
+              <CardContent className="p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                      <Plus className="h-3.5 w-3.5" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-semibold">
+                        Optional add-ons <span className="text-xs font-normal text-muted-foreground">Optional</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">Add extra protection to the warranty.</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAddOnsOpen((open) => !open)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-crm-orange hover:underline"
+                  >
+                    {addOnsOpen ? 'Hide options' : 'Show options'}
+                    <ChevronDown className={`h-3.5 w-3.5 transition-transform ${addOnsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+                {addOnsOpen && (
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {addOns.map((addOn) => {
+                      const active = selectedAddOns.includes(addOn.key);
                       return (
                         <button
-                          key={t}
+                          key={addOn.key}
                           type="button"
-                          onClick={() => setTerm(t)}
-                          className={`px-3 py-2 rounded-lg text-center border-2 transition-all text-xs font-semibold ${
-                            active ? 'bg-yellow-300 border-yellow-400' : 'bg-white border-gray-200 hover:border-orange-300'
+                          onClick={() => toggleAddOn(addOn.key)}
+                          className={`flex items-center justify-between rounded-md border px-3 py-2 text-left text-xs font-semibold transition-colors ${
+                            active
+                              ? 'border-crm-orange bg-crm-orange-soft text-foreground'
+                              : 'border-crm-line bg-card hover:bg-muted'
                           }`}
                         >
-                          {termLabel(t)}
+                          <span className="flex items-center gap-2">
+                            <span
+                              className={`flex h-4 w-4 items-center justify-center rounded border ${
+                                active ? 'border-crm-orange bg-crm-orange text-white' : 'border-crm-line'
+                              }`}
+                            >
+                              {active && <Check className="h-3 w-3" />}
+                            </span>
+                            {addOn.label}
+                          </span>
+                          <span className="text-muted-foreground">+{gbp(addOn.price)}/m</span>
                         </button>
                       );
                     })}
                   </div>
-                  <p className="text-xs font-bold text-orange-600 mt-3">
-                    £{(monthlyFee * term).toFixed(2)} total service fee over {term} months
-                  </p>
-                </div>
-              </div>
-            </section>
+                )}
+              </CardContent>
+            </Card>
 
-
-            {/* Optional Add-ons */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">Optional add-ons</h2>
-              <p className="text-xs text-gray-500 mb-4">Boost the cover with extra protection.</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2">
-                {ADD_ONS.map((name) => {
-                  const checked = !!addOns[name];
-                  return (
-                    <label key={name} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 select-none">
-                      <span
-                        onClick={() => setAddOns((prev) => ({ ...prev, [name]: !checked }))}
-                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
-                          checked ? 'bg-orange-500 border-orange-500' : 'bg-white border-gray-400'
-                        }`}
-                      >
-                        {checked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-                      </span>
-                      <span>{name}</span>
-                    </label>
-                  );
-                })}
-              </div>
-            </section>
-
-
-            {/* Customer details */}
-            <section className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-sm">
-              <h2 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight mb-1">
-                Customer details
-              </h2>
-              <p className="text-xs text-gray-500 mb-4">
-                Add details now or send them later.
-              </p>
-
-              {/* Mode tabs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
-                {([
-                  { key: 'now', icon: User, title: 'Add now', sub: "Fill in the customer's details." },
-                  { key: 'later', icon: Clock, title: 'Send later', sub: 'Share via WhatsApp / email later.' },
-                ] as const).map(({ key, icon: Icon, title, sub }) => {
-                  const active = customerMode === key;
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setCustomerMode(key)}
-                      className={`text-left rounded-xl border-2 p-3 transition-all ${
-                        active ? 'border-orange-500 bg-orange-50/60 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-300'
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                          <Icon className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-gray-900">{title}</p>
-                          <p className="text-[11px] text-gray-600 mt-0.5 leading-snug">{sub}</p>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {customerMode === 'now' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Claims responsibility */}
+            <Card className="crm-panel-shadow border-crm-line bg-card">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                    <Headphones className="h-3.5 w-3.5" />
+                  </span>
                   <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-gray-400" /> Full name *
-                    </label>
-                    <Input value={form.name} onChange={(e) => update('name', e.target.value)} className={inputClass} placeholder="Jane Smith" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-gray-400" /> Email *
-                    </label>
-                    <Input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} className={inputClass} placeholder="jane@example.com" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                      <Phone className="w-3.5 h-3.5 text-gray-400" /> Phone *
-                    </label>
-                    <Input value={form.phone} onChange={(e) => update('phone', e.target.value)} className={inputClass} placeholder="07…" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-gray-400" /> Postcode *
-                    </label>
-                    <AddressAutocomplete
-                      placeholder="Start typing postcode..."
-                      initialValue={form.postcode}
-                      className={`uppercase ${inputClass}`}
-                      provider="postcoder"
-                      displaySelectedPostcode
-                      onInputChange={(value) => update('postcode', value.toUpperCase())}
-                      onAddressSelect={(addr) =>
-                        setForm((p) => ({
-                          ...p,
-                          address_line1: addr.line_1,
-                          town: addr.town,
-                          postcode: (addr.postcode || '').toUpperCase(),
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-bold text-gray-700 mb-1 block">Address line 1</label>
-                    <Input value={form.address_line1} onChange={(e) => update('address_line1', e.target.value)} className={inputClass} placeholder="123 High Street" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-bold text-gray-700 mb-1 block">Town</label>
-                    <Input value={form.town} onChange={(e) => update('town', e.target.value)} className={inputClass} placeholder="London" />
-                  </div>
-                </div>
-              )}
-
-              {customerMode === 'later' && (
-                <div className="space-y-4">
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-                    <Info className="w-4 h-4 text-orange-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-gray-700">
-                      We'll mark this warranty as <strong>Pending customer details</strong>. You can send the details over later via WhatsApp or email and your team will add them on.
+                    <p className="text-sm font-semibold">What happens when your customer claims?</p>
+                    <p className="text-xs text-muted-foreground">
+                      Our UK claims team manages the process and keeps both you and your customer informed.
                     </p>
                   </div>
-                  <div>
-                    <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">How will you send them?</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      {([
-                        { key: 'whatsapp', icon: MessageCircle, label: 'WhatsApp' },
-                        { key: 'email', icon: Mail, label: 'Email' },
-                      ] as const).map(({ key, icon: Icon, label }) => {
-                        const active = channel === key;
-                        return (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => setChannel(key)}
-                            className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 font-semibold text-sm transition-all ${
-                              active ? 'border-orange-500 bg-yellow-300 text-gray-900' : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300'
-                            }`}
-                          >
-                            <Icon className="w-4 h-4" /> {label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-gray-700 mb-1 block">Quick note (optional)</label>
-                    <Textarea
-                      rows={3}
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder="e.g. Will send name + address on WhatsApp this afternoon."
-                      className={inputClass}
-                    />
-                  </div>
                 </div>
-              )}
-
-
-              {error && <p className="text-sm text-red-600 font-medium mt-3">{error}</p>}
-            </section>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {claimFlow.map((item, index) => (
+                    <React.Fragment key={item}>
+                      <span className="rounded-md border border-crm-line bg-muted/40 px-3 py-1.5 text-xs font-medium">
+                        {item}
+                      </span>
+                      {index < claimFlow.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* SIDEBAR — Summary */}
-          <aside className="lg:sticky lg:top-4 lg:self-start">
-            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
-              <div className="text-[10px] uppercase tracking-[0.15em] font-bold text-orange-600 mb-2">Summary</div>
-              <h3 className="text-base font-extrabold text-gray-900 mb-3">Claim Handling Cover</h3>
+          {/* Summary */}
+          <div className="xl:sticky xl:top-[88px] xl:self-start">
+            <Card className="crm-panel-shadow border-crm-line bg-card">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-2.5">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">
+                    <ClipboardList className="h-4 w-4" />
+                  </span>
+                  <div>
+                    <h2 className="text-base font-bold">Quote summary</h2>
+                    <p className="text-xs text-muted-foreground">Your Dealer-Paid Warranty configuration.</p>
+                  </div>
+                </div>
 
-              <dl className="text-xs space-y-2">
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Term</dt>
-                  <dd className="font-bold text-gray-900">{termLabel(term)}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Claim limit</dt>
-                  <dd className="font-bold text-gray-900">{formatClaim(claimLimit)}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Parts</dt>
-                  <dd className="font-bold text-gray-900">{PARTS_OPTIONS.find((p) => p.key === parts)?.label}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Excess</dt>
-                  <dd className="font-bold text-gray-900">£{excess}</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Labour rate</dt>
-                  <dd className="font-bold text-gray-900">£{labour}/hr</dd>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <dt className="text-gray-500">Service fee</dt>
-                  <dd className="font-bold text-gray-900">£{monthlyFee.toFixed(2)} / mo</dd>
-                </div>
-              </dl>
+                <dl className="mt-3 space-y-1.5">
+                  {summaryRows.map((row) => (
+                    <div key={row.label} className="flex items-center justify-between gap-3 text-xs">
+                      <dt className="text-muted-foreground">{row.label}</dt>
+                      <dd className="font-semibold text-foreground">{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
 
-              <div className="border-t border-gray-200 my-4" />
-
-              <div className="flex items-baseline justify-between">
-                <span className="text-xs uppercase tracking-wider font-bold text-gray-500">Total fee</span>
-                <span className="text-2xl font-extrabold text-gray-900">£{totalCost.toFixed(2)}</span>
-              </div>
-              <p className="text-[11px] text-gray-500 mt-1">
-                Over {totalMonths} months · Dealer pays claim payouts.
-              </p>
-
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-bold mb-2">
-                  Price shown in customer view
-                </p>
-                <div className="inline-flex w-full rounded-lg overflow-hidden border border-gray-300">
-                  <button
-                    type="button"
-                    onClick={() => setCustomerPriceSource('retail')}
-                    className={`flex-1 text-xs font-bold px-2 py-2 ${customerPriceSource === 'retail' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
-                  >
-                    Recommended £{recommendedRetail.toFixed(2)}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCustomerPriceSource('own')}
-                    className={`flex-1 text-xs font-bold px-2 py-2 border-l border-gray-300 ${customerPriceSource === 'own' ? 'bg-slate-900 text-white' : 'bg-white text-gray-700'}`}
-                  >
-                    My price {ownPrice > 0 ? `£${ownPrice.toFixed(2)}` : ''}
-                  </button>
+                <div className="mt-4 rounded-md border border-crm-line bg-muted/40 p-3">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-crm-orange">Panda Protect fee</p>
+                  <p className="mt-0.5 text-2xl font-bold leading-none">
+                    {gbp(fee)} <span className="text-sm font-semibold text-muted-foreground">/ month</span>
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">From</p>
+                  <p className="mt-1.5 text-[11px] font-semibold text-foreground">
+                    Repair costs are funded by your dealership.
+                  </p>
+                  <p className="mt-1 text-[11px] font-medium text-muted-foreground">
+                    {priceState === 'updating' ? 'Updating…' : 'Updated'}
+                  </p>
                 </div>
-                <div className="mt-2 flex items-center rounded-lg border-2 border-gray-200 bg-white overflow-hidden focus-within:border-orange-400">
-                  <span className="px-3 text-sm font-extrabold text-gray-600">£</span>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    step="0.01"
-                    min="0"
-                    value={customerPrice}
-                    onChange={(e) => { setCustomerPrice(e.target.value); setCustomerPriceSource('own'); }}
-                    placeholder="Your price to the customer"
-                    className="flex-1 py-2 text-sm font-bold text-gray-900 outline-none bg-transparent"
-                  />
-                  <span className="pr-3 text-[11px] text-gray-500">/ month</span>
-                </div>
+
                 <button
                   type="button"
-                  onClick={() => setCustomerViewOpen(true)}
-                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
+                  onClick={() => setBreakdownOpen((open) => !open)}
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-crm-orange hover:underline"
                 >
-                  <Eye className="w-3.5 h-3.5" /> Show customer view
+                  View cost breakdown
+                  <ChevronDown className={`h-3.5 w-3.5 transition-transform ${breakdownOpen ? 'rotate-180' : ''}`} />
                 </button>
-              </div>
+                {breakdownOpen && (
+                  <dl className="mt-2 space-y-1.5 rounded-md border border-crm-line p-3 text-xs">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Panda Protect administration</dt>
+                      <dd className="font-semibold">{gbp(fee)} / month</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Claims management</dt>
+                      <dd className="font-semibold">Included</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">Customer support</dt>
+                      <dd className="font-semibold">Included</dd>
+                    </div>
+                    <div className="flex justify-between border-t border-crm-line pt-1.5">
+                      <dt className="text-muted-foreground">Approved repair costs</dt>
+                      <dd className="font-semibold">Paid by dealership</dd>
+                    </div>
+                  </dl>
+                )}
 
-              <Button
-                onClick={handleContinue}
-                className="w-full mt-4 rounded-lg bg-orange-500 hover:bg-orange-600 text-white h-11 font-bold"
-              >
-                Continue to checkout <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
+                <div className="mt-3 rounded-md bg-muted/40 p-3">
+                  <p className="text-[11px] font-semibold text-foreground">Included with Dealer-Paid Warranty</p>
+                  <ul className="mt-1.5 space-y-1">
+                    {included.map((item) => (
+                      <li key={item} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                        <Check className="h-3 w-3 text-crm-orange" /> {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="mt-3 rounded-lg bg-gray-50 border border-gray-200 px-3 py-2 flex items-start gap-2">
-                <Info className="w-3.5 h-3.5 text-gray-500 mt-0.5 shrink-0" />
-                <p className="text-[11px] text-gray-600 leading-relaxed">
-                  We manage the claim from start to finish. Approved repair costs are paid by your dealership.
-                </p>
-              </div>
-            </div>
-          </aside>
+                {error && <p className="mt-3 text-xs font-medium text-destructive">{error}</p>}
+
+                <div className="mt-3 space-y-2">
+                  <Button
+                    className="w-full bg-crm-orange text-white hover:bg-crm-orange/90"
+                    onClick={handleContinue}
+                    disabled={saving}
+                  >
+                    Continue <ArrowRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-crm-orange text-crm-orange hover:bg-crm-orange-soft"
+                    onClick={handleSaveDraft}
+                    disabled={saving}
+                  >
+                    Save draft & exit
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                    onClick={() => navigate('/dealer-portal/quote/vehicle')}
+                  >
+                    <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-
-      <CustomerQuoteView
-        open={customerViewOpen}
-        onClose={() => setCustomerViewOpen(false)}
-        vehicle={vehicle}
-        coverTitle="Vehicle warranty cover"
-        coverSubtitle="Mechanical & electrical protection, claims managed for you"
-        price={customerFacingPrice}
-        secondaryLabel="Cover term"
-        secondaryValue={`${term} months`}
-        specs={[
-          { label: 'Cover term', value: termLabel(term) },
-          { label: 'Claim limit', value: formatClaim(claimLimit) },
-          { label: 'Excess', value: `£${excess}` },
-          { label: 'Labour rate', value: `£${labour}/hr` },
-          { label: 'Parts contribution', value: PARTS_OPTIONS.find((p) => p.key === parts)?.label || '' },
-        ]}
-        included={Object.keys(addOns).filter((k) => addOns[k])}
-        dealerName={dealer?.company_name || dealer?.name || undefined}
-      />
     </DealerLayout>
   );
 };
