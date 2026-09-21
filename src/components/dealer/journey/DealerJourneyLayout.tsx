@@ -118,9 +118,9 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                       <div
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                           done
-                            ? 'bg-orange-500 text-gray-900'
+                            ? 'bg-orange-500 text-white'
                             : active
-                            ? 'bg-orange-500 text-gray-900 ring-4 ring-orange-500/20'
+                            ? 'bg-orange-500 text-white ring-4 ring-orange-500/20'
                             : 'bg-gray-100 text-gray-500'
                         }`}
                       >

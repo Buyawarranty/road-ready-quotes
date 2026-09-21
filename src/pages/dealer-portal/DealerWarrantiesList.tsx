@@ -179,13 +179,13 @@ const DealerWarrantiesList = () => {
         <TabsList className="bg-white border border-gray-200">
           <TabsTrigger
             value="plans"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-700 font-bold tracking-wide"
+            className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
           >
             Plans ({paidRows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-gray-900 text-gray-700 font-bold tracking-wide"
+            className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
           >
             Payments ({unpaidIds.length} unpaid)
           </TabsTrigger>
@@ -270,7 +270,7 @@ const DealerWarrantiesList = () => {
             <Button
               onClick={handlePaySelected}
               disabled={paying || selectedIds.length === 0}
-              className="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wide"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wide"
             >
               {paying ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -326,7 +326,7 @@ const DealerWarrantiesList = () => {
                               onCheckedChange={(v) =>
                                 setSelected((s) => ({ ...s, [r.id]: !!v }))
                               }
-                              className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:text-gray-900"
+                              className="border-gray-300 data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
                             />
                           </TableCell>
                           <TableCell className="font-mono text-orange-600 font-bold">

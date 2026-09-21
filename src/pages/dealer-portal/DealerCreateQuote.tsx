@@ -325,7 +325,7 @@ const DealerCreateQuote = () => {
                 <Input type="number" step="0.01" min="0" value={form.price} onChange={(e) => update('price', e.target.value)} placeholder="e.g. 299.99" className={inputClass} />
               </div>
               <div className="flex gap-3 pt-2">
-                <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-gray-900" disabled={loading}>
+                <Button type="submit" className="bg-orange-500 hover:bg-orange-600 text-white" disabled={loading}>
                   {loading ? 'Saving...' : 'Save Quote'}
                 </Button>
                 <Button type="button" variant="outline" onClick={() => navigate('/dealer-portal/quotes')} className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900">

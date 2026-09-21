@@ -1875,7 +1875,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                   : 'border-gray-200 hover:border-orange-300 hover:shadow-md'
               }`}
             >
-              <span className="absolute -top-3 right-4 bg-orange-500 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">MOST POPULAR</span>
+              <span className="absolute -top-3 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">MOST POPULAR</span>
               <div className="mb-2">
                 <span className="text-2xl font-bold text-foreground">£70 </span>
                 <span className="text-sm font-medium text-foreground">per hour</span>
@@ -2090,7 +2090,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
                       }}
                     >
                       {isPopular && (
-                        <div className="absolute -top-3 right-4 bg-orange-500 text-gray-900 px-3 py-1 rounded-full text-xs font-semibold">
+                        <div className="absolute -top-3 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                           MOST POPULAR
                         </div>
                       )}
@@ -2996,7 +2996,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
               </Button>
               <Button
                 onClick={handleSendQuoteEmail}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-gray-900"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
                 disabled={emailQuoteSending}
               >
                 {emailQuoteSending ? 'Sending...' : 'Send Quote'}
