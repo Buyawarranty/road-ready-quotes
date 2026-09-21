@@ -5,6 +5,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dealer CRM palette. Scoped tokens keep the operational portal distinct. */
+.dealer-crm {
+  --crm-navy: 215 61% 16%;
+  --crm-navy-soft: 215 48% 22%;
+  --crm-orange: 18 100% 50%;
+  --crm-orange-soft: 24 100% 95%;
+  --crm-green: 151 81% 38%;
+  --crm-green-soft: 151 60% 94%;
+  --crm-blue: 213 94% 55%;
+  --crm-blue-soft: 213 100% 95%;
+  --crm-purple: 251 78% 63%;
+  --crm-purple-soft: 251 100% 96%;
+  --crm-amber: 38 94% 50%;
+  --crm-amber-soft: 42 100% 93%;
+  --crm-red: 4 85% 60%;
+  --crm-red-soft: 4 100% 95%;
+  --crm-canvas: 210 25% 97%;
+  --crm-line: 214 24% 89%;
+  --background: 210 25% 97%;
+  --foreground: 215 61% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 61% 16%;
+  --primary: 18 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 213 100% 95%;
+  --secondary-foreground: 215 61% 16%;
+  --muted: 210 22% 94%;
+  --muted-foreground: 215 14% 42%;
+  --accent: 24 100% 95%;
+  --accent-foreground: 18 100% 42%;
+  --border: 214 24% 89%;
+  --input: 214 24% 89%;
+  --ring: 18 100% 50%;
+}
+
+.dealer-crm .crm-panel-shadow {
+  box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.04), 0 8px 24px hsl(var(--crm-navy) / 0.045);
+}
+
 /* Public static-page reskin. Kept behind explicit page classes so internal
    admin, customer and dealer applications retain their existing UI. */
 .public-static-page,

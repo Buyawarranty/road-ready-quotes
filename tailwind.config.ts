@@ -66,6 +66,24 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				crm: {
+					navy: 'hsl(var(--crm-navy))',
+					'navy-soft': 'hsl(var(--crm-navy-soft))',
+					orange: 'hsl(var(--crm-orange))',
+					'orange-soft': 'hsl(var(--crm-orange-soft))',
+					green: 'hsl(var(--crm-green))',
+					'green-soft': 'hsl(var(--crm-green-soft))',
+					blue: 'hsl(var(--crm-blue))',
+					'blue-soft': 'hsl(var(--crm-blue-soft))',
+					purple: 'hsl(var(--crm-purple))',
+					'purple-soft': 'hsl(var(--crm-purple-soft))',
+					amber: 'hsl(var(--crm-amber))',
+					'amber-soft': 'hsl(var(--crm-amber-soft))',
+					red: 'hsl(var(--crm-red))',
+					'red-soft': 'hsl(var(--crm-red-soft))',
+					canvas: 'hsl(var(--crm-canvas))',
+					line: 'hsl(var(--crm-line))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

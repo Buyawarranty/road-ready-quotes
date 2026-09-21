@@ -18,6 +18,7 @@ interface DealerProfile {
   county?: string | null;
   postcode?: string | null;
   country_code?: string | null;
+  status?: string | null;
 }
 
 

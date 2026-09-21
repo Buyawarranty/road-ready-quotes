@@ -1,95 +1,63 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
-import { DealerStatsCards } from '@/components/dealer/DealerStatsCards';
-import { DealerRecentQuotes } from '@/components/dealer/DealerRecentQuotes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import {
   FilePlus,
   FileText,
   Shield,
-  Sparkles,
-  Search,
   ArrowRight,
-  Car,
+  Users,
+  Wrench,
+  ChevronRight,
+  TrendingUp,
+  AlertCircle,
+  Settings2,
+  BookOpen,
+  BarChart3,
+  Send,
 } from 'lucide-react';
+
+const recentQuotes = [
+  { customer: 'Prajwal Chauhan', reg: 'S17DRW', vehicle: 'Land Rover Discovery', price: '£141.60', status: 'Pending', date: '22/08/2026' },
+  { customer: 'Sarah Khan', reg: 'SJ17DRW', vehicle: 'Renault Clio', price: '£14.40', status: 'Pending', date: '22/08/2026' },
+  { customer: 'Michael Roberts', reg: 'GV70ABC', vehicle: 'BMW 3 Series', price: '£199.00', status: 'Draft', date: '21/08/2026' },
+  { customer: 'James Wilson', reg: 'NL21KZE', vehicle: 'Audi Q5', price: '£185.00', status: 'Sent', date: '20/08/2026' },
+  { customer: 'Emma Taylor', reg: 'BD22XYZ', vehicle: 'Volkswagen Golf', price: '£122.00', status: 'Expired', date: '18/08/2026' },
+];
+
+const statusStyles: Record<string, string> = {
+  Pending: 'bg-crm-amber-soft text-crm-amber',
+  Draft: 'bg-crm-blue-soft text-crm-blue',
+  Sent: 'bg-crm-green-soft text-crm-green',
+  Expired: 'bg-crm-red-soft text-crm-red',
+};
+
+const sparkHeights = ['h-[28%]', 'h-[40%]', 'h-[52%]', 'h-[65%]', 'h-[78%]', 'h-[94%]'];
+const sparkOpacity = ['opacity-40', 'opacity-50', 'opacity-60', 'opacity-70', 'opacity-80', 'opacity-100'];
 
 const DealerDashboard = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
 
-  const { data: quotes = [] } = useQuery({
-    queryKey: ['dealer-quotes', dealer?.id],
-    queryFn: async () => {
-      if (!dealer?.id) return [];
-      const { data } = await supabase
-        .from('dealer_quotes')
-        .select('*')
-        .eq('dealer_id', dealer.id)
-        .order('created_at', { ascending: false });
-      return data || [];
-    },
-    enabled: !!dealer?.id,
-  });
-
-  const { data: dealerOrders = [] } = useQuery({
-    queryKey: ['dealer-orders', dealer?.id],
-    queryFn: async () => {
-      if (!dealer?.id) return [];
-      const { data } = await supabase
-        .from('customers')
-        .select('id, name, email, registration_plate, plan_type, payment_type, final_amount, payment_status, status, signup_date, policy_end_date')
-        .eq('dealer_id', dealer.id)
-        .order('signup_date', { ascending: false })
-        .limit(20);
-      return data || [];
-    },
-    enabled: !!dealer?.id,
-  });
-
-  const totalQuotes = quotes.length;
-  const activeWarranties = dealerOrders.filter((o: any) => o.status === 'active').length;
-
-  const dealerRegs = dealerOrders
-    .map((o: any) => (o.registration_plate || '').toString().replace(/\s+/g, '').toUpperCase())
-    .filter(Boolean);
-
-  const { data: activeClaimsData = [] } = useQuery({
-    queryKey: ['dealer-active-claims', dealer?.id, dealerRegs.join(',')],
-    queryFn: async () => {
-      if (!dealer?.id || dealerRegs.length === 0) return [];
-      const { data } = await supabase
-        .from('claims_submissions')
-        .select('id, status, vehicle_registration')
-        .in('status', ['new', 'in_review', 'pending', 'open', 'in_progress', 'approved']);
-      return (data || []).filter((c: any) =>
-        dealerRegs.includes((c.vehicle_registration || '').toString().replace(/\s+/g, '').toUpperCase())
-      );
-    },
-    enabled: !!dealer?.id && dealerRegs.length > 0,
-  });
-  const activeClaims = activeClaimsData.length;
-
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleaned = reg.trim().toUpperCase();
     if (!cleaned) return;
-    navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`);
+    navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`);
   };
 
   const quickActions = [
     {
       label: 'Start full quote',
       desc: 'Guided vehicle, customer & checkout flow',
-      icon: Sparkles,
-      onClick: () => navigate('/dealer-portal/quote/pricing'),
+      icon: FilePlus,
+      onClick: () => navigate('/dealer-portal/quote/vehicle'),
       tone: 'primary' as const,
     },
     {
@@ -100,7 +68,7 @@ const DealerDashboard = () => {
     },
     {
       label: 'View quotes',
-      desc: 'All saved & sent dealer quotes',
+      desc: 'All saved & sent quotes',
       icon: FileText,
       onClick: () => navigate('/dealer-portal/quotes'),
     },
@@ -110,162 +78,201 @@ const DealerDashboard = () => {
       icon: Shield,
       onClick: () => navigate('/dealer-portal/warranties'),
     },
+    { label: 'Customers', desc: 'Manage your customer base', icon: Users, onClick: () => navigate('/dealer-portal/customers') },
+    { label: 'Claims', desc: 'Submit & track claims', icon: Wrench, onClick: () => navigate('/dealer-portal/coming-soon?section=claims') },
+  ];
+
+  const kpis = [
+    { label: 'Total Quotes', value: '128', change: '+24%', icon: FileText, tone: 'blue' },
+    { label: 'Active Warranties', value: '97', change: '+18%', icon: Shield, tone: 'green' },
+    { label: 'Open Claims', value: '6', change: '+25%', icon: AlertCircle, tone: 'orange' },
+    { label: 'Customers', value: '84', change: '+32%', icon: Users, tone: 'purple' },
+  ] as const;
+
+  const toneStyles = {
+    blue: 'bg-crm-blue-soft text-crm-blue',
+    green: 'bg-crm-green-soft text-crm-green',
+    orange: 'bg-crm-orange-soft text-crm-orange',
+    purple: 'bg-crm-purple-soft text-crm-purple',
+  };
+
+  const attention = [
+    { title: '3 pending quotes', description: 'Quotes awaiting action', count: '3', icon: FileText, style: 'bg-crm-orange-soft text-crm-orange', to: '/dealer-portal/quotes' },
+    { title: '2 claims need information', description: 'Customer information required', count: '2', icon: AlertCircle, style: 'bg-crm-amber-soft text-crm-amber', to: '/dealer-portal/coming-soon?section=claims' },
+    { title: '5 warranties expiring soon', description: 'Within the next 30 days', count: '5', icon: Shield, style: 'bg-crm-amber-soft text-crm-amber', to: '/dealer-portal/warranties' },
+    { title: '1 document missing', description: 'Customer document required', count: '1', icon: FileText, style: 'bg-crm-red-soft text-crm-red', to: '/dealer-portal/coming-soon?section=documents' },
+  ];
+
+  const activities = [
+    { title: 'Quote created', detail: 'Audi Q5 · B11CSD', time: '2 mins ago', icon: FileText, style: 'bg-crm-orange-soft text-crm-orange' },
+    { title: 'Warranty issued', detail: 'Riverside Motors', time: '18 mins ago', icon: Shield, style: 'bg-crm-green-soft text-crm-green' },
+    { title: 'New customer', detail: 'Sarah Khan', time: '1 hour ago', icon: Users, style: 'bg-crm-blue-soft text-crm-blue' },
+    { title: 'Claim submitted', detail: 'Ford Kuga', time: '3 hours ago', icon: Wrench, style: 'bg-crm-orange-soft text-crm-orange' },
+    { title: 'Document sent', detail: 'Policy schedule', time: '5 hours ago', icon: Send, style: 'bg-muted text-muted-foreground' },
+  ];
+
+  const performance = [
+    { value: '128', label: 'Quotes', colour: 'bg-crm-blue' },
+    { value: '97', label: 'Warranties', colour: 'bg-crm-green' },
+    { value: '6', label: 'Claims', colour: 'bg-crm-orange' },
+    { value: '84', label: 'Customers', colour: 'bg-crm-purple' },
   ];
 
   return (
     <DealerLayout>
-      <div className="space-y-6">
-        {/* Hero / Reg lookup */}
-        <Card className="bg-gradient-to-br from-yellow-300 via-yellow-200 to-orange-200 border border-orange-200 overflow-hidden">
-          <CardContent className="p-6 lg:p-8">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="space-y-2 max-w-xl">
-                <p className="text-xs font-bold tracking-[0.2em] text-orange-600">
-                  DEALER DASHBOARD
+      <div className="mx-auto max-w-[1500px] space-y-3">
+        <Card className="crm-panel-shadow overflow-hidden border-crm-line bg-crm-orange-soft">
+          <CardContent className="p-0">
+            <div className="grid min-h-[150px] lg:grid-cols-[minmax(0,1fr)_390px]">
+              <div className="relative p-5 sm:p-7">
+                <p className="mb-1 text-[11px] font-bold tracking-[0.16em] text-crm-orange">DEALER PORTAL</p>
+                <h1 className="text-2xl font-bold leading-tight sm:text-3xl">Welcome back, {dealer?.name?.split(' ')[0] || 'Prajwal'}</h1>
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                  Let's keep your dealership moving. Get a quote, manage warranties, check claims and more — all in one place.
                 </p>
-                <h1 className="text-2xl lg:text-3xl font-bold leading-tight text-gray-900">
-                  Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}
-                </h1>
-                <p className="text-sm text-gray-700">
-                  {dealer?.company_name || 'Issue a warranty in under 60 seconds — start with a registration.'}
-                </p>
+                <p className="mt-3 hidden text-sm font-semibold italic text-foreground/70 sm:block">Stronger dealerships together.</p>
               </div>
-
-              <form
-                onSubmit={handleRegSubmit}
-                className="flex flex-col sm:flex-row items-stretch gap-2 w-full lg:w-auto lg:min-w-[420px]"
-              >
-                <div className="relative flex-1">
-                  <Car className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-orange-500" />
-                  <Input
-                    value={reg}
-                    onChange={(e) => setReg(e.target.value.toUpperCase())}
-                    placeholder="ENTER REG"
-                    aria-label="Vehicle registration"
-                    className="h-12 pl-10 bg-white border-2 border-orange-300 text-gray-900 placeholder:text-gray-500 font-bold tracking-widest text-lg uppercase focus-visible:ring-orange-400"
-                    maxLength={10}
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  className="h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wide px-6"
-                >
-                  Get quote <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </form>
+              <div className="flex items-center border-t border-crm-line bg-card/90 p-4 lg:border-l lg:border-t-0">
+                <form onSubmit={handleRegSubmit} className="w-full rounded-md border border-crm-line bg-card p-4 crm-panel-shadow">
+                  <h2 className="text-sm font-bold">Get a quote</h2>
+                  <p className="mb-3 text-xs text-muted-foreground">Enter a vehicle registration to start</p>
+                  <div className="flex gap-2">
+                    <div className="flex min-w-0 flex-1 overflow-hidden rounded-md border-2 border-crm-amber bg-crm-amber-soft">
+                      <span className="flex w-9 items-center justify-center bg-crm-blue text-[10px] font-bold text-primary-foreground">GB</span>
+                      <Input value={reg} onChange={(event) => setReg(event.target.value.toUpperCase())} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="h-10 min-w-0 border-0 bg-transparent text-center text-sm font-black tracking-widest focus-visible:ring-0" />
+                    </div>
+                    <Button type="submit" className="h-10 shrink-0 px-4">Get quote <ArrowRight className="ml-1 h-4 w-4" /></Button>
+                  </div>
+                  <Button type="button" variant="link" size="sm" className="mt-1 h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/vehicle')}>Or start a full quote <ArrowRight className="ml-1 h-3 w-3" /></Button>
+                </form>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Stats */}
-        <DealerStatsCards
-          totalQuotes={totalQuotes}
-          activeWarranties={activeWarranties}
-          activeClaims={activeClaims}
-        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {kpis.map((kpi) => {
+            const Icon = kpi.icon;
+            return (
+              <Card key={kpi.label} className="crm-panel-shadow cursor-pointer border-crm-line transition-transform hover:-translate-y-0.5" onClick={() => navigate(kpi.label === 'Customers' ? '/dealer-portal/customers' : kpi.label === 'Active Warranties' ? '/dealer-portal/warranties' : kpi.label === 'Open Claims' ? '/dealer-portal/coming-soon?section=claims' : '/dealer-portal/quotes')}>
+                <CardContent className="flex items-center gap-3 p-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-md ${toneStyles[kpi.tone]}`}><Icon className="h-6 w-6" /></div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground">{kpi.label}</p>
+                    <p className="text-xl font-bold leading-none">{kpi.value}</p>
+                    <p className={`mt-1 text-xs font-bold ${kpi.tone === 'orange' ? 'text-crm-orange' : 'text-crm-green'}`}><TrendingUp className="mr-1 inline h-3.5 w-3.5" />{kpi.change} <span className="font-normal text-muted-foreground">vs last month</span></p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-        {/* Quick actions grid */}
         <div>
-          <div className="flex items-end justify-between mb-3">
+          <div className="mb-2 flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Quick actions</h2>
-              <p className="text-xs text-gray-500">Pick the flow that fits the customer in front of you.</p>
+              <h2 className="text-base font-bold">Quick actions</h2>
+              <p className="text-xs text-muted-foreground">Everything you need to manage your dealership, in one place.</p>
             </div>
+            <Button variant="outline" size="sm" className="hidden gap-1.5 sm:flex"><Settings2 className="h-3.5 w-3.5" /> Customise</Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-6">
             {quickActions.map((a) => {
               const Icon = a.icon;
               const isPrimary = a.tone === 'primary';
               return (
-                <button
+                <Button
+                  variant="outline"
                   key={a.label}
                   onClick={a.onClick}
-                  className={`group text-left rounded-xl p-4 border transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                  className={`group h-[76px] justify-start gap-3 whitespace-normal rounded-md p-3 text-left transition-all hover:-translate-y-0.5 ${
                     isPrimary
-                      ? 'bg-orange-500 border-orange-500 hover:bg-orange-600'
-                      : 'bg-white border-gray-200 hover:border-orange-400'
+                      ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground'
+                      : 'border-crm-line bg-card hover:border-crm-orange hover:bg-card'
                   }`}
                 >
-                  <div
-                    className={`h-10 w-10 rounded-lg flex items-center justify-center mb-3 ${
-                      isPrimary ? 'bg-yellow-300 text-orange-700' : 'bg-orange-50 text-orange-600 group-hover:bg-orange-100'
-                    }`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className={`font-bold text-sm ${isPrimary ? 'text-gray-900' : 'text-gray-900'}`}>
-                    {a.label}
-                  </div>
-                  <div className={`text-xs mt-0.5 ${isPrimary ? 'text-gray-900/80' : 'text-gray-500'}`}>
-                    {a.desc}
-                  </div>
-                </button>
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${isPrimary ? 'bg-primary-foreground/18' : 'bg-crm-orange-soft text-crm-orange'}`}><Icon className="h-5 w-5" /></span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-xs font-bold">{a.label}</span>
+                    <span className={`mt-0.5 block text-[10px] leading-tight ${isPrimary ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{a.desc}</span>
+                  </span>
+                  <ChevronRight className={`h-4 w-4 shrink-0 ${isPrimary ? 'text-primary-foreground' : 'text-crm-orange'}`} />
+                </Button>
               );
             })}
           </div>
         </div>
 
-        {/* Recent dealer orders */}
-        <Card className="bg-white border-gray-200">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Recent dealer orders</h2>
-                <p className="text-xs text-gray-500">Latest warranties issued under your account.</p>
+        <div className="grid gap-3 xl:grid-cols-[0.92fr_1.25fr_0.72fr]">
+          <Card className="crm-panel-shadow border-crm-line">
+            <CardContent className="p-3">
+              <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-bold">Needs attention</h2><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quotes')}>View all <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
+              <div className="space-y-1.5">
+                {attention.map((item) => { const Icon = item.icon; return (
+                  <Button key={item.title} variant="outline" className="h-[58px] w-full justify-start gap-2 border-crm-line px-2.5 text-left" onClick={() => navigate(item.to)}>
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${item.style}`}><Icon className="h-4 w-4" /></span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-xs font-bold">{item.title}</span><span className="block truncate text-[10px] font-normal text-muted-foreground">{item.description}</span></span>
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${item.style}`}>{item.count}</span><ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                  </Button>
+                ); })}
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/dealer-portal/warranties')}
-                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-              >
-                View all <ArrowRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-            {dealerOrders.length === 0 ? (
-              <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-lg">
-                <Shield className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                <p className="text-gray-600 text-sm font-medium">No dealer orders yet</p>
-                <p className="text-gray-400 text-xs mb-4">Enter a reg above to issue your first warranty.</p>
-              </div>
-            ) : (
+            </CardContent>
+          </Card>
+
+          <Card className="crm-panel-shadow min-w-0 border-crm-line">
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between px-3 py-3"><h2 className="text-sm font-bold">Recent quotes</h2><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quotes')}>View all <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-200 text-gray-600 text-xs uppercase tracking-wider">
-                      <th className="text-left py-2 font-medium">Customer</th>
-                      <th className="text-left py-2 font-medium">Vehicle</th>
-                      <th className="text-left py-2 font-medium">Plan</th>
-                      <th className="text-right py-2 font-medium">Amount</th>
-                      <th className="text-left py-2 font-medium pl-4">Status</th>
+                <table className="w-full min-w-[560px] text-left text-[10px]">
+                  <thead className="border-y border-crm-line bg-muted/40 text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Customer</th><th className="px-2 py-2 font-medium">Vehicle</th><th className="px-2 py-2 font-medium">Price</th><th className="px-2 py-2 font-medium">Status</th><th className="px-2 py-2 font-medium">Date</th><th className="w-6" /></tr></thead>
+                  <tbody>{recentQuotes.map((quote) => (
+                    <tr key={`${quote.customer}-${quote.reg}`} className="cursor-pointer border-b border-crm-line last:border-0 hover:bg-muted/50" onClick={() => navigate(`/dealer-portal/quotes?search=${quote.reg}`)}>
+                      <td className="px-3 py-2 font-semibold">{quote.customer}</td><td className="px-2 py-2"><span className="block font-medium">{quote.reg}</span><span className="block text-muted-foreground">{quote.vehicle}</span></td><td className="px-2 py-2">{quote.price}</td><td className="px-2 py-2"><span className={`rounded-full px-2 py-1 font-semibold ${statusStyles[quote.status]}`}>{quote.status}</span></td><td className="px-2 py-2 text-muted-foreground">{quote.date}</td><td><ChevronRight className="h-3.5 w-3.5 text-muted-foreground" /></td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {dealerOrders.slice(0, 8).map((o: any) => (
-                      <tr key={o.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 text-gray-900">{o.name}</td>
-                        <td className="py-3 text-gray-700 font-mono text-xs">{o.registration_plate}</td>
-                        <td className="py-3 text-gray-700 capitalize">{o.plan_type} · {o.payment_type}mo</td>
-                        <td className="py-3 text-right text-gray-900 font-semibold">£{Number(o.final_amount || 0).toFixed(2)}</td>
-                        <td className="py-3 pl-4">
-                          {o.payment_status === 'invoice_pending' ? (
-                            <Badge className="bg-yellow-100 text-orange-700 border border-yellow-300 hover:bg-yellow-100">Awaiting invoice</Badge>
-                          ) : o.status === 'active' ? (
-                            <Badge className="bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-100">Active</Badge>
-                          ) : (
-                            <Badge className="bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-100">{o.status || 'Pending'}</Badge>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  ))}</tbody>
                 </table>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <DealerRecentQuotes quotes={quotes as any[]} />
+          <Card className="crm-panel-shadow border-crm-line">
+            <CardContent className="p-3">
+              <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-bold">Recent activity</h2><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quotes')}>View all <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
+              <div>{activities.map((item, index) => { const Icon = item.icon; return (
+                <div key={item.title} className={`flex items-center gap-2 py-2 ${index < activities.length - 1 ? 'border-b border-crm-line' : ''}`}>
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${item.style}`}><Icon className="h-4 w-4" /></span>
+                  <span className="min-w-0 flex-1"><span className="block truncate text-[11px] font-bold">{item.title}</span><span className="block truncate text-[10px] text-muted-foreground">{item.detail}</span></span><span className="whitespace-nowrap text-[9px] text-muted-foreground">{item.time}</span>
+                </div>
+              ); })}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_300px_240px]">
+          <Card className="crm-panel-shadow border-crm-line">
+            <CardContent className="p-3">
+              <div className="mb-3 flex items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-sm font-bold"><BarChart3 className="h-4 w-4" /> Your dealership performance</h2><p className="text-[10px] text-muted-foreground">A quick look at your activity over the last 6 months.</p></div><select aria-label="Performance period" className="h-8 rounded-md border border-input bg-card px-2 text-[10px]"><option>Last 6 months</option></select></div>
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">{performance.map((metric) => (
+                <div key={metric.label} className="flex items-end justify-between rounded-md border border-crm-line p-2"><div><p className="text-lg font-bold leading-none">{metric.value}</p><p className="mt-1 text-[10px] text-muted-foreground">{metric.label}</p></div><div className="flex h-8 items-end gap-1">{sparkHeights.map((height, index) => <span key={height} className={`w-1.5 rounded-t-sm ${metric.colour} ${height} ${sparkOpacity[index]}`} />)}</div></div>
+              ))}</div>
+            </CardContent>
+          </Card>
+
+          <Card className="crm-panel-shadow overflow-hidden border-crm-line">
+            <CardContent className="flex h-full items-center gap-3 p-3">
+              <img src={supportPanda.url} alt="Panda Protect support mascot" className="h-20 w-20 shrink-0 object-contain" />
+              <div><h2 className="text-sm font-bold">Need support?</h2><p className="mb-2 text-[10px] text-muted-foreground">Our UK team is here to help.</p><Button variant="outline" size="sm" asChild className="h-8 border-crm-orange text-[10px] text-crm-orange"><a href="mailto:hello@pandaprotect.co.uk">Contact dealer support →</a></Button></div>
+            </CardContent>
+          </Card>
+
+          <Card className="crm-panel-shadow border-crm-line">
+            <CardContent className="flex h-full items-center gap-3 p-4">
+              <BookOpen className="h-8 w-8 shrink-0 text-crm-navy" />
+              <div><h2 className="text-sm font-bold">Helpful resources</h2><p className="mb-2 text-[10px] text-muted-foreground">Guides, FAQs and sales material.</p><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/faq/traders/')}>View resources <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DealerLayout>
   );
