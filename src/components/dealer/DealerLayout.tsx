@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  ArrowLeft,
   Home,
   FilePlus2,
   FileText,
@@ -333,6 +334,21 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </aside>
 
       <main className="min-h-screen px-3 pb-5 pt-[84px] sm:px-5 lg:ml-[240px] lg:px-6 lg:pt-[88px]">
+        {location.pathname !== '/dealer-portal/dashboard' && (
+          <div className="mb-3">
+            <button
+              type="button"
+              onClick={() => {
+                const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
+                if (window.history.length > 1 && idx > 0) navigate(-1);
+                else navigate('/dealer-portal/dashboard');
+              }}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-muted px-5 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+            >
+              <ArrowLeft className="h-4 w-4" /> Back
+            </button>
+          </div>
+        )}
         {children}
       </main>
     </div>
