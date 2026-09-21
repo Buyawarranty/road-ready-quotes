@@ -6,4 +6,4 @@
 - [ ] Build the remaining CRM pages after Home and New Quote are approved.
 - [x] Update /dealer-portal/signup UI to match the supplied screenshot style and simplify the register/login choice.
 - [x] Replace quote-list photo placeholders with registration plates and vehicle descriptions.
-- [ ] Match the dashboard registration input to the UK plate style with ENTER REG default wording.
+- [x] Match the dashboard registration input to the UK plate style with ENTER REG default wording.
