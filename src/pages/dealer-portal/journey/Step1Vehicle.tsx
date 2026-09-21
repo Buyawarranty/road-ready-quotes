@@ -4,19 +4,10 @@ import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useDealerJourney, type DealerJourneyPlan, type DealerJourneyVehicle } from '@/contexts/DealerJourneyContext';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import {
   ArrowRight,
-  BarChart3,
   Car,
   Check,
   CheckCircle2,
@@ -24,8 +15,6 @@ import {
   Loader2,
   Search,
   Shield,
-  Sparkles,
-  Users,
 } from 'lucide-react';
 
 type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
@@ -33,31 +22,11 @@ type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
 type SaveState = 'idle' | 'saving' | 'saved';
 
 
-const reassurance = [
-  { label: 'Quick & simple', icon: Sparkles },
-  { label: 'Dealer-focused', icon: Shield },
-  { label: 'UK support', icon: Headphones },
-  { label: 'Trusted by dealers', icon: Users },
-];
-
 const progressSteps = [
   { n: 1, label: 'Enter Reg Plate' },
   { n: 2, label: 'Vehicle Details' },
   { n: 3, label: 'Choose Your Plan' },
   { n: 4, label: 'Review & Pay' },
-];
-
-const comparisonRows = [
-  { label: 'What it is', dealerPaid: 'Claim management only', fullyCovered: 'A comprehensive warranty' },
-  { label: 'Who handles the claim', dealerPaid: 'We manage the claim for your customer', fullyCovered: 'We manage the claim for your customer' },
-  { label: 'Who pays for repairs', dealerPaid: 'You pay the repair bill', fullyCovered: 'We pay the repair bill' },
-  { label: 'Repair costs', dealerPaid: 'Funded by dealership', fullyCovered: 'Covered under the warranty' },
-  { label: 'Dealer support', dealerPaid: 'Included', fullyCovered: 'Included' },
-  {
-    label: 'Best suited for',
-    dealerPaid: 'Dealers wanting lower warranty costs while funding repairs themselves',
-    fullyCovered: 'Dealers wanting repair costs transferred to Panda Protect',
-  },
 ];
 
 const warrantyPlans = [
