@@ -5,3 +5,4 @@
 - [x] Build the New Quote page inside the dealer CRM with the supplied quote journey design and connect every New Quote entry point to it.
 - [ ] Build the remaining CRM pages after Home and New Quote are approved.
 - [x] Update /dealer-portal/signup UI to match the supplied screenshot style and simplify the register/login choice.
+- [ ] Replace quote-list photo placeholders with registration plates and vehicle descriptions.
