@@ -345,7 +345,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
             </div>
             <div className="min-w-0">
               <div className="text-sm sm:text-base font-bold text-gray-900">Dealer-Paid Warranty</div>
-              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">We manage claims · You fund the repairs</div>
+              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Claim management only · We handle the claim, you pay the repair bill</div>
             </div>
           </div>
           <span className="text-sm sm:text-base font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
@@ -366,7 +366,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                 <span className="text-sm sm:text-base font-bold text-gray-900">Fully Covered Warranty</span>
                 <span className="text-[9px] font-bold uppercase tracking-wide bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Popular</span>
               </div>
-              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">All-inclusive · We handle claims & pay repairs</div>
+              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">A comprehensive warranty · We handle claims and pay for repairs</div>
             </div>
           </div>
           <span className="text-sm sm:text-base font-extrabold text-gray-900 whitespace-nowrap">£{warrantyResult.gross.toFixed(2)}/m</span>

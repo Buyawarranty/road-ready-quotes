@@ -61,10 +61,10 @@ const progressSteps = [
 ];
 
 const comparisonRows = [
-  { label: 'Who pays for repairs', dealerPaid: 'Dealer', fullyCovered: 'Panda Protect' },
-  { label: 'Claims management', dealerPaid: 'Panda Protect manages the process', fullyCovered: 'Panda Protect manages the process' },
+  { label: 'What it is', dealerPaid: 'Claim management only', fullyCovered: 'A comprehensive warranty' },
+  { label: 'Who handles the claim', dealerPaid: 'We manage the claim for your customer', fullyCovered: 'We manage the claim for your customer' },
+  { label: 'Who pays for repairs', dealerPaid: 'You pay the repair bill', fullyCovered: 'We pay the repair bill' },
   { label: 'Repair costs', dealerPaid: 'Funded by dealership', fullyCovered: 'Covered under the warranty' },
-  { label: 'Customer experience', dealerPaid: 'Managed claims support', fullyCovered: 'Fully managed cover' },
   { label: 'Dealer support', dealerPaid: 'Included', fullyCovered: 'Included' },
   {
     label: 'Best suited for',
@@ -77,13 +77,13 @@ const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
     name: 'Dealer-Paid Warranty',
-    description: 'We manage claims · You fund the repairs',
+    description: 'Claim management only · We handle the claim, you pay the repair bill',
     price: '£1.20/m',
     icon: Headphones,
     badge: null,
     benefits: [
-      'Cost-effective for dealerships',
-      'Simple claims process',
+      'We manage every claim for your customer',
+      'You keep control of repair costs',
       'Keeps your customers on the road',
       'Full support from our UK team',
     ],
@@ -91,15 +91,15 @@ const warrantyPlans = [
   {
     key: 'fully-covered' as const,
     name: 'Fully Covered Warranty',
-    description: 'All-inclusive · We handle claims & pay repairs',
+    description: 'A comprehensive warranty · We handle claims and pay for repairs',
     price: '£141.60/m',
     icon: Shield,
     badge: 'POPULAR',
     benefits: [
-      'Comprehensive cover',
-      'Hassle-free for you and your customer',
+      'Comprehensive cover for your customer',
+      'We handle the claim and pay the repair bill',
       'National repair network',
-      'Trusted by dealerships across the UK',
+      'Hassle-free for you and your customer',
     ],
   },
 ];
