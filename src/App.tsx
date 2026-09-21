@@ -289,7 +289,6 @@ const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 // Dealer Portal pages
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
 const DealerDashboard = lazy(() => import("./pages/dealer-portal/DealerDashboard"));
-const DealerCreateQuote = lazy(() => import("./pages/dealer-portal/DealerCreateQuote"));
 const DealerQuotesList = lazy(() => import("./pages/dealer-portal/DealerQuotesList"));
 const DealerWarrantiesList = lazy(() => import("./pages/dealer-portal/DealerWarrantiesList"));
 const DealerAnalytics = lazy(() => import("./pages/dealer-portal/DealerAnalytics"));
@@ -429,7 +428,7 @@ const App = () => {
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     {/* Dealer portal app routes */}
                     <Route path="/dealer-portal/dashboard" element={<DealerDashboard />} />
-                    <Route path="/dealer-portal/quotes/create" element={<DealerCreateQuote />} />
+                    <Route path="/dealer-portal/quotes/create" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quotes" element={<DealerJourneyProvider><DealerQuotesList /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
                     <Route path="/dealer-portal/customers" element={<DealerCustomersList />} />

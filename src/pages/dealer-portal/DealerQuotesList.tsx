@@ -11,7 +11,7 @@ import { Plus, Search, Trash2, Camera, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STEP_PATHS: Record<number, string> = {
-  1: '/dealer-portal/quote/pricing',
+  1: '/dealer-portal/quote/vehicle',
   2: '/dealer-portal/quote/customer',
   3: '/dealer-portal/quote/pricing',
   4: '/dealer-portal/quote/checkout',
@@ -108,7 +108,7 @@ const DealerQuotesList = () => {
 
   const handleNewQuote = () => {
     reset();
-    navigate('/dealer-portal/quote/pricing');
+    navigate('/dealer-portal/quote/vehicle');
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
@@ -145,12 +145,14 @@ const DealerQuotesList = () => {
               </Button>
             </div>
 
-            <button
+            <Button
+              type="button"
+              variant="ghost"
               onClick={handleNewQuote}
-              className="inline-flex items-center gap-2 text-orange-500 hover:text-orange-600 font-bold text-sm tracking-wide self-start md:self-auto"
+              className="h-auto self-start px-0 text-sm font-bold tracking-wide text-crm-orange hover:bg-transparent hover:text-crm-orange md:self-auto"
             >
-              <Plus className="h-5 w-5" /> Add new dealer plan
-            </button>
+              <Plus className="h-5 w-5" /> New Quote
+            </Button>
           </div>
 
           <div className="mt-4 text-sm">
