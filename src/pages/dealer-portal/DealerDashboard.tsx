@@ -4,6 +4,7 @@ import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import {
@@ -13,6 +14,7 @@ import {
   ArrowRight,
   Users,
   Wrench,
+  ChevronDown,
   ChevronRight,
   TrendingUp,
   AlertCircle,
@@ -44,6 +46,8 @@ const DealerDashboard = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [recentQuotesOpen, setRecentQuotesOpen] = useState(false);
+  const [recentActivityOpen, setRecentActivityOpen] = useState(false);
 
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
