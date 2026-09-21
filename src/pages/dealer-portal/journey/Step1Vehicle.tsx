@@ -166,6 +166,7 @@ const Step1Vehicle: React.FC = () => {
             setLookupState('not-found');
           } else {
             setLookupState('success');
+            setMileage(LAST_MOT_MILEAGE);
           }
         }, 550);
       }, 250);
