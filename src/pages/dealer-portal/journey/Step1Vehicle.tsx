@@ -162,12 +162,6 @@ const Step1Vehicle: React.FC = () => {
     setValidation((current) => ({ ...current, reg: '' }));
   };
 
-  const editVehicle = () => {
-    setLookupState('default');
-    regInputRef.current?.focus();
-    regInputRef.current?.select();
-  };
-
   const validate = () => {
     const errors: Record<string, string> = {};
     if (!isValidReg(reg)) errors.reg = 'Enter a valid UK vehicle registration.';
@@ -183,12 +177,6 @@ const Step1Vehicle: React.FC = () => {
     setPlan(activePlan);
     await save({ silent: true, overrideVehicle: activeVehicle, overridePlan: activePlan });
     navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
-  };
-
-  const choosePlanFromCompare = (plan: WarrantyPlanKey) => {
-    setSelectedPlan(plan);
-    setValidation((current) => ({ ...current, plan: '' }));
-    setCompareOpen(false);
   };
 
   return (
