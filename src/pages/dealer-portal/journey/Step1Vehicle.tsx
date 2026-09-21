@@ -175,7 +175,10 @@ const Step1Vehicle: React.FC = () => {
   const [saveState, setSaveState] = useState<SaveState>('saved');
 
   const currentMileage = manualMode ? manualFields.mileage : mileage;
-  const canContinue = Boolean((manualMode || isValidReg(reg)) && currentMileage.trim() && selectedPlan);
+  const vehicleDetailsComplete = manualMode
+    ? Boolean(manualFields.make.trim() && manualFields.model.trim() && manualFields.year.trim() && manualFields.fuelType.trim() && currentMileage.trim())
+    : Boolean(isValidReg(reg) && currentMileage.trim() && lookupState === 'success');
+  const canContinue = Boolean(vehicleDetailsComplete && selectedPlan);
   const activeVehicle = useMemo(() => buildVehicle(reg, mileage, manualFields, manualMode), [reg, mileage, manualFields, manualMode]);
   const activePlan = useMemo(() => buildPlan(selectedPlan), [selectedPlan]);
 
@@ -441,34 +444,45 @@ const Step1Vehicle: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card className="crm-panel-shadow border-crm-line">
+        <Card className={`crm-panel-shadow border-crm-line transition-opacity ${vehicleDetailsComplete ? 'opacity-100' : 'opacity-70'}`}>
           <CardContent className="p-4 sm:p-5">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-3">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><Shield className="h-5 w-5" /></span>
                 <div>
                   <h2 className="text-base font-bold">Choose your warranty plan</h2>
-                  <p className="text-xs text-muted-foreground">Select the cover that best suits your customer.</p>
+                  <p className="text-xs text-muted-foreground">
+                    {vehicleDetailsComplete ? 'Vehicle details confirmed. Select the cover that best suits your customer.' : 'Enter the registration and mileage above, then choose a warranty option.'}
+                  </p>
                 </div>
               </div>
-              <Button variant="link" size="sm" className="h-auto justify-start px-0 text-xs font-bold text-crm-orange" onClick={() => setCompareOpen(true)}>
+              <Button variant="link" size="sm" className="h-auto justify-start px-0 text-xs font-bold text-crm-orange" onClick={() => setCompareOpen(true)} disabled={!vehicleDetailsComplete}>
                 <BarChart3 className="h-3.5 w-3.5" /> Compare plans <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
+
+            {!vehicleDetailsComplete && (
+              <div className="mb-3 rounded-md border border-dashed border-crm-line bg-muted/40 p-4 text-sm font-semibold text-muted-foreground">
+                Complete the vehicle details to unlock Dealer-Paid and Fully Covered options.
+              </div>
+            )}
 
             <div className="grid gap-3 lg:grid-cols-2">
               {warrantyPlans.map((plan) => {
                 const Icon = plan.icon;
                 const isSelected = selectedPlan === plan.key;
                 return (
-                  <button
+                  <Button
                     key={plan.key}
                     type="button"
                     onClick={() => { setSelectedPlan(plan.key); setValidation((current) => ({ ...current, plan: '' })); }}
-                    className={`group rounded-md border p-4 text-left transition-all ${isSelected ? 'border-crm-orange bg-crm-orange-soft shadow-sm' : 'border-crm-line bg-card hover:border-crm-orange'}`}
+                    disabled={!vehicleDetailsComplete}
+                    variant="ghost"
+                    className={`group h-auto justify-start rounded-md border p-4 text-left transition-all disabled:pointer-events-none disabled:opacity-60 ${isSelected ? 'border-crm-orange bg-crm-orange-soft shadow-sm' : 'border-crm-line bg-card hover:border-crm-orange'}`}
                     aria-pressed={isSelected}
                   >
-                    <div className="flex items-start gap-3">
+                    <span className="w-full">
+                    <span className="flex items-start gap-3">
                       <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${isSelected ? 'bg-card text-crm-orange' : 'bg-crm-blue-soft text-crm-blue'}`}><Icon className="h-5 w-5" /></span>
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-2 text-sm font-black">
@@ -478,15 +492,16 @@ const Step1Vehicle: React.FC = () => {
                         <span className="mt-0.5 block text-xs text-muted-foreground">{plan.description}</span>
                       </span>
                       <span className="text-right text-base font-black leading-none">{plan.price}<span className="block text-[10px] font-semibold text-muted-foreground">from</span></span>
-                    </div>
-                    <div className="mt-3 grid gap-1.5 text-[11px] text-muted-foreground">
+                    </span>
+                    <span className="mt-3 grid gap-1.5 text-[11px] text-muted-foreground">
                       {plan.benefits.map((benefit) => <span key={benefit} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-crm-orange" /> {benefit}</span>)}
-                    </div>
+                    </span>
                     <span className="mt-3 flex items-center justify-end gap-2 text-[11px] font-bold text-muted-foreground">
                       {isSelected ? 'Selected' : 'Select'}
                       <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isSelected ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'border-crm-line bg-card'}`}>{isSelected && <Check className="h-3 w-3" />}</span>
                     </span>
-                  </button>
+                    </span>
+                  </Button>
                 );
               })}
             </div>
