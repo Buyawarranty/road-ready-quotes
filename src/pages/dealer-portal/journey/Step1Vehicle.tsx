@@ -117,14 +117,14 @@ const emptyManualFields: ManualVehicleFields = {
 const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 const isValidReg = (value: string) => /^[A-Z0-9]{4,8}$/.test(normaliseReg(value));
 
-const buildVehicle = (reg: string, mileage: string, manual: ManualVehicleFields, manualMode: boolean): DealerJourneyVehicle => ({
+const buildVehicle = (reg: string, mileage: string): DealerJourneyVehicle => ({
   reg: normaliseReg(reg),
-  make: manualMode ? manual.make.trim() || undefined : 'AUDI',
-  model: manualMode ? manual.model.trim() || undefined : 'Q5',
-  year: manualMode ? manual.year.trim() || undefined : '2018',
-  fuel_type: manualMode ? manual.fuelType.trim() || undefined : 'Diesel',
-  transmission: manualMode ? manual.transmission.trim() || undefined : undefined,
-  mileage: manualMode ? manual.mileage.trim() : mileage.trim(),
+  make: 'AUDI',
+  model: 'Q5',
+  year: '2018',
+  fuel_type: 'Diesel',
+  transmission: undefined,
+  mileage: mileage.trim(),
 });
 
 const buildPlan = (selectedPlan: WarrantyPlanKey): DealerJourneyPlan => {
@@ -159,27 +159,15 @@ const Step1Vehicle: React.FC = () => {
   const [reg, setReg] = useState(normaliseReg(initialReg));
   const [mileage, setMileage] = useState(vehicle?.mileage || '101782');
   const [lookupState, setLookupState] = useState<LookupState>(initialReg ? 'success' : 'default');
-  const [manualMode, setManualMode] = useState(false);
-  const [manualFields, setManualFields] = useState<ManualVehicleFields>({
-    ...emptyManualFields,
-    make: vehicle?.make || '',
-    model: vehicle?.model || '',
-    year: vehicle?.year || '',
-    fuelType: vehicle?.fuel_type || '',
-    transmission: vehicle?.transmission || '',
-    mileage: vehicle?.mileage || '101782',
-  });
+  const regInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
   const [compareOpen, setCompareOpen] = useState(false);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
 
-  const currentMileage = manualMode ? manualFields.mileage : mileage;
-  const vehicleDetailsComplete = manualMode
-    ? Boolean(manualFields.make.trim() && manualFields.model.trim() && manualFields.year.trim() && manualFields.fuelType.trim() && currentMileage.trim())
-    : Boolean(isValidReg(reg) && currentMileage.trim() && lookupState === 'success');
+  const vehicleDetailsComplete = Boolean(isValidReg(reg) && mileage.trim() && lookupState === 'success');
   const canContinue = Boolean(vehicleDetailsComplete && selectedPlan);
-  const activeVehicle = useMemo(() => buildVehicle(reg, mileage, manualFields, manualMode), [reg, mileage, manualFields, manualMode]);
+  const activeVehicle = useMemo(() => buildVehicle(reg, mileage), [reg, mileage]);
   const activePlan = useMemo(() => buildPlan(selectedPlan), [selectedPlan]);
 
   useEffect(() => {
