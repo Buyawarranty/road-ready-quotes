@@ -4,6 +4,7 @@ import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import {
@@ -13,6 +14,7 @@ import {
   ArrowRight,
   Users,
   Wrench,
+  ChevronDown,
   ChevronRight,
   TrendingUp,
   AlertCircle,
@@ -44,6 +46,8 @@ const DealerDashboard = () => {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [recentQuotesOpen, setRecentQuotesOpen] = useState(false);
+  const [recentActivityOpen, setRecentActivityOpen] = useState(false);
 
   const handleRegSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -226,33 +230,63 @@ const DealerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="crm-panel-shadow min-w-0 border-crm-line">
+          <Collapsible open={recentQuotesOpen} onOpenChange={setRecentQuotesOpen} className="crm-panel-shadow min-w-0 rounded-lg border border-crm-line bg-card">
             <CardContent className="p-0">
-              <div className="flex items-center justify-between px-3 py-3"><h2 className="text-sm font-bold">Recent quotes</h2><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quotes')}>View all <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[560px] text-left text-[10px]">
-                  <thead className="border-y border-crm-line bg-muted/40 text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Customer</th><th className="px-2 py-2 font-medium">Vehicle</th><th className="px-2 py-2 font-medium">Price</th><th className="px-2 py-2 font-medium">Status</th><th className="px-2 py-2 font-medium">Date</th><th className="w-6" /></tr></thead>
-                  <tbody>{recentQuotes.map((quote) => (
-                    <tr key={`${quote.customer}-${quote.reg}`} className="cursor-pointer border-b border-crm-line last:border-0 hover:bg-muted/50" onClick={() => navigate(`/dealer-portal/quotes?search=${quote.reg}`)}>
-                      <td className="px-3 py-2 font-semibold">{quote.customer}</td><td className="px-2 py-2"><span className="block font-medium">{quote.reg}</span><span className="block text-muted-foreground">{quote.vehicle}</span></td><td className="px-2 py-2">{quote.price}</td><td className="px-2 py-2"><span className={`rounded-full px-2 py-1 font-semibold ${statusStyles[quote.status]}`}>{quote.status}</span></td><td className="px-2 py-2 text-muted-foreground">{quote.date}</td><td><ChevronRight className="h-3.5 w-3.5 text-muted-foreground" /></td>
-                    </tr>
-                  ))}</tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="crm-panel-shadow border-crm-line">
-            <CardContent className="p-3">
-              <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-bold">Recent activity</h2><Button variant="link" size="sm" className="h-auto px-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quotes')}>View all <ArrowRight className="ml-1 h-3 w-3" /></Button></div>
-              <div>{activities.map((item, index) => { const Icon = item.icon; return (
-                <div key={item.title} className={`flex items-center gap-2 py-2 ${index < activities.length - 1 ? 'border-b border-crm-line' : ''}`}>
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${item.style}`}><Icon className="h-4 w-4" /></span>
-                  <span className="min-w-0 flex-1"><span className="block truncate text-[11px] font-bold">{item.title}</span><span className="block truncate text-[10px] text-muted-foreground">{item.detail}</span></span><span className="whitespace-nowrap text-[9px] text-muted-foreground">{item.time}</span>
+              <CollapsibleTrigger asChild>
+                <button type="button" className="flex w-full items-center justify-between gap-2 px-3 py-3 text-left">
+                  <h2 className="text-sm font-bold">Recent quotes</h2>
+                  <span className="flex items-center gap-2">
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="text-xs font-semibold text-crm-orange hover:underline"
+                      onClick={(event) => { event.stopPropagation(); navigate('/dealer-portal/quotes'); }}
+                    >View all <ArrowRight className="ml-1 inline h-3 w-3" /></span>
+                    <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${recentQuotesOpen ? 'rotate-180' : ''}`} />
+                  </span>
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="overflow-x-auto border-t border-crm-line">
+                  <table className="w-full min-w-[560px] text-left text-[10px]">
+                    <thead className="border-b border-crm-line bg-muted/40 text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Customer</th><th className="px-2 py-2 font-medium">Vehicle</th><th className="px-2 py-2 font-medium">Price</th><th className="px-2 py-2 font-medium">Status</th><th className="px-2 py-2 font-medium">Date</th><th className="w-6" /></tr></thead>
+                    <tbody>{recentQuotes.map((quote) => (
+                      <tr key={`${quote.customer}-${quote.reg}`} className="cursor-pointer border-b border-crm-line last:border-0 hover:bg-muted/50" onClick={() => navigate(`/dealer-portal/quotes?search=${quote.reg}`)}>
+                        <td className="px-3 py-2 font-semibold">{quote.customer}</td><td className="px-2 py-2"><span className="block font-medium">{quote.reg}</span><span className="block text-muted-foreground">{quote.vehicle}</span></td><td className="px-2 py-2">{quote.price}</td><td className="px-2 py-2"><span className={`rounded-full px-2 py-1 font-semibold ${statusStyles[quote.status]}`}>{quote.status}</span></td><td className="px-2 py-2 text-muted-foreground">{quote.date}</td><td><ChevronRight className="h-3.5 w-3.5 text-muted-foreground" /></td>
+                      </tr>
+                    ))}</tbody>
+                  </table>
                 </div>
-              ); })}</div>
+              </CollapsibleContent>
             </CardContent>
-          </Card>
+          </Collapsible>
+
+          <Collapsible open={recentActivityOpen} onOpenChange={setRecentActivityOpen} className="crm-panel-shadow rounded-lg border border-crm-line bg-card">
+            <CardContent className="p-3">
+              <CollapsibleTrigger asChild>
+                <button type="button" className="flex w-full items-center justify-between gap-2 text-left">
+                  <h2 className="text-sm font-bold">Recent activity</h2>
+                  <span className="flex items-center gap-2">
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      className="text-xs font-semibold text-crm-orange hover:underline"
+                      onClick={(event) => { event.stopPropagation(); navigate('/dealer-portal/quotes'); }}
+                    >View all <ArrowRight className="ml-1 inline h-3 w-3" /></span>
+                    <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${recentActivityOpen ? 'rotate-180' : ''}`} />
+                  </span>
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="mt-1 border-t border-crm-line pt-1">{activities.map((item, index) => { const Icon = item.icon; return (
+                  <div key={item.title} className={`flex items-center gap-2 py-2 ${index < activities.length - 1 ? 'border-b border-crm-line' : ''}`}>
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${item.style}`}><Icon className="h-4 w-4" /></span>
+                    <span className="min-w-0 flex-1"><span className="block truncate text-[11px] font-bold">{item.title}</span><span className="block truncate text-[10px] text-muted-foreground">{item.detail}</span></span><span className="whitespace-nowrap text-[9px] text-muted-foreground">{item.time}</span>
+                  </div>
+                ); })}</div>
+              </CollapsibleContent>
+            </CardContent>
+          </Collapsible>
         </div>
 
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_300px_240px]">
