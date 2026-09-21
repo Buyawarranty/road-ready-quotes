@@ -38,6 +38,7 @@ import {
   FileText,
   Loader2,
   MoreHorizontal,
+  Plus,
   Search,
   ShieldCheck,
   Upload,
@@ -448,8 +449,12 @@ const CustomerDetailDrawer = ({
               <DetailSection
                 title="Contact details"
                 action={
-                  <Button variant="ghost" size="sm" className="text-crm-orange hover:text-crm-orange">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-crm-orange hover:text-crm-orange"
                     onClick={() => toast.info('Customer updates can be requested through Panda Protect support.')}
+                  >
                     <Edit3 className="mr-1 h-3.5 w-3.5" /> Edit details
                   </Button>
                 }
