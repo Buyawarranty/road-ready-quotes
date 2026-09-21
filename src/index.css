@@ -44,6 +44,28 @@
   box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.04), 0 8px 24px hsl(var(--crm-navy) / 0.045);
 }
 
+
+/* Legacy CRM orange utilities are mapped to the dealer CRM brand orange. */
+.dealer-crm :where(.bg-orange-500, .bg-orange-600) {
+  background-color: hsl(var(--crm-orange));
+}
+
+.dealer-crm :where(.hover\:bg-orange-50:hover, .bg-orange-50, .bg-orange-100, .from-orange-50) {
+  background-color: hsl(var(--crm-orange-soft));
+}
+
+.dealer-crm :where(.text-orange-300, .text-orange-500, .text-orange-600, .text-orange-700) {
+  color: hsl(var(--crm-orange));
+}
+
+.dealer-crm :where(.border-orange-200, .border-orange-300, .border-orange-500) {
+  border-color: hsl(var(--crm-orange));
+}
+
+.dealer-crm :where(.focus-visible\:ring-orange-500:focus-visible) {
+  --tw-ring-color: hsl(var(--crm-orange));
+}
+
 /* Public static-page reskin. Kept behind explicit page classes so internal
    admin, customer and dealer applications retain their existing UI. */
 .public-static-page,
