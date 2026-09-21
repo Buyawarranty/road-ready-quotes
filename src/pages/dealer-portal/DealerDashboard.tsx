@@ -259,10 +259,10 @@ const DealerDashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="crm-panel-shadow overflow-hidden border-crm-line">
+          <Card className="crm-panel-shadow overflow-hidden border-crm-line bg-[#284185]">
             <CardContent className="flex h-full items-center gap-3 p-3">
               <img src={supportPanda.url} alt="Panda Protect support mascot" className="h-20 w-20 shrink-0 object-contain" />
-              <div><h2 className="text-sm font-bold">Need support?</h2><p className="mb-2 text-[10px] text-muted-foreground">Our UK team is here to help.</p><Button variant="outline" size="sm" asChild className="h-8 border-crm-orange text-[10px] text-crm-orange"><a href="mailto:hello@pandaprotect.co.uk">Contact dealer support →</a></Button></div>
+              <div><h2 className="text-sm font-bold text-white">Need support?</h2><p className="mb-2 text-[10px] text-white/90">Our UK team is here to help.</p><Button variant="outline" size="sm" asChild className="h-8 border-white text-[10px] text-white hover:bg-white/10 hover:text-white"><a href="mailto:hello@pandaprotect.co.uk">Contact dealer support →</a></Button></div>
             </CardContent>
           </Card>
 
