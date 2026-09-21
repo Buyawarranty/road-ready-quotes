@@ -200,14 +200,14 @@ const DealerHome = () => {
   const serviceRows = [
     {
       title: 'Full Warranty Cover',
-      subtitle: 'We handle claims AND pay the repairs',
+      subtitle: 'A comprehensive warranty — we handle claims and pay for repairs',
       body: 'A fully insured extended warranty for your customers. Zero risk to your dealership — we cover every approved repair payout.',
       items: ['All parts, labour & VAT included', 'Nationwide UK repair network', '24/7 claims for your customers'],
       to: '/dealer-portal/full-warranty',
     },
     {
       title: 'Claims Handling Only',
-      subtitle: 'We handle claims · You fund the repairs',
+      subtitle: 'Claim management only — we handle the claim, you pay the repair bill',
       body: 'Run your own dealer-paid warranty. You keep full control of pricing and terms — we look after every customer call.',
       items: ['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1/month per policy'],
       to: '/dealer-portal/claims-handling',
@@ -306,13 +306,13 @@ const DealerHome = () => {
               <article>
                 <Shield aria-hidden="true" />
                 <h3>Full Warranty Cover</h3>
-                <p>We handle claims AND pay the repairs</p>
+                <p>A comprehensive warranty — we handle claims and pay for repairs</p>
                 <ul>{serviceRows[0].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
               </article>
               <article>
                 <Headphones aria-hidden="true" />
                 <h3>Claims Handling Only</h3>
-                <p>We handle claims · You fund the repairs</p>
+                <p>Claim management only — we handle the claim, you pay the repair bill</p>
                 <ul>{serviceRows[1].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
               </article>
             </div>
