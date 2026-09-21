@@ -109,7 +109,6 @@ const Step1Vehicle: React.FC = () => {
   const [lookupState, setLookupState] = useState<LookupState>(initialReg ? 'success' : 'default');
   const regInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
-  const [compareOpen, setCompareOpen] = useState(false);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
 
