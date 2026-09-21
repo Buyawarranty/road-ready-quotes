@@ -418,13 +418,6 @@ const Step1Vehicle: React.FC = () => {
             </div>
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
-            <div className="mt-3 flex flex-col gap-3 rounded-md border border-crm-blue/20 bg-crm-blue-soft p-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-card text-crm-blue"><Info className="h-4 w-4" /></span>
-                <div><p className="text-sm font-bold">Not sure which to choose?</p><p className="text-xs text-muted-foreground">Compare the key differences between our warranty options.</p></div>
-              </div>
-              <Button variant="outline" size="sm" className="border-crm-orange text-crm-orange hover:bg-crm-orange-soft" onClick={() => setCompareOpen(true)}>Compare plans <ArrowRight className="h-3.5 w-3.5" /></Button>
-            </div>
 
             <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:justify-end">
               <Button className="w-full sm:w-auto" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
