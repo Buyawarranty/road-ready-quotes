@@ -107,7 +107,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   if (!user) return null;
 
   // Gate: dealer must exist AND be approved (status = 'active')
-  const dealerStatus = (dealer as any)?.status;
+  const dealerStatus = dealer?.status;
   const isApproved = !!dealer && dealerStatus === 'active';
   if (!isApproved) {
     return (
