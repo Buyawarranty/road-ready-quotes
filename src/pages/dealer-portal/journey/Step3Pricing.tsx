@@ -221,6 +221,8 @@ const Step3Pricing: React.FC = () => {
       dealer_price: pricing.wholesale,
       term_months: months,
       selected_options: {
+        warranty_type: 'fully-covered',
+        label: 'Fully Covered Warranty',
         term: termOption.label,
         excess: Number(excess),
         labour: Number(labour),

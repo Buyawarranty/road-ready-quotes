@@ -169,7 +169,7 @@ const Step1Vehicle: React.FC = () => {
     transmission: vehicle?.transmission || '',
     mileage: vehicle?.mileage || '101782',
   });
-  const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('dealer-paid');
+  const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
   const [compareOpen, setCompareOpen] = useState(false);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
@@ -262,7 +262,7 @@ const Step1Vehicle: React.FC = () => {
     setVehicle(activeVehicle);
     setPlan(activePlan);
     await save({ silent: true, overrideVehicle: activeVehicle, overridePlan: activePlan });
-    navigate('/dealer-portal/quote/pricing');
+    navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
   const choosePlanFromCompare = (plan: WarrantyPlanKey) => {
