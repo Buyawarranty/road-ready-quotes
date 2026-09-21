@@ -30,6 +30,7 @@ import {
   FolderOpen,
   BookOpen,
   Headphones,
+  MoreHorizontal,
 } from 'lucide-react';
 
 interface DealerLayoutProps {
@@ -146,6 +147,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
   const primaryNav = navItems.slice(0, 6);
   const secondaryNav = navItems.slice(6);
+  const topNav = primaryNav;
 
   const renderNavItem = (item: NavItem, mobile = false) => {
     const active = isActive(item);
@@ -173,18 +175,59 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     <div className="dealer-crm min-h-screen bg-crm-canvas text-foreground">
       <header className="fixed inset-x-0 top-0 z-50 h-[72px] border-b border-crm-line bg-card">
         <div className="flex h-full items-center gap-4 px-4 lg:px-5">
-            <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[220px]">
+            <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[230px]">
               <img
                 src="/panda-protect-logo.png"
                 alt="Panda Protect"
                 className="h-9 w-auto"
               />
-              <span className="hidden rounded border border-crm-orange/40 px-1.5 py-0.5 text-[9px] font-bold tracking-[0.16em] text-crm-orange sm:inline">
-                DEALER
+              <span className="hidden leading-tight sm:block">
+                <span className="block text-[8px] font-bold tracking-[0.18em] text-muted-foreground">TRADE WARRANTY SOLUTIONS</span>
+                <span className="mt-1 inline-flex rounded border border-crm-orange/40 px-1.5 py-0.5 text-[9px] font-bold tracking-[0.16em] text-crm-orange">
+                  DEALER
+                </span>
               </span>
             </Link>
 
-            <div className="relative mx-auto hidden w-full max-w-[520px] md:block">
+            <nav className="hidden items-center gap-1 xl:flex">
+              {topNav.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item);
+                return (
+                  <Link
+                    key={`top-${item.to}`}
+                    to={item.to}
+                    className={`flex h-[58px] min-w-[58px] flex-col items-center justify-center gap-1 border-b-2 px-2 text-[10px] font-semibold transition-colors ${
+                      active
+                        ? 'border-crm-orange text-crm-orange'
+                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex h-[58px] min-w-[58px] flex-col gap-1 px-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground">
+                    <MoreHorizontal className="h-4 w-4" /> More
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  {secondaryNav.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem key={`more-${item.to}`} className="cursor-pointer" onClick={() => navigate(item.to)}>
+                        <Icon className="mr-2 h-4 w-4" /> {item.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </nav>
+
+            <div className="relative mx-auto hidden w-full max-w-[420px] md:block">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <input
                 ref={searchRef}
@@ -192,7 +235,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                 onChange={(event) => { setSearchValue(event.target.value); setSearchOpen(true); }}
                 onFocus={() => setSearchOpen(true)}
                 onBlur={() => window.setTimeout(() => setSearchOpen(false), 120)}
-                placeholder="Search registration, customer, quote, warranty or claim..."
+                placeholder="Search registration, customer, quote..."
                 className="h-10 w-full rounded-md border border-input bg-background pl-10 pr-14 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/30"
               />
               <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-crm-line bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground">⌘ K</kbd>
