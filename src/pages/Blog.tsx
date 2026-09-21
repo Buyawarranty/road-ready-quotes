@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Calendar, User, Clock, ChevronRight, Phone, Shield, Check, Briefcase, TrendingUp, Wrench } from 'lucide-react';
 import { SEOHead } from '@/components/SEOHead';
@@ -9,6 +9,20 @@ import { Badge } from '@/components/ui/badge';
 import pandaHeroImage from '@/assets/blog-hero-panda-mechanic.png';
 import warrantyCarImage from '@/assets/blog-hero-warranty-car.png';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { supabase } from '@/integrations/supabase/client';
+
+interface HubPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  readTime: string;
+  category: string;
+  image: string;
+  featured: boolean;
+}
 
 const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,50 +31,58 @@ const Blog = () => {
 
   const goToDealerSignup = () => navigate('/dealer-portal/signup');
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: "Why Every UK Dealer Should Offer a Trade Warranty in 2026",
-      excerpt: "Trade warranties are no longer a nice-to-have. Discover how offering a dealer-branded warranty increases forecourt conversions, reduces comeback costs, and protects your margin on every sale.",
-      author: "Sarah Johnson",
-      date: "March 18, 2026",
-      readTime: "7 min read",
-      category: "Trade Warranty Guides",
-      image: warrantyCarImage,
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Dealer-Paid vs Customer-Paid Warranties: What's Right for Your Forecourt?",
-      excerpt: "A side-by-side breakdown of the two dealer warranty models — when to absorb the cost, when to upsell, and how each impacts CSI, repeat business and your bottom line.",
-      author: "Mike Thompson",
-      date: "March 15, 2026",
-      readTime: "6 min read",
-      category: "Dealer Strategy",
-      image: "/lovable-uploads/car-warranty-uk-compare-quotes.png",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "How Trade Warranties Cut Comeback Costs by Up to 80%",
-      excerpt: "Every comeback eats into your margin. Learn how a structured trade warranty programme transfers post-sale repair risk away from your workshop and onto a regulated provider.",
-      author: "Emma Davis",
-      date: "March 12, 2026",
-      readTime: "8 min read",
-      category: "Workshop & Claims",
-      image: pandaHeroImage,
-      featured: false,
-    },
-  ];
+  const [blogPosts, setBlogPosts] = useState<HubPost[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
-  const categories = ['All', 'Trade Warranty Guides', 'Dealer Strategy', 'Workshop & Claims', 'Compliance & FCA', 'Selling Tips'];
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const { data } = await supabase
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, featured_image_url, published_at, read_time_minutes, blog_authors(name), blog_categories(name)')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false });
 
-  const featuredPost = blogPosts.find((p) => p.featured);
-  const filteredPosts = selectedCategory === 'All'
-    ? blogPosts.filter((p) => !p.featured)
-    : blogPosts.filter((p) => !p.featured && p.category === selectedCategory);
-  const recentPosts = filteredPosts.slice(0, 4);
-  const olderPosts = filteredPosts.slice(4);
+      if (!active) return;
+      const mapped: HubPost[] = (data || []).map((p, index) => ({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        excerpt: p.excerpt || '',
+        author: p.blog_authors?.name || 'Panda Protect',
+        date: p.published_at
+          ? new Date(p.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+          : '',
+        readTime: `${p.read_time_minutes || 6} min read`,
+        category: p.blog_categories?.name || 'Trade Warranty Guides',
+        image: p.featured_image_url || (index % 2 === 0 ? warrantyCarImage : pandaHeroImage),
+        featured: index === 0,
+      }));
+      setBlogPosts(mapped);
+      setLoadingPosts(false);
+    };
+    load();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const categories = ['All', ...Array.from(new Set(blogPosts.map((p) => p.category)))];
+
+  const matchesSearch = (p: HubPost) => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return true;
+    return p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q);
+  };
+
+  const visiblePosts = blogPosts.filter(
+    (p) => matchesSearch(p) && (selectedCategory === 'All' || p.category === selectedCategory),
+  );
+
+  const featuredPost = visiblePosts.find((p) => p.featured) || visiblePosts[0];
+  const filteredPosts = visiblePosts.filter((p) => p.id !== featuredPost?.id);
+  const recentPosts = filteredPosts.slice(0, 6);
+  const olderPosts = filteredPosts.slice(6);
 
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -236,10 +258,12 @@ const Blog = () => {
                           <div className="flex items-center gap-2"><Clock className="w-4 h-4" /><span>{featuredPost.readTime}</span></div>
                         </div>
 
-                        <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold group">
-                          Read Full Article
-                          <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
+                        <Link to={`/thewarrantyhub/${featuredPost.slug}/`}>
+                          <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-semibold group">
+                            Read Full Article
+                            <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        </Link>
                       </div>
                     </CardContent>
                   </div>
@@ -288,6 +312,13 @@ const Blog = () => {
                       </p>
                     </div>
 
+                    {loadingPosts && (
+                      <p className="text-gray-500">Loading trade articles…</p>
+                    )}
+                    {!loadingPosts && recentPosts.length === 0 && (
+                      <p className="text-gray-500">No articles match that search yet.</p>
+                    )}
+
                     <div className="grid md:grid-cols-2 gap-6">
                       {recentPosts.map((post) => (
                         <Card key={post.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-gray-200 hover:border-primary bg-white group">
@@ -302,10 +333,12 @@ const Blog = () => {
                               <div className="flex items-center gap-1"><User className="w-3 h-3" /><span className="font-medium">{post.author}</span></div>
                               <div className="flex items-center gap-1"><Clock className="w-3 h-3" /><span>{post.readTime}</span></div>
                             </div>
-                            <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-sm group/btn">
-                              Read Article
-                              <ChevronRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                            </Button>
+                            <Link to={`/thewarrantyhub/${post.slug}/`}>
+                              <Button className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-sm group/btn">
+                                Read Article
+                                <ChevronRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                              </Button>
+                            </Link>
                           </CardContent>
                         </Card>
                       ))}
@@ -317,7 +350,8 @@ const Blog = () => {
                       <h3 className="text-2xl font-bold text-gray-900 mb-6">More Trade Articles</h3>
                       <div className="space-y-4">
                         {olderPosts.map((post) => (
-                          <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary bg-white group">
+                          <Link key={post.id} to={`/thewarrantyhub/${post.slug}/`} className="block">
+                          <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary bg-white group">
                             <div className="flex gap-4 p-4">
                               <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-white rounded">
                                 <img src={post.image} alt={post.title} className="w-full h-full object-contain" />
@@ -329,6 +363,7 @@ const Blog = () => {
                               </div>
                             </div>
                           </Card>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -376,13 +411,13 @@ const Blog = () => {
                       <h3 className="text-lg font-bold text-gray-900 mb-4">Popular with Dealers</h3>
                       <div className="space-y-4">
                         {blogPosts.slice(0, 3).map((post, index) => (
-                          <div key={post.id} className="flex gap-3 group cursor-pointer">
+                          <Link key={post.id} to={`/thewarrantyhub/${post.slug}/`} className="flex gap-3 group cursor-pointer">
                             <span className="text-2xl font-bold text-gray-300 flex-shrink-0">{index + 1}</span>
                             <div>
                               <h4 className="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors leading-tight mb-1">{post.title}</h4>
                               <p className="text-xs text-gray-500">{post.readTime}</p>
                             </div>
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     </CardContent>
