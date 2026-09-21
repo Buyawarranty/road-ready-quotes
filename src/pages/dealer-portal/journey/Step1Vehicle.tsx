@@ -94,6 +94,8 @@ const warrantyPlans = [
 const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 const isValidReg = (value: string) => /^[A-Z0-9]{4,8}$/.test(normaliseReg(value));
 
+const LAST_MOT_MILEAGE = '101782';
+
 const buildVehicle = (reg: string, mileage: string): DealerJourneyVehicle => ({
   reg: normaliseReg(reg),
   make: 'AUDI',
@@ -224,26 +226,10 @@ const Step1Vehicle: React.FC = () => {
     <DealerLayout>
       <div className="mx-auto max-w-[1500px] space-y-3">
         <Card className="crm-panel-shadow overflow-hidden border-crm-line bg-card">
-          <CardContent className="p-0">
-            <div className="grid min-h-[188px] lg:grid-cols-[minmax(0,1fr)_430px]">
-              <div className="p-5 sm:p-7">
-                <p className="mb-1 text-[11px] font-bold tracking-[0.16em] text-crm-orange">NEW QUOTE</p>
-                <h1 className="text-2xl font-bold leading-tight sm:text-4xl">Build your warranty</h1>
-                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                  Get a quote in minutes. Enter the vehicle details below and choose the right cover for your customer.
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {reassurance.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <span key={item.label} className="inline-flex items-center gap-1.5 rounded-full border border-crm-line bg-card px-3 py-1.5 text-[11px] font-bold text-foreground">
-                        <Icon className="h-3.5 w-3.5 text-crm-orange" /> {item.label}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+          <CardContent className="p-5 sm:p-6">
+            <p className="mb-1 text-[11px] font-bold tracking-[0.16em] text-crm-orange">NEW QUOTE</p>
+            <h1 className="text-2xl font-bold leading-tight sm:text-3xl">Build your warranty</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Enter the registration, confirm the mileage, choose a plan.</p>
           </CardContent>
         </Card>
 
