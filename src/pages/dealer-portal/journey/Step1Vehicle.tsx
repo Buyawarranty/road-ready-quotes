@@ -14,8 +14,6 @@ import {
 } from '@/components/ui/dialog';
 import { useDealerJourney, type DealerJourneyPlan, type DealerJourneyVehicle } from '@/contexts/DealerJourneyContext';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import supportPanda from '@/assets/contact-support-panda.png.asset.json';
-import audiQ5Image from '@/assets/audi-q5-used-car-warranty.png';
 import {
   ArrowRight,
   BarChart3,
