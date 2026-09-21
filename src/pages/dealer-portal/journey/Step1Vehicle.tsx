@@ -17,7 +17,6 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import supportPanda from '@/assets/contact-support-panda.png.asset.json';
 import audiQ5Image from '@/assets/audi-q5-used-car-warranty.png';
 import {
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   Car,
@@ -436,8 +435,7 @@ const Step1Vehicle: React.FC = () => {
               <Button variant="outline" size="sm" className="border-crm-orange text-crm-orange hover:bg-crm-orange-soft" onClick={() => setCompareOpen(true)}>Compare plans <ArrowRight className="h-3.5 w-3.5" /></Button>
             </div>
 
-            <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:flex-row sm:justify-between">
-              <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/dealer-portal/dashboard')}><ArrowLeft className="h-4 w-4" /> Back</Button>
+            <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:justify-end">
               <Button className="w-full sm:w-auto" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
             </div>
           </CardContent>
