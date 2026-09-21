@@ -134,11 +134,7 @@ const DealerClaimsList: React.FC = () => {
                             </Button>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-right">
-                          <Button size="sm" variant="outline" onClick={() => navigate(`/dealer-portal/claims/${c.id}`)}>
-                            View
-                          </Button>
-                        </td>
+                        <td className="px-4 py-3 text-right" />
                       </tr>
                     );
                   })}
