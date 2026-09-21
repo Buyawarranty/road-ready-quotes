@@ -467,7 +467,7 @@ const Step1Vehicle: React.FC = () => {
               </div>
             )}
 
-            <div className="grid gap-3 lg:grid-cols-2">
+            <div className="mx-auto grid max-w-4xl gap-3 lg:grid-cols-2">
               {warrantyPlans.map((plan) => {
                 const Icon = plan.icon;
                 const isSelected = selectedPlan === plan.key;
@@ -496,9 +496,9 @@ const Step1Vehicle: React.FC = () => {
                     <span className="mt-3 grid gap-1.5 text-[11px] text-muted-foreground">
                       {plan.benefits.map((benefit) => <span key={benefit} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-crm-orange" /> {benefit}</span>)}
                     </span>
-                    <span className="mt-3 flex items-center justify-end gap-2 text-[11px] font-bold text-muted-foreground">
-                      {isSelected ? 'Selected' : 'Select'}
-                      <span className={`flex h-5 w-5 items-center justify-center rounded-full border ${isSelected ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'border-crm-line bg-card'}`}>{isSelected && <Check className="h-3 w-3" />}</span>
+                    <span className={`mt-3 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-xs font-bold ${plan.key === 'dealer-paid' ? 'bg-crm-navy text-primary-foreground' : 'bg-crm-orange text-primary-foreground'}`}>
+                      {plan.key === 'dealer-paid' ? 'Manage my warranty' : 'Choose Full Cover'}
+                      {isSelected ? <Check className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
                     </span>
                     </span>
                   </Button>
@@ -524,22 +524,32 @@ const Step1Vehicle: React.FC = () => {
       </div>
 
       <Dialog open={compareOpen} onOpenChange={setCompareOpen}>
-        <DialogContent className="max-w-4xl border-crm-line p-0">
+        <DialogContent className="max-w-2xl border-crm-line p-0">
           <DialogHeader className="border-b border-crm-line p-5 pb-4">
             <DialogTitle>Compare plans</DialogTitle>
             <DialogDescription>Dealer-Paid Warranty versus Fully Covered Warranty.</DialogDescription>
           </DialogHeader>
-          <div className="overflow-x-auto px-5">
-            <table className="w-full min-w-[660px] text-left text-sm">
-              <thead className="text-xs text-muted-foreground"><tr><th className="py-3 font-bold">Feature</th><th className="py-3 font-bold">Dealer-Paid Warranty</th><th className="py-3 font-bold">Fully Covered Warranty</th></tr></thead>
+          <div className="overflow-x-auto px-5 py-2">
+            <table className="w-full min-w-[480px] text-left text-xs">
+              <thead>
+                <tr>
+                  <th className="w-[28%] py-3" />
+                  <th className="rounded-t-md bg-crm-navy px-3 py-2.5 text-center text-[11px] font-black uppercase tracking-wide text-primary-foreground">Dealer-Paid Warranty</th>
+                  <th className="rounded-t-md bg-crm-orange px-3 py-2.5 text-center text-[11px] font-black uppercase tracking-wide text-primary-foreground">Fully Covered Warranty</th>
+                </tr>
+              </thead>
               <tbody>{comparisonRows.map((row) => (
-                <tr key={row.label} className="border-t border-crm-line"><td className="py-3 pr-4 text-xs font-bold text-foreground">{row.label}</td><td className="py-3 pr-4 text-xs text-muted-foreground">{row.dealerPaid}</td><td className="py-3 text-xs text-muted-foreground">{row.fullyCovered}</td></tr>
+                <tr key={row.label} className="border-t border-crm-line">
+                  <td className="py-3 pr-3 align-top font-bold text-foreground">{row.label}</td>
+                  <td className="bg-crm-blue-soft/40 px-3 py-3 align-top font-medium text-foreground">{row.dealerPaid}</td>
+                  <td className="bg-crm-orange-soft/60 px-3 py-3 align-top font-medium text-foreground">{row.fullyCovered}</td>
+                </tr>
               ))}</tbody>
             </table>
           </div>
-          <DialogFooter className="gap-2 border-t border-crm-line p-5">
-            <Button variant="outline" onClick={() => choosePlanFromCompare('dealer-paid')}>Choose Dealer-Paid</Button>
-            <Button onClick={() => choosePlanFromCompare('fully-covered')}>Choose Fully Covered</Button>
+          <DialogFooter className="gap-2 border-t border-crm-line p-5 sm:justify-center">
+            <Button className="bg-crm-navy text-primary-foreground hover:bg-crm-navy-soft" onClick={() => choosePlanFromCompare('dealer-paid')}>Manage my warranty</Button>
+            <Button className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" onClick={() => choosePlanFromCompare('fully-covered')}>Choose Full Cover</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
