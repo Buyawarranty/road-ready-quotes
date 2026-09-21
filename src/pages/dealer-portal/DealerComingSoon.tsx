@@ -3,16 +3,17 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
-  Building2, User, Mail, Phone, Globe,
+  Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
-import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import whyDealersPanda from '@/assets/why-dealers-panda.png.asset.json';
+import whyDealersPanda from '@/assets/car-warranty-panda-vehicles.png';
+import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 // UK phone — accepts 07xxxxxxxxx, 01/02/03 landlines, +44, spaces/dashes
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
@@ -247,59 +248,74 @@ const DealerComingSoon = () => {
   };
 
   return (
-    <div className="public-marketing-page public-dealer-signup min-h-screen bg-white">
+    <div className="dealer-crm public-marketing-page public-dealer-signup min-h-screen bg-background">
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
         <meta name="description" content="Offer trade warranties to your customers without the paperwork. Register for early dealer access to Panda Protect — UK motor trade warranty for cars, vans, EVs and motorcycles." />
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <DealerPublicHeader />
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-4" aria-label="Panda Protect home">
+            <img src={buyawarrantyLogo} alt="Panda Protect" className="h-10 w-auto sm:h-12" />
+            <span className="rounded-md border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">Dealer</span>
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-5 text-sm font-semibold text-crm-navy">
+            <Link to="/faq/traders/" className="hidden sm:inline-flex items-center gap-2 hover:text-primary"><HelpCircle className="h-5 w-5" /> Help</Link>
+            <span className="hidden h-6 w-px bg-border sm:block" />
+            <a href="tel:03309122535" className="inline-flex items-center gap-2 hover:text-primary"><Headphones className="h-5 w-5" /> Contact us</a>
+          </div>
+        </div>
+      </header>
 
       {/* HERO — simple log in / register choice */}
-      <section className="relative bg-gradient-to-b from-orange-50 via-white to-white">
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 py-10 sm:py-14 lg:py-16 text-center">
-          <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-[#eb4b00] bg-[#eb4b00]/10 px-2.5 py-1 rounded uppercase">
+      <section className="relative bg-gradient-to-b from-crm-blue-soft via-background to-background">
+        <div className="mx-auto max-w-4xl px-4 py-9 text-center sm:px-6 sm:py-12 lg:py-14">
+          <span className="inline-flex rounded-md bg-primary/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
             Dealer portal
           </span>
-          <h1 className="mt-4 text-3xl sm:text-4xl lg:text-[2.75rem] font-black leading-tight tracking-tight text-slate-900">
-            Trade Warranties for UK Motor Dealers
+          <h1 className="mx-auto mt-5 max-w-2xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
+            Trade warranties for UK motor dealers
           </h1>
-          <p className="mt-3 text-slate-600 text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Already a dealer? Log in to your portal — or register your dealership and start quoting in minutes.
           </p>
 
           {pendingReg && (
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-slate-700">
+            <div className="mx-auto mt-6 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-lg border border-crm-amber/40 bg-crm-amber-soft px-4 py-3 text-sm text-crm-navy sm:flex-row">
+              <Info className="h-5 w-5 shrink-0 text-primary" />
               <span>
-                Registration <span className="font-bold text-slate-900">{pendingReg.toUpperCase()}</span> is saved for your quote.
+                Registration <span className="font-bold text-crm-navy">{pendingReg.toUpperCase()}</span> is saved for your quote.
               </span>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={revealLogin}
-                className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline whitespace-nowrap"
+                className="text-primary hover:bg-primary/10 hover:text-primary"
               >
-                <LogIn className="w-4 h-4" /> Log in to continue
-              </button>
+                <LogIn className="h-4 w-4" /> Log in to continue
+              </Button>
             </div>
           )}
 
-          <div className="mt-8 grid sm:grid-cols-2 gap-4 text-left">
+          <div className="mx-auto mt-6 grid max-w-3xl gap-4 text-left sm:grid-cols-2">
             {/* Register */}
             <button
               type="button"
               onClick={revealForm}
-              className="signup-choice signup-choice-primary group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+              className="signup-choice signup-choice-primary group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-6"
             >
-              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
-                <UserPlus className="w-6 h-6" />
+              <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
+                <UserPlus className="h-6 w-6" />
               </div>
-              <h2 className="mt-4 text-xl font-black text-slate-900">Register</h2>
-              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+              <h2 className="mt-4 text-xl font-black text-crm-navy">Register</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 New here? Register your dealership in 60 seconds — free.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
-                Register your interest <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              <span className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-colors group-hover:bg-primary/90">
+                Register your dealership <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </button>
 
@@ -307,38 +323,38 @@ const DealerComingSoon = () => {
             <button
               type="button"
               onClick={revealLogin}
-              className="signup-choice group rounded-2xl border-2 p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb4b00]"
+              className="signup-choice group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-6"
             >
-              <div className="signup-choice-icon w-12 h-12 rounded-xl flex items-center justify-center">
-                <LogIn className="w-6 h-6" />
+              <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
+                <LogIn className="h-6 w-6" />
               </div>
-              <h2 className="mt-4 text-xl font-black text-slate-900">Log in</h2>
-              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+              <h2 className="mt-4 text-xl font-black text-crm-navy">Log in</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                 I already have a dealer account — take me to my portal.
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-[#eb4b00]">
-                Log in <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              <span className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-border bg-card px-4 py-3 text-sm font-bold text-primary transition-colors group-hover:border-primary group-hover:bg-primary/5">
+                Log in <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </button>
           </div>
 
-          <ul className="mt-8 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-white/75">
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Free dealer sign-up</li>
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> No setup fees, no contracts</li>
-            <li className="flex items-center gap-1.5"><Check className="w-4 h-4 text-green-400" /> Quote in seconds</li>
+          <ul className="mx-auto mt-7 flex max-w-3xl flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-crm-navy">
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Free dealer sign-up</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> No setup fees, no contracts</li>
+            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Quote in seconds</li>
           </ul>
 
           {showLogin && (
             <div
               ref={loginRef}
-              className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24 max-w-md mx-auto w-full"
+              className="signup-form-panel mx-auto mt-8 w-full max-w-md scroll-mt-24 rounded-lg border border-border bg-card p-5 text-left shadow-sm sm:p-7"
             >
-              <h2 className="text-xl font-bold text-slate-900">Log in to your portal</h2>
-              <p className="text-sm text-slate-500 mt-1">Welcome back — enter your dealer sign-in details.</p>
+              <h2 className="text-xl font-bold text-crm-navy">Log in to your portal</h2>
+              <p className="text-sm text-muted-foreground mt-1">Welcome back — enter your dealer sign-in details.</p>
 
               <form onSubmit={handleLogin} className="mt-5 space-y-4" noValidate>
                 <label className="block">
-                  <span className="block text-sm font-semibold text-slate-800 mb-1.5">Email address</span>
+                  <span className="block text-sm font-semibold text-crm-navy mb-1.5">Email address</span>
                   <input
                     type="email"
                     autoComplete="email"
@@ -352,10 +368,10 @@ const DealerComingSoon = () => {
 
                 <label className="block">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-semibold text-slate-800">Password</span>
+                    <span className="text-sm font-semibold text-crm-navy">Password</span>
                     <Link
                       to="/forgot-password/"
-                      className="text-xs font-semibold text-[#eb4b00] hover:underline"
+                      className="text-xs font-semibold text-primary hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -373,7 +389,7 @@ const DealerComingSoon = () => {
                       type="button"
                       onClick={() => setShowLoginPassword((v) => !v)}
                       aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
-                      className="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-slate-700"
+                      className="absolute inset-y-0 right-0 px-3 flex items-center text-muted-foreground hover:text-muted-foreground"
                     >
                       {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -399,18 +415,17 @@ const DealerComingSoon = () => {
                 <button
                   type="submit"
                   disabled={loggingIn}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] disabled:opacity-60 text-white font-bold px-5 py-3.5 rounded-lg text-base"
-                  style={{ minHeight: 52 }}
+                  className="w-full inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md bg-primary px-5 py-3.5 text-base font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                 >
                   {loggingIn ? 'Signing in…' : (<>Log in to my portal <ArrowRight className="w-5 h-5" /></>)}
                 </button>
 
-                <p className="text-center text-sm text-slate-600 pt-1 border-t border-slate-100">
+                <p className="text-center text-sm text-muted-foreground pt-1 border-t border-border">
                   New dealer?{' '}
                   <button
                     type="button"
                     onClick={revealForm}
-                    className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
+                    className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
                   >
                     Register instead <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -420,18 +435,18 @@ const DealerComingSoon = () => {
           )}
 
           {showForm && (
-            <div ref={formRef} className="signup-form-panel mt-10 text-left bg-white rounded-2xl shadow-xl border border-slate-200 p-5 sm:p-8 scroll-mt-24">
+            <div ref={formRef} className="signup-form-panel mx-auto mt-8 w-full max-w-2xl scroll-mt-24 rounded-lg border border-border bg-card p-5 text-left shadow-sm sm:p-7">
               {submitted ? (
                 <div className="text-center space-y-3 py-6">
-                  <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-full bg-crm-green-soft text-crm-green mx-auto flex items-center justify-center">
                     <Check className="w-9 h-9" strokeWidth={3} />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900">Thank you — form received.</h3>
-                  <p className="text-slate-600">Once we go live, a member of our team will be in touch with you shortly.</p>
+                  <h3 className="text-2xl font-black text-crm-navy">Thank you — form received.</h3>
+                  <p className="text-muted-foreground">Once we go live, a member of our team will be in touch with you shortly.</p>
                   <button
                     type="button"
                     onClick={() => setSubmitted(false)}
-                    className="text-sm font-semibold text-[#eb4b00] hover:underline mt-2"
+                    className="text-sm font-semibold text-primary hover:underline mt-2"
                   >
                     Submit another response
                   </button>
@@ -439,21 +454,21 @@ const DealerComingSoon = () => {
               ) : (
                 <>
                   <div className="text-center">
-                    <h2 className="inline-flex items-center justify-center gap-2.5 text-2xl sm:text-[1.75rem] font-black text-slate-900 leading-tight">
-                      <span aria-hidden="true" className="w-10 h-10 rounded-full bg-[#eb4b00] text-white flex items-center justify-center text-xl shadow-md shrink-0">🚀</span>
+                    <h2 className="inline-flex items-center justify-center gap-2.5 text-2xl sm:text-[1.75rem] font-black text-crm-navy leading-tight">
+                      <span aria-hidden="true" className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl shadow-md shrink-0">🚀</span>
                       Request dealer access
                     </h2>
-                    <p className="text-sm text-slate-500 mt-2">⚡ Five quick details — no obligation</p>
+                    <p className="text-sm text-muted-foreground mt-2">⚡ Five quick details — no obligation</p>
                   </div>
 
                   {pendingReg && (
-                    <div className="mt-4 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
-                      <span className="bg-yellow-300 text-slate-900 font-black text-sm tracking-[0.08em] px-2.5 py-1 rounded-md border-2 border-slate-900 shrink-0">
+                    <div className="mt-4 flex items-center gap-3 rounded-lg bg-muted border border-border px-4 py-3">
+                      <span className="bg-crm-amber-soft text-crm-navy font-black text-sm tracking-[0.08em] px-2.5 py-1 rounded-md border border-border shrink-0">
                         {pendingReg.toUpperCase()}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-bold text-slate-900">Your saved registration</p>
-                        <p className="text-xs text-slate-500">Your quote picks up right where you left off.</p>
+                        <p className="text-sm font-bold text-crm-navy">Your saved registration</p>
+                        <p className="text-xs text-muted-foreground">Your quote picks up right where you left off.</p>
                       </div>
                     </div>
                   )}
@@ -520,7 +535,7 @@ const DealerComingSoon = () => {
                         className={`${regInputCls} ${touched.phone && errors.phone ? 'border-rose-400' : ''}`}
                       />
                     </Field>
-                    <p className="text-xs text-slate-500 -mt-2 pl-1">Unlock exclusive trade pricing and expert advice</p>
+                    <p className="text-xs text-muted-foreground -mt-2 pl-1">Unlock exclusive trade pricing and expert advice</p>
 
                     <Field
                       label="Where do you sell vehicles?"
@@ -547,26 +562,25 @@ const DealerComingSoon = () => {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="animate-breathing w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[#f97316] to-[#eb4b00] hover:from-[#ea580c] hover:to-[#d63f00] disabled:opacity-60 text-white font-extrabold px-5 py-4 rounded-xl text-base sm:text-lg shadow-lg shadow-orange-500/25 transition-all"
-                      style={{ minHeight: 56 }}
+                      className="animate-breathing w-full inline-flex min-h-14 items-center justify-center gap-2 rounded-md bg-primary px-5 py-4 text-base font-extrabold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60 sm:text-lg"
                     >
                       {submitting ? 'Submitting…' : (<>Register My Interest <ArrowRight className="w-5 h-5" /></>)}
                     </button>
 
                     <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 pt-1">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">⚡ Quote in seconds</span>
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">🚗 Sell more per vehicle</span>
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600">✅ No obligation</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">⚡ Quote in seconds</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">🚗 Sell more per vehicle</span>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">✅ No obligation</span>
                     </div>
 
-                    <p className="text-center text-xs text-slate-500">🔒 We'll only contact you about Trade Warranty.</p>
+                    <p className="text-center text-xs text-muted-foreground">🔒 We'll only contact you about Trade Warranty.</p>
 
-                    <div className="text-center text-sm text-slate-600 pt-3 border-t border-slate-100">
+                    <div className="text-center text-sm text-muted-foreground pt-3 border-t border-border">
                       Already a dealer?{' '}
                       <button
                         type="button"
                         onClick={revealLogin}
-                        className="inline-flex items-center gap-1 font-semibold text-[#eb4b00] hover:underline"
+                        className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
                       >
                         Log in instead <ArrowRight className="w-3.5 h-3.5" />
                       </button>
@@ -580,27 +594,27 @@ const DealerComingSoon = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="bg-white py-12 sm:py-16">
+      <section className="bg-card py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">How it works</h2>
-            <p className="text-slate-600 mt-3 text-sm sm:text-base">Three simple steps to start offering trade warranties.</p>
+            <h2 className="text-2xl sm:text-4xl font-black text-crm-navy">How it works</h2>
+            <p className="text-muted-foreground mt-3 text-sm sm:text-base">Three simple steps to start offering trade warranties.</p>
           </div>
 
           <div className="relative grid md:grid-cols-3 gap-10 md:gap-8">
             {/* dashed connector (desktop) */}
-            <div className="hidden md:block absolute top-7 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-slate-300 -z-0" />
+            <div className="hidden md:block absolute top-7 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-input -z-0" />
             {[
               { n: 1, t: 'Register interest', d: 'Tell us a few details about your dealership.' },
               { n: 2, t: 'Our team contacts you', d: "We'll be in touch to confirm your needs." },
               { n: 3, t: 'Get early access', d: 'Be first to offer Trade Warranty to your customers.' },
             ].map((s) => (
               <div key={s.n} className="relative text-center">
-                <div className="w-14 h-14 rounded-full bg-[#eb4b00] text-white text-xl font-black flex items-center justify-center mx-auto relative z-10 shadow-md">
+                <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground text-xl font-black flex items-center justify-center mx-auto relative z-10 shadow-md">
                   {s.n}
                 </div>
-                <h3 className="font-bold text-slate-900 mt-5">{s.t}</h3>
-                <p className="text-sm text-slate-600 mt-2 max-w-xs mx-auto">{s.d}</p>
+                <h3 className="font-bold text-crm-navy mt-5">{s.t}</h3>
+                <p className="text-sm text-muted-foreground mt-2 max-w-xs mx-auto">{s.d}</p>
               </div>
             ))}
           </div>
@@ -608,10 +622,10 @@ const DealerComingSoon = () => {
       </section>
 
       {/* WHY DEALERS CHOOSE */}
-      <section className="bg-slate-50 py-12 sm:py-16">
+      <section className="bg-muted py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           <div>
-            <h2 className="text-2xl sm:text-4xl font-black text-slate-900">Why dealers choose Panda Protect</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-crm-navy">Why dealers choose Panda Protect</h2>
             <ul className="mt-7 space-y-4">
               {[
                 'High profit warranty products with flexible options',
@@ -621,40 +635,40 @@ const DealerComingSoon = () => {
                 'Marketing support to help you sell more',
               ].map((b) => (
                 <li key={b} className="flex gap-3">
-                  <span className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="w-6 h-6 rounded-full bg-crm-green-soft text-crm-green flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Check className="w-4 h-4" strokeWidth={3} />
                   </span>
-                  <span className="text-slate-700">{b}</span>
+                  <span className="text-muted-foreground">{b}</span>
                 </li>
               ))}
             </ul>
             <button
               onClick={revealForm}
-              className="mt-8 inline-flex items-center gap-2 bg-[#eb4b00] hover:bg-[#d63f00] text-white font-bold px-6 py-3 rounded-lg"
+              className="mt-8 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-bold text-primary-foreground hover:bg-primary/90"
             >
               Register your interest <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <div className="flex justify-center">
-            <img src={whyDealersPanda.url} alt="Panda Protect mascot with protected vehicles" className="w-full max-w-xs sm:max-w-md h-auto" />
+            <img src={whyDealersPanda} alt="Panda Protect mascot with protected vehicles" className="w-full max-w-xs sm:max-w-md h-auto" />
           </div>
         </div>
       </section>
 
       {/* BENEFIT CARDS */}
-      <section className="bg-white py-12 sm:py-16">
+      <section className="bg-card py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           {[
             { icon: TrendingUp, t: 'Increase profit per vehicle', d: 'Earn more on every eligible sale with high-margin warranty products.' },
             { icon: FileText, t: 'No claims admin', d: 'We handle claims, documents and customer support for you.' },
             { icon: ShieldCheck, t: 'Flexible cover options', d: 'Car, van, EV and motorcycle warranty options to suit your customers.' },
           ].map((b) => (
-            <div key={b.t} className="rounded-2xl border border-slate-200 p-6 hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-lg bg-orange-100 text-[#eb4b00] flex items-center justify-center mb-4">
+            <div key={b.t} className="rounded-2xl border border-border p-6 hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
                 <b.icon className="w-6 h-6" />
               </div>
-              <h3 className="font-bold text-slate-900">{b.t}</h3>
-              <p className="text-sm text-slate-600 mt-2 leading-relaxed">{b.d}</p>
+              <h3 className="font-bold text-crm-navy">{b.t}</h3>
+              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{b.d}</p>
             </div>
           ))}
         </div>
@@ -662,7 +676,7 @@ const DealerComingSoon = () => {
 
       {/* FAQ */}
       <DealerFAQSection
-        bgClassName="bg-slate-50"
+        bgClassName="bg-muted"
         intro="Quick answers for UK motor trade dealers about our partner programme, portal, claims and support."
       />
       <DealerFAQSchema />
@@ -673,10 +687,10 @@ const DealerComingSoon = () => {
 };
 
 const inputCls =
-  'w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:border-[#eb4b00] focus:ring-1 focus:ring-[#eb4b00] outline-none text-sm bg-white text-slate-900 placeholder:text-slate-400';
+  'w-full px-3 py-2.5 rounded-lg border border-input focus:border-primary focus:ring-1 focus:ring-ring outline-none text-sm bg-card text-crm-navy placeholder:text-muted-foreground/70';
 
 const regInputCls =
-  'w-full pl-11 pr-12 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-[#eb4b00] focus:ring-2 focus:ring-[#eb4b00]/20 outline-none text-sm text-slate-900 placeholder:text-slate-400 transition-colors';
+  'w-full pl-11 pr-12 py-3 rounded-xl border border-border bg-muted focus:bg-card focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none text-sm text-crm-navy placeholder:text-muted-foreground/70 transition-colors';
 
 const Field: React.FC<{
   label: string;
@@ -689,20 +703,20 @@ const Field: React.FC<{
 }> = ({ label, required, hint, error, valid, icon: Icon, children }) => (
   <label className="block">
     <div className="flex items-baseline gap-1 mb-1.5">
-      <span className="text-[15px] font-bold text-slate-900">
-        {label}{required && <span className="text-[#eb4b00] ml-0.5">*</span>}
+      <span className="text-[15px] font-bold text-crm-navy">
+        {label}{required && <span className="text-primary ml-0.5">*</span>}
       </span>
-      {hint && <span className="text-xs text-slate-500">{hint}</span>}
+      {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
     </div>
     <div className="relative">
       {Icon && (
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
           <Icon className="w-5 h-5" />
         </span>
       )}
       {children}
       {valid && !error && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600 pointer-events-none">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-crm-green pointer-events-none">
           <Check className="w-5 h-5" strokeWidth={3} />
         </span>
       )}
