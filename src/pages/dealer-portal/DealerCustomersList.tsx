@@ -38,7 +38,6 @@ import {
   FileText,
   Loader2,
   MoreHorizontal,
-  Plus,
   Search,
   ShieldCheck,
   Upload,
@@ -101,14 +100,6 @@ type ClaimRow = {
 };
 
 type WarrantyStatus = 'Active' | 'Paused – Payment Due' | 'Expiring Soon' | 'Expired' | 'Cancelled';
-
-type AffectedInvoice = {
-  customerId: string;
-  customer: string;
-  vehicle: string;
-  registration: string;
-  amount: number;
-};
 
 const PAGE_SIZE = 6;
 const SELECTED_CUSTOMER_FIELDS = `
@@ -312,7 +303,6 @@ const CustomerDetailDrawer = ({
   paying: boolean;
 }) => {
   const navigate = useNavigate();
-  const [showAffected, setShowAffected] = useState(false);
 
   if (!customer) return null;
 
@@ -325,25 +315,6 @@ const CustomerDetailDrawer = ({
     const sameReg = normaliseReg(claim.registration_plate || claim.registration_plate_normalized) === normaliseReg(customer.registration_plate);
     return sameCustomer || sameReg;
   });
-  const affectedInvoice = allCustomers
-    .filter((row) => row.id !== customer.id && isPaymentDue(row))
-    .map<AffectedInvoice>((row) => ({
-      customerId: row.id,
-      customer: getCustomerName(row),
-      vehicle: getVehicleName(row),
-      registration: displayReg(row.registration_plate),
-      amount: Number(row.final_amount || 0),
-    }));
-  const affectedRows = [
-    {
-      customerId: customer.id,
-      customer: name,
-      vehicle,
-      registration: displayReg(customer.registration_plate),
-      amount: Number(customer.final_amount || 0),
-    },
-    ...affectedInvoice,
-  ];
   const startDate = getStartDate(customer);
   const endDate = getEndDate(customer);
   const duration = Number(customer.payment_type || 0) ? `${Number(customer.payment_type)} months` : '—';
@@ -386,7 +357,7 @@ const CustomerDetailDrawer = ({
     navigate(`/dealer-portal/claims/new?${params.toString()}`);
   };
 
-  const handlePay = () => onPayInvoice(affectedRows.map((row) => row.customerId));
+  const handlePay = () => onPayInvoice([customer.id]);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -478,6 +449,7 @@ const CustomerDetailDrawer = ({
                 title="Contact details"
                 action={
                   <Button variant="ghost" size="sm" className="text-crm-orange hover:text-crm-orange">
+                    onClick={() => toast.info('Customer updates can be requested through Panda Protect support.')}
                     <Edit3 className="mr-1 h-3.5 w-3.5" /> Edit details
                   </Button>
                 }
@@ -537,35 +509,6 @@ const CustomerDetailDrawer = ({
                   <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
                     <p>This warranty is paused until payment is received.</p>
                     <p>Claims are unavailable while the warranty is paused.</p>
-                    {affectedRows.length > 1 && (
-                      <div className="mt-3 border-t border-amber-200 pt-3">
-                        <p className="font-bold">This invoice affects {affectedRows.length} warranties.</p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="mt-2 border-amber-300 bg-white text-amber-800 hover:bg-amber-100"
-                          onClick={() => setShowAffected((value) => !value)}
-                        >
-                          View affected warranties
-                        </Button>
-                        {showAffected && (
-                          <div className="mt-3 space-y-2">
-                            {affectedRows.map((row) => (
-                              <div key={row.customerId} className="rounded-md bg-white px-3 py-2 text-xs text-amber-900">
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="font-bold">{row.customer}</span>
-                                  <span>{formatMoney(row.amount)}</span>
-                                </div>
-                                <div className="mt-0.5 text-amber-700">
-                                  {row.registration} · {row.vehicle}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 )}
               </DetailSection>
@@ -638,17 +581,6 @@ const CustomerDetailDrawer = ({
                     Certificate <Eye className="h-4 w-4" />
                   </Button>
                 </div>
-              </DetailSection>
-
-              <DetailSection
-                title="Dealer notes"
-                action={
-                  <Button variant="ghost" size="sm" className="text-crm-orange hover:text-crm-orange">
-                    <Plus className="mr-1 h-3.5 w-3.5" /> Add note
-                  </Button>
-                }
-              >
-                <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-600">No dealer notes added.</p>
               </DetailSection>
             </div>
 
