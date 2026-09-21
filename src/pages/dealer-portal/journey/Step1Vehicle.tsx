@@ -21,7 +21,6 @@ import {
   Check,
   CheckCircle2,
   Headphones,
-  Info,
   Loader2,
   Search,
   Shield,
