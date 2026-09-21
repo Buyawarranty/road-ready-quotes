@@ -155,7 +155,7 @@ const DealerQuotesList = () => {
               </div>
               <Button
                 size="icon"
-                className="h-11 w-11 rounded-l-none bg-orange-500 hover:bg-orange-600 text-gray-900"
+                className="h-11 w-11 rounded-l-none bg-orange-500 hover:bg-orange-600 text-white"
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -260,7 +260,7 @@ const DealerQuotesList = () => {
                     <Button
                       size="sm"
                       onClick={() => handleResume(q)}
-                      className="h-9 bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold tracking-wide"
+                      className="h-9 bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wide"
                     >
                       Resume quote <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>

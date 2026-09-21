@@ -80,7 +80,7 @@ export const DealerRegHero: React.FC = () => {
         type="submit"
         size="lg"
         disabled={loading}
-        className="w-full bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold text-base sm:text-lg h-14 rounded-lg transition-colors"
+        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-base sm:text-lg h-14 rounded-lg transition-colors"
       >
         {loading ? (
           <Loader2 className="h-5 w-5 animate-spin" />
