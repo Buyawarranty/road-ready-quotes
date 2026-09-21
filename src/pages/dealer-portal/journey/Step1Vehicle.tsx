@@ -308,108 +308,79 @@ const Step1Vehicle: React.FC = () => {
 
         <Card className="crm-panel-shadow border-crm-line">
           <CardContent className="p-4 sm:p-5">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">
-                  <Car className="h-5 w-5" />
-                </span>
-                <div>
-                  <h2 className="text-base font-bold">Vehicle details</h2>
-                  <p className="text-xs text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
-                </div>
+            <div className="mb-4 flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">
+                <Car className="h-5 w-5" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold">Vehicle details</h2>
+                <p className="text-xs text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
               </div>
-              <Button variant="link" size="sm" className="h-auto justify-start px-0 text-xs font-bold text-crm-orange" onClick={manualMode ? showRegMode : showManualMode}>
-                <Car className="h-3.5 w-3.5" /> {manualMode ? 'Search by registration instead' : 'Search by make & model instead'}
-              </Button>
             </div>
 
-            {manualMode ? (
-              <div className="space-y-4">
-                <div className="grid gap-3 md:grid-cols-3">
-                  {[
-                    ['make', 'Make'],
-                    ['model', 'Model'],
-                    ['year', 'Year'],
-                    ['fuelType', 'Fuel type'],
-                    ['engineSize', 'Engine size'],
-                    ['transmission', 'Transmission'],
-                  ].map(([field, label]) => (
-                    <div key={field}>
-                      <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">{label.toUpperCase()}</label>
-                      <Input value={manualFields[field as keyof ManualVehicleFields]} onChange={(event) => handleManualFieldChange(field as keyof ManualVehicleFields, event.target.value)} className="h-11 border-crm-line bg-background" />
-                      {validation[field] && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation[field]}</p>}
-                    </div>
-                  ))}
-                  <div>
-                    <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
-                    <div className="relative">
-                      <Input value={manualFields.mileage} onChange={(event) => handleManualFieldChange('mileage', event.target.value.replace(/\D/g, ''))} className="h-11 border-crm-line bg-background pr-14" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
-                    </div>
-                    {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
+              <div className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(220px,0.55fr)]">
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
+                  <div className="flex h-12 overflow-hidden rounded-md border-2 border-crm-amber bg-crm-amber-soft">
+                    <span className="flex w-11 shrink-0 items-center justify-center bg-crm-blue text-[11px] font-black text-primary-foreground">GB</span>
+                    <input
+                      ref={regInputRef}
+                      value={reg}
+                      onChange={(event) => handleRegChange(event.target.value)}
+                      placeholder="ENTER REG"
+                      aria-label="Vehicle registration"
+                      className="min-w-0 flex-1 bg-transparent px-3 text-center text-xl font-black uppercase tracking-widest text-foreground outline-none placeholder:text-foreground/35"
+                    />
+                    <span className="flex w-11 shrink-0 items-center justify-center text-foreground"><Search className="h-4 w-4" /></span>
                   </div>
+                  {validation.reg && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.reg}</p>}
+                  {lookupState === 'success' && <p className="mt-1 text-xs font-semibold text-muted-foreground">AUDI Q5 · 2018 · Diesel</p>}
+                  {lookupState === 'default' && <p className="mt-1 text-xs text-muted-foreground">Enter a registration to identify the vehicle.</p>}
+                  {lookupState === 'loading' && <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-crm-blue"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Looking up vehicle...</p>}
+                  {lookupState === 'not-found' && (
+                    <div className="mt-2 rounded-md border border-crm-amber/40 bg-crm-amber-soft p-3 text-xs">
+                      <p className="font-bold text-foreground">We couldn't find that vehicle.</p>
+                      <p className="text-muted-foreground">Check the registration and try again.</p>
+                      <div className="mt-2"><Button type="button" size="sm" variant="outline" onClick={() => setLookupState('default')}>Try again</Button></div>
+                    </div>
+                  )}
+                  {lookupState === 'error' && (
+                    <div className="mt-2 rounded-md border border-crm-red/40 bg-crm-red-soft p-3 text-xs">
+                      <p className="font-bold text-foreground">Vehicle lookup is temporarily unavailable.</p>
+                      <p className="text-muted-foreground">Please try again in a moment.</p>
+                      <Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => setLookupState('default')}>Try again</Button>
+                    </div>
+                  )}
                 </div>
-                <Button type="button" onClick={() => setLookupState('success')} className="w-full sm:w-auto">Find warranty options <ArrowRight className="h-4 w-4" /></Button>
+                <div>
+                  <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
+                  <div className="relative">
+                    <Input value={mileage} onChange={(event) => { setMileage(event.target.value.replace(/\D/g, '')); setValidation((current) => ({ ...current, mileage: '' })); }} className="h-12 border-crm-line bg-background pr-14" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
+                  </div>
+                  {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
+                </div>
               </div>
-            ) : (
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-                <div className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(220px,0.55fr)]">
-                  <div>
-                    <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
-                    <div className="flex h-12 overflow-hidden rounded-md border-2 border-crm-amber bg-crm-amber-soft">
-                      <span className="flex w-11 shrink-0 items-center justify-center bg-crm-blue text-[11px] font-black text-primary-foreground">GB</span>
-                      <input
-                        value={reg}
-                        onChange={(event) => handleRegChange(event.target.value)}
-                        placeholder="ENTER REG"
-                        aria-label="Vehicle registration"
-                        className="min-w-0 flex-1 bg-transparent px-3 text-center text-xl font-black uppercase tracking-widest text-foreground outline-none placeholder:text-foreground/35"
-                      />
-                      <span className="flex w-11 shrink-0 items-center justify-center text-foreground"><Search className="h-4 w-4" /></span>
-                    </div>
-                    {validation.reg && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.reg}</p>}
-                    {lookupState === 'success' && <p className="mt-1 text-xs font-semibold text-muted-foreground">AUDI Q5 · 2018 · Diesel</p>}
-                    {lookupState === 'default' && <p className="mt-1 text-xs text-muted-foreground">Enter a registration to identify the vehicle.</p>}
-                    {lookupState === 'loading' && <p className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-crm-blue"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Looking up vehicle...</p>}
-                    {lookupState === 'not-found' && (
-                      <div className="mt-2 rounded-md border border-crm-amber/40 bg-crm-amber-soft p-3 text-xs">
-                        <p className="font-bold text-foreground">We couldn't find that vehicle.</p>
-                        <p className="text-muted-foreground">Check the registration or search by make and model instead.</p>
-                        <div className="mt-2 flex flex-wrap gap-2"><Button type="button" size="sm" variant="outline" onClick={() => setLookupState('default')}>Try again</Button><Button type="button" size="sm" onClick={showManualMode}>Search by make & model</Button></div>
-                      </div>
-                    )}
-                    {lookupState === 'error' && (
-                      <div className="mt-2 rounded-md border border-crm-red/40 bg-crm-red-soft p-3 text-xs">
-                        <p className="font-bold text-foreground">Vehicle lookup is temporarily unavailable.</p>
-                        <p className="text-muted-foreground">Please try again or enter the vehicle details manually.</p>
-                        <Button type="button" size="sm" className="mt-2" onClick={showManualMode}>Enter manually</Button>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
-                    <div className="relative">
-                      <Input value={mileage} onChange={(event) => { setMileage(event.target.value.replace(/\D/g, '')); setValidation((current) => ({ ...current, mileage: '' })); }} className="h-12 border-crm-line bg-background pr-14" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
-                    </div>
-                    {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
-                  </div>
-                </div>
 
-                {lookupState === 'success' && (
-                  <div className="rounded-md border border-crm-line bg-card p-3">
-                    <div className="flex gap-3">
-                      <div className="h-16 w-24 shrink-0 overflow-hidden rounded-md bg-muted"><img src={audiQ5Image} alt="Audi Q5" className="h-full w-full object-cover" /></div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-black">AUDI Q5</p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">2018 · Diesel · 101,782 miles</p>
-                        <Button variant="link" size="sm" className="mt-1 h-auto px-0 text-xs font-bold text-crm-orange" onClick={showManualMode}>Edit vehicle <ArrowRight className="h-3.5 w-3.5" /></Button>
-                      </div>
+              {lookupState === 'success' && (
+                <div className="rounded-md border border-crm-line bg-card p-3">
+                  <div className="flex items-center gap-4">
+                    <div className="flex shrink-0 flex-col items-center gap-1.5">
+                      <span className="inline-flex overflow-hidden rounded-md border-2 border-black text-sm font-bold shadow-sm">
+                        <span className="flex items-center bg-crm-blue px-1.5 py-1 text-[10px] font-bold text-primary-foreground">GB</span>
+                        <span className="bg-yellow-400 px-3 py-1 tracking-widest text-black">{normaliseReg(reg)}</span>
+                      </span>
+                      <Button variant="link" size="sm" className="h-auto px-0 text-xs font-bold text-crm-orange" onClick={editVehicle}>Edit vehicle <ArrowRight className="h-3.5 w-3.5" /></Button>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-black">AUDI Q5</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">2018 · Diesel · {Number(mileage || 0).toLocaleString('en-GB')} miles</p>
                     </div>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
