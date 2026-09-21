@@ -314,9 +314,6 @@ const Step1Vehicle: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <Button variant="link" size="sm" className="h-auto justify-start px-0 text-xs font-bold text-crm-orange" onClick={() => setCompareOpen(true)} disabled={!vehicleDetailsComplete}>
-                <BarChart3 className="h-3.5 w-3.5" /> Compare plans <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
             </div>
 
             {!vehicleDetailsComplete && (
@@ -372,37 +369,6 @@ const Step1Vehicle: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-
-      <Dialog open={compareOpen} onOpenChange={setCompareOpen}>
-        <DialogContent className="max-w-2xl border-crm-line p-0">
-          <DialogHeader className="border-b border-crm-line p-5 pb-4">
-            <DialogTitle>Compare plans</DialogTitle>
-            <DialogDescription>Dealer-Paid Warranty versus Fully Covered Warranty.</DialogDescription>
-          </DialogHeader>
-          <div className="overflow-x-auto px-5 py-2">
-            <table className="w-full min-w-[480px] text-left text-xs">
-              <thead>
-                <tr>
-                  <th className="w-[28%] py-3" />
-                  <th className="rounded-t-md bg-crm-navy px-3 py-2.5 text-center text-[11px] font-black uppercase tracking-wide text-primary-foreground">Dealer-Paid Warranty</th>
-                  <th className="rounded-t-md bg-crm-orange px-3 py-2.5 text-center text-[11px] font-black uppercase tracking-wide text-primary-foreground">Fully Covered Warranty</th>
-                </tr>
-              </thead>
-              <tbody>{comparisonRows.map((row) => (
-                <tr key={row.label} className="border-t border-crm-line">
-                  <td className="py-3 pr-3 align-top font-bold text-foreground">{row.label}</td>
-                  <td className="bg-crm-blue-soft/40 px-3 py-3 align-top font-medium text-foreground">{row.dealerPaid}</td>
-                  <td className="bg-crm-orange-soft/60 px-3 py-3 align-top font-medium text-foreground">{row.fullyCovered}</td>
-                </tr>
-              ))}</tbody>
-            </table>
-          </div>
-          <DialogFooter className="gap-2 border-t border-crm-line p-5 sm:justify-center">
-            <Button className="bg-crm-navy text-primary-foreground hover:bg-crm-navy-soft" onClick={() => choosePlanFromCompare('dealer-paid')}>Manage my warranty</Button>
-            <Button className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" onClick={() => choosePlanFromCompare('fully-covered')}>Choose Full Cover</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </DealerLayout>
   );
 };
