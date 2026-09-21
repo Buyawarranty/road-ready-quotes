@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { Plus, Search, Trash2, Camera, ArrowRight } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowRight, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STEP_PATHS: Record<number, string> = {
@@ -112,6 +112,22 @@ const DealerQuotesList = () => {
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
+  const formatRegistration = (reg?: string | null) => {
+    const cleaned = (reg || '').replace(/\s+/g, '').toUpperCase();
+    if (!cleaned) return 'REG TBC';
+    return cleaned.length > 3 ? `${cleaned.slice(0, -3)} ${cleaned.slice(-3)}` : cleaned;
+  };
+
+  const vehicleDescription = (q: any) => {
+    const makeModel = [q.vehicle_make, q.vehicle_model].filter(Boolean).join(' ').toUpperCase();
+    return [makeModel, q.vehicle_year, q.vehicle_fuel_type].filter(Boolean).join(' · ') || 'Vehicle details pending';
+  };
+
+  const mileageLabel = (mileage?: string | number | null) => {
+    const number = Number(String(mileage || '').replace(/[^0-9]/g, ''));
+    return Number.isFinite(number) && number > 0 ? `${number.toLocaleString('en-GB')} miles` : null;
+  };
+
   const formatDateTime = (d: string) => {
     const date = new Date(d);
     return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
@@ -177,11 +193,25 @@ const DealerQuotesList = () => {
               className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
             >
               <div className="flex flex-col md:flex-row">
-                {/* Vehicle image / placeholder */}
-                <div className="w-full md:w-56 h-40 md:h-auto bg-gray-100 flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
-                  <div className="flex flex-col items-center text-gray-600">
-                    <Camera className="h-8 w-8 mb-1" />
-                    <span className="text-[10px] font-bold tracking-widest">NO PHOTO</span>
+                {/* Vehicle registration plate */}
+                <div className="w-full md:w-64 bg-muted flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-crm-line p-5">
+                  <div className="w-full max-w-[16rem] space-y-3">
+                    <div className="vehicle-reg-plate relative" aria-label={`Registration ${formatRegistration(q.vehicle_reg)}`}>
+                      <div className="vehicle-reg-plate__country">
+                        <span>GB</span>
+                        <span>UK</span>
+                      </div>
+                      <div className="vehicle-reg-plate__text">{formatRegistration(q.vehicle_reg)}</div>
+                      {q.vehicle_reg && (
+                        <span className="vehicle-reg-plate__check" aria-hidden="true">
+                          <Check className="h-5 w-5 stroke-[3]" />
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-extrabold uppercase text-foreground">{vehicleDescription(q)}</p>
+                      {mileageLabel(q.mileage) && <p className="mt-1 text-xs font-semibold text-muted-foreground">{mileageLabel(q.mileage)}</p>}
+                    </div>
                   </div>
                 </div>
 

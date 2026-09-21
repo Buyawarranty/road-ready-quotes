@@ -21,6 +21,9 @@
   --crm-amber-soft: 42 100% 93%;
   --crm-red: 4 85% 60%;
   --crm-red-soft: 4 100% 95%;
+  --vehicle-plate-yellow: 49 100% 52%;
+  --vehicle-plate-blue: 221 77% 53%;
+  --vehicle-plate-ink: 0 0% 0%;
   --crm-canvas: 210 25% 97%;
   --crm-line: 214 24% 89%;
   --background: 210 25% 97%;
@@ -42,6 +45,60 @@
 
 .dealer-crm .crm-panel-shadow {
   box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.04), 0 8px 24px hsl(var(--crm-navy) / 0.045);
+}
+
+.dealer-crm .vehicle-reg-plate {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  min-height: 4rem;
+  overflow: visible;
+  border: 2px solid hsl(var(--vehicle-plate-ink));
+  border-radius: 0.5rem;
+  background: hsl(var(--vehicle-plate-yellow));
+  color: hsl(var(--vehicle-plate-ink));
+  box-shadow: 0 2px 0 hsl(var(--crm-navy) / 0.18);
+}
+
+.dealer-crm .vehicle-reg-plate__country {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  background: hsl(var(--vehicle-plate-blue));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dealer-crm .vehicle-reg-plate__text {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.65rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: clamp(1.6rem, 4vw, 2.35rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.dealer-crm .vehicle-reg-plate__check {
+  position: absolute;
+  right: -0.65rem;
+  top: -0.65rem;
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: hsl(var(--crm-green));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 0 0 3px hsl(var(--card));
 }
 
 
