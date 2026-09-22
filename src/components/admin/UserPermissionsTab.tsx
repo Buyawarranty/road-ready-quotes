@@ -956,7 +956,7 @@ export const UserPermissionsTab = () => {
     }
     // Copy credentials so they can be pasted on the gateway, then open the login page.
     const gatewayUrl = loginUrlForRole(passwordUser.role);
-    const block = `Gateway: SmashSales2026!!\nLogin URL: ${gatewayUrl}\nEmail: ${passwordUser.email}\nPassword: ${newPassword}`;
+    const block = `Gateway: PandaPanda2026!!\nLogin URL: ${gatewayUrl}\nEmail: ${passwordUser.email}\nPassword: ${newPassword}`;
     navigator.clipboard.writeText(block).catch(() => {});
     toast.success('Credentials copied — paste on the gateway / login page', { duration: 4000 });
     window.open(gatewayUrl, '_blank', 'noopener');
@@ -1537,7 +1537,7 @@ export const UserPermissionsTab = () => {
             </DialogTitle>
           </DialogHeader>
           {passwordUser && (() => {
-            const fullBlock = `Step 1 — Gateway\nLink: ${loginUrlForRole(passwordUser.role)}\nPassword: SmashSales2026!!\n\nStep 2 — ${passwordUser.first_name || ''} ${passwordUser.last_name || ''}'s login\nUsername: ${passwordUser.email}\nPassword: ${newPassword || '(set a password first)'}`;
+            const fullBlock = `Step 1 — Gateway\nLink: ${loginUrlForRole(passwordUser.role)}\nPassword: PandaPanda2026!!\n\nStep 2 — ${passwordUser.first_name || ''} ${passwordUser.last_name || ''}'s login\nUsername: ${passwordUser.email}\nPassword: ${newPassword || '(set a password first)'}`;
             return (
             <div className="space-y-4">
               {/* One-click copy-all */}
@@ -1569,9 +1569,9 @@ export const UserPermissionsTab = () => {
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-muted-foreground shrink-0">Password</span>
                     <div className="flex items-center gap-1">
-                      <code className="font-mono text-xs">SmashSales2026!!</code>
+                      <code className="font-mono text-xs">PandaPanda2026!!</code>
                       <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0"
-                        onClick={() => copyToClipboard('SmashSales2026!!', 'gw')}>
+                        onClick={() => copyToClipboard('PandaPanda2026!!', 'gw')}>
                         {copiedField === 'gw' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
                       </Button>
                     </div>
