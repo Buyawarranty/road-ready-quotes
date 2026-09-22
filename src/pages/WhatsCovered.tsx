@@ -33,7 +33,7 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import TrustpilotSliderWidget from '@/components/TrustpilotSliderWidget';
-import pandaThumbsUp from '@/assets/panda-thumbs-up-optimized.webp';
+import pandaClaimHero from '@/assets/panda-claim-hero.webp';
 
 const PLATINUM_PDF = '/Platinum-Warranty-Plan-v2.4.pdf';
 const TANDC_PDF = '/Terms-and-Conditions-v2.3.pdf';
@@ -261,13 +261,13 @@ const WhatsCovered: React.FC = () => {
             </div>
             <div className="flex justify-center lg:justify-end">
               <OptimizedImage
-                src={pandaThumbsUp}
-                 alt="Panda Protect mascot giving a thumbs up beside the coverage guide"
+                src={pandaClaimHero}
+                alt="Car with the bonnet open during a warranty repair, with an approved claim card showing parts and labour covered"
                 priority
-                 width={640}
-                 height={640}
-                 sizes="(max-width: 640px) 16rem, (max-width: 1024px) 20rem, 28rem"
-                className="w-64 sm:w-80 lg:w-full max-w-md h-auto"
+                width={1200}
+                height={800}
+                sizes="(max-width: 640px) 20rem, (max-width: 1024px) 28rem, 36rem"
+                className="w-full max-w-md sm:max-w-lg lg:max-w-xl h-auto rounded-2xl"
               />
             </div>
           </div>
@@ -356,7 +356,7 @@ const WhatsCovered: React.FC = () => {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-4">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-2">{title}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">{title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{body}</p>
                 </div>
               ))}
@@ -493,7 +493,7 @@ const WhatsCovered: React.FC = () => {
                     {example.icon}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground">{example.title}</h3>
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground">{example.title}</h3>
                     <p className="text-muted-foreground text-sm">{example.body}</p>
                   </div>
                   <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-1">
