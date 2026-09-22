@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { Resend } from "https://esm.sh/resend@4.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,7 +9,6 @@ const corsHeaders = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const SITE_ORIGIN = "https://www.pandaprotect.co.uk";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -31,7 +31,10 @@ serve(async (req) => {
       throw new Error("Supabase service role credentials are not configured");
     }
 
-    const { email } = await req.json();
+    const body: { email?: string; brand?: string } = await req.json();
+    const { email } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
+    const SITE_ORIGIN = brand.siteUrl;
     const cleanEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 
     if (!EMAIL_RE.test(cleanEmail)) {
@@ -73,21 +76,21 @@ serve(async (req) => {
     const resend = new Resend(resendApiKey);
 
     const button = confirmLink
-      ? `<a href="${confirmLink}" style="display:inline-block;background:#EC6F33;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;font-size:15px;">Confirm my email</a>`
-      : `<a href="${SITE_ORIGIN}/auth" style="display:inline-block;background:#EC6F33;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;font-size:15px;">Sign in to your account</a>`;
+      ? `<a href="${confirmLink}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;font-size:15px;">Confirm my email</a>`
+      : `<a href="${SITE_ORIGIN}/auth" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;font-size:15px;">Sign in to your account</a>`;
 
     const introLine = confirmLink
-      ? "You're one click away. Confirm your email address to activate your Panda Protect account."
-      : "Your Panda Protect account is ready. Sign in any time to manage your warranty.";
+      ? `You're one click away. Confirm your email address to activate your ${brand.name} account.`
+      : `Your ${brand.name} account is ready. Sign in any time to manage your warranty.`;
 
     const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
         <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
           <div style="background:#0f2544;padding:24px;text-align:center;">
-            <h1 style="margin:0;color:#ffffff;font-size:20px;">Panda Protect</h1>
+            <h1 style="margin:0;color:#ffffff;font-size:20px;">${brand.name}</h1>
           </div>
           <div style="padding:32px 28px;color:#111827;">
-            <h2 style="margin:0 0 16px 0;font-size:22px;color:#0f2544;">Welcome to Panda Protect</h2>
+            <h2 style="margin:0 0 16px 0;font-size:22px;color:#0f2544;">Welcome to ${brand.name}</h2>
             <p style="line-height:1.6;">Hi,</p>
             <p style="line-height:1.6;">Thanks for creating an account with <strong>${cleanEmail}</strong>. ${introLine}</p>
             <div style="text-align:center;margin:28px 0;">
@@ -97,20 +100,20 @@ serve(async (req) => {
             <span style="word-break:break-all;color:#6b7280;">${confirmLink || `${SITE_ORIGIN}/auth`}</span></p>
             <p style="line-height:1.6;">Once you're signed in you can view your warranty details, upload documents, and make a claim — all from your dashboard.</p>
             <p style="line-height:1.6;">If you didn't create this account, you can safely ignore this email.</p>
-            <p style="line-height:1.6;">Kind regards,<br/>The Panda Protect Team</p>
+            <p style="line-height:1.6;">Kind regards,<br/>The ${brand.name} Team</p>
           </div>
           <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
-            Panda Protect · support@pandaprotect.co.uk
+            ${brand.name} · ${brand.supportEmail}
           </div>
         </div>
       </div>
     `;
 
     const { error: sendError } = await resend.emails.send({
-      from: "Panda Protect <hello@pandaprotect.co.uk>",
+      from: brandFrom(brand, "", "hello"),
       to: [cleanEmail],
-      reply_to: "support@pandaprotect.co.uk",
-      subject: "Welcome to Panda Protect — confirm your email",
+      reply_to: brand.supportEmail,
+      subject: `Welcome to ${brand.name} — confirm your email`,
       html,
     });
 
