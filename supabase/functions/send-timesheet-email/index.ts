@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,7 +30,8 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const { html, monthLabel, userEmail } = await req.json();
+    const { html, monthLabel, userEmail, brand: brandHint } = await req.json();
+    const brand = resolveBrand(req, { brand: brandHint });
 
     const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY');
     if (!BREVO_API_KEY) {
@@ -45,8 +47,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Panda Protect', email: 'noreply@pandaprotect.co.uk' },
-        to: [{ email: 'accounts@pandaprotect.co.uk', name: 'Accounts' }],
+        sender: { name: brand.name, email: brand.noReplyEmail },
+        to: [{ email: `accounts@${brand.domain}`, name: 'Accounts' }],
         subject,
         htmlContent: html,
         replyTo: { email: userEmail },
