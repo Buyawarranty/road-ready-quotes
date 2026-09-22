@@ -22,13 +22,6 @@ type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
 type SaveState = 'idle' | 'saving' | 'saved';
 
 
-const progressSteps = [
-  { n: 1, label: 'Enter Reg Plate' },
-  { n: 2, label: 'Vehicle Details' },
-  { n: 3, label: 'Choose Your Plan' },
-  { n: 4, label: 'Review & Pay' },
-];
-
 const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
@@ -182,69 +175,32 @@ const Step1Vehicle: React.FC = () => {
   return (
     <DealerLayout>
       <div className="mx-auto max-w-[1500px] space-y-3">
-        <Card className="crm-panel-shadow overflow-hidden border-crm-line bg-card">
-          <CardContent className="p-5 sm:p-6">
-            <p className="mb-1 text-[11px] font-bold tracking-[0.16em] text-crm-orange">NEW QUOTE</p>
-            <h1 className="text-2xl font-bold leading-tight sm:text-3xl">Build your warranty</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Enter the registration, confirm the mileage, choose a plan.</p>
-          </CardContent>
-        </Card>
-
         <Card className="crm-panel-shadow border-crm-line">
-          <CardContent className="p-4 sm:p-5">
-            <div className="flex items-start gap-2 sm:items-center">
-              {progressSteps.map((step, index) => {
-                const complete = step.n === 1;
-                const current = step.n === 2;
-                return (
-                  <React.Fragment key={step.n}>
-                    <div className="flex min-w-0 flex-1 flex-col items-center gap-1 text-center sm:flex-row sm:text-left">
-                      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${complete ? 'bg-crm-green text-primary-foreground' : current ? 'bg-crm-orange text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                        {complete ? <Check className="h-4 w-4" /> : step.n}
-                      </span>
-                      <span className={`text-[10px] font-bold leading-tight sm:text-xs ${complete ? 'text-crm-green' : current ? 'text-crm-orange' : 'text-muted-foreground'}`}>{step.label}</span>
-                    </div>
-                    {index < progressSteps.length - 1 && <span className={`mt-4 hidden h-1 flex-1 rounded-full sm:block ${index === 0 ? 'bg-crm-green' : 'bg-muted'}`} />}
-                  </React.Fragment>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="rounded-md border border-crm-line bg-card p-3 text-xs font-semibold text-muted-foreground crm-panel-shadow">
-          <span className="inline-flex items-center gap-2">
-            {saveState === 'saving' ? <Loader2 className="h-3.5 w-3.5 animate-spin text-crm-orange" /> : <CheckCircle2 className="h-3.5 w-3.5 text-crm-green" />}
-            {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : 'Ready'}
-          </span>
-        </div>
-
-        <Card className="crm-panel-shadow border-crm-line">
-          <CardContent className="p-4 sm:p-5">
-            <div className="mb-4 flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">
-                <Car className="h-5 w-5" />
-              </span>
+          <CardContent className="p-5 sm:p-7">
+            <div className="mb-6 flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold">Vehicle details</h2>
-                <p className="text-xs text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
+                <h1 className="text-xl font-bold sm:text-2xl">Vehicle details</h1>
+                <p className="mt-1 text-sm text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
               </div>
+              <span className="inline-flex min-h-6 items-center text-xs font-semibold text-muted-foreground" aria-live="polite">
+                {saveState === 'saving' && <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-crm-orange" /> Saving...</>}
+                {saveState === 'saved' && <><CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-crm-green" /> Saved</>}
+              </span>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(220px,0.55fr)]">
+            <div className="max-w-3xl space-y-5">
               <div>
-                <label className="mb-1 block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
-                <div className="flex h-12 overflow-hidden rounded-md border-2 border-crm-amber bg-crm-amber-soft">
-                  <span className="flex w-11 shrink-0 items-center justify-center bg-crm-blue text-[11px] font-black text-primary-foreground">GB</span>
+                <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
+                <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
+                  <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
                   <input
                     ref={regInputRef}
                     value={reg}
                     onChange={(event) => handleRegChange(event.target.value)}
                     placeholder="ENTER REG"
                     aria-label="Vehicle registration"
-                    className="min-w-0 flex-1 bg-transparent px-3 text-center text-xl font-black uppercase tracking-widest text-foreground outline-none placeholder:text-foreground/35"
+                    className="vehicle-reg-plate__input"
                   />
-                  <span className="flex w-11 shrink-0 items-center justify-center text-foreground"><Search className="h-4 w-4" /></span>
                 </div>
                 {validation.reg && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.reg}</p>}
                 {lookupState === 'success' && (
@@ -269,9 +225,9 @@ const Step1Vehicle: React.FC = () => {
                   </div>
                 )}
               </div>
-              <div>
-                <div className="mb-1 flex items-center gap-2">
-                  <label className="block text-[10px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
+              <div className="max-w-xl">
+                <div className="mb-2 flex items-center gap-2">
+                  <label className="block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
                   {lookupState === 'success' && (
                     <span className="rounded-full bg-crm-green-soft px-2 py-0.5 text-[9px] font-black tracking-wide text-crm-green">LAST MOT</span>
                   )}
