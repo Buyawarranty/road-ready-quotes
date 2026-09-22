@@ -2577,7 +2577,7 @@ body {
 .public-dealer-home .home-hero-eligibility strong { color: hsl(var(--home-ink)); }
 .public-dealer-home .home-reg-form { max-width: 540px; display: grid; gap: 0.55rem; }
 .public-dealer-home .home-reg-input { min-height: 60px; display: flex; overflow: hidden; border: 2px solid hsl(var(--home-ink)); border-radius: 0.55rem; }
-.public-dealer-home .home-reg-country { width: 52px; flex: 0 0 52px; display: grid; place-content: center; text-align: center; color: hsl(var(--home-surface)); background: hsl(225 74% 46%); font-size: 0.72rem; font-weight: 800; line-height: 1; }
+.public-dealer-home .home-reg-country { width: 52px; flex: 0 0 52px; display: grid; place-content: center; text-align: center; color: #ffffff !important; background: hsl(225 74% 46%); font-size: 0.72rem; font-weight: 800; line-height: 1; }
 .public-dealer-home .home-reg-country small { font-size: 0.52rem; margin-top: 0.15rem; }
 .public-dealer-home .home-reg-input input { width: 100%; min-width: 0; border: 0; border-radius: 0; padding: 0.75rem 1rem; outline: 0; background: hsl(var(--home-yellow)); color: hsl(var(--home-ink)); font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 .public-dealer-home .home-reg-input input::placeholder { color: hsl(var(--home-ink) / 0.65); }
