@@ -5,6 +5,7 @@
 // touches our servers.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { resolveBrand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,6 +32,7 @@ interface Billing {
 }
 
 interface Body {
+  brand?: string;
   session_href?: string;
   cardholder_name?: string | null;
   amount_pence?: number;
@@ -163,12 +165,13 @@ Deno.serve(async (req: Request) => {
     const transactionReference = `PP-${txn.id}`;
     const base = ENVIRONMENT === 'live' ? 'https://access.worldpay.com' : 'https://try.access.worldpay.com';
 
+    const narrativeBrand = resolveBrand(req, { brand: body.brand });
     const narrative =
-      String(description || 'Panda Protect')
+      String(description || narrativeBrand.name)
         .replace(/[^a-zA-Z0-9\-., ]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim()
-        .slice(0, 24) || 'Panda Protect';
+        .slice(0, 24) || narrativeBrand.name;
 
     const paymentInstrument: Record<string, unknown> = {
       type: 'checkout',

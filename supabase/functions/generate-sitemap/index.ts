@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,13 +11,15 @@ interface BlogPost {
   updated_at: string;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     console.log('Generating sitemap...');
+
+    const brand = resolveBrand(req);
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -101,7 +104,7 @@ Deno.serve(async (req) => {
       { url: '/privacy', priority: '0.9' },
     ];
 
-    const baseUrl = 'https://www.pandaprotect.co.uk';
+    const baseUrl = brand.siteUrl;
     const lastmod = '2026-03-17';
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';

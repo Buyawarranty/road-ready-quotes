@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
 import Stripe from 'https://esm.sh/stripe@14.21.0'
+import { resolveBrand } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -51,7 +52,7 @@ serve(async (req) => {
     // Find customer record to get Stripe customer ID
     const { data: customerData, error: customerError } = await supabase
       .from('customers')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, brand')
       .eq('email', user.email)
       .maybeSingle();
 
@@ -62,6 +63,8 @@ serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    const brand = resolveBrand(req, { record: customerData });
 
     let stripeCustomerId = customerData?.stripe_customer_id;
 
@@ -88,7 +91,7 @@ serve(async (req) => {
     // Create billing portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: `${req.headers.get('origin') || 'https://www.pandaprotect.co.uk'}/customer-dashboard`,
+      return_url: `${req.headers.get('origin') || brand.siteUrl}/customer-dashboard`,
     });
 
     console.log('Billing portal session created:', portalSession.id);

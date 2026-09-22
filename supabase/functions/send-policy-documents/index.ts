@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { encode as base64Encode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,7 +42,7 @@ serve(async (req) => {
   try {
     logStep("Function started");
     
-    const { recipientEmail, variables, forceResend } = await req.json();
+    const { recipientEmail, variables, forceResend, brand: brandHint } = await req.json();
     const { 
       planType, 
       customerName, 
@@ -375,9 +376,11 @@ serve(async (req) => {
     // Fetch customer details for claim limit, excess, labour rate
     const { data: customerRecord } = await supabaseClient
       .from('customers')
-      .select('claim_limit, voluntary_excess, labour_rate')
+      .select('claim_limit, voluntary_excess, labour_rate, brand')
       .eq('email', recipientEmail)
       .maybeSingle();
+
+    const brand = resolveBrand(req, { brand: brandHint, record: customerRecord });
     
     // Also check customer_policies for these values
     const { data: policyRecord } = policyNumber ? await supabaseClient
@@ -426,7 +429,7 @@ serve(async (req) => {
         month: '2-digit', 
         year: 'numeric' 
       }),
-      loginUrl: "https://www.pandaprotect.co.uk/customer-dashboard",
+      loginUrl: `${brand.siteUrl}/customer-dashboard`,
       loginEmail: recipientEmail,
       isFutureActivation: isFutureActivation ? 'true' : 'false',
       ...(await getCustomerCredentials(supabaseClient, recipientEmail, policyNumber))

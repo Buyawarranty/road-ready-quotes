@@ -1,14 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-const BRAND = "Panda Protect";
-const FROM = "Panda Protect <hello@pandaprotect.co.uk>";
-const PORTAL_URL = "https://pandaprotect.co.uk/dealer-portal/login";
 
 const esc = (v?: string | null) =>
   (v ?? "")
@@ -18,18 +15,18 @@ const esc = (v?: string | null) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-const shell = (title: string, body: string) => `
+const shell = (brand: Brand, title: string, body: string) => `
 <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
   <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
     <div style="background:#1e3a5f;padding:24px;">
-      <h1 style="margin:0;color:#ffffff;font-size:20px;">${BRAND}</h1>
+      <h1 style="margin:0;color:#ffffff;font-size:20px;">${brand.name}</h1>
     </div>
     <div style="padding:28px;color:#111827;">
       <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">${title}</h2>
       ${body}
     </div>
     <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
-      ${BRAND} · Trade Warranty · hello@pandaprotect.co.uk
+      ${brand.name} · Trade Warranty · ${brand.helloEmail}
     </div>
   </div>
 </div>`;
@@ -40,22 +37,26 @@ function generatePassword() {
   return Array.from(bytes).map((b) => chars[b % chars.length]).join("") + "!7";
 }
 
-async function sendEmail(to: string, subject: string, html: string) {
+async function sendEmail(brand: Brand, to: string, subject: string, html: string) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) {
     console.warn("RESEND_API_KEY missing; skipping email to", to);
     return;
   }
+  const from = `${brand.name} <${brand.helloEmail}>`;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: FROM, to: [to], subject, html }),
+    body: JSON.stringify({ from, to: [to], subject, html }),
   });
   if (!res.ok) console.error("Resend error:", await res.text());
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const brand: Brand = resolveBrand(req, { force: "pandaprotect" });
+  const PORTAL_URL = `${brand.siteUrl}/dealer-portal/login`;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -136,17 +137,19 @@ serve(async (req) => {
         .eq("id", signupId);
 
       await sendEmail(
+        brand,
         email,
-        `Your ${BRAND} trade application`,
+        `Your ${brand.name} trade application`,
         shell(
+          brand,
           "Thanks for your interest",
           `
           <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
-          <p style="line-height:1.6;">Thank you for registering your interest in becoming a ${BRAND} trade partner. After reviewing your application we're not able to open a trade account for you at this time.</p>
-          ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid #eb4b00;padding:12px 16px;">${esc(notes)}</p>` : ""}
+          <p style="line-height:1.6;">Thank you for registering your interest in becoming a ${brand.name} trade partner. After reviewing your application we're not able to open a trade account for you at this time.</p>
+          ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
           <p style="line-height:1.6;">This isn't a permanent no — our criteria change as we grow, and you're very welcome to apply again in the future.</p>
-          <p style="line-height:1.6;">If you'd like to discuss your application, just reply to this email or contact us at hello@pandaprotect.co.uk.</p>
-          <p style="line-height:1.6;">Kind regards,<br/>The ${BRAND} Trade Team</p>`
+          <p style="line-height:1.6;">If you'd like to discuss your application, just reply to this email or contact us at ${brand.helloEmail}.</p>
+          <p style="line-height:1.6;">Kind regards,<br/>The ${brand.name} Trade Team</p>`
         )
       );
 
@@ -261,27 +264,29 @@ serve(async (req) => {
     // 4. welcome / credentials email
     const sendTo = alternateEmail || email;
     await sendEmail(
+      brand,
       sendTo,
       isResend
-        ? `Your ${BRAND} Trade login details`
-        : `Welcome to ${BRAND} Trade — your login details`,
+        ? `Your ${brand.name} Trade login details`
+        : `Welcome to ${brand.name} Trade — your login details`,
       shell(
+        brand,
         isResend ? "Your dealer portal login details" : "Your trade account is live",
         `
         <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
         <p style="line-height:1.6;">${isResend
-          ? `As requested, here are your ${BRAND} dealer portal login details. Your password has been reset to the temporary one below.`
-          : `Great news — your ${BRAND} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
-        ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid #eb4b00;padding:12px 16px;">${esc(notes)}</p>` : ""}
+          ? `As requested, here are your ${brand.name} dealer portal login details. Your password has been reset to the temporary one below.`
+          : `Great news — your ${brand.name} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
+        ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
         <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:20px;margin:22px 0;">
           <div style="padding:6px 0;"><strong>Email:</strong> <span style="font-family:monospace;color:#1e3a5f;">${esc(email)}</span></div>
           <div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password!)}</span></div>
         </div>
         <div style="text-align:center;margin:28px 0;">
-          <a href="${PORTAL_URL}" style="display:inline-block;background:#eb4b00;color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
+          <a href="${PORTAL_URL}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
         </div>
         <p style="line-height:1.6;font-size:14px;color:#6b7280;">For security, please change your password after your first login.</p>
-        <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${BRAND} Trade Team</p>`
+        <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${brand.name} Trade Team</p>`
       )
     );
 

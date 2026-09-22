@@ -108,6 +108,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
+    const brand = resolveBrand(req, { brand: body?.brand });
     const {
       customerName,
       customerEmail,
@@ -161,7 +162,7 @@ serve(async (req) => {
     const { data: quote, error: insertError } = await supabaseClient
       .from('live_quotes')
       .insert({
-        brand: resolveBrand(req).key,
+        brand: brand.key,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || null,
@@ -189,7 +190,7 @@ serve(async (req) => {
         access_token: accessToken,
         status: 'sent',
         created_by_name: createdByName || null,
-        share_link: `https://www.pandaprotect.co.uk/quote/${accessToken}`,
+        share_link: `${brand.siteUrl}/quote/${accessToken}`,
         customer_dob: customerDob || null
       })
       .select()

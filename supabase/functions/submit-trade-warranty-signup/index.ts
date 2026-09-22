@@ -1,12 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_URL_BASE = "https://pandaprotect.co.uk/admin-dashboard/?tab=dealer-signups";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
 
@@ -48,6 +48,9 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  const brand: Brand = resolveBrand(req, { force: "pandaprotect" });
+  const ADMIN_URL_BASE = `${brand.siteUrl}/admin-dashboard/?tab=dealer-signups`;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -123,23 +126,23 @@ serve(async (req) => {
             ${row("Submission Date", submittedAt)}
             ${row("Dealership Name", esc(payload.dealership_name))}
             ${row("Contact Name", esc(payload.contact_name))}
-            ${row("Email Address", `<a href="mailto:${esc(payload.email_address)}" style="color:#eb4b00;text-decoration:none;">${esc(payload.email_address)}</a>`)}
-            ${row("Phone Number", `<a href="tel:${esc(payload.phone_number)}" style="color:#eb4b00;text-decoration:none;">${esc(payload.phone_number)}</a>`)}
+            ${row("Email Address", `<a href="mailto:${esc(payload.email_address)}" style="color:${brand.accentColor};text-decoration:none;">${esc(payload.email_address)}</a>`)}
+            ${row("Phone Number", `<a href="tel:${esc(payload.phone_number)}" style="color:${brand.accentColor};text-decoration:none;">${esc(payload.phone_number)}</a>`)}
             ${row("Monthly Vehicle Sales", esc(payload.monthly_vehicle_sales))}
             ${row("Current Warranty Provider", esc(payload.current_warranty_provider))}
             ${row("Interested In", esc(payload.interested_in))}
-            ${row("Where They Sell Vehicles", payload.heard_about_us && /^https?:\/\//i.test(payload.heard_about_us) ? `<a href="${esc(payload.heard_about_us)}" target="_blank" style="color:#eb4b00;text-decoration:none;">${esc(payload.heard_about_us)}</a>` : esc(payload.heard_about_us))}
+            ${row("Where They Sell Vehicles", payload.heard_about_us && /^https?:\/\//i.test(payload.heard_about_us) ? `<a href="${esc(payload.heard_about_us)}" target="_blank" style="color:${brand.accentColor};text-decoration:none;">${esc(payload.heard_about_us)}</a>` : esc(payload.heard_about_us))}
             ${row("Additional Information", esc(payload.additional_information))}
           </table>
 
           <div style="text-align:center;margin:28px 0 8px 0;">
-            <a href="${portalUrl}" style="display:inline-block;background:#eb4b00;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;font-size:14px;">
+            <a href="${portalUrl}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;font-size:14px;">
               View in Admin Portal ->
             </a>
           </div>
 
           <p style="margin-top:24px;color:#6b7280;font-size:12px;text-align:center;">
-            Source: /dealer-portal/signup - Panda Protect Trade Warranty
+            Source: /dealer-portal/signup - ${brand.name} Trade Warranty
           </p>
         </div>
       `;
@@ -151,8 +154,8 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Panda Protect <noreply@pandaprotect.co.uk>",
-          to: ["info@pandaprotect.co.uk", "hello@pandaprotect.co.uk", "info@pandaprotect.co.uk"],
+          from: `${brand.name} <noreply@${brand.domain}>`,
+          to: [brand.helloEmail],
           reply_to: payload.email_address,
           subject: "New Trade Warranty Interest Registration",
           html,
@@ -169,12 +172,12 @@ serve(async (req) => {
         <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
             <div style="background:#1e3a5f;padding:24px;">
-              <h1 style="margin:0;color:#ffffff;font-size:20px;">Panda Protect</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:20px;">${brand.name}</h1>
             </div>
             <div style="padding:28px;color:#111827;">
               <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">We've received your interest</h2>
               <p style="line-height:1.6;">Hi ${esc(applicantName)},</p>
-              <p style="line-height:1.6;">Thanks for registering your interest in becoming a Panda Protect trade partner. Your application has been received and our team is reviewing it now.</p>
+              <p style="line-height:1.6;">Thanks for registering your interest in becoming a ${brand.name} trade partner. Your application has been received and our team is reviewing it now.</p>
               <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:18px;margin:20px 0;font-size:14px;">
                 <div style="padding:4px 0;"><strong>Dealership:</strong> ${esc(payload.dealership_name) || "-"}</div>
                 <div style="padding:4px 0;"><strong>Contact:</strong> ${esc(payload.contact_name) || "-"}</div>
@@ -182,10 +185,10 @@ serve(async (req) => {
                 <div style="padding:4px 0;"><strong>Phone:</strong> ${esc(payload.phone_number)}</div>
               </div>
               <p style="line-height:1.6;">We'll be in touch within 1 business day to let you know the outcome. If your application is approved you'll receive your dealer portal login details by email.</p>
-              <p style="line-height:1.6;">Kind regards,<br/>The Panda Protect Trade Team</p>
+              <p style="line-height:1.6;">Kind regards,<br/>The ${brand.name} Trade Team</p>
             </div>
             <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
-              Panda Protect · Trade Warranty · hello@pandaprotect.co.uk
+              ${brand.name} · Trade Warranty · ${brand.helloEmail}
             </div>
           </div>
         </div>
@@ -198,10 +201,10 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Panda Protect <hello@pandaprotect.co.uk>",
+          from: `${brand.name} <${brand.helloEmail}>`,
           to: [payload.email_address],
-          reply_to: "hello@pandaprotect.co.uk",
-          subject: "We've received your Panda Protect trade application",
+          reply_to: brand.helloEmail,
+          subject: `We've received your ${brand.name} trade application`,
           html: applicantHtml,
         }),
       });

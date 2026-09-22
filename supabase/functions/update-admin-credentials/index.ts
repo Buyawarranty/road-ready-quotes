@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
@@ -22,8 +23,17 @@ serve(async (req) => {
       }
     });
 
-    const newEmail = 'info@pandaprotect.co.uk';
-    const newPassword = 'Poland333!';
+    let bodyBrand: unknown;
+    try {
+      const parsed = await req.json();
+      bodyBrand = parsed?.brand;
+    } catch {
+      bodyBrand = undefined;
+    }
+    const brand = resolveBrand(req, { brand: bodyBrand });
+
+    const newEmail = brand.infoEmail;
+    const newPassword = Deno.env.get('ADMIN_TEMP_PASSWORD') || 'Poland333!';
 
     console.log('Looking for existing admin user...');
 
@@ -43,11 +53,11 @@ serve(async (req) => {
       adminUserId = oldAdminUser.id;
       console.log('Found admin@example.com user:', adminUserId);
     } else {
-      // Check if info@pandaprotect.co.uk already exists
+      // Check if the brand's admin address already exists
       const newAdminUser = existingUsers.users.find(u => u.email === newEmail);
       if (newAdminUser) {
         adminUserId = newAdminUser.id;
-        console.log('Found existing info@pandaprotect.co.uk user:', adminUserId);
+        console.log(`Found existing ${newEmail} user:`, adminUserId);
       }
     }
 

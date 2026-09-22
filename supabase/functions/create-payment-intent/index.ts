@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -44,6 +45,7 @@ serve(async (req) => {
       gaClientId
     } = body;
     
+    const brand = resolveBrand(req, { brand: body?.brand });
     logStep("Request data", { planName, planId, paymentType, voluntaryExcess, discountCode, finalAmount, protectionAddOns });
 
     // Validate vehicle age (must be 15 years or newer)
@@ -68,7 +70,7 @@ serve(async (req) => {
 
     // Get authenticated user
     let user = null;
-    let customerEmail = customerData?.email || vehicleData?.email || "guest@pandaprotect.co.uk";
+    let customerEmail = customerData?.email || vehicleData?.email || `guest@${brand.domain}`;
     
     const authHeader = req.headers.get("Authorization");
     if (authHeader && authHeader !== "Bearer null") {

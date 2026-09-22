@@ -3,6 +3,7 @@
 // Body: { customer_id: string, kind?: 'invoice' | 'paid' }
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,6 +21,8 @@ const money = (n: number) => `£${Number(n || 0).toFixed(2)}`;
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  const brand: Brand = resolveBrand(req, { force: 'pandaprotect' });
 
   try {
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -75,7 +78,7 @@ Deno.serve(async (req: Request) => {
       : `Payment received — warranty for ${c.registration_plate || 'your customer'}`;
 
     const intro = kind === 'invoice'
-      ? `This warranty has been added to your Panda Protect dealer account and will appear on your next invoice. Amount outstanding: <strong>${money(amount)}</strong>.`
+      ? `This warranty has been added to your ${brand.name} dealer account and will appear on your next invoice. Amount outstanding: <strong>${money(amount)}</strong>.`
       : `Thanks — your payment of <strong>${money(amount)}</strong> has been received and the warranty is now active.`;
 
     const html = `
@@ -85,7 +88,7 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:14px;line-height:1.6">${intro}</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
         <p style="font-size:13px;color:#666;margin-top:22px">You can view and manage this warranty in your dealer portal.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">Panda Protect · hello@pandaprotect.co.uk</p>
+        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${brand.name} · ${brand.helloEmail}</p>
       </div>`;
 
     if (!RESEND_API_KEY) {
@@ -100,7 +103,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Panda Protect <hello@pandaprotect.co.uk>',
+        from: brandFrom(brand, '', 'hello'),
         to: [dealerEmail],
         subject,
         html,

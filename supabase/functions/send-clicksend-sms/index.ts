@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,7 +8,8 @@ const corsHeaders = {
 };
 
 // Welcome message for new leads
-const WELCOME_MESSAGE = `Your vehicle warranty quote is ready. Lock in your cover in under 60 seconds at https://www.pandaprotect.co.uk or call 0330 229 5040.`;
+const welcomeMessage = (brand: Brand) =>
+  `Your vehicle warranty quote is ready. Lock in your cover in under 60 seconds at ${brand.siteUrl} or call ${brand.quotePhone}.`;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -16,9 +18,13 @@ serve(async (req) => {
   }
 
   try {
-    const { phone, firstName, vehicleMake, vehicleModel, leadId, abandonedCartId } = await req.json();
+    const body = await req.json();
+    const { phone, firstName, vehicleMake, vehicleModel, leadId, abandonedCartId } = body;
 
-    console.log('Received SMS request:', { phone, firstName, vehicleMake, vehicleModel, leadId, abandonedCartId });
+    const brand = resolveBrand(req, { brand: body?.brand });
+    const WELCOME_MESSAGE = welcomeMessage(brand);
+
+    console.log('Received SMS request:', { phone, firstName, vehicleMake, vehicleModel, leadId, abandonedCartId, brand: brand.key });
 
     // Validate phone number
     if (!phone) {

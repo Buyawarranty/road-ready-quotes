@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,7 +19,17 @@ serve(async (req) => {
   }
 
   try {
-    logStep("Starting comprehensive API connectivity test");
+    let bodyBrand: unknown;
+    try {
+      const cloned = req.clone();
+      const parsed = await cloned.json();
+      bodyBrand = parsed?.brand;
+    } catch {
+      bodyBrand = undefined;
+    }
+    const brand = resolveBrand(req, { brand: bodyBrand });
+
+    logStep("Starting comprehensive API connectivity test", { brand: brand.key });
     
     const testResults: {
       timestamp: string;
@@ -55,15 +66,15 @@ serve(async (req) => {
           amount: "1.00",
           preferred_product_type: "paylater",
           api_key: bumperApiKey,
-          success_url: "https://www.pandaprotect.co.uk/test-success",
-          failure_url: "https://www.pandaprotect.co.uk/test-failure",
+          success_url: `${brand.siteUrl}/test-success`,
+          failure_url: `${brand.siteUrl}/test-failure`,
           currency: "GBP",
           order_reference: "TEST-001",
           invoice_number: `INV-${Date.now()}`,
-          user_email: "test@pandaprotect.co.uk",
+          user_email: `test@${brand.domain}`,
           first_name: "Test",
           last_name: "Customer",
-          email: "test@pandaprotect.co.uk",
+          email: `test@${brand.domain}`,
           mobile: "07123456789",
           vehicle_reg: "TEST123",
           instalments: "1",

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,6 +22,7 @@ interface InviteUserRequest {
   password?: string;
   role: 'admin' | 'member' | 'viewer' | 'guest' | 'blog_writer' | 'sales';
   permissions: Record<string, boolean>;
+  brand?: string;
 }
 
 serve(async (req: Request) => {
@@ -29,7 +31,9 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { email, firstName, lastName, password, role, permissions }: InviteUserRequest = await req.json();
+    const body: InviteUserRequest = await req.json();
+    const { email, firstName, lastName, password, role, permissions } = body;
+    const brand: Brand = resolveBrand(req, { brand: body?.brand });
 
     // Generate invitation token and password (use provided password or generate one)
     const invitationToken = crypto.randomUUID();
@@ -194,13 +198,13 @@ serve(async (req: Request) => {
     // Send invitation email
     try {
       await resend.emails.send({
-        from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
+        from: `${brand.name} Customer Care <${brand.noReplyEmail}>`,
         to: [email],
-        subject: 'You\'ve been invited to the Panda Protect Admin Dashboard',
+        subject: `You've been invited to the ${brand.name} Admin Dashboard`,
         html: `
-          <h1>Welcome to Buy a Warranty Admin Dashboard</h1>
+          <h1>Welcome to ${brand.name} Admin Dashboard</h1>
           <p>Hello ${firstName},</p>
-          <p>You've been invited to join the Buy a Warranty admin dashboard with ${role} access.</p>
+          <p>You've been invited to join the ${brand.name} admin dashboard with ${role} access.</p>
           
           <div style="background-color: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
             <h3>Your Login Credentials:</h3>
@@ -209,7 +213,7 @@ serve(async (req: Request) => {
           </div>
           
           <p>
-            <a href="https://www.pandaprotect.co.uk/auth" 
+            <a href="${brand.siteUrl}/auth" 
                style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
                Accept Invitation & Access Dashboard
             </a>
@@ -217,15 +221,15 @@ serve(async (req: Request) => {
           
           <p style="margin-top: 16px;">
             Or you can log in directly at: 
-            <a href="https://www.pandaprotect.co.uk/auth" style="color: #007bff;">
-              https://www.pandaprotect.co.uk/auth
+            <a href="${brand.siteUrl}/auth" style="color: #007bff;">
+              ${brand.siteUrl}/auth
             </a>
           </p>
           
           <p><small>This invitation expires in 7 days.</small></p>
           <p><small>Please change your password after your first login.</small></p>
           
-          <p>Best regards,<br>The Buy a Warranty Team</p>
+          <p>Best regards,<br>The ${brand.name} Team</p>
         `
       });
     } catch (emailError) {

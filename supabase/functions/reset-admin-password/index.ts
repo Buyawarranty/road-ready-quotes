@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,7 +38,9 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { userId, email } = await req.json();
+    const body = await req.json();
+    const { userId, email } = body;
+    const brand: Brand = resolveBrand(req, { brand: body?.brand });
     logStep("Request data", { userId, email });
 
     if (!userId || !email) {
@@ -100,14 +103,14 @@ serve(async (req) => {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset - Panda Protect Admin</title>
+    <title>Password Reset - ${brand.name} Admin</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px 20px; text-align: center;">
             <h1 style="margin: 0; font-size: 28px; font-weight: bold;">🔐 Password Reset</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Panda Protect Admin Dashboard</p>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">${brand.name} Admin Dashboard</p>
         </div>
 
         <!-- Main Content -->
@@ -129,7 +132,7 @@ serve(async (req) => {
                         <strong>Temporary Password:</strong> <span style="color: #dc2626; font-weight: bold;">${tempPassword}</span>
                     </div>
                     <div>
-                        <strong>Dashboard URL:</strong> <a href="https://pricing.pandaprotect.co.uk/admin" style="color: #1e40af;">https://pricing.pandaprotect.co.uk/admin</a>
+                        <strong>Dashboard URL:</strong> <a href="${brand.siteUrl}/admin" style="color: #1e40af;">${brand.siteUrl}/admin</a>
                     </div>
                 </div>
             </div>
@@ -148,11 +151,11 @@ serve(async (req) => {
         <!-- Footer -->
         <div style="background-color: #1f2937; color: #d1d5db; padding: 25px 20px; text-align: center;">
             <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">Kind regards,</p>
-            <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">Panda Protect</p>
+            <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: bold;">${brand.name}</p>
             <p style="margin: 0 0 15px 0; font-size: 14px;">IT Administration Team</p>
             
             <div style="border-top: 1px solid #374151; padding-top: 15px; margin-top: 20px; font-size: 12px; color: #9ca3af;">
-                <p style="margin: 0 0 5px 0;">© Panda Protect. All rights reserved.</p>
+                <p style="margin: 0 0 5px 0;">© ${brand.name}. All rights reserved.</p>
                 <p style="margin: 0;">This is an automated system email.</p>
             </div>
         </div>
@@ -160,7 +163,7 @@ serve(async (req) => {
 </body>
 </html>`;
 
-    const textVersion = `Password Reset - Panda Protect Admin Dashboard
+    const textVersion = `Password Reset - ${brand.name} Admin Dashboard
 
 Hello ${adminUser.first_name || 'Admin User'},
 
@@ -169,7 +172,7 @@ Your admin dashboard password has been reset. You can now log in using the tempo
 Login Details:
 Email: ${email}
 Temporary Password: ${tempPassword}
-Dashboard URL: https://pricing.pandaprotect.co.uk/admin
+Dashboard URL: ${brand.siteUrl}/admin
 
 IMPORTANT SECURITY NOTICE:
 - This is a temporary password. Please change it after logging in.
@@ -177,12 +180,12 @@ IMPORTANT SECURITY NOTICE:
 - If you didn't request this reset, please contact an administrator immediately.
 
 Kind regards,
-Panda Protect IT Administration Team`;
+${brand.name} IT Administration Team`;
 
     const emailResponse = await resend.emails.send({
-      from: "Panda Protect Team <support@pandaprotect.co.uk>",
+      from: `${brand.name} Team <${brand.supportEmail}>`,
       to: [email],
-      subject: "🔐 Admin Password Reset - Panda Protect",
+      subject: `🔐 Admin Password Reset - ${brand.name}`,
       html: emailHtml,
       text: textVersion,
       headers: {
@@ -204,7 +207,7 @@ Panda Protect IT Administration Team`;
       .from('email_logs')
       .insert({
         recipient_email: email,
-        subject: '🔐 Admin Password Reset - Panda Protect',
+        subject: `🔐 Admin Password Reset - ${brand.name}`,
         status: 'sent',
         metadata: {
           user_id: userId,
