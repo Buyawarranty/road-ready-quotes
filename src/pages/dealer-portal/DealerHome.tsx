@@ -240,8 +240,6 @@ const DealerHome = () => {
               <li><Check aria-hidden="true" /><span>Instant quotes <span className="home-bullet-sep">•</span> Flexible cover <span className="home-bullet-sep">•</span> Fast payouts</span></li>
               <li><Check aria-hidden="true" /><span>Protect your customers <span className="home-bullet-sep">•</span> Boost your bottom line</span></li>
             </ul>
-            <p className="home-hero-eligibility">Cover for vehicles up to <strong>100,000 miles</strong> and <strong>12 years old</strong>.</p>
-
             <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
               <div className="home-reg-input">
                 <span className="home-reg-country" aria-hidden="true">GB<br /><small>UK</small></span>
@@ -257,14 +255,23 @@ const DealerHome = () => {
                 />
               </div>
               <Button type="submit" className="home-primary-button">
-                Get Quote <ArrowRight aria-hidden="true" />
+                Get my quote
               </Button>
             </form>
-            <p className="home-secure-copy"><Lock aria-hidden="true" /> Secure DVLA lookup – no manual data entry</p>
+            <p className="home-hero-eligibility">Protection for vehicles up to <strong>100,000 miles</strong> and <strong>12 years old</strong>.</p>
 
-            <div className="home-support-card">
-              <Link to="/dealer-portal/login"><UserCircle2 aria-hidden="true" /> Already a dealer? Dealer Login</Link>
-              <Link to="/dealer-portal/signup">Not signed up yet? Dealer Sign Up <ArrowRight aria-hidden="true" /></Link>
+            <div className="home-contact-card">
+              <div className="home-contact-row">
+                <a href="tel:03309122535" className="home-contact-phone">
+                  <span className="home-contact-icon"><Phone aria-hidden="true" /></span>
+                  0330 912 2535
+                </a>
+                <span className="home-contact-divider" aria-hidden="true" />
+                <button type="button" className="home-contact-callback" onClick={() => setCallbackOpen(true)}>
+                  Request a callback <ArrowRight aria-hidden="true" />
+                </button>
+              </div>
+              <p className="home-contact-note">Speak to our UK team – Lines open 9am to 5:30pm, Monday to Friday.</p>
             </div>
           </div>
 
