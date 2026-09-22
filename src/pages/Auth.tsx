@@ -291,7 +291,7 @@ const Auth = () => {
       // Send a branded welcome / confirmation email straight to the
       // address the person registered with.
       supabase.functions
-        .invoke('send-signup-confirmation', { body: { email } })
+        .invoke('send-signup-confirmation', { body: { email, brand: currentBrandKey() } })
         .then(({ error: mailError }) => {
           if (mailError) console.error('Signup welcome email failed:', mailError);
         })
@@ -328,7 +328,7 @@ const Auth = () => {
 
       // Use our custom branded password reset email
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email: resetEmail }
+        body: { email: resetEmail, brand: currentBrandKey() }
       });
 
       if (error || data?.success === false) {
