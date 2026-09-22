@@ -409,7 +409,7 @@ const StartClaim: React.FC = () => {
               </div>
               <div>
                 <Label htmlFor="claim-email">Email *</Label>
-                <Input id="claim-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="info@buyawarranty.co.uk" />
+                <Input id="claim-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@dealership.co.uk" />
                 <FieldError message={errors.email} />
               </div>
               <div>

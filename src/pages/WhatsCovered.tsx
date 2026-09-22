@@ -669,8 +669,8 @@ const WhatsCovered: React.FC = () => {
                 </a>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <a href="mailto:support@buyawarranty.co.uk" className="inline-flex items-center gap-2 hover:text-white">
-                  <Mail className="h-4 w-4" /> support@buyawarranty.co.uk
+                <a href="mailto:support@pandaprotect.co.uk" className="inline-flex items-center gap-2 hover:text-white">
+                  <Mail className="h-4 w-4" /> support@pandaprotect.co.uk
                 </a>
               </div>
               <div className="flex flex-col items-center gap-2">

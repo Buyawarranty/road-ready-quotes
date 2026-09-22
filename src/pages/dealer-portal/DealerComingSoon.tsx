@@ -10,7 +10,7 @@ import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import whyDealersPanda from '@/assets/car-warranty-panda-vehicles.png';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -258,7 +258,7 @@ const DealerComingSoon = () => {
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-4" aria-label="Panda Protect home">
-            <img src={buyawarrantyLogo} alt="Panda Protect" className="h-10 w-auto sm:h-12" />
+            <img src={pandaProtectLogo} alt="Panda Protect" className="h-10 w-auto sm:h-12" />
             <span className="rounded-md border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">Dealer</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-5 text-sm font-semibold text-crm-navy">
