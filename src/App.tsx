@@ -284,7 +284,6 @@ const StepTest = lazy(() => import("./pages/StepTest"));
 const SetupAdmin = lazy(() => import("./pages/SetupAdmin"));
 const UpdateAdminCredentials = lazy(() => import("./pages/UpdateAdminCredentials"));
 const RequestAccess = lazy(() => import("./pages/RequestAccess"));
-const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 
 // Dealer Portal pages
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
@@ -374,7 +373,7 @@ const App = () => {
                     <Route path="/dealer-widget/" element={<DealerWidget />} />
                     
                     <Route path="/auth/" element={<Auth />} />
-                    <Route path="/sales-login/" element={<SalesLogin />} />
+                    <Route path="/sales-login/" element={<Navigate to="/auth/" replace />} />
                     <Route path="/admin/" element={<AdminDashboard />} />
                     <Route path="/admin-dashboard/" element={<AdminDashboard />} />
                     <Route path="/customer-dashboard/" element={<CustomerDashboard />} />
