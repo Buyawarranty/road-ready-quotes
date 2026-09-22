@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,7 +19,9 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { customerIds, templateId, customSubject, customContent, customEmails } = await req.json();
+    const { customerIds, templateId, customSubject, customContent, customEmails, brand: brandHint } = await req.json();
+
+    const brand = resolveBrand(req, { brand: brandHint });
 
     console.log('Bulk email request:', { customerIds: customerIds?.length, templateId, hasCustomContent: !!customContent, customEmails: customEmails?.length });
 
@@ -33,7 +36,7 @@ serve(async (req) => {
     // Use custom content if provided, otherwise fetch template
     let emailSubject = customSubject;
     let emailContent = customContent;
-    let fromEmail = 'support@pandaprotect.co.uk';
+    let fromEmail = brandFrom(brand, "", "support");
 
     if (!emailSubject || !emailContent) {
       // Get template
@@ -65,7 +68,7 @@ serve(async (req) => {
     // Get customers
     const { data: customers, error: customersError } = await supabase
       .from('customers')
-      .select('id, name, email')
+      .select('id, name, email, brand')
       .in('id', customerIds);
 
     if (customersError) {
@@ -91,7 +94,7 @@ serve(async (req) => {
 
     // Prepare list of all recipients (customers + custom emails), excluding blocked
     const allRecipients = [
-      ...customers.map(c => ({ email: c.email, name: c.name || 'Customer', isCustomer: true, customerId: c.id })),
+      ...customers.map(c => ({ email: c.email, name: c.name || 'Customer', isCustomer: true, customerId: c.id, brand: c.brand })),
       ...(customEmails || []).map((email: string) => ({ email, name: 'Recipient', isCustomer: false }))
     ].filter(r => !blockedSet.has(r.email.trim().toLowerCase()));
 
@@ -104,6 +107,9 @@ serve(async (req) => {
     // Send emails
     for (const recipient of allRecipients) {
       try {
+        const recipientBrand = resolveBrand(req, { brand: brandHint, record: recipient });
+        const recipientFrom = customSubject && customContent ? brandFrom(recipientBrand, "", "support") : (fromEmail || brandFrom(recipientBrand, "", "support"));
+
         // Replace template variables with recipient data
         const recipientName = recipient.name || 'Recipient';
         const personalizedSubject = emailSubject.replace(/\{name\}/g, recipientName);
@@ -115,7 +121,7 @@ serve(async (req) => {
         const unsubFooter = `<div style="border-top: 1px solid #eee; padding-top: 16px; margin-top: 24px; text-align: center;"><p style="color: #aab7c4; font-size: 11px; margin: 0;"><a href="${unsubUrl}" style="color: #aab7c4; text-decoration: underline;">Unsubscribe</a> from future emails.</p></div>`;
 
         const emailResponse = await resend.emails.send({
-          from: fromEmail,
+          from: recipientFrom,
           to: [recipient.email],
           subject: personalizedSubject,
           html: personalizedContent.replace(/\n/g, '<br>') + unsubFooter,

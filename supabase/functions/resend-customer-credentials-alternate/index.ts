@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
+import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,7 +29,8 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { originalEmail, alternateEmail }: RequestBody = await req.json();
+    const body: RequestBody & { brand?: unknown } = await req.json();
+    const { originalEmail, alternateEmail } = body;
 
     if (!originalEmail || !alternateEmail) {
       return new Response(
@@ -53,6 +55,8 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    const brand = resolveBrand(req, { brand: body?.brand, record: customer });
 
     if (!customer) {
       return new Response(
@@ -99,8 +103,8 @@ serve(async (req) => {
       .maybeSingle();
 
     // Prepare email content
-    const loginUrl = "https://www.pandaprotect.co.uk/customer-dashboard";
-    const supportEmail = "support@pandaprotect.co.uk";
+    const loginUrl = `${brand.siteUrl}/customer-dashboard`;
+    const supportEmail = brand.supportEmail;
     
     const emailHtml = `
     <!DOCTYPE html>
@@ -127,7 +131,7 @@ serve(async (req) => {
             <div class="content">
                 <h2>Hello ${customer.first_name || 'Customer'},</h2>
                 
-                <p>Your login credentials for the Buy-A-Warranty customer dashboard have been sent to this email address as requested.</p>
+                <p>Your login credentials for the ${brand.name} customer dashboard have been sent to this email address as requested.</p>
                 
                 <div class="credentials">
                     <h3>Login Information:</h3>
@@ -164,7 +168,7 @@ serve(async (req) => {
                 <p>If you have any questions or need assistance, please contact our support team at <a href="mailto:${supportEmail}">${supportEmail}</a>.</p>
             </div>
             <div class="footer">
-                <p>© 2025 Buy-A-Warranty. All rights reserved.</p>
+                <p>© 2025 ${brand.name}. All rights reserved.</p>
                 <p>This email was sent to ${alternateEmail} as requested.</p>
                 <p>Account holder: ${originalEmail}</p>
             </div>
@@ -187,7 +191,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect Customer Care <info@pandaprotect.co.uk>',
+        from: brandFrom(brand, 'Customer Care', 'info'),
         to: [alternateEmail],
         subject: 'Your Customer Dashboard Login Details',
         html: emailHtml,

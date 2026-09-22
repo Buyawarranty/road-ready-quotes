@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,6 +36,7 @@ serve(async (req) => {
 
     const body = await req.json();
     ({ items, customerData, discountCode, originalAmount, finalAmount, totalAmount } = body);
+    const brand = resolveBrand(req, { brand: body?.brand });
     actualTotalAmount = finalAmount || totalAmount;
     logStep("Request data", { itemCount: items.length, originalAmount, finalAmount, actualTotalAmount, customerData, discountCode });
 
@@ -108,7 +110,7 @@ serve(async (req) => {
       });
     }
 
-    const origin = req.headers.get("origin") || "https://www.pandaprotect.co.uk";
+    const origin = req.headers.get("origin") || brand.siteUrl;
     
     // Create product description for all warranties
     const productDescription = items.map((item: any, index: number) => ({
@@ -175,7 +177,8 @@ serve(async (req) => {
         redirect_url: `${origin}/thank-you`,
         status: 'pending',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        brand: brand.key
       });
 
     if (storeError) {

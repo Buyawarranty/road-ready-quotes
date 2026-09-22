@@ -513,7 +513,8 @@ serve(async (req) => {
         addon_mot_fee: addOnFields.mot_fee ? 'true' : 'false',
         addon_mot_repair: addOnFields.mot_repair ? 'true' : 'false',
         addon_lost_key: addOnFields.lost_key ? 'true' : 'false',
-        addon_consequential: addOnFields.consequential ? 'true' : 'false'
+        addon_consequential: addOnFields.consequential ? 'true' : 'false',
+        brand: transactionData.brand || null
       }
     };
 

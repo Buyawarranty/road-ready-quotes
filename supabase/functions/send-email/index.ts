@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -31,7 +32,7 @@ const markdownToHtml = (text: string): string => {
 };
 
 // Build a generic HTML email wrapper from template content
-const buildTemplateHtml = (greeting: string, content: string, recipientEmail: string, variables: Record<string, string>): string => {
+const buildTemplateHtml = (greeting: string, content: string, recipientEmail: string, variables: Record<string, string>, brand: Brand): string => {
   // Replace template variables like {{customerFirstName}}
   let processedGreeting = greeting || 'Hi there,';
   let processedContent = content || '';
@@ -50,8 +51,8 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
     'policyNumber': variables?.policyNumber || '',
     'planType': variables?.planType || '',
     'vehicleReg': variables?.vehicleReg || '',
-    'portalUrl': variables?.portalUrl || 'https://www.pandaprotect.co.uk/customer-dashboard',
-    'renewalUrl': variables?.renewalUrl || 'https://www.pandaprotect.co.uk',
+    'portalUrl': variables?.portalUrl || `${brand.siteUrl}/customer-dashboard`,
+    'renewalUrl': variables?.renewalUrl || brand.siteUrl,
     'expiryDate': variables?.expiryDate || '',
   };
   
@@ -88,7 +89,7 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
 <body>
   <div class="container">
     <div class="logo-header">
-      <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Panda Protect" />
+      <img src="${brand.logoUrl}" alt="${brand.name}" />
     </div>
     <div class="content">
       <p class="greeting">${processedGreeting}</p>
@@ -97,21 +98,21 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
       </div>
       <div class="contact-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Need help?</p>
-        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> support@pandaprotect.co.uk | 0330 229 5040</p>
-        <p style="margin: 4px 0;"><strong>Claims:</strong> claims@pandaprotect.co.uk | 0330 229 5045</p>
+        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> ${brand.supportEmail} | ${brand.quotePhone}</p>
+        <p style="margin: 4px 0;"><strong>Claims:</strong> ${brand.claimsEmail} | ${brand.claimsPhone}</p>
         <p style="margin: 4px 0; color: #666;">Monday to Friday, 9am – 5:30pm</p>
       </div>
       <div class="trustpilot-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Trusted by thousands of drivers</p>
         <div class="trustpilot-stars">★★★★★</div>
         <p style="margin: 8px 0 4px; font-size: 14px; color: #333;"><strong>Excellent</strong> on Trustpilot</p>
-        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" style="color: #00b67a;">trustpilot.com</a></p>
+        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="${brand.trustpilotUrl}" style="color: #00b67a;">trustpilot.com</a></p>
       </div>
     </div>
     <div class="footer">
-      <p><strong>Panda Protect Ltd</strong> | Protecting Your Journey</p>
+      <p><strong>${brand.legalName}</strong> | Protecting Your Journey</p>
       <p>This email was sent to ${recipientEmail}</p>
-      <p>&copy; ${new Date().getFullYear()} Panda Protect. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} ${brand.name}. All rights reserved.</p>
     </div>
   </div>
 </body>
@@ -134,6 +135,8 @@ serve(async (req) => {
     const templateDbId = requestBody.templateDbId || undefined;
     const { recipientEmail, variables, attachments, customSubject, customHtml } = requestBody;
     
+    const brand = resolveBrand(req, { brand: requestBody?.brand });
+    
     logStep("Request received", { 
       templateId, 
       recipientEmail, 
@@ -154,7 +157,7 @@ serve(async (req) => {
     }
     logStep("Resend API key found");
 
-    let subject = customSubject || "Your Panda Protect Policy Is Now Active 🚗";
+    let subject = customSubject || `Your ${brand.name} Policy Is Now Active 🚗`;
     let htmlContent = customHtml || "";
     
     if (templateId === 'policy_documents' || templateId === 'welcome_email') {
@@ -162,13 +165,13 @@ serve(async (req) => {
       const isFutureActivation = variables?.isFutureActivation === 'true' || variables?.isFutureActivation === true;
       
       subject = customSubject || (isFutureActivation 
-        ? `Your Panda Protect Policy – Future Activation Confirmed 🚗`
-        : `Your Panda Protect Policy Is Now Active 🚗`);
+        ? `Your ${brand.name} Policy – Future Activation Confirmed 🚗`
+        : `Your ${brand.name} Policy Is Now Active 🚗`);
       
       const headerText = isFutureActivation ? 'Future Activation Confirmed!' : 'Your Policy Is Now Active!';
       const introText = isFutureActivation
-        ? `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${variables?.policyStartDate || 'N/A'}</strong>.`
-        : `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
+        ? `Thanks for choosing ${brand.name} to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${variables?.policyStartDate || 'N/A'}</strong>.`
+        : `Thanks for choosing ${brand.name} to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
       const startDateLabel = isFutureActivation ? 'Activation Date' : 'Start Date';
       const endDateLabel = isFutureActivation ? 'Expiry Date' : 'End Date';
       
@@ -209,7 +212,7 @@ serve(async (req) => {
         <body>
           <div class="container">
             <div class="logo-header">
-              <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Panda Protect" />
+              <img src="${brand.logoUrl}" alt="${brand.name}" />
             </div>
             <div class="header"><h1>${headerText}</h1></div>
             <div class="content">
@@ -233,21 +236,21 @@ serve(async (req) => {
                 <h3>🔐 Your Portal Login Details!</h3>
                 <p>You can view your updated policy anytime via your customer portal:</p>
                 <div class="login-info">
-                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
+                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || `${brand.siteUrl}/customer-dashboard`}" style="color: #1a365d;">Customer Dashboard</a></span></div>
                   <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${variables?.loginEmail || recipientEmail}</span></div>
                   <div class="info-row"><span class="info-label">Password:</span><span class="info-value"><strong>${variables?.temporaryPassword}</strong></span></div>
                 </div>
-                <a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
+                <a href="${variables?.loginUrl || `${brand.siteUrl}/customer-dashboard`}" class="button">Access Customer Portal</a>
               </div>` : variables?.isExistingCustomer ? `
               <div class="login-box">
                 <h3>🔐 Welcome Back!</h3>
                 <p>You can access your updated policy through your existing customer portal account.</p>
                 <div class="login-info">
-                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
+                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || `${brand.siteUrl}/customer-dashboard`}" style="color: #1a365d;">Customer Dashboard</a></span></div>
                   <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${variables?.loginEmail || recipientEmail}</span></div>
                 </div>
                 <p><em>${variables?.temporaryPassword || 'Use your existing password'}</em></p>
-                <a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
+                <a href="${variables?.loginUrl || `${brand.siteUrl}/customer-dashboard`}" class="button">Access Customer Portal</a>
               </div>` : ''}
               <div class="info-box">
                 <h3>📎 Your Documents</h3>
@@ -258,17 +261,17 @@ serve(async (req) => {
               <div class="contact-section">
                 <h3 style="margin-top: 0; color: #1a365d;">📞 Need a hand?</h3>
                 <p>If you've got any questions or need help, feel free to reach out:</p>
-                <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> support@pandaprotect.co.uk</div><div><strong>Phone:</strong> 0330 229 5040</div></div>
-                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><div><strong>Email:</strong> claims@pandaprotect.co.uk</div><div><strong>Phone:</strong> 0330 229 5045</div></div>
+                <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> ${brand.supportEmail}</div><div><strong>Phone:</strong> ${brand.quotePhone}</div></div>
+                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><div><strong>Email:</strong> ${brand.claimsEmail}</div><div><strong>Phone:</strong> ${brand.claimsPhone}</div></div>
                 <div style="margin-top: 10px; color: #666;"><strong>Hours:</strong> Monday to Friday, 9am – 5:30pm</div>
               </div>
-              <p>Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.</p>
-              <p style="margin-top: 30px;">Best regards,<br><strong>The Panda Protect Team</strong></p>
+              <p>Thanks again for choosing ${brand.name} — we're here to keep you covered and give you peace of mind on the road.</p>
+              <p style="margin-top: 30px;">Best regards,<br><strong>The ${brand.name} Team</strong></p>
             </div>
             <div class="footer">
-              <p><strong>Panda Protect Ltd</strong> | Protecting Your Journey</p>
+              <p><strong>${brand.legalName}</strong> | Protecting Your Journey</p>
               <p>This email was sent to ${recipientEmail}</p>
-              <p>&copy; ${new Date().getFullYear()} Panda Protect. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} ${brand.name}. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -322,16 +325,17 @@ serve(async (req) => {
         const greeting = templateContent?.greeting || 'Hi there,';
         const bodyContent = templateContent?.content || '';
         
-        htmlContent = buildTemplateHtml(greeting, bodyContent, recipientEmail, variables || {});
+        htmlContent = buildTemplateHtml(greeting, bodyContent, recipientEmail, variables || {}, brand);
       } else {
         // Fallback: generate a simple HTML email with the variables
         logStep("No template found, using fallback HTML");
         const firstName = variables?.firstName || variables?.customerName?.split(' ')[0] || 'Valued Customer';
         htmlContent = buildTemplateHtml(
           `Hi ${firstName},`,
-          'Thank you for contacting Panda Protect. We wanted to reach out regarding your vehicle warranty.\n\nIf you have any questions, please don\'t hesitate to contact us.',
+          `Thank you for contacting ${brand.name}. We wanted to reach out regarding your vehicle warranty.\n\nIf you have any questions, please don't hesitate to contact us.`,
           recipientEmail,
-          variables || {}
+          variables || {},
+          brand
         );
       }
     }
@@ -342,9 +346,10 @@ serve(async (req) => {
       const firstName = variables?.firstName || variables?.customerName?.split(' ')[0] || 'Valued Customer';
       htmlContent = buildTemplateHtml(
         `Hi ${firstName},`,
-        'Thank you for your interest in Panda Protect. We are here to help protect your vehicle.',
+        `Thank you for your interest in ${brand.name}. We are here to help protect your vehicle.`,
         recipientEmail,
-        variables || {}
+        variables || {},
+        brand
       );
     }
 
@@ -352,9 +357,9 @@ serve(async (req) => {
     // Add Trustpilot BCC for welcome/policy emails only
     const isWelcomeEmail = templateId === 'policy_documents' || templateId === 'welcome_email';
     const emailPayload: any = {
-      from: "Panda Protect Team <support@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Team", "support"),
       to: [recipientEmail],
-      ...(isWelcomeEmail && { bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'] }),
+      ...(isWelcomeEmail && { bcc: [`${brand.domain}+8fc526946e@invite.trustpilot.com`] }),
       subject: subject,
       html: htmlContent,
     };

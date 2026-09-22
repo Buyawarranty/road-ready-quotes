@@ -137,6 +137,7 @@ Deno.serve(async (req: Request) => {
       signup_date: startDate.toISOString(),
       is_manual_entry: false,
       payment_verified: payment_method === 'invoice',
+      brand: 'pandaprotect',
     } as Record<string, unknown>;
 
     // Helper: upsert dealer customer row by (email, registration_plate) for this dealer.

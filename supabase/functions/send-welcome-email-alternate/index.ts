@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -58,7 +59,7 @@ serve(async (req) => {
         *,
         customers!customer_id (
           id, name, email, first_name, last_name, registration_plate,
-          vehicle_make, vehicle_model, vehicle_year
+          vehicle_make, vehicle_model, vehicle_year, brand
         )
       `)
       .eq('id', policyId)
@@ -75,6 +76,7 @@ serve(async (req) => {
     }
 
     const customer = policy.customers;
+    const brand = resolveBrand(req, { brand: body?.brand, record: customer });
     const displayName = customerName || customer?.first_name || customer?.name || 'Customer';
     
     logStep("Data loaded", { 
@@ -203,15 +205,15 @@ serve(async (req) => {
                 </div>
                 
                 <p style="text-align: center;">
-                    <a href="https://www.pandaprotect.co.uk/customer-dashboard" class="button">Access Your Dashboard</a>
+                    <a href="${brand.siteUrl}/customer-dashboard" class="button">Access Your Dashboard</a>
                 </p>
                 
                 <p>If you have any questions about your coverage, please don't hesitate to contact our support team.</p>
                 
-                <p>Best regards,<br><strong>The Buy-A-Warranty Team</strong></p>
+                <p>Best regards,<br><strong>The ${brand.name} Team</strong></p>
             </div>
             <div class="footer">
-                <p>© 2025 Buy-A-Warranty. All rights reserved.</p>
+                <p>© 2025 ${brand.name}. All rights reserved.</p>
                 <p>This email was sent to ${alternateEmail} as requested.</p>
                 <p>Original policy holder: ${customer?.email || 'N/A'}</p>
             </div>
@@ -222,7 +224,7 @@ serve(async (req) => {
 
     // Send email via Resend
     const emailPayload: any = {
-      from: 'Panda Protect Customer Care <info@pandaprotect.co.uk>',
+      from: brandFrom(brand, 'Customer Care', 'info'),
       to: [alternateEmail],
       subject: `Your Warranty Confirmation - ${policy.policy_number}`,
       html: emailHtml,

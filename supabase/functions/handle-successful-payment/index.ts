@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 // Import addons utility functions
 const getAutoIncludedAddOns = (paymentType: string, planType?: string): string[] => {
@@ -68,7 +69,9 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { planId, paymentType, userEmail, userId, stripeSessionId, vehicleData, customerData, skipEmail, metadata, protectionAddOns, claimLimit, voluntaryExcess, seasonalBonusMonths = 0, labourRate, startDate, bumperOrderId, trackingData } = await req.json();
+    const requestBody = await req.json();
+    const { planId, paymentType, userEmail, userId, stripeSessionId, vehicleData, customerData, skipEmail, metadata, protectionAddOns, claimLimit, voluntaryExcess, seasonalBonusMonths = 0, labourRate, startDate, bumperOrderId, trackingData } = requestBody;
+    const brand = resolveBrand(req, { brand: requestBody?.brand ?? customerData?.brand ?? metadata?.brand });
     logStep("Request data", { planId, paymentType, userEmail, userId, stripeSessionId, bumperOrderId, skipEmail, hasMetadata: !!metadata, hasProtectionAddOns: !!protectionAddOns, claimLimit, voluntaryExcess, seasonalBonusMonths, labourRate, startDate, hasGclid: !!trackingData?.gclid });
 
     if (!planId || !paymentType || !userEmail) {
@@ -398,10 +401,11 @@ serve(async (req) => {
       gclid: trackingData?.gclid || metadata?.gclid || null,
       ga_client_id: trackingData?.clientId || metadata?.ga_client_id || null,
       purchase_source: (trackingData?.gclid || metadata?.gclid) ? 'google_ads' : (effectiveBumperOrderId ? 'bumper' : (stripeSessionId ? 'stripe' : 'website')),
-      // Default all website sales to support@pandaprotect.co.uk
+      // Default all website sales to the brand support mailbox
       assigned_to: 'e39499b8-f88c-4963-9f0d-63e1addb3025',
       // Customer date of birth for identity verification
-      customer_dob: customerData?.customer_dob || metadata?.customer_dob || null
+      customer_dob: customerData?.customer_dob || metadata?.customer_dob || null,
+      brand: brand.key
     };
 
     // Detect Facebook Ads attribution from abandoned cart metadata
@@ -1099,8 +1103,8 @@ serve(async (req) => {
         `;
 
         await resend.emails.send({
-          from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
-          to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
+          from: `${brand.name} Team <notifications@${brand.domain}>`,
+          to: [brand.infoEmail, `accounts@${brand.domain}`],
           subject: `New Sale ${detectedAdSource === 'google' ? 'G' : detectedAdSource === 'facebook' ? 'F' : 'Web'}: ${regPlate} - ${planName} - ${saleValueDisplay} via ${paymentMethod} - ${warrantyReference}`,
           html: salesEmailHtml
         });
@@ -1206,8 +1210,8 @@ serve(async (req) => {
           `;
 
           await resend.emails.send({
-            from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
-            to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
+            from: `${brand.name} Team <notifications@${brand.domain}>`,
+            to: [brand.infoEmail, `accounts@${brand.domain}`],
             subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValueDisplay} - Converted by ${agentName}`,
             html: agentSaleHtml,
           });

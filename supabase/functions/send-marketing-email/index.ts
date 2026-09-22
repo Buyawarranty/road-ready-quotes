@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -14,6 +15,7 @@ interface MarketingEmailRequest {
   emails: string[];
   subject: string;
   content: string;
+  brand?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -31,7 +33,9 @@ const handler = async (req: Request): Promise<Response> => {
       { auth: { persistSession: false } }
     );
     
-    const { campaignId, emails, subject, content }: MarketingEmailRequest = await req.json();
+    const { campaignId, emails, subject, content, brand: brandHint }: MarketingEmailRequest = await req.json();
+
+    const brand = resolveBrand(req, { brand: brandHint });
 
     console.log(`Sending marketing email to ${emails.length} recipients`);
     console.log(`Subject: ${subject}`);
@@ -99,7 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
           const unsubUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/handle-email-unsubscribe?email=${encodeURIComponent(cleanEmail)}&token=${encodeURIComponent(unsubToken)}`;
           
           return resend.emails.send({
-            from: "Panda Protect Customer Care <marketing@pandaprotect.co.uk>",
+            from: brandFrom(brand, "Customer Care", "marketing"),
             to: [recipientEmail],
             subject: subject,
             html: `
@@ -107,8 +111,8 @@ const handler = async (req: Request): Promise<Response> => {
                 <div style="margin-bottom: 30px;">${htmlContent}</div>
                 
                 <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; color: #666; font-size: 12px;">
-                  <p>You're receiving this email because you've interacted with Panda Protect.</p>
-                  <p>Panda Protect Ltd - Your trusted warranty provider</p>
+                  <p>You're receiving this email because you've interacted with ${brand.name}.</p>
+                  <p>${brand.name} Ltd - Your trusted warranty provider</p>
                   <p style="margin-top: 12px;">
                     <a href="${unsubUrl}" style="color: #999; text-decoration: underline; font-size: 11px;">Unsubscribe</a> from future emails.
                   </p>

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +11,7 @@ interface RequestBody {
   claimIds: string[];
   recipientEmail: string;
   message?: string;
+  brand?: string;
 }
 
 serve(async (req: Request) => {
@@ -23,7 +25,7 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { claimIds, recipientEmail, message } = await req.json() as RequestBody;
+    const { claimIds, recipientEmail, message, brand: brandHint } = await req.json() as RequestBody;
 
     if (!claimIds?.length || !recipientEmail) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -35,7 +37,7 @@ serve(async (req: Request) => {
     // Fetch claims
     const { data: claims, error: claimsError } = await supabase
       .from("claims_submissions")
-      .select("id, name, vehicle_registration, claim_reason")
+      .select("id, name, vehicle_registration, claim_reason, brand")
       .in("id", claimIds);
 
     if (claimsError || !claims?.length) {
@@ -64,6 +66,8 @@ serve(async (req: Request) => {
       throw new Error("Failed to create update requests");
     }
 
+    const brand = resolveBrand(req, { brand: brandHint, record: claims[0] });
+
     // Build the reg plates for the subject line
     const regPlates = claims
       .map((c) => c.vehicle_registration?.toUpperCase())
@@ -73,7 +77,7 @@ serve(async (req: Request) => {
     const firstRegPlate = claims[0]?.vehicle_registration?.toUpperCase() || "N/A";
 
     // Build the site URL
-    const siteUrl = Deno.env.get("SITE_URL") || "https://www.pandaprotect.co.uk";
+    const siteUrl = Deno.env.get("SITE_URL") || brand.siteUrl;
 
     // Build form links for each claim
     const claimLinks = insertedRequests!.map((r) => {
@@ -98,7 +102,7 @@ serve(async (req: Request) => {
     const emailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%); padding: 24px; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 22px;">Buy a Warranty</h1>
+          <h1 style="color: white; margin: 0; font-size: 22px;">${brand.name}</h1>
           <p style="color: #94a3b8; margin: 5px 0 0 0;">Claims Update Request</p>
         </div>
         
@@ -131,7 +135,7 @@ serve(async (req: Request) => {
         
         <div style="background: #f8fafc; padding: 16px; text-align: center; border-top: 1px solid #e2e8f0;">
           <p style="color: #64748b; font-size: 12px; margin: 0;">
-            Buy a Warranty Claims Department<br>
+            ${brand.name} Claims Department<br>
             This is an automated request for claim updates.
           </p>
         </div>
@@ -151,7 +155,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Panda Protect Claims <claims@pandaprotect.co.uk>",
+        from: brandFrom(brand, "Claims", "claims"),
         to: [recipientEmail],
         subject: `Urgent claims update: ${firstRegPlate}${claims.length > 1 ? ` (+${claims.length - 1} more)` : ""}`,
         html: emailHtml,

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +33,7 @@ serve(async (req) => {
     const discountCode = url.searchParams.get('discount_code') || '';
     const totalAmount = parseFloat(url.searchParams.get('total_amount') || '0');
     const redirectUrl = url.searchParams.get('redirect') || 'https://www.pandaprotect.co.uk/thank-you';
+    const brand = resolveBrand(req);
 
     logStep("Extracted parameters", { 
       itemCount: items.length, 
@@ -137,7 +139,8 @@ serve(async (req) => {
               addon_mot_fee: item.protectionAddOns?.motFee ? 'true' : 'false',
               addon_mot_repair: item.protectionAddOns?.motRepair ? 'true' : 'false',
               addon_lost_key: item.protectionAddOns?.lostKey ? 'true' : 'false',
-              addon_consequential: item.protectionAddOns?.consequential ? 'true' : 'false'
+              addon_consequential: item.protectionAddOns?.consequential ? 'true' : 'false',
+              brand: brand.key
             }
           }
         });

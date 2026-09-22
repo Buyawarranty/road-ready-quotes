@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,7 +21,9 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { to, subject, body, claimId } = await req.json() as ClaimEmailRequest;
+    const payload = await req.json() as ClaimEmailRequest & { brand?: string };
+    const { to, subject, body, claimId } = payload;
+    const brand = resolveBrand(req, { brand: payload.brand });
 
     console.log("Sending claim email:", { to, subject, claimId });
 
@@ -37,14 +40,14 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Panda Protect Team <claims@pandaprotect.co.uk>",
+        from: brandFrom(brand, "Team", "claims"),
         to: [to],
         subject: subject,
         text: body,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2744 100%); padding: 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">Buy a Warranty</h1>
+              <h1 style="color: white; margin: 0; font-size: 24px;">${brand.name}</h1>
               <p style="color: #94a3b8; margin: 5px 0 0 0;">Claims Department</p>
             </div>
             <div style="padding: 30px; background: #ffffff;">
@@ -52,7 +55,7 @@ serve(async (req: Request) => {
             </div>
             <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="color: #64748b; font-size: 12px; margin: 0;">
-                This email was sent from the Buy a Warranty admin portal.<br>
+                This email was sent from the ${brand.name} admin portal.<br>
                 Claim Reference: ${claimId.slice(0, 8)}
               </p>
             </div>

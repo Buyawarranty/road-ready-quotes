@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,6 +10,7 @@ interface TestEmailRequest {
   email?: string;
   warranty_number?: string;
   customer_name?: string;
+  brand?: string;
 }
 
 // Timeout wrapper for fetch
@@ -51,13 +53,11 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Check environment variables
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const resendFrom = 'Panda Protect <support@pandaprotect.co.uk>';
     
     console.log(JSON.stringify({ 
       evt: "env.check", 
       rid,
-      hasResendKey: !!resendApiKey,
-      hasFrom: !!resendFrom
+      hasResendKey: !!resendApiKey
     }));
     
     if (!resendApiKey) {
@@ -77,6 +77,9 @@ const handler = async (req: Request): Promise<Response> => {
     const email = body.email || 'test@example.com';
     const warrantyNumber = body.warranty_number || 'W-TEST-001';
     const customerName = body.customer_name || 'Test Customer';
+
+    const brand = resolveBrand(req, { brand: body.brand });
+    const resendFrom = brandFrom(brand, "", "support");
     
     console.log(JSON.stringify({ evt: "request.parsed", rid, email, warrantyNumber, customerName }));
 

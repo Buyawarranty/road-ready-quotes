@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -28,6 +29,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { planId, vehicleData, paymentType, voluntaryExcess = 0, customerData, discountCode, finalAmount, protectionAddOns, claimLimit, seasonalBonusMonths = 0, labourRate = 70, startDate, trackingData } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
     logStep("Request data", { planId, vehicleData, paymentType, voluntaryExcess, discountCode, finalAmount, protectionAddOns, claimLimit, seasonalBonusMonths, labourRate, startDate, trackingData });
 
     // Validate vehicle age (must be 15 years or newer)
@@ -220,7 +222,7 @@ serve(async (req) => {
       apiVersion: "2023-10-16" 
     });
 
-    const origin = req.headers.get("origin") || "https://pricing.pandaprotect.co.uk";
+    const origin = req.headers.get("origin") || brand.siteUrl;
     
     // Check if customer exists in Stripe
     let stripeCustomerId = null;
@@ -366,7 +368,8 @@ serve(async (req) => {
         start_date: startDate || '',
         // Google Ads tracking data for server-side conversion
         gclid: trackingData?.gclid || '',
-        ga_client_id: trackingData?.clientId || ''
+        ga_client_id: trackingData?.clientId || '',
+        brand: brand.key
       }
     };
 

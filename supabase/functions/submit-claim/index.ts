@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -47,7 +48,9 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { name, email, phone, vehicleReg, currentMileage, faultDescription, dateOccurred, faultDetails, issueTiming, additionalInfo, file }: ClaimSubmissionRequest = await req.json();
+    const body = await req.json() as ClaimSubmissionRequest & { brand?: string };
+    const { name, email, phone, vehicleReg, currentMileage, faultDescription, dateOccurred, faultDetails, issueTiming, additionalInfo, file } = body;
+    const brand = resolveBrand(req, { brand: body.brand });
 
     console.log('Received claim submission:', { name, email, phone: phone || 'N/A', vehicleReg: vehicleReg || 'N/A' });
 
@@ -201,6 +204,7 @@ const handler = async (req: Request): Promise<Response> => {
           mileage_driven: mileageDriven,
           days_on_risk: daysOnRisk,
           warranty_start_date: warrantyStartDate,
+          brand: brand.key,
         }
       ])
       .select()
@@ -262,7 +266,7 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
         </div>
         
-        <h1 style="color: #eb4b00;">New Claim Submission</h1>
+        <h1 style="color: ${brand.accentColor};">New Claim Submission</h1>
         
         <!-- RISK ASSESSMENT - RIGHT AT THE TOP -->
         ${riskInfoHtml}
@@ -302,7 +306,7 @@ const handler = async (req: Request): Promise<Response> => {
           <h2 style="color: #333; margin-top: 0;">📎 Attachment</h2>
           <p><strong>File:</strong> ${fileName}</p>
           <p><strong>Size:</strong> ${fileSize ? Math.round(fileSize / 1024) + ' KB' : 'Unknown'}</p>
-          ${fileUrl ? `<p><a href="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/${fileUrl}" style="color: #eb4b00; text-decoration: underline;">Download Attachment</a></p>` : ''}
+          ${fileUrl ? `<p><a href="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/${fileUrl}" style="color: ${brand.accentColor}; text-decoration: underline;">Download Attachment</a></p>` : ''}
         </div>
         ` : ''}
         
@@ -313,7 +317,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         <hr style="margin: 30px 0;">
         <p style="color: #666; font-size: 12px;">
-          This email was sent automatically from the Buy a Warranty claims system.
+          This email was sent automatically from the ${brand.name} claims system.
           Please respond to the customer at ${email} to acknowledge their submission.
         </p>
       </div>
@@ -321,8 +325,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Prepare email with attachment
     const emailPayload: any = {
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
-      to: ["support@pandaprotect.co.uk", "support@warranties2000.co.uk"],
+      from: brandFrom(brand, "Customer Care", "noreply"),
+      to: [brand.supportEmail, "support@warranties2000.co.uk"],
       subject: emailSubject,
       html: emailHtml,
     };
@@ -348,7 +352,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Send confirmation email to customer
     const customerEmailHtml = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #eb4b00;">Claim Submission Received</h1>
+        <h1 style="color: ${brand.accentColor};">Claim Submission Received</h1>
         
         <p>Dear ${name},</p>
         
@@ -363,19 +367,19 @@ const handler = async (req: Request): Promise<Response> => {
         
         <p>If you need urgent assistance during these hours, you can:</p>
         <ul style="margin: 10px 0; padding-left: 20px;">
-          <li style="margin-bottom: 8px;"><strong>Call us:</strong> 0330 229 5045</li>
-          <li><strong>Email us:</strong> <a href="mailto:claims@pandaprotect.co.uk" style="color: #eb4b00;">claims@pandaprotect.co.uk</a></li>
+          <li style="margin-bottom: 8px;"><strong>Call us:</strong> ${brand.claimsPhone}</li>
+          <li><strong>Email us:</strong> <a href="mailto:${brand.claimsEmail}" style="color: ${brand.accentColor};">${brand.claimsEmail}</a></li>
         </ul>
         
         <p>Thank you for your patience – we're here to help!</p>
         
         <p style="margin-top: 30px;">Best regards,</p>
-        <p style="margin: 5px 0;"><strong>Buy a Warranty Claims Team</strong></p>
+        <p style="margin: 5px 0;"><strong>${brand.name} Claims Team</strong></p>
       </div>
     `;
 
     await resend.emails.send({
-      from: "Panda Protect Claims Team <claims@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Claims Team", "claims"),
       to: [email],
       subject: "Claim Submission Received",
       html: customerEmailHtml,

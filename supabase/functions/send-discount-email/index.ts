@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,14 +31,16 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('RESEND_API_KEY environment variable is not set');
     }
 
-    const { email, discountCode, discountAmount }: DiscountEmailRequest = await req.json();
+    const body: DiscountEmailRequest & { brand?: string } = await req.json();
+    const { email, discountCode, discountAmount } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
     
     logStep('Sending discount email', { email, discountCode, discountAmount });
 
     const resend = new Resend(resendApiKey);
 
     const emailResponse = await resend.emails.send({
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "noreply"),
       to: [email],
       subject: `Your £${discountAmount} Discount Code - ${discountCode}`,
       html: `
@@ -50,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #2563eb; margin: 0;">buya<span style="color: #ea580c;">warranty</span></h1>
+            <h1 style="color: #2563eb; margin: 0;">${brand.name}</h1>
           </div>
           
           <div style="background: #f8fafc; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
@@ -76,7 +79,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p>Visit our website to continue with your warranty quote and apply your discount.</p>
             
             <div style="text-align: center; margin: 20px 0;">
-              <a href="https://www.pandaprotect.co.uk" style="background: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+              <a href="${brand.siteUrl}" style="background: ${brand.accentColor}; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Get My Warranty
               </a>
             </div>
@@ -84,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
             <p style="font-size: 12px; color: #64748b;">
-              This discount code is valid for a limited time. Questions? Contact us at info@pandaprotect.co.uk
+              This discount code is valid for a limited time. Questions? Contact us at ${brand.infoEmail}
             </p>
           </div>
         </body>

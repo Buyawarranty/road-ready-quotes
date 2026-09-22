@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -93,15 +94,11 @@ const handler = async (req: Request): Promise<Response> => {
     
     // Check environment variables at startup
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    // Use verified domain email address
-    const resendFrom = 'Panda Protect Customer Care <info@pandaprotect.co.uk>';
     
     console.log(JSON.stringify({ 
       evt: "env.check", 
       rid,
-      hasResendKey: !!resendApiKey,
-      hasFrom: !!resendFrom,
-      fromAddress: resendFrom
+      hasResendKey: !!resendApiKey
     }));
     
     if (!resendApiKey) {
@@ -140,7 +137,7 @@ const handler = async (req: Request): Promise<Response> => {
       .select(`
         *,
         customers!customer_id (
-          id, name, email, first_name, last_name
+          id, name, email, first_name, last_name, brand
         )
       `);
 
@@ -179,6 +176,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     const policy = policies[0];
     const customer = policy.customers;
+    const brand: Brand = resolveBrand(req, { brand: body?.brand, record: customer });
+    const resendFrom = brandFrom(brand, "Customer Care", "info");
 
     if (!customer) {
       return new Response(JSON.stringify({ 
@@ -548,7 +547,7 @@ const handler = async (req: Request): Promise<Response> => {
     const termsUrl = 'https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/terms/terms-and-conditions-v3.1-2026-02.pdf';
 
     // Define login URL for customer portal
-    const loginUrl = 'https://www.pandaprotect.co.uk/auth';
+    const loginUrl = `${brand.siteUrl}/auth`;
 
     // Registration plate styling - UK-style yellow background with black text
     const regPlate = customerDetails?.registration_plate || 'N/A';
@@ -579,17 +578,17 @@ const handler = async (req: Request): Promise<Response> => {
       new Date(policy.policy_start_date) > new Date();
     
     const emailSubject = isFutureActivation 
-      ? `Your Panda Protect Policy – Future Activation Confirmed 🚗`
-      : `Your Panda Protect Policy Is Now Active 🚗`;
+      ? `Your ${brand.name} Policy – Future Activation Confirmed 🚗`
+      : `Your ${brand.name} Policy Is Now Active 🚗`;
     
     const introText = isFutureActivation
-      ? `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${formatDate(policy.policy_start_date)}</strong>.`
-      : `Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
+      ? `Thanks for choosing ${brand.name} to protect your vehicle — we're pleased to confirm your warranty has been set up and will activate on <strong>${formatDate(policy.policy_start_date)}</strong>.`
+      : `Thanks for choosing ${brand.name} to protect your vehicle — we're pleased to let you know that your warranty is now active!`;
 
     const emailPayload = {
       from: resendFrom,
       to: [customer.email],
-      bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'],
+      bcc: [`${brand.domain}+8fc526946e@invite.trustpilot.com`],
       subject: emailSubject,
       ...(attachments.length > 0 && { attachments }),
       html: `
@@ -597,7 +596,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
+            <img src="${brand.logoUrl}" alt="${brand.name}" style="max-width: 300px; height: auto;" />
           </div>
 
           <div style="margin-bottom: 30px;">
@@ -665,7 +664,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="margin-bottom: 15px;">
-              <strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
+              <strong>Login:</strong> <a href="${brand.siteUrl}/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
             </p>
             
             <ul style="list-style: none; padding: 0; margin: 0;">
@@ -686,7 +685,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="margin-bottom: 15px;">
-              <strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
+              <strong>Login:</strong> <a href="${brand.siteUrl}/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
             </p>
             
             <p style="color: #333;">
@@ -723,20 +722,20 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Customer Sales and Support</strong></p>
               <p style="color: #333; margin-bottom: 3px;">
-                Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #ff6b35; text-decoration: none;">support@pandaprotect.co.uk</a>
+                Email: <a href="mailto:${brand.supportEmail}" style="color: #ff6b35; text-decoration: none;">${brand.supportEmail}</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
-                Phone: <a href="tel:03302295040" style="color: #ff6b35; text-decoration: none;">0330 229 5040</a>
+                Phone: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: #ff6b35; text-decoration: none;">${brand.quotePhone}</a>
               </p>
             </div>
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Claims and Repairs</strong></p>
               <p style="color: #333; margin-bottom: 3px;">
-                Email: <a href="mailto:claims@pandaprotect.co.uk" style="color: #ff6b35; text-decoration: none;">claims@pandaprotect.co.uk</a>
+                Email: <a href="mailto:${brand.claimsEmail}" style="color: #ff6b35; text-decoration: none;">${brand.claimsEmail}</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
-                Phone: <a href="tel:03302295045" style="color: #ff6b35; text-decoration: none;">0330 229 5045</a>
+                Phone: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #ff6b35; text-decoration: none;">${brand.claimsPhone}</a>
               </p>
             </div>
             
@@ -747,25 +746,25 @@ const handler = async (req: Request): Promise<Response> => {
 
           <div style="margin-bottom: 25px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
             <p style="color: #333; margin: 0; font-size: 16px;">
-              Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.
+              Thanks again for choosing ${brand.name} — we're here to keep you covered and give you peace of mind on the road.
             </p>
           </div>
 
           <div style="text-align: left; margin-bottom: 25px;">
             <p style="color: #333; margin: 0; font-size: 16px;">
               Best regards,<br>
-              <strong>The Panda Protect Team</strong>
+              <strong>The ${brand.name} Team</strong>
             </p>
           </div>
 
           <div style="text-align: center; border-top: 1px solid #dee2e6; padding-top: 20px;">
-            <p style="color: #333; margin-bottom: 10px; font-weight: bold;">pandaprotect.co.uk</p>
+            <p style="color: #333; margin-bottom: 10px; font-weight: bold;">${brand.domain}</p>
             <p style="color: #666; margin-bottom: 15px; font-style: italic;">Your trusted warranty partner</p>
             
             <hr style="border: none; border-top: 1px solid #dee2e6; margin: 20px 0;">
             
             <p style="color: #666; font-size: 12px; line-height: 1.4; margin: 0;">
-              Panda Protect Limited. Registered in the UK under Company number: 10314863 since 2016.<br>
+              ${brand.legalName} Registered in the UK under Company number: 10314863 since 2016.<br>
               Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England.
             </p>
           </div>
@@ -817,7 +816,7 @@ const handler = async (req: Request): Promise<Response> => {
           ok: false, 
           rid,
           code: 'DOMAIN_VERIFICATION_REQUIRED', 
-          error: 'Resend domain verification required. Please verify pandaprotect.co.uk domain at resend.com/domains or contact support.',
+          error: `Resend domain verification required. Please verify ${brand.domain} domain at resend.com/domains or contact support.`,
           details: {
             status: emailResponse.status,
             message: errorMsg,

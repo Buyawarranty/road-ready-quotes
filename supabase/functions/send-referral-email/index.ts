@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -15,6 +16,7 @@ const corsHeaders = {
 interface ReferralEmailRequest {
   friendEmail: string;
   referrerName: string;
+  brand?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -23,7 +25,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { friendEmail, referrerName, referrerEmail }: ReferralEmailRequest & { referrerEmail?: string } = await req.json();
+    const { friendEmail, referrerName, referrerEmail, brand: brandHint }: ReferralEmailRequest & { referrerEmail?: string } = await req.json();
 
     if (!friendEmail || !friendEmail.includes('@')) {
       return new Response(
@@ -37,6 +39,19 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Initialize Supabase client
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Look up referrer's customer record to resolve brand
+    let referrerRecord: { brand?: unknown } | null = null;
+    if (referrerEmail) {
+      const { data } = await supabase
+        .from('customers')
+        .select('brand')
+        .eq('email', referrerEmail)
+        .maybeSingle();
+      referrerRecord = data;
+    }
+
+    const brand = resolveBrand(req, { brand: brandHint, record: referrerRecord });
 
     // Generate a unique discount code for this referral
     const discountCode = `FRIEND-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
@@ -80,7 +95,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "noreply"),
       to: [friendEmail],
       subject: "I Just Got My Vehicle Covered – Thought You Might Like This 🚗✨",
       html: `
@@ -88,7 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
           <h2 style="color: #0B0B0B; font-size: 24px; margin-bottom: 20px;">Hi there,</h2>
           
           <p style="color: #0B0B0B; font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
-            Hope you're well! I just sorted out a warranty for my vehicle through Buy-A-Warranty, and I genuinely think you'd like it too.
+            Hope you're well! I just sorted out a warranty for my vehicle through ${brand.name}, and I genuinely think you'd like it too.
           </p>
           
           <p style="color: #0B0B0B; font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
@@ -96,14 +111,14 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://www.pandaprotect.co.uk" 
-               style="background-color: #FF6B00; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+            <a href="${brand.siteUrl}" 
+               style="background-color: ${brand.accentColor}; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
               Get Your Warranty Quote
             </a>
           </div>
           
           <p style="color: #0B0B0B; font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
-            Plus, use the code <strong style="color: #FF6B00;">${discountCode}</strong> to get £30 off your warranty – it's a win-win! 😄
+            Plus, use the code <strong style="color: ${brand.accentColor};">${discountCode}</strong> to get £30 off your warranty – it's a win-win! 😄
           </p>
           
           <p style="color: #0B0B0B; font-size: 16px; line-height: 1.6; margin-bottom: 15px;">
@@ -117,7 +132,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e5; text-align: center;">
             <p style="color: #666; font-size: 14px;">
-              <a href="https://www.pandaprotect.co.uk" style="color: #FF6B00; text-decoration: none;">pandaprotect.co.uk</a><br>
+              <a href="${brand.siteUrl}" style="color: ${brand.accentColor}; text-decoration: none;">${brand.domain}</a><br>
               Your trusted warranty partner
             </p>
           </div>

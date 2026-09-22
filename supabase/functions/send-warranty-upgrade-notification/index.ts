@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,6 +16,7 @@ interface UpgradeRequest {
   customerEmail: string;
   customerName: string;
   registrationPlate: string;
+  brand?: string;
   changes: {
     claimLimit?: UpgradeChange | null;
     labourRate?: UpgradeChange | null;
@@ -34,7 +36,9 @@ serve(async (req) => {
     }
 
     const resend = new Resend(resendApiKey);
-    const { customerEmail, customerName, registrationPlate, changes }: UpgradeRequest = await req.json();
+    const { customerEmail, customerName, registrationPlate, changes, brand: brandHint }: UpgradeRequest = await req.json();
+
+    const brand: Brand = resolveBrand(req, { brand: brandHint });
 
     console.log(`Sending warranty upgrade notification to ${customerEmail}`);
 
@@ -103,7 +107,7 @@ serve(async (req) => {
             <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
               <!-- Header -->
               <tr>
-                <td style="background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); padding: 30px; text-align: center;">
+                <td style="background: linear-gradient(135deg, #f59e0b 0%, ${brand.accentColor} 100%); padding: 30px; text-align: center;">
                   <h1 style="color: #ffffff; margin: 0; font-size: 24px;">✨ Your Warranty Has Been Upgraded</h1>
                 </td>
               </tr>
@@ -135,8 +139,8 @@ serve(async (req) => {
                   </p>
                   
                   <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://pricing.pandaprotect.co.uk/customer-dashboard" 
-                       style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                    <a href="${brand.siteUrl}/customer-dashboard" 
+                       style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, ${brand.accentColor} 100%); color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold;">
                       View My Warranty
                     </a>
                   </div>
@@ -151,10 +155,10 @@ serve(async (req) => {
               <tr>
                 <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
                   <p style="font-size: 12px; color: #9ca3af; margin: 0;">
-                    © ${new Date().getFullYear()} Panda Protect | All rights reserved
+                    © ${new Date().getFullYear()} ${brand.name} | All rights reserved
                   </p>
                   <p style="font-size: 12px; color: #9ca3af; margin: 5px 0 0 0;">
-                    <a href="https://www.pandaprotect.co.uk" style="color: #f59e0b; text-decoration: none;">Visit our website</a>
+                    <a href="${brand.siteUrl}" style="color: #f59e0b; text-decoration: none;">Visit our website</a>
                   </p>
                 </td>
               </tr>
@@ -167,7 +171,7 @@ serve(async (req) => {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "noreply"),
       to: [customerEmail],
       subject: `✨ Your Warranty for ${registrationPlate} Has Been Upgraded`,
       html: htmlContent,
