@@ -12,7 +12,6 @@ import {
   Globe,
   Headphones,
   LifeBuoy,
-  Lock,
   Mail,
   MessageCircle,
   Phone,
