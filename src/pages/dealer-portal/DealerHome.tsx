@@ -31,11 +31,11 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
-import twoWaysImage from '@/assets/two-ways-cover.png';
-import dealerGrowthImage from '@/assets/panda-dealer-growth.png';
+import twoWaysImage from '@/assets/two-ways-cover-optimized.webp';
+import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
 import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
 const coveredPartsImage = programmeBannerAsset.url;
-import pandaHeroImage from '@/assets/panda-hero.png';
+import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
 
 const HOME_FAQS: { q: string; a: string }[] = [
   {
@@ -273,8 +273,9 @@ const DealerHome = () => {
               src={pandaHeroImage}
               alt="Panda Protect warranty cover for cars, vans and motorbikes"
               priority
-              width={1500}
-              height={1000}
+              width={1200}
+              height={813}
+              sizes="(max-width: 1024px) 92vw, 48vw"
             />
             <div className="home-vehicle-types" aria-label="Eligible vehicle types">
               <span>Cars</span><span>Vans</span><span>Hybrid</span><span>EV</span><span>Motorbikes</span>
@@ -324,6 +325,7 @@ const DealerHome = () => {
               alt="Panda Protect mechanic with a wrench beside a car with its bonnet open"
               width={1400}
               height={920}
+              sizes="(max-width: 1024px) 92vw, 42vw"
             />
           </div>
         </div>
@@ -402,7 +404,7 @@ const DealerHome = () => {
 
       <section id="why-choose-us" className="home-story-section scroll-mt-24">
         <div className="home-shell home-story-grid">
-          <div className="home-story-image"><OptimizedImage src={dealerGrowthImage} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={1200} height={800} /></div>
+          <div className="home-story-image"><OptimizedImage src={dealerGrowthImage} alt="Panda Protect mascot and a motor dealer reviewing warranty sales on a laptop" width={960} height={686} sizes="(max-width: 1024px) 92vw, 46vw" /></div>
           <div>
             <p className="home-eyebrow">Grow sales with dealer extended warranties</p>
             <h2>Grow Sales with Dealer Extended Warranties</h2>

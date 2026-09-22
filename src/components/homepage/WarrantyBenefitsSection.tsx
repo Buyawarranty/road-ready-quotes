@@ -1,7 +1,7 @@
 import React from 'react';
 import { Check, ArrowRight, Settings, Cpu, Zap, Wrench, Lock } from 'lucide-react';
 import TrustpilotSliderWidget from '@/components/TrustpilotSliderWidget';
-import warrantyPandaMascot from '@/assets/warranty-panda-mascot.png';
+import warrantyPandaMascot from '@/assets/warranty-panda-mascot-optimized.webp';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import TrustpilotMicroStarWidget from '@/components/TrustpilotMicroStarWidget';
 
@@ -122,6 +122,9 @@ const WarrantyBenefitsSection: React.FC<WarrantyBenefitsSectionProps> = ({
                     <img 
                       src={warrantyPandaMascot} 
                       alt="Miles the Panda mascot with car" 
+                       width={640}
+                       height={427}
+                       loading="lazy"
                       className="w-48 md:w-56 lg:w-64 h-auto object-contain"
                     />
                   </div>
@@ -149,6 +152,9 @@ const WarrantyBenefitsSection: React.FC<WarrantyBenefitsSectionProps> = ({
                 <img 
                   src={warrantyPandaMascot} 
                   alt="Miles the Panda mascot with car" 
+                   width={640}
+                   height={427}
+                   loading="lazy"
                   className="w-48 md:w-56 h-auto object-contain"
                 />
               </div>

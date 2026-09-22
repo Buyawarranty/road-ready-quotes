@@ -270,12 +270,12 @@ const DealerComingSoon = () => {
       </header>
 
       {/* HERO — simple log in / register choice */}
-      <section className="relative bg-gradient-to-b from-crm-blue-soft via-background to-background">
-        <div className="mx-auto max-w-4xl px-4 py-9 text-center sm:px-6 sm:py-12 lg:py-14">
+      <section className="signup-choice-section relative">
+        <div className="mx-auto max-w-6xl px-4 py-9 text-center sm:px-6 sm:py-12 lg:py-14">
           <span className="inline-flex rounded-md bg-primary/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
             Dealer portal
           </span>
-          <h1 className="mx-auto mt-5 max-w-2xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
+          <h1 className="mx-auto mt-5 max-w-4xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
             Trade warranties for UK motor dealers
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -283,7 +283,7 @@ const DealerComingSoon = () => {
           </p>
 
           {pendingReg && (
-            <div className="mx-auto mt-6 flex max-w-3xl flex-col items-center justify-center gap-3 rounded-lg border border-crm-amber/40 bg-crm-amber-soft px-4 py-3 text-sm text-crm-navy sm:flex-row">
+            <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-center justify-center gap-3 rounded-lg border border-crm-amber/40 bg-crm-amber-soft px-4 py-3 text-sm text-crm-navy sm:flex-row">
               <Info className="h-5 w-5 shrink-0 text-primary" />
               <span>
                 Registration <span className="font-bold text-crm-navy">{pendingReg.toUpperCase()}</span> is saved for your quote.
@@ -300,12 +300,12 @@ const DealerComingSoon = () => {
             </div>
           )}
 
-          <div className="mx-auto mt-6 grid max-w-3xl gap-4 text-left sm:grid-cols-2">
+          <div className="mx-auto mt-5 grid max-w-5xl gap-5 text-left sm:grid-cols-2">
             {/* Register */}
             <button
               type="button"
               onClick={revealForm}
-              className="signup-choice signup-choice-primary group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-6"
+               className="signup-choice signup-choice-primary group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-7"
             >
               <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
                 <UserPlus className="h-6 w-6" />
@@ -323,7 +323,7 @@ const DealerComingSoon = () => {
             <button
               type="button"
               onClick={revealLogin}
-              className="signup-choice group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-6"
+               className="signup-choice group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-7"
             >
               <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
                 <LogIn className="h-6 w-6" />
@@ -338,7 +338,7 @@ const DealerComingSoon = () => {
             </button>
           </div>
 
-          <ul className="mx-auto mt-7 flex max-w-3xl flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-crm-navy">
+          <ul className="signup-trust-row mx-auto mt-7 flex max-w-4xl flex-wrap justify-center gap-x-12 gap-y-3 text-sm text-crm-navy">
             <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Free dealer sign-up</li>
             <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> No setup fees, no contracts</li>
             <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Quote in seconds</li>

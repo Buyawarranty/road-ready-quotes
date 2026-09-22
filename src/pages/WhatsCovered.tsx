@@ -33,7 +33,7 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import TrustpilotSliderWidget from '@/components/TrustpilotSliderWidget';
-import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
+import pandaThumbsUp from '@/assets/panda-thumbs-up-optimized.webp';
 
 const PLATINUM_PDF = '/Platinum-Warranty-Plan-v2.4.pdf';
 const TANDC_PDF = '/Terms-and-Conditions-v2.3.pdf';
@@ -262,10 +262,11 @@ const WhatsCovered: React.FC = () => {
             <div className="flex justify-center lg:justify-end">
               <OptimizedImage
                 src={pandaThumbsUp}
-                alt="Buyawarranty panda mascot giving a thumbs up"
+                 alt="Panda Protect mascot giving a thumbs up beside the coverage guide"
                 priority
-                width={700}
-                height={700}
+                 width={640}
+                 height={640}
+                 sizes="(max-width: 640px) 16rem, (max-width: 1024px) 20rem, 28rem"
                 className="w-64 sm:w-80 lg:w-full max-w-md h-auto"
               />
             </div>

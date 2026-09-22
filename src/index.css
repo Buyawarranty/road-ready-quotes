@@ -830,26 +830,25 @@
 
 .public-dealer-signup > section:first-of-type {
   padding-block: 1rem 2rem;
+  background: linear-gradient(180deg, hsl(var(--crm-blue-soft) / 0.45), hsl(var(--background)) 72%);
 }
 
-.public-dealer-signup > section:first-of-type > div > div > div:first-child :where(h1, p) {
-  color: hsl(var(--marketing-surface));
+.public-dealer-signup > section:first-of-type :where(h1, h2) {
+  color: hsl(var(--crm-navy));
 }
 
-.public-dealer-signup > section:first-of-type > div > div > div:first-child > span {
-  color: hsl(var(--marketing-surface));
-  border: 1px solid hsl(var(--marketing-surface) / 0.24);
-  background: hsl(var(--marketing-surface) / 0.1);
+.public-dealer-signup > section:first-of-type p {
+  color: hsl(var(--muted-foreground));
 }
 
-.public-dealer-signup > section:first-of-type > div > div > div:last-child > div:first-child {
-  border-radius: 0.5rem;
-  border-color: hsl(var(--marketing-line));
-  box-shadow: 0 18px 45px hsl(220 35% 7% / 0.25);
+.public-dealer-signup > section:first-of-type > div > span:first-child {
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary) / 0.12);
+  background: hsl(var(--primary) / 0.1);
 }
 
-.public-dealer-signup > section:first-of-type > div > div > div:last-child > div:not(:first-child) :where(h3, p, li) {
-  color: hsl(var(--marketing-surface));
+.public-dealer-signup .signup-saved-reg {
+  box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.03);
 }
 
 .public-dealer-signup > section:nth-of-type(2) div[class*="rounded-full"],
@@ -871,7 +870,8 @@
 .public-dealer-signup .signup-choice {
   background: hsl(var(--card));
   border-color: hsl(var(--border));
-  box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.04), 0 10px 30px hsl(var(--crm-navy) / 0.05);
+  min-height: 19rem;
+  box-shadow: 0 1px 2px hsl(var(--crm-navy) / 0.04), 0 12px 32px hsl(var(--crm-navy) / 0.045);
   transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -902,7 +902,22 @@
 
 .public-dealer-signup .signup-choice-primary,
 .public-dealer-signup .signup-choice-primary:hover {
-  border-color: hsl(var(--primary) / 0.75);
+  border-color: hsl(var(--primary));
+}
+
+.public-dealer-signup .signup-choice > span:last-child {
+  margin-top: auto;
+}
+
+.public-dealer-signup .signup-choice {
+  display: flex;
+  flex-direction: column;
+}
+
+.public-dealer-signup .signup-trust-row li svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0.35rem;
 }
 
 /* Sign-up: registration form panel */
@@ -933,6 +948,10 @@
   .public-dealer-signup > section:first-of-type h1 {
     font-size: 2.25rem;
     line-height: 1.08;
+  }
+
+  .public-dealer-signup .signup-choice {
+    min-height: 17rem;
   }
 }
 
