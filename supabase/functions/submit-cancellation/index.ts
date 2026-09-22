@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -13,6 +14,7 @@ interface CancellationRequest {
   fullName: string;
   reason: string;
   feedback?: string;
+  brand?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -22,12 +24,15 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { 
-      registrationPlate, 
-      fullName, 
-      reason, 
-      feedback 
+    const {
+      registrationPlate,
+      fullName,
+      reason,
+      feedback,
+      brand: brandHint,
     }: CancellationRequest = await req.json();
+
+    const brand = resolveBrand(req, { brand: brandHint });
 
     console.log("Processing cancellation request for:", registrationPlate);
 
@@ -217,8 +222,8 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Panda Protect Team <noreply@pandaprotect.co.uk>",
-        to: ["support@pandaprotect.co.uk"],
+        from: brandFrom(brand, "Team", "noreply"),
+        to: [brand.supportEmail],
         subject: emailSubject,
         html: emailHtml,
       }),

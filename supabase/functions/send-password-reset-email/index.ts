@@ -1,6 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
 import { Resend } from "https://esm.sh/resend@4.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,7 +30,9 @@ serve(async (req) => {
     
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { email }: ResetPasswordRequest = await req.json();
+    const body: ResetPasswordRequest & { brand?: string } = await req.json();
+    const { email } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
     
     logStep('Password reset email request received', { email });
 
@@ -85,7 +88,7 @@ serve(async (req) => {
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: 'https://www.pandaprotect.co.uk/reset-password'
+        redirectTo: `${brand.siteUrl}/reset-password`
       }
     });
 
@@ -97,7 +100,7 @@ serve(async (req) => {
     logStep('Generated reset link successfully', { hasActionLink: !!resetData?.properties?.action_link });
 
     // Use the generated action link for the reset
-    const resetLink = resetData?.properties?.action_link || `https://mzlpuxzwyrcyrgrongeb.supabase.co/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent('https://www.pandaprotect.co.uk/reset-password')}`;
+    const resetLink = resetData?.properties?.action_link || `https://mzlpuxzwyrcyrgrongeb.supabase.co/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent(`${brand.siteUrl}/reset-password`)}`;
     
     // Send branded email
     const emailHtml = `
@@ -106,7 +109,7 @@ serve(async (req) => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset Your Password - Buy-A-Warranty</title>
+        <title>Reset Your Password - ${brand.name}</title>
       </head>
       <body style="margin: 0; padding: 0; background-color: #f8f9fa; font-family: Arial, sans-serif;">
         <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; padding: 20px 0;">
@@ -116,8 +119,8 @@ serve(async (req) => {
                 
                 <!-- Header -->
                 <tr>
-                  <td style="background: linear-gradient(135deg, #2563eb 0%, #f97316 100%); padding: 30px; text-align: center;">
-                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Buy-A-Warranty" style="height: 60px; width: auto;">
+                  <td style="background: ${brand.accentColor}; padding: 30px; text-align: center;">
+                    <img src="${brand.logoUrl}" alt="${brand.name}" style="height: 60px; width: auto;">
                   </td>
                 </tr>
 
@@ -131,7 +134,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-                      We received a request to reset the password for your Buy-A-Warranty customer portal account associated with <strong>${email}</strong>.
+                      We received a request to reset the password for your ${brand.name} customer portal account associated with <strong>${email}</strong>.
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
@@ -141,7 +144,7 @@ serve(async (req) => {
                     <!-- Reset Button -->
                     <div style="text-align: center; margin: 30px 0;">
                       <a href="${resetLink}" 
-                         style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #f97316 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                         style="display: inline-block; background: ${brand.accentColor}; color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 6px; font-weight: 600; font-size: 16px;">
                         Reset Your Password
                       </a>
                     </div>
@@ -167,15 +170,15 @@ serve(async (req) => {
                 <!-- Footer -->
                 <tr>
                   <td style="background-color: #f8f9fa; padding: 25px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                    <p style="color: #2563eb; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">pandaprotect.co.uk</p>
+                    <p style="color: #2563eb; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">${brand.domain}</p>
                     <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">Your trusted warranty partner</p>
                     
                     <div style="color: #6b7280; font-size: 13px; line-height: 1.6;">
                       <div style="margin-bottom: 5px;">
-                        <strong>Claims line:</strong> 0330 229 5045 | claims@pandaprotect.co.uk
+                        <strong>Claims line:</strong> ${brand.claimsPhone} | ${brand.claimsEmail}
                       </div>
                       <div>
-                        <strong>Customer support:</strong> 0330 229 5040 | support@pandaprotect.co.uk
+                        <strong>Customer support:</strong> ${brand.quotePhone} | ${brand.supportEmail}
                       </div>
                     </div>
                   </td>
@@ -190,9 +193,9 @@ serve(async (req) => {
 
     try {
       await resend.emails.send({
-        from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
+        from: brandFrom(brand, 'Customer Care', 'noreply'),
         to: [email],
-        subject: 'Reset Your Panda Protect Portal Password',
+        subject: `Reset Your ${brand.name} Portal Password`,
         html: emailHtml,
       });
 

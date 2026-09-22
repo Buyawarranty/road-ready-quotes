@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -104,6 +105,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Kick off sales-user resolution in parallel with body parsing
     const salesUserPromise = resolveSalesUser(req);
 
+    const requestBody: QuoteEmailRequest & { brand?: unknown } = await req.json();
     const {
       to,
       cc,
@@ -112,7 +114,9 @@ const handler = async (req: Request): Promise<Response> => {
       customerName,
       vehicleData,
       quoteDetails,
-    }: QuoteEmailRequest = await req.json();
+    } = requestBody;
+
+    const brand = resolveBrand(req, { brand: requestBody.brand });
 
     const salesUser = await salesUserPromise;
 
@@ -153,8 +157,8 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header with Logo -->
                   <tr>
                     <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-                      <a href="https://www.pandaprotect.co.uk" target="_blank" style="text-decoration: none; font-size: 28px; font-weight: 800; color: #1a2a44; letter-spacing: -0.5px;">
-                        panda<span style="color: #EC6F33;">protect</span>
+                      <a href="${brand.siteUrl}" target="_blank" style="text-decoration: none; font-size: 28px; font-weight: 800; color: #1a2a44; letter-spacing: -0.5px;">
+                        <img src="${brand.logoUrl}" alt="${brand.name}" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
                       </a>
                     </td>
                   </tr>
@@ -419,7 +423,7 @@ const handler = async (req: Request): Promise<Response> => {
                               Trusted by UK drivers
                             </p>
                             <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">
-                              Drivers across the UK trust Panda Protect for reliable vehicle protection.
+                              Drivers across the UK trust ${brand.name} for reliable vehicle protection.
                             </p>
                           </td>
                         </tr>
@@ -440,13 +444,13 @@ const handler = async (req: Request): Promise<Response> => {
                               Our UK-based team is happy to help.
                             </p>
                             <p style="font-size: 13px; color: #64748b; margin: 0 0 6px 0;">
-                              Customer Services and Sales: <a href="tel:03302295040" style="color: #ea580c; text-decoration: none; font-weight: 500;">0330 229 5040</a>
+                              Customer Services and Sales: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${brand.quotePhone}</a>
                             </p>
                             <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">
-                              Claims Line: <a href="tel:03302295045" style="color: #ea580c; text-decoration: none; font-weight: 500;">0330 229 5045</a>
+                              Claims Line: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${brand.claimsPhone}</a>
                             </p>
                             <p style="font-size: 13px; color: #94a3b8; margin: 0;">
-                              <a href="https://www.pandaprotect.co.uk" style="color: #ea580c; text-decoration: none;">pandaprotect.co.uk</a>
+                              <a href="${brand.siteUrl}" style="color: #ea580c; text-decoration: none;">${brand.domain}</a>
                             </p>
                           </td>
                         </tr>
@@ -488,7 +492,7 @@ const handler = async (req: Request): Promise<Response> => {
       : null;
 
     const customerSendPromise = resend.emails.send({
-      from: "Panda Protect Customer Care <quotes@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "quotes"),
       to: [to],
       cc: ccRecipients.length > 0 ? ccRecipients : undefined,
       subject: subject,
@@ -497,7 +501,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const salesCopySendPromise = shouldSendSalesCopy
       ? resend.emails.send({
-          from: "Panda Protect Customer Care <quotes@pandaprotect.co.uk>",
+          from: brandFrom(brand, "Customer Care", "quotes"),
           to: [salesUser!.email],
           subject: `[Copy] ${subject}`,
           html: finalHtml,
