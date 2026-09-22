@@ -182,7 +182,7 @@ Panda Protect IT Administration Team`;
     const emailResponse = await resend.emails.send({
       from: "Panda Protect Team <support@pandaprotect.co.uk>",
       to: [email],
-      subject: "🔐 Admin Password Reset - BuyaWarranty",
+      subject: "🔐 Admin Password Reset - Panda Protect",
       html: emailHtml,
       text: textVersion,
       headers: {

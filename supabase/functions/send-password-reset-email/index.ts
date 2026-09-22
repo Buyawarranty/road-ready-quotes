@@ -192,7 +192,7 @@ serve(async (req) => {
       await resend.emails.send({
         from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
         to: [email],
-        subject: 'Reset Your BuyaWarranty Portal Password',
+        subject: 'Reset Your Panda Protect Portal Password',
         html: emailHtml,
       });
 

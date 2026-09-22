@@ -10,13 +10,13 @@ const corsHeaders = {
 const MESSAGES = {
   OPT_IN: (_name?: string) => `We'll call you shortly with your best price. Prefer to speak now? Call 0330 229 5040.`,
   
-  OPT_OUT: `You're opted out from BuyaWarranty. No further messages will be sent.`,
+  OPT_OUT: `You're opted out from Panda Protect. No further messages will be sent.`,
 
-  STOP: `You're opted out from BuyaWarranty. No further messages will be sent.`,
+  STOP: `You're opted out from Panda Protect. No further messages will be sent.`,
   
   RE_SUBSCRIBE: `Thanks for reconnecting with us.
 
-A BuyaWarranty expert will be in touch shortly to help you with your warranty options.
+A Panda Protect expert will be in touch shortly to help you with your warranty options.
 
 If you would like to speak to us now, call 0330 229 5040.`,
 };

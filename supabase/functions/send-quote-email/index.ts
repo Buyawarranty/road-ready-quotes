@@ -230,7 +230,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #999999; text-decoration: underline;">Unsubscribe</a>
                   </p>
                   <p style="font-size: 11px; color: #AAAAAA; margin: 0; line-height: 1.5; text-align: center;">
-                    Buyawarranty.co.uk is a trading name of Panda Protect Limited. Established 2016.<br/>
+                    Panda Protect is a trading name of Panda Protect Limited. Established 2016.<br/>
                     Registered in the United Kingdom under Company number: 10314863<br/>
                     Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
                   </p>

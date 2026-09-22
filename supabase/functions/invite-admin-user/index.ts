@@ -196,7 +196,7 @@ serve(async (req: Request) => {
       await resend.emails.send({
         from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
         to: [email],
-        subject: 'You\'ve been invited to the BuyaWarranty Admin Dashboard',
+        subject: 'You\'ve been invited to the Panda Protect Admin Dashboard',
         html: `
           <h1>Welcome to Buy a Warranty Admin Dashboard</h1>
           <p>Hello ${firstName},</p>

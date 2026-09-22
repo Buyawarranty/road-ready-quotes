@@ -168,7 +168,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Panda Protect <hello@pandaprotect.co.uk>",
         to: [recipientEmail],
-        subject: subject || `Invoice from BuyaWarranty`,
+        subject: subject || `Invoice from Panda Protect`,
         html: emailHtml,
         attachments: attachments.map(att => ({
           filename: att.filename,

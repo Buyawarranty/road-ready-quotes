@@ -160,7 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
       const confirmationResponse = await resend.emails.send({
         from: 'Panda Protect Customer Care <support@pandaprotect.co.uk>',
         to: [body.email],
-        subject: 'Thank you for contacting BuyaWarranty',
+        subject: 'Thank you for contacting Panda Protect',
         html: confirmationEmailContent,
       });
 
