@@ -94,7 +94,7 @@ serve(async (req) => {
           </div>
           <div style="padding: 16px 24px; background: #f9fafb; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; border-top: 0;">
             <p style="margin: 0; font-size: 12px; color: #6b7280;">
-              This is an automated alert from BuyAWarranty. Log in to the admin dashboard to resolve this issue.
+              This is an automated alert from Panda Protect. Log in to the admin dashboard to resolve this issue.
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ serve(async (req) => {
 
       try {
         await resend.emails.send({
-          from: "BuyAWarranty Alerts <alerts@notify.buyawarranty.co.uk>",
+          from: "Panda Protect Alerts <alerts@notify.pandaprotect.co.uk>",
           to: ["support@pandaprotect.co.uk"],
           subject,
           html: htmlContent,

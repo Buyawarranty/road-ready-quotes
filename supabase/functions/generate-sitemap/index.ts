@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
       { url: '/privacy', priority: '0.9' },
     ];
 
-    const baseUrl = 'https://buyawarranty.co.uk';
+    const baseUrl = 'https://www.pandaprotect.co.uk';
     const lastmod = '2026-03-17';
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';

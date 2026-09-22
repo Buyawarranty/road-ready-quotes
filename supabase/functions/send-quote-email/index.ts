@@ -91,8 +91,8 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <!-- Header with Logo -->
               <tr>
                 <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-                  <a href="https://buyawarranty.co.uk" target="_blank">
-                    <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="buyawarranty" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
+                  <a href="https://www.pandaprotect.co.uk" target="_blank">
+                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
                   </a>
                 </td>
               </tr>
@@ -188,11 +188,11 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <!-- Social Proof -->
               <tr>
                 <td align="center" style="padding: 24px 32px;">
-                  <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" style="text-decoration: none;">
-                    <img src="https://buyawarranty.co.uk/lovable-uploads/4e4faf8a-b202-4101-a858-9c58ad0a28c5.png" alt="Trustpilot" width="120" style="display: block; width: 120px; max-width: 100%; height: auto; margin: 0 auto;" />
+                  <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" style="text-decoration: none;">
+                    <img src="https://www.pandaprotect.co.uk/lovable-uploads/4e4faf8a-b202-4101-a858-9c58ad0a28c5.png" alt="Trustpilot" width="120" style="display: block; width: 120px; max-width: 100%; height: auto; margin: 0 auto;" />
                   </a>
                   <p style="font-size: 13px; margin: 10px 0 0 0;">
-                    <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" style="color: #555555; text-decoration: underline;">Read reviews on Trustpilot</a>
+                    <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" style="color: #555555; text-decoration: underline;">Read reviews on Trustpilot</a>
                   </p>
                 </td>
               </tr>
@@ -230,7 +230,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #999999; text-decoration: underline;">Unsubscribe</a>
                   </p>
                   <p style="font-size: 11px; color: #AAAAAA; margin: 0; line-height: 1.5; text-align: center;">
-                    Buyawarranty.co.uk is a trading name of Panda Protect Limited. Established 2016.<br/>
+                    Panda Protect is a trading name of Panda Protect Limited. Established 2016.<br/>
                     Registered in the United Kingdom under Company number: 10314863<br/>
                     Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
                   </p>
@@ -279,7 +279,7 @@ const handler = async (req: Request): Promise<Response> => {
     const quoteId = `QUO-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
     
     // Always use production URL for email links
-    const baseUrl = 'https://buyawarranty.co.uk';
+    const baseUrl = 'https://www.pandaprotect.co.uk';
     
     logStep('Email URL generation', { baseUrl, quoteId, email: data.email });
     

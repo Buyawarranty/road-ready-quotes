@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
 
-const TRUSTPILOT_REVIEW_LINK = "https://uk.trustpilot.com/evaluate/buyawarranty.co.uk";
+const TRUSTPILOT_REVIEW_LINK = "https://uk.trustpilot.com/evaluate/pandaprotect.co.uk";
 
 // Trustpilot sends their own emails at ~1 day and ~7 days via BCC on the welcome email.
 // We only send our branded final nudge 14-17 days after purchase.
@@ -48,7 +48,7 @@ function getReviewEmailHtml(firstName: string): string {
           <!-- Logo -->
           <tr>
             <td style="text-align:center; padding-bottom:30px;">
-              <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width:200px; height:auto;" />
+              <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width:200px; height:auto;" />
             </td>
           </tr>
           

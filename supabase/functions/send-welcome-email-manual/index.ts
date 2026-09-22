@@ -548,7 +548,7 @@ const handler = async (req: Request): Promise<Response> => {
     const termsUrl = 'https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/terms/terms-and-conditions-v3.1-2026-02.pdf';
 
     // Define login URL for customer portal
-    const loginUrl = 'https://buyawarranty.co.uk/auth';
+    const loginUrl = 'https://www.pandaprotect.co.uk/auth';
 
     // Registration plate styling - UK-style yellow background with black text
     const regPlate = customerDetails?.registration_plate || 'N/A';
@@ -589,7 +589,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailPayload = {
       from: resendFrom,
       to: [customer.email],
-      bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'],
+      bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'],
       subject: emailSubject,
       ...(attachments.length > 0 && { attachments }),
       html: `
@@ -597,7 +597,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
+            <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
           </div>
 
           <div style="margin-bottom: 30px;">
@@ -665,7 +665,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="margin-bottom: 15px;">
-              <strong>Login:</strong> <a href="https://buyawarranty.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
+              <strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
             </p>
             
             <ul style="list-style: none; padding: 0; margin: 0;">
@@ -686,7 +686,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="margin-bottom: 15px;">
-              <strong>Login:</strong> <a href="https://buyawarranty.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
+              <strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/customer-dashboard" style="color: #ff6b35; text-decoration: none;">Customer Dashboard</a>
             </p>
             
             <p style="color: #333;">
@@ -759,7 +759,7 @@ const handler = async (req: Request): Promise<Response> => {
           </div>
 
           <div style="text-align: center; border-top: 1px solid #dee2e6; padding-top: 20px;">
-            <p style="color: #333; margin-bottom: 10px; font-weight: bold;">buyawarranty.co.uk</p>
+            <p style="color: #333; margin-bottom: 10px; font-weight: bold;">pandaprotect.co.uk</p>
             <p style="color: #666; margin-bottom: 15px; font-style: italic;">Your trusted warranty partner</p>
             
             <hr style="border: none; border-top: 1px solid #dee2e6; margin: 20px 0;">
@@ -817,7 +817,7 @@ const handler = async (req: Request): Promise<Response> => {
           ok: false, 
           rid,
           code: 'DOMAIN_VERIFICATION_REQUIRED', 
-          error: 'Resend domain verification required. Please verify buyawarranty.co.uk domain at resend.com/domains or contact support.',
+          error: 'Resend domain verification required. Please verify pandaprotect.co.uk domain at resend.com/domains or contact support.',
           details: {
             status: emailResponse.status,
             message: errorMsg,

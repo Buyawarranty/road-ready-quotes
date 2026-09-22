@@ -85,7 +85,7 @@ serve(async (req) => {
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: 'https://buyawarranty.co.uk/reset-password'
+        redirectTo: 'https://www.pandaprotect.co.uk/reset-password'
       }
     });
 
@@ -97,7 +97,7 @@ serve(async (req) => {
     logStep('Generated reset link successfully', { hasActionLink: !!resetData?.properties?.action_link });
 
     // Use the generated action link for the reset
-    const resetLink = resetData?.properties?.action_link || `https://mzlpuxzwyrcyrgrongeb.supabase.co/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent('https://buyawarranty.co.uk/reset-password')}`;
+    const resetLink = resetData?.properties?.action_link || `https://mzlpuxzwyrcyrgrongeb.supabase.co/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent('https://www.pandaprotect.co.uk/reset-password')}`;
     
     // Send branded email
     const emailHtml = `
@@ -117,7 +117,7 @@ serve(async (req) => {
                 <!-- Header -->
                 <tr>
                   <td style="background: linear-gradient(135deg, #2563eb 0%, #f97316 100%); padding: 30px; text-align: center;">
-                    <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Buy-A-Warranty" style="height: 60px; width: auto;">
+                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Buy-A-Warranty" style="height: 60px; width: auto;">
                   </td>
                 </tr>
 
@@ -167,7 +167,7 @@ serve(async (req) => {
                 <!-- Footer -->
                 <tr>
                   <td style="background-color: #f8f9fa; padding: 25px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
-                    <p style="color: #2563eb; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">buyawarranty.co.uk</p>
+                    <p style="color: #2563eb; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">pandaprotect.co.uk</p>
                     <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">Your trusted warranty partner</p>
                     
                     <div style="color: #6b7280; font-size: 13px; line-height: 1.6;">
@@ -192,7 +192,7 @@ serve(async (req) => {
       await resend.emails.send({
         from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
         to: [email],
-        subject: 'Reset Your BuyaWarranty Portal Password',
+        subject: 'Reset Your Panda Protect Portal Password',
         html: emailHtml,
       });
 

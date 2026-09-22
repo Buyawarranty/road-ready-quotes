@@ -129,7 +129,7 @@ serve(async (req) => {
                         <strong>Temporary Password:</strong> <span style="color: #dc2626; font-weight: bold;">${tempPassword}</span>
                     </div>
                     <div>
-                        <strong>Dashboard URL:</strong> <a href="https://pricing.buyawarranty.co.uk/admin" style="color: #1e40af;">https://pricing.buyawarranty.co.uk/admin</a>
+                        <strong>Dashboard URL:</strong> <a href="https://pricing.pandaprotect.co.uk/admin" style="color: #1e40af;">https://pricing.pandaprotect.co.uk/admin</a>
                     </div>
                 </div>
             </div>
@@ -169,7 +169,7 @@ Your admin dashboard password has been reset. You can now log in using the tempo
 Login Details:
 Email: ${email}
 Temporary Password: ${tempPassword}
-Dashboard URL: https://pricing.buyawarranty.co.uk/admin
+Dashboard URL: https://pricing.pandaprotect.co.uk/admin
 
 IMPORTANT SECURITY NOTICE:
 - This is a temporary password. Please change it after logging in.
@@ -182,7 +182,7 @@ Panda Protect IT Administration Team`;
     const emailResponse = await resend.emails.send({
       from: "Panda Protect Team <support@pandaprotect.co.uk>",
       to: [email],
-      subject: "🔐 Admin Password Reset - BuyaWarranty",
+      subject: "🔐 Admin Password Reset - Panda Protect",
       html: emailHtml,
       text: textVersion,
       headers: {

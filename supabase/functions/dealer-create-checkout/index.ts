@@ -239,7 +239,7 @@ Deno.serve(async (req: Request) => {
     }
     const pendingCustomerId = result.id;
 
-    const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
+    const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],

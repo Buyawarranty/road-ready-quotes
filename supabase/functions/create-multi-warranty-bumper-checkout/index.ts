@@ -108,7 +108,7 @@ serve(async (req) => {
       });
     }
 
-    const origin = req.headers.get("origin") || "https://buyawarranty.com";
+    const origin = req.headers.get("origin") || "https://www.pandaprotect.co.uk";
     
     // Create product description for all warranties
     const productDescription = items.map((item: any, index: number) => ({

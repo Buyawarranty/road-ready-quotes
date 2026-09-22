@@ -641,7 +641,7 @@ serve(async (req) => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${credentials}`,
-        'User-Agent': 'BuyAWarranty-Integration/1.0',
+        'User-Agent': 'Panda Protect-Integration/1.0',
         'Accept': 'application/json, text/plain, */*',
       },
       body: JSON.stringify(w2000Data),

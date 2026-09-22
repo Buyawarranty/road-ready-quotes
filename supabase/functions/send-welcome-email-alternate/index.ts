@@ -203,7 +203,7 @@ serve(async (req) => {
                 </div>
                 
                 <p style="text-align: center;">
-                    <a href="https://buyawarranty.co.uk/customer-dashboard" class="button">Access Your Dashboard</a>
+                    <a href="https://www.pandaprotect.co.uk/customer-dashboard" class="button">Access Your Dashboard</a>
                 </p>
                 
                 <p>If you have any questions about your coverage, please don't hesitate to contact our support team.</p>

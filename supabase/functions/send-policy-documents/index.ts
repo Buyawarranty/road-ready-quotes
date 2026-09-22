@@ -426,7 +426,7 @@ serve(async (req) => {
         month: '2-digit', 
         year: 'numeric' 
       }),
-      loginUrl: "https://buyawarranty.co.uk/customer-dashboard",
+      loginUrl: "https://www.pandaprotect.co.uk/customer-dashboard",
       loginEmail: recipientEmail,
       isFutureActivation: isFutureActivation ? 'true' : 'false',
       ...(await getCustomerCredentials(supabaseClient, recipientEmail, policyNumber))

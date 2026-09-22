@@ -95,7 +95,7 @@ serve(async (req) => {
       .maybeSingle();
 
     // Prepare email content
-    const loginUrl = "https://buyawarranty.co.uk/customer-dashboard";
+    const loginUrl = "https://www.pandaprotect.co.uk/customer-dashboard";
     const supportEmail = "support@pandaprotect.co.uk";
     
     const emailHtml = `

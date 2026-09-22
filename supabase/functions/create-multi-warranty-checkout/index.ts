@@ -147,8 +147,8 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: "payment",
-      success_url: `${req.headers.get("origin") || 'https://buyawarranty.co.uk'}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin") || 'https://buyawarranty.co.uk'}/?step=cart`,
+      success_url: `${req.headers.get("origin") || 'https://www.pandaprotect.co.uk'}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin") || 'https://www.pandaprotect.co.uk'}/?step=cart`,
       discounts: coupon ? [{ coupon }] : undefined,
       // Add customer or customer_email but not both
       ...(customerId ? { customer: customerId } : { customer_email: customerData.email }),

@@ -81,7 +81,7 @@ serve(async (req) => {
               
               <!-- Login Button -->
               <div style="text-align: center; margin: 32px 0;">
-                <a href="https://buyawarranty.co.uk/customer-dashboard/" style="display: inline-block; background-color: #e07a3a; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                <a href="https://www.pandaprotect.co.uk/customer-dashboard/" style="display: inline-block; background-color: #e07a3a; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
                   Log In to Your Dashboard
                 </a>
               </div>

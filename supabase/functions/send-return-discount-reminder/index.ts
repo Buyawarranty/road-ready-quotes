@@ -91,7 +91,7 @@ const handler = async (req: Request): Promise<Response> => {
 
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 40px 0 30px;">
-                        <a href="https://buyawarranty.co.uk?returnDiscount=true&code=${discountCode}" 
+                        <a href="https://www.pandaprotect.co.uk?returnDiscount=true&code=${discountCode}" 
                            style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                           ${isUrgency ? 'Claim Your 20% Discount' : 'Get Your Warranty Now'}
                         </a>

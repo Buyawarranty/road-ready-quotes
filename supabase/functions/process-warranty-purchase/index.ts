@@ -230,7 +230,7 @@ const handler = async (req: Request): Promise<Response> => {
           warranty_number: policy.warranty_number,
           policy_start_date: new Date(policy.policy_start_date).toLocaleDateString('en-GB'),
           policy_end_date: new Date(policy.policy_end_date).toLocaleDateString('en-GB'),
-          secure_download_link: `https://buyawarranty.co.uk/download-policy/${policy.id}`
+          secure_download_link: `https://www.pandaprotect.co.uk/download-policy/${policy.id}`
         };
 
         // Prepare PDF attachment (simplified - you'll need to implement actual PDF retrieval)
