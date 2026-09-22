@@ -214,7 +214,8 @@ const MakeAClaim: React.FC = () => {
                     <Ban className="h-4.5 w-4.5" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1.5">No refund after submitting</h4>
+                    <h4 className="text-base sm:text-lg font-semibold text-foreground mb-1.5">No refund after submitting</h4>
+
                     <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                       Once you submit a claim, your warranty will no longer be eligible for
                       cancellation or refund. Our claims team begins reviewing your case straight
@@ -231,7 +232,8 @@ const MakeAClaim: React.FC = () => {
                     <ShieldCheck className="h-4.5 w-4.5" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground mb-1.5">Your cover stays active</h4>
+                    <h4 className="text-base sm:text-lg font-semibold text-foreground mb-1.5">Your cover stays active</h4>
+
                     <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                       This is standard practice across the warranty industry and is outlined in your
                       policy terms. Your warranty cover will continue as normal for the remainder of
@@ -247,9 +249,10 @@ const MakeAClaim: React.FC = () => {
                     <Headphones className="h-4.5 w-4.5" />
                   </div>
                   <div className="min-w-0">
-                    <h4 className="font-semibold text-foreground mb-1.5">
+                    <h4 className="text-base sm:text-lg font-semibold text-foreground mb-1.5">
                       Not sure? We&apos;re here to help
                     </h4>
+
                     <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-3">
                       Our friendly team can answer any questions before you proceed.
                     </p>
@@ -269,7 +272,7 @@ const MakeAClaim: React.FC = () => {
               </div>
 
               {/* Important documents */}
-              <h4 className="font-semibold text-foreground mb-1">Important documents</h4>
+              <h4 className="text-base sm:text-lg font-semibold text-foreground mb-1">Important documents</h4>
               <p className="text-muted-foreground text-sm mb-4">
                 Please review the relevant documents before submitting your claim.
               </p>
@@ -356,9 +359,10 @@ const MakeAClaim: React.FC = () => {
         <section className="py-16 sm:py-20 bg-muted/30">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionKicker>Your repair limit</SectionKicker>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-5">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-5">
               Clear limits, no surprises
             </h2>
+
             <div className="space-y-4 text-muted-foreground text-base leading-relaxed max-w-2xl mb-8">
               <p>
                 Your maximum repair limit is clearly outlined in your warranty email and visible in
@@ -384,9 +388,10 @@ const MakeAClaim: React.FC = () => {
         <section className="py-16 sm:py-20">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <SectionKicker>Get in touch</SectionKicker>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">
               Talk to our claims team
             </h2>
+
 
             <div className="grid sm:grid-cols-2 gap-4">
               <a
@@ -396,7 +401,7 @@ const MakeAClaim: React.FC = () => {
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                   <Mail className="h-5 w-5" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1">Email us</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Email us</h3>
                 <p className="text-muted-foreground text-sm mb-3">Send your claim details</p>
                 <p className="font-semibold text-foreground text-sm break-all group-hover:text-primary transition-colors">
                   {CLAIMS_EMAIL}
@@ -409,7 +414,7 @@ const MakeAClaim: React.FC = () => {
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                   <Phone className="h-5 w-5" />
                 </div>
-                <h3 className="font-semibold text-foreground mb-1">Call us</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Call us</h3>
                 <p className="text-muted-foreground text-sm mb-3">Mon-Fri, 9am-5pm</p>
                 <p className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">
                   {CLAIMS_PHONE}
