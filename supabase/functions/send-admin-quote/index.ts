@@ -446,7 +446,7 @@ const handler = async (req: Request): Promise<Response> => {
                               Claims Line: <a href="tel:03302295045" style="color: #ea580c; text-decoration: none; font-weight: 500;">0330 229 5045</a>
                             </p>
                             <p style="font-size: 13px; color: #94a3b8; margin: 0;">
-                              <a href="https://buyawarranty.co.uk" style="color: #ea580c; text-decoration: none;">buyawarranty.co.uk</a>
+                              <a href="https://www.pandaprotect.co.uk" style="color: #ea580c; text-decoration: none;">pandaprotect.co.uk</a>
                             </p>
                           </td>
                         </tr>
