@@ -711,11 +711,6 @@
   background: hsl(var(--marketing-surface) / 0.1);
 }
 
-.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child > div:first-child {
-  border-color: hsl(var(--marketing-surface) / 0.22);
-  box-shadow: 0 24px 56px hsl(220 35% 7% / 0.3);
-}
-
 
 .public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
   border: 1px solid hsl(var(--marketing-surface) / 0.18);
@@ -795,13 +790,6 @@
   background: hsl(var(--marketing-canvas));
   color: hsl(var(--marketing-copy));
 }
-
-/* Dashboard mockup frame */
-.public-dealer-home > section:first-of-type > div > div:first-child > div:last-child > div:first-child {
-  border: 1px solid hsl(var(--marketing-line));
-  box-shadow: 0 24px 56px hsl(var(--marketing-ink) / 0.12);
-}
-
 
 /* Benefit cards row */
 .public-dealer-home > section:first-of-type > div > div:nth-child(3) > div {
