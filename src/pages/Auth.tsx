@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { currentBrandKey } from '@/lib/brand';
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -291,7 +292,7 @@ const Auth = () => {
       // Send a branded welcome / confirmation email straight to the
       // address the person registered with.
       supabase.functions
-        .invoke('send-signup-confirmation', { body: { email } })
+        .invoke('send-signup-confirmation', { body: { email, brand: currentBrandKey() } })
         .then(({ error: mailError }) => {
           if (mailError) console.error('Signup welcome email failed:', mailError);
         })
@@ -328,7 +329,7 @@ const Auth = () => {
 
       // Use our custom branded password reset email
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email: resetEmail }
+        body: { email: resetEmail, brand: currentBrandKey() }
       });
 
       if (error || data?.success === false) {
