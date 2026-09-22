@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { Plus, Search, Trash2, ArrowRight, Check } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STEP_PATHS: Record<number, string> = {
@@ -128,6 +128,37 @@ const DealerQuotesList = () => {
     return Number.isFinite(number) && number > 0 ? `${number.toLocaleString('en-GB')} miles` : null;
   };
 
+  const warrantyType = (q: any) => {
+    const options = q.plan_options && typeof q.plan_options === 'object' ? q.plan_options : {};
+    const savedType = String(options.warranty_type || options.warrantyType || '').toLowerCase();
+    const planType = String(q.plan_type || '').toLowerCase();
+
+    if (savedType === 'dealer-paid' || planType === 'basic') {
+      return {
+        label: 'Dealer-Paid Warranty',
+        detail: 'Claim management only · You pay the repair bill',
+        Icon: ClipboardCheck,
+        tone: 'border-crm-blue/30 bg-crm-blue-soft text-crm-navy',
+      };
+    }
+
+    if (savedType === 'fully-covered' || ['gold', 'platinum', 'premium'].includes(planType)) {
+      return {
+        label: 'Fully Covered Warranty',
+        detail: 'Comprehensive cover · We handle claims and pay for repairs',
+        Icon: ShieldCheck,
+        tone: 'border-crm-green/30 bg-crm-green-soft text-crm-navy',
+      };
+    }
+
+    return {
+      label: 'Warranty not selected',
+      detail: 'Resume this quote to choose the warranty type',
+      Icon: ShieldCheck,
+      tone: 'border-crm-line bg-muted text-crm-navy',
+    };
+  };
+
   const formatDateTime = (d: string) => {
     const date = new Date(d);
     return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
@@ -187,7 +218,10 @@ const DealerQuotesList = () => {
             </p>
           </div>
         ) : (
-          filtered.map((q: any) => (
+          filtered.map((q: any) => {
+            const warranty = warrantyType(q);
+            const WarrantyIcon = warranty.Icon;
+            return (
             <div
               key={q.id}
               className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
@@ -240,6 +274,13 @@ const DealerQuotesList = () => {
                       <span className="text-gray-700">{q.customer_name}</span>
                     </p>
                   )}
+                  <div className={`mt-3 inline-flex max-w-full items-start gap-2 rounded-md border px-3 py-2 ${warranty.tone}`}>
+                    <WarrantyIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-extrabold">{warranty.label}</p>
+                      <p className="mt-0.5 text-xs font-medium leading-snug">{warranty.detail}</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Right: price + actions */}
@@ -268,7 +309,8 @@ const DealerQuotesList = () => {
                 </div>
               </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
     </DealerLayout>
