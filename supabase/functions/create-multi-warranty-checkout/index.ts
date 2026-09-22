@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,7 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { items, customerData, discountCode, originalAmount, finalAmount, trackingData } = await req.json();
+    const body = await req.json();
+    const { items, customerData, discountCode, originalAmount, finalAmount, trackingData } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
 
     // Validate vehicle age for all items (must be 15 years or newer)
     for (const item of items) {
@@ -147,8 +150,8 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: "payment",
-      success_url: `${req.headers.get("origin") || 'https://www.pandaprotect.co.uk'}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get("origin") || 'https://www.pandaprotect.co.uk'}/?step=cart`,
+      success_url: `${req.headers.get("origin") || brand.siteUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get("origin") || brand.siteUrl}/?step=cart`,
       discounts: coupon ? [{ coupon }] : undefined,
       // Add customer or customer_email but not both
       ...(customerId ? { customer: customerId } : { customer_email: customerData.email }),
@@ -171,6 +174,7 @@ serve(async (req) => {
         discount_code: discountCode || "",
         gclid: trackingData?.gclid || "",
         ga_client_id: trackingData?.clientId || "",
+        brand: brand.key,
       },
       // Store essential data in session metadata (Stripe has 500 char limit per field)
       payment_intent_data: {

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
 import { Resend } from 'https://esm.sh/resend@2.0.0';
+import { resolveBrand, brandFrom } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -64,8 +65,11 @@ serve(async (req) => {
       );
     }
 
-    const { adminEmail, changeType, changedAt }: NotificationRequest = await req.json();
+    const requestBody = await req.json();
+    const { adminEmail, changeType, changedAt }: NotificationRequest = requestBody;
     logStep('Request data', { adminEmail, changeType, changedAt });
+
+    const brand = resolveBrand(req, { brand: (requestBody as any)?.brand });
 
     if (!adminEmail || !changeType) {
       return new Response(
@@ -86,7 +90,7 @@ serve(async (req) => {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background-color: #f97316; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .header { background-color: ${brand.accentColor}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
           .content { background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
           .alert-box { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
           .info-row { margin: 10px 0; }
@@ -124,8 +128,8 @@ serve(async (req) => {
             </p>
             
             <div class="footer">
-              <p>This is an automated security notification from Panda Protect Admin System</p>
-              <p>© ${new Date().getFullYear()} Buy a Warranty. All rights reserved.</p>
+              <p>This is an automated security notification from ${brand.name} Admin System</p>
+              <p>© ${new Date().getFullYear()} ${brand.name}. All rights reserved.</p>
             </div>
           </div>
         </div>
@@ -145,13 +149,13 @@ serve(async (req) => {
       
       If you did not authorize this change or if this activity seems suspicious, please investigate immediately.
       
-      This is an automated security notification from Panda Protect Admin System
+      This is an automated security notification from ${brand.name} Admin System
     `;
 
     logStep('Sending notification email');
     const emailResponse = await resend.emails.send({
-      from: 'Panda Protect Team <support@pandaprotect.co.uk>',
-      to: ['info@pandaprotect.co.uk'],
+      from: brandFrom(brand, 'Team', 'support'),
+      to: [brand.infoEmail],
       subject: emailSubject,
       html: emailHtml,
       text: emailText,
@@ -174,7 +178,7 @@ serve(async (req) => {
     await supabaseClient
       .from('email_logs')
       .insert({
-        recipient_email: 'info@pandaprotect.co.uk',
+        recipient_email: brand.infoEmail,
         subject: emailSubject,
         content: emailHtml,
         status: 'sent',

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -108,6 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
       country: 'United Kingdom',
       voluntary_excess: vehicleDetails?.voluntaryExcess ?? vehicleDetails?.voluntary_excess ?? 0,
       seasonal_bonus_months: seasonalBonusMonths || vehicleDetails?.seasonalBonusMonths || 0,
+      brand: resolveBrand(req).key,
       ...(vehicleDetails || {})
     };
 

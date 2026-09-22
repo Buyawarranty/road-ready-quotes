@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { brandKeyFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -145,7 +146,8 @@ serve(async (req) => {
       // Seasonal bonus
       seasonal_bonus_months: protectionAddOns.seasonalBonusMonths || 0,
       // Customer date of birth for identity verification
-      customer_dob: customerData.customer_dob || null
+      customer_dob: customerData.customer_dob || null,
+      brand: brandKeyFrom(transaction?.brand) ?? 'buyawarranty'
     };
 
     // CRITICAL: Check for duplicate by email + reg plate before inserting

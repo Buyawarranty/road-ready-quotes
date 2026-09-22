@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,7 +18,9 @@ serve(async (req) => {
   }
 
   try {
-    const { quoteId, customerName, customerEmail, vehicleReg, issueMessage } = await req.json();
+    const requestBody = await req.json();
+    const { quoteId, customerName, customerEmail, vehicleReg, issueMessage } = requestBody;
+    const brand = resolveBrand(req, { brand: requestBody?.brand });
 
     logStep("Received flag request", { quoteId, customerName, vehicleReg });
 
@@ -94,7 +97,7 @@ serve(async (req) => {
           </div>
           <div style="padding: 16px 24px; background: #f9fafb; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; border-top: 0;">
             <p style="margin: 0; font-size: 12px; color: #6b7280;">
-              This is an automated alert from Panda Protect. Log in to the admin dashboard to resolve this issue.
+              This is an automated alert from ${brand.name}. Log in to the admin dashboard to resolve this issue.
             </p>
           </div>
         </div>
@@ -102,12 +105,12 @@ serve(async (req) => {
 
       try {
         await resend.emails.send({
-          from: "Panda Protect Alerts <alerts@notify.pandaprotect.co.uk>",
-          to: ["support@pandaprotect.co.uk"],
+          from: brandFrom(brand, "Alerts", "alerts"),
+          to: [brand.supportEmail],
           subject,
           html: htmlContent,
         });
-        logStep("Alert email sent to support@pandaprotect.co.uk");
+        logStep(`Alert email sent to ${brand.supportEmail}`);
       } catch (emailError) {
         logStep("Failed to send email (non-blocking)", { error: String(emailError) });
       }

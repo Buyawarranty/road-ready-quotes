@@ -2,6 +2,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -34,6 +35,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { planName, paymentType, voluntaryExcess = 0, vehicleData, customerData, discountCode, finalAmount, addAnotherWarrantyRequested, protectionAddOns, claimLimit, trackingData } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
     logStep("Request data", { planName, paymentType, voluntaryExcess, discountCode, finalAmount, protectionAddOns, hasGclid: !!trackingData?.gclid });
 
     // Validate vehicle age (must be 15 years or newer)
@@ -176,7 +178,7 @@ serve(async (req) => {
       logStep("Existing customer found", { customerId });
     }
 
-    const origin = req.headers.get("origin") || "https://pricing.pandaprotect.co.uk";
+    const origin = req.headers.get("origin") || brand.siteUrl;
     
     // Prepare session creation options
     const sessionOptions: any = {
@@ -263,7 +265,8 @@ serve(async (req) => {
         addon_consequential: protectionAddOns?.consequential ? 'true' : 'false',
         // Google Ads tracking data
         gclid: trackingData?.gclid || '',
-        ga_client_id: trackingData?.clientId || ''
+        ga_client_id: trackingData?.clientId || '',
+        brand: brand.key
       },
       automatic_tax: { enabled: false },
       billing_address_collection: 'required',

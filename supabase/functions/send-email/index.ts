@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -31,7 +32,7 @@ const markdownToHtml = (text: string): string => {
 };
 
 // Build a generic HTML email wrapper from template content
-const buildTemplateHtml = (greeting: string, content: string, recipientEmail: string, variables: Record<string, string>): string => {
+const buildTemplateHtml = (greeting: string, content: string, recipientEmail: string, variables: Record<string, string>, brand: Brand): string => {
   // Replace template variables like {{customerFirstName}}
   let processedGreeting = greeting || 'Hi there,';
   let processedContent = content || '';
@@ -50,8 +51,8 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
     'policyNumber': variables?.policyNumber || '',
     'planType': variables?.planType || '',
     'vehicleReg': variables?.vehicleReg || '',
-    'portalUrl': variables?.portalUrl || 'https://www.pandaprotect.co.uk/customer-dashboard',
-    'renewalUrl': variables?.renewalUrl || 'https://www.pandaprotect.co.uk',
+    'portalUrl': variables?.portalUrl || `${brand.siteUrl}/customer-dashboard`,
+    'renewalUrl': variables?.renewalUrl || brand.siteUrl,
     'expiryDate': variables?.expiryDate || '',
   };
   
@@ -88,7 +89,7 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
 <body>
   <div class="container">
     <div class="logo-header">
-      <img src="https://mzlpuxzwyrcyrgrongeb.supabase.co/storage/v1/object/public/policy-documents/buy-a-warranty-logo.png" alt="Panda Protect" />
+      <img src="${brand.logoUrl}" alt="${brand.name}" />
     </div>
     <div class="content">
       <p class="greeting">${processedGreeting}</p>
@@ -97,21 +98,21 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
       </div>
       <div class="contact-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Need help?</p>
-        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> support@pandaprotect.co.uk | 0330 229 5040</p>
-        <p style="margin: 4px 0;"><strong>Claims:</strong> claims@pandaprotect.co.uk | 0330 229 5045</p>
+        <p style="margin: 4px 0;"><strong>Sales & Support:</strong> ${brand.supportEmail} | ${brand.quotePhone}</p>
+        <p style="margin: 4px 0;"><strong>Claims:</strong> ${brand.claimsEmail} | ${brand.claimsPhone}</p>
         <p style="margin: 4px 0; color: #666;">Monday to Friday, 9am – 5:30pm</p>
       </div>
       <div class="trustpilot-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Trusted by thousands of drivers</p>
         <div class="trustpilot-stars">★★★★★</div>
         <p style="margin: 8px 0 4px; font-size: 14px; color: #333;"><strong>Excellent</strong> on Trustpilot</p>
-        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" style="color: #00b67a;">trustpilot.com</a></p>
+        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="${brand.trustpilotUrl}" style="color: #00b67a;">trustpilot.com</a></p>
       </div>
     </div>
     <div class="footer">
-      <p><strong>Panda Protect Ltd</strong> | Protecting Your Journey</p>
+      <p><strong>${brand.legalName}</strong> | Protecting Your Journey</p>
       <p>This email was sent to ${recipientEmail}</p>
-      <p>&copy; ${new Date().getFullYear()} Panda Protect. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} ${brand.name}. All rights reserved.</p>
     </div>
   </div>
 </body>

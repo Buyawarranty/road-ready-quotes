@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import Stripe from "https://esm.sh/stripe@14.21.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -102,6 +103,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { accessToken, paymentMethod, customerData: providedCustomerData, discountCode } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
 
     logStep("Request data", { 
       accessToken: accessToken?.substring(0, 8) + '...', 
@@ -173,7 +175,7 @@ serve(async (req) => {
       })
       .eq('id', quote.id);
 
-    const origin = "https://www.pandaprotect.co.uk";
+    const origin = brand.siteUrl;
 
     if (paymentMethod === 'stripe') {
       // Create Stripe checkout session
@@ -277,7 +279,8 @@ serve(async (req) => {
           claim_limit: (quote.claim_limit || 1250).toString(),
           excess_amount: (quote.excess_amount || 75).toString(),
           labour_rate: (quote.labour_rate || 70).toString(),
-          discount_code: discountCode || ''
+          discount_code: discountCode || '',
+          brand: brand.key
         }
       };
 

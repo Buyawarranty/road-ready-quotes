@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -183,6 +184,7 @@ serve(async (req) => {
           assigned_to: assigneeId,
           payment_confirmed_by: assigneeId,
           warranty_reference_number: warrantyReference,
+          brand: resolveBrand(req).key,
           ...(address && !skipAddressDetails && {
             building_number: address.buildingNumber,
             street: address.street,
@@ -228,6 +230,7 @@ serve(async (req) => {
           warranty_reference_number: warrantyReference,
           signup_date: startDate.toISOString(),
           purchase_source: 'admin_external',
+          brand: resolveBrand(req).key,
           ...(address && !skipAddressDetails && {
             building_number: address.buildingNumber,
             street: address.street,

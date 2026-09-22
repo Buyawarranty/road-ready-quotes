@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -43,7 +44,7 @@ const formatCurrency = (amount: number): string => {
   }).format(amount || 0);
 };
 
-const generateEmailHTML = (invoices: InvoiceData[]): string => {
+const generateEmailHTML = (invoices: InvoiceData[], brand: Brand): string => {
   const totalAmount = invoices.reduce((sum, inv) => sum + (inv.amount || 0), 0);
   const invoiceCount = invoices.length;
   
@@ -65,21 +66,21 @@ const generateEmailHTML = (invoices: InvoiceData[]): string => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 700px; margin: 0 auto; padding: 20px;">
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #f97316; padding-bottom: 20px;">
-        <img src="https://www.pandaprotect.co.uk/lovable-uploads/e4a0c8c7-1d74-4e55-a556-1b513ba12cc8.png" alt="Panda Protect" style="max-width: 200px; height: auto;" />
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid ${brand.accentColor}; padding-bottom: 20px;">
+        <img src="${brand.logoUrl}" alt="${brand.name}" style="max-width: 200px; height: auto;" />
       </div>
       
-      <h1 style="color: #f97316; font-size: 24px; margin-bottom: 20px;">Invoice${invoiceCount > 1 ? 's' : ''} Attached</h1>
+      <h1 style="color: ${brand.accentColor}; font-size: 24px; margin-bottom: 20px;">Invoice${invoiceCount > 1 ? 's' : ''} Attached</h1>
       
       <p style="font-size: 14px; color: #666; margin-bottom: 20px;">
-        Please find attached ${invoiceCount} invoice${invoiceCount > 1 ? 's' : ''} from Panda Protect.
+        Please find attached ${invoiceCount} invoice${invoiceCount > 1 ? 's' : ''} from ${brand.name}.
       </p>
       
       <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
-        <h3 style="color: #f97316; margin-top: 0; font-size: 16px;">Invoice Summary</h3>
+        <h3 style="color: ${brand.accentColor}; margin-top: 0; font-size: 16px;">Invoice Summary</h3>
         <table style="width: 100%; border-collapse: collapse;">
           <thead>
-            <tr style="background: #f97316;">
+            <tr style="background: ${brand.accentColor};">
               <th style="padding: 12px; text-align: left; color: white; font-size: 12px;">Invoice #</th>
               <th style="padding: 12px; text-align: left; color: white; font-size: 12px;">Customer</th>
               <th style="padding: 12px; text-align: left; color: white; font-size: 12px;">Registration</th>
@@ -93,7 +94,7 @@ const generateEmailHTML = (invoices: InvoiceData[]): string => {
           <tfoot>
             <tr style="background: #f3f4f6;">
               <td colspan="4" style="padding: 12px; font-weight: bold; font-size: 14px;">Total</td>
-              <td style="padding: 12px; font-weight: bold; font-size: 14px; text-align: right; color: #f97316;">${formatCurrency(totalAmount)}</td>
+              <td style="padding: 12px; font-weight: bold; font-size: 14px; text-align: right; color: ${brand.accentColor};">${formatCurrency(totalAmount)}</td>
             </tr>
           </tfoot>
         </table>
@@ -110,9 +111,9 @@ const generateEmailHTML = (invoices: InvoiceData[]): string => {
       </div>
       
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center; color: #666; font-size: 12px;">
-        <p style="margin: 5px 0;"><strong>Panda Protect</strong></p>
-        <p style="margin: 5px 0;">pandaprotect.co.uk</p>
-        <p style="margin: 5px 0;">support@pandaprotect.co.uk | 0330 229 5040</p>
+        <p style="margin: 5px 0;"><strong>${brand.name}</strong></p>
+        <p style="margin: 5px 0;">${brand.domain}</p>
+        <p style="margin: 5px 0;">${brand.supportEmail} | ${brand.quotePhone}</p>
       </div>
     </body>
     </html>
@@ -128,7 +129,9 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     logStep("Starting send-invoice-email function");
     
-    const { recipientEmail, invoices, subject }: SendInvoiceRequest = await req.json();
+    const body: SendInvoiceRequest & { brand?: string } = await req.json();
+    const { recipientEmail, invoices, subject } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
     
     logStep("Received request", { 
       recipientEmail, 
@@ -145,7 +148,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Generate email HTML
-    const emailHtml = generateEmailHTML(invoices);
+    const emailHtml = generateEmailHTML(invoices, brand);
     
     // Create attachments from invoice HTML using btoa for base64 encoding
     const attachments = invoices.map(invoice => ({
@@ -166,9 +169,9 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Panda Protect <hello@pandaprotect.co.uk>",
+        from: brandFrom(brand, "", "hello"),
         to: [recipientEmail],
-        subject: subject || `Invoice from Panda Protect`,
+        subject: subject || `Invoice from ${brand.name}`,
         html: emailHtml,
         attachments: attachments.map(att => ({
           filename: att.filename,

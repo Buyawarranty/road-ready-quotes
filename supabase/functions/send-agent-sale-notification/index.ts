@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,11 +24,14 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { leadId, agentId } = await req.json();
+    const requestBody = await req.json();
+    const { leadId, agentId } = requestBody;
 
     if (!leadId) {
       throw new Error("leadId is required");
     }
+
+    let brand = resolveBrand(req, { brand: requestBody?.brand });
 
     // Fetch lead details
     const { data: lead, error: leadError } = await supabase
@@ -58,11 +62,13 @@ serve(async (req: Request) => {
     // Check for customer record to get more details
     const { data: customer } = await supabase
       .from("customers")
-      .select("*, plan_type, final_amount, payment_type, registration_plate, vehicle_make, vehicle_model")
+      .select("*, plan_type, final_amount, payment_type, registration_plate, vehicle_make, vehicle_model, brand")
       .ilike("email", lead.email)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    brand = resolveBrand(req, { brand: requestBody?.brand, record: customer });
 
     // Check for policy to get warranty number
     const { data: policy } = await supabase
@@ -152,8 +158,8 @@ serve(async (req: Request) => {
 
     const resend = new Resend(resendApiKey);
     await resend.emails.send({
-      from: "Panda Protect Team <notifications@pandaprotect.co.uk>",
-      to: ["info@pandaprotect.co.uk", "accounts@pandaprotect.co.uk"],
+      from: brandFrom(brand, "Team", "notifications"),
+      to: [brand.infoEmail, `accounts@${brand.domain}`],
       subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValueDisplay} - Converted by ${agentName}`,
       html: emailHtml,
     });

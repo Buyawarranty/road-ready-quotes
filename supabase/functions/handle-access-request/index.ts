@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,6 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const body = await req.json() as Partial<AccessRequestBody>;
     const normalizedEmail = body.email?.trim().toLowerCase();
+    const brand = resolveBrand(req, { brand: (body as any)?.brand });
 
     console.log("Request body:", {
       ...body,
@@ -133,8 +135,8 @@ const handler = async (req: Request): Promise<Response> => {
       
       try {
         await resend.emails.send({
-          from: "Panda Protect <noreply@pandaprotect.co.uk>",
-          to: ["hello@pandaprotect.co.uk"],
+          from: brandFrom(brand, "", "noreply"),
+          to: [brand.helloEmail],
           reply_to: normalizedEmail,
           subject: `New Access Request from ${body.fullName.trim()} (${ROLE_LABELS[body.requestedRole.trim()] || body.requestedRole.trim()})`,
           html: `
@@ -149,7 +151,7 @@ const handler = async (req: Request): Promise<Response> => {
               <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Reason:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${escapeHtml(body.reason)}</td></tr>
             </table>
             <p style="margin-top: 20px;">
-              <a href="https://pricing.pandaprotect.co.uk/admin-dashboard" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
+              <a href="${brand.siteUrl}/admin-dashboard" style="background-color: ${brand.accentColor}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
                 Review in Admin Dashboard
               </a>
             </p>

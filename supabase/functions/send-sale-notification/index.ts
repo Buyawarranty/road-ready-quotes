@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -23,14 +24,17 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    const requestBody = await req.json();
     const {
       customerName, customerEmail, customerPhone,
       regPlate, planName, saleValue, paymentMethod,
       warrantyReference, vehicleMake, vehicleModel,
       agentId, agentName: providedAgentName, saleSource
-    } = await req.json();
+    } = requestBody;
 
     if (!customerEmail) throw new Error("customerEmail is required");
+
+    const brand = resolveBrand(req, { brand: requestBody?.brand });
 
     const saleValueDisplay = saleValue ? `£${Number(saleValue).toFixed(2)}` : 'N/A';
     const reg = regPlate || 'Unknown';
@@ -150,8 +154,8 @@ serve(async (req: Request) => {
       : `New Sale ${saleType}`;
 
     await resend.emails.send({
-      from: "Panda Protect Team <notifications@pandaprotect.co.uk>",
-      to: ["info@pandaprotect.co.uk", "accounts@pandaprotect.co.uk"],
+      from: brandFrom(brand, "Team", "notifications"),
+      to: [brand.infoEmail, `accounts@${brand.domain}`],
       subject: `${subjectPrefix}: ${reg} - ${plan} - ${saleValueDisplay} via ${payment}${isAgentSale ? ` - Converted by ${resolvedAgentName}` : ''}`,
       html: salesEmailHtml,
     });

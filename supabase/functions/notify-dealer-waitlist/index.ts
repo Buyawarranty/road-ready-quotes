@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,8 +21,6 @@ interface Payload {
 }
 
 
-const ADMIN_URL_BASE = 'https://pandaprotect.co.uk/admin-dashboard/?tab=dealer-signups';
-
 const row = (label: string, value: string | null | undefined) => `
   <tr>
     <td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#374151;width:200px;">${label}</td>
@@ -36,7 +35,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const body = (await req.json()) as Payload;
+    const body = (await req.json()) as Payload & { brand?: unknown };
+    const brand = resolveBrand(req, { brand: body?.brand });
+    const ADMIN_URL_BASE = `${brand.siteUrl}/admin-dashboard/?tab=dealer-signups`;
     const {
       id, created_at,
       dealership_name, contact_name,
@@ -74,25 +75,25 @@ serve(async (req) => {
           ${row('Submission Date', submittedAt)}
           ${row('Dealership Name', esc(dealership_name))}
           ${row('Contact Name', esc(contact_name))}
-          ${row('Email Address', `<a href="mailto:${esc(email_address)}" style="color:#eb4b00;text-decoration:none;">${esc(email_address)}</a>`)}
-          ${row('Phone Number', `<a href="tel:${esc(phone_number)}" style="color:#eb4b00;text-decoration:none;">${esc(phone_number)}</a>`)}
+          ${row('Email Address', `<a href="mailto:${esc(email_address)}" style="color:${brand.accentColor};text-decoration:none;">${esc(email_address)}</a>`)}
+          ${row('Phone Number', `<a href="tel:${esc(phone_number)}" style="color:${brand.accentColor};text-decoration:none;">${esc(phone_number)}</a>`)}
           ${row('Monthly Vehicle Sales', esc(monthly_vehicle_sales))}
           ${row('Current Warranty Provider', esc(current_warranty_provider))}
           ${row('Interested In', esc(interested_in))}
-          ${row('Where They Sell Vehicles', heard_about_us && /^https?:\/\//i.test(heard_about_us) ? `<a href="${esc(heard_about_us)}" target="_blank" style="color:#eb4b00;text-decoration:none;">${esc(heard_about_us)}</a>` : esc(heard_about_us))}
+          ${row('Where They Sell Vehicles', heard_about_us && /^https?:\/\//i.test(heard_about_us) ? `<a href="${esc(heard_about_us)}" target="_blank" style="color:${brand.accentColor};text-decoration:none;">${esc(heard_about_us)}</a>` : esc(heard_about_us))}
           ${row('Additional Information', esc(additional_information))}
 
 
         </table>
 
         <div style="text-align:center;margin:28px 0 8px 0;">
-          <a href="${portalUrl}" style="display:inline-block;background:#eb4b00;color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;font-size:14px;">
+          <a href="${portalUrl}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:8px;font-size:14px;">
             View in Admin Portal →
           </a>
         </div>
 
         <p style="margin-top:24px;color:#6b7280;font-size:12px;text-align:center;">
-          Source: /dealer-portal/signup · Panda Protect Trade Warranty
+          Source: /dealer-portal/signup · ${brand.name} Trade Warranty
         </p>
       </div>
     `;
@@ -106,8 +107,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect <noreply@pandaprotect.co.uk>',
-        to: ['hello@pandaprotect.co.uk', 'info@pandaprotect.co.uk'],
+        from: `${brand.name} <noreply@${brand.domain}>`,
+        to: [brand.helloEmail, brand.infoEmail],
         reply_to: email_address,
         subject,
         html,
