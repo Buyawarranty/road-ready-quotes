@@ -10,7 +10,7 @@ interface SalesLoginGateProps {
   onUnlock: () => void;
 }
 
-const GATE_PASSWORD = 'SmashSales2026!!';
+const GATE_PASSWORD = 'PandaPanda2026!!';
 
 export const SalesLoginGate = ({ onUnlock }: SalesLoginGateProps) => {
   const [password, setPassword] = useState('');

@@ -11,7 +11,7 @@ interface AuthPasswordGateProps {
 }
 
 // This is the gate password - change this to your desired password
-const GATE_PASSWORD = 'SmashSales2026!!';
+const GATE_PASSWORD = 'PandaPanda2026!!';
 
 export const AuthPasswordGate = ({ onUnlock }: AuthPasswordGateProps) => {
   const [password, setPassword] = useState('');
