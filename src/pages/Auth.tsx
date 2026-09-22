@@ -552,6 +552,12 @@ const Auth = () => {
                     </div>
                   </div>
                   
+                  {signInError && (
+                    <div className="rounded-lg border-2 border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+                      {signInError}
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     disabled={loading}
