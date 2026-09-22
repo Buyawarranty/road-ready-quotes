@@ -25,6 +25,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let brand = BRANDS[DEFAULT_BRAND];
+
   try {
     logStep("Function started");
 
@@ -73,7 +75,7 @@ serve(async (req) => {
       email: transaction.customer_data?.email 
     });
 
-    const brand = resolveBrand(req, { brand: transaction.customer_data?.brand });
+    brand = resolveBrand(req, { brand: transaction.customer_data?.brand, record: transaction });
 
     // Check if already processed
     if (transaction.status === 'completed') {
@@ -174,7 +176,7 @@ serve(async (req) => {
         logStep("DUPLICATE DETECTED by email + reg plate, skipping insert", { existingId: matchingRecord.id });
         return new Response(null, {
           status: 302,
-          headers: { ...corsHeaders, "Location": `${Deno.env.get('SITE_URL') || 'https://drive-bright.lovable.app'}/thank-you?duplicate=true` },
+          headers: { ...corsHeaders, "Location": `${brand.siteUrl}/thank-you?duplicate=true` },
         });
       }
     }

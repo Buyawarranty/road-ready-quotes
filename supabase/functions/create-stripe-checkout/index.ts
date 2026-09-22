@@ -172,7 +172,7 @@ serve(async (req) => {
     // Get authenticated user
     let user = null;
     // Prioritize email from customer form data over authenticated user email
-    let customerEmail = customerData?.email || vehicleData?.email || "guest@pandaprotect.co.uk";
+    let customerEmail = customerData?.email || vehicleData?.email || `guest@${brand.domain}`;
     
     const authHeader = req.headers.get("Authorization");
     if (authHeader && authHeader !== "Bearer null") {
@@ -226,7 +226,7 @@ serve(async (req) => {
     
     // Check if customer exists in Stripe
     let stripeCustomerId = null;
-    if (customerEmail !== "guest@pandaprotect.co.uk") {
+    if (customerEmail !== `guest@${brand.domain}`) {
       const existingCustomers = await stripe.customers.list({
         email: customerEmail,
         limit: 1

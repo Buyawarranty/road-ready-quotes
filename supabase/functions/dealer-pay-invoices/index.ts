@@ -3,6 +3,7 @@
 // Returns: { checkout_url, session_id }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
+import { resolveBrand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -71,8 +72,9 @@ Deno.serve(async (req: Request) => {
     const billable = typedRows.filter((r) => r.payment_status !== 'paid');
     if (billable.length === 0) return json({ error: 'Nothing to pay — all selected plans are already paid' }, 400);
 
+    const brand = resolveBrand(req, { force: 'pandaprotect' });
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
-    const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
+    const origin = req.headers.get('origin') || brand.siteUrl;
     const safeReturnPath = typeof return_path === 'string' && return_path.startsWith('/dealer-portal/')
       ? return_path
       : '/dealer-portal/warranties';

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -60,7 +61,8 @@ serve(async (req) => {
     if (quote.status === 'paid') {
       logStep("Quote already paid, redirecting to payment received page");
       
-      const thankYouUrl = buildThankYouUrl(quote);
+      const brandForRedirect = resolveBrand(req, { record: quote });
+    const thankYouUrl = buildThankYouUrl(brandForRedirect, quote);
       return new Response(null, {
         status: 302,
         headers: { ...corsHeaders, 'Location': thankYouUrl }
@@ -129,7 +131,8 @@ serve(async (req) => {
     };
 
     // Build thank you URL with all parameters (no policy number yet — will be created later by sales)
-    const thankYouUrl = buildThankYouUrl(quote, undefined, totalAmount, customerData, vehicleData);
+    const brandForRedirect2 = resolveBrand(req, { record: quote });
+    const thankYouUrl = buildThankYouUrl(brandForRedirect2, quote, undefined, totalAmount, customerData, vehicleData);
     
     logStep("Redirecting to payment received page (no warranty created yet)", { url: thankYouUrl });
 
@@ -147,9 +150,10 @@ serve(async (req) => {
     // Redirect to quote page with error
     const url = new URL(req.url);
     const quoteToken = url.searchParams.get('quote_token');
+    const errBrand = resolveBrand(req);
     const errorUrl = quoteToken 
-      ? `https://www.pandaprotect.co.uk/quote/${quoteToken}?failed=1`
-      : 'https://www.pandaprotect.co.uk/?error=payment_failed';
+      ? `${errBrand.siteUrl}/quote/${quoteToken}?failed=1`
+      : `${errBrand.siteUrl}/?error=payment_failed`;
     
     return new Response(null, {
       status: 302,
@@ -162,13 +166,14 @@ serve(async (req) => {
 });
 
 function buildThankYouUrl(
+  brand: import("../_shared/brand.ts").Brand,
   quote: any, 
   policyNumber?: string, 
   totalAmount?: number,
   customerData?: any,
   vehicleData?: any
 ): string {
-  const baseUrl = 'https://www.pandaprotect.co.uk/payment-received';
+  const baseUrl = `${brand.siteUrl}/payment-received`;
   const params = new URLSearchParams();
   
   // Source and payment info

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -169,6 +170,7 @@ serve(async (req) => {
 
   let transactionId: string | null = null;
   let supabaseClient: any = null;
+  let brand = resolveBrand(req);
 
   try {
     logStep("Function started");
@@ -257,6 +259,7 @@ serve(async (req) => {
       });
     }
 
+    brand = resolveBrand(req, { record: transactionData });
     logStep("Transaction data retrieved", { 
       transactionId: transactionData.transaction_id,
       status: transactionData.status,
@@ -272,7 +275,7 @@ serve(async (req) => {
       });
       
       // Build redirect URL with parameters even for duplicate detection
-      const baseRedirectUrl = transactionData.redirect_url || 'https://www.pandaprotect.co.uk/thank-you';
+      const baseRedirectUrl = transactionData.redirect_url || `${brand.siteUrl}/thank-you`;
       const redirectUrl = new URL(baseRedirectUrl);
       redirectUrl.searchParams.set('plan', transactionData.plan_id);
       redirectUrl.searchParams.set('payment', transactionData.payment_type);
@@ -304,7 +307,7 @@ serve(async (req) => {
       });
       
       // Build redirect URL with parameters even for duplicate detection
-      const baseRedirectUrl = transactionData.redirect_url || 'https://www.pandaprotect.co.uk/thank-you';
+      const baseRedirectUrl = transactionData.redirect_url || `${brand.siteUrl}/thank-you`;
       const redirectUrl = new URL(baseRedirectUrl);
       redirectUrl.searchParams.set('plan', transactionData.plan_id);
       redirectUrl.searchParams.set('payment', transactionData.payment_type);
@@ -346,7 +349,7 @@ serve(async (req) => {
       });
       
       // Build redirect URL - the other request is handling the actual processing
-      const baseRedirectUrl = transactionData.redirect_url || 'https://www.pandaprotect.co.uk/thank-you';
+      const baseRedirectUrl = transactionData.redirect_url || `${brand.siteUrl}/thank-you`;
       const redirectUrl = new URL(baseRedirectUrl);
       redirectUrl.searchParams.set('plan', transactionData.plan_id);
       redirectUrl.searchParams.set('payment', transactionData.payment_type);
@@ -558,7 +561,7 @@ serve(async (req) => {
     });
 
     // Build redirect URL with all necessary parameters for ThankYou page
-    const baseRedirectUrl = transactionData.redirect_url || 'https://www.pandaprotect.co.uk/thank-you';
+    const baseRedirectUrl = transactionData.redirect_url || `${brand.siteUrl}/thank-you`;
     const redirectUrl = new URL(baseRedirectUrl);
     
     // Add required parameters that ThankYou page expects
@@ -659,7 +662,7 @@ serve(async (req) => {
     }
 
     // Redirect to error page instead of showing JSON
-    const errorRedirect = 'https://www.pandaprotect.co.uk/payment-fallback?error=processing_failed';
+    const errorRedirect = `${brand.siteUrl}/payment-fallback?error=processing_failed`;
     return new Response(null, {
       status: 302,
       headers: {
