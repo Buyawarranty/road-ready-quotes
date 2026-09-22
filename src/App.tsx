@@ -191,6 +191,7 @@ const TradeOnlyPage = lazy(() => import("./pages/TradeOnlyPage"));
 const WhatsCovered = lazy(() => import("./pages/WhatsCovered"));
 const MakeAClaim = lazy(() => import("./pages/MakeAClaim"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
+const WhyChooseUs = lazy(() => import("./pages/dealer-portal/WhyChooseUs"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PaymentReceived = lazy(() => import("./pages/PaymentReceived"));
@@ -363,6 +364,8 @@ const App = () => {
                     <Route path="/faq/" element={<TradeOnlyPage />} />
                     <Route path="/faq/traders" element={<FAQTraders />} />
                     <Route path="/faq/traders/" element={<FAQTraders />} />
+                    <Route path="/why-choose-us" element={<WhyChooseUs />} />
+                    <Route path="/why-choose-us/" element={<WhyChooseUs />} />
                     <Route path="/thank-you/" element={<ThankYou />} />
                     <Route path="/payment-received/" element={<PaymentReceived />} />
                     <Route path="/payment-fallback/" element={<PaymentFallback />} />

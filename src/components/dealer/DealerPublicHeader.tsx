@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, Clock3, LogIn, Menu, MessageCircle, Phone, PhoneCall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -10,13 +10,15 @@ import pandaProtectLogo from '@/assets/panda-protect-v2.webp';
 
 const NAV_ITEMS = [
   { label: "What's covered", to: '/what-is-covered/' },
-  { label: 'Why Choose Us', to: '/#why-choose-us' },
-  { label: 'Make a Claim', to: '/make-a-claim/' },
+  { label: 'Claims', to: '/make-a-claim/' },
+  { label: 'Why Choose Us', to: '/why-choose-us/' },
+  { label: 'Resources', to: '/thewarrantyhub/' },
   { label: 'FAQs', to: '/faq/traders/' },
   { label: 'Contact', to: '/contact-us/' },
 ] as const;
 
 export const DealerPublicHeader: React.FC = () => {
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [callbackOpen, setCallbackOpen] = React.useState(false);
 
@@ -43,9 +45,9 @@ export const DealerPublicHeader: React.FC = () => {
 
             <nav className="hidden xl:flex items-center" aria-label="Main navigation">
               {NAV_ITEMS.map((item) => (
-                <a key={item.label} href={item.to} className="public-header-nav-link">
+                <Link key={item.label} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined} className={`public-header-nav-link${location.pathname === item.to ? ' is-active' : ''}`}>
                   {item.label}
-                </a>
+                </Link>
               ))}
 
               <Popover>
@@ -99,9 +101,9 @@ export const DealerPublicHeader: React.FC = () => {
                   <OptimizedImage src={pandaProtectLogo} alt="Panda Protect" className="h-10 w-auto self-start object-contain" width={1226} height={594} />
                   <nav className="mt-7 flex flex-col" aria-label="Mobile navigation">
                     {NAV_ITEMS.map((item) => (
-                      <a key={item.label} href={item.to} onClick={() => setMobileOpen(false)} className="public-mobile-nav-link">
+                      <Link key={item.label} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined} onClick={() => setMobileOpen(false)} className={`public-mobile-nav-link${location.pathname === item.to ? ' is-active' : ''}`}>
                         {item.label}<ArrowRight aria-hidden="true" />
-                      </a>
+                      </Link>
                     ))}
                   </nav>
 
