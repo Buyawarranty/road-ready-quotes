@@ -1289,13 +1289,13 @@ export const UserPermissionsTab = () => {
                 <div className="flex items-center gap-2 bg-white border border-blue-200 rounded px-3 py-2">
                   <Users className="h-4 w-4 text-blue-700 shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sales Agents</p>
-                    <code className="text-xs font-mono break-all">https://pandaprotect.co.uk/sales-login</code>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sales Agents / Staff</p>
+                    <code className="text-xs font-mono break-all">https://pandaprotect.co.uk/auth</code>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard('https://pandaprotect.co.uk/sales-login', 'login-url-sales')} title="Copy">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard('https://pandaprotect.co.uk/auth', 'login-url-sales')} title="Copy">
                     {copiedField === 'login-url-sales' ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
                   </Button>
-                  <a href="https://pandaprotect.co.uk/sales-login" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
+                  <a href="https://pandaprotect.co.uk/auth" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>
