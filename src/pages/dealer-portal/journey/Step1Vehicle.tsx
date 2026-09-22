@@ -170,9 +170,12 @@ const Step1Vehicle: React.FC = () => {
     navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
+  const selectedPlanMeta = warrantyPlans.find((plan) => plan.key === selectedPlan);
+
   return (
     <DealerLayout>
-      <div className="mx-auto max-w-[1500px] space-y-3">
+      <div className="mx-auto grid max-w-[1500px] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+       <div className="space-y-4">
         <Card className="crm-panel-shadow border-crm-line">
           <CardContent className="p-5 sm:p-7">
             <div className="mb-6 flex items-start justify-between gap-3">
@@ -186,7 +189,7 @@ const Step1Vehicle: React.FC = () => {
               </span>
             </div>
 
-            <div className="max-w-3xl space-y-5">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
               <div>
                 <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
                 <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
