@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,48 +16,15 @@ interface ReviewEmailRequest {
   customerFirstName: string;
   subject?: string;
   previewOnly?: boolean;
+  brand?: string;
 }
 
 const logStep = (step: string, details?: any) => {
   console.log(`[TRUSTPILOT-REVIEW-REQUEST] ${step}`, details ? JSON.stringify(details) : '');
 };
 
-serve(async (req: Request) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    logStep("Starting Trustpilot review request...");
-
-    const supabaseUrl = Deno.env.get("SUPABASE_URL");
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error("Missing Supabase credentials");
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const {
-      customerId,
-      customerEmail,
-      customerFirstName,
-      subject = "How was your warranty purchase experience?",
-      previewOnly = false,
-    }: ReviewEmailRequest = await req.json();
-
-    logStep("Request received", { customerId, customerEmail, customerFirstName, previewOnly });
-
-    if (!customerEmail) {
-      throw new Error("Customer email is required");
-    }
-
-    const firstName = customerFirstName || "there";
-
-    // Build the HTML email template matching the user's requirements
-    const htmlContent = `
+function getEmailHtml(brand: Brand, firstName: string): string {
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -87,8 +55,8 @@ serve(async (req: Request) => {
           <!-- Logo Header -->
           <tr>
             <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-              <a href="https://www.pandaprotect.co.uk" target="_blank">
-                <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+              <a href="${brand.siteUrl}" target="_blank">
+                <img src="${brand.logoUrl}" alt="${brand.name}" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
               </a>
             </td>
           </tr>
@@ -111,7 +79,7 @@ serve(async (req: Request) => {
               
               <!-- Main Message -->
               <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                We hope you're getting on well since purchasing your warranty with Panda Protect.
+                We hope you're getting on well since purchasing your warranty with ${brand.name}.
               </p>
               
               <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">
@@ -130,7 +98,7 @@ serve(async (req: Request) => {
                       <tr>
                         <td align="center" style="border-radius: 6px; background-color: #00b67a;">
                           <a 
-                            href="https://uk.trustpilot.com/evaluate/pandaprotect.co.uk" 
+                            href="${brand.trustpilotUrl.replace('/review/', '/evaluate/')}" 
                             target="_blank"
                             style="display: inline-block; padding: 16px 32px; background-color: #00b67a; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600;"
                           >
@@ -153,7 +121,7 @@ serve(async (req: Request) => {
               
               <!-- Closing -->
               <p style="margin: 0 0 8px 0; color: #333333; font-size: 16px; line-height: 1.6;">
-                Thanks again for choosing Panda Protect. If you ever need help, our UK-based team is always here.
+                Thanks again for choosing ${brand.name}. If you ever need help, our UK-based team is always here.
               </p>
               
               <p style="margin: 28px 0 0 0; color: #333333; font-size: 16px; line-height: 1.6;">
@@ -163,10 +131,10 @@ serve(async (req: Request) => {
                 Customer Care Team
               </p>
               <p style="margin: 4px 0 0 0; color: #666666; font-size: 15px;">
-                Panda Protect
+                ${brand.name}
               </p>
               <p style="margin: 4px 0 0 0;">
-                <a href="tel:03302295040" style="color: #00b67a; font-size: 15px; text-decoration: none; font-weight: 500;">0330 229 5040</a>
+                <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: #00b67a; font-size: 15px; text-decoration: none; font-weight: 500;">${brand.quotePhone}</a>
               </p>
               
             </td>
@@ -199,6 +167,56 @@ serve(async (req: Request) => {
 </body>
 </html>
     `;
+}
+
+serve(async (req: Request) => {
+  // Handle CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    logStep("Starting Trustpilot review request...");
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Missing Supabase credentials");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const {
+      customerId,
+      customerEmail,
+      customerFirstName,
+      subject = "How was your warranty purchase experience?",
+      previewOnly = false,
+      brand: brandHint,
+    }: ReviewEmailRequest = await req.json();
+
+    logStep("Request received", { customerId, customerEmail, customerFirstName, previewOnly });
+
+    if (!customerEmail) {
+      throw new Error("Customer email is required");
+    }
+
+    let customerRecord: { brand?: unknown } | null = null;
+    if (customerId) {
+      const { data } = await supabase
+        .from("customers")
+        .select("brand")
+        .eq("id", customerId)
+        .maybeSingle();
+      customerRecord = data;
+    }
+
+    const brand = resolveBrand(req, { brand: brandHint, record: customerRecord });
+
+    const firstName = customerFirstName || "there";
+
+    const htmlContent = getEmailHtml(brand, firstName);
 
     // If preview only, return the HTML without sending
     if (previewOnly) {
@@ -221,7 +239,7 @@ serve(async (req: Request) => {
     logStep("Sending email via Resend", { to: customerEmail });
     
     const emailResult = await resend.emails.send({
-      from: "Panda Protect <hello@pandaprotect.co.uk>",
+      from: brandFrom(brand, "", "hello"),
       to: [customerEmail],
       subject: subject,
       html: htmlContent,
