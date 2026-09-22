@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import {
   ArrowRight,
   BarChart3,
-  BriefcaseBusiness,
   Building2,
   Car,
   Check,
