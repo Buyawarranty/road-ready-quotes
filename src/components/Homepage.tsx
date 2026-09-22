@@ -557,7 +557,7 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
             <div className="relative flex flex-col">
               <OptimizedImage 
                 src="/extended_warranty_uk-car-trustworthy-reviews.png" 
-                alt="Extended warranty UK - Car trustworthy reviews - Panda mascot with vehicle collection" 
+                alt="Panda mascot with a collection of covered vehicles" 
                 className="w-full h-auto"
                 priority={true}
                 width={651}
@@ -753,7 +753,7 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
             <div className="relative text-center">
               <OptimizedImage 
                 src="/extended-warranty-uk-car-reliable.png" 
-                alt="Extended warranty UK - Car reliable - Panda mascot with Monthly, Yearly, 1,2,3 Years options" 
+                alt="Panda mascot beside monthly and annual warranty plan options" 
                 className="w-full h-auto max-w-sm md:max-w-lg mx-auto object-contain"
                 priority={false}
                 width={600}

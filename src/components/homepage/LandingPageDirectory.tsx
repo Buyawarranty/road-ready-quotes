@@ -126,6 +126,9 @@ const LandingPageDirectory: React.FC = () => {
                         <img 
                           src={page.featured_image_url} 
                           alt={`${page.brand_name} logo`}
+                           width={40}
+                           height={40}
+                           decoding="async"
                           className="w-8 h-8 md:w-10 md:h-10 object-contain"
                           loading="lazy"
                         />

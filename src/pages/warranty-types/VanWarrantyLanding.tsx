@@ -27,7 +27,7 @@ import trustpilotExcellent from '@/assets/trustpilot-excellent-box.webp';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 import pandaThumbsUp from '@/assets/extended-van-warranty-uk.png';
 import trustpilotBadge from '@/assets/trustpilot-badge.png';
-import vanHeroImage from '@/assets/uk-extended-used-van-warranty.png';
+import vanHeroImage from '@/assets/van-warranty-hero-optimized.webp';
 import fordTransitVan from '@/assets/uk-van-warranty-ford-transit.webp';
 import vanIcon from '@/assets/van-icon.png';
 
@@ -715,11 +715,12 @@ const VanWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage
                     src={vanHeroImage}
-                    alt="UK van warranty — Miles the Panda Protect panda mascot with Ford Transit Custom and Volkswagen Transporter"
+                    alt="Panda Protect mascot with a Ford Transit Custom and Volkswagen Transporter"
                     className="w-full h-auto max-w-md mx-auto object-contain"
                     priority={true}
                     width={600}
                     height={450}
+                     sizes="(max-width: 1024px) 92vw, 38rem"
                     style={{ border: 'none', boxShadow: 'none' }}
                   />
                   <div className="absolute top-4 right-4">

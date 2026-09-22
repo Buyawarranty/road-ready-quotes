@@ -23,11 +23,11 @@ const CoverClaritySection = lazy(() => import('@/components/homepage/CoverClarit
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));
 
 // Assets
-import audiHeroImage from '@/assets/audi-extended-warranty-uk-miles-panda.webp';
+import audiHeroImage from '@/assets/audi-hero-optimized.webp';
 import trustpilotExcellent from '@/assets/trustpilot-excellent-box.webp';
-import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
-import audiWhyChooseUs from '@/assets/audi-used-car-warranty-uk.webp';
-import audiHighMileage from '@/assets/audi-warranty-cover-uk.webp';
+import pandaThumbsUp from '@/assets/panda-thumbs-up-optimized.webp';
+import audiWhyChooseUs from '@/assets/audi-used-car-warranty-optimized.webp';
+import audiHighMileage from '@/assets/audi-warranty-cover-optimized.webp';
 import audiMobileQuote from '@/assets/audi-warranty-mobile-quote.webp';
 
 // Audi Models covered (grouped by category)
@@ -602,11 +602,12 @@ const AudiWarrantyLanding: React.FC = () => {
                 <div className="relative">
                   <OptimizedImage
                     src={audiHeroImage}
-                    alt="Audi extended warranty UK - Miles the Panda with two Audi cars, affordable used Audi warranty cover"
+                     alt="Miles the Panda beside two Audi cars"
                     className="w-full h-auto"
                     priority={true}
                     width={1024}
                     height={640}
+                     sizes="(max-width: 1024px) 92vw, 48vw"
                   />
                   {/* Trustpilot Badge */}
                   <div className="absolute top-4 right-4">
@@ -994,7 +995,7 @@ const AudiWarrantyLanding: React.FC = () => {
               <div className="hidden lg:flex justify-center items-end">
                <OptimizedImage 
                    src={audiWhyChooseUs}
-                   alt="Audi Q4 e-tron extended warranty UK - Why Audi drivers choose Panda Protect for transparent coverage"
+                    alt="Audi Q4 e-tron beside the Panda Protect mascot"
                    className="w-[400px] h-auto object-contain"
                    priority={false}
                    width={400}
@@ -1076,7 +1077,7 @@ const AudiWarrantyLanding: React.FC = () => {
               <div className="flex justify-center">
                  <OptimizedImage 
                    src={audiMobileQuote}
-                   alt="Audi A3 extended warranty quote on mobile — instant online quote for used Audi warranty UK"
+                    alt="Audi A3 warranty quote shown on a mobile phone"
                    className="w-64 sm:w-80 md:w-96 lg:w-[28rem] h-auto object-contain"
                    width={448}
                    height={500}
