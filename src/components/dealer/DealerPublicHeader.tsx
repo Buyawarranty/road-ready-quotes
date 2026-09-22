@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
-import pandaProtectLogo from '@/assets/panda-protect-v2.png.asset.json';
+import pandaProtectLogo from '@/assets/panda-protect-v2.webp';
 
 const NAV_ITEMS = [
   { label: "What's covered", to: '/what-is-covered/' },
@@ -32,7 +32,7 @@ export const DealerPublicHeader: React.FC = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="public-header-logo" aria-label="Panda Protect home">
               <OptimizedImage
-                src={pandaProtectLogo.url}
+                src={pandaProtectLogo}
                 alt="Panda Protect"
                 className="h-11 sm:h-14 w-auto object-contain"
                 priority
@@ -96,7 +96,7 @@ export const DealerPublicHeader: React.FC = () => {
               </SheetTrigger>
               <SheetContent side="right" className="public-mobile-menu w-[min(90vw,380px)] overflow-y-auto">
                 <div className="flex h-full flex-col pt-8">
-                  <OptimizedImage src={pandaProtectLogo.url} alt="Panda Protect" className="h-10 w-auto self-start object-contain" width={1226} height={594} />
+                  <OptimizedImage src={pandaProtectLogo} alt="Panda Protect" className="h-10 w-auto self-start object-contain" width={1226} height={594} />
                   <nav className="mt-7 flex flex-col" aria-label="Mobile navigation">
                     {NAV_ITEMS.map((item) => (
                       <a key={item.label} href={item.to} onClick={() => setMobileOpen(false)} className="public-mobile-nav-link">
