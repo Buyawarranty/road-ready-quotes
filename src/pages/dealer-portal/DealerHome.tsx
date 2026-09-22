@@ -154,6 +154,7 @@ const COVERAGE_ROWS = [
 const DealerHome = () => {
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [callbackOpen, setCallbackOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openService, setOpenService] = useState<number | null>(0);
   const [openCoverage, setOpenCoverage] = useState<number | null>(null);
