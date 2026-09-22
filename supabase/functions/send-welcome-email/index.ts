@@ -356,7 +356,7 @@ serve(async (req) => {
     const emailPayload = {
       from: resendFrom,
       to: [email],
-      bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'],
+      bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'],
       reply_to: 'support@pandaprotect.co.uk',
       subject: `${finalCustomerName}, your warranty is now active`,
       headers: {
@@ -368,7 +368,7 @@ serve(async (req) => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://buyawarranty.co.uk/images/buyawarranty-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
+            <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
           </div>
 
           <!-- Greeting -->
@@ -429,7 +429,7 @@ serve(async (req) => {
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
             <h3 style="color: #333333; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">🔐 Your Portal Login Details!</h3>
             <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0 0 15px 0;">You can view your updated policy anytime via your customer portal:</p>
-            <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Login:</strong> <a href="https://buyawarranty.co.uk/auth" style="color: #1a73e8; text-decoration: none;">Customer Dashboard</a></p>
+            <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/auth" style="color: #1a73e8; text-decoration: none;">Customer Dashboard</a></p>
             <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Email:</strong> ${email}</p>
             ${userHasResetPassword
               ? `<p style="margin: 8px 0; color: #555555; font-size: 13px; font-style: italic;">You have already set your dashboard password. Use your existing password to log in, or reset it from the login page if needed.</p>`
@@ -538,8 +538,8 @@ serve(async (req) => {
             metadata: {
               customerFirstName: finalCustomerName,
               expiryDate: calculatePolicyEndDate(paymentType),
-              portalUrl: 'https://buyawarranty.co.uk/customer-dashboard',
-              referralLink: `https://buyawarranty.co.uk/refer/${userId || 'guest'}`,
+              portalUrl: 'https://www.pandaprotect.co.uk/customer-dashboard',
+              referralLink: `https://www.pandaprotect.co.uk/refer/${userId || 'guest'}`,
               emailType: 'first_invitation'
             }
           });
@@ -574,8 +574,8 @@ serve(async (req) => {
               metadata: {
                 customerFirstName: finalCustomerName,
                 expiryDate: calculatePolicyEndDate(paymentType),
-                portalUrl: 'https://buyawarranty.co.uk/customer-dashboard',
-                referralLink: `https://buyawarranty.co.uk/refer/${userId || 'guest'}`,
+                portalUrl: 'https://www.pandaprotect.co.uk/customer-dashboard',
+                referralLink: `https://www.pandaprotect.co.uk/refer/${userId || 'guest'}`,
                 emailType: 'reminder'
               }
             });

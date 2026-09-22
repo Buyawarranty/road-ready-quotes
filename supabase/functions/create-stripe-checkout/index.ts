@@ -220,7 +220,7 @@ serve(async (req) => {
       apiVersion: "2023-10-16" 
     });
 
-    const origin = req.headers.get("origin") || "https://pricing.buyawarranty.co.uk";
+    const origin = req.headers.get("origin") || "https://pricing.pandaprotect.co.uk";
     
     // Check if customer exists in Stripe
     let stripeCustomerId = null;

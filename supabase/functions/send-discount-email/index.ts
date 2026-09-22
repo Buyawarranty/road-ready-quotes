@@ -76,7 +76,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p>Visit our website to continue with your warranty quote and apply your discount.</p>
             
             <div style="text-align: center; margin: 20px 0;">
-              <a href="https://buyawarranty.co.uk" style="background: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+              <a href="https://www.pandaprotect.co.uk" style="background: #ea580c; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                 Get My Warranty
               </a>
             </div>

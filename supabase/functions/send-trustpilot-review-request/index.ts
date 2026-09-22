@@ -87,8 +87,8 @@ serve(async (req: Request) => {
           <!-- Logo Header -->
           <tr>
             <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-              <a href="https://buyawarranty.co.uk" target="_blank">
-                <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+              <a href="https://www.pandaprotect.co.uk" target="_blank">
+                <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" class="logo" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
               </a>
             </td>
           </tr>
@@ -130,7 +130,7 @@ serve(async (req: Request) => {
                       <tr>
                         <td align="center" style="border-radius: 6px; background-color: #00b67a;">
                           <a 
-                            href="https://uk.trustpilot.com/evaluate/buyawarranty.co.uk" 
+                            href="https://uk.trustpilot.com/evaluate/pandaprotect.co.uk" 
                             target="_blank"
                             style="display: inline-block; padding: 16px 32px; background-color: #00b67a; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600;"
                           >

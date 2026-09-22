@@ -50,8 +50,8 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
     'policyNumber': variables?.policyNumber || '',
     'planType': variables?.planType || '',
     'vehicleReg': variables?.vehicleReg || '',
-    'portalUrl': variables?.portalUrl || 'https://buyawarranty.co.uk/customer-dashboard',
-    'renewalUrl': variables?.renewalUrl || 'https://buyawarranty.co.uk',
+    'portalUrl': variables?.portalUrl || 'https://www.pandaprotect.co.uk/customer-dashboard',
+    'renewalUrl': variables?.renewalUrl || 'https://www.pandaprotect.co.uk',
     'expiryDate': variables?.expiryDate || '',
   };
   
@@ -105,7 +105,7 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Trusted by thousands of drivers</p>
         <div class="trustpilot-stars">★★★★★</div>
         <p style="margin: 8px 0 4px; font-size: 14px; color: #333;"><strong>Excellent</strong> on Trustpilot</p>
-        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" style="color: #00b67a;">trustpilot.com</a></p>
+        <p style="margin: 0; font-size: 12px; color: #666;">See our reviews at <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" style="color: #00b67a;">trustpilot.com</a></p>
       </div>
     </div>
     <div class="footer">
@@ -233,21 +233,21 @@ serve(async (req) => {
                 <h3>🔐 Your Portal Login Details!</h3>
                 <p>You can view your updated policy anytime via your customer portal:</p>
                 <div class="login-info">
-                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://buyawarranty.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
+                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
                   <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${variables?.loginEmail || recipientEmail}</span></div>
                   <div class="info-row"><span class="info-label">Password:</span><span class="info-value"><strong>${variables?.temporaryPassword}</strong></span></div>
                 </div>
-                <a href="${variables?.loginUrl || 'https://buyawarranty.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
+                <a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
               </div>` : variables?.isExistingCustomer ? `
               <div class="login-box">
                 <h3>🔐 Welcome Back!</h3>
                 <p>You can access your updated policy through your existing customer portal account.</p>
                 <div class="login-info">
-                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://buyawarranty.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
+                  <div class="info-row"><span class="info-label">Login:</span><span class="info-value"><a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" style="color: #1a365d;">Customer Dashboard</a></span></div>
                   <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${variables?.loginEmail || recipientEmail}</span></div>
                 </div>
                 <p><em>${variables?.temporaryPassword || 'Use your existing password'}</em></p>
-                <a href="${variables?.loginUrl || 'https://buyawarranty.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
+                <a href="${variables?.loginUrl || 'https://www.pandaprotect.co.uk/customer-dashboard'}" class="button">Access Customer Portal</a>
               </div>` : ''}
               <div class="info-box">
                 <h3>📎 Your Documents</h3>
@@ -354,7 +354,7 @@ serve(async (req) => {
     const emailPayload: any = {
       from: "Panda Protect Team <support@pandaprotect.co.uk>",
       to: [recipientEmail],
-      ...(isWelcomeEmail && { bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'] }),
+      ...(isWelcomeEmail && { bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'] }),
       subject: subject,
       html: htmlContent,
     };

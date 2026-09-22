@@ -22,7 +22,7 @@ serve(async (req) => {
       }
     });
 
-    const newEmail = 'info@buyawarranty.co.uk';
+    const newEmail = 'info@pandaprotect.co.uk';
     const newPassword = 'Poland333!';
 
     console.log('Looking for existing admin user...');
@@ -43,11 +43,11 @@ serve(async (req) => {
       adminUserId = oldAdminUser.id;
       console.log('Found admin@example.com user:', adminUserId);
     } else {
-      // Check if info@buyawarranty.co.uk already exists
+      // Check if info@pandaprotect.co.uk already exists
       const newAdminUser = existingUsers.users.find(u => u.email === newEmail);
       if (newAdminUser) {
         adminUserId = newAdminUser.id;
-        console.log('Found existing info@buyawarranty.co.uk user:', adminUserId);
+        console.log('Found existing info@pandaprotect.co.uk user:', adminUserId);
       }
     }
 

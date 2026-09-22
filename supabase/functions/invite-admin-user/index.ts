@@ -209,7 +209,7 @@ serve(async (req: Request) => {
           </div>
           
           <p>
-            <a href="https://buyawarranty.co.uk/auth" 
+            <a href="https://www.pandaprotect.co.uk/auth" 
                style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold;">
                Accept Invitation & Access Dashboard
             </a>
@@ -217,8 +217,8 @@ serve(async (req: Request) => {
           
           <p style="margin-top: 16px;">
             Or you can log in directly at: 
-            <a href="https://buyawarranty.co.uk/auth" style="color: #007bff;">
-              https://buyawarranty.co.uk/auth
+            <a href="https://www.pandaprotect.co.uk/auth" style="color: #007bff;">
+              https://www.pandaprotect.co.uk/auth
             </a>
           </p>
           

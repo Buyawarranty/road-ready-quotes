@@ -148,8 +148,8 @@ serve(async (req) => {
     const url = new URL(req.url);
     const quoteToken = url.searchParams.get('quote_token');
     const errorUrl = quoteToken 
-      ? `https://buyawarranty.co.uk/quote/${quoteToken}?failed=1`
-      : 'https://buyawarranty.co.uk/?error=payment_failed';
+      ? `https://www.pandaprotect.co.uk/quote/${quoteToken}?failed=1`
+      : 'https://www.pandaprotect.co.uk/?error=payment_failed';
     
     return new Response(null, {
       status: 302,
@@ -168,7 +168,7 @@ function buildThankYouUrl(
   customerData?: any,
   vehicleData?: any
 ): string {
-  const baseUrl = 'https://buyawarranty.co.uk/payment-received';
+  const baseUrl = 'https://www.pandaprotect.co.uk/payment-received';
   const params = new URLSearchParams();
   
   // Source and payment info

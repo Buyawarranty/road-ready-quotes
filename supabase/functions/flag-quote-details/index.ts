@@ -102,7 +102,7 @@ serve(async (req) => {
 
       try {
         await resend.emails.send({
-          from: "BuyAWarranty Alerts <alerts@notify.buyawarranty.co.uk>",
+          from: "BuyAWarranty Alerts <alerts@notify.pandaprotect.co.uk>",
           to: ["support@pandaprotect.co.uk"],
           subject,
           html: htmlContent,

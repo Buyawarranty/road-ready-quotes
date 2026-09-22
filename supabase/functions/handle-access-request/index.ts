@@ -149,7 +149,7 @@ const handler = async (req: Request): Promise<Response> => {
               <tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Reason:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">${escapeHtml(body.reason)}</td></tr>
             </table>
             <p style="margin-top: 20px;">
-              <a href="https://pricing.buyawarranty.co.uk/admin-dashboard" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
+              <a href="https://pricing.pandaprotect.co.uk/admin-dashboard" style="background-color: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px;">
                 Review in Admin Dashboard
               </a>
             </p>

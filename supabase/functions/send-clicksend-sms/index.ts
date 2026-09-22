@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 // Welcome message for new leads
-const WELCOME_MESSAGE = `Your vehicle warranty quote is ready. Lock in your cover in under 60 seconds at https://buyawarranty.co.uk or call 0330 229 5040.`;
+const WELCOME_MESSAGE = `Your vehicle warranty quote is ready. Lock in your cover in under 60 seconds at https://www.pandaprotect.co.uk or call 0330 229 5040.`;
 
 serve(async (req) => {
   // Handle CORS preflight requests

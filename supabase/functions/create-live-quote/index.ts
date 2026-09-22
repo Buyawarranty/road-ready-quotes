@@ -187,7 +187,7 @@ serve(async (req) => {
         access_token: accessToken,
         status: 'sent',
         created_by_name: createdByName || null,
-        share_link: `https://buyawarranty.co.uk/quote/${accessToken}`,
+        share_link: `https://www.pandaprotect.co.uk/quote/${accessToken}`,
         customer_dob: customerDob || null
       })
       .select()

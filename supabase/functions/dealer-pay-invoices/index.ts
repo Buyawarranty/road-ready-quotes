@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
     if (billable.length === 0) return json({ error: 'Nothing to pay — all selected plans are already paid' }, 400);
 
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
-    const origin = req.headers.get('origin') || 'https://buyawarranty.co.uk';
+    const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
     const safeReturnPath = typeof return_path === 'string' && return_path.startsWith('/dealer-portal/')
       ? return_path
       : '/dealer-portal/warranties';

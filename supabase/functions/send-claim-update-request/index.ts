@@ -73,7 +73,7 @@ serve(async (req: Request) => {
     const firstRegPlate = claims[0]?.vehicle_registration?.toUpperCase() || "N/A";
 
     // Build the site URL
-    const siteUrl = Deno.env.get("SITE_URL") || "https://buyawarranty.co.uk";
+    const siteUrl = Deno.env.get("SITE_URL") || "https://www.pandaprotect.co.uk";
 
     // Build form links for each claim
     const claimLinks = insertedRequests!.map((r) => {

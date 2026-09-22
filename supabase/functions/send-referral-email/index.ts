@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://www.buyawarranty.co.uk" 
+            <a href="https://www.pandaprotect.co.uk" 
                style="background-color: #FF6B00; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
               Get Your Warranty Quote
             </a>
@@ -117,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
           
           <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e5e5; text-align: center;">
             <p style="color: #666; font-size: 14px;">
-              <a href="https://www.buyawarranty.co.uk" style="color: #FF6B00; text-decoration: none;">www.buyawarranty.co.uk</a><br>
+              <a href="https://www.pandaprotect.co.uk" style="color: #FF6B00; text-decoration: none;">pandaprotect.co.uk</a><br>
               Your trusted warranty partner
             </p>
           </div>

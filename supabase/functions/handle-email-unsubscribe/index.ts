@@ -87,11 +87,11 @@ function renderPage(title: string, message: string): string {
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f6f9fc; display: flex; justify-content: center; align-items: center; min-height: 100vh;">
   <div style="max-width: 500px; margin: 40px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 48px; text-align: center;">
-    <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="180" alt="Panda Protect" style="margin-bottom: 32px;" />
+    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" width="180" alt="Panda Protect" style="margin-bottom: 32px;" />
     <h1 style="color: #1a1a1a; font-size: 24px; font-weight: 700; margin: 0 0 16px 0;">${title}</h1>
     <p style="color: #484848; font-size: 16px; line-height: 24px; margin: 0;">${message}</p>
     <div style="margin-top: 32px;">
-      <a href="https://buyawarranty.co.uk" style="background-color: #FF7A00; border-radius: 6px; color: #fff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 12px 24px; display: inline-block;">Back to Website</a>
+      <a href="https://www.pandaprotect.co.uk" style="background-color: #FF7A00; border-radius: 6px; color: #fff; font-size: 16px; font-weight: bold; text-decoration: none; padding: 12px 24px; display: inline-block;">Back to Website</a>
     </div>
   </div>
 </body>

@@ -173,7 +173,7 @@ serve(async (req) => {
       })
       .eq('id', quote.id);
 
-    const origin = "https://buyawarranty.co.uk";
+    const origin = "https://www.pandaprotect.co.uk";
 
     if (paymentMethod === 'stripe') {
       // Create Stripe checkout session

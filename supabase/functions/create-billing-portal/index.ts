@@ -88,7 +88,7 @@ serve(async (req) => {
     // Create billing portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: `${req.headers.get('origin') || 'https://buyawarranty.co.uk'}/customer-dashboard`,
+      return_url: `${req.headers.get('origin') || 'https://www.pandaprotect.co.uk'}/customer-dashboard`,
     });
 
     console.log('Billing portal session created:', portalSession.id);

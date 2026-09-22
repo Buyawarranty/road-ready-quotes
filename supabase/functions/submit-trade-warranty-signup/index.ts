@@ -152,7 +152,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           from: "Panda Protect <noreply@pandaprotect.co.uk>",
-          to: ["info@buyawarranty.co.uk", "hello@pandaprotect.co.uk", "info@pandaprotect.co.uk"],
+          to: ["info@pandaprotect.co.uk", "hello@pandaprotect.co.uk", "info@pandaprotect.co.uk"],
           reply_to: payload.email_address,
           subject: "New Trade Warranty Interest Registration",
           html,

@@ -136,7 +136,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; margin-bottom: 64px;">
     <!-- Header -->
     <div style="padding: 24px; text-align: center;">
-      <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
+      <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
     </div>
     
     <!-- Content -->
@@ -153,7 +153,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
       <!-- Promo Section -->
       <div style="background-color: #FFF8E7; border: 2px solid #FF7A00; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
         <p style="color: #1A1A1A; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">${promoText}</p>
-        <a href="https://buyawarranty.co.uk?promo=${promoCode}" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: 800; padding: 12px 24px; border-radius: 6px; display: inline-block; letter-spacing: 2px; font-family: monospace; text-decoration: none; cursor: pointer;">${promoCode}</a>
+        <a href="https://www.pandaprotect.co.uk?promo=${promoCode}" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: 800; padding: 12px 24px; border-radius: 6px; display: inline-block; letter-spacing: 2px; font-family: monospace; text-decoration: none; cursor: pointer;">${promoCode}</a>
         <p style="color: #666666; font-size: 12px; margin: 10px 0 0 0;">Tap to copy &bull; <strong>Valid for 24 hours</strong> &bull; Minimum order £350</p>
       </div>
       ` : ''}
@@ -188,7 +188,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
         The Panda Protect Team
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
-        <a href="https://buyawarranty.co.uk" style="color: #0066cc; text-decoration: underline;">buyawarranty.co.uk</a>
+        <a href="https://www.pandaprotect.co.uk" style="color: #0066cc; text-decoration: underline;">pandaprotect.co.uk</a>
       </p>
 
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0;">
@@ -266,7 +266,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Generate URLs
-    const baseUrl = 'https://buyawarranty.co.uk';
+    const baseUrl = 'https://www.pandaprotect.co.uk';
     let continueUrl = baseUrl;
 
     if (emailRequest.vehicleReg) {

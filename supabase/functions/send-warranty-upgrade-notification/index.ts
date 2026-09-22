@@ -135,7 +135,7 @@ serve(async (req) => {
                   </p>
                   
                   <div style="text-align: center; margin: 30px 0;">
-                    <a href="https://pricing.buyawarranty.co.uk/customer-dashboard" 
+                    <a href="https://pricing.pandaprotect.co.uk/customer-dashboard" 
                        style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold;">
                       View My Warranty
                     </a>
@@ -154,7 +154,7 @@ serve(async (req) => {
                     © ${new Date().getFullYear()} Panda Protect | All rights reserved
                   </p>
                   <p style="font-size: 12px; color: #9ca3af; margin: 5px 0 0 0;">
-                    <a href="https://buyawarranty.co.uk" style="color: #f59e0b; text-decoration: none;">Visit our website</a>
+                    <a href="https://www.pandaprotect.co.uk" style="color: #f59e0b; text-decoration: none;">Visit our website</a>
                   </p>
                 </td>
               </tr>

@@ -38,7 +38,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": "https://buyawarranty.co.uk/payment-fallback?error=no_transaction"
+          "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=no_transaction"
         }
       });
     }
@@ -61,7 +61,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": "https://buyawarranty.co.uk/payment-fallback?error=transaction_not_found"
+          "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=transaction_not_found"
         }
       });
     }
@@ -79,7 +79,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": transaction.redirect_url || "https://buyawarranty.co.uk/thank-you"
+          "Location": transaction.redirect_url || "https://www.pandaprotect.co.uk/thank-you"
         }
       });
     }
@@ -418,7 +418,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        "Location": transaction.redirect_url || "https://buyawarranty.co.uk/thank-you"
+        "Location": transaction.redirect_url || "https://www.pandaprotect.co.uk/thank-you"
       }
     });
 
@@ -429,7 +429,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        "Location": "https://buyawarranty.co.uk/payment-fallback?error=processing_failed"
+        "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=processing_failed"
       }
     });
   }

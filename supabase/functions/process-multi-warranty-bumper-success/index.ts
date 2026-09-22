@@ -31,7 +31,7 @@ serve(async (req) => {
     const customerData = JSON.parse(url.searchParams.get('customer_data') || '{}');
     const discountCode = url.searchParams.get('discount_code') || '';
     const totalAmount = parseFloat(url.searchParams.get('total_amount') || '0');
-    const redirectUrl = url.searchParams.get('redirect') || 'https://buyawarranty.com/thank-you';
+    const redirectUrl = url.searchParams.get('redirect') || 'https://www.pandaprotect.co.uk/thank-you';
 
     logStep("Extracted parameters", { 
       itemCount: items.length, 
@@ -241,7 +241,7 @@ serve(async (req) => {
     logStep("ERROR in process-multi-warranty-bumper-success", { message: errorMessage });
     
     // Redirect to error page
-    const errorRedirect = req.headers.get("origin") || "https://buyawarranty.com";
+    const errorRedirect = req.headers.get("origin") || "https://www.pandaprotect.co.uk";
     return new Response(null, {
       status: 302,
       headers: {
