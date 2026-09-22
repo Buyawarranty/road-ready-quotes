@@ -284,7 +284,6 @@ const StepTest = lazy(() => import("./pages/StepTest"));
 const SetupAdmin = lazy(() => import("./pages/SetupAdmin"));
 const UpdateAdminCredentials = lazy(() => import("./pages/UpdateAdminCredentials"));
 const RequestAccess = lazy(() => import("./pages/RequestAccess"));
-const SalesLogin = lazy(() => import("./pages/SalesLogin"));
 
 // Dealer Portal pages
 const DealerLogin = lazy(() => import("./pages/dealer-portal/DealerLogin"));
