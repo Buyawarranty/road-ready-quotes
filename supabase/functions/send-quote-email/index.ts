@@ -92,7 +92,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <tr>
                 <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
                   <a href="https://www.pandaprotect.co.uk" target="_blank">
-                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="buyawarranty" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
+                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
                   </a>
                 </td>
               </tr>
