@@ -38,6 +38,7 @@ const Auth = () => {
   });
   
   const [loading, setLoading] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
 
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
@@ -185,6 +186,8 @@ const Auth = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setSignInError(null);
+
     
     try {
       console.log("Attempting to sign in with:", email);
@@ -217,9 +220,13 @@ const Auth = () => {
 
       if (error) {
         console.error("Sign in error:", error.message, error);
+        const message = /invalid login credentials/i.test(error.message || '')
+          ? 'Email or password is incorrect. Please check your details and try again.'
+          : error.message || "Authentication failed. Please check your credentials.";
+        setSignInError(message);
         toast({
           title: "Sign In Failed",
-          description: error.message || "Authentication failed. Please check your credentials.",
+          description: message,
           variant: "destructive",
         });
         return;
@@ -490,9 +497,19 @@ const Auth = () => {
           </CardHeader>
           <CardContent className="px-4 md:px-6">
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="signin" className="text-sm">Sign In</TabsTrigger>
-                <TabsTrigger value="signup" className="text-sm">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-6 gap-2 bg-transparent p-0 h-auto">
+                <TabsTrigger
+                  value="signin"
+                  className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
+                >
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger
+                  value="signup"
+                  className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
+                >
+                  Sign Up
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin">
@@ -535,6 +552,12 @@ const Auth = () => {
                     </div>
                   </div>
                   
+                  {signInError && (
+                    <div className="rounded-lg border-2 border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+                      {signInError}
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     disabled={loading}
