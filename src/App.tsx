@@ -374,7 +374,7 @@ const App = () => {
                     <Route path="/dealer-widget/" element={<DealerWidget />} />
                     
                     <Route path="/auth/" element={<Auth />} />
-                    <Route path="/sales-login/" element={<SalesLogin />} />
+                    <Route path="/sales-login/" element={<Navigate to="/auth/" replace />} />
                     <Route path="/admin/" element={<AdminDashboard />} />
                     <Route path="/admin-dashboard/" element={<AdminDashboard />} />
                     <Route path="/customer-dashboard/" element={<CustomerDashboard />} />
