@@ -194,9 +194,9 @@ const DealerQuotesList = () => {
             >
               <div className="flex flex-col md:flex-row">
                 {/* Vehicle registration plate */}
-                <div className="w-full md:w-64 bg-muted flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-crm-line p-5">
-                  <div className="w-full max-w-[16rem] space-y-3">
-                    <div className="vehicle-reg-plate relative" aria-label={`Registration ${formatRegistration(q.vehicle_reg)}`}>
+                <div className="w-full md:w-72 bg-muted flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-crm-line p-3 sm:p-4">
+                  <div className="w-full max-w-[17rem] space-y-2.5">
+                    <div className="vehicle-reg-plate vehicle-reg-plate--list relative" aria-label={`Registration ${formatRegistration(q.vehicle_reg)}`}>
                       <div className="vehicle-reg-plate__country">
                         <span>GB</span>
                         <span>UK</span>
@@ -204,7 +204,7 @@ const DealerQuotesList = () => {
                       <div className="vehicle-reg-plate__text">{formatRegistration(q.vehicle_reg)}</div>
                       {q.vehicle_reg && (
                         <span className="vehicle-reg-plate__check" aria-hidden="true">
-                          <Check className="h-5 w-5 stroke-[3]" />
+                          <Check className="h-3.5 w-3.5 stroke-[3]" />
                         </span>
                       )}
                     </div>
