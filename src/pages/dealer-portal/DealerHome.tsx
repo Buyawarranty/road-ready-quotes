@@ -28,6 +28,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
@@ -546,6 +547,7 @@ const DealerHome = () => {
           </div>
         </div>
       </section>
+      <RequestCallbackModal isOpen={callbackOpen} onClose={() => setCallbackOpen(false)} />
     </div>
   );
 };
