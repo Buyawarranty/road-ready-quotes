@@ -9,3 +9,4 @@
 - [x] Match the dashboard registration input to the UK plate style with ENTER REG default wording.
 - [x] Redesign /dealer-portal/signup to match the supplied dealer portal register/login reference.
 - [x] Optimise large public-page images and improve natural, search-friendly image descriptions.
+- [x] Build the dedicated trade-focused Why Choose Us landing page and connect its public navigation.

@@ -169,7 +169,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget') || location.pathname.startsWith('/dealer-portal/coming-soon') || location.pathname.startsWith('/dealer-portal/signup');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget') || location.pathname.startsWith('/dealer-portal/coming-soon') || location.pathname.startsWith('/dealer-portal/signup') || location.pathname.startsWith('/why-choose-us');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -191,6 +191,7 @@ const TradeOnlyPage = lazy(() => import("./pages/TradeOnlyPage"));
 const WhatsCovered = lazy(() => import("./pages/WhatsCovered"));
 const MakeAClaim = lazy(() => import("./pages/MakeAClaim"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
+const WhyChooseUs = lazy(() => import("./pages/dealer-portal/WhyChooseUs"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const PaymentReceived = lazy(() => import("./pages/PaymentReceived"));
@@ -363,6 +364,8 @@ const App = () => {
                     <Route path="/faq/" element={<TradeOnlyPage />} />
                     <Route path="/faq/traders" element={<FAQTraders />} />
                     <Route path="/faq/traders/" element={<FAQTraders />} />
+                    <Route path="/why-choose-us" element={<WhyChooseUs />} />
+                    <Route path="/why-choose-us/" element={<WhyChooseUs />} />
                     <Route path="/thank-you/" element={<ThankYou />} />
                     <Route path="/payment-received/" element={<PaymentReceived />} />
                     <Route path="/payment-fallback/" element={<PaymentFallback />} />

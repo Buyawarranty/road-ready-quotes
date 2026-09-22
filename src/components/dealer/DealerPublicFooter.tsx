@@ -1,48 +1,66 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Mail, MapPin, Phone } from 'lucide-react';
+import { OptimizedImage } from '@/components/OptimizedImage';
+import pandaProtectLogo from '@/assets/panda-protect-v2.webp';
 
 const DealerPublicFooter: React.FC = () => {
   return (
-    <footer className="bg-slate-900 text-slate-300 mt-16">
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10">
-          <div className="md:col-span-1">
-            <div className="text-white font-black text-xl">Panda Protect</div>
-            <p className="text-sm text-slate-400 mt-3 leading-relaxed">
-              Trusted UK trade warranties for motor dealers.
-            </p>
+    <footer className="dealer-public-footer">
+      <div className="dealer-footer-shell">
+        <div className="dealer-footer-grid">
+          <div className="dealer-footer-brand">
+            <OptimizedImage src={pandaProtectLogo} alt="Panda Protect trade warranty solutions" width={1226} height={594} />
+            <p>Warranty solutions for a stronger tomorrow.</p>
           </div>
 
           <div>
-            <div className="text-white font-bold text-sm uppercase tracking-wide mb-4">For Dealers</div>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/dealer-portal/signup" className="hover:text-orange-400 transition-colors">Register interest</Link></li>
-              <li><Link to="/dealer-portal/login" className="hover:text-orange-400 transition-colors">Dealer login</Link></li>
-              <li><Link to="/faq/traders" className="hover:text-orange-400 transition-colors">Dealer FAQs</Link></li>
+            <h2>Quick links</h2>
+            <ul>
+              <li><Link to="/why-choose-us/">Why Choose Us</Link></li>
+              <li><Link to="/what-is-covered/">What’s Covered</Link></li>
+              <li><Link to="/make-a-claim/">Claims</Link></li>
+              <li><Link to="/thewarrantyhub/">Resources</Link></li>
+              <li><Link to="/faq/traders/">FAQs</Link></li>
+              <li><Link to="/contact-us/">Contact Us</Link></li>
             </ul>
           </div>
 
           <div>
-            <div className="text-white font-bold text-sm uppercase tracking-wide mb-4">Contact</div>
-            <ul className="space-y-2 text-sm">
-              <li><a href="mailto:hello@pandaprotect.co.uk" className="hover:text-orange-400 transition-colors">hello@pandaprotect.co.uk</a></li>
-              <li><a href="tel:03304454446" className="hover:text-orange-400 transition-colors">0330 445 4446</a></li>
+            <h2>For dealers</h2>
+            <ul>
+              <li><Link to="/dealer-portal/login">Dealer Portal</Link></li>
+              <li><Link to="/dealer-portal/signup">Register Your Dealership</Link></li>
+              <li><Link to="/contact-us/">Dealer Support</Link></li>
+              <li><Link to="/what-is-covered/">Warranty Products</Link></li>
+              <li><Link to="/why-choose-us/">White Label Solutions</Link></li>
+              <li><Link to="/thewarrantyhub/">Trade Warranty Guide</Link></li>
             </ul>
           </div>
 
           <div>
-            <div className="text-white font-bold text-sm uppercase tracking-wide mb-4">Legal</div>
-            <ul className="space-y-2 text-sm">
-              <li><Link to="/terms" className="hover:text-orange-400 transition-colors">Terms</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-orange-400 transition-colors">Privacy</Link></li>
-              <li><Link to="/cookie-policy" className="hover:text-orange-400 transition-colors">Cookies</Link></li>
+            <h2>Legal</h2>
+            <ul>
+              <li><Link to="/terms/">Terms &amp; Conditions</Link></li>
+              <li><Link to="/privacy/">Privacy Policy</Link></li>
+              <li><Link to="/why-choose-us/">FCA Information</Link></li>
+              <li><Link to="/cookies/">Cookie Policy</Link></li>
+              <li><Link to="/complaints/">Complaints</Link></li>
             </ul>
+          </div>
+
+          <div className="dealer-footer-contact">
+            <h2>Get in touch</h2>
+            <a href="tel:03309122535"><Phone />0330 912 2535</a>
+            <a href="mailto:dealers@pandaprotect.co.uk"><Mail />dealers@pandaprotect.co.uk</a>
+            <p><MapPin />Warranty House, 62 Berkhamsted Avenue, Wembley, HA9 6DT</p>
+            <strong>Trusted by UK motor dealers</strong>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-10 pt-6 text-xs text-slate-500 flex flex-col sm:flex-row gap-2 justify-between">
+        <div className="dealer-footer-bottom">
           <div>© {new Date().getFullYear()} Panda Protect. All rights reserved.</div>
-          <div>Built for the UK motor trade warranty industry.</div>
+          <div>A trade warranty provider for a stronger tomorrow.</div>
         </div>
       </div>
     </footer>
