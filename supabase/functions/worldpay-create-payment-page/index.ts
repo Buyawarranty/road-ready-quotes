@@ -2,6 +2,7 @@
 // and records the attempt in public.worldpay_transactions.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { resolveBrand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,6 +29,7 @@ interface Billing {
 }
 
 interface Body {
+  brand?: string;
   flow?: 'moto' | 'link';
   amount_pence?: number;
   description?: string;
@@ -143,7 +145,8 @@ Deno.serve(async (req: Request) => {
       ? 'https://access.worldpay.com'
       : 'https://try.access.worldpay.com';
 
-    const origin = req.headers.get('origin') || 'https://pandaprotect.co.uk';
+    const brand = resolveBrand(req, { brand: body.brand });
+    const origin = req.headers.get('origin') || brand.siteUrl;
     const successUrl = body.success_url || `${origin}/payment-received?ref=${transactionReference}`;
     const cancelUrl = body.cancel_url || `${origin}/payment-fallback?ref=${transactionReference}`;
 
@@ -155,11 +158,11 @@ Deno.serve(async (req: Request) => {
         transactionReference,
         merchant: { entity: ENTITY },
         narrative: {
-          line1: (String(description || 'Panda Protect')
+          line1: (String(description || brand.name)
             .replace(/[^a-zA-Z0-9\-., ]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim()
-            .slice(0, 24)) || 'Panda Protect',
+            .slice(0, 24)) || brand.name,
         },
         value: { currency, amount: amountPence },
         resultURLs: {
