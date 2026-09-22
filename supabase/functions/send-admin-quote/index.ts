@@ -153,8 +153,8 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header with Logo -->
                   <tr>
                     <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-                      <a href="https://buyawarranty.co.uk" target="_blank">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+                      <a href="https://www.pandaprotect.co.uk" target="_blank" style="text-decoration: none; font-size: 28px; font-weight: 800; color: #1a2a44; letter-spacing: -0.5px;">
+                        panda<span style="color: #EC6F33;">protect</span>
                       </a>
                     </td>
                   </tr>
