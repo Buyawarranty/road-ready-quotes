@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,8 +36,11 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const { email, planType, paymentType, policyNumber, registrationPlate, customerName, labourRate } = await req.json();
+    const requestBody = await req.json();
+    const { email, planType, paymentType, policyNumber, registrationPlate, customerName, labourRate } = requestBody;
     logStep("Request data", { email, planType, paymentType, policyNumber, registrationPlate, customerName, labourRate });
+
+    const brand = resolveBrand(req, { brand: requestBody?.brand });
 
     if (!email || !planType || !paymentType || !policyNumber) {
       logStep("Missing required parameters", { email: !!email, planType: !!planType, paymentType: !!paymentType, policyNumber: !!policyNumber });
@@ -227,7 +231,7 @@ serve(async (req) => {
 
     // Get environment variables for email
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const resendFrom = 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>';
+    const resendFrom = brandFrom(brand, 'Customer Care', 'noreply');
     
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY not configured');
@@ -356,8 +360,8 @@ serve(async (req) => {
     const emailPayload = {
       from: resendFrom,
       to: [email],
-      bcc: ['pandaprotect.co.uk+8fc526946e@invite.trustpilot.com'],
-      reply_to: 'support@pandaprotect.co.uk',
+      bcc: [`${brand.domain}+8fc526946e@invite.trustpilot.com`],
+      reply_to: brand.supportEmail,
       subject: `${finalCustomerName}, your warranty is now active`,
       headers: {
         'X-Entity-Ref-ID': `welcome-${policyNumber}-${Date.now()}`,
@@ -368,13 +372,13 @@ serve(async (req) => {
           
           <!-- Logo -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width: 300px; height: auto;" />
+            <img src="${brand.logoUrl}" alt="${brand.name}" style="max-width: 300px; height: auto;" />
           </div>
 
           <!-- Greeting -->
           <div style="margin-bottom: 25px;">
             <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 15px 0;">Hi <strong>${finalCustomerName}</strong>,</p>
-            <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0;">Thanks for choosing Panda Protect to protect your vehicle — we're pleased to let you know that your warranty is now active!</p>
+            <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0;">Thanks for choosing ${brand.name} to protect your vehicle — we're pleased to let you know that your warranty is now active!</p>
           </div>
 
           ${seasonalBonusMonths > 0 ? `
@@ -429,7 +433,7 @@ serve(async (req) => {
           <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
             <h3 style="color: #333333; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">🔐 Your Portal Login Details!</h3>
             <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0 0 15px 0;">You can view your updated policy anytime via your customer portal:</p>
-            <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Login:</strong> <a href="https://www.pandaprotect.co.uk/auth" style="color: #1a73e8; text-decoration: none;">Customer Dashboard</a></p>
+            <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Login:</strong> <a href="${brand.siteUrl}/auth" style="color: #1a73e8; text-decoration: none;">Customer Dashboard</a></p>
             <p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Email:</strong> ${email}</p>
             ${userHasResetPassword
               ? `<p style="margin: 8px 0; color: #555555; font-size: 13px; font-style: italic;">You have already set your dashboard password. Use your existing password to log in, or reset it from the login page if needed.</p>`
@@ -456,27 +460,27 @@ serve(async (req) => {
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Customer Sales and Support</strong></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #1a73e8; text-decoration: none;">support@pandaprotect.co.uk</a></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:03302295040" style="color: #1a73e8; text-decoration: none;">0330 229 5040</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:${brand.supportEmail}" style="color: #1a73e8; text-decoration: none;">${brand.supportEmail}</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: #1a73e8; text-decoration: none;">${brand.quotePhone}</a></p>
             </div>
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Claims and Repairs</strong></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:claims@pandaprotect.co.uk" style="color: #1a73e8; text-decoration: none;">claims@pandaprotect.co.uk</a></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:03302295045" style="color: #1a73e8; text-decoration: none;">0330 229 5045</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:${brand.claimsEmail}" style="color: #1a73e8; text-decoration: none;">${brand.claimsEmail}</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #1a73e8; text-decoration: none;">${brand.claimsPhone}</a></p>
               <p style="color: #555555; font-size: 14px; margin: 5px 0 0 0;">Hours: Monday to Friday, 9am – 5:30pm</p>
             </div>
           </div>
 
           <!-- Closing -->
           <div style="margin-bottom: 25px;">
-            <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0;">Thanks again for choosing Panda Protect — we're here to keep you covered and give you peace of mind on the road.</p>
+            <p style="color: #333333; font-size: 15px; line-height: 1.6; margin: 0;">Thanks again for choosing ${brand.name} — we're here to keep you covered and give you peace of mind on the road.</p>
           </div>
 
           <!-- Footer -->
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef;">
             <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Best regards,</strong></p>
-            <p style="color: #333333; font-size: 15px; margin: 0;">The Panda Protect Team</p>
+            <p style="color: #333333; font-size: 15px; margin: 0;">The ${brand.name} Team</p>
           </div>
         </div>
       `
@@ -538,8 +542,8 @@ serve(async (req) => {
             metadata: {
               customerFirstName: finalCustomerName,
               expiryDate: calculatePolicyEndDate(paymentType),
-              portalUrl: 'https://www.pandaprotect.co.uk/customer-dashboard',
-              referralLink: `https://www.pandaprotect.co.uk/refer/${userId || 'guest'}`,
+              portalUrl: `${brand.siteUrl}/customer-dashboard`,
+              referralLink: `${brand.siteUrl}/refer/${userId || 'guest'}`,
               emailType: 'first_invitation'
             }
           });
@@ -574,8 +578,8 @@ serve(async (req) => {
               metadata: {
                 customerFirstName: finalCustomerName,
                 expiryDate: calculatePolicyEndDate(paymentType),
-                portalUrl: 'https://www.pandaprotect.co.uk/customer-dashboard',
-                referralLink: `https://www.pandaprotect.co.uk/refer/${userId || 'guest'}`,
+                portalUrl: `${brand.siteUrl}/customer-dashboard`,
+                referralLink: `${brand.siteUrl}/refer/${userId || 'guest'}`,
                 emailType: 'reminder'
               }
             });
