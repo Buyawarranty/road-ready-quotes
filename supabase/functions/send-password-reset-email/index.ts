@@ -46,19 +46,24 @@ serve(async (req) => {
       );
     }
 
-    // Check if user exists
-    const { data: users, error: findError } = await supabaseClient.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000
-    });
+    // Check if user exists (paginate — the account may not be on the first page)
+    const normalizedEmail = String(email).trim().toLowerCase();
+    let user: { email?: string | null } | undefined;
+    for (let page = 1; page <= 20; page++) {
+      const { data: users, error: findError } = await supabaseClient.auth.admin.listUsers({
+        page,
+        perPage: 1000
+      });
 
-    if (findError) {
-      logStep('Error finding users', findError);
-      throw findError;
+      if (findError) {
+        logStep('Error finding users', findError);
+        throw findError;
+      }
+
+      user = users.users.find(u => (u.email || '').toLowerCase() === normalizedEmail);
+      if (user || users.users.length < 1000) break;
     }
 
-    const user = users.users.find(u => u.email === email);
-    
     if (!user) {
       // Don't reveal whether email exists or not for security
       logStep('User not found, but returning success for security', { email });
@@ -73,6 +78,7 @@ serve(async (req) => {
         }
       );
     }
+
 
     // Generate password reset link using Supabase Auth
     const { data: resetData, error: resetError } = await supabaseClient.auth.admin.generateLink({
