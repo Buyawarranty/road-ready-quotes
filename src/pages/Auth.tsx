@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { currentBrandKey } from '@/lib/brand';
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
