@@ -56,7 +56,7 @@ serve(async (req) => {
 
     logStep("Detail issue recorded in database");
 
-    // 2. Send email to support@pandaprotect.co.uk
+    // 2. Send email to the brand support mailbox
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);

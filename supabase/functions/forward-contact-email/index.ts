@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,6 +49,8 @@ serve(async (req) => {
       );
     }
 
+    const brand = resolveBrand(req, { record: submission });
+
     // Prepare email content
     let emailHtml = `
       <h3>New Contact Submission (Forwarded)</h3>
@@ -76,8 +79,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect Team <support@pandaprotect.co.uk>',
-        to: ['support@pandaprotect.co.uk'],
+        from: brandFrom(brand, 'Team', 'support'),
+        to: [brand.supportEmail],
         subject: `[FORWARDED] New Contact from ${submission.name}`,
         html: emailHtml,
       }),

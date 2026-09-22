@@ -81,7 +81,7 @@ serve(async (req) => {
       );
     }
 
-    // Send notification email to info@pandaprotect.co.uk
+    // Send notification email to the brand info mailbox
     const emailSubject = `Admin Credential Change Alert - ${changeType === 'password' ? 'Password' : 'Email'} Updated`;
     const emailHtml = `
       <!DOCTYPE html>

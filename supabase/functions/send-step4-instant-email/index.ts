@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,7 +39,9 @@ const handler = async (req: Request): Promise<Response> => {
       auth: { persistSession: false }
     });
 
-    const emailRequest: Step4EmailRequest = await req.json();
+    const emailBody: Step4EmailRequest & { brand?: string } = await req.json();
+    const emailRequest = emailBody;
+    const brand = resolveBrand(req, { brand: emailBody?.brand });
     console.log('📧 Step 4 instant email request:', emailRequest);
 
     // Validate required fields
@@ -135,7 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`✅ Sending email #${emailCount + 1} to ${emailRequest.email} (isReminder: ${isReminderEmail})`);
 
     // Build the restore URL that takes them directly back to step 4
-    const baseUrl = 'https://www.pandaprotect.co.uk';
+    const baseUrl = brand.siteUrl;
     const stateParam = btoa(JSON.stringify({
       regNumber: emailRequest.vehicleReg,
       email: emailRequest.email,
@@ -165,14 +168,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate promo code section HTML (only for reminder emails)
     const promoCodeSection = isReminderEmail ? `
       <!-- Promo Code Section -->
-      <div style="background-color: #FFF8E7; border: 2px solid #FF7A00; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
+      <div style="background-color: #FFF8E7; border: 2px solid ${brand.accentColor}; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
         <p style="color: #1A1A1A; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">
           Complete your purchase now and save £50!
         </p>
         <p style="color: #1A1A1A; font-size: 14px; margin: 0 0 12px 0;">
           Use this code at checkout – <strong>valid for 24 hours only</strong>:
         </p>
-        <a href="https://www.pandaprotect.co.uk?promo=SAVE50NOW" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: bold; padding: 12px 24px; border-radius: 4px; display: inline-block; letter-spacing: 2px; text-decoration: none; cursor: pointer;">
+        <a href="${brand.siteUrl}?promo=SAVE50NOW" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: bold; padding: 12px 24px; border-radius: 4px; display: inline-block; letter-spacing: 2px; text-decoration: none; cursor: pointer;">
           SAVE50NOW
         </a>
         <p style="color: #666666; font-size: 12px; margin: 10px 0 0 0;">Minimum order £350</p>
@@ -191,7 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; margin-bottom: 64px;">
     <!-- Header -->
     <div style="padding: 24px; text-align: center;">
-      <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
+      <img src="${brand.logoUrl}" width="200" alt="${brand.name}" style="margin: 0 auto;" />
     </div>
     
     <!-- Content -->
@@ -229,44 +232,44 @@ const handler = async (req: Request): Promise<Response> => {
       <!-- Benefits -->
       <div style="background-color: #f0fdf4; border-radius: 8px; padding: 20px; margin: 24px 0;">
         <p style="color: #166534; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/tick.png" width="16" height="16" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
+          <img src="${brand.siteUrl}/lovable-uploads/tick.png" width="16" height="16" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
           What's Included:
         </p>
         <p style="color: #166534; font-size: 15px; line-height: 28px; margin: 4px 0;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
+          <img src="${brand.siteUrl}/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
           Comprehensive mechanical & electrical cover
         </p>
         <p style="color: #166534; font-size: 15px; line-height: 28px; margin: 4px 0;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
+          <img src="${brand.siteUrl}/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
           UK-based customer support
         </p>
         <p style="color: #166534; font-size: 15px; line-height: 28px; margin: 4px 0;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
+          <img src="${brand.siteUrl}/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
           Easy claims, fast payouts
         </p>
         <p style="color: #166534; font-size: 15px; line-height: 28px; margin: 4px 0;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
+          <img src="${brand.siteUrl}/lovable-uploads/tick.png" width="14" height="14" style="vertical-align: middle; margin-right: 8px;" alt="✓"/>
           14-day money back guarantee
         </p>
       </div>
 
       <!-- Trust Signals -->
       <div style="text-align: center; margin: 24px 0;">
-        <a href="https://www.trustpilot.com/review/pandaprotect.co.uk" target="_blank" style="text-decoration: none;">
-          <img src="https://www.pandaprotect.co.uk/lovable-uploads/trustpilot-5-star-rating.png" width="150" alt="Trustpilot 5 Stars" style="margin: 0 auto;" />
+        <a href="${brand.trustpilotUrl}" target="_blank" style="text-decoration: none;">
+          <img src="${brand.siteUrl}/lovable-uploads/trustpilot-5-star-rating.png" width="150" alt="Trustpilot 5 Stars" style="margin: 0 auto;" />
         </a>
         <p style="color: #666; font-size: 13px; margin: 8px 0 0 0;">Rated Excellent on Trustpilot</p>
       </div>
 
       <!-- CTA Button -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${continueUrl}" style="background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); border-radius: 8px; color: #fff; font-size: 18px; font-weight: bold; text-decoration: none; padding: 18px 40px; display: inline-block; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);">
+        <a href="${continueUrl}" style="background: ${brand.accentColor}; border-radius: 8px; color: #fff; font-size: 18px; font-weight: bold; text-decoration: none; padding: 18px 40px; display: inline-block; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);">
           Complete My Purchase
         </a>
       </div>
 
       <p style="color: #666; font-size: 13px; text-align: center; margin: 16px 0;">
-        <img src="https://www.pandaprotect.co.uk/lovable-uploads/lock-icon.png" width="12" height="12" style="vertical-align: middle; margin-right: 4px;" alt="🔒"/>
+        <img src="${brand.siteUrl}/lovable-uploads/lock-icon.png" width="12" height="12" style="vertical-align: middle; margin-right: 4px;" alt="🔒"/>
         Secure & Encrypted | No hidden fees | FCA compliant
       </p>
 
@@ -279,17 +282,17 @@ const handler = async (req: Request): Promise<Response> => {
 
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
         Best regards,<br/>
-        The Panda Protect Team
+        The ${brand.name} Team
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
-        <a href="https://www.pandaprotect.co.uk" style="color: #0066cc; text-decoration: underline;">pandaprotect.co.uk</a>
+        <a href="${brand.siteUrl}" style="color: #0066cc; text-decoration: underline;">${brand.domain}</a>
       </p>
 
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0;">
-        📧 support@pandaprotect.co.uk
+        📧 ${brand.supportEmail}
       </p>
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0 48px 0;">
-        📞 0330 229 5040
+        📞 ${brand.quotePhone}
       </p>
     </div>
   </div>
@@ -314,7 +317,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Panda Protect Customer Care <info@pandaprotect.co.uk>",
+        from: brandFrom(brand, "Customer Care", "info"),
         to: [emailRequest.email],
         subject: subject,
         html: htmlContent,

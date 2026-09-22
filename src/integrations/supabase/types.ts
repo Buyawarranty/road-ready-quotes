@@ -2186,6 +2186,7 @@ export type Database = {
       bumper_transactions: {
         Row: {
           add_another_warranty: boolean | null
+          brand: string
           claim_limit: number | null
           client_id: string | null
           conversion_fired_at: string | null
@@ -2209,6 +2210,7 @@ export type Database = {
         }
         Insert: {
           add_another_warranty?: boolean | null
+          brand?: string
           claim_limit?: number | null
           client_id?: string | null
           conversion_fired_at?: string | null
@@ -2232,6 +2234,7 @@ export type Database = {
         }
         Update: {
           add_another_warranty?: boolean | null
+          brand?: string
           claim_limit?: number | null
           client_id?: string | null
           conversion_fired_at?: string | null
@@ -9858,6 +9861,7 @@ export type Database = {
           admin_user_id: string | null
           amount_pence: number
           application_url: string | null
+          brand: string
           created_at: string
           currency: string
           customer_email: string | null
@@ -9880,6 +9884,7 @@ export type Database = {
           admin_user_id?: string | null
           amount_pence: number
           application_url?: string | null
+          brand?: string
           created_at?: string
           currency?: string
           customer_email?: string | null
@@ -9902,6 +9907,7 @@ export type Database = {
           admin_user_id?: string | null
           amount_pence?: number
           application_url?: string | null
+          brand?: string
           created_at?: string
           currency?: string
           customer_email?: string | null

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,6 +49,8 @@ serve(async (req) => {
       );
     }
 
+    const brand = resolveBrand(req, { record: claim });
+
     // Prepare email content with REG PLATE at top
     const regPlateDisplay = claim.vehicle_registration ? claim.vehicle_registration.toUpperCase() : 'NO REG PROVIDED';
     
@@ -87,8 +90,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect Team <support@pandaprotect.co.uk>',
-        to: ['claims@pandaprotect.co.uk', 'info@pandaprotect.co.uk'],
+        from: brandFrom(brand, 'Team', 'support'),
+        to: [brand.claimsEmail, brand.infoEmail],
         subject: `[FORWARDED] Claim: ${regPlateDisplay}`,
         html: emailHtml,
       }),

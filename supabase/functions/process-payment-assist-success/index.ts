@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { brandKeyFrom } from "../_shared/brand.ts";
+import { resolveBrand, brandKeyFrom, BRANDS, DEFAULT_BRAND } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,7 +39,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=no_transaction"
+          "Location": `${BRANDS[DEFAULT_BRAND].siteUrl}/payment-fallback?error=no_transaction`
         }
       });
     }
@@ -62,7 +62,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=transaction_not_found"
+          "Location": `${BRANDS[DEFAULT_BRAND].siteUrl}/payment-fallback?error=transaction_not_found`
         }
       });
     }
@@ -73,6 +73,8 @@ serve(async (req) => {
       email: transaction.customer_data?.email 
     });
 
+    const brand = resolveBrand(req, { brand: transaction.customer_data?.brand });
+
     // Check if already processed
     if (transaction.status === 'completed') {
       logStep("Transaction already completed, redirecting to thank you");
@@ -80,7 +82,7 @@ serve(async (req) => {
         status: 302,
         headers: {
           ...corsHeaders,
-          "Location": transaction.redirect_url || "https://www.pandaprotect.co.uk/thank-you"
+          "Location": transaction.redirect_url || `${brand.siteUrl}/thank-you`
         }
       });
     }
@@ -326,8 +328,8 @@ serve(async (req) => {
         `;
 
         await resend.emails.send({
-          from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
-          to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
+          from: `${brand.name} Team <notifications@${brand.domain}>`,
+          to: [brand.infoEmail, `accounts@${brand.domain}`],
           subject: `New Sale ${saleType}: ${regPlate} - ${planName} - ${saleValue} via ${paymentMethod}`,
           html: salesEmailHtml,
         });
@@ -400,8 +402,8 @@ serve(async (req) => {
           `;
 
           await resend.emails.send({
-            from: 'Panda Protect Team <notifications@pandaprotect.co.uk>',
-            to: ['info@pandaprotect.co.uk', 'accounts@pandaprotect.co.uk'],
+            from: `${brand.name} Team <notifications@${brand.domain}>`,
+            to: [brand.infoEmail, `accounts@${brand.domain}`],
             subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValue} - Converted by ${agentName}`,
             html: agentSaleHtml,
           });
@@ -420,7 +422,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        "Location": transaction.redirect_url || "https://www.pandaprotect.co.uk/thank-you"
+        "Location": transaction.redirect_url || `${brand.siteUrl}/thank-you`
       }
     });
 
@@ -431,7 +433,7 @@ serve(async (req) => {
       status: 302,
       headers: {
         ...corsHeaders,
-        "Location": "https://www.pandaprotect.co.uk/payment-fallback?error=processing_failed"
+        "Location": `${brand.siteUrl}/payment-fallback?error=processing_failed`
       }
     });
   }

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,7 @@ interface ContactSubmissionRequest {
   email: string;
   phone?: string;
   message?: string;
+  brand?: string;
   file?: {
     name: string;
     size: number;
@@ -42,6 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
     const resend = new Resend(resendApiKey);
 
     const body: ContactSubmissionRequest = await req.json();
+    const brand = resolveBrand(req, { brand: body.brand });
 
     console.log('Processing contact submission:', {
       name: body.name,
@@ -103,7 +106,8 @@ const handler = async (req: Request): Promise<Response> => {
         file_url: fileUrl,
         file_name: fileName,
         file_size: fileSize,
-        status: 'new'
+        status: 'new',
+        brand: brand.key,
       })
       .select()
       .single();
@@ -133,8 +137,8 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
       const emailResponse = await resend.emails.send({
-        from: 'Panda Protect Team <noreply@pandaprotect.co.uk>',
-        to: ['support@pandaprotect.co.uk'],
+        from: brandFrom(brand, 'Team', 'noreply'),
+        to: [brand.supportEmail],
         subject: `New Contact Form Submission from ${body.name}`,
         html: emailContent,
       });
@@ -149,18 +153,18 @@ const handler = async (req: Request): Promise<Response> => {
         ${body.message ? `<p><strong>Your message:</strong><br>${body.message.replace(/\n/g, '<br>')}</p>` : ''}
         <p>If you have any urgent queries, please don't hesitate to contact us:</p>
         <ul>
-          <li>Email: support@pandaprotect.co.uk</li>
-          <li>Phone: 0330 229 5040</li>
+          <li>Email: ${brand.supportEmail}</li>
+          <li>Phone: ${brand.quotePhone}</li>
         </ul>
-        <p>Best regards,<br>The Buy a Warranty Team</p>
+        <p>Best regards,<br>The ${brand.name} Team</p>
         <hr>
         <p><small>Reference ID: ${submission.id}</small></p>
       `;
 
       const confirmationResponse = await resend.emails.send({
-        from: 'Panda Protect Customer Care <support@pandaprotect.co.uk>',
+        from: brandFrom(brand, 'Customer Care', 'support'),
         to: [body.email],
-        subject: 'Thank you for contacting Panda Protect',
+        subject: `Thank you for contacting ${brand.name}`,
         html: confirmationEmailContent,
       });
 
