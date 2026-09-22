@@ -2595,7 +2595,7 @@ body {
 .public-dealer-home .home-reg-input input::placeholder { color: hsl(var(--home-ink) / 0.65); }
 .public-dealer-home .home-reg-form > button { width: 100%; min-height: 52px; border-radius: 0.55rem; font-size: 1.02rem; }
 .public-dealer-home .home-contact-card { max-width: 540px; margin-top: 1rem; padding: 0.95rem 1.1rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.6rem; background: hsl(var(--home-surface)); box-shadow: 0 5px 16px hsl(var(--home-ink) / 0.06); text-align: center; }
-.public-dealer-home .home-contact-row { display: flex; align-items: center; justify-content: center; gap: 0.9rem; }
+.public-dealer-home .home-contact-row { display: flex; align-items: center; justify-content: center; gap: 0.9rem; border: 0; background: none; }
 .public-dealer-home .home-contact-phone { display: inline-flex; align-items: center; gap: 0.5rem; color: hsl(var(--home-navy)); font-size: 1rem; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .public-dealer-home .home-contact-icon { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 999px; background: hsl(var(--home-navy) / 0.08); color: hsl(var(--home-navy)); }
 .public-dealer-home .home-contact-icon svg { width: 0.95rem; height: 0.95rem; }
