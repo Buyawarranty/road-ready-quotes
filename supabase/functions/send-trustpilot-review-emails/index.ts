@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,8 +9,6 @@ const corsHeaders = {
 };
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
-
-const TRUSTPILOT_REVIEW_LINK = "https://uk.trustpilot.com/evaluate/pandaprotect.co.uk";
 
 // Trustpilot sends their own emails at ~1 day and ~7 days via BCC on the welcome email.
 // We only send our branded final nudge 14-17 days after purchase.
@@ -24,7 +23,7 @@ interface PolicyData {
 }
 
 // Our branded review email template (previously Email 3 — final nudge)
-function getReviewEmailHtml(firstName: string): string {
+function getReviewEmailHtml(firstName: string, brand: Brand): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -48,7 +47,7 @@ function getReviewEmailHtml(firstName: string): string {
           <!-- Logo -->
           <tr>
             <td style="text-align:center; padding-bottom:30px;">
-              <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" style="max-width:200px; height:auto;" />
+              <img src="${brand.logoUrl}" alt="${brand.name}" style="max-width:200px; height:auto;" />
             </td>
           </tr>
           
@@ -64,7 +63,7 @@ function getReviewEmailHtml(firstName: string): string {
             <td class="text" style="font-size:16px; color:#444; line-height:1.6;">
               This is just a quick final reminder.
               <br><br>
-              If you haven't had the chance yet, we'd be grateful if you could share a brief review of your experience with <strong>Panda Protect</strong>.
+              If you haven't had the chance yet, we'd be grateful if you could share a brief review of your experience with <strong>${brand.name}</strong>.
               <br><br>
               Even a few words help other drivers make informed decisions.
             </td>
@@ -74,7 +73,7 @@ function getReviewEmailHtml(firstName: string): string {
 
           <tr>
             <td align="center">
-              <a href="${TRUSTPILOT_REVIEW_LINK}" class="cta-button" style="background:#00b67a; color:#ffffff; text-decoration:none; font-size:16px; padding:16px 40px; border-radius:6px; display:inline-block; font-weight:600;">
+              <a href="${brand.trustpilotUrl}" class="cta-button" style="background:#00b67a; color:#ffffff; text-decoration:none; font-size:16px; padding:16px 40px; border-radius:6px; display:inline-block; font-weight:600;">
                 Share Your Experience on Trustpilot
               </a>
             </td>
@@ -85,7 +84,7 @@ function getReviewEmailHtml(firstName: string): string {
           <tr>
             <td class="text" style="font-size:16px; color:#444; line-height:1.6;">
               Thanks for taking the time,<br>
-              <strong>The Panda Protect Team</strong>
+              <strong>The ${brand.name} Team</strong>
             </td>
           </tr>
 
@@ -94,7 +93,7 @@ function getReviewEmailHtml(firstName: string): string {
           <tr>
             <td style="border-top:1px solid #e5e5e5; padding-top:25px; text-align:center;">
               <p style="margin:0; color:#888888; font-size:13px;">Your trusted warranty partner</p>
-              <p style="margin:5px 0 0 0; color:#888888; font-size:13px;">Panda Protect</p>
+              <p style="margin:5px 0 0 0; color:#888888; font-size:13px;">${brand.name}</p>
             </td>
           </tr>
         </table>
@@ -170,7 +169,7 @@ serve(async (req: Request) => {
         try {
           const { data: customer } = await supabase
             .from("customers")
-            .select("first_name, trustpilot_review_completed, status")
+            .select("first_name, trustpilot_review_completed, status, brand")
             .eq("id", policy.customer_id)
             .single();
 
@@ -187,13 +186,14 @@ serve(async (req: Request) => {
             continue;
           }
 
+          const brand = resolveBrand(req, { record: customer });
           const firstName = customer?.first_name || "Valued Customer";
 
           const emailResult = await resend.emails.send({
-            from: "Panda Protect <reviews@pandaprotect.co.uk>",
+            from: brandFrom(brand, "", "reviews"),
             to: [policy.email],
             subject: "Before we close your request…",
-            html: getReviewEmailHtml(firstName),
+            html: getReviewEmailHtml(firstName, brand),
           });
 
           console.log(`[TRUSTPILOT-REVIEW] Review email sent to ${policy.email}:`, emailResult);
