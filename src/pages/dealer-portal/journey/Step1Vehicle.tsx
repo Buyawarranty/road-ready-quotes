@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
+  FileText,
   Headphones,
   Loader2,
   Shield,
@@ -170,9 +171,12 @@ const Step1Vehicle: React.FC = () => {
     navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
+  const selectedPlanMeta = warrantyPlans.find((plan) => plan.key === selectedPlan);
+
   return (
     <DealerLayout>
-      <div className="mx-auto max-w-[1500px] space-y-3">
+      <div className="mx-auto grid max-w-[1500px] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+       <div className="space-y-4">
         <Card className="crm-panel-shadow border-crm-line">
           <CardContent className="p-5 sm:p-7">
             <div className="mb-6 flex items-start justify-between gap-3">
@@ -186,7 +190,7 @@ const Step1Vehicle: React.FC = () => {
               </span>
             </div>
 
-            <div className="max-w-3xl space-y-5">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
               <div>
                 <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
                 <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
@@ -223,7 +227,7 @@ const Step1Vehicle: React.FC = () => {
                   </div>
                 )}
               </div>
-              <div className="max-w-xl">
+              <div>
                 <div className="mb-2 flex items-center gap-2">
                   <label className="block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">MILEAGE</label>
                   {lookupState === 'success' && (
@@ -239,9 +243,27 @@ const Step1Vehicle: React.FC = () => {
                 )}
                 {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
               </div>
+
+              {lookupState === 'success' && (
+                <div className="rounded-lg border border-crm-line bg-muted/30 p-4">
+                  <p className="text-base font-bold leading-tight">AUDI Q5</p>
+                  <p className="text-xs text-muted-foreground">2018 · Diesel</p>
+                  <div className="mt-3 space-y-2 border-t border-crm-line pt-3 text-xs">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">Last MOT mileage</span>
+                      <span className="font-semibold">{Number(LAST_MOT_MILEAGE).toLocaleString()} miles</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-muted-foreground">Vehicle status</span>
+                      <span className="inline-flex items-center gap-1.5 font-bold text-crm-green"><CheckCircle2 className="h-3.5 w-3.5" /> Recognised</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
+
 
         <Card className={`crm-panel-shadow border-crm-line transition-opacity ${vehicleDetailsComplete ? 'opacity-100' : 'opacity-70'}`}>
           <CardContent className="p-4 sm:p-5">
@@ -304,11 +326,72 @@ const Step1Vehicle: React.FC = () => {
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
 
-            <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:justify-end">
+            <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:justify-end xl:hidden">
               <Button className="w-full sm:w-auto" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
             </div>
           </CardContent>
         </Card>
+       </div>
+
+       <Card className="crm-panel-shadow border-crm-line xl:sticky xl:top-4">
+         <CardContent className="p-5">
+           <div className="flex items-start gap-3">
+             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><FileText className="h-4.5 w-4.5" /></span>
+             <div>
+               <h2 className="text-base font-bold leading-tight">Quote summary</h2>
+               <p className="text-xs text-muted-foreground">Your quote details so far.</p>
+             </div>
+           </div>
+
+           <div className="mt-4 border-t border-crm-line pt-4">
+             <h3 className="text-sm font-bold">Vehicle</h3>
+             {lookupState === 'success' ? (
+               <>
+                 <p className="mt-2 text-sm font-bold">AUDI Q5</p>
+                 <p className="text-xs text-muted-foreground">2018 · Diesel</p>
+                 <dl className="mt-3 space-y-2 text-xs">
+                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Registration</dt><dd className="font-semibold">{reg}</dd></div>
+                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Current mileage</dt><dd className="font-semibold">{mileage ? `${Number(mileage).toLocaleString()} miles` : '—'}</dd></div>
+                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Last MOT mileage</dt><dd className="font-semibold">{Number(LAST_MOT_MILEAGE).toLocaleString()} miles</dd></div>
+                 </dl>
+               </>
+             ) : (
+               <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
+             )}
+           </div>
+
+           <div className="mt-4 border-t border-crm-line pt-4">
+             <h3 className="text-sm font-bold">Selected cover</h3>
+             {selectedPlanMeta && vehicleDetailsComplete ? (
+               <div className="mt-2 flex items-center gap-2">
+                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><selectedPlanMeta.icon className="h-4 w-4" /></span>
+                 <span className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
+                   {selectedPlanMeta.name}
+                   {selectedPlanMeta.badge && <span className="rounded-full bg-crm-orange-soft px-2 py-0.5 text-[9px] font-black tracking-[0.12em] text-crm-orange">{selectedPlanMeta.badge}</span>}
+                 </span>
+               </div>
+             ) : (
+               <p className="mt-2 text-xs text-muted-foreground">No cover selected yet.</p>
+             )}
+           </div>
+
+           {selectedPlanMeta && vehicleDetailsComplete && (
+             <div className="mt-4 border-t border-crm-line pt-4">
+               <h3 className="text-sm font-bold">Quote details</h3>
+               <dl className="mt-2 space-y-2 text-xs">
+                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold">{activePlan.duration_months} months</dd></div>
+                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Cover type</dt><dd className="font-semibold">{selectedPlan === 'dealer-paid' ? 'Claim management' : 'Comprehensive'}</dd></div>
+               </dl>
+               <div className="mt-3 flex items-center justify-between gap-2 border-t border-crm-line pt-3">
+                 <span className="text-sm font-bold">Monthly price</span>
+                 <span className="text-lg font-black">{selectedPlanMeta.price.replace('/m', '')}</span>
+               </div>
+             </div>
+           )}
+
+           <Button className="mt-4 w-full" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
+         </CardContent>
+       </Card>
       </div>
     </DealerLayout>
   );
