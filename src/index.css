@@ -2585,21 +2585,25 @@ body {
 .public-dealer-home .home-hero-bullets li { display: flex; align-items: center; gap: 0.6rem; color: hsl(var(--home-ink)); font-size: 1.05rem; font-weight: 700; }
 .public-dealer-home .home-hero-bullets svg { flex: 0 0 auto; width: 1.1rem; height: 1.1rem; color: hsl(145 63% 42%); }
 .public-dealer-home .home-bullet-sep { color: hsl(var(--home-copy) / 0.55); font-weight: 400; margin-inline: 0.1rem; }
-.public-dealer-home .home-hero-eligibility { max-width: 600px; margin: 0 0 1.1rem; color: hsl(var(--home-copy)); font-size: 0.92rem; }
+.public-dealer-home .home-hero-eligibility { max-width: 540px; margin: 0.85rem 0 0; color: hsl(var(--home-copy)); font-size: 0.92rem; text-align: center; }
 .public-dealer-home .home-hero-eligibility strong { color: hsl(var(--home-ink)); }
 .public-dealer-home .home-reg-form { max-width: 540px; display: grid; gap: 0.55rem; }
-.public-dealer-home .home-reg-input { min-height: 60px; display: flex; overflow: hidden; border: 2px solid hsl(var(--home-ink)); border-radius: 0.32rem; }
-.public-dealer-home .home-reg-country { width: 48px; flex: 0 0 48px; display: grid; place-content: center; text-align: center; color: hsl(var(--home-surface)); background: hsl(225 74% 46%); font-size: 0.72rem; font-weight: 800; line-height: 1; }
+.public-dealer-home .home-reg-input { min-height: 60px; display: flex; overflow: hidden; border: 2px solid hsl(var(--home-ink)); border-radius: 0.55rem; }
+.public-dealer-home .home-reg-country { width: 52px; flex: 0 0 52px; display: grid; place-content: center; text-align: center; color: hsl(var(--home-surface)); background: hsl(225 74% 46%); font-size: 0.72rem; font-weight: 800; line-height: 1; }
 .public-dealer-home .home-reg-country small { font-size: 0.52rem; margin-top: 0.15rem; }
 .public-dealer-home .home-reg-input input { width: 100%; min-width: 0; border: 0; border-radius: 0; padding: 0.75rem 1rem; outline: 0; background: hsl(var(--home-yellow)); color: hsl(var(--home-ink)); font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
 .public-dealer-home .home-reg-input input::placeholder { color: hsl(var(--home-ink) / 0.65); }
-.public-dealer-home .home-reg-form > button { width: 100%; }
-.public-dealer-home .home-secure-copy { display: flex; align-items: center; justify-content: center; gap: 0.35rem; margin: 0.6rem 0 0; color: hsl(var(--home-copy)); font-size: 0.72rem; }
-.public-dealer-home .home-secure-copy svg { width: 0.8rem; height: 0.8rem; }
-.public-dealer-home .home-support-card { max-width: 540px; display: flex; justify-content: space-between; gap: 1rem; margin-top: 1rem; padding: 0.85rem 1rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.45rem; background: hsl(var(--home-surface)); box-shadow: 0 5px 16px hsl(var(--home-ink) / 0.06); }
-.public-dealer-home .home-support-card a { display: inline-flex; align-items: center; gap: 0.35rem; color: hsl(var(--home-navy)); font-size: 0.8rem; font-weight: 800; }
-.public-dealer-home .home-support-card a:last-child { color: hsl(var(--home-orange)); }
-.public-dealer-home .home-support-card svg { width: 0.9rem; height: 0.9rem; }
+.public-dealer-home .home-reg-form > button { width: 100%; min-height: 52px; border-radius: 0.55rem; font-size: 1.02rem; }
+.public-dealer-home .home-contact-card { max-width: 540px; margin-top: 1rem; padding: 0.95rem 1.1rem; border: 1px solid hsl(var(--home-line)); border-radius: 0.6rem; background: hsl(var(--home-surface)); box-shadow: 0 5px 16px hsl(var(--home-ink) / 0.06); text-align: center; }
+.public-dealer-home .home-contact-row { display: flex; align-items: center; justify-content: center; gap: 0.9rem; }
+.public-dealer-home .home-contact-phone { display: inline-flex; align-items: center; gap: 0.5rem; color: hsl(var(--home-navy)); font-size: 1rem; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.public-dealer-home .home-contact-icon { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; border-radius: 999px; background: hsl(var(--home-navy) / 0.08); color: hsl(var(--home-navy)); }
+.public-dealer-home .home-contact-icon svg { width: 0.95rem; height: 0.95rem; }
+.public-dealer-home .home-contact-divider { width: 1px; height: 22px; background: hsl(var(--home-line)); }
+.public-dealer-home .home-contact-callback { display: inline-flex; align-items: center; gap: 0.4rem; border: 0; padding: 0; background: none; cursor: pointer; color: hsl(var(--home-orange)); font-size: 0.95rem; font-weight: 800; }
+.public-dealer-home .home-contact-callback:hover { text-decoration: underline; text-underline-offset: 3px; }
+.public-dealer-home .home-contact-callback svg { width: 0.95rem; height: 0.95rem; }
+.public-dealer-home .home-contact-note { margin: 0.55rem 0 0; color: hsl(var(--home-copy)); font-size: 0.78rem; }
 .public-dealer-home .home-hero-visual { text-align: center; }
 .public-dealer-home .home-hero-visual img { width: 100%; max-height: 440px; object-fit: contain; }
 .public-dealer-home .home-vehicle-types { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.85rem; margin-top: -0.5rem; color: hsl(var(--home-copy)); font-size: 0.72rem; font-weight: 700; }
