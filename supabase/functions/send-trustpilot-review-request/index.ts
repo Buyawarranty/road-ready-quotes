@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
+import { resolveBrand, brandFrom, brandKeyFrom, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -212,7 +212,17 @@ serve(async (req: Request) => {
       customerRecord = data;
     }
 
-    const brand = resolveBrand(req, { brand: brandHint, record: customerRecord });
+    // Trustpilot review invitations are Buy A Warranty only — Panda Protect
+    // must never send them, whatever origin or brand hint is supplied.
+    if (brandKeyFrom(brandHint) === "pandaprotect" || brandKeyFrom(customerRecord?.brand) === "pandaprotect") {
+      logStep("Skipped - Panda Protect does not send Trustpilot review invitations");
+      return new Response(
+        JSON.stringify({ success: false, skipped: true, reason: "Trustpilot review invitations are Buy A Warranty only" }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const brand = resolveBrand(null, { force: "buyawarranty" });
 
     const firstName = customerFirstName || "there";
 
