@@ -8,12 +8,10 @@ import { useDealerJourney, type DealerJourneyPlan, type DealerJourneyVehicle } f
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import {
   ArrowRight,
-  Car,
   Check,
   CheckCircle2,
   Headphones,
   Loader2,
-  Search,
   Shield,
 } from 'lucide-react';
 
