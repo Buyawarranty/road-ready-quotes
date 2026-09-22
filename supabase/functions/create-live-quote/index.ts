@@ -160,6 +160,7 @@ serve(async (req) => {
     const { data: quote, error: insertError } = await supabaseClient
       .from('live_quotes')
       .insert({
+        brand: resolveBrand(req).key,
         customer_name: customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone || null,

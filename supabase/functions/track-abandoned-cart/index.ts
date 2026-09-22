@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -309,6 +310,7 @@ const handler = async (req: Request): Promise<Response> => {
         .from('abandoned_carts')
         .insert([{
           ...cartData,
+          brand: resolveBrand(req).key,
           cart_metadata: {
             total_price: cartData.total_price,
             voluntary_excess: cartData.voluntary_excess,
