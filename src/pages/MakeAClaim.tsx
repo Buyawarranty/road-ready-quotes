@@ -97,11 +97,12 @@ const MakeAClaim: React.FC = () => {
               </span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-foreground mb-3">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-3">
               Making a claim
             </h1>
-            <p className="text-lg text-muted-foreground mb-6">Simple and supportive.</p>
+            <p className="text-base sm:text-lg text-muted-foreground mb-6">Simple and supportive.</p>
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
+
               We know that vehicle issues can be stressful, but making a claim shouldn&apos;t be. At
               Panda Protect, we&apos;ve made the process clear, quick and customer focused - so you
               get the help you need without the hassle.
@@ -136,7 +137,8 @@ const MakeAClaim: React.FC = () => {
                   <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <h3 className="font-semibold text-foreground mb-1.5">{title}</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-1.5">{title}</h3>
+
                   <p className="text-muted-foreground text-sm leading-relaxed">{body}</p>
                 </div>
               ))}
@@ -164,7 +166,8 @@ const MakeAClaim: React.FC = () => {
             {/* Already submitted */}
             <div className="mt-4 bg-card border rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
               <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1">Already submitted a claim?</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-1">Already submitted a claim?</h3>
+
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Just upload extra evidence (photos, reports, invoices) to your existing claim.
                 </p>
@@ -185,7 +188,8 @@ const MakeAClaim: React.FC = () => {
         {/* ================= START YOUR CLAIM ================= */}
         <section className="pb-16 sm:pb-20">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mb-2">Start your claim</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Start your claim</h2>
+
             <p className="text-muted-foreground mb-8">Takes about 3 minutes.</p>
 
             <div className="rounded-3xl border bg-card shadow-sm p-5 sm:p-8">
@@ -195,7 +199,8 @@ const MakeAClaim: React.FC = () => {
                   <Info className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">Before you begin</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">Before you begin</h3>
+
                   <p className="text-muted-foreground text-sm sm:text-base">
                     Please take a moment to review this important information.
                   </p>
