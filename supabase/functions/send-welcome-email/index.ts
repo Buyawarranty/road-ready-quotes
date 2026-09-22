@@ -360,7 +360,10 @@ serve(async (req) => {
     const emailPayload = {
       from: resendFrom,
       to: [email],
-      bcc: [`${brand.domain}+8fc526946e@invite.trustpilot.com`],
+      // Trustpilot review invitations are Buy A Warranty only — never Panda Protect.
+      ...(brand.key === 'buyawarranty'
+        ? { bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'] }
+        : {}),
       reply_to: brand.supportEmail,
       subject: `${finalCustomerName}, your warranty is now active`,
       headers: {

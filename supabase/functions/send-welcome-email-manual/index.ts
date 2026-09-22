@@ -588,7 +588,10 @@ const handler = async (req: Request): Promise<Response> => {
     const emailPayload = {
       from: resendFrom,
       to: [customer.email],
-      bcc: [`${brand.domain}+8fc526946e@invite.trustpilot.com`],
+      // Trustpilot review invitations are Buy A Warranty only — never Panda Protect.
+      ...(brand.key === 'buyawarranty'
+        ? { bcc: ['buyawarranty.co.uk+8fc526946e@invite.trustpilot.com'] }
+        : {}),
       subject: emailSubject,
       ...(attachments.length > 0 && { attachments }),
       html: `
