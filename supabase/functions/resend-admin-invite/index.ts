@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,6 +14,7 @@ const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 interface ResendInviteRequest {
   userId: string;
   email: string;
+  brand?: string;
 }
 
 function generateRandomPassword(): string {
@@ -36,7 +38,9 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { userId, email }: ResendInviteRequest = await req.json();
+    const body: ResendInviteRequest = await req.json();
+    const { userId, email } = body;
+    const brand: Brand = resolveBrand(req, { brand: body?.brand });
 
     // Get user details from admin_users table
     const { data: adminUser, error: fetchError } = await supabaseClient
@@ -109,13 +113,13 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Create invitation link
-    const invitationLink = `https://pricing.pandaprotect.co.uk/admin-dashboard`;
+    const invitationLink = `${brand.siteUrl}/admin-dashboard`;
 
     // Send invitation email
     const emailResult = await resend.emails.send({
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      from: `${brand.name} Customer Care <${brand.noReplyEmail}>`,
       to: [email],
-      subject: "Admin Account Invitation Resent - Panda Protect",
+      subject: `Admin Account Invitation Resent - ${brand.name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
@@ -124,7 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
             <p style="color: #666; margin-bottom: 20px;">Hello ${adminUser.first_name || ''},</p>
             
             <p style="color: #666; margin-bottom: 20px;">
-              Your admin account invitation has been resent. You can now access the Panda Protect admin dashboard.
+              Your admin account invitation has been resent. You can now access the ${brand.name} admin dashboard.
             </p>
             
             <div style="background-color: #f8f9fa; padding: 20px; border-radius: 6px; margin: 20px 0;">
@@ -150,17 +154,17 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             
             <p style="color: #666; font-size: 14px; margin-top: 20px;">
-              If you have any questions, please contact support at info@pandaprotect.co.uk
+              If you have any questions, please contact support at ${brand.infoEmail}
             </p>
           </div>
         </div>
       `,
       text: `
-        Admin Account Invitation Resent - Panda Protect
+        Admin Account Invitation Resent - ${brand.name}
         
         Hello ${adminUser.first_name || ''},
         
-        Your admin account invitation has been resent. You can now access the Panda Protect admin dashboard.
+        Your admin account invitation has been resent. You can now access the ${brand.name} admin dashboard.
         
         Login Credentials:
         Email: ${email}
@@ -170,7 +174,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         Please change your password after your first login for security purposes.
         
-        If you have any questions, please contact support at info@pandaprotect.co.uk
+        If you have any questions, please contact support at ${brand.infoEmail}
       `
     });
 
@@ -179,7 +183,7 @@ const handler = async (req: Request): Promise<Response> => {
       .from('email_logs')
       .insert({
         recipient_email: email,
-        subject: 'Admin Account Invitation Resent - Panda Protect',
+        subject: `Admin Account Invitation Resent - ${brand.name}`,
         status: 'sent',
         metadata: { 
           resend_message_id: emailResult.data?.id,

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,19 +8,19 @@ const corsHeaders = {
 };
 
 // Response messages
-const MESSAGES = {
-  OPT_IN: (_name?: string) => `We'll call you shortly with your best price. Prefer to speak now? Call 0330 229 5040.`,
-  
-  OPT_OUT: `You're opted out from Panda Protect. No further messages will be sent.`,
+const MESSAGES = (brand: Brand) => ({
+  OPT_IN: (_name?: string) => `We'll call you shortly with your best price. Prefer to speak now? Call ${brand.quotePhone}.`,
 
-  STOP: `You're opted out from Panda Protect. No further messages will be sent.`,
-  
+  OPT_OUT: `You're opted out from ${brand.name}. No further messages will be sent.`,
+
+  STOP: `You're opted out from ${brand.name}. No further messages will be sent.`,
+
   RE_SUBSCRIBE: `Thanks for reconnecting with us.
 
-A Panda Protect expert will be in touch shortly to help you with your warranty options.
+A ${brand.name} expert will be in touch shortly to help you with your warranty options.
 
-If you would like to speak to us now, call 0330 229 5040.`,
-};
+If you would like to speak to us now, call ${brand.quotePhone}.`,
+});
 
 // Helper to send SMS via ClickSend
 async function sendSms(phone: string, message: string, authString: string): Promise<boolean> {
@@ -150,6 +151,20 @@ serve(async (req) => {
       console.error('Error looking up consent record:', lookupError);
     }
 
+    // Try to determine which brand this conversation belongs to via the
+    // linked abandoned cart record, falling back to the request origin.
+    let cartBrand: unknown = null;
+    if (consentRecord?.abandoned_cart_id) {
+      const { data: cartRecord } = await supabase
+        .from('abandoned_carts')
+        .select('brand')
+        .eq('id', consentRecord.abandoned_cart_id)
+        .maybeSingle();
+      cartBrand = cartRecord?.brand ?? null;
+    }
+    const brand = resolveBrand(req, { record: { brand: cartBrand } });
+    const MSG = MESSAGES(brand);
+
     let responseMessage: string;
     let newStatus: 'opted_in' | 'opted_out' | 'pending';
     let updateData: Record<string, unknown>;
@@ -158,7 +173,7 @@ serve(async (req) => {
     if (messageUpper === 'YES' || messageUpper === 'Y') {
       // Get customer name from consent record if available
       const customerName = consentRecord?.customer_name || null;
-      responseMessage = MESSAGES.OPT_IN(customerName);
+      responseMessage = MSG.OPT_IN(customerName);
       newStatus = 'opted_in';
       updateData = {
         consent_status: newStatus,
@@ -170,7 +185,7 @@ serve(async (req) => {
       console.log('Customer opted IN');
       
     } else if (messageUpper === 'NO' || messageUpper === 'N') {
-      responseMessage = MESSAGES.OPT_OUT;
+      responseMessage = MSG.OPT_OUT;
       newStatus = 'opted_out';
       updateData = {
         consent_status: newStatus,
@@ -182,7 +197,7 @@ serve(async (req) => {
       console.log('Customer opted OUT');
 
     } else if (messageUpper === 'STOP') {
-      responseMessage = MESSAGES.STOP;
+      responseMessage = MSG.STOP;
       newStatus = 'opted_out';
       updateData = {
         consent_status: newStatus,
@@ -194,7 +209,7 @@ serve(async (req) => {
       console.log('Customer STOPPED');
       
     } else if (messageUpper === 'BACK' || messageUpper === 'START') {
-      responseMessage = MESSAGES.RE_SUBSCRIBE;
+      responseMessage = MSG.RE_SUBSCRIBE;
       newStatus = 'opted_in';
       updateData = {
         consent_status: newStatus,

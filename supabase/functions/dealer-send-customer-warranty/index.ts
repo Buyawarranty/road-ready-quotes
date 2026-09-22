@@ -2,6 +2,7 @@
 // Body: { customer_id: string, to_email?: string, message?: string }
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
+import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,6 +23,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+
+  const brand: Brand = resolveBrand(req, { force: 'pandaprotect' });
 
   try {
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -97,20 +100,20 @@ Deno.serve(async (req: Request) => {
         <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">Your warranty is confirmed</h1>
         <p style="font-size:13px;color:#666;margin:0 0 18px">Provided by ${esc(dealerName)} · ${new Date().toLocaleDateString('en-GB')}</p>
         <p style="font-size:14px;line-height:1.6">Hi ${esc(c.name || 'there')},</p>
-        <p style="font-size:14px;line-height:1.6">${esc(dealerName)} has arranged a Panda Protect warranty for your vehicle. Here are the details:</p>
+        <p style="font-size:14px;line-height:1.6">${esc(dealerName)} has arranged a ${esc(brand.name)} warranty for your vehicle. Here are the details:</p>
         ${note}
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
-        <p style="font-size:13px;color:#666;margin-top:22px">To make a claim, contact us at hello@pandaprotect.co.uk quoting your reference above.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">Panda Protect · hello@pandaprotect.co.uk</p>
+        <p style="font-size:13px;color:#666;margin-top:22px">To make a claim, contact us at ${brand.helloEmail} quoting your reference above.</p>
+        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.helloEmail}</p>
       </div>`;
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
-        from: 'Panda Protect <hello@pandaprotect.co.uk>',
+        from: brandFrom(brand, '', 'hello'),
         to: [to],
-        reply_to: dealer.email || 'hello@pandaprotect.co.uk',
+        reply_to: dealer.email || brand.helloEmail,
         subject: `Your vehicle warranty — ${c.registration_plate || ref}`,
         html,
       }),
