@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
+import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +25,8 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { email } = await req.json();
+    const body = await req.json();
+    const { email } = body;
 
     if (!email) {
       return new Response(
@@ -49,6 +51,8 @@ serve(async (req) => {
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    const brand = resolveBrand(req, { brand: body?.brand, record: customer });
 
     if (!customer) {
       return new Response(
@@ -95,8 +99,8 @@ serve(async (req) => {
       .maybeSingle();
 
     // Prepare email content
-    const loginUrl = "https://www.pandaprotect.co.uk/customer-dashboard";
-    const supportEmail = "support@pandaprotect.co.uk";
+    const loginUrl = `${brand.siteUrl}/customer-dashboard`;
+    const supportEmail = brand.supportEmail;
     
     const emailHtml = `
     <!DOCTYPE html>
@@ -154,7 +158,7 @@ serve(async (req) => {
                 <p>If you continue to experience login issues, please contact our support team at <a href="mailto:${supportEmail}">${supportEmail}</a>.</p>
             </div>
             <div class="footer">
-                <p>© 2025 Buy-A-Warranty. All rights reserved.</p>
+                <p>© 2025 ${brand.name}. All rights reserved.</p>
                 <p>This email was sent because you requested your login credentials.</p>
             </div>
         </div>
@@ -176,7 +180,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect Customer Care <noreply@pandaprotect.co.uk>',
+        from: brandFrom(brand, 'Customer Care', 'noreply'),
         to: [email],
         subject: 'Your Customer Dashboard Login Details',
         html: emailHtml,
