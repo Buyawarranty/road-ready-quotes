@@ -304,33 +304,35 @@ const Auth = () => {
   };
 
   const handleResetPassword = async () => {
-    if (!email) {
-      toast({
-        title: "Email Required",
-        description: "Please enter your email address first.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Default to the support inbox when no email has been entered
+    const resetEmail = email.trim() || 'info@buyawarranty.co.uk';
 
     try {
+      setLoading(true);
+
       // Use our custom branded password reset email
-      const { error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email }
+      const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
+        body: { email: resetEmail }
       });
-      
-      if (error) throw error;
+
+      if (error || data?.success === false) {
+        throw new Error(data?.error || error?.message || 'Failed to send password reset email');
+      }
 
       toast({
         title: "Reset Email Sent",
-        description: "Check your email for the password reset link.",
+        description: email.trim()
+          ? "Check your email for the password reset link."
+          : `A password reset link has been sent to ${resetEmail}.`,
       });
     } catch (error: any) {
       toast({
         title: "Reset Failed",
-        description: error.message,
+        description: error?.message || 'Failed to send password reset email. Please try again.',
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
