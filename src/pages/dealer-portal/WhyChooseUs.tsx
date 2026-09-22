@@ -166,7 +166,7 @@ const WhyChooseUs = () => {
               [Headphones, 'UK based', 'dealer support'],
             ].map(([Icon, titleText, body]) => {
               const ItemIcon = Icon as React.ComponentType<{ 'aria-hidden'?: boolean }>;
-              return <div key={String(titleText)}><span><ItemIcon aria-hidden="true" /></span><p><strong>{String(titleText)}</strong>{String(body)}</p></div>;
+              return <div key={String(titleText)}><span><ItemIcon aria-hidden={true} /></span><p><strong>{String(titleText)}</strong>{String(body)}</p></div>;
             })}
           </div>
         </section>
