@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,6 +42,8 @@ serve(async (req: Request) => {
       });
     }
 
+    const brand = resolveBrand(req, { brand: body?.brand, record: request });
+
     // Check expiry
     if (new Date(request.expires_at) < new Date()) {
       return new Response(JSON.stringify({ error: "This link has expired" }), {
@@ -77,7 +80,7 @@ serve(async (req: Request) => {
       .update({ is_responded: true })
       .eq("id", request.id);
 
-    // Send notification email to claims@pandaprotect.co.uk
+    // Send notification email to the brand claims mailbox
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const regPlate = request.vehicle_registration?.toUpperCase() || "N/A";
@@ -118,8 +121,8 @@ serve(async (req: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Panda Protect Claims <claims@pandaprotect.co.uk>",
-          to: ["claims@pandaprotect.co.uk"],
+          from: brandFrom(brand, "Claims", "claims"),
+          to: [brand.claimsEmail],
           subject: `Claim Update Received: ${regPlate} — ${statusUpdate || "Update submitted"}`,
           html: notificationHtml,
         }),

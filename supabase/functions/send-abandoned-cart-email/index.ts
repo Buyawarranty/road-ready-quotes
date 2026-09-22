@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
 // Utility functions for retrying fetch requests
 const timedFetch = (url: string, options: RequestInit, timeout = 30000): Promise<Response> => {
@@ -86,7 +87,7 @@ interface SendEmailRequest {
   };
 }
 
-const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { html: string, subject: string } => {
+const generateEmailHTML = (request: SendEmailRequest, continueUrl: string, brand: Brand): { html: string, subject: string } => {
   // Use first name if available and it's not an email address, otherwise use a friendly greeting
   const isEmailAddress = (str: string) => str && str.includes('@');
   const firstName = request.firstName && request.firstName.trim() && !isEmailAddress(request.firstName.trim()) 
@@ -95,7 +96,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
   const vehicleInfo = `${request.vehicleMake || ''} ${request.vehicleModel || ''}`.trim() || 'your vehicle';
   const vehicleReg = request.vehicleReg || '';
   
-  let subject = `${vehicleReg} - Your warranty quote from Panda Protect`;
+  let subject = `${vehicleReg} - Your warranty quote from ${brand.name}`;
   let heading = `Your Warranty Quote for ${vehicleInfo}`;
   let intro = `You requested a warranty quote for your ${vehicleInfo}${vehicleReg ? ` (${vehicleReg})` : ''}.`;
   let body = "We've saved your quote details. You can review and complete your application whenever you're ready.";
@@ -136,7 +137,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; margin-bottom: 64px;">
     <!-- Header -->
     <div style="padding: 24px; text-align: center;">
-      <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" width="200" alt="Panda Protect" style="margin: 0 auto;" />
+      <img src="${brand.logoUrl}" width="200" alt="${brand.name}" style="margin: 0 auto;" />
     </div>
     
     <!-- Content -->
@@ -151,9 +152,9 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
 
       ${showPromo ? `
       <!-- Promo Section -->
-      <div style="background-color: #FFF8E7; border: 2px solid #FF7A00; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
+      <div style="background-color: #FFF8E7; border: 2px solid ${brand.accentColor}; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
         <p style="color: #1A1A1A; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">${promoText}</p>
-        <a href="https://www.pandaprotect.co.uk?promo=${promoCode}" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: 800; padding: 12px 24px; border-radius: 6px; display: inline-block; letter-spacing: 2px; font-family: monospace; text-decoration: none; cursor: pointer;">${promoCode}</a>
+        <a href="${brand.siteUrl}?promo=${promoCode}" style="background-color: #1A1A1A; color: #fff; font-size: 24px; font-weight: 800; padding: 12px 24px; border-radius: 6px; display: inline-block; letter-spacing: 2px; font-family: monospace; text-decoration: none; cursor: pointer;">${promoCode}</a>
         <p style="color: #666666; font-size: 12px; margin: 10px 0 0 0;">Tap to copy &bull; <strong>Valid for 24 hours</strong> &bull; Minimum order £350</p>
       </div>
       ` : ''}
@@ -169,7 +170,7 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
 
       <!-- CTA Button -->
       <div style="text-align: center; margin: 32px 0;">
-        <a href="${continueUrl}" style="background-color: #FF7A00; border-radius: 6px; color: #fff; font-size: 18px; font-weight: bold; text-decoration: none; padding: 16px 32px; display: inline-block;">
+        <a href="${continueUrl}" style="background-color: ${brand.accentColor}; border-radius: 6px; color: #fff; font-size: 18px; font-weight: bold; text-decoration: none; padding: 16px 32px; display: inline-block;">
           ${ctaText}
         </a>
       </div>
@@ -185,22 +186,22 @@ const generateEmailHTML = (request: SendEmailRequest, continueUrl: string): { ht
         Best regards,
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
-        The Panda Protect Team
+        The ${brand.name} Team
       </p>
       <p style="color: #8898aa; font-size: 14px; line-height: 20px; margin: 8px 0;">
-        <a href="https://www.pandaprotect.co.uk" style="color: #0066cc; text-decoration: underline;">pandaprotect.co.uk</a>
+        <a href="${brand.siteUrl}" style="color: #0066cc; text-decoration: underline;">${brand.domain}</a>
       </p>
 
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0;">
-        📧 support@pandaprotect.co.uk
+        📧 ${brand.supportEmail}
       </p>
       <p style="color: #8898aa; font-size: 13px; line-height: 20px; margin: 8px 0 24px 0;">
-        📞 0330 229 5040
+        📞 ${brand.quotePhone}
       </p>
 
       <div style="border-top: 1px solid #e6ebf1; padding-top: 16px; margin-top: 16px; text-align: center;">
         <p style="color: #aab7c4; font-size: 11px; line-height: 16px; margin: 0;">
-          You're receiving this email because you requested a warranty quote from Panda Protect.<br>
+          You're receiving this email because you requested a warranty quote from ${brand.name}.<br>
           <a href="${Deno.env.get('SUPABASE_URL')}/functions/v1/handle-email-unsubscribe?email=${encodeURIComponent(request.email)}&token=${btoa(request.email.trim().toLowerCase() + '_baw_unsub_2024')}" style="color: #aab7c4; text-decoration: underline;">Unsubscribe</a> from future emails.
         </p>
       </div>
@@ -226,7 +227,9 @@ const handler = async (req: Request): Promise<Response> => {
       auth: { persistSession: false }
     });
 
-    const emailRequest: SendEmailRequest = await req.json();
+    const emailBody: SendEmailRequest & { brand?: string } = await req.json();
+    const emailRequest = emailBody;
+    const brand = resolveBrand(req, { brand: emailBody?.brand });
     console.log('Sending abandoned cart email:', emailRequest);
 
     // Check if we've already sent this type of email for this specific cart
@@ -266,7 +269,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Generate URLs
-    const baseUrl = 'https://www.pandaprotect.co.uk';
+    const baseUrl = brand.siteUrl;
     let continueUrl = baseUrl;
 
     if (emailRequest.vehicleReg) {
@@ -307,7 +310,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Generate email HTML
-    const { html: htmlContent, subject } = generateEmailHTML(emailRequest, continueUrl);
+    const { html: htmlContent, subject } = generateEmailHTML(emailRequest, continueUrl, brand);
 
     // Send email using Resend
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -316,7 +319,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailPayload = {
-      from: "Panda Protect Customer Care <info@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "info"),
       to: [emailRequest.email],
       subject: subject,
       html: htmlContent,

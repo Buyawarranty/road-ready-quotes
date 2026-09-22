@@ -2,7 +2,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { resolveBrand } from "../_shared/brand.ts";
-import { brandKeyFrom, resolveBrand } from "../_shared/brand.ts";
 
 // Import addons utility functions
 const getAutoIncludedAddOns = (paymentType: string, planType?: string): string[] => {
@@ -403,11 +402,10 @@ serve(async (req) => {
       ga_client_id: trackingData?.clientId || metadata?.ga_client_id || null,
       purchase_source: (trackingData?.gclid || metadata?.gclid) ? 'google_ads' : (effectiveBumperOrderId ? 'bumper' : (stripeSessionId ? 'stripe' : 'website')),
       // Default all website sales to the brand support mailbox
-      brand: brand.key,
       assigned_to: 'e39499b8-f88c-4963-9f0d-63e1addb3025',
       // Customer date of birth for identity verification
       customer_dob: customerData?.customer_dob || metadata?.customer_dob || null,
-      brand: brandKeyFrom(metadata?.brand) ?? resolveBrand(req).key
+      brand: brand.key
     };
 
     // Detect Facebook Ads attribution from abandoned cart metadata

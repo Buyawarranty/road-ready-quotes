@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -49,7 +50,7 @@ const formatPaymentType = (paymentType: string): string => {
   }
 };
 
-const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string => {
+const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string, brand: Brand): string => {
   const { vehicleData, firstName, lastName, selectedPlan, quoteId, email } = data;
   
   const isEmailAddress = (str: string) => str && str.includes('@');
@@ -91,8 +92,8 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <!-- Header with Logo -->
               <tr>
                 <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-                  <a href="https://www.pandaprotect.co.uk" target="_blank">
-                    <img src="https://www.pandaprotect.co.uk/panda-protect-logo.png" alt="Panda Protect" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
+                  <a href="${brand.siteUrl}" target="_blank">
+                    <img src="${brand.logoUrl}" alt="${brand.name}" width="160" style="display: block; width: 160px; max-width: 100%; height: auto;" />
                   </a>
                 </td>
               </tr>
@@ -131,7 +132,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <!-- Primary CTA -->
               <tr>
                 <td align="center" style="padding: 0 32px 28px 32px;">
-                  <a href="${quoteLink}" target="_blank" style="display: block; width: 100%; background-color: #FF7A00; color: #ffffff; padding: 16px 24px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 17px; text-align: center; box-sizing: border-box;">
+                  <a href="${quoteLink}" target="_blank" style="display: block; width: 100%; background-color: ${brand.accentColor}; color: #ffffff; padding: 16px 24px; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 17px; text-align: center; box-sizing: border-box;">
                     Complete my purchase
                   </a>
                 </td>
@@ -188,11 +189,11 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
               <!-- Social Proof -->
               <tr>
                 <td align="center" style="padding: 24px 32px;">
-                  <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" style="text-decoration: none;">
-                    <img src="https://www.pandaprotect.co.uk/lovable-uploads/4e4faf8a-b202-4101-a858-9c58ad0a28c5.png" alt="Trustpilot" width="120" style="display: block; width: 120px; max-width: 100%; height: auto; margin: 0 auto;" />
+                  <a href="${brand.trustpilotUrl}" target="_blank" style="text-decoration: none;">
+                    <img src="${brand.logoUrl}" alt="Trustpilot" width="120" style="display: block; width: 120px; max-width: 100%; height: auto; margin: 0 auto;" />
                   </a>
                   <p style="font-size: 13px; margin: 10px 0 0 0;">
-                    <a href="https://uk.trustpilot.com/review/pandaprotect.co.uk" target="_blank" style="color: #555555; text-decoration: underline;">Read reviews on Trustpilot</a>
+                    <a href="${brand.trustpilotUrl}" target="_blank" style="color: #555555; text-decoration: underline;">Read reviews on Trustpilot</a>
                   </p>
                 </td>
               </tr>
@@ -211,10 +212,10 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     Prefer to speak to us?
                   </p>
                   <p style="font-size: 14px; color: #555555; margin: 0 0 4px 0;">
-                    Email: <a href="mailto:support@pandaprotect.co.uk" style="color: #FF7A00; text-decoration: none;">support@pandaprotect.co.uk</a>
+                    Email: <a href="mailto:${brand.supportEmail}" style="color: ${brand.accentColor}; text-decoration: none;">${brand.supportEmail}</a>
                   </p>
                   <p style="font-size: 14px; color: #555555; margin: 0;">
-                    Phone: <a href="tel:03302295040" style="color: #FF7A00; text-decoration: none;">0330 229 5040</a>
+                    Phone: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: ${brand.accentColor}; text-decoration: none;">${brand.quotePhone}</a>
                   </p>
                 </td>
               </tr>
@@ -230,7 +231,7 @@ const generateQuoteEmail = (data: QuoteEmailRequest, baseUrl: string): string =>
                     <a href="${baseUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #999999; text-decoration: underline;">Unsubscribe</a>
                   </p>
                   <p style="font-size: 11px; color: #AAAAAA; margin: 0; line-height: 1.5; text-align: center;">
-                    Panda Protect is a trading name of Panda Protect Limited. Established 2016.<br/>
+                    ${brand.legalName} Established 2016.<br/>
                     Registered in the United Kingdom under Company number: 10314863<br/>
                     Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
                   </p>
@@ -271,6 +272,8 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
     const data: QuoteEmailRequest = await req.json();
     
+    const brand = resolveBrand(req, { brand: (data as any).brand });
+    
     logStep('Sending quote email', { email: data.email, vehicle: data.vehicleData.regNumber, requestHeaders: Object.fromEntries(req.headers.entries()) });
 
     const resend = new Resend(resendApiKey);
@@ -279,7 +282,7 @@ const handler = async (req: Request): Promise<Response> => {
     const quoteId = `QUO-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
     
     // Always use production URL for email links
-    const baseUrl = 'https://www.pandaprotect.co.uk';
+    const baseUrl = brand.siteUrl;
     
     logStep('Email URL generation', { baseUrl, quoteId, email: data.email });
     
@@ -310,7 +313,7 @@ const handler = async (req: Request): Promise<Response> => {
       logStep('Exception storing quote data', error);
     }
 
-    const htmlContent = generateQuoteEmail({ ...data, quoteId }, baseUrl);
+    const htmlContent = generateQuoteEmail({ ...data, quoteId }, baseUrl, brand);
 
     const vehicleDisplay = `${data.vehicleData.make || ''} ${data.vehicleData.model || ''}`.trim() || 'Your Vehicle';
     // Subject line optimized for Primary inbox - conversational, no promotional language
@@ -320,9 +323,9 @@ const handler = async (req: Request): Promise<Response> => {
       : `Your ${data.vehicleData.regNumber} warranty quote is ready`;
     
     const emailResponse = await resend.emails.send({
-      from: "Panda Protect Customer Care <noreply@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "noreply"),
       to: [data.email],
-      reply_to: 'support@pandaprotect.co.uk',
+      reply_to: brand.supportEmail,
       subject: emailSubject,
       headers: {
         'X-Entity-Ref-ID': `quote-${quoteId}-${Date.now()}`,
