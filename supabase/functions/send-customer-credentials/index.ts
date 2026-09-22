@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,7 +18,9 @@ serve(async (req) => {
       throw new Error('RESEND_API_KEY not configured');
     }
 
-    const { email, password, customerName } = await req.json();
+    const body = await req.json();
+    const { email, password, customerName } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
 
     if (!email || !password) {
       return new Response(
@@ -44,7 +47,7 @@ serve(async (req) => {
           <!-- Header -->
           <tr>
             <td style="padding: 30px 40px; background-color: #1a365d; border-radius: 8px 8px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">Panda Protect</h1>
+              <h1 style="margin: 0; color: #ffffff; font-size: 24px;">${brand.name}</h1>
             </td>
           </tr>
           
@@ -81,7 +84,7 @@ serve(async (req) => {
               
               <!-- Login Button -->
               <div style="text-align: center; margin: 32px 0;">
-                <a href="https://www.pandaprotect.co.uk/customer-dashboard/" style="display: inline-block; background-color: #e07a3a; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
+                <a href="${brand.siteUrl}/customer-dashboard/" style="display: inline-block; background-color: ${brand.accentColor}; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: bold;">
                   Log In to Your Dashboard
                 </a>
               </div>
@@ -96,7 +99,7 @@ serve(async (req) => {
           <tr>
             <td style="padding: 24px 40px; background-color: #f8f9fa; border-radius: 0 0 8px 8px; border-top: 1px solid #e9ecef;">
               <p style="margin: 0; color: #999999; font-size: 12px; text-align: center;">
-                Panda Protect Ltd | support@pandaprotect.co.uk | 0800 093 4456
+                ${brand.name} Ltd | ${brand.supportEmail} | 0800 093 4456
               </p>
             </td>
           </tr>
@@ -115,9 +118,9 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Panda Protect <noreply@pandaprotect.co.uk>',
+        from: brandFrom(brand, "", "noreply"),
         to: [email],
-        subject: 'Your Panda Protect Dashboard Login Details',
+        subject: `Your ${brand.name} Dashboard Login Details`,
         html: emailHtml,
       }),
     });

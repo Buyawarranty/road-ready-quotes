@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
+import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -23,7 +24,9 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, customerName, discountCode, daysRemaining, reminderType }: ReminderRequest = await req.json();
+    const body: ReminderRequest & { brand?: string } = await req.json();
+    const { email, customerName, discountCode, daysRemaining, reminderType } = body;
+    const brand = resolveBrand(req, { brand: body?.brand });
 
     console.log(`Sending ${reminderType} reminder to ${email}`);
 
@@ -91,14 +94,14 @@ const handler = async (req: Request): Promise<Response> => {
 
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 40px 0 30px;">
-                        <a href="https://www.pandaprotect.co.uk?returnDiscount=true&code=${discountCode}" 
+                        <a href="${brand.siteUrl}?returnDiscount=true&code=${discountCode}" 
                            style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                           ${isUrgency ? 'Claim Your 20% Discount' : 'Get Your Warranty Now'}
                         </a>
                       </div>
 
                       <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 30px 0 0; padding-top: 20px; border-top: 1px solid #e5e5e5;">
-                        Questions? Contact our team at <a href="mailto:support@pandaprotect.co.uk" style="color: #f97316;">support@pandaprotect.co.uk</a>
+                        Questions? Contact our team at <a href="mailto:${brand.supportEmail}" style="color: #f97316;">${brand.supportEmail}</a>
                       </p>
                     </td>
                   </tr>
@@ -107,7 +110,7 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="background-color: #f9fafb; padding: 20px 40px; text-align: center; border-top: 1px solid #e5e5e5;">
                       <p style="color: #6b7280; font-size: 12px; margin: 0;">
-                        © ${new Date().getFullYear()} Panda Protect. All rights reserved.
+                        © ${new Date().getFullYear()} ${brand.name}. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -120,7 +123,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Panda Protect Customer Care <support@pandaprotect.co.uk>",
+      from: brandFrom(brand, "Customer Care", "support"),
       to: [email],
       subject,
       html: emailHtml,
