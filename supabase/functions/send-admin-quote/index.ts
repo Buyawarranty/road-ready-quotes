@@ -153,8 +153,8 @@ const handler = async (req: Request): Promise<Response> => {
                   <!-- Header with Logo -->
                   <tr>
                     <td align="center" style="padding: 32px 24px 24px 24px; background-color: #ffffff;">
-                      <a href="https://buyawarranty.co.uk" target="_blank">
-                        <img src="https://buyawarranty.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" width="180" style="display: block; width: 180px; max-width: 100%; height: auto;" />
+                      <a href="https://www.pandaprotect.co.uk" target="_blank" style="text-decoration: none; font-size: 28px; font-weight: 800; color: #1a2a44; letter-spacing: -0.5px;">
+                        panda<span style="color: #EC6F33;">protect</span>
                       </a>
                     </td>
                   </tr>
@@ -418,11 +418,8 @@ const handler = async (req: Request): Promise<Response> => {
                             <p style="font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px 0;">
                               Trusted by UK drivers
                             </p>
-                            <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" style="text-decoration: none;">
-                              <img src="https://buyawarranty.co.uk/lovable-uploads/4e4faf8a-b202-4101-a858-9c58ad0a28c5.png" alt="Rated Excellent on Trustpilot" width="130" style="display: block; width: 130px; max-width: 100%; height: auto; margin: 0 auto;" />
-                            </a>
                             <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">
-                              Thousands of drivers trust BuyAWarranty for reliable vehicle protection.
+                              Drivers across the UK trust Panda Protect for reliable vehicle protection.
                             </p>
                           </td>
                         </tr>
@@ -449,7 +446,7 @@ const handler = async (req: Request): Promise<Response> => {
                               Claims Line: <a href="tel:03302295045" style="color: #ea580c; text-decoration: none; font-weight: 500;">0330 229 5045</a>
                             </p>
                             <p style="font-size: 13px; color: #94a3b8; margin: 0;">
-                              <a href="https://buyawarranty.co.uk" style="color: #ea580c; text-decoration: none;">buyawarranty.co.uk</a>
+                              <a href="https://www.pandaprotect.co.uk" style="color: #ea580c; text-decoration: none;">pandaprotect.co.uk</a>
                             </p>
                           </td>
                         </tr>
