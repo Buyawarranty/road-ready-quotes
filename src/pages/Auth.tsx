@@ -288,6 +288,15 @@ const Auth = () => {
 
       console.log("Sign up successful:", data.user?.email);
       
+      // Send a branded welcome / confirmation email straight to the
+      // address the person registered with.
+      supabase.functions
+        .invoke('send-signup-confirmation', { body: { email } })
+        .then(({ error: mailError }) => {
+          if (mailError) console.error('Signup welcome email failed:', mailError);
+        })
+        .catch((mailError) => console.error('Signup welcome email failed:', mailError));
+
       toast({
         title: "Account Created",
         description: "Your account has been created successfully! Please check your email to confirm your account.",
