@@ -418,11 +418,8 @@ const handler = async (req: Request): Promise<Response> => {
                             <p style="font-size: 14px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px 0;">
                               Trusted by UK drivers
                             </p>
-                            <a href="https://uk.trustpilot.com/review/buyawarranty.co.uk" target="_blank" style="text-decoration: none;">
-                              <img src="https://buyawarranty.co.uk/lovable-uploads/4e4faf8a-b202-4101-a858-9c58ad0a28c5.png" alt="Rated Excellent on Trustpilot" width="130" style="display: block; width: 130px; max-width: 100%; height: auto; margin: 0 auto;" />
-                            </a>
                             <p style="font-size: 13px; color: #64748b; margin: 8px 0 0 0;">
-                              Thousands of drivers trust BuyAWarranty for reliable vehicle protection.
+                              Drivers across the UK trust Panda Protect for reliable vehicle protection.
                             </p>
                           </td>
                         </tr>
