@@ -9,9 +9,10 @@ import { useDealerQuoteTemplates, DealerQuoteTemplateInput } from '@/hooks/useDe
 interface Props {
   getSelection: () => Omit<DealerQuoteTemplateInput, 'name'>;
   className?: string;
+  onSaved?: () => void;
 }
 
-export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, className }) => {
+export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, className, onSaved }) => {
   const { saveTemplate } = useDealerQuoteTemplates();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -33,7 +34,8 @@ export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, classNa
     setSaving(true);
     try {
       await saveTemplate({ ...getSelection(), name: trimmed });
-      toast({ title: 'Template saved', description: 'Apply it any time from Quick quote.' });
+      onSaved?.();
+      toast({ title: 'Plan saved', description: 'Find it under "My saved plans" any time.' });
       setOpen(false);
     } catch (err: any) {
       toast({ title: 'Could not save template', description: err.message, variant: 'destructive' });

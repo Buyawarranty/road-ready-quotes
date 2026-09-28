@@ -41,6 +41,7 @@ import {
   DealerWarrantyDefaults,
 } from '@/lib/dealerWarrantyDefaults';
 import SaveQuoteTemplateButton from '@/components/dealer/journey/SaveQuoteTemplateButton';
+import { useDealerQuoteTemplates, describeTemplate } from '@/hooks/useDealerQuoteTemplates';
 import { useTraderPricingConfig } from '@/hooks/useTraderPricingConfig';
 
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
@@ -214,6 +215,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   const [parts, setParts] = useState<TraderParts>(initial.parts);
   const [claim, setClaim] = useState<TraderClaim>(initial.claim);
   const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
+  const { templates: savedPlans, deleteTemplate: deleteSavedPlan, reload: reloadSavedPlans } = useDealerQuoteTemplates();
 
   const [dealerView, setDealerView] = useState<boolean>(true); // true = Wholesale (Trade)
   const [support, setSupport] = useState<SupportOption>(null);
@@ -652,6 +654,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                         plan_type: 'gold',
                         price: customerFacingPrice,
                       })}
+                      onSaved={reloadSavedPlans}
                     />
                     {myDefaults && (
                       <>
@@ -681,6 +684,50 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                   </div>
                   {myDefaults && (
                     <p className="text-[10px] text-gray-500 mt-1.5">Saved: {describeDefaults(myDefaults)}</p>
+                  )}
+                </div>
+
+                {/* My saved (named) plans */}
+                <div className="mt-3 pt-3 border-t border-orange-200">
+                  <p className="text-xs font-bold text-gray-900 mb-2">My saved plans</p>
+                  {savedPlans.length === 0 ? (
+                    <p className="text-[10px] text-gray-500">
+                      No saved plans yet — set your options and tap "Save as template" to name and keep them.
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {savedPlans.map((t) => (
+                        <div key={t.id} className="inline-flex items-center rounded-lg border-2 border-orange-300 bg-white">
+                          <button
+                            type="button"
+                            title={describeTemplate(t)}
+                            onClick={() => {
+                              setTerm(t.term_months as TraderTerm);
+                              setExcess(t.excess as TraderExcess);
+                              setLabour(t.labour as TraderLabour);
+                              setParts(t.parts as TraderParts);
+                              setClaim(t.claim_limit as TraderClaim);
+                              toast({ title: `"${t.name}" applied`, description: describeTemplate(t) });
+                            }}
+                            className="px-3 py-1.5 text-xs font-bold text-orange-700 hover:text-orange-900"
+                          >
+                            {t.name}
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={`Remove ${t.name}`}
+                            onClick={async () => {
+                              try { await deleteSavedPlan(t.id); } catch (e: any) {
+                                toast({ title: 'Could not remove plan', description: e.message, variant: 'destructive' });
+                              }
+                            }}
+                            className="px-2 py-1.5 text-xs text-gray-400 hover:text-gray-800 border-l border-orange-200"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
 
