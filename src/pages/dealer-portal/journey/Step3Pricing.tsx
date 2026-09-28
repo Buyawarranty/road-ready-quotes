@@ -548,9 +548,9 @@ const Step3Pricing: React.FC = () => {
                     <FileText className="h-3.5 w-3.5" /> Price shown in customer view
                   </p>
                   <div className="grid grid-cols-2 gap-2">
-                    <div className="rounded-md bg-crm-navy p-2 text-center text-white">
-                      <p className="text-[10px] opacity-80">Recommended</p>
-                      <p className="text-sm font-bold">{gbp(pricing.recommended)} / month</p>
+                    <div className="rounded-md bg-crm-navy p-2 text-center !text-white">
+                      <p className="text-[10px] !text-white">Recommended</p>
+                      <p className="text-sm font-bold !text-white">{gbp(pricing.recommended)} / month</p>
                     </div>
                     <div className="rounded-md border border-crm-line p-2 text-center">
                       <p className="text-[10px] text-muted-foreground">My price</p>
