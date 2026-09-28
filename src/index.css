@@ -2600,6 +2600,7 @@ body {
 }
 .public-dealer-home .home-hero-visual { text-align: center; }
 .public-dealer-home .home-hero-visual img { width: 100%; max-height: 440px; object-fit: contain; }
+.public-dealer-home .home-hero-caption { margin-top: 0.65rem; color: hsl(var(--home-copy)); font-size: 1.05rem; font-weight: 700; }
 .public-dealer-home .home-vehicle-types { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.85rem; margin-top: -0.5rem; color: hsl(var(--home-copy)); font-size: 0.72rem; font-weight: 700; }
 .public-dealer-home .home-vehicle-types span::before { content: "✓"; margin-right: 0.28rem; color: hsl(var(--home-green)); }
 
