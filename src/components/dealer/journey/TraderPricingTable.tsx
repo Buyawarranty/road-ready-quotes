@@ -692,7 +692,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                   <p className="text-xs font-bold text-gray-900 mb-2">My saved plans</p>
                   {savedPlans.length === 0 ? (
                     <p className="text-[10px] text-gray-500">
-                      No saved plans yet — set your options and tap "Save as template" to name and keep them.
+                      No saved plans yet — set your options and tap "Save &amp; name this plan" to keep and keep them.
                     </p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
