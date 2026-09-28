@@ -69,7 +69,7 @@ const addOns = [
   { key: 'breakdown', label: 'Breakdown recovery', price: 0.5 },
 ];
 
-const BASE_FEE = 1.2;
+const BASE_FEE = 1;
 
 const steps = [
   { n: 1, label: 'Enter Reg Plate', state: 'done' as const },

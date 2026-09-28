@@ -26,7 +26,7 @@ const warrantyPlans = [
     key: 'dealer-paid' as const,
     name: 'Dealer-Paid Warranty',
     description: 'Claim management only · We handle the claim, you pay the repair bill',
-    price: '£1.20/m',
+    price: '£1/m',
     icon: Headphones,
     badge: null,
     benefits: [
@@ -82,8 +82,8 @@ const buildPlan = (selectedPlan: WarrantyPlanKey): DealerJourneyPlan => {
   return {
     plan_type: 'basic',
     duration_months: 12,
-    retail_price: 1.2,
-    dealer_price: 1.2,
+    retail_price: 1,
+    dealer_price: 1,
     term_months: 12,
     selected_options: { warranty_type: 'dealer-paid', label: 'Dealer-Paid Warranty' },
   };
