@@ -296,7 +296,14 @@ const DealerQuotesList = () => {
                     <WarrantyIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
                     <div className="min-w-0">
                       <p className="text-xs font-extrabold">{warranty.label}</p>
-                      <p className="mt-0.5 text-xs font-medium leading-snug">{warranty.detail}</p>
+                      {(() => {
+                        const details = warrantyDetails(q);
+                        return details.length > 0 ? (
+                          <p className="mt-0.5 text-xs font-medium leading-snug">{details.join(' · ')}</p>
+                        ) : (
+                          <p className="mt-0.5 text-xs font-medium leading-snug">{warranty.detail}</p>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
