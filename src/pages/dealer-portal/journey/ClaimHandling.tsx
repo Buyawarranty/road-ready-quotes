@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Calendar,
   Check,
-  CheckCircle2,
+
   ChevronDown,
   ClipboardList,
   Coins,
@@ -292,7 +292,7 @@ const ClaimHandlingPage: React.FC = () => {
                           : 'bg-muted text-muted-foreground'
                     }`}
                   >
-                    {step.state === 'done' ? <CheckCircle2 className="h-4 w-4" /> : step.n}
+                    {step.state === 'done' ? <Check className="h-3.5 w-3.5" /> : step.n}
                   </span>
                   <span
                     className={`text-xs font-semibold ${
