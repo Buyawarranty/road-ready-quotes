@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import CarProgressBar from './CarProgressBar';
 import CustomerQuoteView from './CustomerQuoteView';
+import { buildCustomerQuoteUrl } from '@/pages/dealer-portal/CustomerQuotePage';
 
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
@@ -217,7 +218,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   const [myDefaults, setMyDefaults] = useState<DealerWarrantyDefaults | null>(savedDefaults);
   const { templates: savedPlans, deleteTemplate: deleteSavedPlan, reload: reloadSavedPlans } = useDealerQuoteTemplates();
 
-  const [dealerView, setDealerView] = useState<boolean>(true); // true = Wholesale (Trade)
+  const dealerView = true; // Dealer screen always shows trade pricing; customers use the separate tab
   const [support, setSupport] = useState<SupportOption>(null);
   const [addOns, setAddOns] = useState<Record<string, boolean>>({});
   const [showClaimDetails, setShowClaimDetails] = useState(false);
@@ -259,6 +260,26 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   const ownPrice = Number(customerPrice) || 0;
   const customerFacingPrice =
     customerPriceSource === 'own' && ownPrice > 0 ? ownPrice : recommendedRetail;
+
+  const openCustomerTab = () => {
+    const url = buildCustomerQuoteUrl({
+      vehicle: { reg: vehicle?.reg || reg, make: vehicle?.make, model: vehicle?.model, year: vehicle?.year, mileage },
+      coverTitle: support === 'warranty' ? 'Fully covered warranty' : 'Warranty cover',
+      coverSubtitle: 'Comprehensive mechanical & electrical protection',
+      price: customerFacingPrice,
+      secondaryLabel: 'Cover term',
+      secondaryValue: `${term} months`,
+      specs: [
+        { label: 'Cover term', value: `${term} months` },
+        { label: 'Claim limit', value: formatClaim(claim) },
+        { label: 'Excess', value: `£${excess}` },
+        { label: 'Labour rate', value: `£${labour}/hr` },
+        { label: 'Parts contribution', value: parts === 'none' ? 'None' : 'Age & mileage' },
+      ],
+      included: Object.keys(addOns).filter((k) => addOns[k]),
+    });
+    window.open(url, '_blank', 'noopener');
+  };
 
 
   if (isLoading) {
@@ -568,26 +589,20 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
               <div className="inline-flex rounded-lg overflow-hidden border border-gray-300">
                 <button
                   type="button"
-                  onClick={() => setDealerView(true)}
-                  className={`text-xs font-bold px-3 py-2 ${dealerView ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                  className="text-xs font-bold px-4 py-2 bg-orange-500 text-white"
+                  aria-pressed="true"
                 >
-                  Wholesale
+                  Dealer
                 </button>
                 <button
                   type="button"
-                  onClick={() => setDealerView(false)}
-                  className={`text-xs font-bold px-3 py-2 border-l border-gray-300 ${!dealerView ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                  onClick={openCustomerTab}
+                  title="Opens a separate tab showing only the customer price"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 border-l border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 >
-                  Retail
+                  <Eye className="w-3.5 h-3.5" /> Customer
                 </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setCustomerViewOpen(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 bg-slate-900 text-white hover:bg-slate-800"
-              >
-                <Eye className="w-3.5 h-3.5" /> Customer view
-              </button>
 
             </div>
 
@@ -931,7 +946,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
               </div>
               <button
                 type="button"
-                onClick={() => setCustomerViewOpen(true)}
+                onClick={openCustomerTab}
                 className="mt-2 w-full inline-flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border-2 border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
               >
                 <Eye className="w-3.5 h-3.5" /> Show customer view
