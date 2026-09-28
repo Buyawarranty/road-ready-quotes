@@ -241,9 +241,9 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
   );
 
   // Claim handling = flat low-cost service. Symbolic price in this layout.
-  const CLAIM_FLAT_GROSS = 1.20;
-  const CLAIM_FLAT_EXVAT = 1.0;
-  const CLAIM_FLAT_VAT = 0.2;
+  const CLAIM_FLAT_GROSS = 1.0;
+  const CLAIM_FLAT_EXVAT = 1 / 1.2;
+  const CLAIM_FLAT_VAT = CLAIM_FLAT_GROSS - CLAIM_FLAT_EXVAT;
 
   const activeGross = support === 'warranty' ? warrantyResult.gross : CLAIM_FLAT_GROSS;
   const activeExVat = support === 'warranty' ? warrantyResult.exVat : CLAIM_FLAT_EXVAT;
