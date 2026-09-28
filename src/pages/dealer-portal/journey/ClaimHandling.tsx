@@ -286,7 +286,7 @@ const ClaimHandlingPage: React.FC = () => {
                   <span
                     className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
                       step.state === 'done'
-                        ? 'bg-crm-green-soft text-green-700'
+                        ? 'bg-green-600 text-white'
                         : step.state === 'current'
                           ? 'bg-crm-orange text-white'
                           : 'bg-muted text-muted-foreground'
