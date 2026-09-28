@@ -159,6 +159,24 @@ const DealerQuotesList = () => {
     };
   };
 
+  const warrantyDetails = (q: any): string[] => {
+    const options = q.plan_options && typeof q.plan_options === 'object' ? q.plan_options : {};
+    const parts: string[] = [];
+    const months = Number(q.warranty_duration || options.term || options.term_months || 0);
+    if (months > 0) {
+      parts.push(months === 12 ? '1 year warranty' : months === 24 ? '2 year warranty' : months === 36 ? '3 year warranty' : `${months} month warranty`);
+    }
+    const excess = Number(options.excess ?? options.excess_amount ?? NaN);
+    if (Number.isFinite(excess)) parts.push(`£${excess} excess`);
+    const claimLimit = Number(options.claimLimit ?? options.claim_limit ?? NaN);
+    if (Number.isFinite(claimLimit) && claimLimit > 0) parts.push(`£${claimLimit.toLocaleString('en-GB')} claim limit`);
+    const labour = Number(options.labourRate ?? options.labour_rate ?? NaN);
+    if (Number.isFinite(labour) && labour > 0) parts.push(`£${labour}/hr labour rate`);
+    const partsContrib = options.partsContribution ?? options.parts_contribution;
+    if (partsContrib !== undefined && partsContrib !== null && partsContrib !== '') parts.push(`${partsContrib}% parts contribution`);
+    return parts;
+  };
+
   const formatDateTime = (d: string) => {
     const date = new Date(d);
     return `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
