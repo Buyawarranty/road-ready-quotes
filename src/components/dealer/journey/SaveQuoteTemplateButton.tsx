@@ -9,9 +9,10 @@ import { useDealerQuoteTemplates, DealerQuoteTemplateInput } from '@/hooks/useDe
 interface Props {
   getSelection: () => Omit<DealerQuoteTemplateInput, 'name'>;
   className?: string;
+  onSaved?: () => void;
 }
 
-export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, className }) => {
+export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, className, onSaved }) => {
   const { saveTemplate } = useDealerQuoteTemplates();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -33,7 +34,8 @@ export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, classNa
     setSaving(true);
     try {
       await saveTemplate({ ...getSelection(), name: trimmed });
-      toast({ title: 'Template saved', description: 'Apply it any time from Quick quote.' });
+      onSaved?.();
+      toast({ title: 'Plan saved', description: 'Find it under "My saved plans" any time.' });
       setOpen(false);
     } catch (err: any) {
       toast({ title: 'Could not save template', description: err.message, variant: 'destructive' });
@@ -52,16 +54,16 @@ export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, classNa
           'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-orange-300 bg-white text-orange-700 hover:border-orange-500'
         }
       >
-        <Bookmark className="w-3.5 h-3.5" /> Save as template
+        <Bookmark className="w-3.5 h-3.5" /> Save &amp; name this plan
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Save these settings as a template</DialogTitle>
+            <DialogTitle>Name and save this plan</DialogTitle>
           </DialogHeader>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Template name</label>
+            <label className="text-sm font-medium text-gray-700">Plan name</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -76,7 +78,7 @@ export const SaveQuoteTemplateButton: React.FC<Props> = ({ getSelection, classNa
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={handleSave} disabled={saving} className="bg-orange-500 hover:bg-orange-600 text-white">
-              {saving && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />} Save template
+              {saving && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />} Save plan
             </Button>
           </DialogFooter>
         </DialogContent>
