@@ -321,14 +321,14 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
           <div className="my-3 border-t border-primary-foreground/15" />
           {secondaryNav.map((item) => renderNavItem(item))}
         </nav>
-        <div className="mt-auto rounded-md bg-crm-navy-soft p-4 text-primary-foreground">
+        <div className="mt-auto rounded-md bg-crm-navy-soft p-4 text-white">
           <div className="mb-2 flex items-center gap-2">
-            <Headphones className="h-5 w-5" />
-            <p className="text-sm font-bold">Need help?</p>
+            <Headphones className="h-5 w-5 text-white" />
+            <p className="text-sm font-bold text-white">Need help?</p>
           </div>
-          <p className="mb-3 text-xs leading-relaxed text-primary-foreground/70">Our UK team is here to help.</p>
-          <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-transparent text-primary-foreground hover:bg-crm-orange hover:text-primary-foreground">
-            <a href="mailto:hello@pandaprotect.co.uk">Contact support →</a>
+          <p className="mb-3 text-xs leading-relaxed text-white">Our UK team is here to help.</p>
+          <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-transparent !text-white hover:bg-crm-orange hover:!text-white">
+            <a href="mailto:hello@pandaprotect.co.uk" className="text-white">Contact support →</a>
           </Button>
         </div>
       </aside>
