@@ -20,7 +20,7 @@ import {
   ArrowRight,
   Calendar,
   Check,
-  CheckCircle2,
+
   ClipboardList,
   Coins,
   FileText,

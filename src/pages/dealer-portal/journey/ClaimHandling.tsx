@@ -13,7 +13,7 @@ import {
   ArrowRight,
   Calendar,
   Check,
-  CheckCircle2,
+
   ChevronDown,
   ClipboardList,
   Coins,
