@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -3572,6 +3572,24 @@ export type Database = {
           },
         ]
       }
+      claims_data_access: {
+        Row: {
+          created_at: string
+          granted_by_email: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_by_email?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_by_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       claims_submissions: {
         Row: {
           approved_at: string | null
@@ -4500,6 +4518,7 @@ export type Database = {
           policy_number: string
           policy_start_date: string
           quote_sent_by: string | null
+          renewal_review_required: boolean
           retention_outcome: string | null
           retention_worked_at: string | null
           seasonal_bonus_months: number | null
@@ -4560,6 +4579,7 @@ export type Database = {
           policy_number: string
           policy_start_date?: string
           quote_sent_by?: string | null
+          renewal_review_required?: boolean
           retention_outcome?: string | null
           retention_worked_at?: string | null
           seasonal_bonus_months?: number | null
@@ -4620,6 +4640,7 @@ export type Database = {
           policy_number?: string
           policy_start_date?: string
           quote_sent_by?: string | null
+          renewal_review_required?: boolean
           retention_outcome?: string | null
           retention_worked_at?: string | null
           seasonal_bonus_months?: number | null
@@ -11168,6 +11189,73 @@ export type Database = {
           },
         ]
       }
+      renewal_reviews: {
+        Row: {
+          claim_count: number
+          created_at: string
+          customer_id: string
+          id: string
+          manager_note: string | null
+          policy_id: string
+          reasons: string[]
+          renewal_year: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          claim_count?: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          manager_note?: string | null
+          policy_id: string
+          reasons?: string[]
+          renewal_year: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          claim_count?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          manager_note?: string | null
+          policy_id?: string
+          reasons?: string[]
+          renewal_year?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renewal_reviews_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_reviews_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "customer_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renewal_reviews_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       round_robin_state: {
         Row: {
           id: string
@@ -14461,6 +14549,10 @@ export type Database = {
         Args: { p_admin_user_id: string }
         Returns: boolean
       }
+      agent_works_renewals: {
+        Args: { p_admin_user_id: string }
+        Returns: boolean
+      }
       apply_customer_risk_tag: {
         Args: {
           p_actor?: string
@@ -14878,6 +14970,7 @@ export type Database = {
         Returns: boolean
       }
       has_all_leads_permission: { Args: { _user_id: string }; Returns: boolean }
+      has_claims_data_access: { Args: never; Returns: boolean }
       has_manager_discount_access: {
         Args: { _user_id: string }
         Returns: boolean
@@ -14906,6 +14999,7 @@ export type Database = {
         Returns: boolean
       }
       is_blog_writer: { Args: { user_id: string }; Returns: boolean }
+      is_claims_data_owner: { Args: never; Returns: boolean }
       is_ip_blocked: { Args: { check_ip: unknown }; Returns: boolean }
       is_known_fake_phone: { Args: { _phone: string }; Returns: boolean }
       is_management: { Args: { _user_id: string }; Returns: boolean }
@@ -15445,6 +15539,10 @@ export type Database = {
         Args: { p_customer_id: string }
         Returns: string
       }
+      renewal_eligibility_reasons: {
+        Args: { p_policy_id: string }
+        Returns: string[]
+      }
       renewal_pool_get_next: {
         Args: { _agent: string }
         Returns: {
@@ -15491,6 +15589,10 @@ export type Database = {
         }[]
       }
       revert_pricing_to_code_defaults: { Args: never; Returns: undefined }
+      review_renewal: {
+        Args: { p_decision: string; p_note?: string; p_review_id: string }
+        Returns: string
+      }
       rolling_rr_distribute: {
         Args: {
           _batch_cap?: number
@@ -15555,6 +15657,10 @@ export type Database = {
       }
       set_agent_lead_allocation: {
         Args: { _admin_user_id: string; _enabled: boolean }
+        Returns: undefined
+      }
+      set_claims_data_access: {
+        Args: { p_allow: boolean; p_user_id: string }
         Returns: undefined
       }
       set_sale_credit_agent:
