@@ -3208,3 +3208,16 @@ img, video { height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .why-page *, .why-page *::before, .why-page *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Print only the customer-safe presentation, never surrounding portal content. */
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body:has(.customer-quote-view) { overflow: visible !important; }
+  body:has(.customer-quote-view) * { visibility: hidden; }
+  body:has(.customer-quote-view) .customer-quote-view,
+  body:has(.customer-quote-view) .customer-quote-view * { visibility: visible; }
+  .customer-quote-view { position: absolute !important; inset: 0 !important; height: auto !important; overflow: visible !important; background: hsl(var(--card)) !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .customer-quote-view .customer-quote-tools { display: none !important; }
+  .customer-quote-view > div:last-child { padding: 0 !important; max-width: none !important; }
+  .customer-quote-view dl, .customer-quote-view li { break-inside: avoid; }
+}
