@@ -67,7 +67,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
         <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Close" onClick={onClose}><X /></Button>
       </div>
 
-      <div className="max-w-2xl mx-auto px-5 py-10 sm:py-14">
+      <div className="max-w-2xl mx-auto px-5 pb-10 pt-20 sm:py-14">
         <div className="text-center mb-7">
           <div className="inline-flex items-center gap-2 text-crm-orange font-extrabold ">
             <ShieldCheck className="w-5 h-5" /> Panda Protect
@@ -80,11 +80,11 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
         <div className="bg-card border border-crm-line rounded-lg overflow-hidden">
           {/* Vehicle */}
           {vehicle?.reg && (
-            <div className="px-6 sm:px-8 py-5 border-b border-crm-line flex items-center gap-4">
-              <div className="inline-flex items-stretch rounded-sm overflow-hidden border-2 border-crm-line shrink-0">
-                <div className="bg-crm-blue text-primary-foreground text-[10px] font-bold flex items-center px-1.5">GB</div>
-                <div className="bg-muted text-foreground font-black  text-base px-2.5 py-1">
-                  {vehicle.reg}
+            <div className="px-6 sm:px-8 py-5 border-b border-crm-line flex flex-wrap items-center gap-4">
+              <div className="w-36 shrink-0">
+                <div className="vehicle-reg-plate vehicle-reg-plate--list">
+                  <span className="vehicle-reg-plate__country">GB<span>UK</span></span>
+                  <span className="vehicle-reg-plate__text">{vehicle.reg}</span>
                 </div>
               </div>
               <div className="min-w-0">
