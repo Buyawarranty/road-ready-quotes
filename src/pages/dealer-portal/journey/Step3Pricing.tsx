@@ -29,10 +29,10 @@ const Step3Pricing: React.FC = () => {
   const { save, saving } = useDealerQuoteSave(3);
   const { templates, reload, deleteTemplate } = useDealerQuoteTemplates();
   const old = savedPlan?.selected_options || {};
-  const initialTerm = warrantyTerms.find(t => t.months === savedPlan?.duration_months)?.value || '12+12';
+  const initialTerm = warrantyTerms.find(t => t.months === savedPlan?.duration_months)?.value || '12';
   const [term, setTerm] = useState(initialTerm);
   const [excess, setExcess] = useState(String(old.excess ?? 50));
-  const [labour, setLabour] = useState(String(old.labour ?? 70));
+  const [labour, setLabour] = useState(warrantyLabour.some(o => o.value === String(old.labour)) ? String(old.labour) : '70');
   const [parts, setParts] = useState(old.parts_key || (String(old.parts).includes('100%') || old.parts === 'No contribution' ? 'none' : 'age-mileage'));
   const [claim, setClaim] = useState(warrantyClaims.some(o => o.value === String(old.claim)) ? String(old.claim) : '1000');
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>(Array.isArray(old.add_ons) ? old.add_ons.filter((key: string) => liveWarrantyAddOns.some(a => a.key === key)) : []);

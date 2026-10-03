@@ -29,9 +29,9 @@ import {
 const termOptions = [
   { value: '3', label: '3 months', months: 3 },
   { value: '6', label: '6 months', months: 6 },
-  { value: '12', label: '12 months', months: 12 },
-  { value: '24', label: '24 months', months: 24 },
-  { value: '36', label: '36 months', months: 36 },
+  { value: '12', label: '1 year', months: 12 },
+  { value: '24', label: '2 years', months: 24 },
+  { value: '36', label: '3 years', months: 36 },
 ];
 
 const excessOptions = [
@@ -47,7 +47,6 @@ const labourOptions = [
   { value: '70', label: '£70/hr' },
   { value: '100', label: '£100/hr' },
   { value: '150', label: '£150/hr' },
-  { value: '200', label: '£200/hr' },
 ];
 
 const partsOptions = [
