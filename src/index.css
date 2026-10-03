@@ -126,7 +126,7 @@
   color: hsl(var(--vehicle-plate-ink));
   text-align: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-size: clamp(1.05rem, 10.5cqi, 2rem);
   font-weight: 900;
   letter-spacing: 0;
   text-transform: uppercase;
