@@ -262,7 +262,7 @@ const Step1Vehicle: React.FC = () => {
 
             {!vehicleDetailsComplete && (
               <div className="mb-3 rounded-md border border-dashed border-crm-line bg-muted/40 p-4 text-sm font-semibold text-muted-foreground">
-                Complete the vehicle details to unlock Dealer-Paid and Fully Covered options.
+                Complete the vehicle details to unlock Manage My Warranty and Fully Covered options.
               </div>
             )}
 
