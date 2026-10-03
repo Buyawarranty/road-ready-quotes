@@ -3126,7 +3126,7 @@ img, video { height: auto; }
 .dealer-footer-brand .dealer-footer-contact { margin-top: .9rem; }
 .dealer-footer-brand .dealer-footer-contact p, .dealer-footer-brand .dealer-footer-contact a { color: hsl(216 13% 39%); font-size: .68rem; }
 .dealer-footer-contact-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: 2rem; padding: 1.15rem 1.35rem; border-radius: .65rem; background: hsl(218 48% 18%); }
-.dealer-footer-contact-strip h2 { margin: 0; color: hsl(0 0% 100%); }
+.dealer-public-footer .dealer-footer-contact-strip h2 { margin: 0; color: hsl(0 0% 100%); }
 .dealer-footer-strip-actions { display: flex; flex-wrap: wrap; gap: 1.4rem; }
 .dealer-footer-strip-action { display: inline-flex; align-items: center; gap: .45rem; color: hsl(0 0% 100%); font-size: .78rem; font-weight: 600; }
 .dealer-footer-strip-action svg { width: .95rem; height: .95rem; color: hsl(19 82% 56%); }
