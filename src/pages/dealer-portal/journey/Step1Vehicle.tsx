@@ -182,7 +182,6 @@ const Step1Vehicle: React.FC = () => {
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-xl font-bold sm:text-2xl">Vehicle details</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
               </div>
               <span className="inline-flex min-h-6 items-center text-xs font-semibold text-muted-foreground" aria-live="polite">
                 {saveState === 'saving' && <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-crm-orange" /> Saving...</>}
@@ -238,9 +237,6 @@ const Step1Vehicle: React.FC = () => {
                   <Input value={mileage} onChange={(event) => { setMileage(event.target.value.replace(/\D/g, '')); setValidation((current) => ({ ...current, mileage: '' })); }} className={`h-12 border-crm-line pr-14 ${lookupState === 'success' ? 'border-crm-green bg-crm-green-soft' : 'bg-background'}`} />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
                 </div>
-                {lookupState === 'success' && (
-                  <p className="mt-1 text-[11px] text-muted-foreground">Last MOT mileage — update it if the vehicle has driven further.</p>
-                )}
                 {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
               </div>
             </div>
@@ -326,21 +322,17 @@ const Step1Vehicle: React.FC = () => {
              </div>
            </div>
 
-           <div className="mt-4 border-t border-crm-line pt-4">
-             <h3 className="text-sm font-bold">Vehicle</h3>
-             {lookupState === 'success' ? (
-               <>
-                 <p className="mt-2 text-sm font-bold">AUDI Q5</p>
-                 <p className="text-xs text-muted-foreground">2018 · Diesel</p>
-                  <dl className="mt-3 space-y-2 text-xs">
-                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Registration</dt><dd className="font-semibold">{reg}</dd></div>
-                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Mileage (Last MOT)</dt><dd className="font-semibold">{mileage ? `${Number(mileage).toLocaleString()} miles` : '—'}</dd></div>
-                  </dl>
-               </>
-             ) : (
-               <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
-             )}
-           </div>
+            <div className="mt-4 border-t border-crm-line pt-4">
+              <h3 className="text-sm font-bold">Vehicle</h3>
+              {lookupState === 'success' ? (
+                <p className="mt-2 text-sm font-bold">
+                  {activeVehicle.make} {activeVehicle.model}
+                  <span className="font-normal text-muted-foreground"> · {activeVehicle.year} · {activeVehicle.fuel_type} · {Number(mileage).toLocaleString()} miles</span>
+                </p>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
+              )}
+            </div>
 
            <div className="mt-4 border-t border-crm-line pt-4">
              <h3 className="text-sm font-bold">Selected cover</h3>
