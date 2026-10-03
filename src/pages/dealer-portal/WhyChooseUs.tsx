@@ -25,7 +25,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
-import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
 import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
@@ -233,8 +232,6 @@ const WhyChooseUs = () => {
           <div className="why-shell"><div><h2>Ready to partner with a trusted UK warranty provider?</h2><p>Join dealers growing their business with Panda Protect.</p></div><div className="why-final-actions"><Button asChild className="why-button why-button-primary"><Link to="/dealer-portal/quote/vehicle">Get a dealer quote <ArrowRight /></Link></Button><Button asChild variant="outline" className="why-button why-button-dark-outline"><Link to="/contact-us/">Speak to our team</Link></Button></div><ul>{['More sales', 'Happier customers', 'Greater profitability', 'A stronger dealership'].map((item) => <li key={item}><Check />{item}</li>)}</ul></div>
         </section>
       </main>
-
-      <DealerPublicFooter />
     </div>
   );
 };
