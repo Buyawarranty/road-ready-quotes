@@ -322,21 +322,17 @@ const Step1Vehicle: React.FC = () => {
              </div>
            </div>
 
-           <div className="mt-4 border-t border-crm-line pt-4">
-             <h3 className="text-sm font-bold">Vehicle</h3>
-             {lookupState === 'success' ? (
-               <>
-                 <p className="mt-2 text-sm font-bold">AUDI Q5</p>
-                 <p className="text-xs text-muted-foreground">2018 · Diesel</p>
-                  <dl className="mt-3 space-y-2 text-xs">
-                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Registration</dt><dd className="font-semibold">{reg}</dd></div>
-                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Mileage (Last MOT)</dt><dd className="font-semibold">{mileage ? `${Number(mileage).toLocaleString()} miles` : '—'}</dd></div>
-                  </dl>
-               </>
-             ) : (
-               <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
-             )}
-           </div>
+            <div className="mt-4 border-t border-crm-line pt-4">
+              <h3 className="text-sm font-bold">Vehicle</h3>
+              {lookupState === 'success' ? (
+                <p className="mt-2 text-sm font-bold">
+                  {activeVehicle.make} {activeVehicle.model}
+                  <span className="font-normal text-muted-foreground"> · {activeVehicle.year} · {activeVehicle.fuel_type} · {Number(mileage).toLocaleString()} miles</span>
+                </p>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
+              )}
+            </div>
 
            <div className="mt-4 border-t border-crm-line pt-4">
              <h3 className="text-sm font-bold">Selected cover</h3>
