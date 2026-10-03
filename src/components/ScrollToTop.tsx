@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 const ScrollToTop = () => {
   const location = useLocation();
-  const { pathname, search } = location;
+  const { pathname, search, hash } = location;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,13 +45,13 @@ const ScrollToTop = () => {
     
     // Redirect URLs without trailing slash to include trailing slash (preserve query params)
     if (pathname !== '/' && !pathname.endsWith('/')) {
-      navigate(pathname + '/' + search, { replace: true });
+      navigate(pathname + '/' + search + hash, { replace: true });
       return;
     }
     
     // Scroll to top when pathname changes
     window.scrollTo(0, 0);
-  }, [pathname, search, navigate]);
+  }, [pathname, search, hash, navigate]);
 
   return null;
 };

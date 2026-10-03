@@ -20,7 +20,7 @@ export function customerSafeQuote(p: CustomerQuotePayload): CustomerQuotePayload
 export function buildCustomerQuoteUrl(p: CustomerQuotePayload) {
   const bytes = new TextEncoder().encode(JSON.stringify(customerSafeQuote(p)));
   const encoded = btoa(Array.from(bytes, b => String.fromCharCode(b)).join(''));
-  return `/customer-quote#${encoded}`;
+  return `/customer-quote/#${encoded}`;
 }
 
 export function decodeCustomerQuote(hash: string): CustomerQuotePayload | null {
