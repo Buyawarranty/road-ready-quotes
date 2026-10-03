@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -52,7 +52,26 @@ const DealerComingSoon = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; phone?: string; url?: string }>({});
   const [touched, setTouched] = useState<{ email?: boolean; phone?: boolean; url?: boolean }>({});
+  const [savedVehicle, setSavedVehicle] = useState<{ title: string; fuel: string } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const reg = pendingReg.trim().toUpperCase();
+    if (!reg) { setSavedVehicle(null); return; }
+    let active = true;
+    supabase.functions
+      .invoke('dvla-vehicle-lookup', { body: { registrationNumber: reg } })
+      .then(({ data }: { data: { found?: boolean; make?: string; model?: string; yearOfManufacture?: number; fuelType?: string } | null }) => {
+        if (!active || !data?.found) return;
+        const name = [data.make, data.model].filter(Boolean).join(' ');
+        if (!name) return;
+        const year = data.yearOfManufacture ? ` (${data.yearOfManufacture})` : '';
+        setSavedVehicle({ title: `${name.toUpperCase()}${year}`, fuel: data.fuelType || '' });
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [pendingReg]);
+
 
   const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
