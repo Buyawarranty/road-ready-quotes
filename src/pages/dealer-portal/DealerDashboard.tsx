@@ -127,18 +127,17 @@ const DealerDashboard = () => {
       <div className="mx-auto max-w-[1500px] space-y-3">
         <Card className="crm-panel-shadow overflow-hidden border-crm-line bg-crm-orange-soft">
           <CardContent className="p-0">
-            <div className="grid min-h-[150px] lg:grid-cols-[minmax(0,1fr)_425px]">
-              <div className="relative p-5 sm:p-7">
-                <p className="mb-1 text-[11px] font-bold tracking-[0.16em] text-crm-orange">DEALER PORTAL</p>
-                <h1 className="text-2xl font-bold leading-tight sm:text-3xl">Welcome back, {dealer?.name?.split(' ')[0] || 'Prajwal'}</h1>
-                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            <div className="grid lg:grid-cols-[minmax(220px,0.7fr)_minmax(0,1.3fr)]">
+              <div className="flex flex-col justify-center px-4 py-3 sm:px-5">
+                <p className="text-[10px] font-bold tracking-[0.16em] text-crm-orange">DEALER PORTAL</p>
+                <h1 className="text-lg font-bold leading-tight sm:text-xl">Welcome back, {dealer?.name?.split(' ')[0] || 'Prajwal'}</h1>
+                <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
                   Let's keep your dealership moving. Get a quote, manage warranties, check claims and more — all in one place.
                 </p>
               </div>
-              <div className="flex items-center border-t border-crm-line bg-card/90 p-4 lg:border-l lg:border-t-0">
+              <div className="flex items-center border-t border-crm-line bg-card/90 p-3 lg:border-l lg:border-t-0">
                 <form onSubmit={handleRegSubmit} className="w-full rounded-lg border border-crm-line bg-card p-4 crm-panel-shadow">
-                  <h2 className="text-sm font-bold">Get a quote</h2>
-                  <p className="mb-3 text-xs text-muted-foreground">Enter a vehicle registration to start</p>
+                  <h2 className="mb-2 text-sm font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
                   <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
                     <div className="vehicle-reg-plate vehicle-reg-plate--quote min-w-0">
                       <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
