@@ -1,10 +1,9 @@
 export const warrantyTerms = [
   { value: '3', label: '3 months', months: 3 },
-  // Legacy 6+1 actually supplied seven months. Preserve duration until repricing is approved.
-  { value: '6+1', label: '7 months', months: 7 },
-  { value: '12+12', label: '12 months', months: 12 },
-  { value: '24+12', label: '24 months', months: 24 },
-  { value: '36+12', label: '36 months', months: 36 },
+  { value: '6', label: '6 months', months: 6 },
+  { value: '12', label: '1 year', months: 12 },
+  { value: '24', label: '2 years', months: 24 },
+  { value: '36', label: '3 years', months: 36 },
 ];
 export const warrantyExcess = [
   { value: '0', label: '£0', factor: 1.22 }, { value: '50', label: '£50', factor: 1 },
@@ -14,7 +13,6 @@ export const warrantyExcess = [
 export const warrantyLabour = [
   { value: '40', label: '£40/hr', factor: 0.9 }, { value: '70', label: '£70/hr', factor: 1 },
   { value: '100', label: '£100/hr', factor: 1.12 }, { value: '150', label: '£150/hr', factor: 1.26 },
-  { value: '200', label: '£200/hr', factor: 1.4 },
 ];
 export const warrantyParts = [
   { value: 'age-mileage', label: 'Age & mileage contribution', factor: 1 },

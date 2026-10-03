@@ -1,6 +1,16 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateFullWarranty, liveWarrantyAddOns, warrantyClaims, pendingWarrantyClaims } from '../fullWarrantyConfiguration';
+import { calculateFullWarranty, liveWarrantyAddOns, warrantyClaims, pendingWarrantyClaims, warrantyTerms, warrantyLabour } from '../fullWarrantyConfiguration';
+
+describe('Dealer warranty configuration', () => {
+  it('offers only 3, 6, 12, 24 and 36 months of cover', () => {
+    assert.deepEqual(warrantyTerms.map(option => option.months), [3, 6, 12, 24, 36]);
+    assert.deepEqual(warrantyTerms.map(option => Number(option.value)), [3, 6, 12, 24, 36]);
+  });
+  it('offers only £40, £70, £100 and £150 hourly labour rates', () => {
+    assert.deepEqual(warrantyLabour.map(option => Number(option.value)), [40, 70, 100, 150]);
+  });
+});
 
 describe('Approved full warranty add-ons', () => {
   const approved = [
