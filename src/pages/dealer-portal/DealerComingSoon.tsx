@@ -6,7 +6,6 @@ import {
   Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
-import DealerPublicFooter from '@/components/dealer/DealerPublicFooter';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import whyDealersPanda from '@/assets/car-warranty-panda-vehicles.png';
@@ -680,8 +679,6 @@ const DealerComingSoon = () => {
         intro="Quick answers for UK motor trade dealers about our partner programme, portal, claims and support."
       />
       <DealerFAQSchema />
-
-      <DealerPublicFooter />
     </div>
   );
 };
