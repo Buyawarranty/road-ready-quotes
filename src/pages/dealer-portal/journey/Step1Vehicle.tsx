@@ -191,7 +191,7 @@ const Step1Vehicle: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-2">
+            <div className="grid gap-4 lg:grid-cols-2">
               <div>
                 <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
                 <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
