@@ -10,3 +10,4 @@
 - [x] Redesign /dealer-portal/signup to match the supplied dealer portal register/login reference.
 - [x] Optimise large public-page images and improve natural, search-friendly image descriptions.
 - [x] Build the dedicated trade-focused Why Choose Us landing page and connect its public navigation.
+- [ ] Update Full Warranty Cover pricing to the supplied compact layout, add customer-safe print/email/WhatsApp sharing, and confirm commercial add-on rates.
