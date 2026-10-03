@@ -21,17 +21,12 @@ export const warrantyParts = [
   { value: 'none', label: '100% full cover', factor: 1.15 },
 ];
 export const warrantyClaims = [
-  { value: '750', label: '£750', factor: 0.9 }, { value: '1000', label: '£1,000', factor: 1 },
+  { value: '1000', label: '£1,000', factor: 1 },
   { value: '2000', label: '£2,000', factor: 1.18 }, { value: '3000', label: '£3,000', factor: 1.32 },
 ];
+// Visible to dealers but excluded from charging and customer-adjustable quotes until approved.
+export const pendingWarrantyClaims = [{ value: '5000', label: '£5,000 — price pending', disabled: true }];
 export const liveWarrantyAddOns = [
-  { key: 'breakdown', label: 'Breakdown assistance', price: 6 },
-  { key: 'mot', label: 'MOT protection', price: 4 },
-  { key: 'diagnostics', label: 'Diagnostics contribution', price: 5 },
-  { key: 'wear', label: 'Wear & tear options', price: 8 },
-];
-// Commercial recommendations only: not eligible for selection or checkout.
-export const proposedWarrantyAddOns = [
   { key: 'wear-extension', label: 'Wear & tear extension', price: 20, description: 'Specified wear-related components.' },
   { key: 'emissions', label: 'Emissions system cover', price: 15, description: 'DPF, EGR and emissions components.' },
   { key: 'air-suspension', label: 'Air & adaptive suspension', price: 25, description: 'Air springs, compressors and controls.' },
@@ -45,6 +40,7 @@ export const proposedWarrantyAddOns = [
 ];
 
 export function calculateFullWarranty(excess: string, labour: string, parts: string, claim: string, addOns: string[]) {
+  if (!warrantyClaims.some(option => option.value === claim)) throw new Error('Claim limit requires approved pricing.');
   const factor = (options: { value: string; factor: number }[], value: string) => options.find(o => o.value === value)?.factor ?? 1;
   const extras = liveWarrantyAddOns.filter(a => addOns.includes(a.key)).reduce((sum, a) => sum + a.price, 0);
   const monthly = +(118 * factor(warrantyExcess, excess) * factor(warrantyLabour, labour) * factor(warrantyParts, parts) * factor(warrantyClaims, claim) + extras).toFixed(2);
