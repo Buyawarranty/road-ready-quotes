@@ -1,38 +1,19 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
-import CustomerQuoteView, { CustomerQuoteViewProps } from '@/components/dealer/journey/CustomerQuoteView';
-
-type Payload = Omit<CustomerQuoteViewProps, 'open' | 'onClose'>;
-
-/** Encode only customer-safe fields. Never pass trade/wholesale values in here. */
-export function buildCustomerQuoteUrl(p: Payload) {
-  const safe: Payload = {
-    vehicle: p.vehicle,
-    coverTitle: p.coverTitle,
-    coverSubtitle: p.coverSubtitle,
-    price: p.price,
-    secondaryLabel: p.secondaryLabel,
-    secondaryValue: p.secondaryValue,
-    specs: p.specs,
-    included: p.included,
-    dealerName: p.dealerName,
-  };
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(safe))));
-  return `/customer-quote#${encoded}`;
-}
+import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
+import { decodeCustomerQuote } from '@/lib/customerQuoteSharing';
+export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
-  const data = useMemo<Payload | null>(() => {
-    try {
-      const raw = window.location.hash.slice(1);
-      return raw ? JSON.parse(decodeURIComponent(escape(atob(raw)))) : null;
-    } catch {
-      return null;
-    }
-  }, []);
+  const data = useMemo(() => decodeCustomerQuote(window.location.hash), []);
+  useEffect(() => {
+    if (!data || new URLSearchParams(window.location.search).get('print') !== '1') return;
+    const timer = window.setTimeout(() => window.print(), 500);
+    return () => window.clearTimeout(timer);
+  }, [data]);
 
   if (!data) {
-    return <div className="p-10 text-center text-gray-600">This quote link is no longer available.</div>;
+    return <div className="p-10 text-center text-muted-foreground">This quote link is no longer available.</div>;
   }
 
   return (

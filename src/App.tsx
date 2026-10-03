@@ -75,6 +75,7 @@ const ConditionalSeasonalBanner = () => {
 // Component to conditionally hide footer during checkout steps and admin pages
 const ConditionalStickyNavigation = () => {
   const location = useLocation();
+  if (location.pathname.startsWith('/customer-quote')) return null;
   if (location.pathname.startsWith('/dealer-portal')) return null;
   if (location.pathname.startsWith('/dealer-widget')) return null;
   // Dealer homepage routes render their own DealerPublicHeader
@@ -85,6 +86,7 @@ const ConditionalStickyNavigation = () => {
 
 const ConditionalCookieBanner = () => {
   const location = useLocation();
+  if (location.pathname.startsWith('/customer-quote')) return null;
   if (location.pathname.startsWith('/dealer-widget')) return null;
   return <CookieBanner />;
 };
@@ -164,6 +166,7 @@ const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
 
 const ConditionalFooter = () => {
   const location = useLocation();
+  if (location.pathname.startsWith('/customer-quote')) return null;
   const searchParams = new URLSearchParams(location.search);
   const step = searchParams.get('step');
   
