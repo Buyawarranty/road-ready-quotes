@@ -190,7 +190,7 @@ const Step1Vehicle: React.FC = () => {
               </span>
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
+            <div className="grid gap-5 lg:grid-cols-2">
               <div>
                 <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
                 <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
@@ -244,23 +244,6 @@ const Step1Vehicle: React.FC = () => {
                 {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
               </div>
 
-              {lookupState === 'success' && (
-                <div className="rounded-lg border border-crm-line bg-muted/30 p-4">
-                  <p className="text-base font-bold leading-tight">AUDI Q5</p>
-                  <p className="text-xs text-muted-foreground">2018 · Diesel</p>
-                  <div className="mt-3 space-y-2 border-t border-crm-line pt-3 text-xs">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">Last MOT mileage</span>
-                      <span className="font-semibold">{Number(LAST_MOT_MILEAGE).toLocaleString()} miles</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-muted-foreground">Vehicle status</span>
-                      <span className="inline-flex items-center gap-1.5 font-bold text-crm-green"><CheckCircle2 className="h-3.5 w-3.5" /> Recognised</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
           </CardContent>
         </Card>
 
