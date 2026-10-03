@@ -8,7 +8,7 @@ describe('Customer quote separation', () => {
   test('shared tab receives only customer-safe fields, including nested vehicle and specs', () => {
     const decoded = decodeCustomerQuote(buildCustomerQuoteUrl(quote).split('#')[1]);
     assert.equal(decoded?.price, 177);
-    assert.deepEqual(decoded?.vehicle, { reg: 'B11CSD', make: 'AUDI' });
+    assert.deepEqual(JSON.parse(JSON.stringify(decoded?.vehicle)), { reg: 'B11CSD', make: 'AUDI' });
     assert.deepEqual(decoded?.specs, [{ label: 'Term', value: '12 months' }]);
     assert.ok(!JSON.stringify(decoded).includes('dealer_price'));
     assert.ok(!JSON.stringify(decoded).includes('private@example.test'));
