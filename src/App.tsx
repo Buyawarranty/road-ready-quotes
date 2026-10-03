@@ -12,7 +12,7 @@ import { preloadCriticalRoutes } from "@/utils/preloadRoutes";
 // Eager load critical components
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import WebsiteFooter from "@/components/WebsiteFooter";
+import DealerPublicFooter from "@/components/dealer/DealerPublicFooter";
 import ScrollToTop from "@/components/ScrollToTop";
 import NotFound from "./pages/NotFound";
 import { CookieBanner } from "@/components/CookieBanner";
@@ -169,7 +169,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget') || location.pathname.startsWith('/dealer-portal/coming-soon') || location.pathname.startsWith('/dealer-portal/signup') || location.pathname.startsWith('/why-choose-us');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -182,7 +182,7 @@ const ConditionalFooter = () => {
   const isCheckoutStep = step && /^[2-6]/.test(step);
   
   if (isCheckoutStep || isAdminRoute || isBrandLanding || isQuotePage || isDealerDashboard) return null;
-  return <WebsiteFooter />;
+  return <DealerPublicFooter />;
 };
 
 // Lazy load pages
