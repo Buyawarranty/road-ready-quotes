@@ -132,7 +132,7 @@ const DealerDashboard = () => {
                 <p className="text-[10px] font-bold tracking-[0.16em] text-crm-orange">DEALER PORTAL</p>
                 <h1 className="text-lg font-bold leading-tight sm:text-xl">Welcome back, {dealer?.name?.split(' ')[0] || 'Prajwal'}</h1>
                 <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
-                  Get a quote, manage warranties and check claims — all in one place.
+                  Let's keep your dealership moving. Get a quote, manage warranties, check claims and more — all in one place.
                 </p>
               </div>
               <div className="flex items-center border-t border-crm-line bg-card/90 p-3 lg:border-l lg:border-t-0">
