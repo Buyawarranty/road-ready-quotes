@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, LogIn, Eye, EyeOff,
   Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
