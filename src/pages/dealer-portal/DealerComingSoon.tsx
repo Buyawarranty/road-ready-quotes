@@ -594,7 +594,7 @@ const DealerComingSoon = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="bg-card py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-12">
             <h2 className="text-2xl sm:text-4xl font-black text-crm-navy">How it works</h2>
@@ -622,7 +622,7 @@ const DealerComingSoon = () => {
       </section>
 
       {/* WHY DEALERS CHOOSE */}
-      <section className="bg-muted py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
           <div>
             <h2 className="text-2xl sm:text-4xl font-black text-crm-navy">Why dealers choose Panda Protect</h2>
@@ -656,7 +656,7 @@ const DealerComingSoon = () => {
       </section>
 
       {/* BENEFIT CARDS */}
-      <section className="bg-card py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 grid sm:grid-cols-2 md:grid-cols-3 gap-5 sm:gap-6">
           {[
             { icon: TrendingUp, t: 'Increase profit per vehicle', d: 'Earn more on every eligible sale with high-margin warranty products.' },
@@ -676,7 +676,7 @@ const DealerComingSoon = () => {
 
       {/* FAQ */}
       <DealerFAQSection
-        bgClassName="bg-muted"
+        bgClassName="bg-background"
         intro="Quick answers for UK motor trade dealers about our partner programme, portal, claims and support."
       />
       <DealerFAQSchema />

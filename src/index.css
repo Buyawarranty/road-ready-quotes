@@ -834,7 +834,7 @@
 
 .public-dealer-signup > section:first-of-type {
   padding-block: 1rem 2rem;
-  background: linear-gradient(180deg, hsl(var(--crm-blue-soft) / 0.45), hsl(var(--background)) 72%);
+  background: #ffffff;
 }
 
 .public-dealer-signup > section:first-of-type :where(h1, h2) {
