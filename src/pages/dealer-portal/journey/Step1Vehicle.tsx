@@ -182,7 +182,6 @@ const Step1Vehicle: React.FC = () => {
             <div className="mb-6 flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-xl font-bold sm:text-2xl">Vehicle details</h1>
-                <p className="mt-1 text-sm text-muted-foreground">Enter the vehicle registration and mileage to find the best warranty options.</p>
               </div>
               <span className="inline-flex min-h-6 items-center text-xs font-semibold text-muted-foreground" aria-live="polite">
                 {saveState === 'saving' && <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin text-crm-orange" /> Saving...</>}
@@ -238,9 +237,6 @@ const Step1Vehicle: React.FC = () => {
                   <Input value={mileage} onChange={(event) => { setMileage(event.target.value.replace(/\D/g, '')); setValidation((current) => ({ ...current, mileage: '' })); }} className={`h-12 border-crm-line pr-14 ${lookupState === 'success' ? 'border-crm-green bg-crm-green-soft' : 'bg-background'}`} />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
                 </div>
-                {lookupState === 'success' && (
-                  <p className="mt-1 text-[11px] text-muted-foreground">Last MOT mileage — update it if the vehicle has driven further.</p>
-                )}
                 {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
               </div>
             </div>
