@@ -20,11 +20,12 @@ type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
 type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
 type SaveState = 'idle' | 'saving' | 'saved';
 
+const WARRANTY_TERMS = [3, 6, 12, 24, 36, 48, 60];
 
 const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
-    name: 'Dealer-Paid Warranty',
+    name: 'Manage My Warranty',
     description: 'Claim management only · We handle the claim, you pay the repair bill',
     price: '£1/m',
     icon: Headphones,
@@ -67,25 +68,25 @@ const buildVehicle = (reg: string, mileage: string): DealerJourneyVehicle => ({
   mileage: mileage.trim(),
 });
 
-const buildPlan = (selectedPlan: WarrantyPlanKey): DealerJourneyPlan => {
+const buildPlan = (selectedPlan: WarrantyPlanKey, termMonths: number): DealerJourneyPlan => {
   if (selectedPlan === 'fully-covered') {
     return {
       plan_type: 'gold',
-      duration_months: 12,
+      duration_months: termMonths,
       retail_price: 141.6,
       dealer_price: 141.6,
-      term_months: 12,
+      term_months: termMonths,
       selected_options: { warranty_type: 'fully-covered', label: 'Fully Covered Warranty' },
     };
   }
 
   return {
     plan_type: 'basic',
-    duration_months: 12,
+    duration_months: termMonths,
     retail_price: 1,
     dealer_price: 1,
-    term_months: 12,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Dealer-Paid Warranty' },
+    term_months: termMonths,
+    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Warranty' },
   };
 };
 
