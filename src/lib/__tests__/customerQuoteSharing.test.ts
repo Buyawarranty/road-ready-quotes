@@ -24,7 +24,7 @@ describe('Customer quote separation', () => {
 });
 
 describe('Existing commercial prices retained pending approval', () => {
-  test('age-mileage retains £118 versus £135.70 full-cover monthly price', () => {
+  test('age-mileage retains £118 versus £135.70 full-cover price', () => {
     assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', []).wholesale, 118);
     assert.equal(calculateFullWarranty('50', '70', 'none', '1000', []).wholesale, 135.7);
   });

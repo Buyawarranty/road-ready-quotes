@@ -77,6 +77,9 @@ const Step4Checkout: React.FC = () => {
 
   const total = plan.dealer_price;
   const options = (plan.selected_options || {}) as Record<string, unknown>;
+  const fullPriceBasis = options.price_basis === 'full-warranty';
+  const netPrice = fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
+  const vatAmount = fullPriceBasis ? Number(options.vat_total) : total - netPrice;
   const planName = (options.label as string) || DEALER_PLAN_LABELS[plan.plan_type];
   const termLabel = (options.term as string) || `${plan.duration_months} months`;
   const excess = options.excess as number | undefined;
@@ -485,8 +488,12 @@ const Step4Checkout: React.FC = () => {
               <div className="border-t border-gray-200 pt-4 space-y-1.5">
                 <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Price</p>
                 <div className="flex justify-between text-gray-600">
-                  <span>Warranty price</span>
-                  <span>£{total.toFixed(2)}</span>
+                  <span>Warranty price excluding VAT</span>
+                  <span>£{netPrice.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>VAT (20%)</span>
+                  <span>£{vatAmount.toFixed(2)}</span>
                 </div>
                 {discount_pct > 0 && (
                   <div className="flex justify-between text-orange-600 font-semibold">

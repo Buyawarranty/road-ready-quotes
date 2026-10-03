@@ -57,7 +57,7 @@ export function customerQuoteMessage(p: CustomerQuotePayload, url: string) {
   const safe = customerSafeQuote(p);
   return [safe.dealerName, safe.coverTitle, [safe.vehicle?.reg, safe.vehicle?.make, safe.vehicle?.model].filter(Boolean).join(' '),
     ...safe.specs.map(s => `${s.label}: ${s.value}`),
-    `Customer price: £${safe.price.toFixed(2)} ${safe.priceSuffix || '/month'} including VAT`,
+    `Customer price: £${safe.price.toFixed(2)} ${safe.priceSuffix || ''} including VAT`,
     ...(safe.included || []), 'Quote only — subject to eligibility and policy terms.', url].filter(Boolean).join('\n');
 }
 export function adjustableQuotePrice(a: AdjustableQuote, selected: string[], extras: string[]) {

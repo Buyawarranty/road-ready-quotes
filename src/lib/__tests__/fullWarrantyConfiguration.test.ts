@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateFullWarranty, liveWarrantyAddOns, warrantyClaims, pendingWarrantyClaims, warrantyTerms, warrantyLabour } from '../fullWarrantyConfiguration';
+import { calculateFullWarranty, liveWarrantyAddOns, warrantyClaims, pendingWarrantyClaims, warrantyTerms, warrantyLabour, warrantyPriceWithVat } from '../fullWarrantyConfiguration';
 
 describe('Dealer warranty configuration', () => {
   it('offers only 3, 6, 12, 24 and 36 months of cover', () => {
@@ -22,7 +22,7 @@ describe('Approved full warranty add-ons', () => {
     assert.deepEqual(liveWarrantyAddOns.map(a => a.key), approved.map(([key]) => key));
   });
   for (const [key, price] of approved) {
-    it(`${key} costs £${price} per month excluding VAT`, () => {
+    it(`${key} costs £${price} for the full warranty excluding VAT`, () => {
       assert.equal(liveWarrantyAddOns.find(a => a.key === key)?.price, price);
       assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', [key]).wholesale, 118 + price);
     });
@@ -42,5 +42,13 @@ describe('Full warranty claim limits', () => {
   });
   it('removes 750 from new quote pricing', () => {
     assert.throws(() => calculateFullWarranty('50', '70', 'age-mileage', '750', []));
+  });
+});
+describe('Full warranty payment', () => {
+  it('charges £118 for the entire warranty rather than multiplying by 12', () => {
+    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', []).total, 118);
+  });
+  it('adds £23.60 VAT to £118 for a final payment of £141.60', () => {
+    assert.deepEqual(warrantyPriceWithVat(118), { net: 118, vat: 23.6, total: 141.6 });
   });
 });
