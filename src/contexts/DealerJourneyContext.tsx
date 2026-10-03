@@ -22,10 +22,10 @@ export interface DealerJourneyCustomer {
 
 export interface DealerJourneyPlan {
   plan_type: 'basic' | 'gold' | 'platinum';
-  duration_months: 3 | 12 | 24 | 36;
+  duration_months: number;
   retail_price: number; // before discount
   dealer_price: number; // after discount
-  term_months?: 3 | 6 | 12 | 24 | 36;
+  term_months?: number;
   selected_options?: Record<string, any>;
 }
 
