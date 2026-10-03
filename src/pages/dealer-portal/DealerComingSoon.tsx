@@ -296,9 +296,6 @@ const DealerComingSoon = () => {
           <h1 className="mx-auto mt-5 max-w-4xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
             Trade warranties for UK motor dealers
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Already a dealer? Log in to your portal — or register your dealership and start quoting in minutes.
-          </p>
 
           {pendingReg && (
             <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-stretch gap-4 rounded-xl border border-crm-line bg-card px-4 py-4 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6">
