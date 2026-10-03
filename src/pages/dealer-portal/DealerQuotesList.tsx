@@ -219,21 +219,66 @@ const DealerQuotesList = () => {
             <span className="text-orange-500 text-2xl">◆</span>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-stretch w-full max-w-md">
-              <div className="relative flex-1">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+              {/* Search */}
+              <div className="relative w-full sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                 <Input
-                  placeholder="Search..."
+                  placeholder="Search by reg, customer, make or model..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="h-11 bg-white border-0 rounded-r-none text-gray-900 placeholder:text-gray-500 focus-visible:ring-orange-500"
+                  onChange={(e) => updateFilters(() => setSearch(e.target.value))}
+                  className="h-11 pl-9 pr-9 bg-white border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500"
                 />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => updateFilters(() => setSearch(''))}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
               </div>
+
+              {/* Date filter */}
+              <div className="flex items-center gap-2">
+                <Input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => updateFilters(() => setDateFilter(e.target.value))}
+                  className="h-11 w-full sm:w-44 bg-white border-gray-300 rounded-lg text-gray-900 focus-visible:ring-orange-500"
+                  aria-label="Filter by date"
+                />
+                {dateFilter && (
+                  <button
+                    type="button"
+                    onClick={() => updateFilters(() => setDateFilter(''))}
+                    className="text-gray-400 hover:text-gray-600"
+                    aria-label="Clear date filter"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sort toggle */}
               <Button
-                size="icon"
-                className="h-11 w-11 rounded-l-none bg-orange-500 hover:bg-orange-600 text-white"
+                type="button"
+                variant="outline"
+                onClick={() => updateFilters(() => setSortDir(sortDir === 'desc' ? 'asc' : 'desc'))}
+                className="h-11 border-gray-300 bg-white text-gray-800 font-semibold hover:bg-gray-50"
               >
-                <Search className="h-4 w-4" />
+                {sortDir === 'desc' ? (
+                  <>
+                    Newest first <ArrowDown className="h-4 w-4 ml-1.5 text-orange-500" />
+                  </>
+                ) : (
+                  <>
+                    Oldest first <ArrowUp className="h-4 w-4 ml-1.5 text-orange-500" />
+                  </>
+                )}
               </Button>
             </div>
 
@@ -241,7 +286,7 @@ const DealerQuotesList = () => {
               type="button"
               variant="ghost"
               onClick={handleNewQuote}
-              className="h-auto self-start px-0 text-sm font-bold tracking-wide text-crm-orange hover:bg-transparent hover:text-crm-orange md:self-auto"
+              className="h-auto self-start px-0 text-sm font-bold tracking-wide text-crm-orange hover:bg-transparent hover:text-crm-orange lg:self-auto"
             >
               <Plus className="h-5 w-5" /> New Quote
             </Button>
@@ -250,6 +295,9 @@ const DealerQuotesList = () => {
           <div className="mt-4 text-sm">
             <span className="text-gray-600 font-semibold">Summary Stats: </span>
             <span className="text-orange-500 font-bold">Total Quotes ({quotes.length})</span>
+            {(search || dateFilter) && (
+              <span className="text-gray-600 font-semibold"> · Showing {filtered.length} matching</span>
+            )}
           </div>
         </div>
       </div>
