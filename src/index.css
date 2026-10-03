@@ -3125,9 +3125,17 @@ img, video { height: auto; }
 
 .dealer-public-footer { margin-top: 0; color: hsl(216 13% 39%); background: hsl(0 0% 100%); border-top: 1px solid hsl(216 17% 88%); font-family: Helvetica, "Segoe UI", Arial, sans-serif; }
 .dealer-footer-shell { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; padding: 2.4rem 0 1rem; }
-.dealer-footer-grid { display: grid; grid-template-columns: 1.1fr repeat(4, minmax(0, 1fr)); gap: 2rem; }
+.dealer-footer-grid { display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 2rem; }
 .dealer-footer-brand img { width: 145px; height: auto; object-fit: contain; }
-.dealer-footer-brand p { max-width: 190px; margin: .75rem 0 0; font-size: .72rem; line-height: 1.5; }
+.dealer-footer-brand p { margin: .75rem 0 0; font-size: .72rem; line-height: 1.5; }
+.dealer-footer-brand .dealer-footer-blurb { margin-top: .5rem; }
+.dealer-footer-brand .dealer-footer-contact { margin-top: .9rem; }
+.dealer-footer-brand .dealer-footer-contact p, .dealer-footer-brand .dealer-footer-contact a { color: hsl(216 13% 39%); font-size: .68rem; }
+.dealer-footer-contact-strip { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; margin-bottom: 2rem; padding: 1.15rem 1.35rem; border-radius: .65rem; background: hsl(218 48% 18%); }
+.dealer-footer-contact-strip h2 { margin: 0; color: hsl(0 0% 100%); }
+.dealer-footer-strip-actions { display: flex; flex-wrap: wrap; gap: 1.4rem; }
+.dealer-footer-strip-action { display: inline-flex; align-items: center; gap: .45rem; color: hsl(0 0% 100%); font-size: .78rem; font-weight: 600; }
+.dealer-footer-strip-action svg { width: .95rem; height: .95rem; color: hsl(19 82% 56%); }
 .dealer-public-footer h2 { margin: 0 0 .65rem; color: hsl(218 48% 18%); font-size: .76rem; font-weight: 850; text-transform: uppercase; }
 .dealer-public-footer ul { display: grid; gap: .38rem; margin: 0; padding: 0; list-style: none; }
 .dealer-public-footer li, .dealer-public-footer a, .dealer-footer-contact p { color: hsl(216 13% 39%); font-size: .68rem; line-height: 1.4; }
