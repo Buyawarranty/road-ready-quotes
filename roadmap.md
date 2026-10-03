@@ -11,5 +11,8 @@
 - [x] Optimise large public-page images and improve natural, search-friendly image descriptions.
 - [x] Build the dedicated trade-focused Why Choose Us landing page and connect its public navigation.
 - [x] Update Full Warranty Cover pricing to the supplied compact layout and add customer-safe print/email/WhatsApp sharing.
-- [ ] Activate proposed add-on rates, diagnostic inclusion and corrected term pricing after explicit commercial confirmation; current charges retained.
+- [x] Activate the ten approved full-cover add-ons without icons, replace old options, and verify their monthly charges and customer sharing. All 27 targeted tests pass; dealer visual verification requires an external authenticated session.
+- [ ] Preserve selected cover and add-on details on issued warranty records: checkout currently forwards the price but omits selected options; confirm the policy storage fields before enabling issuance with the new protections.
+- [ ] Activate £5,000 claim cover after approval of the recommended extra £20/month excluding VAT above £3,000; option remains disabled pending approval.
+- [ ] Diagnostic inclusion and corrected term pricing await commercial confirmation.
 - [x] Add fixed and adjustable customer quotes, custom selling prices and true profit margin, with customer-safe new-tab sharing. Public interaction and privacy tests pass; signed-in dealer checks remain unavailable.

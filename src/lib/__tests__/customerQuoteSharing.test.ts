@@ -28,11 +28,11 @@ describe('Existing commercial prices retained pending approval', () => {
     assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', []).wholesale, 118);
     assert.equal(calculateFullWarranty('50', '70', 'none', '1000', []).wholesale, 135.7);
   });
-  test('proposed protections cannot change the payable price', () => {
-    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['ev-battery', 'aircon']).wholesale, 118);
+  test('approved battery and air-conditioning add-ons enter the quote price', () => {
+    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['ev-battery', 'aircon']).wholesale, 151);
   });
-  test('existing selectable add-on prices remain unchanged', () => {
-    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['wear', 'breakdown', 'mot', 'diagnostics']).wholesale, 141);
+  test('replaced add-ons are excluded from new quote charges', () => {
+    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['wear', 'breakdown', 'mot', 'diagnostics']).wholesale, 118);
   });
 });
 
