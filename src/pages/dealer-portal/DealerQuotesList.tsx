@@ -250,25 +250,10 @@ const DealerQuotesList = () => {
               </div>
 
               {/* Date filter */}
-              <div className="flex items-center gap-2">
-                <Input
-                  type="date"
-                  value={dateFilter}
-                  onChange={(e) => updateFilters(() => setDateFilter(e.target.value))}
-                  className="h-11 w-full sm:w-44 bg-white border-gray-300 rounded-lg text-gray-900 focus-visible:ring-orange-500"
-                  aria-label="Filter by date"
-                />
-                {dateFilter && (
-                  <button
-                    type="button"
-                    onClick={() => updateFilters(() => setDateFilter(''))}
-                    className="text-gray-400 hover:text-gray-600"
-                    aria-label="Clear date filter"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
+              <DealerDateFilter
+                value={dateRange}
+                onChange={(range) => updateFilters(() => setDateRange(range))}
+              />
 
               {/* Sort toggle */}
               <Button
@@ -302,7 +287,7 @@ const DealerQuotesList = () => {
           <div className="mt-4 text-sm">
             <span className="text-gray-600 font-semibold">Summary Stats: </span>
             <span className="text-orange-500 font-bold">Total Quotes ({quotes.length})</span>
-            {(search || dateFilter) && (
+            {(search || dateRange?.from) && (
               <span className="text-gray-600 font-semibold"> · Showing {filtered.length} matching</span>
             )}
           </div>
@@ -314,7 +299,7 @@ const DealerQuotesList = () => {
         {filtered.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
             <p className="text-gray-600">
-              {search || dateFilter ? 'No quotes match your search or filters.' : 'No saved quotes yet. Start a new quote to get going.'}
+              {search || dateRange?.from ? 'No quotes match your search or filters.' : 'No saved quotes yet. Start a new quote to get going.'}
             </p>
           </div>
         ) : (
