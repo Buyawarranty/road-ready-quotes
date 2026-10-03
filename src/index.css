@@ -865,11 +865,6 @@
   box-shadow: none;
 }
 
-.public-dealer-signup > footer {
-  margin-top: 0;
-  background: hsl(var(--marketing-navy));
-}
-
 /* Sign-up: log in / register choice cards (light dealer portal) */
 .public-dealer-signup .signup-choice {
   background: hsl(var(--card));
@@ -3117,7 +3112,6 @@ img, video { height: auto; }
 .why-final-cta ul { grid-column: 1 / -1; display: flex; justify-content: center; gap: .85rem 2rem; margin: 0; padding: .3rem 0 0; list-style: none; }
 .why-final-cta li { display: flex; align-items: center; gap: .35rem; color: hsl(var(--why-surface) / .82); font-size: .7rem; }
 .why-final-cta li svg { width: .9rem; height: .9rem; padding: .12rem; border-radius: 50%; color: hsl(var(--why-surface)); background: hsl(var(--why-green)); stroke-width: 4; }
-.why-page > footer { margin-top: 0; }
 
 .public-header-nav-link.is-active { color: hsl(var(--public-orange)); }
 .public-header-nav-link.is-active::after { transform: scaleX(1); }
