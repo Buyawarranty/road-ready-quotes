@@ -307,11 +307,11 @@ const DealerQuotesList = () => {
         {filtered.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
             <p className="text-gray-600">
-              {search ? 'No quotes match your search.' : 'No saved quotes yet. Start a new quote to get going.'}
+              {search || dateFilter ? 'No quotes match your search or filters.' : 'No saved quotes yet. Start a new quote to get going.'}
             </p>
           </div>
         ) : (
-          filtered.map((q: any) => {
+          paginated.map((q: any) => {
             const warranty = warrantyType(q);
             const WarrantyIcon = warranty.Icon;
             return (
@@ -413,6 +413,97 @@ const DealerQuotesList = () => {
           })
         )}
       </div>
+
+      {/* Pagination */}
+      {filtered.length > PAGE_SIZE && (
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-gray-200 rounded-lg px-4 py-3">
+          <p className="text-sm text-gray-600">
+            Showing <span className="font-semibold text-gray-900">{(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)}</span> of{' '}
+            <span className="font-semibold text-gray-900">{filtered.length}</span> quotes
+          </p>
+
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              onClick={() => setPage(currentPage - 1)}
+              className="h-9 border-gray-300"
+            >
+              <ChevronLeft className="h-4 w-4" /> Prev
+            </Button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                .reduce<(number | 'ellipsis')[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push('ellipsis');
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, idx) =>
+                  p === 'ellipsis' ? (
+                    <span key={`e-${idx}`} className="px-1 text-gray-400">…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => setPage(p)}
+                      className={`h-9 min-w-9 px-2 rounded-md text-sm font-semibold transition-colors ${
+                        p === currentPage
+                          ? 'bg-orange-500 text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage(currentPage + 1)}
+              className="h-9 border-gray-300"
+            >
+              Next <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const target = Number(pageJump);
+              if (Number.isFinite(target) && target >= 1 && target <= totalPages) {
+                setPage(target);
+                setPageJump('');
+              } else {
+                toast.error(`Enter a page between 1 and ${totalPages}`);
+              }
+            }}
+          >
+            <label htmlFor="quote-page-jump" className="text-sm text-gray-600 whitespace-nowrap">Go to page</label>
+            <Input
+              id="quote-page-jump"
+              type="number"
+              min={1}
+              max={totalPages}
+              value={pageJump}
+              onChange={(e) => setPageJump(e.target.value)}
+              placeholder={String(currentPage)}
+              className="h-9 w-20 bg-white border-gray-300 text-gray-900"
+            />
+            <Button type="submit" size="sm" className="h-9 bg-orange-500 hover:bg-orange-600 text-white font-semibold">
+              Go
+            </Button>
+          </form>
+        </div>
+      )}
     </DealerLayout>
   );
 };
