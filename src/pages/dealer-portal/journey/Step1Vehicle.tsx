@@ -20,8 +20,6 @@ type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
 type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
 type SaveState = 'idle' | 'saving' | 'saved';
 
-const WARRANTY_TERMS = [3, 6, 12, 24, 36, 48, 60];
-
 const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
@@ -39,7 +37,7 @@ const warrantyPlans = [
   },
   {
     key: 'fully-covered' as const,
-    name: 'Fully Covered Warranty',
+    name: 'Comprehensive Warranty',
     description: 'A comprehensive warranty · We handle claims and pay for repairs',
     price: '£141.60/m',
     icon: Shield,
@@ -102,7 +100,7 @@ const Step1Vehicle: React.FC = () => {
   const [lookupState, setLookupState] = useState<LookupState>(initialReg ? 'success' : 'default');
   const regInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
-  const [selectedTerm, setSelectedTerm] = useState(12);
+  const [selectedTerm] = useState(12);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
 
@@ -169,7 +167,7 @@ const Step1Vehicle: React.FC = () => {
     if (!validate()) return;
     setVehicle(activeVehicle);
     setPlan(activePlan);
-    await save({ silent: true, overrideVehicle: activeVehicle, overridePlan: activePlan });
+    void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: activePlan });
     navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
@@ -180,7 +178,7 @@ const Step1Vehicle: React.FC = () => {
       <div className="mx-auto grid max-w-[1500px] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
        <div className="space-y-4">
         <Card className="crm-panel-shadow border-crm-line">
-          <CardContent className="p-4 sm:p-5">
+          <CardContent className="p-4">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-xl font-bold sm:text-2xl">Vehicle details</h1>
@@ -247,79 +245,36 @@ const Step1Vehicle: React.FC = () => {
 
 
         <Card className={`crm-panel-shadow border-crm-line transition-opacity ${vehicleDetailsComplete ? 'opacity-100' : 'opacity-70'}`}>
-          <CardContent className="p-4 sm:p-5">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><Shield className="h-5 w-5" /></span>
-                <div>
-                  <h2 className="text-base font-bold">Choose your warranty plan</h2>
-                  <p className="text-xs text-muted-foreground">
-                    {vehicleDetailsComplete ? 'Vehicle details confirmed. Select the cover that best suits your customer.' : 'Enter the registration and mileage above, then choose a warranty option.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {!vehicleDetailsComplete && (
-              <div className="mb-3 rounded-md border border-dashed border-crm-line bg-muted/40 p-4 text-sm font-semibold text-muted-foreground">
-                Complete the vehicle details to unlock Manage My Warranty and Fully Covered options.
-              </div>
-            )}
-
-            <div className="mx-auto grid max-w-4xl gap-3 lg:grid-cols-2">
+          <CardContent className="p-4">
+            <h2 className="mb-3 text-base font-bold">Choose your warranty</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
               {warrantyPlans.map((plan) => {
                 const Icon = plan.icon;
                 const isSelected = selectedPlan === plan.key;
                 return (
-                  <Button
-                    key={plan.key}
-                    type="button"
-                    onClick={() => { setSelectedPlan(plan.key); setValidation((current) => ({ ...current, plan: '' })); }}
-                    disabled={!vehicleDetailsComplete}
-                    variant="ghost"
-                    className={`group h-auto justify-start rounded-md border p-4 text-left transition-all disabled:pointer-events-none disabled:opacity-60 ${isSelected ? 'border-crm-orange bg-crm-orange-soft shadow-sm' : 'border-crm-line bg-card hover:border-crm-orange'}`}
-                    aria-pressed={isSelected}
-                  >
-                    <span className="w-full">
-                    <span className="flex items-start gap-3">
-                      <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${isSelected ? 'bg-card text-crm-orange' : 'bg-crm-blue-soft text-crm-blue'}`}><Icon className="h-5 w-5" /></span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex flex-wrap items-center gap-2 text-sm font-black">
-                          {plan.name}
-                          {plan.badge && <span className="rounded-full bg-crm-orange-soft px-2 py-0.5 text-[9px] font-black tracking-[0.12em] text-crm-orange">{plan.badge}</span>}
-                        </span>
-                        <span className="mt-0.5 block text-xs text-muted-foreground">{plan.description}</span>
-                      </span>
-                      <span className="text-right text-base font-black leading-none">{plan.price}<span className="block text-[10px] font-semibold text-muted-foreground">from</span></span>
-                    </span>
-                    <span className="mt-3 grid gap-1.5 text-[11px] text-muted-foreground">
-                      {plan.benefits.map((benefit) => <span key={benefit} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-crm-orange" /> {benefit}</span>)}
-                    </span>
-                    <span className={`mt-3 flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-xs font-bold ${plan.key === 'dealer-paid' ? 'bg-crm-navy text-primary-foreground' : 'bg-crm-orange text-primary-foreground'}`}>
-                      {plan.key === 'dealer-paid' ? 'Select' : 'Choose Full Cover'}
-                      {isSelected ? <Check className="h-3.5 w-3.5" /> : <ArrowRight className="h-3.5 w-3.5" />}
-                    </span>
-                    </span>
-                  </Button>
+                  <div key={plan.key} className="min-w-0">
+                    <Button
+                      type="button"
+                      onClick={() => { setSelectedPlan(plan.key); setValidation((current) => ({ ...current, plan: '' })); }}
+                      disabled={!vehicleDetailsComplete}
+                      variant="outline"
+                      className={`h-auto min-h-16 w-full justify-start gap-2 whitespace-normal rounded-md px-3 py-3 text-left ${isSelected ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground' : 'border-crm-line bg-card'}`}
+                      aria-pressed={isSelected}
+                    >
+                      <Icon className="h-5 w-5 shrink-0" />
+                      <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
+                      {isSelected && <Check className="h-4 w-4 shrink-0" />}
+                    </Button>
+                    <details className="mt-2 text-xs text-muted-foreground">
+                      <summary className="cursor-pointer py-1">Cover details</summary>
+                      <p className="mt-2 leading-relaxed">{plan.description}</p>
+                      <ul className="mt-2 space-y-2">
+                        {plan.benefits.map((benefit) => <li key={benefit} className="flex items-start gap-2 leading-relaxed"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-crm-green" />{benefit}</li>)}
+                      </ul>
+                    </details>
+                  </div>
                 );
               })}
-            </div>
-            <div className="mt-4 border-t border-crm-line pt-4">
-              <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">WARRANTY PERIOD</label>
-              <div className="flex flex-wrap gap-2">
-                {WARRANTY_TERMS.map((term) => (
-                  <button
-                    key={term}
-                    type="button"
-                    disabled={!vehicleDetailsComplete}
-                    onClick={() => setSelectedTerm(term)}
-                    aria-pressed={selectedTerm === term}
-                    className={`rounded-md border px-3.5 py-2 text-xs font-bold transition-all disabled:pointer-events-none disabled:opacity-60 ${selectedTerm === term ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'border-crm-line bg-card text-foreground hover:border-crm-orange'}`}
-                  >
-                    {term} months
-                  </button>
-                ))}
-              </div>
             </div>
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
