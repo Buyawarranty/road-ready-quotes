@@ -243,7 +243,7 @@ const Step1Vehicle: React.FC = () => {
                 )}
                 {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
               </div>
-
+            </div>
           </CardContent>
         </Card>
 
