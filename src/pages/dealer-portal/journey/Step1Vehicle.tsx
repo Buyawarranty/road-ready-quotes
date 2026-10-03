@@ -332,11 +332,10 @@ const Step1Vehicle: React.FC = () => {
                <>
                  <p className="mt-2 text-sm font-bold">AUDI Q5</p>
                  <p className="text-xs text-muted-foreground">2018 · Diesel</p>
-                 <dl className="mt-3 space-y-2 text-xs">
-                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Registration</dt><dd className="font-semibold">{reg}</dd></div>
-                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Current mileage</dt><dd className="font-semibold">{mileage ? `${Number(mileage).toLocaleString()} miles` : '—'}</dd></div>
-                   <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Last MOT mileage</dt><dd className="font-semibold">{Number(LAST_MOT_MILEAGE).toLocaleString()} miles</dd></div>
-                 </dl>
+                  <dl className="mt-3 space-y-2 text-xs">
+                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Registration</dt><dd className="font-semibold">{reg}</dd></div>
+                    <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Mileage (Last MOT)</dt><dd className="font-semibold">{mileage ? `${Number(mileage).toLocaleString()} miles` : '—'}</dd></div>
+                  </dl>
                </>
              ) : (
                <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
