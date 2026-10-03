@@ -102,13 +102,14 @@ const Step1Vehicle: React.FC = () => {
   const [lookupState, setLookupState] = useState<LookupState>(initialReg ? 'success' : 'default');
   const regInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
+  const [selectedTerm, setSelectedTerm] = useState(12);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
 
   const vehicleDetailsComplete = Boolean(isValidReg(reg) && mileage.trim() && lookupState === 'success');
   const canContinue = Boolean(vehicleDetailsComplete && selectedPlan);
   const activeVehicle = useMemo(() => buildVehicle(reg, mileage), [reg, mileage]);
-  const activePlan = useMemo(() => buildPlan(selectedPlan), [selectedPlan]);
+  const activePlan = useMemo(() => buildPlan(selectedPlan, selectedTerm), [selectedPlan, selectedTerm]);
 
   useEffect(() => {
     if (!normaliseReg(reg)) {
