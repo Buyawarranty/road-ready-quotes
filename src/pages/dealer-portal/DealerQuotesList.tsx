@@ -37,7 +37,7 @@ const DealerQuotesList = () => {
   const queryClient = useQueryClient();
   const { hydrate, reset } = useDealerJourney();
   const [search, setSearch] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [page, setPage] = useState(1);
   const [pageJump, setPageJump] = useState('');
@@ -65,14 +65,18 @@ const DealerQuotesList = () => {
         q.vehicle_reg?.toLowerCase().includes(term) ||
         q.vehicle_make?.toLowerCase().includes(term) ||
         q.vehicle_model?.toLowerCase().includes(term);
-      const matchesDate = !dateFilter || String(q.created_at || '').startsWith(dateFilter);
+      const day = String(q.created_at || '').slice(0, 10);
+      const matchesDate =
+        !dateRange?.from ||
+        (day >= format(dateRange.from, 'yyyy-MM-dd') &&
+          day <= format(dateRange.to || dateRange.from, 'yyyy-MM-dd'));
       return matchesSearch && matchesDate;
     });
     return [...list].sort((a: any, b: any) => {
       const diff = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
       return sortDir === 'desc' ? -diff : diff;
     });
-  }, [quotes, search, dateFilter, sortDir]);
+  }, [quotes, search, dateRange, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
