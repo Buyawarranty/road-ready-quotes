@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
+import { DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
 import { Download, FileText, CreditCard, Loader2, Mail } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -119,14 +120,26 @@ const DealerWarrantiesList = () => {
   };
 
   const renderStatus = (r: DealerPdfRow) => {
-    if (r.payment_status === 'paid') {
-      return <Badge className="bg-green-500/20 text-green-300 border border-green-500/40 font-bold">Paid</Badge>;
-    }
-    if (r.payment_status === 'invoice_pending') {
-      return <Badge className="bg-red-500/20 text-red-300 border border-red-500/40 font-bold">Unpaid</Badge>;
-    }
-    return <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">Pending</Badge>;
+    const st = getDealerPaymentState(r);
+    const sty = DEALER_PAYMENT_STYLES[st.key];
+    return (
+      <div>
+        <Badge className={`${sty.className} font-bold whitespace-nowrap`}>{sty.label}</Badge>
+        {st.dueDate && <div className="text-[11px] text-gray-500 mt-1 whitespace-nowrap">Due {st.dueDate.toLocaleDateString('en-GB')}</div>}
+      </div>
+    );
   };
+
+  const counts = useMemo(() => {
+    const c = { paid: 0, due: 0, overdue: 0, awaiting: 0 } as Record<DealerPaymentKey, number>;
+    const owed = { due: 0, overdue: 0 };
+    rows.forEach((r) => {
+      const k = getDealerPaymentState(r).key;
+      c[k]++;
+      if (k === 'due' || k === 'overdue') owed[k] += Number(r.final_amount || 0);
+    });
+    return { c, owed };
+  }, [rows]);
 
   const renderActiveStatus = (r: DealerPdfRow) => {
     const s = String((r as any).status || '').toLowerCase();
@@ -175,13 +188,30 @@ const DealerWarrantiesList = () => {
         </div>
       </div>
 
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+        {(['paid', 'due', 'overdue', 'awaiting'] as DealerPaymentKey[]).map((k) => (
+          <div key={k} className="bg-white border border-gray-200 rounded-lg p-4">
+            <Badge className={`${DEALER_PAYMENT_STYLES[k].className} font-bold`}>{DEALER_PAYMENT_STYLES[k].label}</Badge>
+            <div className="text-2xl font-extrabold text-gray-900 mt-2">{counts.c[k]}</div>
+            {(k === 'due' || k === 'overdue') && (
+              <div className="text-xs text-gray-500">£{counts.owed[k].toFixed(2)} owed</div>
+            )}
+          </div>
+        ))}
+      </div>
+      {counts.c.overdue > 0 && (
+        <div className="mb-6 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <strong>{counts.c.overdue} overdue invoice{counts.c.overdue === 1 ? '' : 's'}.</strong> Warranties linked to an unpaid invoice may be paused and claims unavailable until payment is received.
+        </div>
+      )}
+
       <Tabs defaultValue="plans" className="space-y-6">
         <TabsList className="bg-white border border-gray-200">
           <TabsTrigger
             value="plans"
             className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
           >
-            Plans ({paidRows.length})
+            All plans ({rows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
@@ -194,9 +224,9 @@ const DealerWarrantiesList = () => {
         {/* PLANS TAB */}
         <TabsContent value="plans">
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            {paidRows.length === 0 ? (
+            {rows.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No active plans yet. Plans appear here once payment is completed.
+                No plans yet.
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -209,12 +239,13 @@ const DealerWarrantiesList = () => {
                       <TableHead className="text-gray-700 font-bold">Start</TableHead>
                       <TableHead className="text-gray-700 font-bold">End</TableHead>
                       <TableHead className="text-gray-700 font-bold text-right">Amount</TableHead>
+                      <TableHead className="text-gray-700 font-bold">Payment</TableHead>
                       <TableHead className="text-gray-700 font-bold">Status</TableHead>
                       <TableHead className="text-gray-700 font-bold text-right">Send to customer</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paidRows.map((w) => (
+                    {rows.map((w) => (
                       <TableRow key={w.id} className="border-gray-200 hover:bg-gray-100">
                         <TableCell className="font-medium text-gray-900">
                           <div>{w.name}</div>
@@ -232,6 +263,7 @@ const DealerWarrantiesList = () => {
                         <TableCell className="text-gray-700">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
                         <TableCell className="text-gray-700">{fmt(computeEnd(w))}</TableCell>
                         <TableCell className="text-right text-gray-900 font-semibold">£{Number(w.final_amount || 0).toFixed(2)}</TableCell>
+                        <TableCell>{renderStatus(w)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
                         <TableCell className="text-right">
                           <Button
