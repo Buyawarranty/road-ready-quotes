@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { DEALER_PAYMENT_OPTIONS, DEALER_PAYMENT_STYLES, getDealerPaymentState } from '@/lib/dealerPaymentStatus';
 
 interface UnpaidRow {
   id: string;
@@ -127,6 +128,19 @@ const DealerAdminInvoices: React.FC = () => {
     }
     toast({ title: 'Payment confirmed', description: `${money(Number(row.final_amount ?? 0))} collected — warranty moved to active plans.` });
     setRows((prev) => prev.filter((r) => r.id !== row.id));
+  };
+
+  const setStatus = async (row: UnpaidRow, value: string) => {
+    if (value === 'paid') { setConfirmRow(row); return; }
+    setBusy(`status-${row.id}`);
+    const { error } = await supabase.from('customers').update({ payment_status: value }).eq('id', row.id);
+    setBusy(null);
+    if (error) {
+      toast({ title: 'Failed', description: error.message, variant: 'destructive' });
+      return;
+    }
+    setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, payment_status: value } : r)));
+    toast({ title: 'Status updated', description: 'The dealer will see this on their warranties page.' });
   };
 
   const emailInvoice = async (g: Group, only?: UnpaidRow) => {
@@ -417,9 +431,29 @@ const DealerAdminInvoices: React.FC = () => {
                               </td>
                               <td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td>
                               <td className="px-3 py-2">
-                                <Badge variant="secondary" className="bg-amber-500 text-white">
-                                  {r.payment_status || 'Unpaid'}
-                                </Badge>
+                                {(() => {
+                                  const st = getDealerPaymentState(r);
+                                  const sty = DEALER_PAYMENT_STYLES[st.key];
+                                  return (
+                                    <div className="space-y-1">
+                                      <Badge className={sty.className}>{sty.label}</Badge>
+                                      {st.dueDate && (
+                                        <p className="text-[11px] text-muted-foreground">Due {st.dueDate.toLocaleDateString('en-GB')}</p>
+                                      )}
+                                      <select
+                                        aria-label="Set payment status"
+                                        className="block w-full rounded border border-border bg-background px-1.5 py-1 text-xs"
+                                        value={(r.payment_status || 'pending').toLowerCase()}
+                                        disabled={busy === `status-${r.id}`}
+                                        onChange={(e) => setStatus(r, e.target.value)}
+                                      >
+                                        {DEALER_PAYMENT_OPTIONS.map((o) => (
+                                          <option key={o.value} value={o.value}>{o.label}</option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                  );
+                                })()}
                               </td>
                               <td className="px-3 py-2 text-right font-semibold">{money(Number(r.final_amount ?? 0))}</td>
                               <td className="px-3 py-2">
