@@ -41,6 +41,10 @@ export function calculateFullWarranty(excess: string, labour: string, parts: str
   if (!warrantyClaims.some(option => option.value === claim)) throw new Error('Claim limit requires approved pricing.');
   const factor = (options: { value: string; factor: number }[], value: string) => options.find(o => o.value === value)?.factor ?? 1;
   const extras = liveWarrantyAddOns.filter(a => addOns.includes(a.key)).reduce((sum, a) => sum + a.price, 0);
-  const monthly = +(118 * factor(warrantyExcess, excess) * factor(warrantyLabour, labour) * factor(warrantyParts, parts) * factor(warrantyClaims, claim) + extras).toFixed(2);
-  return { wholesale: monthly, total: +(monthly * 12).toFixed(2), recommended: +(monthly * 1.5).toFixed(2), myPrice: +(monthly * 1.687).toFixed(2) };
+  const fullPrice = +(118 * factor(warrantyExcess, excess) * factor(warrantyLabour, labour) * factor(warrantyParts, parts) * factor(warrantyClaims, claim) + extras).toFixed(2);
+  return { wholesale: fullPrice, total: fullPrice, recommended: +(fullPrice * 1.5).toFixed(2), myPrice: +(fullPrice * 1.687).toFixed(2) };
+}
+export function warrantyPriceWithVat(net: number) {
+  const vat = Math.round(net * 0.2 * 100) / 100;
+  return { net, vat, total: Math.round((net + vat) * 100) / 100 };
 }

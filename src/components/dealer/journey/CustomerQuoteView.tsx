@@ -38,7 +38,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   coverTitle,
   coverSubtitle,
   price,
-  priceSuffix = '/month',
+  priceSuffix = '',
   secondaryLabel,
   secondaryValue,
   specs,
@@ -114,7 +114,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
                 {secondaryLabel} <span className="font-bold text-primary-foreground">{secondaryValue}</span>
               </p>
             )}
-            <p className="text-[11px] text-primary-foreground mt-2">Final monthly price · Includes VAT</p>
+            <p className="text-[11px] text-primary-foreground mt-2">Full warranty price · Includes VAT</p>
           </div>
 
           {/* Cover spec */}
@@ -135,7 +135,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Cover excluding VAT</dt><dd>{fmt(price / 1.2)}</dd></div>
                 <div className="flex justify-between gap-3"><dt className="text-muted-foreground">VAT (20%)</dt><dd>{fmt(price - price / 1.2)}</dd></div>
-                <div className="flex justify-between gap-3 border-t border-crm-line pt-2 font-bold"><dt>Final monthly price</dt><dd>{fmt(price)}</dd></div>
+                <div className="flex justify-between gap-3 border-t border-crm-line pt-2 font-bold"><dt>Final price</dt><dd>{fmt(price)}</dd></div>
               </dl>
             </div>
             {included.length > 0 && (
