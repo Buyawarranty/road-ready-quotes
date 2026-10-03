@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, UserPlus, LogIn, Eye, EyeOff,
+  ArrowRight, Check, TrendingUp, ShieldCheck, FileText, LogIn, Eye, EyeOff,
   Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
@@ -296,9 +296,6 @@ const DealerComingSoon = () => {
           <h1 className="mx-auto mt-5 max-w-4xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
             Trade warranties for UK motor dealers
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Already a dealer? Log in to your portal — or register your dealership and start quoting in minutes.
-          </p>
 
           {pendingReg && (
             <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-stretch gap-4 rounded-xl border border-crm-line bg-card px-4 py-4 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6">
@@ -331,49 +328,30 @@ const DealerComingSoon = () => {
             </div>
           )}
 
-          <div className="mx-auto mt-5 grid max-w-5xl gap-5 text-left sm:grid-cols-2">
+          <div className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:flex-row sm:justify-center">
             {/* Register */}
             <button
               type="button"
               onClick={revealForm}
-               className="signup-choice signup-choice-primary group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-7"
+              className="group inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
-                <UserPlus className="h-6 w-6" />
-              </div>
-              <h2 className="mt-4 text-xl font-black text-crm-navy">Register</h2>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                New here? Register your dealership in 60 seconds — free.
-              </p>
-              <span className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-colors group-hover:bg-primary/90">
-                Register your dealership <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
+              Register your dealership
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </button>
 
             {/* Log in */}
             <button
               type="button"
               onClick={revealLogin}
-               className="signup-choice group rounded-lg border-2 p-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-7"
+              className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md border border-crm-navy/20 bg-card px-6 py-3.5 text-sm font-bold text-crm-navy transition-colors hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="signup-choice-icon flex h-12 w-12 items-center justify-center rounded-lg">
-                <LogIn className="h-6 w-6" />
-              </div>
-              <h2 className="mt-4 text-xl font-black text-crm-navy">Log in</h2>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                I already have a dealer account — take me to my portal.
-              </p>
-              <span className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-border bg-card px-4 py-3 text-sm font-bold text-primary transition-colors group-hover:border-primary group-hover:bg-primary/5">
-                Log in <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </span>
+              Log in
             </button>
           </div>
+          <p className="mx-auto mt-4 text-sm text-muted-foreground">
+            Free dealer sign-up · No setup fees, no contracts · Quote in seconds
+          </p>
 
-          <ul className="signup-trust-row mx-auto mt-7 flex max-w-4xl flex-wrap justify-center gap-x-12 gap-y-3 text-sm text-crm-navy">
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Free dealer sign-up</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> No setup fees, no contracts</li>
-            <li className="flex items-center gap-2"><Check className="h-4 w-4 rounded-full bg-crm-green-soft p-0.5 text-crm-green" /> Quote in seconds</li>
-          </ul>
 
           {showLogin && (
             <div
