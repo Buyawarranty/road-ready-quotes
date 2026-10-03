@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck } from 'lucide-react';
+import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { toast } from 'sonner';
+
+const PAGE_SIZE = 10;
 
 const STEP_PATHS: Record<number, string> = {
   1: '/dealer-portal/quote/vehicle',
@@ -32,6 +34,10 @@ const DealerQuotesList = () => {
   const queryClient = useQueryClient();
   const { hydrate, reset } = useDealerJourney();
   const [search, setSearch] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  const [page, setPage] = useState(1);
+  const [pageJump, setPageJump] = useState('');
 
   const { data: quotes = [] } = useQuery({
     queryKey: ['dealer-quotes-list', dealer?.id],
@@ -47,12 +53,33 @@ const DealerQuotesList = () => {
     enabled: !!dealer?.id,
   });
 
-  const filtered = quotes.filter((q: any) =>
-    q.customer_name?.toLowerCase().includes(search.toLowerCase()) ||
-    q.vehicle_reg?.toLowerCase().includes(search.toLowerCase()) ||
-    q.vehicle_make?.toLowerCase().includes(search.toLowerCase()) ||
-    q.vehicle_model?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const list = quotes.filter((q: any) => {
+      const matchesSearch =
+        !term ||
+        q.customer_name?.toLowerCase().includes(term) ||
+        q.vehicle_reg?.toLowerCase().includes(term) ||
+        q.vehicle_make?.toLowerCase().includes(term) ||
+        q.vehicle_model?.toLowerCase().includes(term);
+      const matchesDate = !dateFilter || String(q.created_at || '').startsWith(dateFilter);
+      return matchesSearch && matchesDate;
+    });
+    return [...list].sort((a: any, b: any) => {
+      const diff = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      return sortDir === 'desc' ? -diff : diff;
+    });
+  }, [quotes, search, dateFilter, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const updateFilters = (fn: () => void) => {
+    fn();
+    setPage(1);
+    setPageJump('');
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this quote?')) return;
