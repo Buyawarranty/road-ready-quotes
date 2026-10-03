@@ -12,3 +12,4 @@
 - [x] Build the dedicated trade-focused Why Choose Us landing page and connect its public navigation.
 - [x] Update Full Warranty Cover pricing to the supplied compact layout and add customer-safe print/email/WhatsApp sharing.
 - [ ] Activate proposed add-on rates, diagnostic inclusion and corrected term pricing after explicit commercial confirmation; current charges retained.
+- [x] Add fixed and adjustable customer quotes, custom selling prices and true profit margin, with customer-safe new-tab sharing. Public interaction and privacy tests pass; signed-in dealer checks remain unavailable.

@@ -19,6 +19,7 @@ export interface CustomerQuoteViewProps {
   /** Included / add-on bullet list. */
   included?: string[];
   dealerName?: string;
+  quoteControls?: React.ReactNode;
 }
 
 const fmt = (n: number) =>
@@ -43,6 +44,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   specs,
   included = [],
   dealerName,
+  quoteControls,
 }) => {
   useEffect(() => {
     if (!open) return;
@@ -101,10 +103,10 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
 
           {/* Price */}
           <div className="px-6 sm:px-8 py-8 text-center bg-crm-navy">
-            <p className="text-primary-foreground text-sm font-semibold">{coverTitle}</p>
+            <h1 className="text-primary-foreground text-lg font-bold">Your warranty quote</h1><p className="mt-1 text-primary-foreground text-sm font-semibold">{coverTitle}</p>
             {coverSubtitle && <p className="text-primary-foreground text-xs mt-1">{coverSubtitle}</p>}
-            <div className="mt-4 flex items-end justify-center gap-1">
-              <span className="text-4xl sm:text-5xl font-bold text-primary-foreground">{fmt(price)}</span>
+            <div className="mt-4 flex flex-wrap items-end justify-center gap-1">
+              <span className="text-3xl sm:text-5xl font-bold text-primary-foreground">{fmt(price)}</span>
               <span className="text-primary-foreground font-semibold pb-2">{priceSuffix}</span>
             </div>
             {secondaryLabel && secondaryValue && (
@@ -112,11 +114,12 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
                 {secondaryLabel} <span className="font-bold text-primary-foreground">{secondaryValue}</span>
               </p>
             )}
-            <p className="text-[11px] text-primary-foreground mt-2">Includes VAT</p>
+            <p className="text-[11px] text-primary-foreground mt-2">Final monthly price · Includes VAT</p>
           </div>
 
           {/* Cover spec */}
           <div className="px-6 sm:px-8 py-6">
+            {quoteControls}
             <p className="text-[11px] uppercase  text-muted-foreground font-bold mb-3">Your cover</p>
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
               {specs.map((s) => (
@@ -127,6 +130,14 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               ))}
             </dl>
 
+            <div className="mt-5 border-t border-crm-line pt-4">
+              <h2 className="mb-2 text-sm font-bold">Price breakdown</h2>
+              <dl className="space-y-2 text-sm">
+                <div className="flex justify-between gap-3"><dt className="text-muted-foreground">Cover excluding VAT</dt><dd>{fmt(price / 1.2)}</dd></div>
+                <div className="flex justify-between gap-3"><dt className="text-muted-foreground">VAT (20%)</dt><dd>{fmt(price - price / 1.2)}</dd></div>
+                <div className="flex justify-between gap-3 border-t border-crm-line pt-2 font-bold"><dt>Final monthly price</dt><dd>{fmt(price)}</dd></div>
+              </dl>
+            </div>
             {included.length > 0 && (
               <div className="mt-6">
                 <p className="text-[11px] uppercase  text-muted-foreground font-bold mb-3">Included</p>
