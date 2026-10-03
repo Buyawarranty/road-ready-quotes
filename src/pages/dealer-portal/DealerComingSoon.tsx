@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -52,7 +52,26 @@ const DealerComingSoon = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; phone?: string; url?: string }>({});
   const [touched, setTouched] = useState<{ email?: boolean; phone?: boolean; url?: boolean }>({});
+  const [savedVehicle, setSavedVehicle] = useState<{ title: string; fuel: string } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const reg = pendingReg.trim().toUpperCase();
+    if (!reg) { setSavedVehicle(null); return; }
+    let active = true;
+    supabase.functions
+      .invoke('dvla-vehicle-lookup', { body: { registrationNumber: reg } })
+      .then(({ data }: { data: { found?: boolean; make?: string; model?: string; yearOfManufacture?: number; fuelType?: string } | null }) => {
+        if (!active || !data?.found) return;
+        const name = [data.make, data.model].filter(Boolean).join(' ');
+        if (!name) return;
+        const year = data.yearOfManufacture ? ` (${data.yearOfManufacture})` : '';
+        setSavedVehicle({ title: `${name.toUpperCase()}${year}`, fuel: data.fuelType || '' });
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [pendingReg]);
+
 
   const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -282,19 +301,32 @@ const DealerComingSoon = () => {
           </p>
 
           {pendingReg && (
-            <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-center justify-center gap-3 rounded-lg border border-crm-amber/40 bg-crm-amber-soft px-4 py-3 text-sm text-crm-navy sm:flex-row">
-              <Info className="h-5 w-5 shrink-0 text-primary" />
-              <span>
-                Registration <span className="font-bold text-crm-navy">{pendingReg.toUpperCase()}</span> is saved for your quote.
-              </span>
+            <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-stretch gap-4 rounded-xl border border-crm-line bg-card px-4 py-4 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+              <div className="flex min-w-0 items-center gap-4 text-left">
+                <div className="vehicle-reg-plate vehicle-reg-plate--quote w-44 shrink-0" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
+                  <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
+                  <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
+                </div>
+                <div className="min-w-0">
+                  {savedVehicle?.title && (
+                    <>
+                      <p className="text-base font-bold leading-tight text-crm-navy">{savedVehicle.title}</p>
+                      {savedVehicle.fuel && (
+                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{savedVehicle.fuel}</p>
+                      )}
+                    </>
+                  )}
+                  <p className="text-sm text-muted-foreground">
+                    Registration <span className="font-bold text-crm-navy">{pendingReg.toUpperCase()}</span> is saved for your quote.
+                  </p>
+                </div>
+              </div>
               <Button
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={revealLogin}
-                className="text-primary hover:bg-primary/10 hover:text-primary"
+                className="min-h-11 shrink-0 gap-2 bg-primary px-6 font-bold text-primary-foreground hover:bg-primary/90"
               >
-                <LogIn className="h-4 w-4" /> Log in to continue
+                <LogIn className="h-4 w-4" /> Log in
               </Button>
             </div>
           )}
