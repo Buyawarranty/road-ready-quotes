@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast';
 import {
   ArrowRight,
   Bookmark,
+  Trash2,
   Check,
   CheckCircle2,
   Headphones,
