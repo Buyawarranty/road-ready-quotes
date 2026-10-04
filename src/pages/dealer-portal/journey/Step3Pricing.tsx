@@ -42,6 +42,8 @@ const Step3Pricing: React.FC = () => {
   const [margin, setMargin] = useState(String(old.customer_margin ?? 20));
   const [quoteMode, setQuoteMode] = useState<'fixed' | 'adjustable'>('fixed');
   const [error, setError] = useState('');
+  const [paylink, setPaylink] = useState<string | null>(null);
+  const [paylinkBusy, setPaylinkBusy] = useState(false);
   const termOption = warrantyTerms.find(o => o.value === term) ?? warrantyTerms[2];
   const partsOption = warrantyParts.find(o => o.value === parts) ?? warrantyParts[0];
   const pricing = useMemo(() => calculateFullWarranty(excess, labour, parts, claim, selectedAddOns), [excess, labour, parts, claim, selectedAddOns]);
@@ -87,6 +89,17 @@ const Step3Pricing: React.FC = () => {
     const message = customerQuoteMessage(customerPayload, url);
     if (action === 'email') window.location.href = `mailto:?subject=${encodeURIComponent(`Warranty quote — ${vehicle.reg}`)}&body=${encodeURIComponent(message)}`;
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+  };
+  const openPaylink = async () => {
+    if (!vehicle?.reg || !validPrice) { setError('Enter a valid customer price and select a vehicle first.'); return; }
+    setError('');
+    setPaylinkBusy(true);
+    const plan = buildPlan();
+    setPlan(plan);
+    const id = await save({ overridePlan: plan, silent: true });
+    setPaylinkBusy(false);
+    if (!id) { setError('Your quote could not be saved, so no payment link was created. Please try again.'); return; }
+    setPaylink(getCustomerUrl().replace('/customer-quote/#', `/customer-quote/?pay=${id}#`));
   };
   const buildPlan = () => ({
     plan_type: 'gold' as const, duration_months: termOption.months, term_months: termOption.months,
