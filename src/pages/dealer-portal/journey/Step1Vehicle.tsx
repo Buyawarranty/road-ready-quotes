@@ -323,7 +323,7 @@ const Step1Vehicle: React.FC = () => {
                     >
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
-                      <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      {isSelected && <Check className="h-4 w-4 shrink-0" aria-hidden="true" />}
                     </Button>
                     <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-orange' : 'text-crm-navy'}`}>{plan.subtitle}</p>
                     <details className="mt-2 text-xs text-muted-foreground">
