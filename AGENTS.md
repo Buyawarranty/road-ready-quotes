@@ -7,3 +7,4 @@
 - Dealer margin calculations use VAT-inclusive cost divided by one minus the margin fraction; keep selling-price calculations separate from warranty charging.
 - Full-cover calculations return net full-warranty amounts; quote display adds VAT once, and journey dealer_price/retail_price carry gross payable totals so checkout charges match the preview.
 - Dealer dashboard data must be dealer-scoped and reuse quote, customer/warranty and claim records; never substitute sample figures when data is unavailable.
+- Pricing-page product selection stays in place and retains the vehicle and configuration; dealer economics are calculated separately from customer-safe sharing and warranty charging.

@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Shield, Wrench } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type CoverType = 'manage-my-claims' | 'comprehensive';
 
 interface CoverTypeSwitchProps {
   active: CoverType;
+  onChange?: (type: CoverType) => void;
 }
 
 const options: { key: CoverType; title: string; subtitle: string; target: string }[] = [
@@ -23,41 +25,35 @@ const options: { key: CoverType; title: string; subtitle: string; target: string
   },
 ];
 
-const CoverTypeSwitch: React.FC<CoverTypeSwitchProps> = ({ active }) => {
+const CoverTypeSwitch: React.FC<CoverTypeSwitchProps> = ({ active, onChange }) => {
   const navigate = useNavigate();
   return (
-    <div className="rounded-lg border border-crm-line bg-card p-3">
-      <p className="text-xs font-semibold text-foreground">
-        Cover type{' '}
-        <span className="ml-1 font-normal text-muted-foreground">Switch type — your vehicle selection stays the same</span>
-      </p>
-      <div className="mt-2 grid gap-2 sm:grid-cols-2">
-        {options.map((option) => {
+    <section className="rounded-lg border border-crm-line bg-card p-3" aria-label="Cover type">
+      <div className="grid grid-cols-2 gap-1 rounded-md border border-crm-line bg-muted p-1">
+        {[options[1], options[0]].map((option) => {
           const isActive = option.key === active;
           return (
-            <button
+            <Button
+              variant="ghost"
               key={option.key}
               type="button"
               aria-pressed={isActive}
-              onClick={() => !isActive && navigate(option.target)}
-              className={`flex items-start justify-between gap-2 rounded-md border px-3 py-2 text-left transition-colors ${
+              onClick={() => !isActive && (onChange ? onChange(option.key) : navigate(option.target))}
+              className={`h-auto min-h-10 gap-2 whitespace-normal rounded-md px-2 py-2 text-xs sm:text-sm ${
                 isActive
-                  ? 'border-crm-navy bg-crm-navy text-primary-foreground'
-                  : 'border-crm-line bg-card text-foreground hover:border-crm-orange/50 hover:bg-muted'
+                  ? 'bg-crm-orange text-primary-foreground hover:bg-crm-orange hover:text-primary-foreground'
+                  : 'text-foreground hover:bg-card'
               }`}
             >
-              <span className="min-w-0">
-                <span className="block text-sm font-bold">{option.title}</span>
-                <span className={`block text-xs leading-snug ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
-                  {option.subtitle}
-                </span>
-              </span>
-              {isActive && <Check className="mt-0.5 h-4 w-4 shrink-0" />}
-            </button>
+              {option.key === 'comprehensive' ? <Shield className="h-4 w-4 shrink-0" /> : <Wrench className="h-4 w-4 shrink-0" />}
+              {option.title}
+            </Button>
           );
         })}
       </div>
-    </div>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{active === 'comprehensive' ? 'Panda Protect provides comprehensive mechanical & electrical warranty cover and manages eligible claims.' : 'You provide and fund the warranty. Panda Protect manages the claims process for you.'}</p>
+      {active === 'manage-my-claims' && <p className="mt-1 text-xs font-semibold">Your dealership funds approved repairs.</p>}
+    </section>
   );
 };
 
