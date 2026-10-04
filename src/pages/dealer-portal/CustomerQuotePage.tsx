@@ -3,14 +3,22 @@ import { Helmet } from 'react-helmet-async';
 import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
 import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { CreditCard, Settings } from 'lucide-react';
 import { decodeCustomerQuote, adjustableQuotePrice } from '@/lib/customerQuoteSharing';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
   const data = useMemo(() => decodeCustomerQuote(window.location.hash), []);
+  const params = useMemo(() => new URLSearchParams(window.location.search), []);
+  const payQuoteId = params.get('pay');
+  const paid = params.get('paid') === '1';
+  const cancelled = params.get('cancelled') === '1';
   const [selected, setSelected] = useState(data?.adjustable?.selected || []);
   const [extras, setExtras] = useState(data?.adjustable?.selectedExtras || []);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState('');
   useEffect(() => {
     if (!data || new URLSearchParams(window.location.search).get('print') !== '1') return;
     const timer = window.setTimeout(() => window.print(), 500);
@@ -37,6 +45,23 @@ const CustomerQuotePage: React.FC = () => {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} open onClose={() => window.close()} />
+      {(payQuoteId || paid) && <div className="customer-quote-tools mx-auto -mt-4 mb-8 max-w-2xl px-4">
+        {paid ? <div className="rounded-lg border border-crm-green bg-crm-green/10 p-4 text-center">
+          <p className="text-sm font-bold text-crm-green">Payment received — thank you.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Your dealer will confirm your warranty documents shortly.</p>
+        </div> : <div className="rounded-lg border border-crm-line bg-card p-4 text-center">
+          {cancelled && <p className="mb-2 text-xs font-semibold text-destructive">Payment was cancelled — you can try again below.</p>}
+          <Button className="w-full sm:w-auto" disabled={paying} onClick={async () => {
+            setPaying(true); setPayError('');
+            const { data: res, error } = await supabase.functions.invoke('customer-create-checkout', { body: { quote_id: payQuoteId, return_url: window.location.href } });
+            setPaying(false);
+            if (error || !res?.checkout_url) { setPayError(res?.error || 'Could not start payment — please contact your dealer.'); return; }
+            window.location.href = res.checkout_url;
+          }}><CreditCard /> {paying ? 'Redirecting…' : `Pay £${price.toFixed(2)} now`}</Button>
+          <p className="mt-2 text-[11px] text-muted-foreground">Secure card payment powered by Stripe.</p>
+          {payError && <p role="alert" className="mt-2 text-xs text-destructive">{payError}</p>}
+        </div>}
+      </div>}
     </>
   );
 };
