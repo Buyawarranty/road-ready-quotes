@@ -135,7 +135,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
 
   const isActive = (item: NavItem) => {
-    if (location.pathname === item.to) return true;
+    if (location.pathname.replace(/\/$/, '') === item.to.replace(/\/$/, '')) return true;
     if (item.matchPaths?.some((p) => location.pathname.startsWith(p))) return true;
     if (item.to === '/dealer-portal/quotes' && location.pathname === '/dealer-portal/quotes') return true;
     return false;
@@ -339,7 +339,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </aside>
 
       <main className="min-h-screen px-3 pb-5 pt-[84px] sm:px-5 lg:ml-[240px] lg:px-6 lg:pt-[88px]">
-        {location.pathname !== '/dealer-portal/dashboard' && (
+        {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (
           <div className="mb-3">
             <button
               type="button"

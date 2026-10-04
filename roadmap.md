@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Update the dealer dashboard to the October reference with compact actions, live operational panels and a date-filtered activity chart.
+- [x] Update the dealer dashboard to the October reference with compact actions, live operational panels and a date-filtered activity chart. Four calculation tests pass; desktop/tablet/mobile layout tested in isolation. Actual dealer data verification is blocked by external authentication.
 
 - [x] Treat existing full-cover prices as full warranty prices, remove monthly-payment labels, and add VAT once to the final payable total.
 
