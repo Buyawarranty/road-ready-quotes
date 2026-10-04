@@ -33,7 +33,7 @@ const CustomerQuotePage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Your warranty quote</title>
+        <title>Customer Quote</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} open onClose={() => window.close()} />
