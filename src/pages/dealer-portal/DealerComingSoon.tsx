@@ -325,9 +325,9 @@ const DealerComingSoon = () => {
           </h1>
 
           {pendingReg && (
-            <div className="signup-saved-reg mx-auto mt-7 flex max-w-5xl flex-col items-stretch gap-4 rounded-xl border border-crm-line bg-card px-4 py-4 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-              <div className="flex min-w-0 items-center gap-4 text-left">
-                <div className="vehicle-reg-plate vehicle-reg-plate--quote w-44 shrink-0" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
+            <div className="signup-saved-reg mx-auto mt-7 flex max-w-2xl flex-col items-stretch gap-3 rounded-xl border border-crm-line bg-card px-4 py-3 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+              <div className="flex min-w-0 items-center gap-3 text-left">
+                <div className="vehicle-reg-plate vehicle-reg-plate--quote w-36 shrink-0" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
                   <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
                   <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
                 </div>
