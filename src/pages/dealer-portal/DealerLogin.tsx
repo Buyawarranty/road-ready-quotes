@@ -30,6 +30,34 @@ const DealerLogin = () => {
 
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
 
+  // If already signed in, skip the login form and go straight to the target page.
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled || !session?.user) return;
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', session.user.id);
+      const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
+      if (cancelled || (!dealer && !isAdmin)) return;
+      const redirect = searchParams.get('redirect');
+      const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
+      if (redirect && redirect.startsWith('/dealer')) {
+        navigate(reg ? `${redirect}?reg=${encodeURIComponent(reg)}` : redirect, { replace: true });
+      } else {
+        navigate('/dealer-portal/dashboard', { replace: true });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
