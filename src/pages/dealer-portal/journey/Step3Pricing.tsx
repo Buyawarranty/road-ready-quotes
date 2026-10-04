@@ -15,7 +15,8 @@ import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { warrantyTerms, warrantyExcess, warrantyLabour, warrantyParts, warrantyClaims, pendingWarrantyClaims, liveWarrantyAddOns, calculateFullWarranty, warrantyPriceWithVat } from '@/lib/fullWarrantyConfiguration';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
 import { marginSellingPrice } from '@/lib/customerSellingPrice';
-import { ArrowRight, Calendar, Check, ClipboardList, Coins, Eye, Headphones, Layers, Mail, MessageCircle, Pencil, Printer, Settings, ShieldCheck, Wrench, X } from 'lucide-react';
+import { ArrowRight, Calendar, Check, ClipboardList, Coins, Copy, Eye, Headphones, Layers, Link2, Mail, MessageCircle, Pencil, Printer, Settings, ShieldCheck, Wrench, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP' });
 const included = ['Comprehensive mechanical & electrical cover', 'UK claims support'];
