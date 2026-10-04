@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import CoverTypeSwitch from '@/components/dealer/journey/CoverTypeSwitch';
+
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
