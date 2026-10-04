@@ -219,17 +219,23 @@ const StartClaim: React.FC = () => {
           status = 'ineligible';
           reason = `Warranty status is ${warranty.status}.`;
         }
+      } else {
+        status = 'ineligible';
+        reason = 'No active warranty found for this registration.';
       }
 
       setVehicle({
         reg: normalised,
-        make: customer?.vehicle_make ?? null,
-        model: customer?.vehicle_model ?? null,
+        make: customer?.vehicle_make ?? order?.vehicle_make ?? null,
+        model: customer?.vehicle_model ?? order?.vehicle_model ?? null,
         year: customer?.vehicle_year ?? null,
         customerName:
-          warranty?.customer_name ?? [customer?.first_name, customer?.last_name].filter(Boolean).join(' ') ?? null,
+          warranty?.customer_name ??
+          ([customer?.first_name, customer?.last_name].filter(Boolean).join(' ') || null) ??
+          order?.customer_name ??
+          null,
         customerId: customer?.id ?? null,
-        plan: customer?.plan_type ?? 'Fully Covered',
+        plan: customer?.plan_type ?? order?.plan_type ?? 'Fully Covered',
         status,
         reason,
       });
