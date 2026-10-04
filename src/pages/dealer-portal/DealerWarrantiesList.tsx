@@ -257,8 +257,16 @@ const DealerWarrantiesList = () => {
                             <div className="text-xs text-gray-500">{w.vehicle_make} {w.vehicle_model}</div>
                           )}
                         </TableCell>
-                        <TableCell className="text-gray-700 capitalize">
-                          {w.plan_type} · {w.payment_type}mo
+                        <TableCell className="text-gray-700 min-w-[190px]">
+                          <div className="font-semibold text-gray-900">
+                            {String(w.plan_type).toLowerCase() === 'basic' ? 'Manage My Claims' : 'Comprehensive Warranty'}
+                          </div>
+                          <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 text-xs text-gray-600">
+                            <span>Duration</span><span className="font-medium text-gray-800">{w.payment_type ? `${w.payment_type} months` : '—'}</span>
+                            <span>Claim limit</span><span className="font-medium text-gray-800">{(w as any).claim_limit ? `£${Number((w as any).claim_limit).toLocaleString('en-GB')}` : '—'}</span>
+                            <span>Excess</span><span className="font-medium text-gray-800">{(w as any).voluntary_excess != null ? `£${Number((w as any).voluntary_excess)}` : '—'}</span>
+                            <span>Labour rate</span><span className="font-medium text-gray-800">{(w as any).labour_rate ? `£${Number((w as any).labour_rate)}/hr` : '—'}</span>
+                          </div>
                         </TableCell>
                         <TableCell className="text-gray-700">{fmt(w.warranty_start_date || w.signup_date)}</TableCell>
                         <TableCell className="text-gray-700">{fmt(computeEnd(w))}</TableCell>
@@ -273,7 +281,7 @@ const DealerWarrantiesList = () => {
                             className="border-orange-500 text-orange-600 hover:bg-orange-50 font-semibold"
                           >
                             <Mail className="h-4 w-4 mr-2" />
-                            Email warranty
+                            {w.payment_status === 'paid' ? 'Resend documents' : 'Email warranty'}
                           </Button>
                         </TableCell>
                       </TableRow>
