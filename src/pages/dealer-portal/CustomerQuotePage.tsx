@@ -3,14 +3,22 @@ import { Helmet } from 'react-helmet-async';
 import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
 import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { CreditCard, Settings } from 'lucide-react';
 import { decodeCustomerQuote, adjustableQuotePrice } from '@/lib/customerQuoteSharing';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
   const data = useMemo(() => decodeCustomerQuote(window.location.hash), []);
+  const params = useMemo(() => new URLSearchParams(window.location.search), []);
+  const payQuoteId = params.get('pay');
+  const paid = params.get('paid') === '1';
+  const cancelled = params.get('cancelled') === '1';
   const [selected, setSelected] = useState(data?.adjustable?.selected || []);
   const [extras, setExtras] = useState(data?.adjustable?.selectedExtras || []);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState('');
   useEffect(() => {
     if (!data || new URLSearchParams(window.location.search).get('print') !== '1') return;
     const timer = window.setTimeout(() => window.print(), 500);
