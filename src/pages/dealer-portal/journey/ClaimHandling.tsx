@@ -318,6 +318,9 @@ const ClaimHandlingPage: React.FC = () => {
           </p>
         </div>
 
+        <CoverTypeSwitch active="manage-my-claims" />
+
+
         {/* Vehicle strip */}
         <Card className="crm-panel-shadow border-crm-line bg-card">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
