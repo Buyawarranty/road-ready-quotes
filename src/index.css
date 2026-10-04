@@ -3217,7 +3217,7 @@ img, video { height: auto; }
 }
 
 /* Script accent for the customer quote hero. */
-.customer-quote-view .quote-script { font-family: "Brush Script MT", "Segoe Script", "Bradley Hand", cursive; font-style: italic; }
+.customer-quote-view .quote-script { font-family: "Caveat", "Brush Script MT", "Segoe Script", cursive; }
 
 /* Print only the customer-safe presentation, never surrounding portal content. */
 @media print {

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { X, Check, ShieldCheck, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoAsset from '@/assets/panda-protect-v2.png.asset.json';
-import pandaAsset from '@/assets/customer-quote-panda.png.asset.json';
+import logoAsset from '@/assets/panda-protect-v2.webp';
+import pandaAsset from '@/assets/customer-quote-panda.webp';
 
 export interface CustomerQuoteViewProps {
   open: boolean;
