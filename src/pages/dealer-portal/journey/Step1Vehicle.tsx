@@ -205,7 +205,7 @@ const Step1Vehicle: React.FC = () => {
     setActiveSaved(t);
   };
 
-  const useSavedPlan = (edit: boolean) => {
+  const applySavedPlan = (edit: boolean) => {
     if (!activeSaved || !savedQuote) return;
     const plan = savedQuote.plan as unknown as DealerJourneyPlan;
     setVehicle(activeVehicle);
@@ -385,8 +385,8 @@ const Step1Vehicle: React.FC = () => {
                 )}
               </div>
               <DialogFooter className="gap-2 sm:gap-2">
-                <Button variant="outline" onClick={() => useSavedPlan(true)}>Edit plan</Button>
-                <Button onClick={() => useSavedPlan(false)}>Continue to checkout <ArrowRight className="h-4 w-4" /></Button>
+                <Button variant="outline" onClick={() => applySavedPlan(true)}>Edit plan</Button>
+                <Button onClick={() => applySavedPlan(false)}>Continue to checkout <ArrowRight className="h-4 w-4" /></Button>
               </DialogFooter>
             </>
           )}
