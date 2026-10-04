@@ -9,6 +9,7 @@ import {
   Car,
   Check,
   ChevronDown,
+  Timer,
   Globe,
   Headphones,
   LifeBuoy,
@@ -285,7 +286,7 @@ const DealerHome = () => {
               height={813}
               sizes="(max-width: 1024px) 92vw, 48vw"
             />
-            <p className="home-hero-caption">Reliable warranty setup in 60 seconds</p>
+            <p className="home-hero-caption"><Timer aria-hidden="true" />Reliable warranty setup in 60 seconds</p>
             <div className="home-vehicle-types" aria-label="Eligible vehicle types">
               <span>Cars</span><span>Vans</span><span>Hybrid</span><span>EV</span><span>Motorbikes</span>
             </div>
