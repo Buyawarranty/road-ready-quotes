@@ -169,6 +169,18 @@ const Step3Pricing: React.FC = () => {
         </CardContent></Card></aside>
       </div>
     </div>
+    <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink(null)}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader>
+        <p className="text-sm text-muted-foreground">Send this link to your customer. They'll see their quote and can pay {validPrice ? gbp(customerTotals.total) : ''} securely by card.</p>
+        <div className="break-all rounded-md border border-crm-line bg-muted/50 p-3 text-xs">{paylink}</div>
+        <div className="grid grid-cols-3 gap-2">
+          <Button variant="outline" size="sm" onClick={() => { navigator.clipboard?.writeText(paylink || ''); toast({ title: 'Payment link copied' }); }}><Copy /> Copy</Button>
+          <Button variant="outline" size="sm" onClick={() => { window.location.href = `mailto:?subject=${encodeURIComponent(`Your Panda Protect warranty — ${vehicle?.reg}`)}&body=${encodeURIComponent(`Hi,\n\nHere is your warranty quote and secure payment link for ${[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')} (${vehicle?.reg}):\n\n${paylink}\n\nTotal to pay: ${gbp(customerTotals.total)} including VAT.\n\nThanks,\n${dealer?.company_name || ''}`)}`; }}><Mail /> Email</Button>
+          <Button variant="outline" size="sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Your Panda Protect warranty quote for ${vehicle?.reg} — pay securely here: ${paylink}`)}`, '_blank', 'noopener,noreferrer')}><MessageCircle /> WhatsApp</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </DealerLayout>;
 };
 export default Step3Pricing;
