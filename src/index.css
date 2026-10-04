@@ -841,6 +841,12 @@
   color: hsl(var(--crm-navy));
 }
 
+/* Logo-coloured heading words: navy for plain words, orange for the highlight span */
+.public-dealer-signup > section:first-of-type h1 span:first-child,
+.public-dealer-signup > section:first-of-type h1 span:last-child {
+  color: hsl(var(--crm-navy));
+}
+
 .public-dealer-signup > section:first-of-type p {
   color: hsl(var(--muted-foreground));
 }
