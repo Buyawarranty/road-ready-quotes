@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { X, Check, ShieldCheck, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoAsset from '@/assets/panda-protect-v2.webp';
-import pandaAsset from '@/assets/customer-quote-panda.webp';
+import logoAssetUrl from '@/assets/panda-protect-v2.webp';
+import pandaAssetUrl from '@/assets/customer-quote-panda.webp';
 
 export interface CustomerQuoteViewProps {
   open: boolean;
@@ -73,7 +73,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
 
       <div className="max-w-2xl mx-auto px-5 pb-10 pt-16 sm:pt-20">
         <div className="text-center mb-6">
-          <img src={logoAsset.url} alt="Panda Protect" className="mx-auto h-10 w-auto" />
+          <img src={logoAssetUrl} alt="Panda Protect" className="mx-auto h-10 w-auto" />
           {dealerName && (
             <p className="text-xs text-muted-foreground mt-2">Presented by {dealerName}</p>
           )}
@@ -121,7 +121,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               Drive with confidence
             </p>
             <img
-              src={pandaAsset.url}
+              src={pandaAssetUrl}
               alt=""
               aria-hidden="true"
               className="pointer-events-none absolute bottom-0 right-0 sm:right-4 h-40 sm:h-52 w-auto object-contain object-bottom"
