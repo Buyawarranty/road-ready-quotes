@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Update the dealer dashboard to the October reference with compact actions, live operational panels and a date-filtered activity chart.
+
 - [x] Treat existing full-cover prices as full warranty prices, remove monthly-payment labels, and add VAT once to the final payable total.
 
 - [x] Rebuild the dealer portal Home dashboard to the supplied CRM specification and reference.
