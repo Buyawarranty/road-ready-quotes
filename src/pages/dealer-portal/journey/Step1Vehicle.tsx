@@ -197,12 +197,7 @@ const Step1Vehicle: React.FC = () => {
 
   const handlePlanSelect = (planKey: WarrantyPlanKey) => {
     setValidation((current) => ({ ...current, plan: '' }));
-    const plan = buildPlan(planKey, selectedTerm);
     setSelectedPlan(planKey);
-    setVehicle(activeVehicle);
-    setPlan(plan);
-    void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: plan });
-    navigate(planKey === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
   const handleContinue = async () => {
@@ -328,7 +323,7 @@ const Step1Vehicle: React.FC = () => {
                     >
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
-                      <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+                      {isSelected && <Check className="h-4 w-4 shrink-0" aria-hidden="true" />}
                     </Button>
                     <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-orange' : 'text-crm-navy'}`}>{plan.subtitle}</p>
                     <details className="mt-2 text-xs text-muted-foreground">
@@ -342,6 +337,14 @@ const Step1Vehicle: React.FC = () => {
                 );
               })}
             </div>
+            <Button
+              type="button"
+              onClick={handleContinue}
+              disabled={!canContinue}
+              className="mt-3 h-12 w-full gap-2 bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90"
+            >
+              Continue <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Button>
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
 
