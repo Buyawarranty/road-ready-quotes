@@ -60,6 +60,9 @@ const Step3Pricing: React.FC = () => {
   const customerTotals = warrantyPriceWithVat(chosenPrice);
   const validPrice = managed || (Number.isFinite(chosenPrice) && chosenPrice > 0);
   const economics = dealerQuoteEconomics(pricing.wholesale, chosenPrice);
+  const managedFeeExVat = termOption.months * 1;
+  const managedFeeVat = +(managedFeeExVat * 0.2).toFixed(2);
+  const managedFeeTotal = +(managedFeeExVat + managedFeeVat).toFixed(2);
   const summary = [
     { label: 'Warranty term', value: termOption.label },
     { label: 'Customer excess', value: gbp(Number(excess)) },
@@ -68,7 +71,7 @@ const Step3Pricing: React.FC = () => {
     { label: 'Claim limit per repair', value: gbp(Number(claim)) },
   ];
   const customerPayload: CustomerQuotePayload = {
-    vehicle, coverTitle: managed ? 'Manage My Claims' : 'Comprehensive Warranty', coverSubtitle: 'Warranty quotation', price: managed ? 1.2 : customerTotals.total, priceSuffix: managed ? 'per month including VAT' : '', specs: summary,
+    vehicle, coverTitle: managed ? 'Manage My Claims' : 'Comprehensive Warranty', coverSubtitle: 'Warranty quotation', price: managed ? managedFeeTotal : customerTotals.total, priceSuffix: managed ? `for ${termOption.label} including VAT (£1 a month)` : '', specs: summary,
     included: managed ? ['Panda Protect manages the claims process', 'Your dealership funds approved repairs', 'UK claims support'] : [...included, ...liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label)], dealerName: dealer?.company_name,
   };
   if (!managed && quoteMode === 'adjustable' && validPrice) {
@@ -112,8 +115,8 @@ const Step3Pricing: React.FC = () => {
   };
   const buildPlan = () => managed ? ({
     plan_type: 'basic' as const, duration_months: termOption.months, term_months: termOption.months,
-    dealer_price: 1, retail_price: 1,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims', term: termOption.label, excess: Number(excess), labour: Number(labour), parts: partsOption.label, claim: Number(claim), add_ons: [], monthly_fee: 1, repairs_funded_by: 'dealer' },
+    dealer_price: managedFeeTotal, retail_price: managedFeeTotal,
+    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims', term: termOption.label, excess: Number(excess), labour: Number(labour), parts: partsOption.label, claim: Number(claim), add_ons: [], monthly_fee: 1, fee_total: managedFeeTotal, repairs_funded_by: 'dealer' },
   }) : ({
     plan_type: 'gold' as const, duration_months: termOption.months, term_months: termOption.months,
     retail_price: customerTotals.total, dealer_price: dealerTotals.total,
@@ -176,7 +179,7 @@ const Step3Pricing: React.FC = () => {
           <dl className="mt-4 space-y-2">{summary.map(row => <div key={row.label} className="flex justify-between gap-3 text-xs"><dt className="text-muted-foreground">{row.label}</dt><dd className="max-w-[55%] text-right font-semibold">{row.value}</dd></div>)}</dl>
           {!managed && selectedAddOns.length > 0 && <p className="mt-3 text-xs text-muted-foreground">Add-ons: {liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label).join(', ')}</p>}
           {managed ? <div className="mt-4 space-y-3 border-t border-crm-line pt-4">
-            <p className="text-xs font-semibold">Panda Protect service fee</p><p className="text-2xl font-bold">£1.00 <span className="text-xs font-normal text-muted-foreground">per month plus VAT</span></p><p className="text-xs text-muted-foreground">VAT (20%) £0.20 · Total £1.20 a month</p>
+            <p className="text-xs font-semibold">Panda Protect service fee</p><p className="text-2xl font-bold">{gbp(managedFeeExVat)} <span className="text-xs font-normal text-muted-foreground">plus VAT · £1 a month × {termOption.months} months</span></p><p className="text-xs text-muted-foreground">VAT (20%) {gbp(managedFeeVat)} · Total {gbp(managedFeeTotal)} for {termOption.label}</p>
             <div className="border-t border-crm-line pt-3"><p className="text-xs font-bold">Your repair responsibility</p><p className="mt-1 text-xs text-muted-foreground">Your dealership funds approved repairs.</p></div>
           </div> : <>
           <div className="mt-4 flex items-center justify-between gap-2 border-t border-crm-line pt-4 text-xs"><span className="text-muted-foreground">Your cost (ex. VAT)</span><strong className="text-base">{gbp(pricing.wholesale)}</strong></div>
