@@ -558,7 +558,7 @@ const ClaimHandlingPage: React.FC = () => {
                       <dd className="font-semibold">{gbp(fee)} / month</dd>
                     </div>
                     <div className="flex justify-between">
-                      <dt className="text-muted-foreground">Manage my warranty</dt>
+                      <dt className="text-muted-foreground">Manage my claims</dt>
                       <dd className="font-semibold">Included</dd>
                     </div>
                     <div className="flex justify-between">
