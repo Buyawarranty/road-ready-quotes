@@ -24,6 +24,7 @@ const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
     name: 'Manage My Claims',
+    subtitle: 'Only £1 a month',
     description: 'Manage My Claims only · We handle the claim, you pay the repair bill',
     price: '£1/m',
     icon: Headphones,
@@ -38,6 +39,7 @@ const warrantyPlans = [
   {
     key: 'fully-covered' as const,
     name: 'Comprehensive Warranty',
+    subtitle: 'From £69',
     description: 'A comprehensive warranty · We handle claims and pay for repairs',
     price: '£141.60/m',
     icon: Shield,
@@ -275,6 +277,7 @@ const Step1Vehicle: React.FC = () => {
                       <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
                       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                     </Button>
+                    <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-orange' : 'text-crm-navy'}`}>{plan.subtitle}</p>
                     <details className="mt-2 text-xs text-muted-foreground">
                       <summary className="cursor-pointer py-1">Cover details</summary>
                       <p className="mt-2 leading-relaxed">{plan.description}</p>
