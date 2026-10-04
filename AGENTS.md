@@ -6,3 +6,4 @@
 - Adjustable customer quotes carry a nested-allowlisted selling-price matrix and customer option labels only; never send dealer pricing rules or margin percentages to the customer page.
 - Dealer margin calculations use VAT-inclusive cost divided by one minus the margin fraction; keep selling-price calculations separate from warranty charging.
 - Full-cover calculations return net full-warranty amounts; quote display adds VAT once, and journey dealer_price/retail_price carry gross payable totals so checkout charges match the preview.
+- Dealer dashboard data must be dealer-scoped and reuse quote, customer/warranty and claim records; never substitute sample figures when data is unavailable.
