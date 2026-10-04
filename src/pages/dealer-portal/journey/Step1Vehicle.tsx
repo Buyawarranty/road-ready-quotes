@@ -352,6 +352,33 @@ const Step1Vehicle: React.FC = () => {
             <div className="mb-3 flex items-center gap-2">
               <Bookmark className="h-4 w-4 text-crm-orange" />
               <h2 className="text-base font-bold">Use a saved plan</h2>
+              {savedPlans.length > 0 && (
+                <div className="ml-auto flex items-center gap-3">
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                    <input
+                      type="checkbox"
+                      checked={allSelected}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 accent-[#EC6F33]"
+                      aria-label="Select all saved plans"
+                    />
+                    Select all
+                  </label>
+                  {selectedSaved.size > 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={deletingSaved}
+                      onClick={deleteSelected}
+                      className="h-7 gap-1.5 border-crm-red/40 px-2 text-xs text-crm-red hover:bg-crm-red/10 hover:text-crm-red"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {deletingSaved ? 'Deleting…' : `Delete (${selectedSaved.size})`}
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
             {savedPlans.length === 0 ? (
               <p className="text-xs text-muted-foreground">No saved plans yet. Set up a warranty on the pricing page and tap "Save &amp; name this plan" to reuse it here.</p>
@@ -359,21 +386,33 @@ const Step1Vehicle: React.FC = () => {
               <div className="grid gap-2 sm:grid-cols-2">
                 {savedPlans.map((t) => {
                   const isClaims = t.plan_type === 'basic' || t.plan_type === 'dealer-paid';
+                  const checked = selectedSaved.has(t.id);
                   return (
-                    <button
+                    <div
                       key={t.id}
-                      type="button"
-                      disabled={!vehicleDetailsComplete}
-                      onClick={() => openSavedPlan(t)}
-                      className="flex min-w-0 items-center gap-3 rounded-md border border-crm-line bg-card px-3 py-2.5 text-left transition-colors hover:border-crm-orange disabled:cursor-not-allowed"
+                      className={`flex min-w-0 items-center gap-2 rounded-md border bg-card px-3 py-2.5 transition-colors ${checked ? 'border-crm-orange bg-crm-orange-soft/40' : 'border-crm-line'}`}
                     >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">{isClaims ? <Headphones className="h-4 w-4" /> : <Shield className="h-4 w-4" />}</span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-bold">{t.name}</span>
-                        <span className="block truncate text-[11px] text-muted-foreground">{isClaims ? 'Manage My Claims' : 'Comprehensive'} · {describeTemplate(t)}</span>
-                      </span>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    </button>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleSaved(t.id)}
+                        className="h-4 w-4 shrink-0 accent-[#EC6F33]"
+                        aria-label={`Select ${t.name}`}
+                      />
+                      <button
+                        type="button"
+                        disabled={!vehicleDetailsComplete}
+                        onClick={() => openSavedPlan(t)}
+                        className="flex min-w-0 flex-1 items-center gap-3 text-left disabled:cursor-not-allowed"
+                      >
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">{isClaims ? <Headphones className="h-4 w-4" /> : <Shield className="h-4 w-4" />}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-bold">{t.name}</span>
+                          <span className="block truncate text-[11px] text-muted-foreground">{isClaims ? 'Manage My Claims' : 'Comprehensive'} · {describeTemplate(t)}</span>
+                        </span>
+                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
