@@ -6,15 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDealerJourney, type DealerJourneyPlan, type DealerJourneyVehicle } from '@/contexts/DealerJourneyContext';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
+import { useDealerQuoteTemplates, describeTemplate, type DealerQuoteTemplate } from '@/hooks/useDealerQuoteTemplates';
+import { buildSavedPlanQuote } from '@/lib/savedPlanCheckout';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from '@/hooks/use-toast';
 import {
   ArrowRight,
+  Bookmark,
   Check,
   CheckCircle2,
-  FileText,
   Headphones,
   Loader2,
   Shield,
 } from 'lucide-react';
+
+const gbp = (n: number) => `£${n.toFixed(2)}`;
 
 type WarrantyPlanKey = 'dealer-paid' | 'fully-covered';
 type LookupState = 'default' | 'loading' | 'success' | 'not-found' | 'error';
@@ -105,6 +111,8 @@ const Step1Vehicle: React.FC = () => {
   const [selectedTerm] = useState(12);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
+  const { templates: savedPlans } = useDealerQuoteTemplates();
+  const [activeSaved, setActiveSaved] = useState<DealerQuoteTemplate | null>(null);
 
   const vehicleDetailsComplete = Boolean(isValidReg(reg) && mileage.trim() && lookupState === 'success');
   const canContinue = Boolean(vehicleDetailsComplete && selectedPlan);
@@ -183,11 +191,34 @@ const Step1Vehicle: React.FC = () => {
     navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
-  const selectedPlanMeta = warrantyPlans.find((plan) => plan.key === selectedPlan);
+  const savedQuote = useMemo(() => {
+    if (!activeSaved) return null;
+    try { return buildSavedPlanQuote(activeSaved); } catch { return null; }
+  }, [activeSaved]);
+
+  const openSavedPlan = (t: DealerQuoteTemplate) => {
+    if (!validate()) return;
+    try { buildSavedPlanQuote(t); } catch (e: any) {
+      toast({ title: 'Saved plan unavailable', description: e?.message, variant: 'destructive' });
+      return;
+    }
+    setActiveSaved(t);
+  };
+
+  const useSavedPlan = (edit: boolean) => {
+    if (!activeSaved || !savedQuote) return;
+    const plan = savedQuote.plan as unknown as DealerJourneyPlan;
+    setVehicle(activeVehicle);
+    setPlan(plan);
+    void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: plan });
+    setActiveSaved(null);
+    if (edit) navigate(savedQuote.isClaims ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
+    else navigate('/dealer-portal/quote/customer');
+  };
 
   return (
     <DealerLayout>
-      <div className="mx-auto grid max-w-[1500px] items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mx-auto grid max-w-[1100px] items-start gap-4">
        <div className="space-y-4">
         <Card className="crm-panel-shadow border-crm-line">
           <CardContent className="p-4">
@@ -292,68 +323,75 @@ const Step1Vehicle: React.FC = () => {
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
 
-            <div className="mt-4 flex flex-col-reverse gap-2 border-t border-crm-line pt-4 sm:justify-end xl:hidden">
-              <Button className="w-full sm:w-auto" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
+          </CardContent>
+        </Card>
+
+        <Card className={`crm-panel-shadow border-crm-line transition-opacity ${vehicleDetailsComplete ? 'opacity-100' : 'opacity-70'}`}>
+          <CardContent className="p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <Bookmark className="h-4 w-4 text-crm-orange" />
+              <h2 className="text-base font-bold">Use a saved plan</h2>
             </div>
+            {savedPlans.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No saved plans yet. Set up a warranty on the pricing page and tap "Save &amp; name this plan" to reuse it here.</p>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {savedPlans.map((t) => {
+                  const isClaims = t.plan_type === 'basic' || t.plan_type === 'dealer-paid';
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      disabled={!vehicleDetailsComplete}
+                      onClick={() => openSavedPlan(t)}
+                      className="flex min-w-0 items-center gap-3 rounded-md border border-crm-line bg-card px-3 py-2.5 text-left transition-colors hover:border-crm-orange disabled:cursor-not-allowed"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">{isClaims ? <Headphones className="h-4 w-4" /> : <Shield className="h-4 w-4" />}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-bold">{t.name}</span>
+                        <span className="block truncate text-[11px] text-muted-foreground">{isClaims ? 'Manage My Claims' : 'Comprehensive'} · {describeTemplate(t)}</span>
+                      </span>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
        </div>
-
-       <Card className="crm-panel-shadow border-crm-line xl:sticky xl:top-4">
-         <CardContent className="p-5">
-           <div className="flex items-start gap-3">
-             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><FileText className="h-4.5 w-4.5" /></span>
-             <div>
-               <h2 className="text-base font-bold leading-tight">Quote summary</h2>
-               <p className="text-xs text-muted-foreground">Your quote details so far.</p>
-             </div>
-           </div>
-
-            <div className="mt-4 border-t border-crm-line pt-4">
-              <h3 className="text-sm font-bold">Vehicle</h3>
-              {lookupState === 'success' ? (
-                <p className="mt-2 text-sm font-bold">
-                  {activeVehicle.make} {activeVehicle.model}
-                  <span className="font-normal text-muted-foreground"> · {activeVehicle.year} · {activeVehicle.fuel_type} · {Number(mileage).toLocaleString()} miles</span>
-                </p>
-              ) : (
-                <p className="mt-2 text-xs text-muted-foreground">Enter a registration to see the vehicle here.</p>
-              )}
-            </div>
-
-           <div className="mt-4 border-t border-crm-line pt-4">
-             <h3 className="text-sm font-bold">Selected cover</h3>
-             {selectedPlanMeta && vehicleDetailsComplete ? (
-               <div className="mt-2 flex items-center gap-2">
-                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange"><selectedPlanMeta.icon className="h-4 w-4" /></span>
-                 <span className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-                   {selectedPlanMeta.name}
-                   {selectedPlanMeta.badge && <span className="rounded-full bg-crm-orange-soft px-2 py-0.5 text-[9px] font-black tracking-[0.12em] text-crm-orange">{selectedPlanMeta.badge}</span>}
-                 </span>
-               </div>
-             ) : (
-               <p className="mt-2 text-xs text-muted-foreground">No cover selected yet.</p>
-             )}
-           </div>
-
-           {selectedPlanMeta && vehicleDetailsComplete && (
-             <div className="mt-4 border-t border-crm-line pt-4">
-               <h3 className="text-sm font-bold">Quote details</h3>
-               <dl className="mt-2 space-y-2 text-xs">
-                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold">{activePlan.duration_months} months</dd></div>
-                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Cover type</dt><dd className="font-semibold">{selectedPlan === 'dealer-paid' ? 'Manage My Claims' : 'Comprehensive'}</dd></div>
-               </dl>
-               <div className="mt-3 flex items-center justify-between gap-2 border-t border-crm-line pt-3">
-                 <span className="text-sm font-bold">Monthly price</span>
-                 <span className="text-lg font-black">{selectedPlanMeta.price.replace('/m', '')}</span>
-               </div>
-             </div>
-           )}
-
-           <Button className="mt-4 w-full" disabled={!canContinue} onClick={handleContinue}>Continue <ArrowRight className="h-4 w-4" /></Button>
-         </CardContent>
-       </Card>
       </div>
+
+      <Dialog open={Boolean(activeSaved)} onOpenChange={(open) => !open && setActiveSaved(null)}>
+        <DialogContent className="max-w-md">
+          {activeSaved && savedQuote && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{activeSaved.name}</DialogTitle>
+                <DialogDescription>{activeVehicle.reg} · {activeVehicle.make} {activeVehicle.model} · {activeVehicle.year} · {Number(mileage).toLocaleString('en-GB')} miles</DialogDescription>
+              </DialogHeader>
+              <dl className="space-y-1.5 text-sm">
+                {savedQuote.rows.map((r) => (
+                  <div key={r.label} className="flex justify-between gap-3"><dt className="text-muted-foreground">{r.label}</dt><dd className="text-right font-semibold">{r.value}</dd></div>
+                ))}
+              </dl>
+              <div className="space-y-1.5 border-t border-crm-line pt-3 text-sm">
+                <p className="text-[11px] font-bold tracking-[0.12em] text-muted-foreground">{savedQuote.monthly ? 'SERVICE FEE' : 'YOUR TRADE PRICE'}</p>
+                <div className="flex justify-between"><span className="text-muted-foreground">Price (ex VAT)</span><span className="font-semibold">{gbp(savedQuote.totals.net)}{savedQuote.monthly ? ' a month' : ''}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">VAT (20%)</span><span className="font-semibold">{gbp(savedQuote.totals.vat)}</span></div>
+                <div className="flex justify-between border-t border-crm-line pt-1.5 text-base"><span className="font-bold">{savedQuote.monthly ? 'Total a month' : 'Full price to pay'}</span><span className="font-black">{gbp(savedQuote.totals.total)}</span></div>
+                {savedQuote.customerTotals && (
+                  <div className="flex justify-between pt-1 text-xs"><span className="text-muted-foreground">Customer selling price (inc VAT)</span><span className="font-semibold">{gbp(savedQuote.customerTotals.total)}</span></div>
+                )}
+              </div>
+              <DialogFooter className="gap-2 sm:gap-2">
+                <Button variant="outline" onClick={() => useSavedPlan(true)}>Edit plan</Button>
+                <Button onClick={() => useSavedPlan(false)}>Continue to checkout <ArrowRight className="h-4 w-4" /></Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </DealerLayout>
   );
 };
