@@ -39,6 +39,7 @@ const warrantyPlans = [
   {
     key: 'fully-covered' as const,
     name: 'Comprehensive Warranty',
+    subtitle: 'From £69',
     description: 'A comprehensive warranty · We handle claims and pay for repairs',
     price: '£141.60/m',
     icon: Shield,
