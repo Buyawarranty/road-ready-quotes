@@ -133,7 +133,7 @@ const Step3Pricing: React.FC = () => {
     setPlan(plan);
     const id = await save({ overridePlan: plan });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
-    if (exit) { reset(); navigate('/dealer-portal/quotes'); }
+    if (exit) { toast({ title: 'Draft saved in Quotes' }); }
     else navigate('/dealer-portal/quote/customer');
   };
   const applyTemplate = (t: DealerQuoteTemplate) => {
@@ -151,7 +151,7 @@ const Step3Pricing: React.FC = () => {
     <div className="mx-auto max-w-[1500px] space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-crm-line bg-card px-4 py-3">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
-          <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
+          <div className="w-44 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
           <div><p className="text-sm font-semibold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
         </div>
         <Button variant="outline" size="sm" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil /> Edit vehicle</Button>
