@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerDashboard } from '@/hooks/useDealerDashboard';
-import { monthChange, monthlyActivity, type ActivitySeries } from '@/lib/dealerDashboardMetrics';
+import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 
 const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Claims: '/dealer-portal/claims', Customers: '/dealer-portal/customers' };
 const series = [
@@ -113,7 +113,7 @@ export default function DealerDashboard() {
 
       <section className={`${panel} p-4`}>
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-sm font-bold"><BarChart3 className="h-4 w-4" />{range?.from && range?.to ? 'Dealership activity' : 'Activity over time'}</h2><p className="mt-1 text-xs text-muted-foreground">Quotes, warranties, claims and customers</p></div><DealerDateFilter value={range} onChange={setRange} /></div>
-        <div className="mb-3 flex flex-wrap gap-4">{series.map(item => <span key={item.key} className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><span className={`h-2 w-2 rounded-full ${item.tone.replace(/bg-\S+ /, '') === 'text-crm-blue' ? 'bg-crm-blue' : item.key === 'Warranties' ? 'bg-crm-green' : item.key === 'Claims' ? 'bg-crm-orange' : 'bg-crm-purple'}`} />{item.key}</span>)}</div>
+        <div className="mb-3 flex flex-wrap gap-4">{series.map(item => <span key={item.key} className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><span className={`h-2 w-2 rounded-full ${item.key === 'Quotes' ? 'bg-crm-blue' : item.key === 'Warranties' ? 'bg-crm-green' : item.key === 'Claims' ? 'bg-crm-orange' : 'bg-crm-purple'}`} />{item.key}</span>)}</div>
         <div className="h-[190px] w-full" aria-label="Monthly dealership activity chart">
           <ResponsiveContainer width="100%" height="100%"><BarChart data={chart} barSize={12} margin={{ left: -24, right: 4, top: 5, bottom: 0 }}><CartesianGrid vertical={false} stroke="hsl(var(--crm-line))" /><XAxis dataKey="month" tickFormatter={value => format(new Date(`${value}-01T12:00:00Z`), chart.length > 12 ? 'MMM yy' : 'MMM')} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis allowDecimals={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--crm-line))', borderRadius: 6, fontSize: 12 }} labelFormatter={value => format(new Date(`${value}-01T12:00:00Z`), 'MMMM yyyy')} />{series.map(item => <Bar key={item.key} dataKey={item.key} fill={item.colour} radius={[3, 3, 0, 0]} isAnimationActive={false} />)}</BarChart></ResponsiveContainer>
         </div>
