@@ -23,8 +23,8 @@ type SaveState = 'idle' | 'saving' | 'saved';
 const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
-    name: 'Manage My Warranty',
-    description: 'Manage My Warranty only · We handle the claim, you pay the repair bill',
+    name: 'Manage My Claims',
+    description: 'Manage My Claims only · We handle the claim, you pay the repair bill',
     price: '£1/m',
     icon: Headphones,
     badge: null,
@@ -84,7 +84,7 @@ const buildPlan = (selectedPlan: WarrantyPlanKey, termMonths: number): DealerJou
     retail_price: 1,
     dealer_price: 1,
     term_months: termMonths,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Warranty' },
+    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims' },
   };
 };
 
@@ -328,7 +328,7 @@ const Step1Vehicle: React.FC = () => {
                <h3 className="text-sm font-bold">Quote details</h3>
                <dl className="mt-2 space-y-2 text-xs">
                  <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold">{activePlan.duration_months} months</dd></div>
-                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Cover type</dt><dd className="font-semibold">{selectedPlan === 'dealer-paid' ? 'Manage My Warranty' : 'Comprehensive'}</dd></div>
+                 <div className="flex items-center justify-between gap-2"><dt className="text-muted-foreground">Cover type</dt><dd className="font-semibold">{selectedPlan === 'dealer-paid' ? 'Manage My Claims' : 'Comprehensive'}</dd></div>
                </dl>
                <div className="mt-3 flex items-center justify-between gap-2 border-t border-crm-line pt-3">
                  <span className="text-sm font-bold">Monthly price</span>

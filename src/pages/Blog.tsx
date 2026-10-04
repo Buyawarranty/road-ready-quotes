@@ -105,8 +105,8 @@ const Blog = () => {
       <DealerPublicHeader />
       <SEOHead
         title="The Warranty Hub | Trade Warranties for UK Dealers"
-        description="Trade warranty advice for UK motor dealers — Manage My Warranty and customer-paid plans, forecourt protection strategy, and claims insight from Panda Protect."
-        keywords="trade warranty UK, dealer warranty, motor trade warranty, forecourt warranty, used car dealer warranty, manage my warranty, trade cover, dealer protection plans"
+        description="Trade warranty advice for UK motor dealers — Manage My Claims and customer-paid plans, forecourt protection strategy, and claims insight from Panda Protect."
+        keywords="trade warranty UK, dealer warranty, motor trade warranty, forecourt warranty, used car dealer warranty, manage my claims, trade cover, dealer protection plans"
         canonical="https://pandaprotect.co.uk/thewarrantyhub"
         ogImage={pandaHeroImage}
       />
@@ -153,7 +153,7 @@ const Blog = () => {
                   <h3 className="text-lg font-bold text-gray-900 mb-4">Built for the Trade</h3>
                   <div className="grid grid-cols-2 gap-4">
                     {[
-                      'Manage My Warranty & customer-paid plans',
+                      'Manage My Claims & customer-paid plans',
                       'White-label warranty options',
                       'Dedicated dealer portal',
                       'Fast claims paid in 90 minutes',
@@ -483,7 +483,7 @@ const Blog = () => {
                       </p>
                       <div className="space-y-4 pt-4">
                         {[
-                          'Manage My Warranty & customer-paid warranty options',
+                          'Manage My Claims & customer-paid warranty options',
                           'White-label dealer branding available',
                           'Live dealer portal — quote, sell, manage',
                           'UK-based claims team, paid in 90 minutes',
