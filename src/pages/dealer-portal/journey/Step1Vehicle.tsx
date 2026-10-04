@@ -111,8 +111,29 @@ const Step1Vehicle: React.FC = () => {
   const [selectedTerm] = useState(12);
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
-  const { templates: savedPlans } = useDealerQuoteTemplates();
+  const { templates: savedPlans, deleteTemplate } = useDealerQuoteTemplates();
   const [activeSaved, setActiveSaved] = useState<DealerQuoteTemplate | null>(null);
+  const [selectedSaved, setSelectedSaved] = useState<Set<string>>(new Set());
+  const [deletingSaved, setDeletingSaved] = useState(false);
+
+  const toggleSaved = (id: string) => setSelectedSaved((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const allSelected = savedPlans.length > 0 && selectedSaved.size === savedPlans.length;
+  const toggleSelectAll = () => setSelectedSaved(allSelected ? new Set() : new Set(savedPlans.map((t) => t.id)));
+  const deleteSelected = async () => {
+    if (selectedSaved.size === 0) return;
+    setDeletingSaved(true);
+    try {
+      await Promise.all([...selectedSaved].map((id) => deleteTemplate(id)));
+      setSelectedSaved(new Set());
+      if (activeSaved && selectedSaved.has(activeSaved.id)) setActiveSaved(null);
+    } finally {
+      setDeletingSaved(false);
+    }
+  };
 
   const vehicleDetailsComplete = Boolean(isValidReg(reg) && mileage.trim() && lookupState === 'success');
   const canContinue = Boolean(vehicleDetailsComplete && selectedPlan);
