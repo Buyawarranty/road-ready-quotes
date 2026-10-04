@@ -24,6 +24,7 @@ const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
     name: 'Manage My Claims',
+    subtitle: 'Only £1 a month',
     description: 'Manage My Claims only · We handle the claim, you pay the repair bill',
     price: '£1/m',
     icon: Headphones,
