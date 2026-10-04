@@ -337,6 +337,14 @@ const Step1Vehicle: React.FC = () => {
                 );
               })}
             </div>
+            <Button
+              type="button"
+              onClick={handleContinue}
+              disabled={!canContinue}
+              className="mt-3 h-12 w-full gap-2 bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90"
+            >
+              Continue <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Button>
             {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
 
 
