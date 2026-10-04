@@ -8,8 +8,8 @@ import {
 import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import pandaClaimApproved from '@/assets/panda-claim-approved.webp.asset.json';
-import whyDealersPanda from '@/assets/panda-trusted-warranties.webp.asset.json';
+import pandaClaimApproved from '@/assets/panda-claim-approved.webp';
+import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
 import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -378,7 +378,7 @@ const DealerComingSoon = () => {
 
           <div className="mx-auto mt-8 flex max-w-3xl justify-center">
             <img
-              src={pandaClaimApproved.url}
+              src={pandaClaimApproved}
               alt="Vehicle with bonnet open as Panda Protect approves a claim covering parts, labour and workshop payment"
               width={1536}
               height={1024}
@@ -697,7 +697,7 @@ const DealerComingSoon = () => {
           </div>
           <div className="flex justify-center">
             <img
-              src={whyDealersPanda.url}
+              src={whyDealersPanda}
               alt="Panda Protect mascot holding a sign: trusted auto warranties for motor dealers"
               width={1484}
               height={1060}
