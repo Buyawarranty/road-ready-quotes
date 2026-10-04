@@ -318,7 +318,10 @@ const DealerComingSoon = () => {
             Dealer portal
           </span>
           <h1 className="mx-auto mt-5 max-w-4xl text-3xl font-black leading-tight tracking-normal text-crm-navy sm:text-5xl">
-            Trade warranties for UK motor dealers
+            <span>Reliable </span>
+            <span className="text-primary">Trade warranties</span>
+            <br />
+            <span>for UK motor dealers</span>
           </h1>
 
           {pendingReg && (
