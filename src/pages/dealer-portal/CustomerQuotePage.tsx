@@ -45,6 +45,23 @@ const CustomerQuotePage: React.FC = () => {
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
       <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} open onClose={() => window.close()} />
+      {(payQuoteId || paid) && <div className="customer-quote-tools mx-auto -mt-4 mb-8 max-w-2xl px-4">
+        {paid ? <div className="rounded-lg border border-crm-green bg-crm-green/10 p-4 text-center">
+          <p className="text-sm font-bold text-crm-green">Payment received — thank you.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Your dealer will confirm your warranty documents shortly.</p>
+        </div> : <div className="rounded-lg border border-crm-line bg-card p-4 text-center">
+          {cancelled && <p className="mb-2 text-xs font-semibold text-destructive">Payment was cancelled — you can try again below.</p>}
+          <Button className="w-full sm:w-auto" disabled={paying} onClick={async () => {
+            setPaying(true); setPayError('');
+            const { data: res, error } = await supabase.functions.invoke('customer-create-checkout', { body: { quote_id: payQuoteId, return_url: window.location.href } });
+            setPaying(false);
+            if (error || !res?.checkout_url) { setPayError(res?.error || 'Could not start payment — please contact your dealer.'); return; }
+            window.location.href = res.checkout_url;
+          }}><CreditCard /> {paying ? 'Redirecting…' : `Pay £${price.toFixed(2)} now`}</Button>
+          <p className="mt-2 text-[11px] text-muted-foreground">Secure card payment powered by Stripe.</p>
+          {payError && <p role="alert" className="mt-2 text-xs text-destructive">{payError}</p>}
+        </div>}
+      </div>}
     </>
   );
 };
