@@ -193,6 +193,9 @@ const ClaimHandlingPage: React.FC = () => {
     return +(BASE_FEE + extras).toFixed(2);
   }, [selectedAddOns]);
 
+  const vat = useMemo(() => +(fee * 0.2).toFixed(2), [fee]);
+  const feeTotal = useMemo(() => +(fee + vat).toFixed(2), [fee, vat]);
+
   useEffect(() => {
     setPriceState('updating');
     const timer = window.setTimeout(() => setPriceState('idle'), 400);
