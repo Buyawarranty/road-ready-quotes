@@ -99,7 +99,8 @@
 }
 
 .dealer-crm .vehicle-reg-plate--list .vehicle-reg-plate__text {
-  font-size: clamp(1.35rem, 12cqi, 2rem);
+  padding: 0 0.5rem;
+  font-size: clamp(1rem, 11cqi, 1.6rem);
 }
 
 .dealer-crm .vehicle-reg-plate--quote {
