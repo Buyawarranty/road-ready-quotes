@@ -163,6 +163,16 @@ const Step1Vehicle: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const handlePlanSelect = (planKey: WarrantyPlanKey) => {
+    setValidation((current) => ({ ...current, plan: '' }));
+    const plan = buildPlan(planKey, selectedTerm);
+    setSelectedPlan(planKey);
+    setVehicle(activeVehicle);
+    setPlan(plan);
+    void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: plan });
+    navigate(planKey === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
+  };
+
   const handleContinue = async () => {
     if (!validate()) return;
     setVehicle(activeVehicle);
@@ -255,7 +265,7 @@ const Step1Vehicle: React.FC = () => {
                   <div key={plan.key} className="min-w-0">
                     <Button
                       type="button"
-                      onClick={() => { setSelectedPlan(plan.key); setValidation((current) => ({ ...current, plan: '' })); }}
+                      onClick={() => handlePlanSelect(plan.key)}
                       disabled={!vehicleDetailsComplete}
                       variant="outline"
                       className={`h-auto min-h-16 w-full justify-start gap-2 whitespace-normal rounded-md px-3 py-3 text-left ${isSelected ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground' : 'border-crm-line bg-card'}`}
@@ -263,7 +273,7 @@ const Step1Vehicle: React.FC = () => {
                     >
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
-                      {isSelected && <Check className="h-4 w-4 shrink-0" />}
+                      <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
                     </Button>
                     <details className="mt-2 text-xs text-muted-foreground">
                       <summary className="cursor-pointer py-1">Cover details</summary>
