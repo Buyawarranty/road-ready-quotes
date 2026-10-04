@@ -8,7 +8,8 @@ import {
 import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import whyDealersPanda from '@/assets/car-warranty-panda-vehicles.png';
+import pandaClaimApproved from '@/assets/panda-claim-approved.webp.asset.json';
+import whyDealersPanda from '@/assets/panda-trusted-warranties.webp.asset.json';
 import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
