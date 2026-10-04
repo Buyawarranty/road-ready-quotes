@@ -45,7 +45,6 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   secondaryValue,
   specs,
   included = [],
-  dealerName,
   quoteControls,
 }) => {
   useEffect(() => {
@@ -74,9 +73,6 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
       <div className="max-w-2xl mx-auto px-5 pb-10 pt-16 sm:pt-20">
         <div className="text-center mb-6">
           <img src={logoAssetUrl} alt="Panda Protect" className="mx-auto h-10 w-auto" />
-          {dealerName && (
-            <p className="text-xs text-muted-foreground mt-2">Presented by {dealerName}</p>
-          )}
         </div>
 
         <div className="bg-card border border-crm-line rounded-xl overflow-hidden shadow-sm">
