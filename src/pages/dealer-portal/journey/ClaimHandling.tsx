@@ -193,6 +193,9 @@ const ClaimHandlingPage: React.FC = () => {
     return +(BASE_FEE + extras).toFixed(2);
   }, [selectedAddOns]);
 
+  const vat = useMemo(() => +(fee * 0.2).toFixed(2), [fee]);
+  const feeTotal = useMemo(() => +(fee + vat).toFixed(2), [fee, vat]);
+
   useEffect(() => {
     setPriceState('updating');
     const timer = window.setTimeout(() => setPriceState('idle'), 400);
@@ -532,9 +535,12 @@ const ClaimHandlingPage: React.FC = () => {
                 <div className="mt-4 rounded-md border border-crm-line bg-muted/40 p-3">
                   <p className="text-[11px] font-bold uppercase tracking-wide text-crm-orange">Panda Protect fee</p>
                   <p className="mt-0.5 text-2xl font-bold leading-none">
-                    {gbp(fee)} <span className="text-sm font-semibold text-muted-foreground">/ month</span>
+                    {gbp(fee)} <span className="text-sm font-semibold text-muted-foreground">per month</span>
                   </p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">From</p>
+                  <p className="mt-1 text-[11px] font-semibold text-foreground">plus VAT</p>
+                  <p className="mt-0.5 text-[11px] text-muted-foreground">
+                    VAT (20%) {gbp(vat)} · Total {gbp(feeTotal)} a month
+                  </p>
                   <p className="mt-1.5 text-[11px] font-semibold text-foreground">
                     Repair costs are funded by your dealership.
                   </p>
@@ -556,6 +562,14 @@ const ClaimHandlingPage: React.FC = () => {
                     <div className="flex justify-between">
                       <dt className="text-muted-foreground">Panda Protect administration</dt>
                       <dd className="font-semibold">{gbp(fee)} / month</dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">VAT (20%)</dt>
+                      <dd className="font-semibold">{gbp(vat)} / month</dd>
+                    </div>
+                    <div className="flex justify-between border-t border-crm-line pt-1.5">
+                      <dt className="font-semibold text-foreground">Total per month</dt>
+                      <dd className="font-bold">{gbp(feeTotal)}</dd>
                     </div>
                     <div className="flex justify-between">
                       <dt className="text-muted-foreground">Manage my claims</dt>
