@@ -33,6 +33,9 @@ interface PlanPayload {
   duration_months: number;
   retail_price: number;
   dealer_price: number;
+  claim_limit?: number;
+  excess?: number;
+  labour_rate?: number;
 }
 
 interface RequestBody {
@@ -127,6 +130,9 @@ Deno.serve(async (req: Request) => {
       mileage: vehicle.mileage ? parseInt(vehicle.mileage, 10) : null,
       plan_type: plan.plan_type,
       payment_type: String(plan.duration_months),
+      claim_limit: Number.isFinite(Number(plan.claim_limit)) && plan.claim_limit ? Number(plan.claim_limit) : null,
+      voluntary_excess: Number.isFinite(Number(plan.excess)) && plan.excess != null ? Number(plan.excess) : null,
+      labour_rate: Number.isFinite(Number(plan.labour_rate)) && plan.labour_rate ? Number(plan.labour_rate) : null,
       final_amount: plan.dealer_price,
       original_amount: plan.retail_price,
       discount_amount: +(plan.retail_price - plan.dealer_price).toFixed(2),
