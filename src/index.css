@@ -3216,6 +3216,9 @@ img, video { height: auto; }
   .why-page *, .why-page *::before, .why-page *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
 
+/* Script accent for the customer quote hero. */
+.customer-quote-view .quote-script { font-family: "Caveat", "Brush Script MT", "Segoe Script", cursive !important; }
+
 /* Print only the customer-safe presentation, never surrounding portal content. */
 @media print {
   @page { size: A4; margin: 12mm; }
