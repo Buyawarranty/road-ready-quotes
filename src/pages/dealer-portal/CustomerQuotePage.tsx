@@ -59,7 +59,7 @@ const CustomerQuotePage: React.FC = () => {
           }}><CreditCard /> {paying ? 'Redirecting…' : `Pay £${price.toFixed(2)} now`}</Button>
           <p className="mt-2 text-[11px] text-muted-foreground">Secure card payment powered by Stripe.</p>
           {payError && <p role="alert" className="mt-2 text-xs text-destructive">{payError}</p>}
-        </div> : undefined} />
+        </div>}
       </div> : undefined} />
     </>
   );
