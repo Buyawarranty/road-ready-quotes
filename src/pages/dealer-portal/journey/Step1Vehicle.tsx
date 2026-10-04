@@ -318,12 +318,16 @@ const Step1Vehicle: React.FC = () => {
                       onClick={() => handlePlanSelect(plan.key)}
                       disabled={!vehicleDetailsComplete}
                       variant="outline"
-                      className={`h-auto min-h-16 w-full justify-start gap-2 whitespace-normal rounded-md px-3 py-3 text-left ${isSelected ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground' : 'border-crm-line bg-card'}`}
+                      className={`h-auto min-h-16 w-full justify-start gap-2 whitespace-normal rounded-md px-3 py-3 text-left ${isSelected ? 'border-crm-navy bg-crm-navy text-white hover:bg-crm-navy/90 hover:text-white' : 'border-crm-line bg-card'}`}
                       aria-pressed={isSelected}
                     >
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="min-w-0 flex-1 text-sm font-bold leading-snug">{plan.name}</span>
-                      {isSelected && <Check className="h-4 w-4 shrink-0" aria-hidden="true" />}
+                      {isSelected && (
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-crm-green">
+                          <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} aria-hidden="true" />
+                        </span>
+                      )}
                     </Button>
                     <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-orange' : 'text-crm-navy'}`}>{plan.subtitle}</p>
                     <details className="mt-2 text-xs text-muted-foreground">
