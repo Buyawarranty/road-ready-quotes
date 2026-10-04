@@ -190,7 +190,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-1 xl:flex">
+            <nav className="hidden items-center gap-1 2xl:flex">
               {topNav.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item);
@@ -251,10 +251,15 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
             </div>
 
             <div className="ml-auto hidden items-center gap-2 lg:flex">
-              <Button variant="ghost" size="icon" className="relative text-foreground" aria-label="Notifications">
-                <Bell className="h-5 w-5" />
-                <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-crm-orange px-1 text-[9px] font-bold text-primary-foreground">3</span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-foreground" aria-label="Notifications"><Bell className="h-5 w-5" /></Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate('/dealer-portal/warranties')}>Review warranties and outstanding invoices</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/dealer-portal/claims')}>Check claim updates</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button variant="ghost" size="sm" className="gap-2 text-foreground" asChild>
                 <a href="mailto:hello@pandaprotect.co.uk"><CircleHelp className="h-4 w-4" /> Help</a>
               </Button>
