@@ -367,7 +367,7 @@ const Step1Vehicle: React.FC = () => {
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleSelectAll}
-                      className="h-4 w-4 accent-[#EC6F33]"
+                      className="h-4 w-4 accent-[#FE670A]"
                       aria-label="Select all saved plans"
                     />
                     Select all
@@ -404,7 +404,7 @@ const Step1Vehicle: React.FC = () => {
                         type="checkbox"
                         checked={checked}
                         onChange={() => toggleSaved(t.id)}
-                        className="h-4 w-4 shrink-0 accent-[#EC6F33]"
+                        className="h-4 w-4 shrink-0 accent-[#FE670A]"
                         aria-label={`Select ${t.name}`}
                       />
                       <button
