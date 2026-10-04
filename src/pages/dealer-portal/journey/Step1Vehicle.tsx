@@ -197,12 +197,7 @@ const Step1Vehicle: React.FC = () => {
 
   const handlePlanSelect = (planKey: WarrantyPlanKey) => {
     setValidation((current) => ({ ...current, plan: '' }));
-    const plan = buildPlan(planKey, selectedTerm);
     setSelectedPlan(planKey);
-    setVehicle(activeVehicle);
-    setPlan(plan);
-    void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: plan });
-    navigate(planKey === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
   };
 
   const handleContinue = async () => {
