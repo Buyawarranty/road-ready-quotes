@@ -173,7 +173,7 @@ const StartClaim: React.FC = () => {
     setLookupState('loading');
     setVehicle(null);
     try {
-      const [{ data: warranty }, { data: customer }] = await Promise.all([
+      const [{ data: warranty }, { data: customer }, { data: order }] = await Promise.all([
         supabase
           .from('dealer_warranties')
           .select('vehicle_reg, customer_name, status, start_date, end_date')
@@ -190,9 +190,17 @@ const StartClaim: React.FC = () => {
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
+        supabase
+          .from('dealer_admin_orders')
+          .select('vehicle_reg, vehicle_make, vehicle_model, customer_name, plan_type')
+          .eq('dealer_id', dealer.id)
+          .eq('vehicle_reg_normalized', normalised)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ]);
 
-      if (!warranty && !customer) {
+      if (!warranty && !customer && !order) {
         setLookupState('not-found');
         return;
       }
@@ -211,17 +219,23 @@ const StartClaim: React.FC = () => {
           status = 'ineligible';
           reason = `Warranty status is ${warranty.status}.`;
         }
+      } else {
+        status = 'ineligible';
+        reason = 'No active warranty found for this registration.';
       }
 
       setVehicle({
         reg: normalised,
-        make: customer?.vehicle_make ?? null,
-        model: customer?.vehicle_model ?? null,
+        make: customer?.vehicle_make ?? order?.vehicle_make ?? null,
+        model: customer?.vehicle_model ?? order?.vehicle_model ?? null,
         year: customer?.vehicle_year ?? null,
         customerName:
-          warranty?.customer_name ?? [customer?.first_name, customer?.last_name].filter(Boolean).join(' ') ?? null,
+          warranty?.customer_name ??
+          ([customer?.first_name, customer?.last_name].filter(Boolean).join(' ') || null) ??
+          order?.customer_name ??
+          null,
         customerId: customer?.id ?? null,
-        plan: customer?.plan_type ?? 'Fully Covered',
+        plan: customer?.plan_type ?? order?.plan_type ?? 'Fully Covered',
         status,
         reason,
       });
