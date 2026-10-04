@@ -376,6 +376,19 @@ const DealerComingSoon = () => {
             Free dealer sign-up · No setup fees, no contracts · Quote in seconds
           </p>
 
+          <div className="mx-auto mt-8 flex max-w-3xl justify-center">
+            <img
+              src={pandaClaimApproved.url}
+              alt="Vehicle with bonnet open as Panda Protect approves a claim covering parts, labour and workshop payment"
+              width={1536}
+              height={1024}
+              loading="eager"
+              decoding="sync"
+              className="w-full h-auto"
+            />
+          </div>
+
+
 
           {showLogin && (
             <div
@@ -683,7 +696,15 @@ const DealerComingSoon = () => {
             </button>
           </div>
           <div className="flex justify-center">
-            <img src={whyDealersPanda} alt="Panda Protect mascot with protected vehicles" className="w-full max-w-xs sm:max-w-md h-auto" />
+            <img
+              src={whyDealersPanda.url}
+              alt="Panda Protect mascot holding a sign: trusted auto warranties for motor dealers"
+              width={1484}
+              height={1060}
+              loading="lazy"
+              decoding="async"
+              className="w-full max-w-xs sm:max-w-md h-auto"
+            />
           </div>
         </div>
       </section>
