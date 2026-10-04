@@ -170,10 +170,10 @@ const Step3Pricing: React.FC = () => {
       </div>
     </div>
     <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink(null)}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="!left-1/2 !top-1/2 !translate-x-[-50%] !translate-y-[-50%] w-[calc(100%-2rem)] max-w-md max-h-[85vh] overflow-y-auto">
         <DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader>
         <p className="text-sm text-muted-foreground">Send this link to your customer. They'll see their quote and can pay {validPrice ? gbp(customerTotals.total) : ''} securely by card.</p>
-        <div className="break-all rounded-md border border-crm-line bg-muted/50 p-3 text-xs">{paylink}</div>
+        <a href={paylink || undefined} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-3 rounded-md border border-crm-line bg-muted/50 p-3 text-sm font-semibold text-primary">Open customer quote <ArrowRight className="h-4 w-4 shrink-0" /></a>
         <div className="grid grid-cols-3 gap-2">
           <Button variant="outline" size="sm" onClick={() => { navigator.clipboard?.writeText(paylink || ''); toast({ title: 'Payment link copied' }); }}><Copy /> Copy</Button>
           <Button variant="outline" size="sm" onClick={() => { window.location.href = `mailto:?subject=${encodeURIComponent(`Your Panda Protect warranty — ${vehicle?.reg}`)}&body=${encodeURIComponent(`Hi,\n\nHere is your warranty quote and secure payment link for ${[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')} (${vehicle?.reg}):\n\n${paylink}\n\nTotal to pay: ${gbp(customerTotals.total)} including VAT.\n\nThanks,\n${dealer?.company_name || ''}`)}`; }}><Mail /> Email</Button>
