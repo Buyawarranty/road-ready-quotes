@@ -72,6 +72,29 @@ const DealerComingSoon = () => {
     return () => { active = false; };
   }, [pendingReg]);
 
+  // If already signed in as a dealer, skip the signup form entirely.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled || !session?.user) return;
+      const { data: dealer } = await supabase
+        .from('dealers')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      if (cancelled || !dealer) return;
+      const redirect = searchParams.get('redirect');
+      if (redirect && redirect.startsWith('/dealer')) {
+        navigate(pendingReg ? `${redirect}?reg=${encodeURIComponent(pendingReg)}` : redirect, { replace: true });
+      } else {
+        navigate('/dealer-portal/dashboard', { replace: true });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+
 
   const set = (k: keyof typeof initialForm, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
