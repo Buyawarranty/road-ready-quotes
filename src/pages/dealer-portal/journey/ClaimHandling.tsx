@@ -216,7 +216,7 @@ const ClaimHandlingPage: React.FC = () => {
     term_months: termOption.months as never,
     selected_options: {
       warranty_type: 'dealer-paid',
-      label: 'Manage My Warranty',
+      label: 'Manage My Claims',
       term: termOption.label,
       excess: Number(excess),
       labour: Number(labour),
@@ -264,7 +264,7 @@ const ClaimHandlingPage: React.FC = () => {
   const vehicleName = [vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'AUDI Q5';
 
   const summaryRows = [
-    { label: 'Warranty', value: 'Manage My Warranty' },
+    { label: 'Warranty', value: 'Manage My Claims' },
     { label: 'Vehicle', value: vehicleName },
     { label: 'Term', value: termOption.label },
     { label: 'Customer excess', value: excessOption.label },
@@ -308,8 +308,8 @@ const ClaimHandlingPage: React.FC = () => {
 
         {/* Page title */}
         <div>
-          <p className="text-[11px] font-bold tracking-[0.16em] text-crm-orange">MANAGE MY WARRANTY</p>
-          <h1 className="text-xl font-bold leading-tight sm:text-2xl">Configure Manage My Warranty</h1>
+          <p className="text-[11px] font-bold tracking-[0.16em] text-crm-orange">MANAGE MY CLAIMS</p>
+          <h1 className="text-xl font-bold leading-tight sm:text-2xl">Configure Manage My Claims</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             We manage the claims process and support your customer. Your dealership funds approved repairs.
           </p>
@@ -340,7 +340,7 @@ const ClaimHandlingPage: React.FC = () => {
 
         {/* How it works */}
         <div className="rounded-lg border border-crm-orange/30 bg-crm-orange-soft p-4">
-          <p className="text-sm font-bold">How Manage My Warranty works</p>
+          <p className="text-sm font-bold">How Manage My Claims works</p>
           <ol className="mt-2 grid gap-2 sm:grid-cols-3">
             {howItWorks.map((item, index) => (
               <li key={item} className="flex items-start gap-2 text-xs font-medium text-foreground">
@@ -516,7 +516,7 @@ const ClaimHandlingPage: React.FC = () => {
                   </span>
                   <div>
                     <h2 className="text-base font-bold">Quote summary</h2>
-                    <p className="text-xs text-muted-foreground">Your Manage My Warranty configuration.</p>
+                    <p className="text-xs text-muted-foreground">Your Manage My Claims configuration.</p>
                   </div>
                 </div>
 
@@ -573,7 +573,7 @@ const ClaimHandlingPage: React.FC = () => {
                 )}
 
                 <div className="mt-3 rounded-md bg-muted/40 p-3">
-                  <p className="text-[11px] font-semibold text-foreground">Included with Manage My Warranty</p>
+                  <p className="text-[11px] font-semibold text-foreground">Included with Manage My Claims</p>
                   <ul className="mt-1.5 space-y-1">
                     {included.map((item) => (
                       <li key={item} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

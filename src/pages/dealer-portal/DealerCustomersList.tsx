@@ -162,7 +162,7 @@ const formatNumber = (value?: number | string | null) => {
 const invoiceRef = (id: string) => `INV-${id.replace(/-/g, '').slice(0, 5).toUpperCase()}`;
 const planLabel = (plan?: string | null) => {
   const value = String(plan || '').toLowerCase();
-  if (value.includes('dealer')) return 'Manage My Warranty';
+  if (value.includes('dealer')) return 'Manage My Claims';
   if (value.includes('full') || value.includes('gold') || value.includes('premium')) return 'Fully Covered';
   return plan ? plan.replace(/[-_]/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase()) : 'Fully Covered';
 };
@@ -772,7 +772,7 @@ const DealerCustomersList = () => {
             <SelectContent className="bg-white">
               <SelectItem value="all">Warranty type</SelectItem>
               <SelectItem value="fully">Fully Covered</SelectItem>
-              <SelectItem value="dealer">Manage My Warranty</SelectItem>
+              <SelectItem value="dealer">Manage My Claims</SelectItem>
             </SelectContent>
           </Select>
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
