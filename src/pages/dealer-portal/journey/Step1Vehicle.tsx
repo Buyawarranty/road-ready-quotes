@@ -329,7 +329,7 @@ const Step1Vehicle: React.FC = () => {
                         </span>
                       )}
                     </Button>
-                    <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-orange' : 'text-crm-navy'}`}>{plan.subtitle}</p>
+                    <p className={`mt-1.5 text-xs font-semibold ${isSelected ? 'text-crm-navy' : 'text-crm-navy'}`}>{plan.subtitle}</p>
                     <details className="mt-2 text-xs text-muted-foreground">
                       <summary className="cursor-pointer py-1">Cover details</summary>
                       <p className="mt-2 leading-relaxed">{plan.description}</p>
