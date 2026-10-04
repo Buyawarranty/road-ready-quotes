@@ -430,20 +430,24 @@ const StartClaim: React.FC = () => {
             </div>
             <div>
               <Label htmlFor="claim-reg">Vehicle registration *</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="claim-reg"
-                  value={reg}
-                  onChange={(e) => {
-                    setReg(e.target.value.toUpperCase());
-                    setLookupState('idle');
-                    setVehicle(null);
-                  }}
-                  onBlur={() => reg.trim() && lookupState === 'idle' && lookupVehicle()}
-                  placeholder="B11CSD"
-                  className="uppercase"
-                />
-                <Button type="button" variant="outline" onClick={lookupVehicle} disabled={!reg.trim() || lookupState === 'loading'}>
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl flex-1">
+                  <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
+                  <input
+                    id="claim-reg"
+                    value={reg}
+                    onChange={(e) => {
+                      setReg(e.target.value.toUpperCase());
+                      setLookupState('idle');
+                      setVehicle(null);
+                    }}
+                    onBlur={() => reg.trim() && lookupState === 'idle' && lookupVehicle()}
+                    placeholder="ENTER REG"
+                    aria-label="Vehicle registration"
+                    className="vehicle-reg-plate__input"
+                  />
+                </div>
+                <Button type="button" variant="outline" onClick={lookupVehicle} disabled={!reg.trim() || lookupState === 'loading'} className="shrink-0">
                   {lookupState === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Look up'}
                 </Button>
               </div>
