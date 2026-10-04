@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import CoverTypeSwitch from '@/components/dealer/journey/CoverTypeSwitch';
+
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -141,6 +143,8 @@ const Step3Pricing: React.FC = () => {
         <Button variant="outline" size="sm" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil /> Edit vehicle</Button>
       </div>
       <div><p className="text-[11px] font-bold text-crm-orange">FULL WARRANTY COVER</p><h1 className="mt-1 text-2xl font-bold">Configure your comprehensive warranty</h1><p className="mt-1 text-sm text-muted-foreground">Choose the cover options for your customer.</p></div>
+      <CoverTypeSwitch active="comprehensive" />
+
       <ol className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Quote progress">
         {['Enter Reg Plate', 'Vehicle Details', 'Choose Your Plan', 'Review & Pay'].map((label, i) => <li key={label} className="flex items-center gap-2 text-xs font-semibold"><span className={`flex h-6 w-6 items-center justify-center rounded-full ${i < 2 ? 'bg-crm-green text-primary-foreground' : i === 2 ? 'bg-crm-orange text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{i < 2 ? <Check className="h-3.5 w-3.5" /> : i + 1}</span>{label}</li>)}
       </ol>

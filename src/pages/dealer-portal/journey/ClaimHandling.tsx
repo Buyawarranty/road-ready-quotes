@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import CoverTypeSwitch from '@/components/dealer/journey/CoverTypeSwitch';
+
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -317,6 +319,9 @@ const ClaimHandlingPage: React.FC = () => {
             We manage the claims process and support your customer. Your dealership funds approved repairs.
           </p>
         </div>
+
+        <CoverTypeSwitch active="manage-my-claims" />
+
 
         {/* Vehicle strip */}
         <Card className="crm-panel-shadow border-crm-line bg-card">
