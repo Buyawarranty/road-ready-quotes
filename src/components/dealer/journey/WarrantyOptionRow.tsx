@@ -22,7 +22,7 @@ export default function WarrantyOptionRow({ icon: Icon, label, helper, options, 
         disabled={option.disabled}
         onClick={() => onChange(option.value)} className={`h-auto min-h-10 min-w-[78px] flex-1 gap-1.5 whitespace-normal border-2 px-2 py-2 text-xs ${option.value === value ? 'border-crm-orange bg-crm-orange-soft text-foreground hover:bg-crm-orange-soft hover:text-foreground' : 'border-crm-line bg-muted/40'}`}>
         {option.label}
-        {option.value === value && <span className="ml-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-2.5 w-2.5" strokeWidth={3} /></span>}
+        {option.value === value && <Check className="ml-auto h-3.5 w-3.5 shrink-0 text-crm-green" strokeWidth={3.5} />}
       </Button>)}
     </div>
   </div>;
