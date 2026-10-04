@@ -25,7 +25,6 @@ export const warrantyClaims = [
 // Visible to dealers but excluded from charging and customer-adjustable quotes until approved.
 export const pendingWarrantyClaims = [{ value: '5000', label: '£5,000 — price pending', disabled: true }];
 export const liveWarrantyAddOns = [
-  { key: 'wear-extension', label: 'Wear & tear extension', price: 20, description: 'Specified wear-related components.' },
   { key: 'emissions', label: 'Emissions system cover', price: 15, description: 'DPF, EGR and emissions components.' },
   { key: 'air-suspension', label: 'Air & adaptive suspension', price: 25, description: 'Air springs, compressors and controls.' },
   { key: 'wet-belt', label: 'Wet belt / timing belt', price: 12, description: 'Subject to servicing and eligibility.' },

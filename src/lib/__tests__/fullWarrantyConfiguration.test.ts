@@ -14,11 +14,11 @@ describe('Dealer warranty configuration', () => {
 
 describe('Approved full warranty add-ons', () => {
   const approved = [
-    ['wear-extension', 20], ['emissions', 15], ['air-suspension', 25],
+    ['emissions', 15], ['air-suspension', 25],
     ['wet-belt', 12], ['rental', 10], ['aircon', 8], ['infotainment', 8],
     ['adas', 12], ['ev-battery', 25], ['suspension', 10],
   ] as const;
-  it('uses exactly the ten replacement options', () => {
+  it('uses exactly the nine replacement options', () => {
     assert.deepEqual(liveWarrantyAddOns.map(a => a.key), approved.map(([key]) => key));
   });
   for (const [key, price] of approved) {
@@ -28,7 +28,7 @@ describe('Approved full warranty add-ons', () => {
     });
   }
   it('charges each selected protection once', () => {
-    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['wear-extension', 'wear-extension']).wholesale, 138);
+    assert.equal(calculateFullWarranty('50', '70', 'age-mileage', '1000', ['emissions', 'emissions']).wholesale, 133);
   });
 });
 
