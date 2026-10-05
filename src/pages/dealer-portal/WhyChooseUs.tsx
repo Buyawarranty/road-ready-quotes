@@ -156,8 +156,8 @@ const WhyChooseUs = () => {
         <section className="why-section why-paperwork">
           <div className="why-shell">
             <div className="why-paperwork-card">
-              <h2>Hate doing the warranty paperwork and admin?</h2>
-              <p>Just send us all the details and we will process your warranty for you and send your customer all of their information.</p>
+              <h2>We do all of the paperwork and admin for you.</h2>
+              <p>We process the whole warranty for you. Just give us the customer details and we do the rest — we send your customer all of their information and documents, and send you your warranty document too.</p>
               <Button asChild className="why-button why-button-primary">
                 <Link to="/dealer-portal/signup">Register your dealership <ArrowRight /></Link>
               </Button>
