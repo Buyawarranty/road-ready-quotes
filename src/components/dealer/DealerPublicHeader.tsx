@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { label: "What's covered", to: '/what-is-covered/' },
   { label: 'Claims', to: '/make-a-claim/' },
   { label: 'Why Choose Us', to: '/why-choose-us/' },
-  { label: 'Resources', to: '/thewarrantyhub/' },
   { label: 'FAQs', to: '/faq/traders/' },
   { label: 'Contact', to: '/contact-us/' },
 ] as const;
