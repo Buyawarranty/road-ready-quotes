@@ -350,6 +350,7 @@ const DealerHome = () => {
               </div>
             </article>
           </div>
+          <div className="home-plan-copy-col">
           <div className="home-plan-top">
             <p className="home-eyebrow">You sell the warranty</p>
             <h2>We Do <span className="home-plan-accent">the Rest.</span></h2>
@@ -376,6 +377,7 @@ const DealerHome = () => {
               <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
               <p>Quick setup. No complicated onboarding.</p>
             </div>
+          </div>
           </div>
         </div>
       </section>
