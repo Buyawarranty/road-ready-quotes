@@ -2742,6 +2742,16 @@ body {
 .public-dealer-home .home-plan-section .home-plan-step-icon svg { width: 1.35rem; height: 1.35rem; }
 .public-dealer-home .home-plan-section .home-plan-step-text { color: hsl(var(--home-copy)); }
 .public-dealer-home .home-plan-section .home-plan-step-text strong { display: block; margin-bottom: 0.2rem; color: hsl(var(--home-ink)); }
+.public-dealer-home .home-plan-accent { color: hsl(var(--home-orange)); }
+.public-dealer-home .home-plan-sub { margin: 0 0 1rem; font-size: 1.05rem; font-weight: 700; color: hsl(var(--home-ink)); }
+.public-dealer-home .home-plan-copy { display: grid; gap: 0.75rem; margin: 0 0 1.4rem; }
+.public-dealer-home .home-plan-copy p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.98rem; line-height: 1.65; }
+.public-dealer-home .home-plan-benefits { display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem; margin: 0.2rem 0 1.6rem; }
+.public-dealer-home .home-plan-benefit { display: inline-flex; align-items: center; gap: 0.5rem; color: hsl(var(--home-ink)); font-size: 0.92rem; font-weight: 800; }
+.public-dealer-home .home-plan-benefit-icon { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; border-radius: 999px; background: hsl(var(--home-orange) / 0.12); color: hsl(var(--home-orange)); }
+.public-dealer-home .home-plan-benefit-icon svg { width: 1.05rem; height: 1.05rem; }
+.public-dealer-home .home-plan-cta { display: grid; gap: 0.55rem; justify-items: start; }
+.public-dealer-home .home-plan-cta p { margin: 0; color: hsl(var(--home-copy)); font-size: 0.8rem; font-weight: 600; }
 
 
 .public-dealer-home .home-included-section { text-align: center; }
