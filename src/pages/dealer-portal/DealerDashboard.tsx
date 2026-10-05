@@ -68,7 +68,7 @@ export default function DealerDashboard() {
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
             <div className="vehicle-reg-plate vehicle-reg-plate--quote min-w-0">
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
-              <Input value={reg} onChange={event => setReg(event.target.value.toUpperCase())} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" />
+              <Input value={reg} onChange={event => setReg(event.target.value.toUpperCase())} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()} />
             </div>
             <Button type="submit" className="h-14 gap-2 px-5 font-bold">Get quote <ArrowRight className="h-4 w-4" /></Button>
           </div>

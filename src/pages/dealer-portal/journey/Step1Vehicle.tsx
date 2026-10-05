@@ -260,7 +260,7 @@ const Step1Vehicle: React.FC = () => {
                     onChange={(event) => handleRegChange(event.target.value)}
                     placeholder="ENTER REG"
                     aria-label="Vehicle registration"
-                    className="vehicle-reg-plate__input"
+                    className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()}
                   />
                 </div>
                 {validation.reg && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.reg}</p>}

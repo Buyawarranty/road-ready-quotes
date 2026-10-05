@@ -458,7 +458,7 @@ const StartClaim: React.FC = () => {
                     onBlur={() => reg.trim() && lookupState === 'idle' && lookupVehicle()}
                     placeholder="ENTER REG"
                     aria-label="Vehicle registration"
-                    className="vehicle-reg-plate__input"
+                    className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()}
                   />
                 </div>
                 <Button type="button" variant="outline" onClick={lookupVehicle} disabled={!reg.trim() || lookupState === 'loading'} className="shrink-0">
