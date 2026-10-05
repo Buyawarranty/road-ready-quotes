@@ -153,6 +153,18 @@ const WhyChooseUs = () => {
           </div>
         </section>
 
+        <section className="why-section why-paperwork">
+          <div className="why-shell">
+            <div className="why-paperwork-card">
+              <h2>Hate doing the warranty paperwork and admin?</h2>
+              <p>Just send us all the details and we will process your warranty for you and send your customer all of their information.</p>
+              <Button asChild className="why-button why-button-primary">
+                <Link to="/dealer-portal/signup">Register your dealership <ArrowRight /></Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
         <section className="why-trust-strip" aria-label="Dealer warranty service benefits">
           <div className="why-shell why-trust-grid">
             {[
