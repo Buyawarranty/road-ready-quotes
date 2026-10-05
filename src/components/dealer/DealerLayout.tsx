@@ -288,9 +288,6 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dealer-portal/settings/profile')}>
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dealer-portal/warranties?tab=cancellations')}>
-                    <Ban className="h-4 w-4 mr-2" /> Cancellations
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-destructive" onClick={signOut}>
                     <LogOut className="h-4 w-4 mr-2" /> Logout
