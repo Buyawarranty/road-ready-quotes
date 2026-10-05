@@ -300,7 +300,7 @@ const DealerHome = () => {
 
       <section className="home-plan-section" aria-label="You sell the warranty, we do the rest">
         <div className="home-shell home-plan-grid">
-          <div>
+          <div className="home-plan-top">
             <p className="home-eyebrow">We do the hard work</p>
             <h2>You Sell the Warranty. <span className="home-plan-accent">We Do the Rest.</span></h2>
             <p className="home-plan-sub">No paperwork. No chasing documents. No extra admin for your dealership.</p>
@@ -308,6 +308,9 @@ const DealerHome = () => {
               <p>You simply provide the customer and vehicle details, and Panda Protect handles the entire warranty process for you.</p>
               <p>We process the warranty, send the customer their confirmation, policy information and documents, and send your dealership everything it needs for its records.</p>
             </div>
+          </div>
+          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
+          <div className="home-plan-body">
             <ul>
               {[
                 { icon: UserCircle2, title: 'You provide the details', body: 'Customer and vehicle information is all we need.' },
@@ -337,7 +340,6 @@ const DealerHome = () => {
               <p>Quick setup. No complicated onboarding.</p>
             </div>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
         </div>
       </section>
 
