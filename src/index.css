@@ -7,8 +7,8 @@
 
 /* Dealer CRM palette. Scoped tokens keep the operational portal distinct. */
 .dealer-crm {
-  --crm-navy: 215 61% 16%;
-  --crm-navy-soft: 215 48% 22%;
+  --crm-navy: 227 75% 17%;
+  --crm-navy-soft: 227 48% 24%;
   --crm-orange: 20 99% 52%;
   --crm-orange-soft: 20 100% 95%;
   --crm-green: 151 81% 38%;
