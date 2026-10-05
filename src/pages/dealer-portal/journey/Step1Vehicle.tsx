@@ -55,7 +55,7 @@ const warrantyPlans = [
       'Comprehensive cover for your customer',
       'We handle the claim and pay the repair bill',
       'National repair network',
-      'Hassle-free for you and your customer',
+      'We do the paperwork for you',
     ],
   },
 ];
