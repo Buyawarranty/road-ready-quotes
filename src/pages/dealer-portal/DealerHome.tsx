@@ -6,12 +6,10 @@ import {
   BarChart2,
   BatteryCharging,
   Bike,
-  Calculator,
   Car,
   Check,
   ChevronDown,
   FileText,
-  HelpCircle,
   Timer,
   Globe,
   Headphones,
@@ -39,7 +37,8 @@ import twoWaysImage from '@/assets/two-ways-cover-optimized.webp';
 import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
 import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
 const coveredPartsImage = programmeBannerAsset.url;
-import pandaTrustedImage from '@/assets/panda-trusted-mascot.webp';
+import pandaSupportAsset from '@/assets/panda-support-agent.png.asset.json';
+const pandaSupportImage = pandaSupportAsset.url;
 import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
 
 const HOME_FAQS: { q: string; a: string }[] = [
@@ -470,19 +469,16 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-plan-section" aria-label="Your trade sales kit">
+      <section className="home-plan-section" aria-label="You sell warranties, we process them">
         <div className="home-shell home-plan-grid">
           <div>
-            <p className="home-eyebrow">Dealer sales kit</p>
-            <h2>Sales Material Built For Trade</h2>
+            <p className="home-eyebrow">We do the hard work</p>
+            <h2>You Sell Warranties, We Process Them</h2>
             <ul>
               {[
-                { icon: FileText, title: 'One Page PDF Rate Card', body: 'Plan comparison, terms from 3 to 36 months, price examples and your margin story on one printable A4 sheet.' },
-                { icon: Mail, title: 'Trade Email Welcome Pack', body: 'Two to three emails sent automatically after you sign up: how quoting works, how payouts happen and who to call.' },
-                { icon: FileText, title: 'Customer Leaflet Template', body: 'A branded one pager for the car buyer: what is covered, claim limits and our claims number, handed over at the point of sale.' },
-                { icon: MessageCircle, title: 'WhatsApp Quote Explainer', body: 'A short image or GIF showing the flow: send us the reg and customer details, we issue the warranty, the customer gets their documents.' },
-                { icon: HelpCircle, title: 'Objection Cheat Sheet', body: 'One line answers to questions like "I already have a warranty provider" or "Is £1 a month really it", in the same style as our desk cheat sheet.' },
-                { icon: Calculator, title: 'Dealer Profit Calculator', body: 'Cost versus recommended selling price and margin per plan, making your profit per warranty tangible.' },
+                { icon: FileText, title: 'We Do All of the Paperwork and Admin', body: 'From quote to policy documents, our team handles every bit of paperwork and admin for you.' },
+                { icon: UserCircle2, title: 'You Just Provide the Details', body: 'Give us the customer details and we do the rest, including sending all documents to your customer and you.' },
+                { icon: Zap, title: 'Zero Sales, Leave It to Us', body: 'Leave it to us to do the hard work. You sell warranties, we process them.' },
               ].map(({ icon: Icon, title, body }) => (
                 <li key={title} className="home-plan-step">
                   <span className="home-plan-step-icon"><Icon aria-hidden="true" /></span>
@@ -491,7 +487,7 @@ const DealerHome = () => {
               ))}
             </ul>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={pandaTrustedImage} alt="Panda Protect mascot holding a sign: trusted auto warranties for motor dealers" width={1440} height={1080} /></div>
+          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
         </div>
       </section>
 
