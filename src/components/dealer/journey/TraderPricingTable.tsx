@@ -993,7 +993,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
                 }
                 className="w-full mt-2 rounded-lg h-11 font-bold border-orange-500/40 text-orange-600 hover:bg-orange-50"
               >
-                {savingDraft ? 'Saving…' : 'Save draft & exit'}
+                {savingDraft ? 'Saving…' : 'Save quote'}
               </Button>
             )}
 

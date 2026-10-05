@@ -133,7 +133,7 @@ const Step3Pricing: React.FC = () => {
     setPlan(plan);
     const id = await save({ overridePlan: plan });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
-    if (exit) { toast({ title: 'Draft saved in Quotes' }); }
+    if (exit) { toast({ title: 'Quote saved in Quotes' }); }
     else navigate('/dealer-portal/quote/customer');
   };
   const applyTemplate = (t: DealerQuoteTemplate) => {
@@ -193,7 +193,7 @@ const Step3Pricing: React.FC = () => {
           <div className="mt-3 grid grid-cols-2 gap-1.5"><Button variant="outline" className="px-2 text-xs" onClick={() => share('view')}><Eye /> Customer View</Button><Button variant="outline" className="px-2 text-xs" onClick={openPaylink} disabled={paylinkBusy || managed}><Link2 /> {paylinkBusy ? 'Creating…' : 'Payment Link'}</Button></div>
           <div className="mt-2 grid grid-cols-3 gap-1.5"><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('print')}><Printer /> Print</Button><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('email')}><Mail /> Email</Button><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('whatsapp')}><MessageCircle /> WhatsApp</Button></div></>}
           {error && <p role="alert" className="mt-3 text-xs text-destructive">{error}</p>}
-          <div className="mt-4 space-y-2"><Button className="w-full" disabled={saving || !validPrice} onClick={() => persist(false)}>{saving ? 'Saving…' : 'Continue'}<ArrowRight /></Button><Button variant="outline" className="w-full border-crm-orange" disabled={saving || !validPrice} onClick={() => persist(true)}>Save draft</Button></div>
+          <div className="mt-4 space-y-2"><Button className="w-full" disabled={saving || !validPrice} onClick={() => persist(false)}>{saving ? 'Saving…' : 'Continue'}<ArrowRight /></Button><Button variant="outline" className="w-full border-crm-orange" disabled={saving || !validPrice} onClick={() => persist(true)}>Save quote</Button></div>
         </CardContent></Card></aside>
       </div>
     </div>
