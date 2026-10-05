@@ -302,29 +302,63 @@ const DealerHome = () => {
 
       <section className="home-plan-section" aria-label="You sell the warranty, we do the rest">
         <div className="home-shell home-plan-grid">
+          <div className="home-plan-visual">
+            <article className="home-plan-card">
+              <OptimizedImage src={pandaDealerPhoto} alt="A dealership salesperson entering customer and vehicle details on a tablet" width={1024} height={640} loading="lazy" />
+              <div className="home-plan-card-body">
+                <h3><span className="home-plan-card-badge">1</span>You provide the details</h3>
+                <ul>
+                  {['Customer details', 'Vehicle information', 'Choose warranty options'].map((item) => (
+                    <li key={item}><Check aria-hidden="true" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+            <span className="home-plan-arrow"><ArrowRight aria-hidden="true" /></span>
+            <article className="home-plan-card">
+              <div className="home-plan-card-doc">
+                <span className="home-plan-card-doc-sheet">
+                  <span className="home-plan-card-doc-brand"><PawPrint aria-hidden="true" /><span className="home-plan-card-doc-word">panda<em>protect</em></span></span>
+                  <span className="home-plan-card-doc-line" />
+                  <span className="home-plan-card-doc-line short" />
+                </span>
+                <span className="home-plan-card-doc-gear"><Settings aria-hidden="true" /></span>
+              </div>
+              <div className="home-plan-card-body">
+                <h3><span className="home-plan-card-badge">2</span>We process the warranty</h3>
+                <ul>
+                  {['Handle all paperwork', 'Process the warranty', 'Send all documents'].map((item) => (
+                    <li key={item}><Check aria-hidden="true" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+            <span className="home-plan-arrow"><ArrowRight aria-hidden="true" /></span>
+            <article className="home-plan-card">
+              <div className="home-plan-card-photo-wrap">
+                <OptimizedImage src={pandaCustomerPhoto} alt="A happy customer reading her warranty confirmation on her phone" width={1024} height={640} loading="lazy" />
+                <span className="home-plan-card-active"><Check aria-hidden="true" />Your Warranty is Active</span>
+              </div>
+              <div className="home-plan-card-body">
+                <h3><span className="home-plan-card-badge">3</span>Your customer receives everything</h3>
+                <ul>
+                  {['Policy information', 'Warranty documents', 'Confirmation by email'].map((item) => (
+                    <li key={item}><Check aria-hidden="true" />{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          </div>
           <div className="home-plan-top">
-            <p className="home-eyebrow">We do the hard work</p>
-            <h2>You Sell the Warranty. <span className="home-plan-accent">We Do the Rest.</span></h2>
-            <p className="home-plan-sub">No paperwork. No chasing documents. No extra admin for your dealership.</p>
+            <p className="home-eyebrow">You sell the warranty</p>
+            <h2>We Do <span className="home-plan-accent">the Rest.</span></h2>
+            <p className="home-plan-sub">No paperwork. No chasing documents. No extra admin for your team.</p>
             <div className="home-plan-copy">
               <p>You simply provide the customer and vehicle details, and Panda Protect handles the entire warranty process for you.</p>
               <p>We process the warranty, send the customer their confirmation, policy information and documents, and send your dealership everything it needs for its records.</p>
             </div>
           </div>
-          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
-          <div className="home-plan-body">
-            <ul>
-              {[
-                { icon: UserCircle2, title: 'You provide the details', body: 'Customer and vehicle information is all we need.' },
-                { icon: Settings, title: 'We process everything', body: 'We set up the warranty, handle the paperwork and prepare all the documents.' },
-                { icon: Mail, title: 'We send everything out', body: 'Your customer receives their warranty documents and your dealership gets its copy automatically.' },
-              ].map(({ icon: Icon, title, body }) => (
-                <li key={title} className="home-plan-step">
-                  <span className="home-plan-step-icon"><Icon aria-hidden="true" /></span>
-                  <span className="home-plan-step-text"><strong>{title}</strong>{body}</span>
-                </li>
-              ))}
-            </ul>
+          <div className="home-plan-footer">
             <div className="home-plan-benefits" aria-label="Benefits">
               {[
                 { icon: Check, label: 'Zero admin.' },
