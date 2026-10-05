@@ -3018,6 +3018,9 @@ img, video { height: auto; }
 .why-button-outline:hover { color: hsl(var(--why-surface)); background: hsl(var(--why-orange)); }
 
 .why-hero { overflow: hidden; padding: 3rem 0 1.5rem; background: hsl(var(--why-surface)); }
+.why-paperwork-card { max-width: 760px; margin: 0 auto; padding: 2.75rem 2rem; text-align: center; border-radius: 1rem; background: hsl(218 48% 18%); color: hsl(0 0% 100%); box-shadow: 0 18px 40px hsl(218 48% 18% / .18); }
+.why-paperwork-card h2 { margin: 0 0 .75rem; font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 850; color: hsl(0 0% 100%); }
+.why-paperwork-card p { margin: 0 auto 1.5rem; max-width: 560px; font-size: 1rem; line-height: 1.6; color: hsl(0 0% 100% / .82); }
 .why-hero-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: 2rem; }
 .why-hero-copy { position: relative; z-index: 1; }
 .why-hero h1 { max-width: 670px; margin: 0; color: hsl(var(--why-ink)); font-size: clamp(2.25rem, 4vw, 3.65rem); line-height: 1.02; font-weight: 900; }
