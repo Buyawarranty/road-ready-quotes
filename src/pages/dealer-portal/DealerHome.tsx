@@ -39,7 +39,8 @@ import twoWaysImage from '@/assets/two-ways-cover-optimized.webp';
 import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
 import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
 const coveredPartsImage = programmeBannerAsset.url;
-import pandaTrustedImage from '@/assets/panda-trusted-mascot.webp';
+import pandaSupportAsset from '@/assets/panda-support-agent.png.asset.json';
+const pandaSupportImage = pandaSupportAsset.url;
 import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
 
 const HOME_FAQS: { q: string; a: string }[] = [
