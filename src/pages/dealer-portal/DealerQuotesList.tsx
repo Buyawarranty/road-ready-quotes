@@ -169,8 +169,8 @@ const DealerQuotesList = () => {
 
     if (savedType === 'dealer-paid' || planType === 'basic') {
       return {
-        label: 'Manage My Claims',
-        detail: 'Manage My Claims only · You pay the repair bill',
+        label: 'Manage My Claim',
+        detail: 'Manage My Claim only · You pay the repair bill',
         Icon: ClipboardCheck,
         tone: 'border-crm-blue/30 bg-crm-blue-soft text-crm-navy',
       };

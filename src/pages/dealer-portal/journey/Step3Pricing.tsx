@@ -71,7 +71,7 @@ const Step3Pricing: React.FC = () => {
     { label: 'Claim limit per repair', value: gbp(Number(claim)) },
   ];
   const customerPayload: CustomerQuotePayload = {
-    vehicle, coverTitle: managed ? 'Manage My Claims' : 'Comprehensive Warranty', coverSubtitle: 'Warranty quotation', price: managed ? managedFeeTotal : customerTotals.total, priceSuffix: managed ? `for ${termOption.label} including VAT (£1 a month)` : '', specs: summary,
+    vehicle, coverTitle: managed ? 'Manage My Claim' : 'Comprehensive Warranty', coverSubtitle: 'Warranty quotation', price: managed ? managedFeeTotal : customerTotals.total, priceSuffix: managed ? `for ${termOption.label} including VAT (£1 a month)` : '', specs: summary,
     included: managed ? ['Panda Protect manages the claims process', 'Your dealership funds approved repairs', 'UK claims support'] : [...included, ...liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label)], dealerName: dealer?.company_name,
   };
   if (!managed && quoteMode === 'adjustable' && validPrice) {
@@ -116,7 +116,7 @@ const Step3Pricing: React.FC = () => {
   const buildPlan = () => managed ? ({
     plan_type: 'basic' as const, duration_months: termOption.months, term_months: termOption.months,
     dealer_price: managedFeeTotal, retail_price: managedFeeTotal,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims', term: termOption.label, excess: Number(excess), labour: Number(labour), parts: partsOption.label, claim: Number(claim), add_ons: [], monthly_fee: 1, fee_total: managedFeeTotal, repairs_funded_by: 'dealer' },
+    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claim', term: termOption.label, excess: Number(excess), labour: Number(labour), parts: partsOption.label, claim: Number(claim), add_ons: [], monthly_fee: 1, fee_total: managedFeeTotal, repairs_funded_by: 'dealer' },
   }) : ({
     plan_type: 'gold' as const, duration_months: termOption.months, term_months: termOption.months,
     retail_price: customerTotals.total, dealer_price: dealerTotals.total,

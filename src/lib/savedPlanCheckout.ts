@@ -23,7 +23,7 @@ export function buildSavedPlanQuote(t: SavedPlanLike) {
   const partsLabel = warrantyParts.find(o => o.value === parts)!.label;
   if (!term) throw new Error('This saved plan uses a term that is no longer available.');
   const rows = [
-    { label: 'Cover', value: isClaims ? 'Manage My Claims' : 'Comprehensive Warranty' },
+    { label: 'Cover', value: isClaims ? 'Manage My Claim' : 'Comprehensive Warranty' },
     { label: 'Warranty term', value: term.label },
     { label: 'Customer excess', value: gbp(Number(t.excess)) },
     { label: 'Maximum labour rate', value: `${gbp(Number(t.labour))}/hr` },
@@ -38,7 +38,7 @@ export function buildSavedPlanQuote(t: SavedPlanLike) {
       plan: {
         plan_type: 'basic' as const, duration_months: term.months, term_months: term.months,
         retail_price: MANAGE_MY_CLAIMS_MONTHLY_FEE, dealer_price: MANAGE_MY_CLAIMS_MONTHLY_FEE,
-        selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims', term: term.label, excess: Number(t.excess), labour: Number(t.labour), parts: partsLabel, claim: Number(t.claim_limit), add_ons: [], saved_plan: t.name },
+        selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claim', term: term.label, excess: Number(t.excess), labour: Number(t.labour), parts: partsLabel, claim: Number(t.claim_limit), add_ons: [], saved_plan: t.name },
       },
     };
   }

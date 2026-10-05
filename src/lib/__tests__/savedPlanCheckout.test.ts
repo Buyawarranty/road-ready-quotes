@@ -10,7 +10,7 @@ describe('Saved plan checkout', () => {
     assert.deepEqual(q.totals, { net: 118, vat: 23.6, total: 141.6 });
     assert.equal(q.plan.dealer_price, 141.6);
   });
-  it('charges Manage My Claims at £1 a month', () => {
+  it('charges Manage My Claim at £1 a month', () => {
     const q = buildSavedPlanQuote({ ...base, plan_type: 'basic' });
     assert.equal(q.plan.dealer_price, 1);
   });
