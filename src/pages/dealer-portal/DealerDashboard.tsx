@@ -57,7 +57,7 @@ export default function DealerDashboard() {
 
   return <DealerLayout>
     <div className="mx-auto max-w-[1500px] space-y-4">
-      <section className="grid items-center gap-4 rounded-lg border border-crm-line bg-crm-orange-soft p-4 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)]">
+      <section className="grid items-center gap-4 rounded-lg border border-crm-line bg-muted/60 p-4 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)]">
         <div className="min-w-0">
           <p className="mb-1 text-[10px] font-bold text-crm-orange">DEALER PORTAL</p>
           <h1 className="text-xl font-bold leading-tight lg:text-2xl">Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}</h1>
