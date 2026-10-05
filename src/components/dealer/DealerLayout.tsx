@@ -64,7 +64,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
   { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
   { to: '/dealer-portal/analytics', label: 'Reports', icon: BarChart3 },
-  { to: '/faq/traders/', label: 'Resources', icon: BookOpen, trader: true },
   { to: '/dealer-portal/settings/profile', label: 'Settings', icon: Settings, trader: true },
 ];
 
