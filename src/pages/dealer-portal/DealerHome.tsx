@@ -297,13 +297,25 @@ const DealerHome = () => {
         </div>
       </section>
 
-      <section className="home-paperwork" aria-label="We handle the warranty paperwork and admin">
-        <div className="home-shell">
-          <div className="why-paperwork-card">
-            <h2>We do all of the paperwork and admin for you.</h2>
-            <p>We process the whole warranty for you. Just give us the customer details and we do the rest — we send your customer all of their information and documents, and send you your warranty document too.</p>
-            <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
+      <section className="home-plan-section" aria-label="You sell warranties, we process them">
+        <div className="home-shell home-plan-grid">
+          <div>
+            <p className="home-eyebrow">We do the hard work</p>
+            <h2>You Sell Warranties, We Process Them</h2>
+            <ul>
+              {[
+                { icon: FileText, title: 'We Do All of the Paperwork and Admin', body: 'From quote to policy documents, our team handles every bit of paperwork and admin for you.' },
+                { icon: UserCircle2, title: 'You Just Provide the Details', body: 'Give us the customer details and we do the rest, including sending all documents to your customer and you.' },
+                { icon: Zap, title: 'Zero Sales, Leave It to Us', body: 'Leave it to us to do the hard work. You sell warranties, we process them.' },
+              ].map(({ icon: Icon, title, body }) => (
+                <li key={title} className="home-plan-step">
+                  <span className="home-plan-step-icon"><Icon aria-hidden="true" /></span>
+                  <span className="home-plan-step-text"><strong>{title}</strong>{body}</span>
+                </li>
+              ))}
+            </ul>
           </div>
+          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
         </div>
       </section>
 
@@ -466,28 +478,6 @@ const DealerHome = () => {
             </ul>
           </div>
           <div className="home-plan-image"><OptimizedImage src={coveredPartsImage} alt="Panda Protect mascot beside a branded roll-up banner" width={1200} height={800} /></div>
-        </div>
-      </section>
-
-      <section className="home-plan-section" aria-label="You sell warranties, we process them">
-        <div className="home-shell home-plan-grid">
-          <div>
-            <p className="home-eyebrow">We do the hard work</p>
-            <h2>You Sell Warranties, We Process Them</h2>
-            <ul>
-              {[
-                { icon: FileText, title: 'We Do All of the Paperwork and Admin', body: 'From quote to policy documents, our team handles every bit of paperwork and admin for you.' },
-                { icon: UserCircle2, title: 'You Just Provide the Details', body: 'Give us the customer details and we do the rest, including sending all documents to your customer and you.' },
-                { icon: Zap, title: 'Zero Sales, Leave It to Us', body: 'Leave it to us to do the hard work. You sell warranties, we process them.' },
-              ].map(({ icon: Icon, title, body }) => (
-                <li key={title} className="home-plan-step">
-                  <span className="home-plan-step-icon"><Icon aria-hidden="true" /></span>
-                  <span className="home-plan-step-text"><strong>{title}</strong>{body}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="home-plan-image"><OptimizedImage src={pandaSupportImage} alt="Panda Protect mascot beside a support agent at a desk showing the dealer portal" width={1200} height={800} /></div>
         </div>
       </section>
 
