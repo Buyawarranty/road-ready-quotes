@@ -3153,6 +3153,10 @@ img, video { height: auto; }
 .dealer-public-footer ul { display: grid; gap: .38rem; margin: 0; padding: 0; list-style: none; }
 .dealer-public-footer li, .dealer-public-footer a, .dealer-footer-contact p { color: hsl(216 13% 39%); font-size: .68rem; line-height: 1.4; }
 .dealer-public-footer a:hover { color: hsl(19 82% 56%); }
+/* Contact strip stays white on the navy background, overriding the link rules above. */
+.dealer-public-footer .dealer-footer-contact-strip .dealer-footer-strip-action,
+.dealer-public-footer .dealer-footer-contact-strip .dealer-footer-strip-action:hover { color: hsl(0 0% 100%); }
+.dealer-public-footer .dealer-footer-contact-strip .dealer-footer-strip-action svg { color: hsl(0 0% 100%); }
 .dealer-footer-contact { display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; }
 .dealer-footer-contact a, .dealer-footer-contact p { display: flex; align-items: flex-start; gap: .4rem; margin: 0; }
 .dealer-footer-contact svg { width: .8rem; height: .8rem; flex: 0 0 auto; margin-top: .08rem; color: hsl(19 82% 56%); }
