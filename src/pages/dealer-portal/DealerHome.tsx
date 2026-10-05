@@ -34,8 +34,8 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import { supabase } from '@/integrations/supabase/client';
 import twoWaysImage from '@/assets/two-ways-cover-optimized.webp';
 import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
-import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
-const coveredPartsImage = programmeBannerAsset.url;
+import pandaTrustedAsset from '@/assets/panda-trusted-mascot.png.asset.json';
+const pandaTrustedImage = pandaTrustedAsset.url;
 import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
 
 const HOME_FAQS: { q: string; a: string }[] = [
