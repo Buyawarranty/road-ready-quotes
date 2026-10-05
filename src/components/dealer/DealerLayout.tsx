@@ -338,6 +338,14 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
             <p className="text-sm font-bold text-white">Need help?</p>
           </div>
           <p className="mb-3 text-xs leading-relaxed text-white">Our UK team is here to help.</p>
+          <div className="mb-2 space-y-1">
+            <Link
+              to="/faq/traders/"
+              className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-primary-foreground/80 transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+            >
+              <BookOpen className="h-[18px] w-[18px] shrink-0" /> Resources
+            </Link>
+          </div>
           <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-transparent !text-white hover:bg-crm-orange hover:!text-white">
             <a href="mailto:hello@pandaprotect.co.uk" className="text-white">Contact support →</a>
           </Button>
