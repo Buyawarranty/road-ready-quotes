@@ -656,6 +656,25 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
         </div>
       </section>
 
+      {/* We do the paperwork and admin section */}
+      <section className="py-8 md:py-12 bg-[#1B2A4A]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            We do all of the paperwork and admin for you.
+          </h2>
+          <p className="text-white/85 text-base md:text-lg max-w-2xl mx-auto mb-6">
+            We process the whole warranty for you. Give us the customer details and we do the rest — we send your customer all of their information and documents, and send you your warranty document too.
+          </p>
+          <button
+            onClick={scrollToQuoteForm}
+            className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold px-8 py-4 text-lg rounded-lg shadow-lg transition-colors"
+          >
+            Get my quote
+            <ArrowRight className="w-5 h-5" />
+          </button>
+        </div>
+      </section>
+
       {/* Why Choose Our Warranty Plans Section - Lazy Loaded */}
       <LazySection>
         <Suspense fallback={<div className="py-12 md:py-20 bg-white min-h-[400px]" />}>
