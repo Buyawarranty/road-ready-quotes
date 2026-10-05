@@ -10,7 +10,6 @@ import {
   Check,
   ChevronDown,
   FileText,
-  HelpCircle,
   Timer,
   Globe,
   Headphones,
