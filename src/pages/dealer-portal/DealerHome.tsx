@@ -477,9 +477,6 @@ const DealerHome = () => {
               {[
                 { icon: FileText, title: 'One Page PDF Rate Card', body: 'Plan comparison, terms from 3 to 36 months, price examples and your margin story on one printable A4 sheet.' },
                 { icon: Mail, title: 'Trade Email Welcome Pack', body: 'Two to three emails sent automatically after you sign up: how quoting works, how payouts happen and who to call.' },
-                { icon: Leaflet as unknown as string, title: '', body: '' },
-              ]}
-              {[
                 { icon: FileText, title: 'Customer Leaflet Template', body: 'A branded one pager for the car buyer: what is covered, claim limits and our claims number, handed over at the point of sale.' },
                 { icon: MessageCircle, title: 'WhatsApp Quote Explainer', body: 'A short image or GIF showing the flow: send us the reg and customer details, we issue the warranty, the customer gets their documents.' },
                 { icon: HelpCircle, title: 'Objection Cheat Sheet', body: 'One line answers to questions like "I already have a warranty provider" or "Is £1 a month really it", in the same style as our desk cheat sheet.' },
