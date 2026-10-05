@@ -656,6 +656,7 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
         </div>
       </section>
 
+
       {/* Why Choose Our Warranty Plans Section - Lazy Loaded */}
       <LazySection>
         <Suspense fallback={<div className="py-12 md:py-20 bg-white min-h-[400px]" />}>

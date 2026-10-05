@@ -294,6 +294,16 @@ const DealerHome = () => {
         </div>
       </section>
 
+      <section className="home-paperwork" aria-label="We handle the warranty paperwork and admin">
+        <div className="home-shell">
+          <div className="why-paperwork-card">
+            <h2>We do all of the paperwork and admin for you.</h2>
+            <p>We process the whole warranty for you. Just give us the customer details and we do the rest — we send your customer all of their information and documents, and send you your warranty document too.</p>
+            <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
+          </div>
+        </div>
+      </section>
+
       <section className="home-trust-strip" aria-label="Why dealers choose Panda Protect">
         <div className="home-shell home-benefit-row">
           {benefits.map(({ icon: Icon, title }) => (
