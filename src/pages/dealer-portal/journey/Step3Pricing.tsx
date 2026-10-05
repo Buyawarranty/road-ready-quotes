@@ -133,7 +133,7 @@ const Step3Pricing: React.FC = () => {
     setPlan(plan);
     const id = await save({ overridePlan: plan });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
-    if (exit) { toast({ title: ''Quote saved in Quotes' }); }
+    if (exit) { toast({ title: 'Quote saved in Quotes' }); }
     else navigate('/dealer-portal/quote/customer');
   };
   const applyTemplate = (t: DealerQuoteTemplate) => {
