@@ -2845,6 +2845,8 @@ body {
   .public-dealer-home .home-resource-grid { grid-template-columns: 1fr; }
   .public-dealer-home .home-plan-section .home-plan-grid { grid-template-areas: "top" "visual" "footer"; grid-template-rows: none; }
   .public-dealer-home .home-plan-section .home-plan-copy-col { display: contents; }
+  .public-dealer-home .home-plan-section .home-plan-top { grid-area: top; }
+  .public-dealer-home .home-plan-section .home-plan-footer { grid-area: footer; }
   .public-dealer-home .home-plan-section .home-plan-visual { grid-template-columns: 1fr; }
   .public-dealer-home .home-plan-arrow { transform: rotate(90deg); padding: 0.2rem 0; }
   .public-dealer-home .home-story-image,
