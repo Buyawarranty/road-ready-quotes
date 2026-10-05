@@ -260,7 +260,7 @@ const ClaimHandlingPage: React.FC = () => {
     setPlan(plan as never);
     const id = await save({ overridePlan: plan as never });
     if (id) {
-      toast({ title: 'Draft saved' });
+      toast({ title: ''Quote saved' });
       reset();
       navigate('/dealer-portal/quotes');
     }
