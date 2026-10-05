@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -36,7 +36,8 @@ const DealerQuotesList = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { hydrate, reset } = useDealerJourney();
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [page, setPage] = useState(1);
@@ -62,7 +63,9 @@ const DealerQuotesList = () => {
       const matchesSearch =
         !term ||
         q.customer_name?.toLowerCase().includes(term) ||
-        q.vehicle_reg?.toLowerCase().includes(term) ||
+        q.customer_email?.toLowerCase().includes(term) ||
+        q.customer_phone?.toLowerCase().includes(term.replace(/\s+/g, '')) ||
+        q.vehicle_reg?.toLowerCase().includes(term.replace(/\s+/g, '')) ||
         q.vehicle_make?.toLowerCase().includes(term) ||
         q.vehicle_model?.toLowerCase().includes(term);
       const day = String(q.created_at || '').slice(0, 10);

@@ -243,7 +243,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                 onChange={(event) => { setSearchValue(event.target.value); setSearchOpen(true); }}
                 onFocus={() => setSearchOpen(true)}
                 onBlur={() => window.setTimeout(() => setSearchOpen(false), 120)}
-                placeholder="Search registration, customer, quote..."
+                placeholder="Search by name, reg, email or phone..."
                 className="h-10 w-full rounded-md border border-input bg-background pl-10 pr-14 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/30"
               />
               <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-crm-line bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground">⌘ K</kbd>
