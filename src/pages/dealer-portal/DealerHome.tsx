@@ -18,6 +18,7 @@ import {
   Mail,
   MessageCircle,
   Phone,
+  PawPrint,
   PoundSterling,
   Repeat,
   Settings,
