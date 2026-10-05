@@ -6,7 +6,6 @@ import {
   BarChart2,
   BatteryCharging,
   Bike,
-  Calculator,
   Car,
   Check,
   ChevronDown,
