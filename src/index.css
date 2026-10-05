@@ -2648,6 +2648,8 @@ body {
 .public-dealer-home .home-section-heading h2,
 .public-dealer-home .home-story-section h2,
 .public-dealer-home .home-plan-section h2 { margin: 0 0 0.7rem; color: hsl(var(--home-ink)); font-size: clamp(2rem, 3.3vw, 3rem); line-height: 1.05; font-weight: 900; }
+.public-dealer-home .home-plan-section h2.home-plan-heading { margin: 0 0 1.5rem; font-size: clamp(2.4rem, 4.4vw, 3.8rem); }
+.public-dealer-home .home-plan-heading-line { display: block; color: hsl(var(--home-ink)); }
 .public-dealer-home .home-section-heading h2 span { color: hsl(var(--home-orange)); }
 .public-dealer-home .home-section-heading > span,
 .public-dealer-home .home-section-heading > p:not(:first-child) { color: hsl(var(--home-copy)); }

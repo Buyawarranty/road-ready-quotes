@@ -352,9 +352,10 @@ const DealerHome = () => {
           </div>
           <div className="home-plan-copy-col">
           <div className="home-plan-top">
-            <p className="home-eyebrow">You sell the warranty</p>
-            <h2>We Do <span className="home-plan-accent">the Rest.</span></h2>
-            <p className="home-plan-sub">No paperwork. No chasing documents. No extra admin for your team.</p>
+            <h2 className="home-plan-heading">
+              <span className="home-plan-heading-line">You sell the warranty</span>
+              <span className="home-plan-heading-line home-plan-accent">We Do the Rest.</span>
+            </h2>
             <div className="home-plan-copy">
               <p>You simply provide the customer and vehicle details, and Panda Protect handles the entire warranty process for you.</p>
               <p>We process the warranty, send the customer their confirmation, policy information and documents, and send your dealership everything it needs for its records.</p>
