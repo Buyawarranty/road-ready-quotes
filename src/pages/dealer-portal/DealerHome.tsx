@@ -208,9 +208,9 @@ const DealerHome = () => {
       to: '/dealer-portal/full-warranty',
     },
     {
-      title: 'Manage My Claims',
-      subtitle: 'Manage My Claims only — we handle the claim, you pay the repair bill',
-      body: 'Run your own Manage My Claims. You keep full control of pricing and terms — we look after every customer call.',
+      title: 'Manage My Claim',
+      subtitle: 'Manage My Claim only — we handle the claim, you pay the repair bill',
+      body: 'Run your own Manage My Claim. You keep full control of pricing and terms — we look after every customer call.',
       items: ['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1/month per policy'],
       to: '/dealer-portal/claims-handling',
     },
@@ -322,8 +322,8 @@ const DealerHome = () => {
               </article>
               <article>
                 <Headphones aria-hidden="true" />
-                <h3>Manage My Claims</h3>
-                <p>Manage My Claims only — we handle the claim, you pay the repair bill</p>
+                <h3>Manage My Claim</h3>
+                <p>Manage My Claim only — we handle the claim, you pay the repair bill</p>
                 <ul>{serviceRows[1].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
               </article>
             </div>

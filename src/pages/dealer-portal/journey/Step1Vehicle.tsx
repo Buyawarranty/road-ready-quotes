@@ -30,9 +30,9 @@ type SaveState = 'idle' | 'saving' | 'saved';
 const warrantyPlans = [
   {
     key: 'dealer-paid' as const,
-    name: 'Manage My Claims',
+    name: 'Manage My Claim',
     subtitle: 'Only £1 a month',
-    description: 'Manage My Claims only · We handle the claim, you pay the repair bill',
+    description: 'Manage My Claim only · We handle the claim, you pay the repair bill',
     price: '£1/m',
     icon: Headphones,
     badge: null,
@@ -93,7 +93,7 @@ const buildPlan = (selectedPlan: WarrantyPlanKey, termMonths: number): DealerJou
     retail_price: 1,
     dealer_price: 1,
     term_months: termMonths,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claims' },
+    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claim' },
   };
 };
 
@@ -416,7 +416,7 @@ const Step1Vehicle: React.FC = () => {
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-crm-orange-soft text-crm-orange">{isClaims ? <Headphones className="h-4 w-4" /> : <Shield className="h-4 w-4" />}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-bold">{t.name}</span>
-                          <span className="block truncate text-[11px] text-muted-foreground">{isClaims ? 'Manage My Claims' : 'Comprehensive'} · {describeTemplate(t)}</span>
+                          <span className="block truncate text-[11px] text-muted-foreground">{isClaims ? 'Manage My Claim' : 'Comprehensive'} · {describeTemplate(t)}</span>
                         </span>
                         <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </button>

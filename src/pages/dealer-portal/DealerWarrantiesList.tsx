@@ -274,7 +274,7 @@ const DealerWarrantiesList = () => {
                         </TableCell>
                         <TableCell className="text-gray-700 min-w-[190px]">
                           <div className="font-semibold text-gray-900">
-                            {String(w.plan_type).toLowerCase() === 'basic' ? 'Manage My Claims' : 'Comprehensive Warranty'}
+                            {String(w.plan_type).toLowerCase() === 'basic' ? 'Manage My Claim' : 'Comprehensive Warranty'}
                           </div>
                           <div className="mt-1 grid grid-cols-[auto_1fr] gap-x-2 text-xs text-gray-600">
                             <span>Duration</span><span className="font-medium text-gray-800">{w.payment_type ? `${w.payment_type} months` : '—'}</span>

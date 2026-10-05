@@ -13,7 +13,7 @@ interface CoverTypeSwitchProps {
 const options: { key: CoverType; title: string; subtitle: string; target: string }[] = [
   {
     key: 'manage-my-claims',
-    title: 'Manage My Claims',
+    title: 'Manage My Claim',
     subtitle: 'Only £1 a month · We handle the claim, you pay the repair bill',
     target: '/dealer-portal/quote/claim-handling',
   },

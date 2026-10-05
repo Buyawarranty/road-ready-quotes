@@ -367,8 +367,8 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
               <Headphones className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <div className="text-sm sm:text-base font-bold text-gray-900">Manage My Claims</div>
-              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Manage My Claims only · We handle the claim, you pay the repair bill</div>
+              <div className="text-sm sm:text-base font-bold text-gray-900">Manage My Claim</div>
+              <div className="text-[11px] sm:text-xs text-gray-500 mt-0.5">Manage My Claim only · We handle the claim, you pay the repair bill</div>
             </div>
           </div>
           <span className="text-sm sm:text-base font-extrabold text-gray-900 whitespace-nowrap">£{CLAIM_FLAT_GROSS.toFixed(2)}/m</span>
