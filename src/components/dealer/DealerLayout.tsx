@@ -32,6 +32,7 @@ import {
   BookOpen,
   Headphones,
   MoreHorizontal,
+  Ban,
 } from 'lucide-react';
 
 interface DealerLayoutProps {
@@ -60,6 +61,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dealer-portal/warranties', label: 'Warranties', icon: Shield, trader: true },
   { to: '/dealer-portal/claims', label: 'Claims', icon: Wrench, trader: true, matchPaths: ['/dealer-portal/claims'] },
   { to: '/dealer-portal/customers', label: 'Customers', icon: Users, trader: true },
+  { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
   { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
   { to: '/dealer-portal/analytics', label: 'Reports', icon: BarChart3 },
   { to: '/faq/traders/', label: 'Resources', icon: BookOpen, trader: true },
@@ -135,6 +137,11 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
 
   const isActive = (item: NavItem) => {
+    if (item.to.startsWith('/dealer-portal/warranties')) {
+      const cancellations = new URLSearchParams(location.search).get('tab') === 'cancellations';
+      return location.pathname.replace(/\/$/, '') === '/dealer-portal/warranties' &&
+        (item.label === 'Cancellations' ? cancellations : !cancellations);
+    }
     if (location.pathname.replace(/\/$/, '') === item.to.replace(/\/$/, '')) return true;
     if (item.matchPaths?.some((p) => location.pathname.startsWith(p))) return true;
     if (item.to === '/dealer-portal/quotes' && location.pathname === '/dealer-portal/quotes') return true;
@@ -280,6 +287,9 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dealer-portal/settings/profile')}>
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer" onClick={() => navigate('/dealer-portal/warranties?tab=cancellations')}>
+                    <Ban className="h-4 w-4 mr-2" /> Cancellations
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-destructive" onClick={signOut}>

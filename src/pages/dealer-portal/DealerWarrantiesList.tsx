@@ -23,7 +23,9 @@ const ref = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
 
 const DealerWarrantiesList = () => {
   const { dealer } = useDealerAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = ['payments', 'cancellations'].includes(searchParams.get('tab') || '')
+    ? searchParams.get('tab') || 'plans' : 'plans';
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [paying, setPaying] = useState(false);
   const [emailRow, setEmailRow] = useState<DealerPdfRow | null>(null);
@@ -85,6 +87,9 @@ const DealerWarrantiesList = () => {
   });
 
   const isPaid = (r: DealerPdfRow) => r.payment_status === 'paid';
+  const cancellationRows = useMemo(() => rows.filter((r) =>
+    ['cancelled', 'refunded'].includes(String((r as any).status || '').trim().toLowerCase())), [rows]);
+  const visiblePlans = activeTab === 'cancellations' ? cancellationRows : rows;
   const paidRows = useMemo(() => rows.filter(isPaid), [rows]);
   const unpaidRows = useMemo(() => rows.filter((r) => !isPaid(r)), [rows]);
   const unpaidIds = useMemo(() => unpaidRows.map((r) => r.id), [unpaidRows]);
@@ -205,7 +210,14 @@ const DealerWarrantiesList = () => {
         </div>
       )}
 
-      <Tabs defaultValue="plans" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={(tab) => {
+        setSearchParams((previous) => {
+          const next = new URLSearchParams(previous);
+          if (tab === 'plans') next.delete('tab');
+          else next.set('tab', tab);
+          return next;
+        });
+      }} className="space-y-6">
         <TabsList className="bg-white border border-gray-200">
           <TabsTrigger
             value="plans"
@@ -219,14 +231,17 @@ const DealerWarrantiesList = () => {
           >
             Payments ({unpaidIds.length} unpaid)
           </TabsTrigger>
+          <TabsTrigger value="cancellations" className="font-bold text-foreground data-[state=active]:bg-crm-orange data-[state=active]:text-primary-foreground">
+            Cancellations ({cancellationRows.length})
+          </TabsTrigger>
         </TabsList>
 
         {/* PLANS TAB */}
-        <TabsContent value="plans">
+        <TabsContent value={activeTab === 'cancellations' ? 'cancellations' : 'plans'}>
           <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            {rows.length === 0 ? (
+            {visiblePlans.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-12">
-                No plans yet.
+                {activeTab === 'cancellations' ? 'No cancellations yet.' : 'No plans yet.'}
               </p>
             ) : (
               <div className="overflow-x-auto">
@@ -245,7 +260,7 @@ const DealerWarrantiesList = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {rows.map((w) => (
+                    {visiblePlans.map((w) => (
                       <TableRow key={w.id} className="border-gray-200 hover:bg-gray-100">
                         <TableCell className="font-medium text-gray-900">
                           <div>{w.name}</div>

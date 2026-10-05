@@ -1,5 +1,7 @@
 # Architecture rules
 
+- Dealer cancellation navigation reuses the dealer-scoped warranties list via its cancellations tab; status changes remain in the existing admin workflow.
+
 - Customer quote links must use the nested field allowlist in customerQuoteSharing; URLs are readable and must never contain trade prices, margins or customer contact data.
 - Full warranty configuration and approved versus proposed add-ons live in fullWarrantyConfiguration; unapproved commercial recommendations cannot enter the charging calculation.
 - Pending claim limits stay outside live pricing and customer-adjustable matrices; the calculator rejects unapproved limits to prevent fallback pricing.
