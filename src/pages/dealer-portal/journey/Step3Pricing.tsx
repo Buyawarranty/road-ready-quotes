@@ -9,6 +9,7 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
 import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2 } from 'lucide-react';
@@ -18,7 +19,7 @@ const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, plan: savedPlan, setPlan, quoteId } = useDealerJourney();
+  const { vehicle, customer, plan: savedPlan, setPlan, quoteId } = useDealerJourney();
   const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
   const { save, saving } = useDealerQuoteSave(3);
   const { toast } = useToast();
@@ -30,6 +31,9 @@ const Step3Pricing: React.FC = () => {
   const [error, setError] = useState('');
   const [paylink, setPaylink] = useState('');
   const [details, setDetails] = useState(false);
+  const [emailQuote, setEmailQuote] = useState<string | null>(null);
+  const [email, setEmail] = useState(customer?.email || '');
+  const [emailBusy, setEmailBusy] = useState(false);
   const historical = Boolean(savedPlan && term === savedPlan.duration_months);
   const product = config?.terms.find(p => p.months === term);
   const cost = historical && savedPlan ? savedPlan.dealer_price : product?.dealer_price || 0;
@@ -63,7 +67,7 @@ const Step3Pricing: React.FC = () => {
     if (action === 'pay') { url.searchParams.set('pay', id); setPaylink(url.href); return; }
     if (action === 'print') { url.searchParams.set('print', '1'); window.open(url.href, '_blank', 'noopener,noreferrer'); return; }
     const message = customerQuoteMessage(safePayload, url.href);
-    if (action === 'email') window.location.href = `mailto:?subject=${encodeURIComponent(`Panda Protect warranty quote ${vehicle?.reg}`)}&body=${encodeURIComponent(message)}`;
+    if (action === 'email') setEmailQuote(id);
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
   const adjust = (direction: -1 | 1) => { if (!product || !term) return; setPrices(p => ({ ...p, [term]: stepSellingPrice(retail, direction, product) })); };
@@ -116,6 +120,7 @@ const Step3Pricing: React.FC = () => {
     <div className="flex flex-wrap justify-between gap-3 text-xs text-muted-foreground"><p>Including VAT. Subject to vehicle eligibility and policy terms.</p>{trade && <div className="flex gap-3"><Button variant="link" size="sm" disabled={!valid || saving} onClick={() => share('pay')}><Link2 />Customer payment link</Button><Button variant="link" size="sm" onClick={() => navigate('/dealer-portal/quote/claim-handling')}>Manage My Claim</Button></div>}</div>
   </div>
   <Dialog open={exact} onOpenChange={setExact}><DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader><Input aria-label="Exact customer selling price" type="number" step="0.01" min={product?.min_price} max={product?.max_price ?? undefined} value={exactValue} onChange={e => setExactValue(e.target.value)} /><p className="text-xs text-muted-foreground">Including VAT. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
+  <Dialog open={!!emailQuote} onOpenChange={open => !open && setEmailQuote(null)}><DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Email customer quote</DialogTitle></DialogHeader><Input type="email" aria-label="Customer email address" placeholder="Customer email address" value={email} onChange={e => setEmail(e.target.value)} /><Button disabled={emailBusy || !email.includes('@')} onClick={async () => { setEmailBusy(true); const { data, error: sendError } = await supabase.functions.invoke('dealer-quote-email', { body: { quote_id: emailQuote, email } }); setEmailBusy(false); if (sendError || !data?.sent) { toast({ title: data?.error || 'Email could not be sent. Please try again.', variant: 'destructive' }); return; } setEmailQuote(null); toast({ title: 'Customer quote emailed' }); }}>{emailBusy ? 'Sending…' : 'Send quote'}</Button></DialogContent></Dialog>
   <Dialog open={details} onOpenChange={setDetails}><DialogContent><DialogHeader><DialogTitle>Warranty cover details</DialogTitle></DialogHeader><dl className="space-y-3">{summary.map(s => <div key={s.label} className="flex justify-between"><dt>{s.label}</dt><dd className="font-bold">{s.value}</dd></div>)}</dl><p className="text-sm text-muted-foreground">Mechanical and electrical cover is subject to vehicle eligibility, servicing requirements and policy terms. Refer to the full terms for covered components, contributions and exclusions.</p><a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline">Full cover details &amp; exclusions</a></DialogContent></Dialog>
   <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink('')}><DialogContent><DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader><a href={paylink} target="_blank" rel="noopener noreferrer" className="break-all text-sm underline">Open customer quote</a><Button variant="outline" onClick={async () => { await navigator.clipboard.writeText(paylink); toast({ title: 'Payment link copied' }); }}>Copy link</Button><p className="text-sm text-muted-foreground">Your customer pays securely by card. Warranty documents follow confirmation by your dealer.</p></DialogContent></Dialog>
   </DealerLayout>;
