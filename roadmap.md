@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Simplify dealer pricing to annual choices, included cover and one price/action while preserving secondary configuration and sharing tools.
+- [x] Simplify dealer pricing to annual choices, included cover and one price/action while preserving secondary configuration and sharing tools. 31 targeted tests pass and preview compilation is clean; signed-in visual/checkout verification is unavailable with external authentication.
 - [ ] Enable four-year quoting after commercial pricing approval; no approved 48-month price exists yet.
 
 - [x] Update the dealer dashboard to the October reference with compact actions, live operational panels and a date-filtered activity chart. Four calculation tests pass; desktop/tablet/mobile layout tested in isolation. Actual dealer data verification is blocked by external authentication.
