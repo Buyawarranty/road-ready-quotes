@@ -34,7 +34,7 @@ Deno.serve(async (req: Request) => {
     const adminClient = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: quote, error } = await adminClient
       .from('dealer_quotes')
-      .select('id, dealer_id, plan_type, vehicle_reg, vehicle_make, vehicle_model, retail_price, status')
+      .select('id, dealer_id, plan_type, vehicle_reg, vehicle_make, vehicle_model, retail_price, status, warranty_duration')
       .eq('id', quote_id)
       .maybeSingle();
 
@@ -43,6 +43,7 @@ Deno.serve(async (req: Request) => {
         status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+    if (Number(quote.warranty_duration) === 48) return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     const amount = Math.round(Number(quote.retail_price) * 100);
     if (!Number.isFinite(amount) || amount <= 0) {
       return new Response(JSON.stringify({ error: 'This quote has no payable amount.' }), {

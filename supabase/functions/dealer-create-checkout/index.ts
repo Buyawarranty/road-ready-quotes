@@ -3,6 +3,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
+import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,9 +37,12 @@ interface PlanPayload {
   claim_limit?: number;
   excess?: number;
   labour_rate?: number;
+  product_id?: string;
+  pricing_version?: string;
 }
 
 interface RequestBody {
+  quote_id?: string;
   dealer_id: string;
   payment_method: 'pay_now' | 'invoice' | 'worldpay';
   vehicle: VehiclePayload;
@@ -105,6 +109,17 @@ Deno.serve(async (req: Request) => {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    if (plan.pricing_version === 'annual-v1') {
+      const { data: config } = await adminClient.from('dealer_admin_plans').select('pricing_matrix')
+        .eq('id', plan.product_id || '').eq('is_active', true).single();
+      const matrix = config?.pricing_matrix;
+      const product = matrix?.brand === 'pandaprotect' ? matrix.terms?.find((p: { months: number }) => p.months === plan.duration_months) : undefined;
+      const validation = validateAnnualPlan(plan, product);
+      if (validation) return new Response(JSON.stringify({ error: validation }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    } else if (plan.duration_months === 48) {
+      return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Build the customer row payload (shared by both paths)
