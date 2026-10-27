@@ -21,7 +21,7 @@ export function useDealerDashboard(dealerId?: string) {
       const events: DashboardEvent[] = [
         ...(quotes.data || []).map(row => ({ id: `quote-${row.id}`, date: row.created_at, series: 'Quotes' as const, title: 'Quote created', detail: [row.vehicle_reg, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' · '), to: `/dealer-portal/quotes?search=${encodeURIComponent(row.vehicle_reg)}` })),
         ...warranties.map(row => ({ id: `warranty-${row.id}`, date: row.signup_date, series: 'Warranties' as const, title: 'Warranty added', detail: [row.registration_plate, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' · '), to: '/dealer-portal/warranties' })),
-        ...(claims.data || []).map(row => ({ id: `claim-${row.id}`, date: row.created_at, series: 'Claims' as const, title: 'Claim submitted', detail: [row.registration_plate, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' · '), to: '/dealer-portal/claims' })),
+        ...(claims.data || []).map(row => ({ id: `claim-${row.id}`, date: row.created_at, series: 'Claims' as const, title: 'Claim submitted', detail: [row.registration_plate, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' · '), to: '/dealer-portal/dashboard' })),
         ...records.map(row => ({ id: `customer-${row.id}`, date: row.created_at, series: 'Customers' as const, title: 'Customer added', detail: row.name, to: '/dealer-portal/customers' })),
       ];
       return { quotes: quotes.data || [], customers: records, warranties, claims: claims.data || [], events: events.sort((a, b) => b.date.localeCompare(a.date)) };

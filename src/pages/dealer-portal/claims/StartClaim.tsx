@@ -314,7 +314,7 @@ const StartClaim: React.FC = () => {
 
   const goBack = () => {
     if (step === 1) {
-      navigate('/dealer-portal/claims');
+      navigate('/dealer-portal/dashboard');
       return;
     }
     setErrors({});
@@ -380,9 +380,6 @@ const StartClaim: React.FC = () => {
             <p className="text-sm text-gray-600 mt-1">Submit a warranty claim for one of your customers.</p>
             <p className="text-xs text-gray-400">Takes about 3 minutes.</p>
           </div>
-          <Button variant="outline" onClick={() => navigate('/dealer-portal/claims')} className="w-full sm:w-auto">
-            View existing claims
-          </Button>
         </div>
 
         {/* Availability */}
@@ -801,7 +798,7 @@ const StartClaim: React.FC = () => {
             <span className="text-gray-500">Reference: </span>
             <span className="font-bold text-gray-900">{reference}</span>
           </div>
-          <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white" onClick={() => navigate('/dealer-portal/claims')}>
+          <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white" onClick={() => navigate('/dealer-portal/dashboard')}>
             Done
           </Button>
         </DialogContent>

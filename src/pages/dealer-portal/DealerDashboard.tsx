@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, startOfMonth, subMonths } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { FilePlus, FileText, Shield, ArrowRight, Users, Wrench, ChevronRight, TrendingUp, TrendingDown, AlertCircle, BookOpen, BarChart3, Headphones, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { FilePlus, FileText, Shield, ArrowRight, Users, ChevronRight, TrendingUp, TrendingDown, AlertCircle, BookOpen, BarChart3, Headphones, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { DealerDateFilter } from '@/components/dealer/DealerDateFilter';
 import { Button } from '@/components/ui/button';
@@ -12,13 +12,14 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerDashboard } from '@/hooks/useDealerDashboard';
 import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 
-const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Claims: '/dealer-portal/claims', Customers: '/dealer-portal/customers' };
+const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers' };
 const series = [
   { key: 'Quotes', label: 'Total quotes', icon: FileText, tone: 'bg-crm-blue-soft text-crm-blue', colour: 'hsl(var(--crm-blue))' },
   { key: 'Warranties', label: 'Active warranties', icon: Shield, tone: 'bg-crm-green-soft text-crm-green', colour: 'hsl(var(--crm-green))' },
   { key: 'Claims', label: 'Open claims', icon: AlertCircle, tone: 'bg-crm-orange-soft text-crm-orange', colour: 'hsl(var(--crm-orange))' },
   { key: 'Customers', label: 'Customers', icon: Users, tone: 'bg-crm-purple-soft text-crm-purple', colour: 'hsl(var(--crm-purple))' },
 ] as const;
+const kpiSeries = series.filter(item => item.key !== 'Claims');
 const statusTone = (status: string) => ['paid', 'sent', 'quoted', 'completed'].includes(status.toLowerCase()) ? 'bg-crm-green-soft text-crm-green' : status.toLowerCase() === 'draft' ? 'bg-crm-blue-soft text-crm-blue' : 'bg-crm-amber-soft text-crm-amber';
 const money = (value: number) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(value);
 
@@ -31,10 +32,8 @@ export default function DealerDashboard() {
   const quotes = data?.quotes || [];
   const customers = data?.customers || [];
   const warranties = data?.warranties || [];
-  const claims = data?.claims || [];
   const active = warranties.filter(row => row.status.toLowerCase() === 'active');
-  const openClaims = claims.filter(row => !['closed', 'declined', 'paid'].includes(row.status.toLowerCase()));
-  const counts = { Quotes: quotes.length, Warranties: active.length, Claims: openClaims.length, Customers: customers.length };
+  const counts = { Quotes: quotes.length, Warranties: active.length, Claims: (data?.claims || []).filter(row => !['closed', 'declined', 'paid'].includes(row.status.toLowerCase())).length, Customers: customers.length };
   const events = data?.events || [];
   const chart = useMemo(() => {
     const earliest = data?.events.at(-1)?.date;
@@ -42,14 +41,12 @@ export default function DealerDashboard() {
   }, [data, range]);
   const attention = [
     { title: 'Quotes awaiting action', detail: 'Saved drafts and pending quotes', count: quotes.filter(row => ['draft', 'pending'].includes(row.status.toLowerCase())).length, icon: FileText, tone: 'bg-crm-orange-soft text-crm-orange', to: routes.Quotes },
-    { title: 'Claims need information', detail: 'Customer information required', count: claims.filter(row => row.status === 'information_required').length, icon: AlertCircle, tone: 'bg-crm-amber-soft text-crm-amber', to: routes.Claims },
     { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(row => row.payment_status !== 'paid').length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Warranties },
   ];
   const actions = [
     { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/vehicle', primary: true },
     { title: 'Quick quote', detail: 'Choose cover and get a price', icon: FileText, to: '/dealer-portal/quote/vehicle' },
     { title: 'View warranties', detail: 'Dealer-issued policies', icon: Shield, to: routes.Warranties },
-    { title: 'Claims', detail: 'Submit & track claims', icon: Wrench, to: routes.Claims },
   ];
   const viewAll = (to: string) => <Button variant="link" className="h-auto gap-1 p-0 text-xs text-crm-orange" onClick={() => navigate(to)}>View all <ArrowRight className="h-3 w-3" /></Button>;
   const panel = 'crm-panel-shadow min-w-0 rounded-lg border border-crm-line bg-card';
@@ -61,7 +58,7 @@ export default function DealerDashboard() {
         <div className="min-w-0">
           <p className="mb-1 text-[10px] font-bold text-crm-orange">DEALER PORTAL</p>
           <h1 className="text-xl font-bold leading-tight lg:text-2xl">Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}</h1>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties, check claims and more — all in one place.</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
         </div>
         <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`); }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
@@ -77,8 +74,8 @@ export default function DealerDashboard() {
       </section>
 
       {isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-md border border-crm-line bg-card p-3 text-sm"><span>Dealership figures could not be loaded.</span><Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="mr-2 h-4 w-4" />Try again</Button></div>}
-      <section aria-label="Dealership overview" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        {series.map(item => {
+      <section aria-label="Dealership overview" className="grid grid-cols-2 gap-3 xl:grid-cols-3">
+        {kpiSeries.map(item => {
           const change = monthChange(events.filter(event => event.series === item.key).map(event => event.date));
           const Trend = change !== null && change < 0 ? TrendingDown : TrendingUp;
           return <Button key={item.key} variant="outline" onClick={() => navigate(routes[item.key])} className={`${panel} h-auto justify-start gap-3 whitespace-normal p-3 text-left hover:border-crm-orange hover:bg-card sm:p-4`}>
@@ -89,7 +86,7 @@ export default function DealerDashboard() {
         })}
       </section>
 
-      <section><h2 className="mb-2 text-sm font-bold">Quick actions</h2><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <section><h2 className="mb-2 text-sm font-bold">Quick actions</h2><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {actions.map(action => <Button key={action.title} variant={action.primary ? 'default' : 'outline'} className={`h-[76px] justify-start gap-3 whitespace-normal p-3 text-left ${action.primary ? 'text-primary-foreground' : 'border-crm-line bg-card'}`} onClick={() => navigate(action.to)}>
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${action.primary ? 'bg-primary-foreground/10' : 'bg-crm-orange-soft text-crm-orange'}`}><action.icon className="h-5 w-5" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-bold">{action.title}</span><span className={`mt-1 block text-[11px] font-normal leading-snug ${action.primary ? 'text-primary-foreground' : 'text-muted-foreground'}`}>{action.detail}</span></span><ChevronRight className="h-4 w-4 shrink-0" />
         </Button>)}
