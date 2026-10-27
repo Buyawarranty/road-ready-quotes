@@ -10,7 +10,7 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { annualProductActive, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
+import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
 import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2 } from 'lucide-react';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
@@ -25,7 +25,7 @@ const Step3Pricing: React.FC = () => {
   const { toast } = useToast();
   const [view, setView] = useState<'trade' | 'customer'>('trade');
   const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || null);
-  const [prices, setPrices] = useState<Record<string, number>>(() => ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price } : {}) }));
+  const [prices, setPrices] = useState<Record<string, number>>(() => isAnnualQuoteSnapshot(savedPlan?.selected_options) ? ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price } : {}) }) : {});
   const [exact, setExact] = useState(false);
   const [exactValue, setExactValue] = useState('');
   const [error, setError] = useState('');
@@ -34,7 +34,7 @@ const Step3Pricing: React.FC = () => {
   const [emailQuote, setEmailQuote] = useState<string | null>(null);
   const [email, setEmail] = useState(customer?.email || '');
   const [emailBusy, setEmailBusy] = useState(false);
-  const historical = Boolean(savedPlan && term === savedPlan.duration_months);
+  const historical = Boolean(savedPlan && isAnnualQuoteSnapshot(savedPlan.selected_options) && term === savedPlan.duration_months);
   const product = config?.terms.find(p => p.months === term);
   const cost = historical && savedPlan ? savedPlan.dealer_price : product?.dealer_price || 0;
   const retail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
@@ -73,10 +73,10 @@ const Step3Pricing: React.FC = () => {
   const adjust = (direction: -1 | 1) => { if (!product || !term) return; setPrices(p => ({ ...p, [term]: stepSellingPrice(retail, direction, product) })); };
   if (savedPlan?.selected_options?.warranty_type === 'dealer-paid') return <Navigate to="/dealer-portal/quote/claim-handling" replace />;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
-  return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-4 pb-6 text-crm-navy">
-    <header className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-      <div><h1 className="text-3xl font-bold">Choose your warranty</h1><p className="mt-1 text-muted-foreground">Select how many years of cover you want.</p></div>
-      <div className="flex flex-wrap items-center gap-4 rounded-lg border border-crm-line bg-card px-4 py-3">
+  return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-5 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
+    <header className="grid items-center gap-4 min-[1100px]:grid-cols-[1fr_auto]">
+      <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Select how many years of cover you want.</p></div>
+      <div className="flex flex-wrap items-center gap-3 border-b border-crm-line py-3 min-[1100px]:border-0 min-[1100px]:py-0">
         <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
         <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage != null ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
         {trade && <Button variant="outline" size="sm" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil />Change vehicle</Button>}
@@ -91,10 +91,10 @@ const Step3Pricing: React.FC = () => {
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" role="group" aria-label="Warranty duration">
       {[12, 24, 36, 48].map(months => {
         const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
-        const cardCost = savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
+        const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
         const cardRetail = prices[months] ?? p?.retail_price;
         return <Button key={months} variant="outline" disabled={!available} aria-pressed={term === months} onClick={() => { setTerm(months); setError(''); }} className={`relative flex h-auto min-h-44 flex-col items-stretch justify-start whitespace-normal rounded-lg border !bg-card p-4 text-left !text-crm-navy hover:!bg-card hover:!text-crm-navy lg:p-5 ${term === months ? 'border-crm-orange ring-1 ring-crm-orange' : 'border-crm-line'} disabled:opacity-60`}>
-          <span className="flex items-center justify-between gap-2 text-xl font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'}{term === months ? <Check className="text-crm-green" /> : <Circle className="text-muted-foreground" />}</span>
+          <span className="flex items-center justify-between gap-2 text-lg font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'}{term === months ? <Check className="h-4 w-4 text-crm-green" /> : <Circle className="h-4 w-4 text-muted-foreground" />}</span>
           <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">Warranty cover</span>
           <strong className="mt-3 text-3xl">{(trade ? cardCost : cardRetail) != null ? gbp((trade ? cardCost : cardRetail) || 0) : '—'}</strong>
           <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">{trade ? 'Your cost' : 'Customer price'} · inc. VAT</span>
@@ -105,7 +105,7 @@ const Step3Pricing: React.FC = () => {
     </div>
     {cover && <section className="border-y border-crm-line bg-card px-4 py-4" aria-label="Included warranty benefits">
       <div className="mb-4 flex flex-wrap justify-between gap-2"><h2 className="!text-base !leading-6 font-bold text-crm-navy">Every warranty includes</h2><Button variant="link" size="sm" className="h-auto p-0 text-crm-navy" onClick={() => setDetails(true)}>View full cover details &amp; exclusions<ArrowRight /></Button></div>
-      <div className="grid gap-5 sm:grid-cols-3">{[{ icon: ShieldCheck, title: `${gbp(cover.excess)} excess`, text: 'Policy excess on eligible claims.' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour labour`, text: `Covered labour up to ${gbp(cover.labour)} per hour.` }, { icon: FileText, title: `${gbp(cover.claim)} per eligible claim`, text: 'Subject to policy terms.' }].map(b => <div key={b.title} className="flex items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-6 w-6" /></span><div><h3 className="text-sm font-bold">{b.title}</h3><p className="mt-1 text-xs text-muted-foreground">{b.text}</p></div></div>)}</div>
+      <div className="grid gap-4 sm:grid-cols-3">{[{ icon: ShieldCheck, title: `${gbp(cover.excess)} excess`, text: 'Policy excess on eligible claims.' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour labour`, text: `Covered labour up to ${gbp(cover.labour)} per hour.` }, { icon: FileText, title: `${gbp(cover.claim)} per eligible claim`, text: 'Subject to policy terms.' }].map(b => <div key={b.title} className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><div className="min-w-0"><h3 className="font-bold">{b.title}</h3><p className="mt-1 text-xs leading-4 text-muted-foreground">{b.text}</p></div></div>)}</div>
     </section>}
     {trade && <section className="flex flex-wrap items-center justify-between gap-4 border-y border-crm-line bg-card px-4 py-4" aria-label="Selling price adjustment">
       <div><h2 className="!text-base !leading-6 font-bold text-crm-navy">Customer selling price</h2><p className="mt-1 text-xs text-muted-foreground">Adjust the price in £100 steps.</p></div>
