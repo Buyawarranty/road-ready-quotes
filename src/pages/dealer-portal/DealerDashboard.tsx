@@ -33,7 +33,7 @@ export default function DealerDashboard() {
   const customers = data?.customers || [];
   const warranties = data?.warranties || [];
   const active = warranties.filter(row => row.status.toLowerCase() === 'active');
-  const counts = { Quotes: quotes.length, Warranties: active.length, Customers: customers.length };
+  const counts = { Quotes: quotes.length, Warranties: active.length, Claims: (data?.claims || []).filter(row => !['closed', 'declined', 'paid'].includes(row.status.toLowerCase())).length, Customers: customers.length };
   const events = data?.events || [];
   const chart = useMemo(() => {
     const earliest = data?.events.at(-1)?.date;
