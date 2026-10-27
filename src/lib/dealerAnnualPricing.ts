@@ -19,3 +19,7 @@ export function stepSellingPrice(amount: number, direction: -1 | 1, product: Ann
 }
 export const potentialProfit = (retail: number, cost: number) => (priceInPence(retail) - priceInPence(cost)) / 100;
 export const annualProductActive = (product: AnnualWarrantyProduct) => product.active && (product.months !== 48 || product.approvals_complete === true);
+
+export function isAnnualQuoteSnapshot(options: Record<string, unknown> | null | undefined) {
+  return options?.price_basis === 'annual-product' && typeof options.product_id === 'string' && typeof options.pricing_version === 'string';
+}
