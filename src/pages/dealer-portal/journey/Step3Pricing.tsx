@@ -83,8 +83,8 @@ const Step3Pricing: React.FC = () => {
       </div>
     </header>
     <div className="grid max-w-lg grid-cols-2 gap-3" role="group" aria-label="Quote view">
-      <Button variant="outline" aria-pressed={trade} onClick={() => setView('trade')} className={`h-12 justify-start ${trade ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground' : 'border-crm-line bg-card'}`}><Store />Trade View</Button>
-      <Button variant="outline" aria-pressed={!trade} onClick={() => setView('customer')} className={`h-12 justify-start ${!trade ? 'border-crm-orange bg-crm-orange text-primary-foreground hover:bg-crm-orange/90 hover:text-primary-foreground' : 'border-crm-line bg-card'}`}><Eye />Customer View</Button>
+      <Button variant="outline" aria-pressed={trade} onClick={() => setView('trade')} className={`h-12 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />Trade View</Button>
+      <Button variant="outline" aria-pressed={!trade} onClick={() => setView('customer')} className={`h-12 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />Customer View</Button>
     </div>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex items-center gap-3 text-destructive">Warranty prices are unavailable.<Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}

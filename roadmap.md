@@ -1,9 +1,10 @@
 # Roadmap
-- [ ] Match final pricing mockup with safe Trade/Customer views, annual price cards, fixed cover and £100 selling-price controls.
-- [ ] Connect requested annual prices to existing backend product management and prepare inactive 48-month product.
-- [ ] Verify pricing rules, customer privacy, saved quote preservation and live journey where authentication permits.
+- [x] Match final pricing mockup with safe Trade/Customer views, annual price cards, fixed cover and £100 selling-price controls.
+- [x] Store requested annual prices in a Panda-only backend product and prepare inactive 48-month product.
+- [x] Verify pricing rules and customer privacy: 22 tests pass; isolated desktop/mobile interactions pass and compilation is clean.
+- [ ] Verify live signed-in quote, email and Stripe flows; external authentication is unavailable for automated checks.
 - [x] Simplify dealer pricing to annual choices, included cover and one price/action while preserving secondary configuration and sharing tools. 31 targeted tests pass and preview compilation is clean; signed-in visual/checkout verification is unavailable with external authentication.
-- [ ] Enable four-year quoting after commercial pricing approval; no approved 48-month price exists yet.
+- [ ] Enable four-year quoting after eligibility, contractual cover and commercial approvals are complete; the supplied £400/£1,400 prices are stored but inactive.
 
 - [x] Update the dealer dashboard to the October reference with compact actions, live operational panels and a date-filtered activity chart. Four calculation tests pass; desktop/tablet/mobile layout tested in isolation. Actual dealer data verification is blocked by external authentication.
 
