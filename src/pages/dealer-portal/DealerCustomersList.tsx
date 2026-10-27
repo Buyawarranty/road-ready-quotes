@@ -544,18 +544,7 @@ const CustomerDetailDrawer = ({
                               <p className="font-mono text-sm font-black text-gray-900">{claim.claim_reference || '—'}</p>
                               <p className="text-xs text-gray-500">Submitted: {formatDate(claim.created_at)}</p>
                             </div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Badge className={cn('border', claimStatusClass(statusLabel))}>{statusLabel}</Badge>
-                              {statusLabel === 'Information required' ? (
-                                <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/claims')}>
-                                  <Upload className="mr-1 h-3.5 w-3.5" /> Provide information
-                                </Button>
-                              ) : (
-                                <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/claims')}>
-                                  <Eye className="mr-1 h-3.5 w-3.5" /> View claim
-                                </Button>
-                              )}
-                            </div>
+                            <Badge className={cn('border', claimStatusClass(statusLabel))}>{statusLabel}</Badge>
                           </div>
                           {statusLabel === 'Information required' && (
                             <p className="mt-2 text-sm text-amber-700">
