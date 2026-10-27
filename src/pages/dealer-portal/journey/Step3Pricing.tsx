@@ -93,22 +93,22 @@ const Step3Pricing: React.FC = () => {
         const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
         const cardCost = savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
         const cardRetail = prices[months] ?? p?.retail_price;
-        return <Button key={months} variant="outline" disabled={!available} aria-pressed={term === months} onClick={() => { setTerm(months); setError(''); }} className={`relative flex h-auto min-h-48 flex-col items-stretch justify-start whitespace-normal rounded-lg border bg-card p-4 text-left hover:bg-card lg:p-5 ${term === months ? 'border-crm-orange ring-1 ring-crm-orange' : 'border-crm-line'} disabled:opacity-60`}>
+        return <Button key={months} variant="outline" disabled={!available} aria-pressed={term === months} onClick={() => { setTerm(months); setError(''); }} className={`relative flex h-auto min-h-44 flex-col items-stretch justify-start whitespace-normal rounded-lg border !bg-card p-4 text-left !text-crm-navy hover:!bg-card hover:!text-crm-navy lg:p-5 ${term === months ? 'border-crm-orange ring-1 ring-crm-orange' : 'border-crm-line'} disabled:opacity-60`}>
           <span className="flex items-center justify-between gap-2 text-xl font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'}{term === months ? <Check className="text-crm-green" /> : <Circle className="text-muted-foreground" />}</span>
-          <span className="mt-1 text-xs font-normal text-muted-foreground">Warranty cover</span>
+          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">Warranty cover</span>
           <strong className="mt-3 text-3xl">{(trade ? cardCost : cardRetail) != null ? gbp((trade ? cardCost : cardRetail) || 0) : '—'}</strong>
-          <span className="mt-1 text-xs font-normal text-muted-foreground">{trade ? 'Your cost' : 'Customer price'} · inc. VAT</span>
+          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">{trade ? 'Your cost' : 'Customer price'} · inc. VAT</span>
           {trade && cardRetail != null && cardCost != null && <span className="mt-3 border-t border-crm-line pt-2 text-xs font-normal text-crm-green">Potential profit<strong className="mt-1 block text-xl">{gbp(potentialProfit(cardRetail, cardCost))}</strong></span>}
           {!available && <span className="mt-2 text-xs font-normal">{months === 48 ? 'Pending approval' : 'Unavailable'}</span>}
         </Button>;
       })}
     </div>
     {cover && <section className="border-y border-crm-line bg-card px-4 py-4" aria-label="Included warranty benefits">
-      <div className="mb-4 flex flex-wrap justify-between gap-2"><h2 className="font-bold">Every warranty includes</h2><Button variant="link" size="sm" className="h-auto p-0 text-crm-navy" onClick={() => setDetails(true)}>View full cover details &amp; exclusions<ArrowRight /></Button></div>
+      <div className="mb-4 flex flex-wrap justify-between gap-2"><h2 className="!text-base !leading-6 font-bold text-crm-navy">Every warranty includes</h2><Button variant="link" size="sm" className="h-auto p-0 text-crm-navy" onClick={() => setDetails(true)}>View full cover details &amp; exclusions<ArrowRight /></Button></div>
       <div className="grid gap-5 sm:grid-cols-3">{[{ icon: ShieldCheck, title: `${gbp(cover.excess)} excess`, text: 'Policy excess on eligible claims.' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour labour`, text: `Covered labour up to ${gbp(cover.labour)} per hour.` }, { icon: FileText, title: `${gbp(cover.claim)} per eligible claim`, text: 'Subject to policy terms.' }].map(b => <div key={b.title} className="flex items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-6 w-6" /></span><div><h3 className="text-sm font-bold">{b.title}</h3><p className="mt-1 text-xs text-muted-foreground">{b.text}</p></div></div>)}</div>
     </section>}
     {trade && <section className="flex flex-wrap items-center justify-between gap-4 border-y border-crm-line bg-card px-4 py-4" aria-label="Selling price adjustment">
-      <div><h2 className="font-bold">Customer selling price</h2><p className="mt-1 text-xs text-muted-foreground">Adjust the price in £100 steps.</p></div>
+      <div><h2 className="!text-base !leading-6 font-bold text-crm-navy">Customer selling price</h2><p className="mt-1 text-xs text-muted-foreground">Adjust the price in £100 steps.</p></div>
       <div className="flex items-center gap-3"><Button variant="secondary" size="icon" className="h-12 w-12" aria-label="Decrease selling price by £100" disabled={!product || stepSellingPrice(retail, -1, product) === retail} onClick={() => adjust(-1)}><Minus /></Button><strong className="min-w-28 text-center text-2xl">{term ? gbp(retail) : '—'}</strong><Button variant="secondary" size="icon" className="h-12 w-12" aria-label="Increase selling price by £100" disabled={!product || stepSellingPrice(retail, 1, product) === retail} onClick={() => adjust(1)}><Plus /></Button></div>
       <div className="flex gap-2"><Button variant="outline" disabled={!product} onClick={() => { setExactValue(String(retail)); setExact(true); }}><Pencil />Enter exact price</Button><Button variant="outline" disabled={!product || !term} onClick={() => { if (product && term) setPrices(p => ({ ...p, [term]: product.retail_price })); }}><RotateCcw />Reset</Button></div>
     </section>}
