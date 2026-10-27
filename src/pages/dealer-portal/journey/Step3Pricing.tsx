@@ -1,237 +1,128 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import CoverTypeSwitch from '@/components/dealer/journey/CoverTypeSwitch';
-
 import { DealerLayout } from '@/components/dealer/DealerLayout';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { useDealerAuth } from '@/hooks/useDealerAuth';
-import { useToast } from '@/hooks/use-toast';
-import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { useDealerQuoteTemplates, type DealerQuoteTemplate } from '@/hooks/useDealerQuoteTemplates';
-import SaveQuoteTemplateButton from '@/components/dealer/journey/SaveQuoteTemplateButton';
-import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
-import { warrantyTerms, warrantyExcess, warrantyLabour, warrantyParts, warrantyClaims, pendingWarrantyClaims, liveWarrantyAddOns, calculateFullWarranty, warrantyPriceWithVat } from '@/lib/fullWarrantyConfiguration';
-import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { marginSellingPrice } from '@/lib/customerSellingPrice';
-import { dealerQuoteEconomics } from '@/lib/dealerQuoteEconomics';
-import { dealerQuickWarrantyTerms } from '@/lib/dealerQuickWarrantyTerms';
-import { ArrowRight, Calendar, Check, ChevronDown, ClipboardList, Coins, Copy, Eye, Headphones, Layers, Link2, Mail, MessageCircle, Pencil, Printer, Plus, Settings, ShieldCheck, Wrench, X, Tag, Circle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-
-const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP' });
-const included = ['Comprehensive mechanical & electrical cover', 'UK claims support'];
+import { useDealerJourney, type DealerJourneyPlan } from '@/contexts/DealerJourneyContext';
+import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
+import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { annualProductActive, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
+import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
+import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2 } from 'lucide-react';
+const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, plan: savedPlan, setPlan } = useDealerJourney();
-  const { toast } = useToast();
+  const { vehicle, customer, plan: savedPlan, setPlan, quoteId } = useDealerJourney();
+  const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
   const { save, saving } = useDealerQuoteSave(3);
-  const { templates, reload, deleteTemplate } = useDealerQuoteTemplates();
-  const old = savedPlan?.selected_options || {};
-  const initialTerm = warrantyTerms.find(t => t.months === savedPlan?.duration_months)?.value || '12';
-  const [term, setTerm] = useState(initialTerm);
-  const [excess, setExcess] = useState(String(old.excess ?? 50));
-  const [labour, setLabour] = useState(warrantyLabour.some(o => o.value === String(old.labour)) ? String(old.labour) : '70');
-  const [parts, setParts] = useState(old.parts_key || (String(old.parts).includes('100%') || old.parts === 'No contribution' ? 'none' : 'age-mileage'));
-  const [claim, setClaim] = useState(warrantyClaims.some(o => o.value === String(old.claim)) ? String(old.claim) : '1000');
-  const [selectedAddOns, setSelectedAddOns] = useState<string[]>(Array.isArray(old.add_ons) ? old.add_ons.filter((key: string) => liveWarrantyAddOns.some(a => a.key === key)) : []);
-  const [priceMode, setPriceMode] = useState<'recommended' | 'custom' | 'margin'>(old.customer_price_mode || 'recommended');
-  const [customPrice, setCustomPrice] = useState(String(old.customer_price ?? ''));
-  const [margin, setMargin] = useState(String(old.customer_margin ?? 20));
-  const [quoteMode, setQuoteMode] = useState<'fixed' | 'adjustable'>('fixed');
-  const [coverType, setCoverType] = useState<'comprehensive' | 'manage-my-claims'>('comprehensive');
-  const [extrasOpen, setExtrasOpen] = useState(false);
-  const [savedPlansOpen, setSavedPlansOpen] = useState(false);
-  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const { toast } = useToast();
+  const [view, setView] = useState<'trade' | 'customer'>('trade');
+  const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || null);
+  const [prices, setPrices] = useState<Record<string, number>>(() => ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price } : {}) }));
+  const [exact, setExact] = useState(false);
+  const [exactValue, setExactValue] = useState('');
   const [error, setError] = useState('');
-  const managed = coverType === 'manage-my-claims';
-  const [paylink, setPaylink] = useState<string | null>(null);
-  const [paylinkBusy, setPaylinkBusy] = useState(false);
-  const termOption = warrantyTerms.find(o => o.value === term) ?? warrantyTerms[2];
-  const partsOption = warrantyParts.find(o => o.value === parts) ?? warrantyParts[0];
-  const pricing = useMemo(() => calculateFullWarranty(excess, labour, parts, claim, selectedAddOns), [excess, labour, parts, claim, selectedAddOns]);
-  const chosenPrice = priceMode === 'recommended' ? pricing.recommended : priceMode === 'margin' ? marginSellingPrice(pricing.wholesale * 1.2, Number(margin)) / 1.2 : Number(customPrice);
-  const dealerTotals = warrantyPriceWithVat(pricing.wholesale);
-  const customerTotals = warrantyPriceWithVat(chosenPrice);
-  const validPrice = managed || (Number.isFinite(chosenPrice) && chosenPrice > 0);
-  const economics = dealerQuoteEconomics(pricing.wholesale, chosenPrice);
-  const managedFeeExVat = termOption.months * 1;
-  const managedFeeVat = +(managedFeeExVat * 0.2).toFixed(2);
-  const managedFeeTotal = +(managedFeeExVat + managedFeeVat).toFixed(2);
-  const summary = [
-    { label: 'Warranty term', value: termOption.label },
-    { label: 'Customer excess', value: gbp(Number(excess)) },
-    { label: 'Labour rate', value: `${gbp(Number(labour))}/hr` },
-    { label: 'Parts contribution', value: partsOption.label },
-    { label: 'Claim limit per repair', value: gbp(Number(claim)) },
-  ];
-  const customerPayload: CustomerQuotePayload = {
-    vehicle, coverTitle: managed ? 'Manage My Claim' : 'Comprehensive Warranty', coverSubtitle: 'Warranty quotation', price: managed ? managedFeeTotal : customerTotals.total, priceSuffix: managed ? `for ${termOption.label} including VAT (£1 a month)` : '', specs: summary,
-    included: managed ? ['Panda Protect manages the claims process', 'Your dealership funds approved repairs', 'UK claims support'] : [...included, ...liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label)], dealerName: dealer?.company_name,
+  const [paylink, setPaylink] = useState('');
+  const [details, setDetails] = useState(false);
+  const [emailQuote, setEmailQuote] = useState<string | null>(null);
+  const [email, setEmail] = useState(customer?.email || '');
+  const [emailBusy, setEmailBusy] = useState(false);
+  const historical = Boolean(savedPlan && term === savedPlan.duration_months);
+  const product = config?.terms.find(p => p.months === term);
+  const cost = historical && savedPlan ? savedPlan.dealer_price : product?.dealer_price || 0;
+  const retail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
+  const cover = historical && savedPlan?.selected_options ? {
+    excess: Number(savedPlan.selected_options.excess ?? config?.cover.excess ?? 0),
+    labour: Number(savedPlan.selected_options.labour ?? config?.cover.labour ?? 100),
+    claim: Number(savedPlan.selected_options.claim ?? config?.cover.claim ?? 2000),
+    parts: savedPlan.selected_options.parts_key || config?.cover.parts || 'age-mileage',
+  } : config?.cover;
+  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(retail, product) && vehicle?.reg);
+  const trade = view === 'trade';
+  const termLabel = term ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : '';
+  const summary = [{ label: 'Warranty term', value: termLabel }, { label: 'Customer excess', value: gbp(cover?.excess || 0) }, { label: 'Labour rate', value: `${gbp(cover?.labour || 0)}/hour` }, { label: 'Per eligible claim', value: gbp(cover?.claim || 0) }];
+  const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support'], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
+    const buildPlan = (): DealerJourneyPlan => ({ plan_type: 'gold', duration_months: term || 0, term_months: term || 0, dealer_price: cost, retail_price: retail,
+    selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices } });
+  const persist = async (next = false) => {
+    if (!valid) { setError('Choose an available warranty and a valid customer selling price.'); return null; }
+    setError(''); const plan = buildPlan(); setPlan(plan);
+    const id = await save({ overridePlan: plan, silent: true });
+    if (!id) { setError('Your quote could not be saved. Please try again.'); return null; }
+    if (next) navigate('/dealer-portal/quote/customer');
+    else toast({ title: `Quote saved in Quotes: ${id.slice(0, 8).toUpperCase()}` });
+    return id;
   };
-  if (!managed && quoteMode === 'adjustable' && validPrice) {
-    const ratio = customerTotals.total / pricing.wholesale;
-    const options = [warrantyExcess, warrantyLabour, warrantyParts, warrantyClaims];
-    const prices: number[] = [];
-    for (const e of warrantyExcess) for (const l of warrantyLabour) for (const p of warrantyParts) for (const c of warrantyClaims) {
-      prices.push(+(calculateFullWarranty(e.value, l.value, p.value, c.value, []).wholesale * ratio).toFixed(2));
-    }
-    customerPayload.adjustable = {
-      groups: options.map((opts, i) => ({ label: summary[i + 1].label, options: opts.map(o => ({ value: o.value, label: o.label })) })),
-      selected: [excess, labour, parts, claim], prices,
-      extras: liveWarrantyAddOns.map(a => ({ key: a.key, label: a.label, price: +(a.price * ratio).toFixed(2) })),
-      selectedExtras: selectedAddOns, baseIncluded: included,
-    };
-  }
-  const getCustomerUrl = () => new URL(buildCustomerQuoteUrl(customerPayload), window.location.origin).href;
-  const share = (action: 'view' | 'print' | 'email' | 'whatsapp') => {
-    if (!vehicle?.reg || !validPrice) { setError('Enter a valid customer price and select a vehicle first.'); return; }
-    const url = getCustomerUrl();
-    if (action === 'view' || action === 'print') {
-      const target = new URL(url);
-      if (action === 'print') target.searchParams.set('print', '1');
-      window.open(target.href, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    const message = customerQuoteMessage(customerPayload, url);
-    if (action === 'email') window.location.href = `mailto:?subject=${encodeURIComponent(`Warranty quote — ${vehicle.reg}`)}&body=${encodeURIComponent(message)}`;
+  const share = async (action: 'whatsapp' | 'email' | 'print' | 'pay') => {
+    const id = await persist(); if (!id) return;
+    const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
+    const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
+    if (action === 'pay') { url.searchParams.set('pay', id); setPaylink(url.href); return; }
+    if (action === 'print') { url.searchParams.set('print', '1'); window.open(url.href, '_blank', 'noopener,noreferrer'); return; }
+    const message = customerQuoteMessage(safePayload, url.href);
+    if (action === 'email') setEmailQuote(id);
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
-  const openPaylink = async () => {
-    if (!vehicle?.reg || !validPrice) { setError('Enter a valid customer price and select a vehicle first.'); return; }
-    setError('');
-    setPaylinkBusy(true);
-    const plan = buildPlan();
-    setPlan(plan);
-    const id = await save({ overridePlan: plan, silent: true });
-    setPaylinkBusy(false);
-    if (!id) { setError('Your quote could not be saved, so no payment link was created. Please try again.'); return; }
-    setPaylink(getCustomerUrl().replace('/customer-quote/#', `/customer-quote/?pay=${id}#`));
-  };
-  const buildPlan = () => managed ? ({
-    plan_type: 'basic' as const, duration_months: termOption.months, term_months: termOption.months,
-    dealer_price: managedFeeTotal, retail_price: managedFeeTotal,
-    selected_options: { warranty_type: 'dealer-paid', label: 'Manage My Claim', term: termOption.label, excess: Number(excess), labour: Number(labour), parts: partsOption.label, claim: Number(claim), add_ons: [], monthly_fee: 1, fee_total: managedFeeTotal, repairs_funded_by: 'dealer' },
-  }) : ({
-    plan_type: 'gold' as const, duration_months: termOption.months, term_months: termOption.months,
-    retail_price: customerTotals.total, dealer_price: dealerTotals.total,
-    selected_options: { warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termOption.label,
-      excess: Number(excess), labour: Number(labour), parts: partsOption.label, parts_key: parts, claim: Number(claim),
-      add_ons: selectedAddOns, price_basis: 'full-warranty', ex_vat_total: pricing.total, vat_total: dealerTotals.vat,
-      customer_price: chosenPrice, customer_price_mode: priceMode, customer_margin: Number(margin),
-    },
-  });
-  const persist = async (exit: boolean) => {
-    if (!vehicle?.reg || !validPrice) { setError('Select a vehicle and enter a valid customer selling price.'); return; }
-    setError('');
-    const plan = buildPlan();
-    setPlan(plan);
-    const id = await save({ overridePlan: plan });
-    if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
-    if (exit) { toast({ title: 'Quote saved in Quotes' }); }
-    else navigate('/dealer-portal/quote/customer');
-  };
-  const applyTemplate = (t: DealerQuoteTemplate) => {
-    const match = warrantyTerms.find(o => o.months === t.term_months);
-    if (!match || !warrantyExcess.some(o => o.value === String(t.excess)) || !warrantyLabour.some(o => o.value === String(t.labour)) || !warrantyClaims.some(o => o.value === String(t.claim_limit))) {
-      toast({ title: 'This saved plan uses options not currently available', variant: 'destructive' }); return;
-    }
-    setTerm(match.value); setExcess(String(t.excess)); setLabour(String(t.labour)); setClaim(String(t.claim_limit));
-    setParts(t.parts === 'none' ? 'none' : 'age-mileage');
-    if (t.price && t.price > 0) { setCustomPrice(String(t.price)); setPriceMode('custom'); }
-    setSelectedAddOns([]);
-  };
+  const adjust = (direction: -1 | 1) => { if (!product || !term) return; setPrices(p => ({ ...p, [term]: stepSellingPrice(retail, direction, product) })); };
+  if (savedPlan?.selected_options?.warranty_type === 'dealer-paid') return <Navigate to="/dealer-portal/quote/claim-handling" replace />;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
-  return <DealerLayout>
-    <div className="mx-auto max-w-[1200px] space-y-7 pb-8 text-crm-navy">
-      <header className="flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-        <div><h1 className="text-3xl font-bold sm:text-4xl">Get a warranty quote</h1><p className="mt-2 text-base text-muted-foreground">Choose your warranty length.</p></div>
-        <div className="flex flex-wrap items-center gap-3 rounded-lg border-2 border-crm-line bg-card p-3">
-          <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
-          <div className="min-w-0"><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
-          <Button variant="ghost" size="icon" aria-label="Change vehicle" title="Change vehicle" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil /></Button>
-        </div>
-      </header>
-      <details className="border-b border-crm-line pb-3"><summary className="cursor-pointer text-sm font-semibold">{managed ? 'Manage My Claim' : 'Comprehensive Warranty'} <span className="ml-2 font-normal text-muted-foreground">Change cover type</span></summary><div className="mt-3 max-w-xl"><CoverTypeSwitch active={coverType} onChange={setCoverType} /></div></details>
-      <section aria-labelledby="choose-length">
-        <div className="mb-4 flex items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-orange text-sm font-bold text-primary-foreground">1</span><h2 id="choose-length" className="text-lg font-bold">Choose warranty length</h2></div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" role="group" aria-label="Warranty length">
-          {dealerQuickWarrantyTerms.map(option => <Button key={option.value} variant="outline" disabled={option.disabled} aria-pressed={term === option.value} onClick={() => setTerm(option.value)} className={`relative h-24 justify-start gap-3 whitespace-normal border-2 px-4 text-xl font-bold sm:px-5 ${term === option.value ? 'border-crm-orange bg-crm-orange-soft hover:bg-crm-orange-soft' : 'border-crm-line bg-card'}`}>
-            {term === option.value ? <Check className="!h-5 !w-5 text-crm-green" /> : <Circle className="!h-5 !w-5 text-muted-foreground" />}<span>{option.label}{option.disabled && <span className="mt-1 block text-xs font-normal">Price pending</span>}</span>
-          </Button>)}
-        </div>
-        {!dealerQuickWarrantyTerms.some(option => option.value === term && !option.disabled) && <p className="mt-3 text-sm text-muted-foreground">Current saved term: {termOption.label}. Choose an annual term above to change it.</p>}
-      </section>
-      <section aria-labelledby="included-cover">
-        <div className="mb-4 flex items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-orange text-sm font-bold text-primary-foreground">2</span><h2 id="included-cover" className="text-lg font-bold">{managed ? 'Your claims service' : "What's included?"}</h2></div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[{ icon: ShieldCheck, title: `${gbp(Number(excess))} excess`, detail: 'Customer contribution per claim', tone: 'bg-crm-green-soft text-crm-green' }, { icon: Wrench, title: `Labour up to ${gbp(Number(labour))}/hr`, detail: 'Hourly repair rate, including VAT', tone: 'bg-muted text-crm-navy' }, { icon: Coins, title: `${gbp(Number(claim))} claim limit`, detail: 'Per approved repair', tone: 'bg-crm-orange-soft text-crm-orange' }, { icon: ClipboardList, title: managed ? 'We manage the claim' : 'Mechanical & electrical cover', detail: managed ? 'Your dealership funds approved repairs' : partsOption.label, tone: 'bg-muted text-crm-navy' }].map(item => <article key={item.title} className="flex min-h-28 items-start gap-3 rounded-lg border-2 border-crm-line bg-card p-4"><span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${item.tone}`}><item.icon className="h-6 w-6" /></span><div className="min-w-0"><h3 className="text-sm font-bold leading-snug">{item.title}</h3><p className="mt-2 text-xs leading-relaxed text-muted-foreground">{item.detail}</p></div></article>)}
-        </div>
-        {selectedAddOns.length > 0 && !managed && <p className="mt-3 text-sm text-muted-foreground">Extras: {liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label).join(', ')}</p>}
-        <details className="mt-4 border-b border-crm-line pb-3"><summary className="cursor-pointer text-sm font-semibold">Customise cover & saved plans</summary>
-          <div className="py-4">
-            <h2 className="flex items-center gap-2 text-base font-bold"><ShieldCheck className="h-5 w-5 text-crm-orange" /> {managed ? 'Configure Managed Claims' : 'Configure warranty'}</h2>
-            <p className="mt-1 text-xs text-muted-foreground">{managed ? 'You provide the warranty and fund approved repairs. Panda Protect manages the claims process for you.' : 'Choose the cover options for this customer.'}</p>
-            <div className="mt-3"><WarrantyOptionRow icon={Layers} label="Customer excess" helper="Customer contribution per approved claim." options={warrantyExcess} value={excess} onChange={setExcess} /><WarrantyOptionRow icon={Wrench} label="Labour rate" helper="Hourly repair rate, including VAT." options={warrantyLabour} value={labour} onChange={setLabour} /><WarrantyOptionRow icon={Settings} label="Parts contribution" helper="Replacement-parts contribution." options={warrantyParts} value={parts} onChange={setParts} /><WarrantyOptionRow icon={Coins} label="Claim limit per repair" helper="Maximum approved repair amount." options={[...warrantyClaims, ...pendingWarrantyClaims]} value={claim} onChange={setClaim} /></div>
-            {!managed && <div className="mt-3 border-t border-crm-line pt-3"><div className="flex flex-wrap items-center justify-between gap-2"><Button variant="ghost" size="sm" onClick={() => setSavedPlansOpen(v => !v)} aria-expanded={savedPlansOpen}>My saved plans <ChevronDown className={savedPlansOpen ? "rotate-180" : ""} /></Button><SaveQuoteTemplateButton onSaved={reload} getSelection={() => ({ term: termOption.months, excess: Number(excess), labour: Number(labour), parts, claim: Number(claim), plan_type: 'gold', price: chosenPrice })} className="inline-flex items-center gap-1.5 rounded-md border border-crm-line px-3 py-2 text-xs font-semibold" /></div>{savedPlansOpen && <div className="mt-2 flex flex-wrap gap-2">{templates.filter(t => t.plan_type === 'gold').map(t => <div key={t.id} className="inline-flex rounded-md border border-crm-line"><Button size="sm" variant="ghost" onClick={() => applyTemplate(t)}>{t.name}</Button><Button size="icon" variant="ghost" className="h-9 w-8" aria-label={`Delete ${t.name}`} onClick={() => deleteTemplate(t.id).catch(() => toast({ title: 'Could not delete saved plan', variant: 'destructive' }))}><X /></Button></div>)}</div>}</div>}
-          </div>
-          {!managed && <section className="border-t border-crm-line py-4">
-            <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="flex items-center gap-2 text-sm font-bold"><Plus className="h-4 w-4 text-crm-orange" /> Optional extras</h2><p className="mt-1 text-xs text-muted-foreground">Add extra benefits to the warranty.</p></div><span className="text-xs font-semibold">{selectedAddOns.length} selected · +{gbp(liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).reduce((sum,a) => sum+a.price,0))}</span></div>
-            <div className="mt-3 divide-y divide-crm-line">{liveWarrantyAddOns.filter(a => extrasOpen || a.key === 'rental' || selectedAddOns.includes(a.key)).map(a => <label key={a.key} className="flex cursor-pointer items-start gap-3 py-3 text-xs"><Checkbox className="!h-4 !w-4 mt-0.5 shrink-0 data-[state=checked]:border-crm-green data-[state=checked]:bg-crm-green data-[state=checked]:text-primary-foreground" checked={selectedAddOns.includes(a.key)} onCheckedChange={checked => setSelectedAddOns(current => checked === true ? [...new Set([...current, a.key])] : current.filter(k => k !== a.key))} /><span className="min-w-0 flex-1"><span className="font-semibold">{a.label}</span><span className="mt-1 block text-muted-foreground">{a.description}</span></span><span className="shrink-0">+{gbp(a.price)}</span></label>)}</div>
-            <Button variant="ghost" size="sm" className="mt-1 px-0" onClick={() => setExtrasOpen(v => !v)} aria-expanded={extrasOpen}>{extrasOpen ? 'View fewer extras' : 'View more extras'} <ChevronDown className={extrasOpen ? 'rotate-180' : ''} /></Button>
-            <p className="mt-1 text-[11px] text-muted-foreground">Full warranty prices excluding VAT · subject to eligibility and policy terms.</p>
-          </section>}
-
-        </details>
-      </section>
-      <section aria-labelledby="your-price">
-        <div className="mb-4 flex items-center gap-3"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-orange text-sm font-bold text-primary-foreground">3</span><h2 id="your-price" className="text-lg font-bold">Your price</h2></div>
-        <div className="flex flex-col gap-5 rounded-lg bg-crm-green-soft p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-          <div className="flex items-center gap-4"><Tag className="h-8 w-8 shrink-0 text-crm-green" /><div><p className="text-sm font-semibold">{managed ? 'Total service fee' : 'Your total cost'}</p><p className="mt-1 text-4xl font-bold">{gbp(managed ? managedFeeTotal : dealerTotals.total)}</p><p className="mt-2 text-xs text-muted-foreground">{termOption.label} · Including VAT · One payment</p>{managed && <p className="mt-1 text-xs text-muted-foreground">£1 a month × {termOption.months} months, plus VAT</p>}</div></div>
-          <Button size="lg" className="h-14 w-full bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90 sm:w-72" disabled={saving || !validPrice} onClick={() => persist(false)}>{saving ? 'Saving…' : 'Continue'}<ArrowRight /></Button>
-        </div>
-        {error && <p role="alert" className="mt-3 text-sm text-destructive">{error}</p>}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2"><p className="text-xs text-muted-foreground">{managed ? 'Your dealership funds approved repairs.' : 'Subject to vehicle eligibility and policy terms.'}</p><Button variant="ghost" size="sm" disabled={saving || !validPrice} onClick={() => persist(true)}>Save quote</Button></div>
-        <details className="mt-3 border-t border-crm-line pt-4"><summary className="cursor-pointer text-sm font-semibold">Selling price & quote tools</summary><div className="mt-4 max-w-xl pb-4">
-          <h2 className="flex items-center gap-2 text-base font-bold"><ClipboardList className="h-4 w-4 text-crm-orange" /> Quote summary</h2>
-          <dl className="mt-4 space-y-2">{summary.map(row => <div key={row.label} className="flex justify-between gap-3 text-xs"><dt className="text-muted-foreground">{row.label}</dt><dd className="max-w-[55%] text-right font-semibold">{row.value}</dd></div>)}</dl>
-          {!managed && selectedAddOns.length > 0 && <p className="mt-3 text-xs text-muted-foreground">Add-ons: {liveWarrantyAddOns.filter(a => selectedAddOns.includes(a.key)).map(a => a.label).join(', ')}</p>}
-          {managed ? <div className="mt-4 space-y-3 border-t border-crm-line pt-4">
-            <p className="text-xs font-semibold">Panda Protect service fee</p><p className="text-2xl font-bold">{gbp(managedFeeExVat)} <span className="text-xs font-normal text-muted-foreground">plus VAT · £1 a month × {termOption.months} months</span></p><p className="text-xs text-muted-foreground">VAT (20%) {gbp(managedFeeVat)} · Total {gbp(managedFeeTotal)} for {termOption.label}</p>
-            <div className="border-t border-crm-line pt-3"><p className="text-xs font-bold">Your repair responsibility</p><p className="mt-1 text-xs text-muted-foreground">Your dealership funds approved repairs.</p></div>
-          </div> : <>
-          <div className="mt-4 flex items-center justify-between gap-2 border-t border-crm-line pt-4 text-xs"><span className="text-muted-foreground">Your cost (ex. VAT)</span><strong className="text-base">{gbp(pricing.wholesale)}</strong></div>
-          <div className="mt-3 flex items-center justify-between gap-3"><label htmlFor="customer-selling-price" className="text-xs text-muted-foreground">Customer selling price (ex. VAT)</label><Input id="customer-selling-price" aria-label="Customer selling price excluding VAT" className="h-9 w-28 shrink-0 text-right" type="number" min="0.01" step="0.01" value={priceMode === 'custom' ? customPrice : validPrice ? chosenPrice : ''} onChange={e => { setPriceMode('custom'); setCustomPrice(e.target.value); }} /></div>
-          {validPrice && <><div className="mt-3 flex items-center justify-between gap-3 rounded-md bg-crm-green-soft p-3 text-crm-green"><div><p className="text-xs">Your profit</p><p className="mt-1 text-2xl font-bold">{gbp(economics.profit)}</p></div><div className="text-right"><p className="text-xs">Margin</p><p className="mt-1 text-lg font-bold">{economics.margin.toFixed(0)}%</p></div></div><dl className="mt-3 space-y-3 text-xs"><div className="flex justify-between"><dt className="text-muted-foreground">VAT (20%)</dt><dd>{gbp(customerTotals.vat)}</dd></div><div className="flex justify-between gap-3 font-bold"><dt>Total customer price (inc. VAT)</dt><dd>{gbp(customerTotals.total)}</dd></div></dl></>}
-          <p className="mt-2 text-[11px] text-muted-foreground">Full warranty price · One payment</p>
-          <Button variant="ghost" size="sm" className="mt-2 h-7 px-0 text-xs" onClick={() => setAdvancedOpen(v => !v)} aria-expanded={advancedOpen}>Price & quote options <ChevronDown className={advancedOpen ? 'rotate-180' : ''} /></Button>
-          {advancedOpen && <div className="mt-2 space-y-3"><div className="grid grid-cols-2 gap-2"><Button variant="outline" size="sm" onClick={() => setPriceMode('recommended')}>Recommended</Button><Button variant="outline" size="sm" onClick={() => setPriceMode('margin')}>Set margin %</Button></div>{priceMode === 'margin' && <div><label htmlFor="profit-margin" className="text-xs">Profit margin (%)</label><Input id="profit-margin" type="number" min="0" max="99.99" step="0.1" value={margin} onChange={e => setMargin(e.target.value)} /></div>}<fieldset><legend className="text-xs font-semibold">Quote format</legend><div className="mt-2 grid grid-cols-2 gap-2">{(['fixed', 'adjustable'] as const).map(mode => <Button key={mode} variant="outline" size="sm" aria-pressed={quoteMode === mode} className={quoteMode === mode ? 'border-crm-orange bg-crm-orange-soft' : ''} onClick={() => setQuoteMode(mode)}>{mode === 'fixed' ? 'Fixed quote' : 'Adjustable quote'}</Button>)}</div></fieldset></div>}
-          </>}
-          {!managed && <><h3 className="mt-4 border-t border-crm-line pt-3 text-xs font-bold">Quote actions</h3>
-          <div className="mt-3 grid grid-cols-2 gap-1.5"><Button variant="outline" className="px-2 text-xs" onClick={() => share('view')}><Eye /> Customer View</Button><Button variant="outline" className="px-2 text-xs" onClick={openPaylink} disabled={paylinkBusy || managed}><Link2 /> {paylinkBusy ? 'Creating…' : 'Payment Link'}</Button></div>
-          <div className="mt-2 grid grid-cols-3 gap-1.5"><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('print')}><Printer /> Print</Button><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('email')}><Mail /> Email</Button><Button size="sm" variant="outline" className="px-2 text-xs" onClick={() => share('whatsapp')}><MessageCircle /> WhatsApp</Button></div></>}
-
-        </div></details>
-      </section>
+  return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-4 pb-6 text-crm-navy">
+    <header className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
+      <div><h1 className="text-3xl font-bold">Choose your warranty</h1><p className="mt-1 text-muted-foreground">Select how many years of cover you want.</p></div>
+      <div className="flex flex-wrap items-center gap-4 rounded-lg border border-crm-line bg-card px-4 py-3">
+        <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
+        <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage != null ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
+        {trade && <Button variant="outline" size="sm" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil />Change vehicle</Button>}
+      </div>
+    </header>
+    <div className="grid max-w-lg grid-cols-2 gap-3" role="group" aria-label="Quote view">
+      <Button variant="outline" aria-pressed={trade} onClick={() => setView('trade')} className={`h-12 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />Trade View</Button>
+      <Button variant="outline" aria-pressed={!trade} onClick={() => setView('customer')} className={`h-12 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />Customer View</Button>
     </div>
-    <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink(null)}>
-      <DialogContent className="!left-1/2 !top-1/2 !translate-x-[-50%] !translate-y-[-50%] w-[calc(100%-2rem)] max-w-md max-h-[85vh] overflow-y-auto">
-        <DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader>
-        <p className="text-sm text-muted-foreground">Send this link to your customer. They'll see their quote and can pay {validPrice ? gbp(customerTotals.total) : ''} securely by card.</p>
-        <a href={paylink || undefined} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-3 rounded-md border border-crm-line bg-muted/50 p-3 text-sm font-semibold text-primary">Open customer quote <ArrowRight className="h-4 w-4 shrink-0" /></a>
-        <div className="grid grid-cols-3 gap-2">
-          <Button variant="outline" size="sm" onClick={() => { navigator.clipboard?.writeText(paylink || ''); toast({ title: 'Payment link copied' }); }}><Copy /> Copy</Button>
-          <Button variant="outline" size="sm" onClick={() => { window.location.href = `mailto:?subject=${encodeURIComponent(`Your Panda Protect warranty — ${vehicle?.reg}`)}&body=${encodeURIComponent(`Hi,\n\nHere is your warranty quote and secure payment link for ${[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')} (${vehicle?.reg}):\n\n${paylink}\n\nTotal to pay: ${gbp(customerTotals.total)} including VAT.\n\nThanks,\n${dealer?.company_name || ''}`)}`; }}><Mail /> Email</Button>
-          <Button variant="outline" size="sm" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(`Your Panda Protect warranty quote for ${vehicle?.reg} — pay securely here: ${paylink}`)}`, '_blank', 'noopener,noreferrer')}><MessageCircle /> WhatsApp</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
+    {pricingError && <div role="alert" className="flex items-center gap-3 text-destructive">Warranty prices are unavailable.<Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" role="group" aria-label="Warranty duration">
+      {[12, 24, 36, 48].map(months => {
+        const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
+        const cardCost = savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
+        const cardRetail = prices[months] ?? p?.retail_price;
+        return <Button key={months} variant="outline" disabled={!available} aria-pressed={term === months} onClick={() => { setTerm(months); setError(''); }} className={`relative flex h-auto min-h-44 flex-col items-stretch justify-start whitespace-normal rounded-lg border !bg-card p-4 text-left !text-crm-navy hover:!bg-card hover:!text-crm-navy lg:p-5 ${term === months ? 'border-crm-orange ring-1 ring-crm-orange' : 'border-crm-line'} disabled:opacity-60`}>
+          <span className="flex items-center justify-between gap-2 text-xl font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'}{term === months ? <Check className="text-crm-green" /> : <Circle className="text-muted-foreground" />}</span>
+          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">Warranty cover</span>
+          <strong className="mt-3 text-3xl">{(trade ? cardCost : cardRetail) != null ? gbp((trade ? cardCost : cardRetail) || 0) : '—'}</strong>
+          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">{trade ? 'Your cost' : 'Customer price'} · inc. VAT</span>
+          {trade && cardRetail != null && cardCost != null && <span className="mt-3 border-t border-crm-line pt-2 text-xs font-normal text-crm-green">Potential profit<strong className="mt-1 block text-xl">{gbp(potentialProfit(cardRetail, cardCost))}</strong></span>}
+          {!available && <span className="mt-2 text-xs font-normal">{months === 48 ? 'Pending approval' : 'Unavailable'}</span>}
+        </Button>;
+      })}
+    </div>
+    {cover && <section className="border-y border-crm-line bg-card px-4 py-4" aria-label="Included warranty benefits">
+      <div className="mb-4 flex flex-wrap justify-between gap-2"><h2 className="!text-base !leading-6 font-bold text-crm-navy">Every warranty includes</h2><Button variant="link" size="sm" className="h-auto p-0 text-crm-navy" onClick={() => setDetails(true)}>View full cover details &amp; exclusions<ArrowRight /></Button></div>
+      <div className="grid gap-5 sm:grid-cols-3">{[{ icon: ShieldCheck, title: `${gbp(cover.excess)} excess`, text: 'Policy excess on eligible claims.' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour labour`, text: `Covered labour up to ${gbp(cover.labour)} per hour.` }, { icon: FileText, title: `${gbp(cover.claim)} per eligible claim`, text: 'Subject to policy terms.' }].map(b => <div key={b.title} className="flex items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-6 w-6" /></span><div><h3 className="text-sm font-bold">{b.title}</h3><p className="mt-1 text-xs text-muted-foreground">{b.text}</p></div></div>)}</div>
+    </section>}
+    {trade && <section className="flex flex-wrap items-center justify-between gap-4 border-y border-crm-line bg-card px-4 py-4" aria-label="Selling price adjustment">
+      <div><h2 className="!text-base !leading-6 font-bold text-crm-navy">Customer selling price</h2><p className="mt-1 text-xs text-muted-foreground">Adjust the price in £100 steps.</p></div>
+      <div className="flex items-center gap-3"><Button variant="secondary" size="icon" className="h-12 w-12" aria-label="Decrease selling price by £100" disabled={!product || stepSellingPrice(retail, -1, product) === retail} onClick={() => adjust(-1)}><Minus /></Button><strong className="min-w-28 text-center text-2xl">{term ? gbp(retail) : '—'}</strong><Button variant="secondary" size="icon" className="h-12 w-12" aria-label="Increase selling price by £100" disabled={!product || stepSellingPrice(retail, 1, product) === retail} onClick={() => adjust(1)}><Plus /></Button></div>
+      <div className="flex gap-2"><Button variant="outline" disabled={!product} onClick={() => { setExactValue(String(retail)); setExact(true); }}><Pencil />Enter exact price</Button><Button variant="outline" disabled={!product || !term} onClick={() => { if (product && term) setPrices(p => ({ ...p, [term]: product.retail_price })); }}><RotateCcw />Reset</Button></div>
+    </section>}
+    <section className="flex flex-col gap-5 border-y border-crm-line bg-card p-4 xl:flex-row xl:items-center xl:justify-between" aria-label="Quote summary">
+      <div className="flex flex-wrap gap-6">{trade && <div><p className="text-xs text-muted-foreground">Your cost</p><strong className="mt-2 block text-2xl">{term ? gbp(cost) : '—'}</strong></div>}<div><p className="text-xs text-muted-foreground">{trade ? 'Customer price' : `${termLabel || 'Warranty'} · Customer price`}</p><strong className="mt-2 block text-2xl">{term ? gbp(retail) : '—'}</strong></div>{trade && <div><p className="text-xs text-muted-foreground">Potential profit</p><strong className="mt-2 block text-2xl text-crm-green">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong></div>}</div>
+      <div className="space-y-2 xl:min-w-[410px]"><div className="flex flex-wrap gap-2">{trade && <Button variant="outline" size="sm" disabled={saving || !valid} onClick={() => persist()}><Save />Save Quote</Button>}<Button variant="outline" size="sm" disabled={saving || !valid} onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</Button><Button variant="outline" size="sm" disabled={saving || !valid} onClick={() => share('email')}><Mail />Email</Button><Button variant="outline" size="sm" disabled={saving || !valid} onClick={() => share('print')}><Printer />Print</Button></div>{trade && <Button className="h-12 w-full bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}</div>
+    </section>
+    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+    <div className="flex flex-wrap justify-between gap-3 text-xs text-muted-foreground"><p>Including VAT. Subject to vehicle eligibility and policy terms.</p>{trade && <div className="flex gap-3"><Button variant="link" size="sm" disabled={!valid || saving} onClick={() => share('pay')}><Link2 />Customer payment link</Button><Button variant="link" size="sm" onClick={() => navigate('/dealer-portal/quote/claim-handling')}>Manage My Claim</Button></div>}</div>
+  </div>
+  <Dialog open={exact} onOpenChange={setExact}><DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader><Input aria-label="Exact customer selling price" type="number" step="0.01" min={product?.min_price} max={product?.max_price ?? undefined} value={exactValue} onChange={e => setExactValue(e.target.value)} /><p className="text-xs text-muted-foreground">Including VAT. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
+  <Dialog open={!!emailQuote} onOpenChange={open => !open && setEmailQuote(null)}><DialogContent className="max-w-sm"><DialogHeader><DialogTitle>Email customer quote</DialogTitle></DialogHeader><Input type="email" aria-label="Customer email address" placeholder="Customer email address" value={email} onChange={e => setEmail(e.target.value)} /><Button disabled={emailBusy || !email.includes('@')} onClick={async () => { setEmailBusy(true); const { data, error: sendError } = await supabase.functions.invoke('dealer-quote-email', { body: { quote_id: emailQuote, email } }); setEmailBusy(false); if (sendError || !data?.sent) { toast({ title: data?.error || 'Email could not be sent. Please try again.', variant: 'destructive' }); return; } setEmailQuote(null); toast({ title: 'Customer quote emailed' }); }}>{emailBusy ? 'Sending…' : 'Send quote'}</Button></DialogContent></Dialog>
+  <Dialog open={details} onOpenChange={setDetails}><DialogContent><DialogHeader><DialogTitle>Warranty cover details</DialogTitle></DialogHeader><dl className="space-y-3">{summary.map(s => <div key={s.label} className="flex justify-between"><dt>{s.label}</dt><dd className="font-bold">{s.value}</dd></div>)}</dl><p className="text-sm text-muted-foreground">Mechanical and electrical cover is subject to vehicle eligibility, servicing requirements and policy terms. Refer to the full terms for covered components, contributions and exclusions.</p><a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline">Full cover details &amp; exclusions</a></DialogContent></Dialog>
+  <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink('')}><DialogContent><DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader><a href={paylink} target="_blank" rel="noopener noreferrer" className="break-all text-sm underline">Open customer quote</a><Button variant="outline" onClick={async () => { await navigator.clipboard.writeText(paylink); toast({ title: 'Payment link copied' }); }}>Copy link</Button><p className="text-sm text-muted-foreground">Your customer pays securely by card. Warranty documents follow confirmation by your dealer.</p></DialogContent></Dialog>
   </DealerLayout>;
 };
 export default Step3Pricing;

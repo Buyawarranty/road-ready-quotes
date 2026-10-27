@@ -1,0 +1,12 @@
+import { it } from 'node:test';
+import assert from 'node:assert/strict';
+import { validateAnnualPlan } from '../../../supabase/functions/_shared/dealerAnnualValidation';
+const plan = { duration_months: 24, dealer_price: 200, retail_price: 700, excess: 0, labour_rate: 100, claim_limit: 2000 };
+const product = { months: 24, dealer_price: 200, min_price: 200, max_price: 1400, active: true };
+it('accepts approved £200 cost and £700 retail with fixed cover', () => assert.equal(validateAnnualPlan(plan, product), null));
+it('rejects inactive four-year charging', () => assert.ok(validateAnnualPlan({ ...plan, duration_months: 48 }, { ...product, months: 48, active: false })));
+it('rejects changed dealer cost', () => assert.ok(validateAnnualPlan({ ...plan, dealer_price: 100 }, product)));
+it('rejects retail outside admin bounds', () => assert.ok(validateAnnualPlan({ ...plan, retail_price: 1401 }, product)));
+it('enforces £0 excess', () => assert.ok(validateAnnualPlan({ ...plan, excess: 50 }, product)));
+it('enforces £100 labour', () => assert.ok(validateAnnualPlan({ ...plan, labour_rate: 70 }, product)));
+it('enforces £2000 claim limit', () => assert.ok(validateAnnualPlan({ ...plan, claim_limit: 3000 }, product)));

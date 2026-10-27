@@ -32,7 +32,7 @@ const Step4Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { dealer } = useDealerAuth();
-  const { vehicle, customer, plan, discount_pct } = useDealerJourney();
+  const { vehicle, customer, plan, discount_pct, quoteId } = useDealerJourney();
 
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
@@ -106,6 +106,7 @@ const Step4Checkout: React.FC = () => {
   const createRecord = async () => {
     const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
       body: {
+        quote_id: quoteId,
         dealer_id: dealer.id,
         payment_method: method,
         vehicle: {
@@ -124,6 +125,8 @@ const Step4Checkout: React.FC = () => {
           claim_limit: claimLimit,
           excess,
           labour_rate: labour,
+          product_id: options.product_id,
+          pricing_version: options.pricing_version,
         },
         discount_pct,
       },
