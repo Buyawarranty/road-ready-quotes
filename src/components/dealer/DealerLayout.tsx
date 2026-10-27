@@ -27,7 +27,6 @@ import {
   Search,
   Bell,
   CircleHelp,
-  Wrench,
   FolderOpen,
   BookOpen,
   Headphones,
@@ -59,7 +58,6 @@ const NAV_ITEMS: NavItem[] = [
   },
   { to: '/dealer-portal/quotes', label: 'Quotes', icon: FileText, trader: true },
   { to: '/dealer-portal/warranties', label: 'Warranties', icon: Shield, trader: true },
-  { to: '/dealer-portal/claims', label: 'Claims', icon: Wrench, trader: true, matchPaths: ['/dealer-portal/claims'] },
   { to: '/dealer-portal/customers', label: 'Customers', icon: Users, trader: true },
   { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
   { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
@@ -263,7 +261,6 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => navigate('/dealer-portal/warranties')}>Review warranties and outstanding invoices</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dealer-portal/claims')}>Check claim updates</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button variant="ghost" size="sm" className="gap-2 text-foreground" asChild>
