@@ -107,7 +107,7 @@ const Step3Pricing: React.FC = () => {
     setError(''); const plan = buildPlan(); setPlan(plan);
     const id = await save({ overridePlan: plan, silent: true });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return null; }
-    if (next) navigate('/dealer-portal/quote/customer');
+    if (next) { sessionStorage.setItem('dealer_confetti_light', '1'); navigate('/dealer-portal/quote/customer'); }
     else toast({ title: `Quote saved in Quotes: ${id.slice(0, 8).toUpperCase()}` });
     return id;
   };
@@ -204,19 +204,20 @@ const Step3Pricing: React.FC = () => {
     {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
+    <div className="grid gap-3 md:grid-cols-2">
     <section className="flex items-center gap-3 rounded-xl border border-crm-line bg-card p-4" aria-label="£5,000 claim limit boost">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><Zap className="h-5 w-5 text-crm-navy" /></span>
       <div className="min-w-0 flex-1"><h2 className="font-bold text-crm-navy">£5,000 Claim Limit Boost</h2><p className="text-xs leading-4 text-muted-foreground">Increase the per-claim limit to £5,000.</p></div>
-      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">Coming soon</span>
-      <Switch disabled checked={false} aria-label="Add claim limit boost (not available yet)" />
+      <Switch disabled checked={false} aria-label="Add claim limit boost (price not set yet)" />
     </section>
     <Collapsible className="rounded-xl border border-crm-line bg-card">
-      <CollapsibleTrigger className="group flex w-full items-center gap-3 p-4 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><FileText className="h-5 w-5" /><span className="flex-1 text-lg">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
+      <CollapsibleTrigger className="group flex w-full items-center gap-3 p-4 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><FileText className="h-5 w-5" /></span><span className="flex-1 text-base">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden px-4 pb-4 text-sm text-muted-foreground data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">Full cover details are coming soon. <button type="button" className="font-semibold text-crm-navy underline" onClick={() => setDetails(true)}>View current cover summary</button></CollapsibleContent>
     </Collapsible>
+    </div>
     <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[1.2fr_1fr]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-crm-gold-soft to-crm-gold/40 p-5">
-        <Coins className="h-14 w-14 shrink-0 text-crm-gold-deep" />
+      {trade ? <div className="flex items-center gap-4 rounded-2xl border border-crm-gold/40 bg-crm-gold-soft p-5">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-card"><TrendingUp className="h-7 w-7 text-crm-gold-deep" /></span>
         <div className="min-w-0 border-l-2 border-crm-gold/50 pl-4">
           <p className="text-xl font-extrabold tracking-wide text-crm-gold-deep">PROFIT</p>
           <strong className="block text-5xl font-black leading-[3.25rem] text-crm-gold-deep sm:text-6xl sm:leading-[4rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
