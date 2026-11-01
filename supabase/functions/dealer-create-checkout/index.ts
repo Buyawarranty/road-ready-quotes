@@ -39,6 +39,7 @@ interface PlanPayload {
   labour_rate?: number;
   product_id?: string;
   pricing_version?: string;
+  boost?: boolean;
 }
 
 interface RequestBody {
@@ -112,11 +113,12 @@ Deno.serve(async (req: Request) => {
     }
 
     if (plan.pricing_version === 'annual-v1') {
-      const { data: config } = await adminClient.from('dealer_admin_plans').select('pricing_matrix')
+      const { data: config } = await adminClient.from('dealer_admin_plans').select('pricing_matrix, coverage_details')
         .eq('id', plan.product_id || '').eq('is_active', true).single();
       const matrix = config?.pricing_matrix;
       const product = matrix?.brand === 'pandaprotect' ? matrix.terms?.find((p: { months: number }) => p.months === plan.duration_months) : undefined;
-      const validation = validateAnnualPlan(plan, product);
+      const coverClaim = Number(config?.coverage_details?.claim);
+      const validation = validateAnnualPlan(plan, product, { claim: Number.isFinite(coverClaim) && coverClaim > 0 ? coverClaim : undefined, boost: matrix?.boost ?? null });
       if (validation) return new Response(JSON.stringify({ error: validation }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     } else if (plan.duration_months === 48) {
       return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
