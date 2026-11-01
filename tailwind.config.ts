@@ -74,6 +74,7 @@ export default {
 					green: 'hsl(var(--crm-green))',
 					'green-soft': 'hsl(var(--crm-green-soft))',
 					gold: 'hsl(var(--crm-gold))',
+					'gold-pure': 'hsl(var(--crm-gold-pure))',
 					'gold-deep': 'hsl(var(--crm-gold-deep))',
 					'gold-soft': 'hsl(var(--crm-gold-soft))',
 					blue: 'hsl(var(--crm-blue))',
