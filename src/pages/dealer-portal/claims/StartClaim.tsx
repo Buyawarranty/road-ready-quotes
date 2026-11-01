@@ -18,7 +18,6 @@ import {
   Check,
   CheckCircle2,
   FileText,
-  Info,
   Loader2,
   Pencil,
   Trash2,
