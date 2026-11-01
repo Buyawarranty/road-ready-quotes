@@ -236,7 +236,7 @@ const Step3Pricing: React.FC = () => {
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
     <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[1.2fr_1fr]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center gap-4 rounded-2xl bg-crm-green-deep p-5">
+      {trade ? <div className="flex items-center gap-4 rounded-2xl bg-crm-green p-5">
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-crm-gold-pure"><TrendingUp className="h-7 w-7 text-crm-gold-pure" /></span>
         <div className="min-w-0 border-l-2 border-crm-gold-pure/50 pl-4">
           <p className="text-xl font-extrabold tracking-wide text-crm-gold-pure">YOUR PROFIT</p>
