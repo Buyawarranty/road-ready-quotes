@@ -41,7 +41,7 @@ const Step3Pricing: React.FC = () => {
     if (!/^[A-Z0-9]{2,8}$/.test(cleaned)) { setLookup('error'); setLookupMsg('Enter a valid UK registration.'); return; }
     setLookup('loading'); setLookupMsg('');
     try {
-      const { data, error: lookupError } = await supabase.functions.invoke('dvla-vehicle-lookup', { body: { registration: cleaned } });
+      const { data, error: lookupError } = await supabase.functions.invoke('dvla-vehicle-lookup', { body: { registrationNumber: cleaned } });
       if (lookupError || !data?.make) {
         // Lookup unavailable or vehicle not found — continue with the reg so the dealer can still quote.
         setVehicle({ reg: cleaned });
