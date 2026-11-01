@@ -239,12 +239,12 @@ const Step3Pricing: React.FC = () => {
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
     <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[1.2fr_1fr]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center justify-between gap-5 rounded-2xl border border-crm-line bg-card p-4">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-6 w-6 text-crm-green-deep" /></span>
+      {trade ? <div className="flex items-center justify-end gap-4 rounded-2xl border border-crm-line bg-card p-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-5 w-5 text-crm-green-deep" /></span>
         <div className="min-w-0 text-right">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Your profit</p>
           <strong className="block text-4xl font-black leading-[3rem] text-crm-green sm:text-5xl sm:leading-[3.5rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
-          {term && <p className="mt-0.5 text-xs text-muted-foreground">Your customer pays <strong className="text-crm-navy">{gbp(retail)}</strong>, you pay <strong className="text-crm-navy">{gbp(cost)}</strong>. <button type="button" className="font-bold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button></p>}
+          {term && <button type="button" className="mt-0.5 text-xs font-semibold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button>}
         </div>
       </div> : <div className="flex items-center justify-end rounded-2xl border border-crm-line bg-card p-4"><p className="text-right text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid grid-cols-2 gap-3">
