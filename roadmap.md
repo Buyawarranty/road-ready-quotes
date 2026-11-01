@@ -35,3 +35,4 @@
 - [x] Pause Manage My Claim: vehicle step quotes Comprehensive Warranty only, claim-handling route redirects there, saved Manage My Claim plans hidden; build kept behind one flag.
 - [ ] Build an admin dashboard "Manage My Claim" section with activate/deactivate control (user idea, awaiting go-ahead) to replace the code flag.
 - [x] Retire the vehicle-details quote step: registration entry now happens on the pricing page, /dealer-portal/quote/vehicle and other entry URLs redirect there with ?reg= kept, and every New Quote link points at pricing.
+- [x] Add the v11 Platinum Warranty Plan and Terms & Conditions PDFs as downloads in the pricing page "What's covered?" accordion, served as CDN assets at reduced file size after a high-resolution legibility check.
