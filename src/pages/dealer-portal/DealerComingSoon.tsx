@@ -561,6 +561,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                         placeholder="e.g. you@dealership.co.uk"
+                        aria-invalid={!!(touched.email && errors.email)}
                         className={`${regInputCls} ${touched.email && errors.email ? 'border-destructive' : ''}`}
                       />
                     </Field>
@@ -582,6 +583,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
                         placeholder="e.g. 07960 123 456"
+                        aria-invalid={!!(touched.phone && errors.phone)}
                         className={`${regInputCls} ${touched.phone && errors.phone ? 'border-destructive' : ''}`}
                       />
                     </Field>
@@ -605,6 +607,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
                         placeholder="https://www.autotrader.co.uk/dealers/..."
+                        aria-invalid={!!(touched.url && errors.url)}
                         className={`${regInputCls} ${touched.url && errors.url ? 'border-destructive' : ''}`}
                       />
                     </Field>
