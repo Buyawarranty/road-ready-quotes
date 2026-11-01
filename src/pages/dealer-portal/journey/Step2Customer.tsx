@@ -8,7 +8,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2 } from 'lucide-react';
+import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
@@ -26,6 +26,7 @@ const Step2Customer: React.FC = () => {
   const [mode, setMode] = useState<Mode>(hasDetails ? 'self' : 'panda');
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [note, setNote] = useState('');
+  const [manualAddress, setManualAddress] = useState(hasDetails);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: hasDetails ? customer!.name : '',
@@ -105,10 +106,21 @@ const Step2Customer: React.FC = () => {
     );
   };
 
+  const filled = (k: keyof typeof form) => {
+    const v = form[k].trim();
+    if (!v) return false;
+    if (k === 'email') return /^\S+@\S+\.\S+$/.test(v);
+    if (k === 'phone') return v.replace(/\D/g, '').length >= 10;
+    return v.length > 1;
+  };
+
   const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string) => (
     <div>
       <label htmlFor={`c-${k}`} className="mb-1 block text-sm font-medium text-crm-navy">{label}</label>
-      <Input id={`c-${k}`} type={type} autoComplete={autoComplete} value={form[k]} onChange={(e) => update(k, e.target.value)} className="h-12 text-base" />
+      <div className="relative">
+        <Input id={`c-${k}`} type={type} autoComplete={autoComplete} value={form[k]} onChange={(e) => update(k, e.target.value)} className={`h-12 pr-10 text-base ${filled(k) ? 'border-crm-green' : ''}`} />
+        {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
+      </div>
     </div>
   );
 
