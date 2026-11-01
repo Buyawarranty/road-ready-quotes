@@ -30,6 +30,7 @@ const Step2Customer: React.FC = () => {
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [note, setNote] = useState('');
   const [manualAddress, setManualAddress] = useState(hasDetails);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: hasDetails ? customer!.name : '',
@@ -188,7 +189,7 @@ const Step2Customer: React.FC = () => {
 
             <div className="pt-2">
               <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Search for the address to continue.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Type at least 3 letters of the postcode or street, then pick the address.</p>
               <div className="mt-3 h-px bg-crm-line" />
             </div>
 
@@ -219,7 +220,7 @@ const Step2Customer: React.FC = () => {
         {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
 
         <Button type="button" disabled={saving} onClick={mode === 'panda' ? handoff : submitSelf}
-          className="h-14 w-full gap-2 text-base font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90">
+          className={`h-14 w-full gap-2 px-6 text-base font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:mx-auto sm:flex sm:w-auto sm:min-w-[320px] ${saving ? '' : 'animate-breathing'}`}>
           {saving ? <><Loader2 className="h-5 w-5 animate-spin" />Saving…</> : mode === 'panda' ? <>Request Panda Protect assistance<ArrowRight className="h-5 w-5" /></> : <>Continue to checkout<ArrowRight className="h-5 w-5" /></>}
         </Button>
       </div>
