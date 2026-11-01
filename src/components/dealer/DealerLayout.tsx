@@ -354,7 +354,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </aside>
 
       <main className={`min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
-        {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (
+        {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && !location.pathname.startsWith('/dealer-portal/quote/') && (
           <div className="mb-3">
             <button
               type="button"
