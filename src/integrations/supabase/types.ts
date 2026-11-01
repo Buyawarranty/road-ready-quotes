@@ -6424,6 +6424,56 @@ export type Database = {
           },
         ]
       }
+      dealer_cancellation_requests: {
+        Row: {
+          admin_note: string | null
+          cancellation_fee: number | null
+          created_at: string
+          customer_id: string
+          dealer_id: string
+          id: string
+          reason: string
+          refund_amount: number | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          admin_note?: string | null
+          cancellation_fee?: number | null
+          created_at?: string
+          customer_id: string
+          dealer_id: string
+          id?: string
+          reason: string
+          refund_amount?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          admin_note?: string | null
+          cancellation_fee?: number | null
+          created_at?: string
+          customer_id?: string
+          dealer_id?: string
+          id?: string
+          reason?: string
+          refund_amount?: number | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_cancellation_requests_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_customers: {
         Row: {
           address_line_1: string | null
@@ -15737,6 +15787,16 @@ export type Database = {
         }[]
       }
       revert_pricing_to_code_defaults: { Args: never; Returns: undefined }
+      review_dealer_cancellation: {
+        Args: {
+          p_approve: boolean
+          p_fee: number
+          p_note: string
+          p_refund: number
+          p_request_id: string
+        }
+        Returns: undefined
+      }
       review_dealer_profile_change: {
         Args: { p_approve: boolean; p_note?: string; p_request_id: string }
         Returns: undefined
