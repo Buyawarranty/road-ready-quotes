@@ -76,7 +76,12 @@ const Step3Pricing: React.FC = () => {
   const { toast } = useToast();
   const [view, setView] = useState<'trade' | 'customer'>('trade');
   const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || null);
-  const [prices, setPrices] = useState<Record<string, number>>(() => isAnnualQuoteSnapshot(savedPlan?.selected_options) ? ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price } : {}) }) : {});
+  // Saved quotes store totals including any boost; the page works with base warranty prices.
+  const savedOpts = (savedPlan?.selected_options || {}) as Record<string, any>;
+  const savedBoostCost = savedOpts.boost === true ? Number(savedOpts.boost_dealer_price || 0) : 0;
+  const savedBoostRetail = savedOpts.boost === true ? Number(savedOpts.boost_retail_price || 0) : 0;
+  const [prices, setPrices] = useState<Record<string, number>>(() => isAnnualQuoteSnapshot(savedPlan?.selected_options) ? ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price - savedBoostRetail } : {}) }) : {});
+  const [boost, setBoost] = useState<boolean>(savedOpts.boost === true);
   const [exact, setExact] = useState(false);
   const [exactValue, setExactValue] = useState('');
   const [error, setError] = useState('');
@@ -85,23 +90,31 @@ const Step3Pricing: React.FC = () => {
   const [emailQuote, setEmailQuote] = useState<string | null>(null);
   const [email, setEmail] = useState(customer?.email || '');
   const [emailBusy, setEmailBusy] = useState(false);
+  const boostCfg = config?.boost?.active ? config.boost : null;
+  const boostOn = Boolean(boost && boostCfg);
+  const boostCost = boostOn && boostCfg ? boostCfg.dealer_price : 0;
+  const boostRetail = boostOn && boostCfg ? boostCfg.retail_price : 0;
   const historical = Boolean(savedPlan && isAnnualQuoteSnapshot(savedPlan.selected_options) && term === savedPlan.duration_months);
   const product = config?.terms.find(p => p.months === term);
-  const cost = historical && savedPlan ? savedPlan.dealer_price : product?.dealer_price || 0;
-  const retail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
-  const cover = historical && savedPlan?.selected_options ? {
+  const baseCost = historical && savedPlan ? savedPlan.dealer_price - savedBoostCost : product?.dealer_price || 0;
+  const baseRetail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
+  const cost = baseCost + boostCost;
+  const retail = baseRetail + boostRetail;
+  const baseClaim = Number(config?.cover.claim ?? (savedOpts.boost === true ? undefined : savedOpts.claim) ?? 3000);
+  const baseCover = historical && savedPlan?.selected_options ? {
     excess: Number(savedPlan.selected_options.excess ?? config?.cover.excess ?? 0),
     labour: Number(savedPlan.selected_options.labour ?? config?.cover.labour ?? 100),
-    claim: Number(savedPlan.selected_options.claim ?? config?.cover.claim ?? 3000),
+    claim: baseClaim,
     parts: savedPlan.selected_options.parts_key || config?.cover.parts || 'age-mileage',
   } : config?.cover;
-  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(retail, product) && vehicle?.reg);
+  const cover = baseCover ? { ...baseCover, claim: boostOn && boostCfg ? boostCfg.claim_limit : baseCover.claim } : baseCover;
+  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg);
   const trade = view === 'trade';
   const termLabel = term ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : '';
   const summary = [{ label: 'Warranty term', value: termLabel }, { label: 'Customer excess', value: gbp(cover?.excess || 0) }, { label: 'Labour rate', value: `${gbp(cover?.labour || 0)}/hour` }, { label: 'Per eligible claim', value: gbp(cover?.claim || 0) }];
-  const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support'], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
+  const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support', ...(boostOn ? ['£5,000 claim limit boost'] : [])], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
     const buildPlan = (): DealerJourneyPlan => ({ plan_type: 'gold', duration_months: term || 0, term_months: term || 0, dealer_price: cost, retail_price: retail,
-    selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices } });
+    selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices, boost: boostOn, boost_dealer_price: boostCost, boost_retail_price: boostRetail } });
   const persist = async (next = false) => {
     if (!valid) { setError('Choose an available warranty and a valid customer selling price.'); return null; }
     setError(''); const plan = buildPlan(); setPlan(plan);
@@ -183,8 +196,10 @@ const Step3Pricing: React.FC = () => {
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
-          const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
-          const cardRetail = prices[months] ?? p?.retail_price;
+          const baseCardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price - savedBoostCost : p?.dealer_price;
+          const baseCardRetail = prices[months] ?? p?.retail_price;
+          const cardCost = baseCardCost != null ? baseCardCost + boostCost : undefined;
+          const cardRetail = baseCardRetail != null ? baseCardRetail + boostRetail : undefined;
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 pt-5 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
@@ -200,11 +215,14 @@ const Step3Pricing: React.FC = () => {
           </button>;
         })}
       </div>
-      <div className="mt-4 flex items-center gap-3 rounded-xl border-2 border-dashed border-crm-orange/50 bg-crm-orange-soft p-4" aria-label="£5,000 claim limit boost">
+      <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
-        <div className="min-w-0 flex-1"><h3 className="font-extrabold text-crm-navy">£5,000 Claim Limit Boost</h3><p className="text-sm leading-5 text-muted-foreground">Increase the per-claim limit to £5,000 for extra peace of mind.</p></div>
-        <Switch disabled checked={false} aria-label="Add claim limit boost (price not set yet)" />
-      </div>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">+{gbp(trade ? boostCfg.dealer_price : boostCfg.retail_price)}</span>}</span>
+          <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : 'Increase the per-claim limit to £5,000 for extra peace of mind.'}</span>
+        </span>
+        <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
+      </label>
     </section>
     {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
@@ -219,7 +237,7 @@ const Step3Pricing: React.FC = () => {
         <div className="min-w-0 border-l-2 border-crm-gold-pure/50 pl-4">
           <p className="text-xl font-extrabold tracking-wide text-crm-gold-pure">YOUR PROFIT</p>
           <strong className="block text-5xl font-black leading-[3.25rem] text-crm-gold-pure sm:text-6xl sm:leading-[4rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
-          {term && <p className="mt-1 text-sm text-crm-gold-pure">Your customer pays <strong>{gbp(retail)}</strong>, you pay <strong>{gbp(cost)}</strong>. <button type="button" className="font-bold underline" onClick={() => { setExactValue(String(retail)); setExact(true); }}>Change price</button></p>}
+          {term && <p className="mt-1 text-sm text-crm-gold-pure">Your customer pays <strong>{gbp(retail)}</strong>, you pay <strong>{gbp(cost)}</strong>. <button type="button" className="font-bold underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button></p>}
         </div>
       </div> : <div className="flex items-center rounded-2xl border border-crm-line bg-card p-5"><p className="text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid grid-cols-2 gap-3">
@@ -232,7 +250,7 @@ const Step3Pricing: React.FC = () => {
     {error && <DealerFieldError>{error}</DealerFieldError>}
     <p className="text-xs text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>
   </div>
-  <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader>{(() => { const lo = Math.ceil((product?.min_price || 100) / 100) * 100; const hi = product?.max_price != null ? Math.floor(product.max_price / 100) * 100 : Math.max(lo + 2000, Math.ceil(Number(exactValue || 0) / 100) * 100 + 500); const opts: number[] = []; for (let v = lo; v <= hi; v += 100) opts.push(v); const cur = Number(exactValue); const step = (d: number) => { const n = Math.min(hi, Math.max(lo, Math.round(cur / 100) * 100 + d)); setExactValue(String(n)); }; return <div className="space-y-3"><div className="flex items-center justify-between gap-3"><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Lower price by £100" disabled={cur <= lo} onClick={() => step(-100)}>−</Button><strong className="text-4xl font-black text-crm-navy">{gbp(cur || 0)}</strong><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Raise price by £100" disabled={cur >= hi} onClick={() => step(100)}>+</Button></div><select aria-label="Customer selling price" className="h-12 w-full rounded-md border border-crm-line bg-card px-3 text-base font-semibold text-crm-navy" value={opts.includes(cur) ? String(cur) : ''} onChange={e => setExactValue(e.target.value)}>{!opts.includes(cur) && <option value="">{gbp(cur || 0)}</option>}{opts.map(v => <option key={v} value={v}>{gbp(v)}</option>)}</select></div>; })()}<p className="text-xs text-muted-foreground">Including VAT. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
+  <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader>{(() => { const lo = Math.ceil((product?.min_price || 100) / 100) * 100; const hi = product?.max_price != null ? Math.floor(product.max_price / 100) * 100 : Math.max(lo + 2000, Math.ceil(Number(exactValue || 0) / 100) * 100 + 500); const opts: number[] = []; for (let v = lo; v <= hi; v += 100) opts.push(v); const cur = Number(exactValue); const step = (d: number) => { const n = Math.min(hi, Math.max(lo, Math.round(cur / 100) * 100 + d)); setExactValue(String(n)); }; return <div className="space-y-3"><div className="flex items-center justify-between gap-3"><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Lower price by £100" disabled={cur <= lo} onClick={() => step(-100)}>−</Button><strong className="text-4xl font-black text-crm-navy">{gbp(cur || 0)}</strong><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Raise price by £100" disabled={cur >= hi} onClick={() => step(100)}>+</Button></div><select aria-label="Customer selling price" className="h-12 w-full rounded-md border border-crm-line bg-card px-3 text-base font-semibold text-crm-navy" value={opts.includes(cur) ? String(cur) : ''} onChange={e => setExactValue(e.target.value)}>{!opts.includes(cur) && <option value="">{gbp(cur || 0)}</option>}{opts.map(v => <option key={v} value={v}>{gbp(v)}</option>)}</select></div>; })()}<p className="text-xs text-muted-foreground">Warranty price including VAT{boostOn ? `, plus ${gbp(boostRetail)} for the claim limit boost` : ""}. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
   <Dialog open={!!emailQuote} onOpenChange={open => !open && setEmailQuote(null)}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Email customer quote</DialogTitle></DialogHeader><Input type="email" aria-label="Customer email address" placeholder="Customer email address" value={email} onChange={e => setEmail(e.target.value)} /><Button disabled={emailBusy || !email.includes('@')} onClick={async () => { setEmailBusy(true); const { data, error: sendError } = await supabase.functions.invoke('dealer-quote-email', { body: { quote_id: emailQuote, email } }); setEmailBusy(false); if (sendError || !data?.sent) { toast({ title: data?.error || 'Email could not be sent. Please try again.', variant: 'destructive' }); return; } setEmailQuote(null); toast({ title: 'Customer quote emailed' }); }}>{emailBusy ? 'Sending…' : 'Send quote'}</Button></DialogContent></Dialog>
   <Dialog open={details} onOpenChange={setDetails}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[480px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Warranty cover details</DialogTitle></DialogHeader><dl className="space-y-3">{summary.map(s => <div key={s.label} className="flex justify-between"><dt>{s.label}</dt><dd className="font-bold">{s.value}</dd></div>)}</dl><p className="text-sm text-muted-foreground">Mechanical and electrical cover is subject to vehicle eligibility, servicing requirements and policy terms. Refer to the full terms for covered components, contributions and exclusions.</p><a href="/terms/" target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline">Full cover details &amp; exclusions</a></DialogContent></Dialog>
   <Dialog open={!!paylink} onOpenChange={open => !open && setPaylink('')}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[480px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer payment link</DialogTitle></DialogHeader><a href={paylink} target="_blank" rel="noopener noreferrer" className="break-all text-sm underline">Open customer quote</a><Button variant="outline" onClick={async () => { await navigator.clipboard.writeText(paylink); toast({ title: 'Payment link copied' }); }}>Copy link</Button><p className="text-sm text-muted-foreground">Your customer pays securely by card. Warranty documents follow confirmation by your dealer.</p></DialogContent></Dialog>

@@ -136,6 +136,7 @@ const Step4Checkout: React.FC = () => {
           labour_rate: labour,
           product_id: options.product_id,
           pricing_version: options.pricing_version,
+          boost: options.boost === true,
         },
         discount_pct,
       },
