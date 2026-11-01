@@ -246,20 +246,20 @@ const Step3Pricing: React.FC = () => {
         <p className="mt-1">Mechanical and electrical failures. It is not designed for pre-existing faults, routine servicing, tyres, brake pads and wear items, accident damage, trader-owned vehicles, or hire and reward use (taxis, rentals, couriers).</p>
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
-    <section className="grid items-center gap-3 pt-2 md:grid-cols-[auto_minmax(0,1fr)]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center justify-end gap-3 rounded-2xl border border-crm-line bg-card p-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-4 w-4 text-crm-green-deep" /></span>
-        <div className="min-w-0 text-right">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Your profit</p>
-          <strong className="block text-3xl font-black leading-8 text-crm-green sm:text-4xl sm:leading-9">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+    <section className="grid items-center gap-3 pt-2 lg:grid-cols-[minmax(260px,420px)_minmax(0,1fr)]" aria-label="Quote summary">
+      {trade ? <div className="flex items-center gap-4 rounded-2xl border border-crm-line bg-card px-5 py-4">
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-7 w-7 text-crm-green-deep" /></span>
+        <div className="min-w-0">
+          <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
+          <strong className="block text-5xl font-black leading-[3.25rem] text-crm-green">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
           {term && <button type="button" className="mt-0.5 text-xs font-semibold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button>}
         </div>
-      </div> : <div className="flex items-center justify-end rounded-2xl border border-crm-line bg-card p-3"><p className="text-right text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
-      <div className="grid grid-cols-2 gap-3">
-        {trade && <Button variant="outline" className="h-10 !border-crm-line !bg-card !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save quote</Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-10 !border-crm-line !bg-card !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+      </div> : <div className="flex items-center rounded-2xl border border-crm-line bg-card px-5 py-4"><p className="text-sm text-muted-foreground">Customer price<strong className="block text-5xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
+      <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:justify-end">
+        {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
-        {trade && <Button className="col-span-2 h-16 w-full text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+        {trade && <Button className="col-span-2 h-14 w-full px-6 text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div>
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
