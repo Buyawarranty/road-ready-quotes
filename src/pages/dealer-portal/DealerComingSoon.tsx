@@ -523,7 +523,7 @@ const DealerComingSoon = () => {
                   )}
 
                   <form onSubmit={onSubmit} className="mt-5 space-y-4" noValidate>
-                    <Field label="Dealership name" icon={Building2}>
+                    <Field label="Dealership name" icon={Building2} valid={form.dealership_name.trim().length > 1}>
                       <input
                         type="text"
                         value={form.dealership_name}
@@ -533,7 +533,7 @@ const DealerComingSoon = () => {
                       />
                     </Field>
 
-                    <Field label="Contact name" icon={User}>
+                    <Field label="Contact name" icon={User} valid={form.contact_name.trim().length > 1}>
                       <input
                         type="text"
                         value={form.contact_name}
@@ -560,7 +560,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                         placeholder="e.g. you@dealership.co.uk"
-                        className={`${regInputCls} ${touched.email && errors.email ? 'border-rose-400' : ''}`}
+                        className={`${regInputCls} ${touched.email && errors.email ? 'border-destructive' : ''}`}
                       />
                     </Field>
 
@@ -580,8 +580,8 @@ const DealerComingSoon = () => {
                         value={form.phone_number}
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
-                        placeholder="UK mobile or landline"
-                        className={`${regInputCls} ${touched.phone && errors.phone ? 'border-rose-400' : ''}`}
+                        placeholder="e.g. 07960 123 456"
+                        className={`${regInputCls} ${touched.phone && errors.phone ? 'border-destructive' : ''}`}
                       />
                     </Field>
                     <p className="text-xs text-muted-foreground -mt-2 pl-1">Unlock exclusive trade pricing and expert advice</p>
@@ -604,7 +604,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
                         placeholder="https://www.autotrader.co.uk/dealers/..."
-                        className={`${regInputCls} ${touched.url && errors.url ? 'border-rose-400' : ''}`}
+                        className={`${regInputCls} ${touched.url && errors.url ? 'border-destructive' : ''}`}
                       />
                     </Field>
 
@@ -777,7 +777,7 @@ const Field: React.FC<{
       )}
     </div>
     {error && (
-      <p className="text-xs text-rose-600 mt-1.5 font-medium">{error}</p>
+      <p className="text-xs text-destructive mt-1.5 font-medium">{error}</p>
     )}
   </label>
 );

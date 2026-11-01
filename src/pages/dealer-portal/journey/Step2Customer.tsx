@@ -8,7 +8,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight } from 'lucide-react';
+import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight, User, Phone, MapPin } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
@@ -129,16 +129,17 @@ const Step2Customer: React.FC = () => {
     return null;
   };
 
-  const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string) => {
+  const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string, Icon?: React.ElementType, placeholder?: string) => {
     const err = fieldError(k);
     return (
     <div>
       <label htmlFor={`c-${k}`} className="mb-1 block text-sm font-medium text-crm-navy">{label}</label>
       <div className="relative">
-        <Input id={`c-${k}`} type={type} inputMode={k === 'phone' ? 'tel' : k === 'email' ? 'email' : undefined} autoComplete={autoComplete} value={form[k]}
+        {Icon && <Icon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />}
+        <Input id={`c-${k}`} placeholder={placeholder} type={type} inputMode={k === 'phone' ? 'tel' : k === 'email' ? 'email' : undefined} autoComplete={autoComplete} value={form[k]}
           aria-invalid={!!err} aria-describedby={err ? `c-${k}-err` : undefined}
           onChange={(e) => update(k, e.target.value)} onBlur={() => setTouched((t) => ({ ...t, [k]: true }))}
-          className={`h-12 pr-10 text-base ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
+          className={`h-12 pr-10 text-base ${Icon ? 'pl-11' : ''} ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
         {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
       </div>
       {err && <p id={`c-${k}-err`} className="mt-1 text-sm font-medium text-destructive">{err}</p>}
@@ -183,9 +184,9 @@ const Step2Customer: React.FC = () => {
           </section>
         ) : (
           <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
-            {field('email', 'Email *', 'email', 'email')}
-            {field('phone', 'Mobile *', 'tel', 'tel')}
-            {field('name', 'Full name *', 'text', 'name')}
+            {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
+            {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
+            {field('email', 'Email *', 'email', 'email', Mail, 'e.g. john@example.com')}
 
             <div className="pt-2">
               <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
@@ -210,8 +211,8 @@ const Step2Customer: React.FC = () => {
 
             {manualAddress && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {field('address_line1', 'Address line 1 *', 'text', 'address-line1')}
-                {field('town', 'Town *', 'text', 'address-level2')}
+                {field('address_line1', 'Address line 1 *', 'text', 'address-line1', Home, 'e.g. 12 High Street')}
+                {field('town', 'Town *', 'text', 'address-level2', MapPin, 'e.g. Manchester')}
               </div>
             )}
           </section>
