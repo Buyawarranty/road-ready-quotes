@@ -1277,6 +1277,16 @@ body {
   animation: breathing 2.8s ease-in-out infinite;
 }
 
+@keyframes car-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.animate-car-bounce {
+  animation: car-bounce 1.2s ease-in-out infinite;
+}
+
+
 /* Swinton Design System Components */
 
 /* CTA Button - Branded Orange for Primary Actions */
