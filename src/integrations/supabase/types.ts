@@ -6673,6 +6673,56 @@ export type Database = {
         }
         Relationships: []
       }
+      dealer_profile_change_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          current_value: string | null
+          dealer_id: string
+          field: string
+          id: string
+          reason: string | null
+          requested_value: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          current_value?: string | null
+          dealer_id: string
+          field?: string
+          id?: string
+          reason?: string | null
+          requested_value: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          current_value?: string | null
+          dealer_id?: string
+          field?: string
+          id?: string
+          reason?: string | null
+          requested_value?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_profile_change_requests_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_quote_templates: {
         Row: {
           claim_limit: number
@@ -15687,6 +15737,10 @@ export type Database = {
         }[]
       }
       revert_pricing_to_code_defaults: { Args: never; Returns: undefined }
+      review_dealer_profile_change: {
+        Args: { p_approve: boolean; p_note?: string; p_request_id: string }
+        Returns: undefined
+      }
       review_renewal: {
         Args: { p_decision: string; p_note?: string; p_review_id: string }
         Returns: string
