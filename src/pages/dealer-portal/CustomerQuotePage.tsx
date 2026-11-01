@@ -6,8 +6,8 @@ import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { CreditCard, Settings } from 'lucide-react';
-import { decodeCustomerQuote, adjustableQuotePrice } from '@/lib/customerQuoteSharing';
+import { CreditCard, Settings, Link2, MessageCircle, Mail } from 'lucide-react';
+import { decodeCustomerQuote, adjustableQuotePrice, customerQuoteMessage } from '@/lib/customerQuoteSharing';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
@@ -20,6 +20,7 @@ const CustomerQuotePage: React.FC = () => {
   const [extras, setExtras] = useState(data?.adjustable?.selectedExtras || []);
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState('');
+  const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (!data || new URLSearchParams(window.location.search).get('print') !== '1') return;
     const timer = window.setTimeout(() => window.print(), 500);
