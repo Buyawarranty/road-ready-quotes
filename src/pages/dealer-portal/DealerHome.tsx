@@ -178,7 +178,7 @@ const DealerHome = () => {
     // portal quote flow; otherwise send them to dealer registration.
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.user) {
-      navigate(`/dealer-portal/quote/vehicle${regParam}`);
+      navigate(`/dealer-portal/quote/pricing${regParam}`);
     } else {
       navigate(`/dealer-portal/signup${regParam}`);
     }

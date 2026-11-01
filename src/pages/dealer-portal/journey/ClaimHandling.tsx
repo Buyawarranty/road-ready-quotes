@@ -339,7 +339,7 @@ const ClaimHandlingPage: React.FC = () => {
             </div>
             <button
               type="button"
-              onClick={() => navigate('/dealer-portal/quote/vehicle')}
+              onClick={() => navigate('/dealer-portal/quote/pricing')}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-orange hover:underline"
             >
               <Pencil className="h-3.5 w-3.5" /> Edit vehicle
@@ -624,7 +624,7 @@ const ClaimHandlingPage: React.FC = () => {
                   <Button
                     variant="ghost"
                     className="w-full text-muted-foreground"
-                    onClick={() => navigate('/dealer-portal/quote/vehicle')}
+                    onClick={() => navigate('/dealer-portal/quote/pricing')}
                   >
                     <ArrowLeft className="mr-1.5 h-4 w-4" /> Back
                   </Button>

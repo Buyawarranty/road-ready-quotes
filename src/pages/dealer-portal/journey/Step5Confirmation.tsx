@@ -96,7 +96,7 @@ const Step5Confirmation: React.FC = () => {
               <FileText className="h-4 w-4 mr-2" /> View warranty
             </Button>
             <Button
-              onClick={() => navigate('/dealer-portal/quote/vehicle')}
+              onClick={() => navigate('/dealer-portal/quote/pricing')}
               variant="outline"
               className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
             >

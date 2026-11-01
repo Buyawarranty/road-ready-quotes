@@ -140,7 +140,7 @@ const WhyChooseUs = () => {
               <h1>A trusted trade warranty <span>provider for UK motor dealers.</span></h1>
               <p className="why-lead">Panda Protect is a leading trade warranty provider helping dealerships across the UK sell more cars with confidence. As a dealer warranty provider, we deliver flexible motor trade warranty solutions with FCA-compliant processes, fast claims and dedicated UK support.</p>
               <div className="why-actions">
-                <Button asChild className="why-button why-button-primary"><Link to="/dealer-portal/quote/vehicle">Get a dealer quote <ArrowRight /></Link></Button>
+                <Button asChild className="why-button why-button-primary"><Link to="/dealer-portal/quote/pricing">Get a dealer quote <ArrowRight /></Link></Button>
                 <Button asChild variant="outline" className="why-button why-button-outline"><Link to="/dealer-portal/signup">Register your dealership</Link></Button>
               </div>
               <ul className="why-reassurance">
@@ -241,7 +241,7 @@ const WhyChooseUs = () => {
         </section>
 
         <section className="why-final-cta">
-          <div className="why-shell"><div><h2>Ready to partner with a trusted UK warranty provider?</h2><p>Join dealers growing their business with Panda Protect.</p></div><div className="why-final-actions"><Button asChild className="why-button why-button-primary"><Link to="/dealer-portal/quote/vehicle">Get a dealer quote <ArrowRight /></Link></Button><Button asChild variant="outline" className="why-button why-button-dark-outline"><Link to="/contact-us/">Speak to our team</Link></Button></div><ul>{['More sales', 'Happier customers', 'Greater profitability', 'A stronger dealership'].map((item) => <li key={item}><Check />{item}</li>)}</ul></div>
+          <div className="why-shell"><div><h2>Ready to partner with a trusted UK warranty provider?</h2><p>Join dealers growing their business with Panda Protect.</p></div><div className="why-final-actions"><Button asChild className="why-button why-button-primary"><Link to="/dealer-portal/quote/pricing">Get a dealer quote <ArrowRight /></Link></Button><Button asChild variant="outline" className="why-button why-button-dark-outline"><Link to="/contact-us/">Speak to our team</Link></Button></div><ul>{['More sales', 'Happier customers', 'Greater profitability', 'A stronger dealership'].map((item) => <li key={item}><Check />{item}</li>)}</ul></div>
         </section>
       </main>
     </div>

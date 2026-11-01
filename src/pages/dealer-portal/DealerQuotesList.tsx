@@ -16,7 +16,7 @@ import { DateRange } from 'react-day-picker';
 const PAGE_SIZE = 10;
 
 const STEP_PATHS: Record<number, string> = {
-  1: '/dealer-portal/quote/vehicle',
+  1: '/dealer-portal/quote/pricing',
   2: '/dealer-portal/quote/customer',
   3: '/dealer-portal/quote/pricing',
   4: '/dealer-portal/quote/checkout',
@@ -24,7 +24,7 @@ const STEP_PATHS: Record<number, string> = {
 };
 
 const STEP_LABELS: Record<number, string> = {
-  1: 'Vehicle details',
+  1: 'Warranty quote',
   2: 'Customer details',
   3: 'Plan & pricing',
   4: 'Checkout',
@@ -145,7 +145,7 @@ const DealerQuotesList = () => {
 
   const handleNewQuote = () => {
     reset();
-    navigate('/dealer-portal/quote/vehicle');
+    navigate('/dealer-portal/quote/pricing');
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
@@ -353,7 +353,7 @@ const DealerQuotesList = () => {
                         ? 'Awaiting Panda Protect'
                         : q.status === 'converted' || q.status === 'completed'
                         ? 'Completed'
-                        : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
+                        : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote'}
                     </span>
                     <span className="text-gray-500"> · Created on </span>
                     <span className="text-gray-700">{formatDateTime(q.created_at)}</span>
