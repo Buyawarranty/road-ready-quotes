@@ -180,7 +180,7 @@ const Step3Pricing: React.FC = () => {
         {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
       </div>
     </header>
-    <div className="grid max-w-xs grid-cols-2 gap-3" role="group" aria-label="Quote view">
+    <div className="grid max-w-xs grid-cols-2 gap-2" role="group" aria-label="Quote view">
       <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-9 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
       <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-9 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />CV</Button>
     </div>
@@ -190,7 +190,7 @@ const Step3Pricing: React.FC = () => {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Warranty length</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-crm-navy sm:text-3xl">How long do you want the cover?</h2>
+          <h2 className="mt-1 text-xl font-extrabold text-crm-navy sm:text-2xl">How long do you want the cover?</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Parts and labour covered — pick the warranty length.</p>
         </div>
         <button type="button" onClick={() => setDetails(true)} className="shrink-0 text-xs font-semibold text-crm-navy underline">Details</button>
