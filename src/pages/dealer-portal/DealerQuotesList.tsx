@@ -353,7 +353,7 @@ const DealerQuotesList = () => {
                         ? 'Awaiting Panda Protect'
                         : q.status === 'converted' || q.status === 'completed'
                         ? 'Completed'
-                        : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
+                        : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote'}
                     </span>
                     <span className="text-gray-500"> · Created on </span>
                     <span className="text-gray-700">{formatDateTime(q.created_at)}</span>
