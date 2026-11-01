@@ -120,6 +120,10 @@
   letter-spacing: 0;
 }
 
+.dealer-crm .vehicle-reg-plate--error {
+  border-color: hsl(var(--destructive));
+}
+
 .dealer-crm .vehicle-reg-plate__input {
   height: 100%;
   min-height: 3.5rem;

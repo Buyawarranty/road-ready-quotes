@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -142,7 +143,7 @@ const Step2Customer: React.FC = () => {
           className={`h-12 pr-10 text-base ${Icon ? 'pl-11' : ''} ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
         {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
       </div>
-      {err && <p id={`c-${k}-err`} className="mt-1 text-sm font-medium text-destructive">{err}</p>}
+      {err && <DealerFieldError id={`c-${k}-err`}>{err}</DealerFieldError>}
     </div>
     );
   };
@@ -218,7 +219,7 @@ const Step2Customer: React.FC = () => {
           </section>
         )}
 
-        {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
+        {error && <DealerFieldError>{error}</DealerFieldError>}
 
         <Button type="button" disabled={saving} onClick={mode === 'panda' ? handoff : submitSelf}
           className={`h-14 w-full gap-2 px-6 text-base font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:ml-auto sm:mr-0 sm:flex sm:w-auto sm:min-w-[320px] ${saving ? '' : 'animate-breathing'}`}>

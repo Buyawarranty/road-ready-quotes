@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import CustomerQuoteView from '@/components/dealer/journey/CustomerQuoteView';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -49,7 +50,7 @@ const CustomerQuotePage: React.FC = () => {
           <p className="text-sm font-bold text-crm-green">Payment received — thank you.</p>
           <p className="mt-1 text-xs text-muted-foreground">Your dealer will confirm your warranty documents shortly.</p>
         </div> : <div className="rounded-lg border border-crm-line bg-card p-4 text-center">
-          {cancelled && <p className="mb-2 text-xs font-semibold text-destructive">Payment was cancelled — you can try again below.</p>}
+          {cancelled && <DealerFieldError>Payment was cancelled. You can try again below.</DealerFieldError>}
           <Button className="w-full sm:w-auto" disabled={paying} onClick={async () => {
             setPaying(true); setPayError('');
             const { data: res, error } = await supabase.functions.invoke('customer-create-checkout', { body: { quote_id: payQuoteId, return_url: window.location.href } });
@@ -58,7 +59,7 @@ const CustomerQuotePage: React.FC = () => {
             window.location.href = res.checkout_url;
           }}><CreditCard /> {paying ? 'Redirecting…' : `Pay £${price.toFixed(2)} now`}</Button>
           <p className="mt-2 text-[11px] text-muted-foreground">Secure card payment powered by Stripe.</p>
-          {payError && <p role="alert" className="mt-2 text-xs text-destructive">{payError}</p>}
+          {payError && <DealerFieldError>{payError}</DealerFieldError>}
         </div>}
       </div> : undefined} />
     </>

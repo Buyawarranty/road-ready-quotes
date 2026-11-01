@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import CoverTypeSwitch from '@/components/dealer/journey/CoverTypeSwitch';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -157,7 +158,7 @@ const OptionRow: React.FC<OptionRowProps> = ({ icon: Icon, label, helper, toolti
           );
         })}
       </div>
-      {error && <p className="mt-2 text-xs font-medium text-destructive">{error}</p>}
+      {error && <DealerFieldError>{error}</DealerFieldError>}
     </div>
   </div>
 );
@@ -602,7 +603,7 @@ const ClaimHandlingPage: React.FC = () => {
                   </ul>
                 </div>
 
-                {error && <p className="mt-3 text-xs font-medium text-destructive">{error}</p>}
+                {error && <DealerFieldError>{error}</DealerFieldError>}
 
                 <div className="mt-3 space-y-2">
                   <Button

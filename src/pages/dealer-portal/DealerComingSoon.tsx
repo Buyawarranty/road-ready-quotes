@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import pandaClaimApproved from '@/assets/panda-claim-approved.webp';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
@@ -777,7 +778,7 @@ const Field: React.FC<{
       )}
     </div>
     {error && (
-      <p className="text-xs text-destructive mt-1.5 font-medium">{error}</p>
+      <DealerFieldError>{error}</DealerFieldError>
     )}
   </label>
 );
