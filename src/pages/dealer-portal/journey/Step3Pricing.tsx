@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp } from 'lucide-react';
+import { Check, ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -173,41 +173,37 @@ const Step3Pricing: React.FC = () => {
     </div>
   </DealerLayout>;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
-    <header className="grid items-center gap-4 min-[1100px]:grid-cols-[1fr_auto]">
-      <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Select how many years of cover you want.</p></div>
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-2">
-        <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
-        <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
-        {vehicle?.reg && <div className="flex items-center gap-2 rounded-lg border-2 border-crm-orange/50 bg-crm-orange-soft px-2 py-1.5">
-          <span className="text-xs font-bold uppercase tracking-wide text-crm-orange">Update mileage</span>
-          <span className="flex items-center gap-1">
-            <button type="button" aria-label="Reduce mileage by 100 miles" onClick={() => stepMileage(-100)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold leading-none text-crm-navy hover:border-crm-orange">&minus;</button>
-            <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? Number(mileageInput.replace(/[^0-9]/g, '') || 0).toLocaleString('en-GB') : ''} placeholder="Enter mileage"
-              onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
-              className="h-8 w-24 rounded-md border border-crm-line bg-card px-2 text-center text-sm font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
-            <button type="button" aria-label="Increase mileage by 100 miles" onClick={() => stepMileage(100)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold leading-none text-crm-navy hover:border-crm-orange">+</button>
-          </span>
-          <span className="text-xs font-bold text-crm-navy">miles</span>
-        </div>}
-        {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
+    <header className="flex flex-wrap items-start justify-between gap-3">
+      <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Confirm mileage and select your cover.</p></div>
+      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Quote view">
+        <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-10 gap-2 px-4 font-bold ${trade ? '!border-crm-orange !bg-crm-orange-soft !text-crm-orange' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />Trade View</Button>
+        <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-10 gap-2 px-4 font-bold ${!trade ? '!border-crm-orange !bg-crm-orange-soft !text-crm-orange' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />Customer View</Button>
       </div>
     </header>
-    <div className="grid max-w-xs grid-cols-2 gap-2" role="group" aria-label="Quote view">
-      <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-9 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
-      <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-9 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />CV</Button>
-    </div>
+    <section className="flex flex-wrap items-center gap-4 rounded-xl border border-crm-line bg-card px-4 py-3" aria-label="Vehicle">
+      <div className="w-40 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
+      <div className="min-w-0 flex-1"><p className="text-lg font-extrabold leading-6">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-sm text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
+      <Button variant="outline" className="h-10 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>
+    </section>
+    {(() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageInput !== '' && Number(vehicle?.mileage) === n; return (
+    <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-muted/60 px-4 py-3" aria-label="Current mileage">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card"><Gauge className="h-5 w-5" /></span>
+      <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">Update in steps of 100 or type the figure.</p></div>
+      <div className="flex items-center gap-1.5">
+        <button type="button" aria-label="Reduce mileage by 100 miles" onClick={() => stepMileage(-100)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
+        <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
+          onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
+          className="h-10 w-32 rounded-md border border-crm-line bg-card px-3 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
+        <button type="button" aria-label="Increase mileage by 100 miles" onClick={() => stepMileage(100)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
+        <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
+      </div>
+      {confirmed ? <span className="flex h-10 items-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep"><Check className="h-4 w-4" />Mileage confirmed</span>
+        : <Button variant="outline" className="h-10 !border-crm-orange !bg-card font-bold !text-crm-orange" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+    </section>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
-    <section className="rounded-2xl border border-crm-line bg-card p-4 sm:p-5" aria-label="Warranty length">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Warranty length</p>
-          <h2 className="mt-1 text-xl font-extrabold text-crm-navy sm:text-2xl">How long do you want the cover?</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">Parts and labour covered — pick the warranty length.</p>
-        </div>
-        <button type="button" onClick={() => setDetails(true)} className="shrink-0 text-xs font-semibold text-crm-navy underline">Details</button>
-      </div>
-      <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
+    <section aria-label="Warranty length">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
           const cardBoost = boostOn && boostCfg ? boostForTerm(boostCfg, months) : null;
@@ -217,28 +213,31 @@ const Step3Pricing: React.FC = () => {
           const cardRetail = baseCardRetail != null ? baseCardRetail + (cardBoost?.retail_price || 0) : undefined;
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
-          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-3.5 pt-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
-            {months === 24 && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-crm-orange px-3 py-0.5 text-xs font-bold text-primary-foreground">Most popular</span>}
+          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
             <span className="flex items-start justify-between gap-2">
-              <strong className="text-2xl font-extrabold leading-8 sm:text-3xl sm:leading-9">{shown != null ? gbp(shown) : '—'}</strong>
-              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-crm-orange' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-2 w-2 rounded-full bg-primary-foreground" />}</span>
+              <strong className="text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</strong>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-card' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-3 w-3 rounded-full bg-crm-orange" />}</span>
             </span>
-            <span className="mt-1 text-sm font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'} Warranty</span>
-            <span className="mt-0.5 text-xs text-muted-foreground">{trade ? 'your cost' : 'per vehicle, inc. VAT'}</span>
-            {trade && cardRetail != null && cardCost != null && <span className="mt-1.5 flex items-center gap-1.5 text-xs font-extrabold text-crm-green-deep"><Coins className="h-4 w-4" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
+            <span className="mt-1 text-base font-bold">{months / 12} Year Warranty</span>
+            <span className="text-sm text-muted-foreground">{trade ? `Dealer cost: ${cardCost != null ? gbp(cardCost) : '—'}` : 'per vehicle, inc. VAT'}</span>
+            {trade && cardRetail != null && cardCost != null && <span className="mt-3 flex items-center gap-2 rounded-md border border-crm-line bg-card px-3 py-1.5 text-sm font-extrabold text-crm-green"><Coins className="h-4 w-4" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </button>;
         })}
       </div>
-      <label className={`mt-3 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">{term ? `+${gbp(trade ? boostCost : boostRetail)}` : `from ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}</span>
-          <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : 'Increase the per-claim limit to £5,000 for extra peace of mind.'}</span>
-        </span>
-        <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
-      </label>
     </section>
+    {cover && <section className="grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
+      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
+    </section>}
+    <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors ${boostOn ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-orange/40 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-orange" /></span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-base font-extrabold leading-5">£5,000 Claim Limit Boost</span>
+        <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
+      </span>
+      {boostCfg && <span className="hidden whitespace-nowrap text-sm font-bold sm:inline">{trade ? 'Additional dealer cost' : 'Additional cost'}: {term ? gbp(trade ? (boostForTerm(boostCfg, term)?.dealer_price ?? 0) : (boostForTerm(boostCfg, term)?.retail_price ?? 0)) : `from ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}
+      <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
+    </label>
     {cover && <section className="grid grid-cols-2 gap-3 rounded-xl border border-crm-line bg-card p-3 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
