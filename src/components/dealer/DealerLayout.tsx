@@ -304,8 +304,18 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-destructive" onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" /> Logout
+                  <DropdownMenuItem
+                    className="cursor-pointer text-destructive"
+                    onClick={() => {
+                      if (isImpersonating) {
+                        stopImpersonation();
+                        navigate('/admin-dashboard/?tab=dealer-signups');
+                      } else {
+                        signOut();
+                      }
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" /> {isImpersonating ? 'Exit dealer view' : 'Logout'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -331,8 +341,20 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                       {navItems.map((item) => renderNavItem(item, true))}
                     </nav>
                     <div className="border-t border-crm-line p-4">
-                      <Button variant="outline" onClick={() => { signOut(); setMobileOpen(false); }} className="w-full gap-2 text-destructive">
-                        <LogOut className="h-4 w-4" /> Sign out
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          if (isImpersonating) {
+                            stopImpersonation();
+                            navigate('/admin-dashboard/?tab=dealer-signups');
+                          } else {
+                            signOut();
+                          }
+                        }}
+                        className="w-full gap-2 text-destructive"
+                      >
+                        <LogOut className="h-4 w-4" /> {isImpersonating ? 'Exit dealer view' : 'Sign out'}
                       </Button>
                     </div>
                   </div>
