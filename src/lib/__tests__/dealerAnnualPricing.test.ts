@@ -1,8 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '../dealerAnnualPricing';
+import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '../dealerAnnualPricing';
 const product = { months: 24, dealer_price: 200, retail_price: 695, min_price: 200, max_price: 1400, active: true };
 const oneYear = { months: 12, dealer_price: 100, retail_price: 395, min_price: 100, max_price: null, active: true };
+const boostCfg = { active: true, claim_limit: 5000, dealer_price: 60, retail_price: 60, terms: [{ months: 12, dealer_price: 20, retail_price: 60 }, { months: 24, dealer_price: 40, retail_price: 100 }, { months: 36, dealer_price: 60, retail_price: 140 }] };
 describe('Annual selling prices', () => {
   it('uses £100 dealer and £395 retail for one year rather than a legacy £141.60 snapshot', () => {
     const annual = { ...product, months: 12, dealer_price: 100, retail_price: 395 };
@@ -39,4 +40,15 @@ describe('Annual selling prices', () => {
     assert.equal(stepSellingPrice(395, -1, oneYear), 295);
   });
   it('offers nothing when no price is configured', () => { assert.deepEqual(sellingPriceOptions(undefined, 0), []); });
+});
+describe('Claim limit boost prices', () => {
+  it('uses the price set for the chosen warranty length', () => {
+    assert.equal(boostForTerm(boostCfg, 12)?.dealer_price, 20);
+    assert.equal(boostForTerm(boostCfg, 24)?.dealer_price, 40);
+    assert.equal(boostForTerm(boostCfg, 36)?.dealer_price, 60);
+    assert.equal(boostForTerm(boostCfg, 36)?.retail_price, 140);
+  });
+  it('keeps the £5,000 claim limit when a term price is applied', () => { assert.equal(boostForTerm(boostCfg, 36)?.claim_limit, 5000); });
+  it('falls back to the standard boost price for a term without one', () => { assert.equal(boostForTerm(boostCfg, 48)?.dealer_price, 60); assert.equal(boostForTerm(boostCfg, 48)?.retail_price, 60); });
+  it('offers nothing when the boost is not configured', () => { assert.equal(boostForTerm(undefined, 12), undefined); assert.equal(boostForTerm(null, 12), undefined); });
 });
