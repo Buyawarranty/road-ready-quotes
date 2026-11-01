@@ -11,7 +11,7 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
+import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
 import { Check, ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -92,8 +92,10 @@ const Step3Pricing: React.FC = () => {
   const [emailBusy, setEmailBusy] = useState(false);
   const boostCfg = config?.boost?.active ? config.boost : null;
   const boostOn = Boolean(boost && boostCfg);
-  const boostCost = boostOn && boostCfg ? boostCfg.dealer_price : 0;
-  const boostRetail = boostOn && boostCfg ? boostCfg.retail_price : 0;
+  const selectedBoost = boostOn && boostCfg && term ? boostForTerm(boostCfg, term) : null;
+  const boostLead = boostCfg?.terms?.length ? boostCfg.terms.reduce((a, b) => (b.dealer_price < a.dealer_price ? b : a)) : boostCfg;
+  const boostCost = selectedBoost ? selectedBoost.dealer_price : 0;
+  const boostRetail = selectedBoost ? selectedBoost.retail_price : 0;
   const historical = Boolean(savedPlan && isAnnualQuoteSnapshot(savedPlan.selected_options) && term === savedPlan.duration_months);
   const product = config?.terms.find(p => p.months === term);
   const baseCost = historical && savedPlan ? savedPlan.dealer_price - savedBoostCost : product?.dealer_price || 0;
@@ -196,10 +198,11 @@ const Step3Pricing: React.FC = () => {
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
+          const cardBoost = boostOn && boostCfg ? boostForTerm(boostCfg, months) : null;
           const baseCardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price - savedBoostCost : p?.dealer_price;
           const baseCardRetail = prices[months] ?? p?.retail_price;
-          const cardCost = baseCardCost != null ? baseCardCost + boostCost : undefined;
-          const cardRetail = baseCardRetail != null ? baseCardRetail + boostRetail : undefined;
+          const cardCost = baseCardCost != null ? baseCardCost + (cardBoost?.dealer_price || 0) : undefined;
+          const cardRetail = baseCardRetail != null ? baseCardRetail + (cardBoost?.retail_price || 0) : undefined;
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 pt-5 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
@@ -218,7 +221,7 @@ const Step3Pricing: React.FC = () => {
       <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">+{gbp(trade ? boostCfg.dealer_price : boostCfg.retail_price)}</span>}</span>
+          <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">{term ? `+${gbp(trade ? boostCost : boostRetail)}` : `from ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}</span>
           <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : 'Increase the per-claim limit to £5,000 for extra peace of mind.'}</span>
         </span>
         <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />

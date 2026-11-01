@@ -6,7 +6,7 @@ export interface DealerAnnualPricing {
   version: string;
   terms: AnnualWarrantyProduct[];
   cover: { excess: number; labour: number; claim: number; parts: string };
-  boost?: { active: boolean; claim_limit: number; dealer_price: number; retail_price: number };
+  boost?: { active: boolean; claim_limit: number; dealer_price: number; retail_price: number; terms?: { months: number; dealer_price: number; retail_price: number }[] };
 }
 export function useDealerAnnualPricing(dealerId?: string) {
   return useQuery({

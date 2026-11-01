@@ -1,4 +1,4 @@
-export interface AnnualBoost { active: boolean; claim_limit: number; dealer_price: number; retail_price: number }
+export interface AnnualBoost { active: boolean; claim_limit: number; dealer_price: number; retail_price: number; terms?: { months: number; dealer_price: number; retail_price: number }[] }
 
 const pence = (n: number) => Math.round(n * 100);
 
@@ -8,7 +8,9 @@ export function validateAnnualPlan(
   options: { claim?: number; boost?: AnnualBoost | null } = {},
 ) {
   if (!product || !product.active || (product.months === 48 && product.approvals_complete !== true)) return 'This warranty duration is awaiting approval.';
-  const boost = plan.boost === true ? options.boost : null;
+  const configuredBoost = options.boost ?? null;
+  const termPrice = configuredBoost?.terms?.find(item => item.months === plan.duration_months);
+  const boost = plan.boost === true ? (configuredBoost ? { ...configuredBoost, ...(termPrice || {}) } : null) : null;
   if (plan.boost === true && !boost?.active) return 'The claim limit boost is unavailable. Please refresh your quote.';
   const boostCost = boost ? boost.dealer_price : 0;
   const boostRetail = boost ? boost.retail_price : 0;
