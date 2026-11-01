@@ -169,7 +169,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
             ? 'bg-crm-orange text-primary-foreground shadow-sm'
             : mobile
               ? 'text-foreground hover:bg-muted'
-              : 'text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              : 'text-crm-navy hover:bg-background hover:text-crm-navy'
         }`}
       >
         <Icon className="h-[18px] w-[18px] shrink-0" />
@@ -327,28 +327,28 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </header>
 
-      <aside className={`fixed bottom-0 left-0 ${isImpersonating ? 'top-[112px]' : 'top-[72px]'} z-40 hidden w-[240px] flex-col bg-crm-navy p-3 lg:flex`}>
+      <aside className={`fixed bottom-0 left-0 ${isImpersonating ? 'top-[112px]' : 'top-[72px]'} z-40 hidden w-[240px] flex-col border-r border-crm-line bg-muted p-3 lg:flex`}>
         <nav className="space-y-1">
           {primaryNav.map((item) => renderNavItem(item))}
-          <div className="my-3 border-t border-primary-foreground/15" />
+          <div className="my-3 border-t border-crm-line" />
           {secondaryNav.map((item) => renderNavItem(item))}
         </nav>
-        <div className="mt-auto rounded-md bg-crm-navy-soft p-4 text-white">
+        <div className="mt-auto rounded-md border border-crm-line bg-background p-4 text-crm-navy">
           <div className="mb-2 flex items-center gap-2">
-            <Headphones className="h-5 w-5 text-white" />
-            <p className="text-sm font-bold text-white">Need help?</p>
+            <Headphones className="h-5 w-5 text-crm-navy" />
+            <p className="text-sm font-bold text-crm-navy">Need help?</p>
           </div>
-          <p className="mb-3 text-xs leading-relaxed text-white">Our UK team is here to help.</p>
+          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">Our UK team is here to help.</p>
           <div className="mb-2 space-y-1">
             <Link
               to="/faq/traders/"
-              className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-primary-foreground/80 transition-colors hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-crm-navy transition-colors hover:bg-muted"
             >
               <BookOpen className="h-[18px] w-[18px] shrink-0" /> Resources
             </Link>
           </div>
-          <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-transparent !text-white hover:bg-crm-orange hover:!text-white">
-            <a href="mailto:hello@pandaprotect.co.uk" className="text-white">Contact support →</a>
+          <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-background font-bold !text-crm-navy hover:bg-crm-orange hover:!text-primary-foreground">
+            <a href="mailto:hello@pandaprotect.co.uk" >Contact support →</a>
           </Button>
         </div>
       </aside>

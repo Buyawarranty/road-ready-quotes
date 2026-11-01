@@ -206,11 +206,11 @@ const Step4Checkout: React.FC = () => {
         onClick={() => !disabled && setMethod(value)}
         aria-pressed={active}
         disabled={disabled}
-        className={`w-full text-left rounded-xl border-2 p-4 sm:p-5 transition-all ${
+        className={`w-full text-left rounded-xl border-2 p-4 sm:p-5 transition-colors ${
           disabled
             ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-70'
             : active
-            ? 'border-orange-500 bg-orange-50/50'
+            ? 'border-orange-500 bg-orange-50'
             : 'border-gray-200 bg-white hover:border-orange-300'
         }`}
       >
@@ -225,7 +225,7 @@ const Step4Checkout: React.FC = () => {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <Icon className={`w-5 h-5 ${disabled ? 'text-gray-400' : 'text-orange-500'}`} />
-              <h3 className="font-bold text-gray-900 text-base">{title}</h3>
+              <h3 className="font-bold text-gray-900 text-lg">{title}</h3>
               {badge && (
                 <span className="text-[10px] uppercase tracking-wider font-bold bg-gray-900 text-white px-2 py-0.5 rounded">
                   {badge}
@@ -404,7 +404,7 @@ const Step4Checkout: React.FC = () => {
             <Button
               variant="outline"
               onClick={() => navigate('/dealer-portal/quote/customer')}
-              className="rounded-full bg-gray-900 text-white hover:bg-gray-800 hover:text-white border-gray-900 px-5"
+              className="h-12 rounded-lg bg-muted text-crm-navy hover:bg-crm-line border-transparent px-6 font-bold"
               disabled={submitting}
             >
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
@@ -413,7 +413,7 @@ const Step4Checkout: React.FC = () => {
             <Button
               onClick={handleSubmit}
               disabled={ctaDisabled}
-              className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6 w-full sm:w-auto sm:min-w-[260px]"
+              className="h-12 rounded-lg bg-crm-orange text-primary-foreground text-base font-bold px-6 w-full sm:flex-1 sm:ml-6 animate-breathing"
             >
               {submitting ? (
                 <>
