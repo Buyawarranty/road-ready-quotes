@@ -145,7 +145,7 @@ const DealerQuotesList = () => {
 
   const handleNewQuote = () => {
     reset();
-    navigate('/dealer-portal/quote/vehicle');
+    navigate('/dealer-portal/quote/pricing');
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
