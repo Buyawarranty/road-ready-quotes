@@ -29,3 +29,4 @@
 - [x] Add fixed and adjustable customer quotes, custom selling prices and true profit margin, with customer-safe new-tab sharing. Public interaction and privacy tests pass; signed-in dealer checks remain unavailable.
 
 - [x] Update pricing to the supplied compact configuration reference, inline product switch, dealer profit summary and secondary quote tools without changing approved charges. 33 tests pass; isolated desktop/mobile interactions verified. Live dealer and Stripe checks require external authentication.
+- [x] Add private staff notes to dealer sign-ups: notes log per signup, pinned notes, author and date, notes count column and CSV export. Admin-only access rules applied.
