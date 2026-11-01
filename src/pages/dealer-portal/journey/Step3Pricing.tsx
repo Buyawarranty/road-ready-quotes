@@ -10,9 +10,12 @@ import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
+import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2, Loader2 } from 'lucide-react';
+import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
 const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 
@@ -111,7 +114,6 @@ const Step3Pricing: React.FC = () => {
     if (action === 'email') setEmailQuote(id);
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
-  const adjust = (direction: -1 | 1) => { if (!product || !term) return; setPrices(p => ({ ...p, [term]: stepSellingPrice(retail, direction, product) })); };
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   if (!vehicle?.reg || editingReg) return <DealerLayout>
     <div className="mx-auto w-full max-w-md space-y-4 px-1 pb-6 text-crm-navy">
@@ -157,36 +159,53 @@ const Step3Pricing: React.FC = () => {
     </div>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex items-center gap-3 text-destructive">Warranty prices are unavailable.<Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" role="group" aria-label="Warranty duration">
-      {[12, 24, 36, 48].map(months => {
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
+      {[12, 24, 36].map(months => {
         const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
         const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
         const cardRetail = prices[months] ?? p?.retail_price;
-        return <Button key={months} variant="outline" disabled={!available} aria-pressed={term === months} onClick={() => { setTerm(months); setError(''); }} className={`relative flex h-auto min-h-[208px] gap-0 flex-col items-stretch justify-start whitespace-normal rounded-lg border !bg-card p-4 text-left !text-crm-navy hover:!bg-card hover:!text-crm-navy lg:p-4 ${term === months ? 'border-crm-orange ring-1 ring-crm-orange' : 'border-crm-line'} disabled:opacity-60`}>
-          <span className="flex items-center justify-between gap-2 text-lg font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'}{term === months ? <Check className="h-4 w-4 text-crm-green" /> : <Circle className="h-4 w-4 text-muted-foreground" />}</span>
-          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">Warranty cover</span>
-          <strong className="mt-2 text-3xl">{(trade ? cardCost : cardRetail) != null ? gbp((trade ? cardCost : cardRetail) || 0) : '—'}</strong>
-          <span className="mt-1 text-xs font-normal leading-4 text-muted-foreground">{trade ? 'Your cost' : 'Customer price'} · inc. VAT</span>
-          {trade && cardRetail != null && cardCost != null && <span className="mt-2 border-t border-crm-line pt-2 text-xs font-normal text-crm-green">Potential profit<strong className="mt-1 block text-xl">{gbp(potentialProfit(cardRetail, cardCost))}</strong></span>}
-          {!available && <span className="mt-2 text-xs font-normal">{months === 48 ? 'Pending approval' : 'Unavailable'}</span>}
-        </Button>;
+        const shown = trade ? cardCost : cardRetail;
+        const selected = term === months;
+        return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
+          <span className="flex items-start justify-between gap-2"><span className="text-2xl font-extrabold leading-7">{months / 12} {months === 12 ? 'Year' : 'Years'}</span>{selected ? <span className="flex h-6 w-6 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" strokeWidth={3} /></span> : <Circle className="h-6 w-6 text-muted-foreground" />}</span>
+          <span className="text-sm text-muted-foreground">Warranty cover</span>
+          <strong className="mt-2 text-4xl font-extrabold leading-10">{shown != null ? gbp(shown) : '—'}</strong>
+          {!trade && <span className="text-xs text-muted-foreground">inc. VAT</span>}
+          {trade && cardRetail != null && cardCost != null && <span className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-crm-gold-soft px-3 py-2 text-lg font-extrabold text-crm-gold-deep"><Coins className="h-5 w-5" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
+          {!available && <span className="mt-2 text-xs">Unavailable</span>}
+        </button>;
       })}
     </div>
-    {cover && <section className="border-y border-crm-line bg-card px-4 py-3" aria-label="Included warranty benefits">
-      <div className="mb-3 flex flex-wrap justify-between gap-2"><h2 className="!text-base !leading-6 font-bold text-crm-navy">Every warranty includes</h2><Button variant="link" size="sm" className="h-auto p-0 text-crm-navy" onClick={() => setDetails(true)}>View full cover details &amp; exclusions<ArrowRight /></Button></div>
-      <div className="grid gap-4 sm:grid-cols-3">{[{ icon: ShieldCheck, title: `${gbp(cover.excess)} excess`, text: 'Policy excess on eligible claims.' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour labour`, text: `Covered labour up to ${gbp(cover.labour)} per hour.` }, { icon: FileText, title: `${gbp(cover.claim)} per eligible claim`, text: 'Subject to policy terms.' }].map(b => <div key={b.title} className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><div className="min-w-0"><h3 className="font-bold">{b.title}</h3><p className="mt-1 text-xs leading-4 text-muted-foreground">{b.text}</p></div></div>)}</div>
+    {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
+      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
-    {trade && <section className="grid items-center gap-5 border-y border-crm-line bg-card px-5 py-5 min-[1100px]:grid-cols-[1.3fr_1fr_auto]" aria-label="Selling price adjustment">
-      <div><h2 className="font-bold">Customer selling price <span className="text-sm font-normal">(Trade View only)</span></h2><p className="mt-1 text-xs leading-5 text-muted-foreground">Adjust the price in £100 increments or enter a custom amount.</p></div>
-      <div className="flex items-center justify-center gap-5"><Button variant="secondary" size="icon" className="h-12 w-12 shrink-0" aria-label="Decrease selling price by £100" disabled={!product || stepSellingPrice(retail, -1, product) === retail} onClick={() => adjust(-1)}><Minus className="h-5 w-5" /></Button><div className="min-w-24 text-center"><strong className="block text-3xl leading-9">{term ? gbp(retail) : '—'}</strong><p className="text-xs leading-5 text-muted-foreground">£100 per tap</p></div><Button variant="secondary" size="icon" className="h-12 w-12 shrink-0" aria-label="Increase selling price by £100" disabled={!product || stepSellingPrice(retail, 1, product) === retail} onClick={() => adjust(1)}><Plus className="h-5 w-5" /></Button></div>
-      <div className="flex justify-center gap-3 min-[1100px]:border-l min-[1100px]:border-crm-line min-[1100px]:pl-5"><Button variant="secondary" className="h-11" disabled={!product} onClick={() => { setExactValue(String(retail)); setExact(true); }}><Pencil />Enter exact price</Button><Button variant="secondary" className="h-11" disabled={!product || !term} onClick={() => { if (product && term) setPrices(p => ({ ...p, [term]: product.retail_price })); }}><RotateCcw />Reset</Button></div>
-    </section>}
-    <section className="grid items-center gap-6 border-y border-crm-line bg-card px-5 py-5 min-[1100px]:grid-cols-[1.05fr_1fr]" aria-label="Quote summary">
-      <div className="grid grid-cols-3 gap-4 divide-x divide-crm-line [&>div:not(:first-child)]:pl-4">{trade && <div><p className="text-sm leading-5 text-muted-foreground">Your cost<span className="block text-xs">(to Panda Protect)</span></p><strong className="mt-3 block text-3xl leading-9">{term ? gbp(cost) : '—'}</strong></div>}<div><p className="text-sm leading-5 text-muted-foreground">Customer price<span className="block text-xs">(you’ll charge)</span></p><strong className="mt-3 block text-3xl leading-9">{term ? gbp(retail) : '—'}</strong></div>{trade && <div><p className="text-sm leading-5 text-muted-foreground">Your potential profit</p><strong className="mt-3 block text-3xl leading-9 text-crm-green">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong></div>}</div>
-      <div className="min-w-0 space-y-3"><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{trade && <Button variant="secondary" size="sm" className="h-10 px-2" disabled={saving || !valid} onClick={() => persist()}><Save />Save quote</Button>}<Button variant="secondary" size="sm" className="h-10 px-2" disabled={saving || !valid} onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</Button><Button variant="secondary" size="sm" className="h-10 px-2" disabled={saving || !valid} onClick={() => share('email')}><Mail />Email</Button><Button variant="secondary" size="sm" className="h-10 px-2" disabled={saving || !valid} onClick={() => share('print')}><Printer />Print</Button></div>{trade && <Button className="h-12 w-full !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}</div>
+    <section className="flex items-center gap-3 rounded-xl bg-crm-gold-soft p-4 opacity-80" aria-label="£5,000 claim limit boost">
+      <Zap className="h-7 w-7 shrink-0 text-crm-orange" />
+      <div className="min-w-0 flex-1"><h2 className="font-bold">£5,000 Claim Limit Boost</h2><p className="text-xs leading-4 text-muted-foreground">Increase the per-claim limit to £5,000. Coming soon.</p></div>
+      <Switch disabled checked={false} aria-label="Add claim limit boost (not available yet)" />
+    </section>
+    <Collapsible className="rounded-xl border border-crm-line bg-card">
+      <CollapsibleTrigger className="group flex w-full items-center gap-3 p-4 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><FileText className="h-5 w-5" /><span className="flex-1 text-lg">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
+      <CollapsibleContent className="overflow-hidden px-4 pb-4 text-sm text-muted-foreground data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">Full cover details are coming soon. <button type="button" className="font-semibold text-crm-navy underline" onClick={() => setDetails(true)}>View current cover summary</button></CollapsibleContent>
+    </Collapsible>
+    <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[1.2fr_1fr]" aria-label="Quote summary">
+      {trade ? <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-crm-gold-soft to-crm-gold/40 p-5">
+        <Coins className="h-14 w-14 shrink-0 text-crm-gold-deep" />
+        <div className="min-w-0 border-l-2 border-crm-gold/50 pl-4">
+          <p className="text-xl font-extrabold tracking-wide text-crm-gold-deep">PROFIT</p>
+          <strong className="block text-5xl font-black leading-[3.25rem] text-crm-gold-deep sm:text-6xl sm:leading-[4rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
+          {term && <p className="text-xs text-crm-gold-deep">Customer pays {gbp(retail)} · your cost {gbp(cost)} <button type="button" className="font-semibold underline" onClick={() => { setExactValue(String(retail)); setExact(true); }}>Change</button></p>}
+        </div>
+      </div> : <div className="flex items-center rounded-2xl border border-crm-line bg-card p-5"><p className="text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
+      <div className="grid grid-cols-2 gap-3">
+        {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save quote</Button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+          <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
+        {trade && <Button className="col-span-2 h-14 text-base font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+      </div>
     </section>
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
-    <div className="flex flex-wrap justify-between gap-3 text-xs text-muted-foreground"><p>Including VAT. Subject to vehicle eligibility and policy terms.</p>{trade && <div className="flex gap-3"><Button variant="link" size="sm" disabled={!valid || saving} onClick={() => share('pay')}><Link2 />Customer payment link</Button></div>}</div>
+    <p className="text-xs text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>
   </div>
   <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader><Input aria-label="Exact customer selling price" type="number" step="0.01" min={product?.min_price} max={product?.max_price ?? undefined} value={exactValue} onChange={e => setExactValue(e.target.value)} /><p className="text-xs text-muted-foreground">Including VAT. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
   <Dialog open={!!emailQuote} onOpenChange={open => !open && setEmailQuote(null)}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Email customer quote</DialogTitle></DialogHeader><Input type="email" aria-label="Customer email address" placeholder="Customer email address" value={email} onChange={e => setEmail(e.target.value)} /><Button disabled={emailBusy || !email.includes('@')} onClick={async () => { setEmailBusy(true); const { data, error: sendError } = await supabase.functions.invoke('dealer-quote-email', { body: { quote_id: emailQuote, email } }); setEmailBusy(false); if (sendError || !data?.sent) { toast({ title: data?.error || 'Email could not be sent. Please try again.', variant: 'destructive' }); return; } setEmailQuote(null); toast({ title: 'Customer quote emailed' }); }}>{emailBusy ? 'Sending…' : 'Send quote'}</Button></DialogContent></Dialog>
