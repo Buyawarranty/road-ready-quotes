@@ -205,7 +205,7 @@ const Step3Pricing: React.FC = () => {
             </span>
             <span className="mt-1 text-base font-bold">{months / 12} Year Warranty</span>
             <span className="text-sm text-muted-foreground">{trade ? `Dealer cost: ${cardCost != null ? gbp(cardCost) : '—'}` : 'per vehicle, inc. VAT'}</span>
-            {trade && cardRetail != null && cardCost != null && <span className="mt-3 flex items-center gap-2 rounded-md border border-crm-line bg-card px-3 py-1.5 text-sm font-extrabold text-crm-green"><Coins className="h-4 w-4" />Profit: {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
+            {trade && cardRetail != null && cardCost != null && <span className="mt-3 rounded-md border border-crm-line bg-card px-3 py-1.5 text-sm font-extrabold text-crm-green">Profit: {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </button>;
         })}
@@ -232,8 +232,8 @@ const Step3Pricing: React.FC = () => {
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
     <section className="grid items-center gap-3 pt-2 lg:grid-cols-[minmax(260px,420px)_minmax(0,1fr)]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center gap-4 rounded-2xl border border-crm-line bg-card px-5 py-4">
-        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-7 w-7 text-crm-green-deep" /></span>
+      {trade ? <div className="flex items-stretch gap-4 rounded-[10px] border border-crm-line bg-card px-5 py-4">
+        <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0">
           <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
           <strong className="block text-5xl font-black leading-[3.25rem] text-crm-green">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
