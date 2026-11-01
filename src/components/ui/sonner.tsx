@@ -17,7 +17,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast:
             "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
           error:
-            "!bg-[#FF385C] !text-white !border-[#FF385C] [&_[data-icon]]:!text-white",
+            "!bg-crm-pink !text-white !border-crm-pink [&_[data-icon]]:!text-white [&_[data-description]]:!text-white/90",
+          success:
+            "!bg-crm-green !text-white !border-crm-green [&_[data-icon]]:!text-white [&_[data-description]]:!text-white/90",
           description: "group-[.toast]:text-muted-foreground",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
