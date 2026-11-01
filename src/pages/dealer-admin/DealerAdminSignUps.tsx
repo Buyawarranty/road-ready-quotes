@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
   Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
+  StickyNote, Pin, Trash2, Plus,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
