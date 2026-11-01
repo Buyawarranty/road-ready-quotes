@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -67,6 +68,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const { user, dealer, isTrader, loading, signOut } = useDealerAuth();
+  const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
