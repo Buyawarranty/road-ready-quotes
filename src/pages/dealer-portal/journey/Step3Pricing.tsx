@@ -196,8 +196,10 @@ const Step3Pricing: React.FC = () => {
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
-          const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
-          const cardRetail = prices[months] ?? p?.retail_price;
+          const baseCardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price - savedBoostCost : p?.dealer_price;
+          const baseCardRetail = prices[months] ?? p?.retail_price;
+          const cardCost = baseCardCost != null ? baseCardCost + boostCost : undefined;
+          const cardRetail = baseCardRetail != null ? baseCardRetail + boostRetail : undefined;
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 pt-5 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
@@ -213,11 +215,14 @@ const Step3Pricing: React.FC = () => {
           </button>;
         })}
       </div>
-      <div className="mt-4 flex items-center gap-3 rounded-xl border-2 border-dashed border-crm-orange/50 bg-crm-orange-soft p-4" aria-label="£5,000 claim limit boost">
+      <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
-        <div className="min-w-0 flex-1"><h3 className="font-extrabold text-crm-navy">£5,000 Claim Limit Boost</h3><p className="text-sm leading-5 text-muted-foreground">Increase the per-claim limit to £5,000 for extra peace of mind.</p></div>
-        <Switch disabled checked={false} aria-label="Add claim limit boost (price not set yet)" />
-      </div>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">+{gbp(trade ? boostCfg.dealer_price : boostCfg.retail_price)}</span>}</span>
+          <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : 'Increase the per-claim limit to £5,000 for extra peace of mind.'}</span>
+        </span>
+        <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
+      </label>
     </section>
     {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
