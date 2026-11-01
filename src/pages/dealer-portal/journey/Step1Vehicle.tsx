@@ -74,7 +74,7 @@ const buildVehicle = (reg: string, mileage: string): DealerJourneyVehicle => ({
   year: '2018',
   fuel_type: 'Diesel',
   transmission: undefined,
-  mileage: mileage.trim(),
+  mileage: String(mileage ?? '').trim(),
 });
 
 const buildPlan = (selectedPlan: WarrantyPlanKey, termMonths: number): DealerJourneyPlan => {
@@ -107,7 +107,8 @@ const Step1Vehicle: React.FC = () => {
 
   const initialReg = searchParams.get('reg') || vehicle?.reg || 'B11CSD';
   const [reg, setReg] = useState(normaliseReg(initialReg));
-  const [mileage, setMileage] = useState(vehicle?.mileage || '101782');
+  const [mileage, setMileageRaw] = useState<string>(vehicle?.mileage != null && vehicle?.mileage !== '' ? String(vehicle.mileage) : '101782');
+  const setMileage = (value: unknown) => setMileageRaw(value == null ? '' : String(value));
   const [lookupState, setLookupState] = useState<LookupState>(initialReg ? 'success' : 'default');
   const regInputRef = React.useRef<HTMLInputElement>(null);
   const [selectedPlan, setSelectedPlan] = useState<WarrantyPlanKey>('fully-covered');
