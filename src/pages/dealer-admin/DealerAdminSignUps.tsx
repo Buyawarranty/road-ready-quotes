@@ -258,7 +258,7 @@ const DealerAdminSignUps: React.FC = () => {
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
             {STATUS_OPTIONS.map((s) => (
-              <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+              <SelectItem key={s} value={s}>{STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -399,7 +399,7 @@ const DealerAdminSignUps: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {STATUS_OPTIONS.map((s) => (
-                        <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                        <SelectItem key={s} value={s}>{STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
