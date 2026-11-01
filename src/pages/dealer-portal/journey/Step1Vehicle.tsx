@@ -8,6 +8,7 @@ import { useDealerJourney, type DealerJourneyPlan, type DealerJourneyVehicle } f
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerQuoteTemplates, describeTemplate, type DealerQuoteTemplate } from '@/hooks/useDealerQuoteTemplates';
 import { buildSavedPlanQuote } from '@/lib/savedPlanCheckout';
+import { MANAGE_MY_CLAIM_ENABLED, isPlanQuotable, quoteUrlForPlan } from '@/lib/dealerProductAvailability';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -113,6 +114,7 @@ const Step1Vehicle: React.FC = () => {
   const [validation, setValidation] = useState<Record<string, string>>({});
   const [saveState, setSaveState] = useState<SaveState>('saved');
   const { templates: savedPlans, deleteTemplate } = useDealerQuoteTemplates();
+  const quotablePlans = useMemo(() => savedPlans.filter((t) => isPlanQuotable(t.plan_type)), [savedPlans]);
   const [activeSaved, setActiveSaved] = useState<DealerQuoteTemplate | null>(null);
   const [selectedSaved, setSelectedSaved] = useState<Set<string>>(new Set());
   const [deletingSaved, setDeletingSaved] = useState(false);
@@ -122,8 +124,8 @@ const Step1Vehicle: React.FC = () => {
     if (next.has(id)) next.delete(id); else next.add(id);
     return next;
   });
-  const allSelected = savedPlans.length > 0 && selectedSaved.size === savedPlans.length;
-  const toggleSelectAll = () => setSelectedSaved(allSelected ? new Set() : new Set(savedPlans.map((t) => t.id)));
+  const allSelected = quotablePlans.length > 0 && selectedSaved.size === quotablePlans.length;
+  const toggleSelectAll = () => setSelectedSaved(allSelected ? new Set() : new Set(quotablePlans.map((t) => t.id)));
   const deleteSelected = async () => {
     if (selectedSaved.size === 0) return;
     setDeletingSaved(true);
@@ -205,7 +207,7 @@ const Step1Vehicle: React.FC = () => {
     setVehicle(activeVehicle);
     setPlan(activePlan);
     void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: activePlan });
-    navigate(selectedPlan === 'dealer-paid' ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
+    navigate(quoteUrlForPlan(selectedPlan));
   };
 
   const savedQuote = useMemo(() => {
@@ -229,7 +231,7 @@ const Step1Vehicle: React.FC = () => {
     setPlan(plan);
     void save({ silent: true, overrideVehicle: activeVehicle, overridePlan: plan });
     setActiveSaved(null);
-    if (edit) navigate(savedQuote.isClaims ? '/dealer-portal/quote/claim-handling' : '/dealer-portal/quote/pricing');
+    if (edit) navigate(quoteUrlForPlan(savedQuote.isClaims ? 'dealer-paid' : 'fully-covered'));
     else navigate('/dealer-portal/quote/customer');
   };
 
@@ -306,9 +308,9 @@ const Step1Vehicle: React.FC = () => {
 
         <Card className={`crm-panel-shadow border-crm-line transition-opacity ${vehicleDetailsComplete ? 'opacity-100' : 'opacity-70'}`}>
           <CardContent className="p-4">
-            <h2 className="mb-3 text-base font-bold">Choose your warranty</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {warrantyPlans.map((plan) => {
+            <h2 className="mb-3 text-base font-bold">Warranty cover</h2>
+            <div className="grid gap-3">
+              {warrantyPlans.filter((plan) => plan.key !== 'dealer-paid' || MANAGE_MY_CLAIM_ENABLED).map((plan) => {
                 const Icon = plan.icon;
                 const isSelected = selectedPlan === plan.key;
                 return (
@@ -360,7 +362,7 @@ const Step1Vehicle: React.FC = () => {
             <div className="mb-3 flex items-center gap-2">
               <Bookmark className="h-4 w-4 text-crm-orange" />
               <h2 className="text-base font-bold">Use a saved plan</h2>
-              {savedPlans.length > 0 && (
+              {quotablePlans.length > 0 && (
                 <div className="ml-auto flex items-center gap-3">
                   <label className="flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-muted-foreground">
                     <input
@@ -388,11 +390,11 @@ const Step1Vehicle: React.FC = () => {
                 </div>
               )}
             </div>
-            {savedPlans.length === 0 ? (
+            {quotablePlans.length === 0 ? (
               <p className="text-xs text-muted-foreground">No saved plans yet. Set up a warranty on the pricing page and tap "Save &amp; name this plan" to reuse it here.</p>
             ) : (
               <div className="grid gap-2 sm:grid-cols-2">
-                {savedPlans.map((t) => {
+                {quotablePlans.map((t) => {
                   const isClaims = t.plan_type === 'basic' || t.plan_type === 'dealer-paid';
                   const checked = selectedSaved.has(t.id);
                   return (
