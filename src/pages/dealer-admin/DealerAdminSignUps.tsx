@@ -410,6 +410,7 @@ const DealerAdminSignUps: React.FC = () => {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  <Th>Action</Th>
                   <Th>Signed Up</Th>
                   <Th>Approved</Th>
                   <Th>Dealership</Th>
@@ -421,13 +422,19 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Interested In</Th>
                   <Th>Notes</Th>
                   <Th>Status</Th>
-                  <Th>Action</Th>
                 </tr>
               </thead>
               <tbody>
                 {pageRows.map((r) => (
                   <tr key={r.id} onClick={() => openDetail(r)}
                     className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
+                    <Td className="whitespace-nowrap">
+                      <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                        <Check className="w-4 h-4 mr-1" />
+                        {r.approved_at ? 'Resend login' : 'Approve'}
+                      </Button>
+                    </Td>
                     <Td className="whitespace-nowrap text-gray-600">
                       {format(new Date(r.created_at), 'd MMM yyyy')}
                       <div className="text-xs text-gray-400">{format(new Date(r.created_at), 'HH:mm')}</div>
@@ -459,13 +466,6 @@ const DealerAdminSignUps: React.FC = () => {
                     </Td>
                     <Td>
                       <Badge className={`capitalize ${statusColor[r.status]}`}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
-                    </Td>
-                    <Td className="whitespace-nowrap">
-                      <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <Check className="w-4 h-4 mr-1" />
-                        {r.approved_at ? 'Resend login' : 'Approve'}
-                      </Button>
                     </Td>
                   </tr>
                 ))}
