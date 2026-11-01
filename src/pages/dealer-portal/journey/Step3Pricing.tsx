@@ -169,7 +169,7 @@ const Step3Pricing: React.FC = () => {
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="grid items-center gap-4 min-[1100px]:grid-cols-[1fr_auto]">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Select how many years of cover you want.</p></div>
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-2">
         <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
         <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
         {vehicle?.reg && <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">Mileage
@@ -180,22 +180,22 @@ const Step3Pricing: React.FC = () => {
         {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
       </div>
     </header>
-    <div className="grid max-w-lg grid-cols-2 gap-3" role="group" aria-label="Quote view">
-      <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-11 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
-      <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-11 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />CV</Button>
+    <div className="grid max-w-xs grid-cols-2 gap-3" role="group" aria-label="Quote view">
+      <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-9 justify-start ${trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
+      <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-9 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />CV</Button>
     </div>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
-    <section className="rounded-2xl border border-crm-line bg-card p-5 sm:p-6" aria-label="Warranty length">
+    <section className="rounded-2xl border border-crm-line bg-card p-4 sm:p-5" aria-label="Warranty length">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Warranty length</p>
           <h2 className="mt-1 text-2xl font-extrabold text-crm-navy sm:text-3xl">How long do you want the cover?</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Parts and labour covered — pick the warranty length.</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Parts and labour covered — pick the warranty length.</p>
         </div>
-        <button type="button" onClick={() => setDetails(true)} className="shrink-0 text-sm font-semibold text-crm-navy underline">Details</button>
+        <button type="button" onClick={() => setDetails(true)} className="shrink-0 text-xs font-semibold text-crm-navy underline">Details</button>
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
+      <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
           const cardBoost = boostOn && boostCfg ? boostForTerm(boostCfg, months) : null;
@@ -205,21 +205,21 @@ const Step3Pricing: React.FC = () => {
           const cardRetail = baseCardRetail != null ? baseCardRetail + (cardBoost?.retail_price || 0) : undefined;
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
-          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 pt-5 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
+          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-3.5 pt-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
             {months === 24 && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-crm-orange px-3 py-0.5 text-xs font-bold text-primary-foreground">Most popular</span>}
             <span className="flex items-start justify-between gap-2">
-              <strong className="text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10">{shown != null ? gbp(shown) : '—'}</strong>
+              <strong className="text-2xl font-extrabold leading-8 sm:text-3xl sm:leading-9">{shown != null ? gbp(shown) : '—'}</strong>
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-crm-orange' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-2 w-2 rounded-full bg-primary-foreground" />}</span>
             </span>
-            <span className="mt-1 text-base font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'} Warranty</span>
-            <span className="mt-1 text-sm text-muted-foreground">{trade ? 'your cost' : 'per vehicle, inc. VAT'}</span>
-            {trade && cardRetail != null && cardCost != null && <span className="mt-2 flex items-center gap-1.5 text-sm font-extrabold text-crm-green-deep"><Coins className="h-4 w-4" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
+            <span className="mt-1 text-sm font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'} Warranty</span>
+            <span className="mt-0.5 text-xs text-muted-foreground">{trade ? 'your cost' : 'per vehicle, inc. VAT'}</span>
+            {trade && cardRetail != null && cardCost != null && <span className="mt-1.5 flex items-center gap-1.5 text-xs font-extrabold text-crm-green-deep"><Coins className="h-4 w-4" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </button>;
         })}
       </div>
-      <label className={`mt-4 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
+      <label className={`mt-3 flex cursor-pointer items-center gap-3 rounded-xl border-2 p-3 transition-colors ${boostOn ? 'border-solid border-crm-orange bg-crm-orange-soft' : 'border-dashed border-crm-orange/50 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Zap className="h-5 w-5 text-primary-foreground" /></span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-extrabold leading-5 text-crm-navy">£5,000 Claim Limit Boost{boostCfg && <span className="ml-2 whitespace-nowrap font-bold text-crm-orange">{term ? `+${gbp(trade ? boostCost : boostRetail)}` : `from ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}</span>
           <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : 'Increase the per-claim limit to £5,000 for extra peace of mind.'}</span>
@@ -227,11 +227,11 @@ const Step3Pricing: React.FC = () => {
         <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
       </label>
     </section>
-    {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
-      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
+    {cover && <section className="grid grid-cols-2 gap-3 rounded-xl border border-crm-line bg-card p-3 lg:grid-cols-4" aria-label="Included warranty benefits">
+      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
     <Collapsible className="rounded-xl border border-crm-line bg-card">
-      <CollapsibleTrigger className="group flex w-full items-center gap-3 p-4 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><FileText className="h-5 w-5" /></span><span className="flex-1 text-base">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
+      <CollapsibleTrigger className="group flex w-full items-center gap-3 p-3 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><FileText className="h-5 w-5" /></span><span className="flex-1 text-base">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden px-4 pb-4 text-sm text-muted-foreground data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"><p className="font-bold text-crm-navy">Parts and labour covered</p>
         <ul className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">{['Engine internals', 'Gearbox (manual and automatic)', 'Turbo and supercharger', 'Electrical systems and ECUs', 'Steering', 'Cooling system', 'Clutch system', 'Fuel system', 'Air conditioning', 'Braking system (ABS, servo, callipers)', 'Heating and ventilation', 'Suspension', 'Drive system', 'Safety systems'].map(i => <li key={i} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-crm-green-deep" />{i}</li>)}</ul>
         <p className="mt-4 font-bold text-crm-navy">What the warranty is designed for</p>
@@ -239,19 +239,19 @@ const Step3Pricing: React.FC = () => {
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
     <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[1.2fr_1fr]" aria-label="Quote summary">
-      {trade ? <div className="flex items-center justify-between gap-5 rounded-2xl border border-crm-line bg-card p-5">
+      {trade ? <div className="flex items-center justify-between gap-5 rounded-2xl border border-crm-line bg-card p-4">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-6 w-6 text-crm-green-deep" /></span>
         <div className="min-w-0 text-right">
           <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">Your profit</p>
-          <strong className="block text-5xl font-black leading-[3.25rem] text-crm-green sm:text-6xl sm:leading-[4rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
-          {term && <p className="mt-1 text-sm text-muted-foreground">Your customer pays <strong className="text-crm-navy">{gbp(retail)}</strong>, you pay <strong className="text-crm-navy">{gbp(cost)}</strong>. <button type="button" className="font-bold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button></p>}
+          <strong className="block text-4xl font-black leading-[3rem] text-crm-green sm:text-5xl sm:leading-[3.5rem]">{term ? gbp(potentialProfit(retail, cost)) : '—'}</strong>
+          {term && <p className="mt-0.5 text-xs text-muted-foreground">Your customer pays <strong className="text-crm-navy">{gbp(retail)}</strong>, you pay <strong className="text-crm-navy">{gbp(cost)}</strong>. <button type="button" className="font-bold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button></p>}
         </div>
-      </div> : <div className="flex items-center justify-end rounded-2xl border border-crm-line bg-card p-5"><p className="text-right text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
+      </div> : <div className="flex items-center justify-end rounded-2xl border border-crm-line bg-card p-4"><p className="text-right text-sm text-muted-foreground">Customer price<strong className="block text-4xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid grid-cols-2 gap-3">
-        {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save quote</Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+        {trade && <Button variant="outline" className="h-10 !border-crm-line !bg-card !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save quote</Button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-10 !border-crm-line !bg-card !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
-        {trade && <Button className="col-span-2 h-14 text-base font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+        {trade && <Button className="col-span-2 h-16 w-full text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div>
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
