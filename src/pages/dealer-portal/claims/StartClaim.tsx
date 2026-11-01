@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';

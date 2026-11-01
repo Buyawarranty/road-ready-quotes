@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { BillingAddress, COUNTRY_OPTIONS } from '@/lib/dealerBilling';
 
 interface Props {
