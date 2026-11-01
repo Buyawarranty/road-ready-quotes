@@ -266,10 +266,9 @@ const Step4Checkout: React.FC = () => {
             badge="Pay now"
           >
             <ul className="space-y-1.5 text-xs text-gray-600">
-              <Benefit>Instant warranty activation</Benefit>
-              <Benefit>Policy documents issued immediately</Benefit>
-              <Benefit>Card, Apple Pay and Google Pay accepted</Benefit>
               <Benefit>Secure payment via Stripe</Benefit>
+              <Benefit>Warranty issued after successful payment</Benefit>
+              <Benefit>Documents available in your account</Benefit>
             </ul>
           </OptionCard>
 
@@ -285,9 +284,9 @@ const Step4Checkout: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <Lock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                   <div className="text-xs text-amber-900">
-                    <p className="font-bold">Pay later unavailable</p>
-                    <p className="mt-0.5">Your dealer account has an outstanding overdue balance.</p>
-                    <p className="mt-0.5">Please settle the outstanding invoice before using Pay later again.</p>
+                    <p className="font-bold">
+                      Pay later unavailable — your dealer account has an overdue balance.
+                    </p>
                     <span
                       role="link"
                       tabIndex={0}
@@ -298,7 +297,7 @@ const Step4Checkout: React.FC = () => {
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') navigate('/dealer-portal/warranties');
                       }}
-                      className="mt-2 inline-flex items-center gap-1 font-bold text-amber-800 underline cursor-pointer"
+                      className="mt-1.5 inline-flex items-center gap-1 font-bold text-amber-800 underline cursor-pointer"
                     >
                       View outstanding invoices <ChevronRight className="w-3 h-3" />
                     </span>

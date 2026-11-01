@@ -92,7 +92,7 @@ const Step3Pricing: React.FC = () => {
   const cover = historical && savedPlan?.selected_options ? {
     excess: Number(savedPlan.selected_options.excess ?? config?.cover.excess ?? 0),
     labour: Number(savedPlan.selected_options.labour ?? config?.cover.labour ?? 100),
-    claim: Number(savedPlan.selected_options.claim ?? config?.cover.claim ?? 2000),
+    claim: Number(savedPlan.selected_options.claim ?? config?.cover.claim ?? 3000),
     parts: savedPlan.selected_options.parts_key || config?.cover.parts || 'age-mileage',
   } : config?.cover;
   const valid = Boolean(product && annualProductActive(product) && validSellingPrice(retail, product) && vehicle?.reg);
