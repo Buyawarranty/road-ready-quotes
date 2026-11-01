@@ -231,7 +231,21 @@ const Step3Pricing: React.FC = () => {
         <ul className="mt-2 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">{['Engine internals', 'Gearbox (manual and automatic)', 'Turbo and supercharger', 'Electrical systems and ECUs', 'Steering', 'Cooling system', 'Clutch system', 'Fuel system', 'Air conditioning', 'Braking system (ABS, servo, callipers)', 'Heating and ventilation', 'Suspension', 'Drive system', 'Safety systems'].map(i => <li key={i} className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-crm-green-deep" />{i}</li>)}</ul>
         <p className="mt-4 font-bold text-crm-navy">What the warranty is designed for</p>
         <p className="mt-1">Mechanical and electrical failures. It is not designed for pre-existing faults, routine servicing, tyres, brake pads and wear items, accident damage, trader-owned vehicles, or hire and reward use (taxis, rentals, couriers).</p>
-        <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
+        <p className="mt-4 font-bold text-crm-navy">Download the documents</p>
+        <p className="mt-1">The latest versions, in full, so you can check every detail before you sell.</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf" className="flex items-center gap-3 rounded-xl border border-crm-orange/30 bg-crm-orange-soft px-4 py-3 transition-colors hover:border-crm-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-orange"><Check className="h-4 w-4 text-white" /></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-extrabold text-crm-navy">Platinum Warranty Cover (PDF)</strong><span className="block text-xs text-muted-foreground">50 pages &middot; what we cover</span></span>
+            <Download className="h-4 w-4 shrink-0 text-crm-navy" />
+          </a>
+          <a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf" className="flex items-center gap-3 rounded-xl border border-crm-green/30 bg-crm-green-soft px-4 py-3 transition-colors hover:border-crm-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-green">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-green"><Check className="h-4 w-4 text-white" /></span>
+            <span className="min-w-0 flex-1"><strong className="block text-sm font-extrabold text-crm-navy">Terms &amp; Conditions (PDF)</strong><span className="block text-xs text-muted-foreground">29 pages &middot; full terms and exclusions</span></span>
+            <Download className="h-4 w-4 shrink-0 text-crm-navy" />
+          </a>
+        </div>
+        <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
     </Collapsible>
     <section className="grid items-center gap-3 pt-2 lg:grid-cols-[minmax(260px,420px)_minmax(0,1fr)]" aria-label="Quote summary">
       {trade ? <div className="flex items-stretch gap-4 rounded-[10px] border border-crm-line bg-card px-5 py-4">
