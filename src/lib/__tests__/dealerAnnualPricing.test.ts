@@ -23,19 +23,19 @@ describe('Annual selling prices', () => {
   it('respects configured minimum and maximum', () => { assert.equal(stepSellingPrice(200, -1, product), 200); assert.equal(stepSellingPrice(1400, 1, product), 1400); assert.equal(validSellingPrice(1400.01, product), false); });
   it('keeps currency accurate to the penny', () => assert.equal(stepSellingPrice(700.01, 1, product), 800.01));
   it('gates four years on completed approvals', () => { assert.equal(annualProductActive({ ...product, months: 48 }), false); assert.equal(annualProductActive({ ...product, months: 48, approvals_complete: true, active: false }), false); });
-  it('offers only selling prices ending in £5 and never below the minimum', () => {
+  it('offers only whole-hundred selling prices and never below the minimum', () => {
     const opts = sellingPriceOptions(oneYear, 400);
     assert.ok(opts.includes(400));
-    assert.ok(opts.every(value => value % 10 === 5));
+    assert.ok(opts.every(value => value % 100 === 0));
     assert.ok(opts.every(value => value >= oneYear.min_price));
-    assert.equal(opts[0], 195);
+    assert.equal(opts[0], 100);
   });
   it('caps the price list at the admin maximum', () => {
     const opts = sellingPriceOptions(product, 700);
     assert.equal(opts[opts.length - 1], 1400);
     assert.ok(opts.every(value => value <= 1400));
   });
-  it('keeps the £5 grid when stepping by £100', () => {
+  it('keeps whole hundreds when stepping by £100', () => {
     assert.equal(stepSellingPrice(400, 1, oneYear), 500);
     assert.equal(stepSellingPrice(400, -1, oneYear), 300);
   });
