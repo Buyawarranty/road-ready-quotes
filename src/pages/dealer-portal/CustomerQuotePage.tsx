@@ -62,7 +62,7 @@ const CustomerQuotePage: React.FC = () => {
         <title>Customer Quote</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
-      <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} open onClose={() => window.close()} paymentSection={(payQuoteId || paid) ? <div>
+      <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} shareSection={shareSection} open onClose={() => window.close()} paymentSection={(payQuoteId || paid) ? <div>
         {paid ? <div className="rounded-lg border border-crm-green bg-crm-green/10 p-4 text-center">
           <p className="text-sm font-bold text-crm-green">Payment received — thank you.</p>
           <p className="mt-1 text-xs text-muted-foreground">Your dealer will confirm your warranty documents shortly.</p>
