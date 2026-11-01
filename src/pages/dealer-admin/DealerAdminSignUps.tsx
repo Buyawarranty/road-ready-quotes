@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
   Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
-  StickyNote, Pin, Trash2, Plus,
+  StickyNote, Pin, Trash2, Plus, Eye,
 } from 'lucide-react';
+import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
