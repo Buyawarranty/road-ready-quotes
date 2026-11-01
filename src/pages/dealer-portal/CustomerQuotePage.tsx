@@ -40,6 +40,22 @@ const CustomerQuotePage: React.FC = () => {
     {adjustable.groups.map((group, i) => <WarrantyOptionRow key={group.label} icon={Settings} label={group.label} helper="" options={group.options} value={selected[i]} onChange={value => setSelected(current => current.map((v, j) => j === i ? value : v))} />)}
     <div className="mt-3 space-y-2">{adjustable.extras.map(extra => <label key={extra.key} className="flex items-center gap-2 text-sm"><Checkbox checked={extras.includes(extra.key)} onCheckedChange={checked => setExtras(current => checked ? [...current, extra.key] : current.filter(k => k !== extra.key))} /><span className="min-w-0 flex-1">{extra.label}</span><span>+£{extra.price.toFixed(2)}</span></label>)}</div>
   </div> : undefined;
+  const shareUrl = window.location.href;
+  const shareMessage = customerQuoteMessage({ ...data, price, specs, included }, shareUrl);
+  const mailto = `mailto:?subject=${encodeURIComponent(`Your warranty quote${data.dealerName ? ` from ${data.dealerName}` : ''}`)}&body=${encodeURIComponent(shareMessage)}`;
+  const shareSection = <section className="customer-quote-tools rounded-lg border border-crm-line bg-card p-5 sm:p-6" aria-label="Share this quote">
+    <h2 className="mb-1 flex items-center gap-2 text-base font-bold"><Link2 className="h-5 w-5 text-crm-orange" />Share this quote</h2>
+    <p className="mb-4 text-xs text-muted-foreground">Copy the link and paste it anywhere, or send it on WhatsApp or email. Anyone opening it sees the customer price only.</p>
+    <div className="flex flex-wrap items-stretch gap-2">
+      <input readOnly value={shareUrl} aria-label="Quote link" onFocus={event => event.currentTarget.select()} className="h-11 min-w-0 flex-1 rounded-md border border-crm-line bg-muted/60 px-3 text-xs text-muted-foreground" />
+      <Button variant="outline" className="h-11 shrink-0 font-bold" onClick={async () => { try { await navigator.clipboard.writeText(shareUrl); setCopied(true); window.setTimeout(() => setCopied(false), 2500); } catch { setCopied(false); } }}><Link2 />{copied ? 'Copied' : 'Copy link'}</Button>
+    </div>
+    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      <Button variant="outline" className="h-11 font-bold" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank', 'noopener,noreferrer')}><MessageCircle />WhatsApp</Button>
+      <Button variant="outline" className="h-11 font-bold" asChild><a href={mailto}><Mail />Email</a></Button>
+    </div>
+    {copied && <p className="mt-3 text-xs font-bold text-crm-green">Link copied — paste it anywhere.</p>}
+  </section>;
   return (
     <>
       <Helmet>
