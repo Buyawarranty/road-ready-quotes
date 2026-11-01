@@ -35,6 +35,12 @@ const Step3Pricing: React.FC = () => {
     const n = Number(raw.replace(/[^0-9]/g, ''));
     if (vehicle && raw.trim() !== '' && Number.isFinite(n)) setVehicle({ ...vehicle, mileage: n } as any);
   };
+  const stepMileage = (delta: number) => {
+    const current = Number(mileageInput.replace(/[^0-9]/g, '')) || Number(vehicle?.mileage) || 0;
+    const next = Math.max(0, current + delta);
+    setMileageInput(String(next));
+    commitMileage(String(next));
+  };
 
   const lookupVehicle = async (rawReg: string) => {
     const cleaned = normaliseReg(rawReg);
@@ -172,11 +178,17 @@ const Step3Pricing: React.FC = () => {
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-2">
         <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
         <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
-        {vehicle?.reg && <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">Mileage
-          <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? Number(mileageInput.replace(/[^0-9]/g, '') || 0).toLocaleString('en-GB') : ''} placeholder="Enter mileage"
-            onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
-            className="h-9 w-28 rounded-md border border-crm-line bg-card px-2 text-sm font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
-        </label>}
+        {vehicle?.reg && <div className="flex items-center gap-2 rounded-lg border-2 border-crm-orange/50 bg-crm-orange-soft px-2 py-1.5">
+          <span className="text-xs font-bold uppercase tracking-wide text-crm-orange">Update mileage</span>
+          <span className="flex items-center gap-1">
+            <button type="button" aria-label="Reduce mileage by 100 miles" onClick={() => stepMileage(-100)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold leading-none text-crm-navy hover:border-crm-orange">&minus;</button>
+            <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? Number(mileageInput.replace(/[^0-9]/g, '') || 0).toLocaleString('en-GB') : ''} placeholder="Enter mileage"
+              onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
+              className="h-8 w-24 rounded-md border border-crm-line bg-card px-2 text-center text-sm font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
+            <button type="button" aria-label="Increase mileage by 100 miles" onClick={() => stepMileage(100)} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold leading-none text-crm-navy hover:border-crm-orange">+</button>
+          </span>
+          <span className="text-xs font-bold text-crm-navy">miles</span>
+        </div>}
         {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
       </div>
     </header>
