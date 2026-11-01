@@ -36,6 +36,22 @@ interface Signup {
   updated_at: string;
 }
 
+interface NoteIndexRow {
+  signup_id: string;
+  note_text: string;
+  created_at: string;
+}
+
+interface SignupNote {
+  id: string;
+  signup_id: string;
+  note_text: string;
+  is_pinned: boolean;
+  created_by: string;
+  created_at: string;
+  author: string;
+}
+
 const PAGE_SIZE = 25;
 const STATUS_OPTIONS: Status[] = ['new', 'pending', 'needs_info', 'contacted', 'qualified', 'closed', 'approved', 'rejected'];
 const statusColor: Record<Status, string> = {
@@ -63,6 +79,11 @@ const DealerAdminSignUps: React.FC = () => {
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [noteIndex, setNoteIndex] = useState<NoteIndexRow[]>([]);
+  const [notes, setNotes] = useState<SignupNote[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [noteDraft, setNoteDraft] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -77,6 +98,12 @@ const DealerAdminSignUps: React.FC = () => {
       setRows((data || []) as Signup[]);
     }
     setLoading(false);
+
+    const { data: noteRows } = await supabase
+      .from('trade_warranty_signup_notes')
+      .select('signup_id, note_text, created_at')
+      .order('created_at', { ascending: true });
+    setNoteIndex((noteRows || []) as NoteIndexRow[]);
   };
 
   useEffect(() => { load(); }, []);
@@ -89,6 +116,20 @@ const DealerAdminSignUps: React.FC = () => {
       if (match) setSelected(match);
     }
   }, [searchParams, rows]);
+
+  const noteCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    noteIndex.forEach((n) => { counts[n.signup_id] = (counts[n.signup_id] || 0) + 1; });
+    return counts;
+  }, [noteIndex]);
+
+  const notesForExport = useMemo(() => {
+    const map: Record<string, string> = {};
+    noteIndex.forEach((n) => {
+      map[n.signup_id] = map[n.signup_id] ? `${map[n.signup_id]} | ${n.note_text}` : n.note_text;
+    });
+    return map;
+  }, [noteIndex]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -108,6 +149,95 @@ const DealerAdminSignUps: React.FC = () => {
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   useEffect(() => { setPage(1); }, [search, statusFilter]);
+
+  const fetchNotes = async (signupId: string) => {
+    setNotesLoading(true);
+    const { data, error } = await supabase
+      .from('trade_warranty_signup_notes')
+      .select('*')
+      .eq('signup_id', signupId)
+      .order('is_pinned', { ascending: false })
+      .order('created_at', { ascending: false });
+    if (error) {
+      toast.error(error.message);
+      setNotes([]);
+      setNotesLoading(false);
+      return;
+    }
+    const rowsData = (data || []) as Omit<SignupNote, 'author'>[];
+    const ids = Array.from(new Set(rowsData.map((r) => r.created_by)));
+    const names: Record<string, string> = {};
+    if (ids.length) {
+      const { data: admins } = await supabase
+        .from('admin_users')
+        .select('user_id, first_name, last_name, email')
+        .in('user_id', ids);
+      (admins || []).forEach((a) => {
+        names[a.user_id] = [a.first_name, a.last_name].filter(Boolean).join(' ') || a.email;
+      });
+    }
+    setNotes(rowsData.map((r) => ({ ...r, author: names[r.created_by] || 'Staff' })));
+    setNotesLoading(false);
+  };
+
+  useEffect(() => {
+    setNotes([]);
+    setNoteDraft('');
+    if (selected?.id) fetchNotes(selected.id);
+  }, [selected?.id]);
+
+  const addNote = async () => {
+    if (!selected || !noteDraft.trim()) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error('Please sign in again to add a note');
+      return;
+    }
+    setSavingNote(true);
+    const { error } = await supabase
+      .from('trade_warranty_signup_notes')
+      .insert({
+        signup_id: selected.id,
+        note_text: noteDraft.trim(),
+        created_by: user.id,
+      });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setNoteDraft('');
+      await fetchNotes(selected.id);
+      setNoteIndex((idx) => [...idx, {
+        signup_id: selected.id,
+        note_text: noteDraft.trim(),
+        created_at: new Date().toISOString(),
+      }]);
+      toast.success('Note added');
+    }
+    setSavingNote(false);
+  };
+
+  const togglePin = async (note: SignupNote) => {
+    const { error } = await supabase
+      .from('trade_warranty_signup_notes')
+      .update({ is_pinned: !note.is_pinned })
+      .eq('id', note.id);
+    if (error) toast.error(error.message);
+    else fetchNotes(note.signup_id);
+  };
+
+  const removeNote = async (noteId: string) => {
+    if (!window.confirm('Delete this note?')) return;
+    const { error } = await supabase
+      .from('trade_warranty_signup_notes')
+      .delete()
+      .eq('id', noteId);
+    if (error) toast.error(error.message);
+    else {
+      setNoteIndex((idx) => idx.filter((n) => !(n.note_text && n.signup_id === selected?.id)));
+      if (selected) fetchNotes(selected.id);
+      toast.success('Note deleted');
+    }
+  };
 
   const updateStatus = async (id: string, status: Status) => {
     const prev = rows;
@@ -182,14 +312,14 @@ const DealerAdminSignUps: React.FC = () => {
     const headers = [
       'Submission Date', 'Dealership Name', 'Contact Name', 'Email Address', 'Phone Number',
       'Monthly Vehicle Sales', 'Current Warranty Provider', 'Interested In',
-      'Where They Sell Vehicles', 'Additional Information', 'Status',
+      'Where They Sell Vehicles', 'Additional Information', 'Status', 'Notes',
     ];
     const lines = filtered.map((r) =>
       [
         format(new Date(r.created_at), 'yyyy-MM-dd HH:mm'),
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
         r.monthly_vehicle_sales, r.current_warranty_provider, r.interested_in,
-        r.heard_about_us, r.additional_information, r.status,
+        r.heard_about_us, r.additional_information, r.status, notesForExport[r.id] || '',
       ].map((v) => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')
     );
 
@@ -209,6 +339,8 @@ const DealerAdminSignUps: React.FC = () => {
   };
   const closeDetail = () => {
     setSelected(null);
+    setNotes([]);
+    setNoteDraft('');
     setSearchParams((p) => { p.delete('id'); return p; });
   };
 
@@ -288,6 +420,7 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Monthly Sales</Th>
                   <Th>Current Provider</Th>
                   <Th>Interested In</Th>
+                  <Th>Notes</Th>
                   <Th>Status</Th>
                 </tr>
               </thead>
@@ -317,6 +450,13 @@ const DealerAdminSignUps: React.FC = () => {
                     <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
                     <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
                     <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
+                    <Td>
+                      {noteCounts[r.id] ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs text-orange-700">
+                          <StickyNote className="w-3 h-3" /> {noteCounts[r.id]}
+                        </span>
+                      ) : <span className="text-gray-300">—</span>}
+                    </Td>
                     <Td>
                       <Badge className={`capitalize ${statusColor[r.status]}`}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
                     </Td>
@@ -392,6 +532,61 @@ const DealerAdminSignUps: React.FC = () => {
                     Declining emails them a polite note inviting them to apply again.
                   </p>
                 </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+                    <StickyNote className="w-3.5 h-3.5" /> Notes
+                    {notes.length > 0 && (
+                      <span className="font-normal normal-case tracking-normal text-gray-400">({notes.length})</span>
+                    )}
+                  </div>
+                  <textarea
+                    value={noteDraft}
+                    onChange={(e) => setNoteDraft(e.target.value)}
+                    placeholder="Add a private note about this dealer…"
+                    className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm min-h-[70px]"
+                    disabled={savingNote}
+                  />
+                  <div className="flex justify-end">
+                    <Button size="sm" variant="outline" onClick={addNote} disabled={savingNote || !noteDraft.trim()}>
+                      {savingNote
+                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        : <Plus className="w-4 h-4 mr-2" />}
+                      Add note
+                    </Button>
+                  </div>
+                  {notesLoading ? (
+                    <div className="py-3 flex justify-center"><Loader2 className="w-4 h-4 animate-spin text-gray-400" /></div>
+                  ) : notes.length === 0 ? (
+                    <p className="text-sm text-gray-400">No notes yet. Only admin staff can see these notes.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {notes.map((n) => (
+                        <li key={n.id}
+                          className={`rounded-lg border p-3 text-sm ${n.is_pinned ? 'border-[#eb4b00]/40 bg-orange-50' : 'border-gray-200 bg-gray-50'}`}>
+                          <p className="whitespace-pre-wrap break-words text-gray-800">{n.note_text}</p>
+                          <div className="mt-2 flex items-center justify-between gap-2 text-xs text-gray-500">
+                            <span className="truncate">
+                              {n.author} · {format(new Date(n.created_at), 'd MMM yyyy, HH:mm')}
+                            </span>
+                            <span className="flex items-center gap-1 shrink-0">
+                              <button type="button" onClick={() => togglePin(n)}
+                                title={n.is_pinned ? 'Unpin note' : 'Pin to top'}
+                                className={`rounded p-1 hover:bg-white ${n.is_pinned ? 'text-[#eb4b00]' : 'text-gray-400 hover:text-[#eb4b00]'}`}>
+                                <Pin className="w-3.5 h-3.5" />
+                              </button>
+                              <button type="button" onClick={() => removeNote(n.id)} title="Delete note"
+                                className="rounded p-1 text-gray-400 hover:bg-white hover:text-red-600">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-3">
                   <Badge className={`capitalize ${statusColor[selected.status]}`}>{STATUS_LABEL[selected.status] ?? selected.status}</Badge>
                   <Select value={selected.status} onValueChange={(v) => updateStatus(selected.id, v as Status)}>
