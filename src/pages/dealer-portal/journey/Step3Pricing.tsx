@@ -261,6 +261,7 @@ const Step3Pricing: React.FC = () => {
         <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
         {trade && <Button className="col-span-2 h-14 w-full px-6 text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+        {trade && <p className="col-span-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground sm:justify-end"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
       </div>
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
