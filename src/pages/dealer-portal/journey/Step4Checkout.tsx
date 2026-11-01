@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -37,6 +38,7 @@ const Step4Checkout: React.FC = () => {
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
   const [creditBlocked, setCreditBlocked] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -143,6 +145,7 @@ const Step4Checkout: React.FC = () => {
     }
     if (method === 'invoice' && creditBlocked) return;
 
+    setSubmitError(null);
     setSubmitting(true);
     try {
       const data = await createRecord();
@@ -160,9 +163,11 @@ const Step4Checkout: React.FC = () => {
       );
     } catch (err: unknown) {
       console.error('Dealer checkout error', err);
+      const message = err instanceof Error ? err.message : 'Please try again or contact support.';
+      setSubmitError(message);
       toast({
         title: 'Checkout failed',
-        description: err instanceof Error ? err.message : 'Please try again or contact support.',
+        description: message,
         variant: 'destructive',
       });
       setSubmitting(false);
@@ -371,6 +376,8 @@ const Step4Checkout: React.FC = () => {
           <p className="text-xs text-gray-500 pt-2 border-t border-gray-200">
             By issuing this warranty, you confirm that the vehicle, customer and cover details shown are correct.
           </p>
+
+          {submitError && <DealerFieldError>{submitError}</DealerFieldError>}
 
           <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-between gap-3">
             <Button
