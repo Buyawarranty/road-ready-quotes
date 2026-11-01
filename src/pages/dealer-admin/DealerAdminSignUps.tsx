@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 
-type Status = 'new' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
+type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
 interface Signup {
   id: string;
@@ -29,20 +29,26 @@ interface Signup {
   additional_information: string | null;
 
   status: Status;
+  approved_at?: string | null;
+  rejected_at?: string | null;
   created_at: string;
   updated_at: string;
 }
 
 const PAGE_SIZE = 25;
-const STATUS_OPTIONS: Status[] = ['new', 'contacted', 'qualified', 'closed', 'approved', 'rejected'];
+const STATUS_OPTIONS: Status[] = ['new', 'pending', 'needs_info', 'contacted', 'qualified', 'closed', 'approved', 'rejected'];
 const statusColor: Record<Status, string> = {
   new: 'bg-blue-100 text-blue-800',
+  pending: 'bg-yellow-100 text-yellow-800',
+  needs_info: 'bg-orange-100 text-orange-800',
   contacted: 'bg-amber-100 text-amber-800',
   qualified: 'bg-emerald-100 text-emerald-800',
   closed: 'bg-gray-200 text-gray-700',
   approved: 'bg-green-600 text-white',
   rejected: 'bg-red-100 text-red-800',
 };
+
+const STATUS_LABEL: Record<string, string> = { needs_info: 'Needs more info' };
 
 const DealerAdminSignUps: React.FC = () => {
   const [rows, setRows] = useState<Signup[]>([]);
@@ -272,7 +278,8 @@ const DealerAdminSignUps: React.FC = () => {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <Th>Submission Date</Th>
+                  <Th>Signed Up</Th>
+                  <Th>Approved</Th>
                   <Th>Dealership</Th>
                   <Th>Contact</Th>
                   <Th>Email</Th>
@@ -291,6 +298,11 @@ const DealerAdminSignUps: React.FC = () => {
                       {format(new Date(r.created_at), 'd MMM yyyy')}
                       <div className="text-xs text-gray-400">{format(new Date(r.created_at), 'HH:mm')}</div>
                     </Td>
+                    <Td className="whitespace-nowrap text-gray-600">
+                      {r.approved_at ? format(new Date(r.approved_at), 'd MMM yyyy')
+                        : r.rejected_at ? <span className="text-red-600">Declined {format(new Date(r.rejected_at), 'd MMM')}</span>
+                        : <span className="text-gray-400">Not yet</span>}
+                    </Td>
                     <Td className="font-medium text-gray-900">{r.dealership_name || '—'}</Td>
                     <Td className="text-gray-700">{r.contact_name || '—'}</Td>
                     <Td>
@@ -305,7 +317,7 @@ const DealerAdminSignUps: React.FC = () => {
                     <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
                     <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
                     <Td>
-                      <Badge className={`capitalize ${statusColor[r.status]}`}>{r.status}</Badge>
+                      <Badge className={`capitalize ${statusColor[r.status]}`}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
                     </Td>
                   </tr>
                 ))}
@@ -380,7 +392,7 @@ const DealerAdminSignUps: React.FC = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Badge className={`capitalize ${statusColor[selected.status]}`}>{selected.status}</Badge>
+                  <Badge className={`capitalize ${statusColor[selected.status]}`}>{STATUS_LABEL[selected.status] ?? selected.status}</Badge>
                   <Select value={selected.status} onValueChange={(v) => updateStatus(selected.id, v as Status)}>
                     <SelectTrigger className="w-[180px] h-8 text-xs">
                       <SelectValue placeholder="Change status" />
