@@ -36,3 +36,5 @@
 - [ ] Build an admin dashboard "Manage My Claim" section with activate/deactivate control (user idea, awaiting go-ahead) to replace the code flag.
 - [x] Retire the vehicle-details quote step: registration entry now happens on the pricing page, /dealer-portal/quote/vehicle and other entry URLs redirect there with ?reg= kept, and every New Quote link points at pricing.
 - [x] Add the v11 Platinum Warranty Plan and Terms & Conditions PDFs as downloads in the pricing page "What's covered?" accordion, served as CDN assets at reduced file size after a high-resolution legibility check.
+
+- [x] Make Customer View open the customer-safe quote in its own browser tab (quote saved with its payment reference) and add copy-link, WhatsApp and email sharing inside that tab. Customer-view render and copy interaction verified in the browser; signed-in dealer click still needs the external session.
