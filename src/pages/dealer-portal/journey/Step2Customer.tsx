@@ -12,6 +12,9 @@ import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check,
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+// UK mobile: 07xxx xxxxxx or +44 7xxx xxxxxx
+export const isUkPhone = (v: string) => /^(?:07\d{9}|447\d{9})$/.test(v.replace(/[\s()+-]/g, ''));
 
 const PANDA_WHATSAPP = '443302295045';
 const PANDA_EMAIL = 'support@pandaprotect.co.uk';
@@ -82,10 +85,13 @@ const Step2Customer: React.FC = () => {
 
   const submitSelf = () => {
     setError(null);
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim() || !form.address_line1.trim() || !form.town.trim() || !form.postcode.trim()) {
-      setError('Please complete all required fields'); return;
+    setTouched({ email: true, phone: true, name: true });
+    if (!EMAIL_RE.test(form.email.trim())) { setError('Enter a valid email address'); return; }
+    if (!isUkPhone(form.phone)) { setError('Enter a valid UK mobile number'); return; }
+    if (form.name.trim().length < 2) { setError('Enter the customer\'s full name'); return; }
+    if (!form.address_line1.trim() || !form.town.trim() || !form.postcode.trim()) {
+      setManualAddress(true); setError('Search for the address, or enter it manually'); return;
     }
-    if (!/^\S+@\S+\.\S+$/.test(form.email)) { setError('Enter a valid email address'); return; }
     setCustomer(form);
     navigate('/dealer-portal/quote/checkout');
   };
@@ -109,20 +115,35 @@ const Step2Customer: React.FC = () => {
   const filled = (k: keyof typeof form) => {
     const v = form[k].trim();
     if (!v) return false;
-    if (k === 'email') return /^\S+@\S+\.\S+$/.test(v);
-    if (k === 'phone') return v.replace(/\D/g, '').length >= 10;
+    if (k === 'email') return EMAIL_RE.test(v);
+    if (k === 'phone') return isUkPhone(v);
     return v.length > 1;
   };
 
-  const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string) => (
+  const fieldError = (k: keyof typeof form): string | null => {
+    const v = form[k].trim();
+    if (!v || !touched[k]) return null;
+    if (k === 'email' && !EMAIL_RE.test(v)) return 'Enter a valid email, like name@example.com';
+    if (k === 'phone' && !isUkPhone(v)) return 'Enter a valid UK mobile, like 07123 456789';
+    return null;
+  };
+
+  const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string) => {
+    const err = fieldError(k);
+    return (
     <div>
       <label htmlFor={`c-${k}`} className="mb-1 block text-sm font-medium text-crm-navy">{label}</label>
       <div className="relative">
-        <Input id={`c-${k}`} type={type} autoComplete={autoComplete} value={form[k]} onChange={(e) => update(k, e.target.value)} className={`h-12 pr-10 text-base ${filled(k) ? 'border-crm-green' : ''}`} />
+        <Input id={`c-${k}`} type={type} inputMode={k === 'phone' ? 'tel' : k === 'email' ? 'email' : undefined} autoComplete={autoComplete} value={form[k]}
+          aria-invalid={!!err} aria-describedby={err ? `c-${k}-err` : undefined}
+          onChange={(e) => update(k, e.target.value)} onBlur={() => setTouched((t) => ({ ...t, [k]: true }))}
+          className={`h-12 pr-10 text-base ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
         {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
       </div>
+      {err && <p id={`c-${k}-err`} className="mt-1 text-sm font-medium text-destructive">{err}</p>}
     </div>
-  );
+    );
+  };
 
   return (
     <DealerJourneyLayout step={2} title="Customer details" subtitle="How would you like to complete this warranty?" backTo="/dealer-portal/quote/pricing">
