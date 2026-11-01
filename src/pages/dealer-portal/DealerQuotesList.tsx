@@ -349,7 +349,9 @@ const DealerQuotesList = () => {
                   <p className="text-sm text-gray-600">
                     <span className="font-semibold text-gray-700">Step:</span>{' '}
                     <span className="text-orange-600 font-medium">
-                      {q.status === 'converted' || q.status === 'completed'
+                      {q.status === 'awaiting_panda'
+                        ? 'Awaiting Panda Protect'
+                        : q.status === 'converted' || q.status === 'completed'
                         ? 'Completed'
                         : STEP_LABELS[Number(q.current_step || 1)] || 'Vehicle details'}
                     </span>

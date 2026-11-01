@@ -213,43 +213,6 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-1 2xl:flex">
-              {topNav.map((item) => {
-                const Icon = item.icon;
-                const active = isActive(item);
-                return (
-                  <Link
-                    key={`top-${item.to}`}
-                    to={item.to}
-                    className={`flex h-[58px] min-w-[58px] flex-col items-center justify-center gap-1 border-b-2 px-2 text-[10px] font-semibold transition-colors ${
-                      active
-                        ? 'border-crm-orange text-crm-orange'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
-                  </Link>
-                );
-              })}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex h-[58px] min-w-[58px] flex-col gap-1 px-2 text-[10px] font-semibold text-muted-foreground hover:text-foreground">
-                    <MoreHorizontal className="h-4 w-4" /> More
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-48">
-                  {secondaryNav.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <DropdownMenuItem key={`more-${item.to}`} className="cursor-pointer" onClick={() => navigate(item.to)}>
-                        <Icon className="mr-2 h-4 w-4" /> {item.label}
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </nav>
 
             <div className="relative mx-auto hidden w-full max-w-[420px] md:block">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
