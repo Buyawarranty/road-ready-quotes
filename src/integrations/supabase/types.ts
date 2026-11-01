@@ -15844,6 +15844,8 @@ export type Database = {
         | "closed"
         | "approved"
         | "rejected"
+        | "pending"
+        | "needs_info"
       user_role:
         | "admin"
         | "customer"
@@ -16091,6 +16093,8 @@ export const Constants = {
         "closed",
         "approved",
         "rejected",
+        "pending",
+        "needs_info",
       ],
       user_role: [
         "admin",
