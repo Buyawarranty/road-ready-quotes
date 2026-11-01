@@ -220,7 +220,7 @@ const Step2Customer: React.FC = () => {
         {error && <p role="alert" className="text-sm font-medium text-destructive">{error}</p>}
 
         <Button type="button" disabled={saving} onClick={mode === 'panda' ? handoff : submitSelf}
-          className={`h-14 w-full gap-2 px-6 text-base font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:mx-auto sm:flex sm:w-auto sm:min-w-[320px] ${saving ? '' : 'animate-breathing'}`}>
+          className={`h-14 w-full gap-2 px-6 text-base font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:ml-auto sm:mr-0 sm:flex sm:w-auto sm:min-w-[320px] ${saving ? '' : 'animate-breathing'}`}>
           {saving ? <><Loader2 className="h-5 w-5 animate-spin" />Saving…</> : mode === 'panda' ? <>Request Panda Protect assistance<ArrowRight className="h-5 w-5" /></> : <>Continue to checkout<ArrowRight className="h-5 w-5" /></>}
         </Button>
       </div>
