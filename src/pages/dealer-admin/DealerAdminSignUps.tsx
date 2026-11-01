@@ -195,23 +195,21 @@ const DealerAdminSignUps: React.FC = () => {
       return;
     }
     setSavingNote(true);
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from('trade_warranty_signup_notes')
       .insert({
         signup_id: selected.id,
         note_text: noteDraft.trim(),
         created_by: user.id,
-      });
+      })
+      .select('id, signup_id, note_text, created_at')
+      .single();
     if (error) {
       toast.error(error.message);
     } else {
       setNoteDraft('');
       await fetchNotes(selected.id);
-      setNoteIndex((idx) => [...idx, {
-        signup_id: selected.id,
-        note_text: noteDraft.trim(),
-        created_at: new Date().toISOString(),
-      }]);
+      if (inserted) setNoteIndex((idx) => [...idx, inserted as NoteIndexRow]);
       toast.success('Note added');
     }
     setSavingNote(false);
@@ -234,7 +232,7 @@ const DealerAdminSignUps: React.FC = () => {
       .eq('id', noteId);
     if (error) toast.error(error.message);
     else {
-      setNoteIndex((idx) => idx.filter((n) => !(n.note_text && n.signup_id === selected?.id)));
+      setNoteIndex((idx) => idx.filter((n) => n.id !== noteId));
       if (selected) fetchNotes(selected.id);
       toast.success('Note deleted');
     }
