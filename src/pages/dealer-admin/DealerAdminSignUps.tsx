@@ -421,6 +421,7 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Interested In</Th>
                   <Th>Notes</Th>
                   <Th>Status</Th>
+                  <Th>Action</Th>
                 </tr>
               </thead>
               <tbody>
@@ -458,6 +459,13 @@ const DealerAdminSignUps: React.FC = () => {
                     </Td>
                     <Td>
                       <Badge className={`capitalize ${statusColor[r.status]}`}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
+                    </Td>
+                    <Td className="whitespace-nowrap">
+                      <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                        <Check className="w-4 h-4 mr-1" />
+                        {r.approved_at ? 'Resend login' : 'Approve'}
+                      </Button>
                     </Td>
                   </tr>
                 ))}
