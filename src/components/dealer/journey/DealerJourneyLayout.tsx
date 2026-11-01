@@ -22,7 +22,7 @@ const STEPS = ['Choose Warranty', 'Customer Details', 'Review & Pay', 'Done'];
 const STEP_POSITION: Record<number, number> = { 1: 0, 3: 0, 2: 1, 4: 2, 5: 3 };
 
 const CarIcon = () => (
-  <svg viewBox="0 0 64 36" className="w-12 h-7 drop-shadow-sm" aria-hidden="true">
+  <svg viewBox="0 0 64 36" className="w-8 h-5 drop-shadow-sm animate-car-bounce" aria-hidden="true">
     <rect x="4" y="10" width="54" height="18" rx="6" className="fill-primary" />
     <rect x="14" y="4" width="32" height="12" rx="4" className="fill-primary" />
     <rect x="18" y="7" width="10" height="7" rx="1.5" className="fill-primary-foreground/80" />
@@ -39,32 +39,32 @@ const JourneyProgress: React.FC<{ current: number }> = ({ current }) => {
   const last = STEPS.length - 1;
   const pct = (current / last) * 100;
   return (
-    <div className="relative pt-8" aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
-      <div className="relative mx-[12.5%] h-2.5 rounded-full bg-muted">
+    <div className="relative pt-5" aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
+      <div className="relative mx-[12.5%] h-1.5 rounded-full bg-muted">
         <div className="absolute inset-y-0 left-0 rounded-full bg-success transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
-        <div className="absolute -top-8 -translate-x-1/2 transition-all duration-700 ease-out" style={{ left: `${pct}%` }}>
+        <div className="absolute -top-5 -translate-x-1/2 transition-all duration-700 ease-out" style={{ left: `${pct}%` }}>
           <CarIcon />
         </div>
       </div>
-      <ol className="grid grid-cols-4 mt-3">
+      <ol className="grid grid-cols-4 mt-1.5">
         {STEPS.map((label, i) => {
           const done = i < current;
           const active = i === current;
           return (
-            <li key={label} className="flex flex-col items-center text-center gap-1.5">
+            <li key={label} className="flex flex-col items-center text-center gap-1">
               <span
-                className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-sm font-bold ${
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                   done
                     ? 'bg-success text-success-foreground'
                     : active
-                      ? 'bg-primary text-primary-foreground ring-4 ring-primary/25'
+                      ? 'bg-primary text-primary-foreground ring-2 ring-primary/25'
                       : 'bg-muted text-muted-foreground border border-border'
                 }`}
               >
-                {done ? <Check className="w-5 h-5" strokeWidth={3} /> : i + 1}
+                {done ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : i + 1}
               </span>
               <span
-                className={`text-[11px] sm:text-sm font-semibold leading-tight ${
+                className={`text-[10px] sm:text-xs font-semibold leading-tight ${
                   done ? 'text-success' : active ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
@@ -126,7 +126,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
     <DealerLayout>
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-6 lg:-my-8 bg-gray-50 text-gray-900 min-h-[calc(100vh-5rem)]">
         <div className="border-b border-gray-200 bg-gray-100/50 backdrop-blur">
-          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               {showBack && (
                 <Button
@@ -138,7 +138,6 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
               )}
-              <span className="text-sm font-semibold text-orange-500">DEALER QUOTE</span>
             </div>
             <div className="flex items-center gap-2">
               {discount_pct > 0 && (
@@ -160,7 +159,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
           </div>
 
           {/* Progress */}
-          <div className="max-w-4xl mx-auto px-4 pt-2 pb-5">
+          <div className="max-w-4xl mx-auto px-4 pt-1 pb-3">
             <JourneyProgress current={STEP_POSITION[step]} />
           </div>
         </div>
