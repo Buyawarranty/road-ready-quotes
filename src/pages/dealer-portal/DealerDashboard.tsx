@@ -27,6 +27,7 @@ export default function DealerDashboard() {
   const { dealer } = useDealerAuth();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
+  const [regMissing, setRegMissing] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>(() => ({ from: startOfMonth(subMonths(new Date(), 5)), to: new Date() }));
   const { data, isPending, isError, refetch } = useDealerDashboard(dealer?.id);
   const quotes = data?.quotes || [];
