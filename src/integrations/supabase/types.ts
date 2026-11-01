@@ -13167,6 +13167,44 @@ export type Database = {
           },
         ]
       }
+      trade_warranty_signup_notes: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_pinned: boolean
+          note_text: string
+          signup_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_pinned?: boolean
+          note_text: string
+          signup_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_pinned?: boolean
+          note_text?: string
+          signup_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_warranty_signup_notes_signup_id_fkey"
+            columns: ["signup_id"]
+            isOneToOne: false
+            referencedRelation: "trade_warranty_signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trade_warranty_signups: {
         Row: {
           additional_information: string | null
