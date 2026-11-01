@@ -76,7 +76,12 @@ const Step3Pricing: React.FC = () => {
   const { toast } = useToast();
   const [view, setView] = useState<'trade' | 'customer'>('trade');
   const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || null);
-  const [prices, setPrices] = useState<Record<string, number>>(() => isAnnualQuoteSnapshot(savedPlan?.selected_options) ? ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price } : {}) }) : {});
+  // Saved quotes store totals including any boost; the page works with base warranty prices.
+  const savedOpts = (savedPlan?.selected_options || {}) as Record<string, any>;
+  const savedBoostCost = savedOpts.boost === true ? Number(savedOpts.boost_dealer_price || 0) : 0;
+  const savedBoostRetail = savedOpts.boost === true ? Number(savedOpts.boost_retail_price || 0) : 0;
+  const [prices, setPrices] = useState<Record<string, number>>(() => isAnnualQuoteSnapshot(savedPlan?.selected_options) ? ({ ...(savedPlan?.selected_options?.selling_prices || {}), ...(savedPlan ? { [savedPlan.duration_months]: savedPlan.retail_price - savedBoostRetail } : {}) }) : {});
+  const [boost, setBoost] = useState<boolean>(savedOpts.boost === true);
   const [exact, setExact] = useState(false);
   const [exactValue, setExactValue] = useState('');
   const [error, setError] = useState('');
@@ -85,23 +90,31 @@ const Step3Pricing: React.FC = () => {
   const [emailQuote, setEmailQuote] = useState<string | null>(null);
   const [email, setEmail] = useState(customer?.email || '');
   const [emailBusy, setEmailBusy] = useState(false);
+  const boostCfg = config?.boost?.active ? config.boost : null;
+  const boostOn = Boolean(boost && boostCfg);
+  const boostCost = boostOn && boostCfg ? boostCfg.dealer_price : 0;
+  const boostRetail = boostOn && boostCfg ? boostCfg.retail_price : 0;
   const historical = Boolean(savedPlan && isAnnualQuoteSnapshot(savedPlan.selected_options) && term === savedPlan.duration_months);
   const product = config?.terms.find(p => p.months === term);
-  const cost = historical && savedPlan ? savedPlan.dealer_price : product?.dealer_price || 0;
-  const retail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
-  const cover = historical && savedPlan?.selected_options ? {
+  const baseCost = historical && savedPlan ? savedPlan.dealer_price - savedBoostCost : product?.dealer_price || 0;
+  const baseRetail = term ? prices[term] ?? product?.retail_price ?? 0 : 0;
+  const cost = baseCost + boostCost;
+  const retail = baseRetail + boostRetail;
+  const baseClaim = Number(config?.cover.claim ?? (savedOpts.boost === true ? undefined : savedOpts.claim) ?? 3000);
+  const baseCover = historical && savedPlan?.selected_options ? {
     excess: Number(savedPlan.selected_options.excess ?? config?.cover.excess ?? 0),
     labour: Number(savedPlan.selected_options.labour ?? config?.cover.labour ?? 100),
-    claim: Number(savedPlan.selected_options.claim ?? config?.cover.claim ?? 3000),
+    claim: baseClaim,
     parts: savedPlan.selected_options.parts_key || config?.cover.parts || 'age-mileage',
   } : config?.cover;
-  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(retail, product) && vehicle?.reg);
+  const cover = baseCover ? { ...baseCover, claim: boostOn && boostCfg ? boostCfg.claim_limit : baseCover.claim } : baseCover;
+  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg);
   const trade = view === 'trade';
   const termLabel = term ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : '';
   const summary = [{ label: 'Warranty term', value: termLabel }, { label: 'Customer excess', value: gbp(cover?.excess || 0) }, { label: 'Labour rate', value: `${gbp(cover?.labour || 0)}/hour` }, { label: 'Per eligible claim', value: gbp(cover?.claim || 0) }];
-  const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support'], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
+  const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support', ...(boostOn ? ['£5,000 claim limit boost'] : [])], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
     const buildPlan = (): DealerJourneyPlan => ({ plan_type: 'gold', duration_months: term || 0, term_months: term || 0, dealer_price: cost, retail_price: retail,
-    selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices } });
+    selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices, boost: boostOn, boost_dealer_price: boostCost, boost_retail_price: boostRetail } });
   const persist = async (next = false) => {
     if (!valid) { setError('Choose an available warranty and a valid customer selling price.'); return null; }
     setError(''); const plan = buildPlan(); setPlan(plan);
