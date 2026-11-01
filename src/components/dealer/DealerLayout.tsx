@@ -180,7 +180,24 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
   return (
     <div className="dealer-crm min-h-screen bg-crm-canvas text-foreground">
-      <header className="fixed inset-x-0 top-0 z-50 h-[72px] border-b border-crm-line bg-card">
+      {isImpersonating && impersonatedDealer && (
+        <div className="fixed inset-x-0 top-0 z-[60] flex h-10 items-center justify-center gap-3 bg-amber-400 px-4 text-xs font-semibold text-amber-950 sm:text-sm">
+          <span className="truncate">
+            Viewing the dealer portal as {impersonatedDealer.dealerName} ({impersonatedDealer.dealerEmail}) — your admin login is still active
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              stopImpersonation();
+              navigate('/admin-dashboard/?tab=dealer-signups');
+            }}
+            className="shrink-0 rounded-full bg-amber-950 px-3 py-1 text-[11px] font-bold text-white hover:bg-amber-900"
+          >
+            Exit
+          </button>
+        </div>
+      )}
+      <header className={`fixed inset-x-0 ${isImpersonating ? 'top-10' : 'top-0'} z-50 h-[72px] border-b border-crm-line bg-card`}>
         <div className="flex h-full items-center gap-4 px-4 lg:px-5">
             <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[230px]">
               <img
