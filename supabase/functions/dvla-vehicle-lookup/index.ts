@@ -801,7 +801,13 @@ serve(async (req) => {
       motStatus: motStatus,
       motExpiryDate: motExpiryDate,
       taxStatus: taxStatus,
-      motVerified: motVerified
+      motVerified: motVerified,
+      ...(() => {
+        const t = (vehicleData.motTests || [])
+          .filter((m: MOTTest) => m.odometerValue != null && (!m.odometerUnit || String(m.odometerUnit).toLowerCase().startsWith('mi')))
+          .sort((a: MOTTest, b: MOTTest) => new Date(b.completedDate).getTime() - new Date(a.completedDate).getTime())[0];
+        return { lastMotMileage: t ? Number(t.odometerValue) : null, lastMotDate: t?.completedDate || null };
+      })()
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

@@ -29,6 +29,11 @@ const Step3Pricing: React.FC = () => {
   const [regInput, setRegInput] = useState('');
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
   const [lookupMsg, setLookupMsg] = useState('');
+  const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
+  const commitMileage = (raw: string) => {
+    const n = Number(raw.replace(/[^0-9]/g, ''));
+    if (vehicle && raw.trim() !== '' && Number.isFinite(n)) setVehicle({ ...vehicle, mileage: n } as any);
+  };
 
   const lookupVehicle = async (rawReg: string) => {
     const cleaned = normaliseReg(rawReg);
@@ -46,7 +51,8 @@ const Step3Pricing: React.FC = () => {
         const ageYears = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
         if (ageYears > 15) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.'); return; }
       }
-      setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType });
+      setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
+      if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));
       setLookup('idle'); setEditingReg(false);
     } catch {
       setVehicle({ reg: cleaned });
@@ -149,7 +155,12 @@ const Step3Pricing: React.FC = () => {
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Select how many years of cover you want.</p></div>
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-3">
         <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
-        <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage != null ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
+        <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
+        {vehicle?.reg && <label className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">Mileage
+          <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? Number(mileageInput.replace(/[^0-9]/g, '') || 0).toLocaleString('en-GB') : ''} placeholder="Enter mileage"
+            onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
+            className="h-9 w-28 rounded-md border border-crm-line bg-card px-2 text-sm font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
+        </label>}
         {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
       </div>
     </header>
