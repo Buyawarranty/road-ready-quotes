@@ -8,7 +8,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Check, Loader2 } from 'lucide-react';
+import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2 } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
@@ -136,7 +136,7 @@ const Step2Customer: React.FC = () => {
                     className={`flex items-center gap-4 rounded-xl border-2 p-3 text-left transition ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
                     <span className={`flex h-12 w-12 items-center justify-center rounded-lg ${key === 'whatsapp' ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy'}`}><Icon className="h-6 w-6" /></span>
                     <span className="flex-1 text-lg font-bold">{label}</span>
-                    {active ? <Check className="h-5 w-5 text-crm-green" /> : <ArrowRight className="h-5 w-5" />}
+                    <RadioDot active={active} />
                   </button>
                 );
               })}
