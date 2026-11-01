@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,14 +12,55 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2 } from 'lucide-react';
+import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2, Loader2 } from 'lucide-react';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
+const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, customer, plan: savedPlan, setPlan, quoteId } = useDealerJourney();
+  const { vehicle, customer, plan: savedPlan, setPlan, setVehicle, quoteId } = useDealerJourney();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [editingReg, setEditingReg] = useState(false);
+  const [regInput, setRegInput] = useState('');
+  const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [lookupMsg, setLookupMsg] = useState('');
+
+  const lookupVehicle = async (rawReg: string) => {
+    const cleaned = normaliseReg(rawReg);
+    if (!/^[A-Z0-9]{2,8}$/.test(cleaned)) { setLookup('error'); setLookupMsg('Enter a valid UK registration.'); return; }
+    setLookup('loading'); setLookupMsg('');
+    try {
+      const { data, error: lookupError } = await supabase.functions.invoke('dvla-vehicle-lookup', { body: { registration: cleaned } });
+      if (lookupError || !data?.make) {
+        // Lookup unavailable or vehicle not found — continue with the reg so the dealer can still quote.
+        setVehicle({ reg: cleaned });
+        setLookup('idle'); setEditingReg(false);
+        return;
+      }
+      if (data.manufactureDate) {
+        const ageYears = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+        if (ageYears > 15) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.'); return; }
+      }
+      setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType });
+      setLookup('idle'); setEditingReg(false);
+    } catch {
+      setVehicle({ reg: cleaned });
+      setLookup('idle'); setEditingReg(false);
+    }
+  };
+
+  useEffect(() => {
+    const regParam = searchParams.get('reg');
+    if (regParam && normaliseReg(regParam) !== vehicle?.reg) {
+      setRegInput(normaliseReg(regParam));
+      void lookupVehicle(regParam);
+      searchParams.delete('reg');
+      setSearchParams(searchParams, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
   const { save, saving } = useDealerQuoteSave(3);
   const { toast } = useToast();
@@ -72,13 +113,42 @@ const Step3Pricing: React.FC = () => {
   };
   const adjust = (direction: -1 | 1) => { if (!product || !term) return; setPrices(p => ({ ...p, [term]: stepSellingPrice(retail, direction, product) })); };
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  if (!vehicle?.reg || editingReg) return <DealerLayout>
+    <div className="mx-auto w-full max-w-md space-y-4 px-1 pb-6 text-crm-navy">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold leading-8">Get a warranty quote</h1>
+        <p className="mt-1 text-sm leading-5 text-muted-foreground">Enter the vehicle registration to see your prices.</p>
+      </div>
+      <form className="space-y-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
+        <div className="vehicle-reg-plate vehicle-reg-plate--quote">
+          <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
+          <input
+            value={regInput}
+            onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }}
+            placeholder="ENTER REG"
+            aria-label="Vehicle registration"
+            maxLength={8}
+            autoFocus
+            className="vehicle-reg-plate__input"
+            onFocus={event => event.currentTarget.select()}
+            onMouseUp={event => event.preventDefault()}
+          />
+        </div>
+        {lookupMsg && <p role="alert" className="text-sm font-semibold text-destructive">{lookupMsg}</p>}
+        <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-14 w-full gap-2 !bg-crm-orange text-base font-bold !text-primary-foreground hover:!bg-crm-orange/90">
+          {lookup === 'loading' ? <><Loader2 className="h-5 w-5 animate-spin" />Looking up vehicle…</> : <>Get prices<ArrowRight className="h-5 w-5" /></>}
+        </Button>
+        {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto w-full p-0 text-xs" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
+      </form>
+    </div>
+  </DealerLayout>;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="grid items-center gap-4 min-[1100px]:grid-cols-[1fr_auto]">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">Select how many years of cover you want.</p></div>
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-3">
         <div className="w-36 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg || 'ENTER REG'}</span></div></div>
         <div><p className="text-sm font-bold">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="mt-1 text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type, vehicle?.mileage != null ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : null].filter(Boolean).join(' · ')}</p></div>
-        {trade && <Button variant="outline" size="sm" onClick={() => navigate('/dealer-portal/quote/vehicle')}><Pencil />Change vehicle</Button>}
+        {trade && <Button variant="outline" size="sm" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>}
       </div>
     </header>
     <div className="grid max-w-lg grid-cols-2 gap-3" role="group" aria-label="Quote view">

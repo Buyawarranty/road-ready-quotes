@@ -44,8 +44,8 @@ export default function DealerDashboard() {
     { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(row => row.payment_status !== 'paid').length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Warranties },
   ];
   const actions = [
-    { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/vehicle', primary: true },
-    { title: 'Quick quote', detail: 'Choose cover and get a price', icon: FileText, to: '/dealer-portal/quote/vehicle' },
+    { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/pricing', primary: true },
+    { title: 'Quick quote', detail: 'Choose cover and get a price', icon: FileText, to: '/dealer-portal/quote/pricing' },
     { title: 'View warranties', detail: 'Dealer-issued policies', icon: Shield, to: routes.Warranties },
   ];
   const viewAll = (to: string) => <Button variant="link" className="h-auto gap-1 p-0 text-xs text-crm-orange" onClick={() => navigate(to)}>View all <ArrowRight className="h-3 w-3" /></Button>;
@@ -60,7 +60,7 @@ export default function DealerDashboard() {
           <h1 className="text-xl font-bold leading-tight lg:text-2xl">Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
         </div>
-        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/vehicle?reg=${encodeURIComponent(cleaned)}`); }}>
+        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
             <div className="vehicle-reg-plate vehicle-reg-plate--quote min-w-0">
@@ -69,7 +69,7 @@ export default function DealerDashboard() {
             </div>
             <Button type="submit" className="h-14 gap-2 px-5 font-bold">Get quote <ArrowRight className="h-4 w-4" /></Button>
           </div>
-          <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/vehicle')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
+          <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/pricing')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
       </section>
 
