@@ -8,7 +8,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Check, Loader2 } from 'lucide-react';
+import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2 } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
@@ -89,14 +89,18 @@ const Step2Customer: React.FC = () => {
     navigate('/dealer-portal/quote/checkout');
   };
 
+  const RadioDot: React.FC<{ active: boolean }> = ({ active }) => (
+    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${active ? 'border-crm-orange bg-crm-orange' : 'border-muted-foreground/40 bg-card'}`}>{active && <span className="h-2 w-2 rounded-full bg-primary-foreground" />}</span>
+  );
+
   const OptionCard: React.FC<{ value: Mode; icon: React.ElementType; title: string; sub: string }> = ({ value, icon: Icon, title, sub }) => {
     const active = mode === value;
     return (
       <button type="button" role="radio" aria-checked={active} onClick={() => setMode(value)}
-        className={`flex flex-1 items-center gap-4 rounded-xl border-2 p-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+        className={`flex flex-1 items-start gap-4 rounded-xl border-2 p-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
         <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-crm-orange/15 text-crm-orange' : 'bg-muted text-crm-navy'}`}><Icon className="h-6 w-6" /></span>
         <span className="min-w-0 flex-1"><span className="block text-lg font-bold leading-6">{title}</span><span className="mt-1 block text-sm text-muted-foreground">{sub}</span></span>
-        {active ? <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-crm-orange text-primary-foreground"><Check className="h-4 w-4" strokeWidth={3} /></span> : <span className="h-7 w-7 shrink-0 rounded-full border-2 border-crm-line" />}
+        <RadioDot active={active} />
       </button>
     );
   };
@@ -111,10 +115,15 @@ const Step2Customer: React.FC = () => {
   return (
     <DealerJourneyLayout step={2} title="Customer details" subtitle="How would you like to complete this warranty?" backTo="/dealer-portal/quote/pricing">
       <div className="space-y-5 text-crm-navy">
-        <div className="flex flex-col gap-3 sm:flex-row" role="radiogroup" aria-label="How to complete this warranty">
-          <OptionCard value="panda" icon={Headset} title="Panda Protect does it for you" sub="Send us the customer details and we'll process the warranty for you." />
-          <OptionCard value="self" icon={Pencil} title="I'll enter the details" sub="Complete the customer information now." />
-        </div>
+        <section className="rounded-2xl border border-crm-line bg-card p-5 sm:p-6" aria-label="How to complete this warranty">
+          <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Customer details</p>
+          <h2 className="mt-1 text-2xl font-extrabold text-crm-navy sm:text-3xl">Who completes the details?</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Send them to us, or enter them yourself now.</p>
+          <div className="mt-4 flex flex-col gap-3 sm:flex-row" role="radiogroup" aria-label="How to complete this warranty">
+            <OptionCard value="panda" icon={Headset} title="Panda Protect does it for you" sub="Send us the customer details and we'll process the warranty for you." />
+            <OptionCard value="self" icon={Pencil} title="I'll enter the details" sub="Complete the customer information now." />
+          </div>
+        </section>
 
         {mode === 'panda' ? (
           <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
@@ -127,7 +136,7 @@ const Step2Customer: React.FC = () => {
                     className={`flex items-center gap-4 rounded-xl border-2 p-3 text-left transition ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
                     <span className={`flex h-12 w-12 items-center justify-center rounded-lg ${key === 'whatsapp' ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy'}`}><Icon className="h-6 w-6" /></span>
                     <span className="flex-1 text-lg font-bold">{label}</span>
-                    {active ? <Check className="h-5 w-5 text-crm-green" /> : <ArrowRight className="h-5 w-5" />}
+                    <RadioDot active={active} />
                   </button>
                 );
               })}
