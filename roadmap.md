@@ -32,3 +32,5 @@
 - [x] Add private staff notes to dealer sign-ups: notes log per signup, pinned notes, author and date, notes count column and CSV export. Admin-only access rules applied.
 - [x] Add "View as dealer" mode for admins: button on dealer sign-up detail panel, read-only dealer portal view with exit banner, admin read access rules for dealer quotes/warranties/saved plans.
 - [ ] Improve the admin dashboard one page at a time through the whole journey (user to direct each page).
+- [x] Pause Manage My Claim: vehicle step quotes Comprehensive Warranty only, claim-handling route redirects there, saved Manage My Claim plans hidden; build kept behind one flag.
+- [ ] Build an admin dashboard "Manage My Claim" section with activate/deactivate control (user idea, awaiting go-ahead) to replace the code flag.
