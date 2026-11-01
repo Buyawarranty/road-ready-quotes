@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
   Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
-  StickyNote, Pin, Trash2, Plus,
+  StickyNote, Pin, Trash2, Plus, Eye,
 } from 'lucide-react';
+import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'cl
 
 interface Signup {
   id: string;
+  dealer_id?: string | null;
   dealership_name: string | null;
   contact_name: string | null;
   email_address: string;
@@ -85,6 +87,21 @@ const DealerAdminSignUps: React.FC = () => {
   const [notesLoading, setNotesLoading] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const navigate = useNavigate();
+  const { startImpersonation } = useDealerImpersonation();
+
+  const viewAsDealer = (signup: Signup) => {
+    if (!signup.dealer_id) return;
+    startImpersonation(
+      signup.dealer_id,
+      signup.dealership_name || signup.contact_name || 'Dealer',
+      signup.email_address,
+    );
+    toast.success(`Now viewing the dealer portal as ${signup.dealership_name || signup.contact_name || 'this dealer'}`, {
+      description: 'Your admin session stays active. Use the banner to exit.',
+    });
+    navigate('/dealer-portal/dashboard');
+  };
 
   const load = async () => {
     setLoading(true);
@@ -538,6 +555,21 @@ const DealerAdminSignUps: React.FC = () => {
                     Approving creates the trader's dealer portal account and emails their login details.
                     Declining emails them a polite note inviting them to apply again.
                   </p>
+                  {selected.dealer_id && (
+                    <div className="border-t border-gray-200 pt-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => viewAsDealer(selected)}
+                        className="w-full border-[#eb4b00]/40 text-[#eb4b00] hover:bg-orange-50"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View dealer portal as this trader
+                      </Button>
+                      <p className="mt-1.5 text-xs text-gray-500">
+                        Opens their dealer portal exactly as they see it. Your admin login stays active and you can exit at any time.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">

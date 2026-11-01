@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -67,6 +68,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const { user, dealer, isTrader, loading, signOut } = useDealerAuth();
+  const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -178,7 +180,24 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
   return (
     <div className="dealer-crm min-h-screen bg-crm-canvas text-foreground">
-      <header className="fixed inset-x-0 top-0 z-50 h-[72px] border-b border-crm-line bg-card">
+      {isImpersonating && impersonatedDealer && (
+        <div className="fixed inset-x-0 top-0 z-[60] flex h-10 items-center justify-center gap-3 bg-amber-400 px-4 text-xs font-semibold text-amber-950 sm:text-sm">
+          <span className="truncate">
+            Viewing the dealer portal as {impersonatedDealer.dealerName} ({impersonatedDealer.dealerEmail}) — your admin login is still active
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              stopImpersonation();
+              navigate('/admin-dashboard/?tab=dealer-signups');
+            }}
+            className="shrink-0 rounded-full bg-amber-950 px-3 py-1 text-[11px] font-bold text-white hover:bg-amber-900"
+          >
+            Exit
+          </button>
+        </div>
+      )}
+      <header className={`fixed inset-x-0 ${isImpersonating ? 'top-10' : 'top-0'} z-50 h-[72px] border-b border-crm-line bg-card`}>
         <div className="flex h-full items-center gap-4 px-4 lg:px-5">
             <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[230px]">
               <img
@@ -285,8 +304,18 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <Settings className="h-4 w-4 mr-2" /> Account Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-destructive" onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" /> Logout
+                  <DropdownMenuItem
+                    className="cursor-pointer text-destructive"
+                    onClick={() => {
+                      if (isImpersonating) {
+                        stopImpersonation();
+                        navigate('/admin-dashboard/?tab=dealer-signups');
+                      } else {
+                        signOut();
+                      }
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" /> {isImpersonating ? 'Exit dealer view' : 'Logout'}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -312,8 +341,20 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                       {navItems.map((item) => renderNavItem(item, true))}
                     </nav>
                     <div className="border-t border-crm-line p-4">
-                      <Button variant="outline" onClick={() => { signOut(); setMobileOpen(false); }} className="w-full gap-2 text-destructive">
-                        <LogOut className="h-4 w-4" /> Sign out
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          if (isImpersonating) {
+                            stopImpersonation();
+                            navigate('/admin-dashboard/?tab=dealer-signups');
+                          } else {
+                            signOut();
+                          }
+                        }}
+                        className="w-full gap-2 text-destructive"
+                      >
+                        <LogOut className="h-4 w-4" /> {isImpersonating ? 'Exit dealer view' : 'Sign out'}
                       </Button>
                     </div>
                   </div>
@@ -323,7 +364,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </header>
 
-      <aside className="fixed bottom-0 left-0 top-[72px] z-40 hidden w-[240px] flex-col bg-crm-navy p-3 lg:flex">
+      <aside className={`fixed bottom-0 left-0 ${isImpersonating ? 'top-[112px]' : 'top-[72px]'} z-40 hidden w-[240px] flex-col bg-crm-navy p-3 lg:flex`}>
         <nav className="space-y-1">
           {primaryNav.map((item) => renderNavItem(item))}
           <div className="my-3 border-t border-primary-foreground/15" />
@@ -349,7 +390,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </aside>
 
-      <main className="min-h-screen px-3 pb-5 pt-[84px] sm:px-5 lg:ml-[240px] lg:px-6 lg:pt-[88px]">
+      <main className={`min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
         {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (
           <div className="mb-3">
             <button

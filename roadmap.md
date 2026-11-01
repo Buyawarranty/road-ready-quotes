@@ -30,3 +30,4 @@
 
 - [x] Update pricing to the supplied compact configuration reference, inline product switch, dealer profit summary and secondary quote tools without changing approved charges. 33 tests pass; isolated desktop/mobile interactions verified. Live dealer and Stripe checks require external authentication.
 - [x] Add private staff notes to dealer sign-ups: notes log per signup, pinned notes, author and date, notes count column and CSV export. Admin-only access rules applied.
+- [x] Add "View as dealer" mode for admins: button on dealer sign-up detail panel, read-only dealer portal view with exit banner, admin read access rules for dealer quotes/warranties/saved plans.

@@ -1,0 +1,3 @@
+CREATE POLICY "Admins can view dealer quotes" ON public.dealer_quotes FOR SELECT TO authenticated USING (is_admin(auth.uid()));
+CREATE POLICY "Admins can view dealer warranties" ON public.dealer_warranties FOR SELECT TO authenticated USING (is_admin(auth.uid()));
+CREATE POLICY "Admins can view dealer quote templates" ON public.dealer_quote_templates FOR SELECT TO authenticated USING (is_admin(auth.uid()));
