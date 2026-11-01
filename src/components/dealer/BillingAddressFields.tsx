@@ -21,7 +21,7 @@ const Field: React.FC<{
       {label} {required && <span className="text-orange-600">*</span>}
     </Label>
     {children}
-    {error && <p className="text-xs text-red-600">{error}</p>}
+    {error && <DealerFieldError>{error}</DealerFieldError>}
   </div>
 );
 
