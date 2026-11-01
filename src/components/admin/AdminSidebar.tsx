@@ -492,6 +492,12 @@ export const defaultTabs: Tab[] = [
     description: 'Dealer invoicing and payment status'
   },
   {
+    id: 'dealer-paylater',
+    label: 'Pay Later Rules',
+    icon: Receipt,
+    description: 'When dealers can choose Invoice me at checkout'
+  },
+  {
     id: 'trader-pricing',
     label: 'Trader Pricing',
     icon: Calculator,
