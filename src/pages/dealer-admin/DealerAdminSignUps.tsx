@@ -37,6 +37,7 @@ interface Signup {
 }
 
 interface NoteIndexRow {
+  id: string;
   signup_id: string;
   note_text: string;
   created_at: string;
@@ -101,7 +102,7 @@ const DealerAdminSignUps: React.FC = () => {
 
     const { data: noteRows } = await supabase
       .from('trade_warranty_signup_notes')
-      .select('signup_id, note_text, created_at')
+      .select('id, signup_id, note_text, created_at')
       .order('created_at', { ascending: true });
     setNoteIndex((noteRows || []) as NoteIndexRow[]);
   };
