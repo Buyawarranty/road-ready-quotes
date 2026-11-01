@@ -26,6 +26,14 @@ type Method = 'pay_now' | 'invoice';
 
 const PAYMENT_TERM_DAYS = 30;
 
+interface PayLaterEligibility {
+  eligible: boolean;
+  reason: 'new' | 'overdue' | 'blocked' | null;
+  paid_count: number;
+  required: number;
+  term_days: number;
+}
+
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -38,6 +46,8 @@ const Step4Checkout: React.FC = () => {
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
   const [creditBlocked, setCreditBlocked] = useState(false);
+  const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
+  const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
