@@ -161,21 +161,37 @@ const Step2Customer: React.FC = () => {
           </section>
         ) : (
           <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
-            <div>
-              <label className="mb-1 block text-sm font-medium">Postcode *</label>
-              <AddressAutocomplete placeholder="Start typing postcode to find the address" initialValue={form.postcode} className="h-12 text-base uppercase" provider="postcoder" displaySelectedPostcode
-                onInputChange={(value) => update('postcode', value.toUpperCase())}
-                onAddressSelect={(addr) => setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() }))} />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {field('name', 'Full name *', 'text', 'name')}
-              {field('phone', 'Mobile *', 'tel', 'tel')}
-            </div>
             {field('email', 'Email *', 'email', 'email')}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {field('address_line1', 'Address line 1 *', 'text', 'address-line1')}
-              {field('town', 'Town *', 'text', 'address-level2')}
+            {field('phone', 'Mobile *', 'tel', 'tel')}
+            {field('name', 'Full name *', 'text', 'name')}
+
+            <div className="pt-2">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Search for the address to continue.</p>
+              <div className="mt-3 h-px bg-crm-line" />
             </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <AddressAutocomplete placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
+                  onInputChange={(value) => update('postcode', value)}
+                  onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
+              </div>
+              {!manualAddress && (
+                <button type="button" onClick={() => setManualAddress(true)} className="mt-3 flex items-center gap-1 text-sm font-bold text-crm-navy underline">
+                  Can't find the address? Enter it manually <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {manualAddress && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {field('address_line1', 'Address line 1 *', 'text', 'address-line1')}
+                {field('town', 'Town *', 'text', 'address-level2')}
+              </div>
+            )}
           </section>
         )}
 
