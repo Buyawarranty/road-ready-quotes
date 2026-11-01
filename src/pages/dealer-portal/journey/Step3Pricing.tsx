@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2 } from 'lucide-react';
+import { ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -159,23 +159,36 @@ const Step3Pricing: React.FC = () => {
     </div>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex items-center gap-3 text-destructive">Warranty prices are unavailable.<Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
-      {[12, 24, 36].map(months => {
-        const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
-        const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
-        const cardRetail = prices[months] ?? p?.retail_price;
-        const shown = trade ? cardCost : cardRetail;
-        const selected = term === months;
-        return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
-          <span className="flex items-start justify-between gap-2"><span className="text-2xl font-extrabold leading-7">{months / 12} {months === 12 ? 'Year' : 'Years'}</span>{selected ? <span className="flex h-6 w-6 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" strokeWidth={3} /></span> : <Circle className="h-6 w-6 text-muted-foreground" />}</span>
-          <span className="text-sm text-muted-foreground">Warranty cover</span>
-          <strong className="mt-2 text-4xl font-extrabold leading-10">{shown != null ? gbp(shown) : '—'}</strong>
-          {!trade && <span className="text-xs text-muted-foreground">inc. VAT</span>}
-          {trade && cardRetail != null && cardCost != null && <span className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-crm-gold-soft px-3 py-2 text-lg font-extrabold text-crm-gold-deep"><Coins className="h-5 w-5" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
-          {!available && <span className="mt-2 text-xs">Unavailable</span>}
-        </button>;
-      })}
-    </div>
+    <section className="rounded-2xl border border-crm-line bg-card p-5 sm:p-6" aria-label="Warranty length">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Warranty length</p>
+          <h2 className="mt-1 text-2xl font-extrabold text-crm-navy sm:text-3xl">How long do you want the cover?</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Parts and labour covered — pick the warranty length.</p>
+        </div>
+        <button type="button" onClick={() => setDetails(true)} className="shrink-0 text-sm font-semibold text-crm-navy underline">Details</button>
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
+        {[12, 24, 36].map(months => {
+          const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
+          const cardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price : p?.dealer_price;
+          const cardRetail = prices[months] ?? p?.retail_price;
+          const shown = trade ? cardCost : cardRetail;
+          const selected = term === months;
+          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 bg-card p-4 pt-5 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line hover:border-crm-navy/30'}`}>
+            {months === 24 && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-crm-orange px-3 py-0.5 text-xs font-bold text-primary-foreground">Most popular</span>}
+            <span className="flex items-start justify-between gap-2">
+              <strong className="text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10">{shown != null ? gbp(shown) : '—'}</strong>
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-crm-orange' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-2 w-2 rounded-full bg-primary-foreground" />}</span>
+            </span>
+            <span className="mt-1 text-base font-bold">{months / 12} {months === 12 ? 'Year' : 'Years'} Warranty</span>
+            <span className="mt-1 text-sm text-muted-foreground">{trade ? 'your cost' : 'per vehicle, inc. VAT'}</span>
+            {trade && cardRetail != null && cardCost != null && <span className="mt-2 flex items-center gap-1.5 text-sm font-extrabold text-crm-gold-deep"><Coins className="h-4 w-4" />Profit: {gbp(potentialProfit(cardRetail, cardCost))}</span>}
+            {!available && <span className="mt-2 text-xs">Unavailable</span>}
+          </button>;
+        })}
+      </div>
+    </section>
     {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
