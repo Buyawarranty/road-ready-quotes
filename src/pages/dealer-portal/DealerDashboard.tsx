@@ -60,14 +60,14 @@ export default function DealerDashboard() {
           <h1 className="text-xl font-bold leading-tight lg:text-2xl">Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
         </div>
-        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); }}>
+        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-            <div className="vehicle-reg-plate vehicle-reg-plate--quote min-w-0">
+            <div className={`vehicle-reg-plate vehicle-reg-plate--quote min-w-0 ${regMissing ? 'vehicle-reg-plate--highlight' : ''}`} onAnimationEnd={() => setRegMissing(false)}>
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
-              <Input value={reg} onChange={event => setReg(event.target.value.toUpperCase())} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()} />
+              <Input value={reg} onChange={event => { setReg(event.target.value.toUpperCase()); setRegMissing(false); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()} />
             </div>
-            <Button type="submit" className="h-14 gap-2 px-5 font-bold">Get quote <ArrowRight className="h-4 w-4" /></Button>
+            <Button type="submit" className="h-14 gap-2 px-5 font-bold sm:h-auto sm:self-stretch">Get quote <ArrowRight className="h-4 w-4" /></Button>
           </div>
           <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/pricing')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
