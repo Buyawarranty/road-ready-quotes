@@ -342,7 +342,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </header>
 
-      <aside className="fixed bottom-0 left-0 top-[72px] z-40 hidden w-[240px] flex-col bg-crm-navy p-3 lg:flex">
+      <aside className={`fixed bottom-0 left-0 ${isImpersonating ? 'top-[112px]' : 'top-[72px]'} z-40 hidden w-[240px] flex-col bg-crm-navy p-3 lg:flex`}>
         <nav className="space-y-1">
           {primaryNav.map((item) => renderNavItem(item))}
           <div className="my-3 border-t border-primary-foreground/15" />
@@ -368,7 +368,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </aside>
 
-      <main className="min-h-screen px-3 pb-5 pt-[84px] sm:px-5 lg:ml-[240px] lg:px-6 lg:pt-[88px]">
+      <main className={`min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
         {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (
           <div className="mb-3">
             <button
