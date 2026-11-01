@@ -855,7 +855,7 @@
   color: hsl(var(--crm-navy));
 }
 
-.public-dealer-signup > section:first-of-type p {
+.public-dealer-signup > section:first-of-type p:not([role="alert"]) {
   color: hsl(var(--muted-foreground));
 }
 

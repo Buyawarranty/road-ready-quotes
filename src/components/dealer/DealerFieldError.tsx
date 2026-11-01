@@ -17,7 +17,7 @@ export const DealerFieldError: React.FC<Props> = ({ id, className, children }) =
   <p
     id={id}
     role="alert"
-    className={`mt-1.5 flex items-start gap-1.5 text-sm font-bold leading-snug text-destructive ${className ?? ''}`}
+    className={`mt-1.5 flex items-start gap-1.5 text-sm font-bold leading-snug !text-destructive ${className ?? ''}`}
   >
     <span aria-hidden="true">
       &bull;
