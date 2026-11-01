@@ -8,7 +8,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2 } from 'lucide-react';
+import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
@@ -26,6 +26,7 @@ const Step2Customer: React.FC = () => {
   const [mode, setMode] = useState<Mode>(hasDetails ? 'self' : 'panda');
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [note, setNote] = useState('');
+  const [manualAddress, setManualAddress] = useState(hasDetails);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: hasDetails ? customer!.name : '',
@@ -105,10 +106,21 @@ const Step2Customer: React.FC = () => {
     );
   };
 
+  const filled = (k: keyof typeof form) => {
+    const v = form[k].trim();
+    if (!v) return false;
+    if (k === 'email') return /^\S+@\S+\.\S+$/.test(v);
+    if (k === 'phone') return v.replace(/\D/g, '').length >= 10;
+    return v.length > 1;
+  };
+
   const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string) => (
     <div>
       <label htmlFor={`c-${k}`} className="mb-1 block text-sm font-medium text-crm-navy">{label}</label>
-      <Input id={`c-${k}`} type={type} autoComplete={autoComplete} value={form[k]} onChange={(e) => update(k, e.target.value)} className="h-12 text-base" />
+      <div className="relative">
+        <Input id={`c-${k}`} type={type} autoComplete={autoComplete} value={form[k]} onChange={(e) => update(k, e.target.value)} className={`h-12 pr-10 text-base ${filled(k) ? 'border-crm-green' : ''}`} />
+        {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
+      </div>
     </div>
   );
 
@@ -149,21 +161,37 @@ const Step2Customer: React.FC = () => {
           </section>
         ) : (
           <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
-            <div>
-              <label className="mb-1 block text-sm font-medium">Postcode *</label>
-              <AddressAutocomplete placeholder="Start typing postcode to find the address" initialValue={form.postcode} className="h-12 text-base uppercase" provider="postcoder" displaySelectedPostcode
-                onInputChange={(value) => update('postcode', value.toUpperCase())}
-                onAddressSelect={(addr) => setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() }))} />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {field('name', 'Full name *', 'text', 'name')}
-              {field('phone', 'Mobile *', 'tel', 'tel')}
-            </div>
             {field('email', 'Email *', 'email', 'email')}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {field('address_line1', 'Address line 1 *', 'text', 'address-line1')}
-              {field('town', 'Town *', 'text', 'address-level2')}
+            {field('phone', 'Mobile *', 'tel', 'tel')}
+            {field('name', 'Full name *', 'text', 'name')}
+
+            <div className="pt-2">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
+              <p className="mt-1 text-sm text-muted-foreground">Search for the address to continue.</p>
+              <div className="mt-3 h-px bg-crm-line" />
             </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <AddressAutocomplete placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
+                  onInputChange={(value) => update('postcode', value)}
+                  onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
+              </div>
+              {!manualAddress && (
+                <button type="button" onClick={() => setManualAddress(true)} className="mt-3 flex items-center gap-1 text-sm font-bold text-crm-navy underline">
+                  Can't find the address? Enter it manually <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {manualAddress && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {field('address_line1', 'Address line 1 *', 'text', 'address-line1')}
+                {field('town', 'Town *', 'text', 'address-level2')}
+              </div>
+            )}
           </section>
         )}
 
