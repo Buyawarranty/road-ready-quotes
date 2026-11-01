@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,14 +12,55 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, isAnnualQuoteSnapshot, potentialProfit, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2 } from 'lucide-react';
+import { ArrowRight, Check, Circle, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Minus, Plus, RotateCcw, Save, MessageCircle, Mail, Printer, Link2, Loader2 } from 'lucide-react';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
+const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { dealer, loading } = useDealerAuth();
-  const { vehicle, customer, plan: savedPlan, setPlan, quoteId } = useDealerJourney();
+  const { vehicle, customer, plan: savedPlan, setPlan, setVehicle, quoteId } = useDealerJourney();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [editingReg, setEditingReg] = useState(false);
+  const [regInput, setRegInput] = useState('');
+  const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [lookupMsg, setLookupMsg] = useState('');
+
+  const lookupVehicle = async (rawReg: string) => {
+    const cleaned = normaliseReg(rawReg);
+    if (!/^[A-Z0-9]{2,8}$/.test(cleaned)) { setLookup('error'); setLookupMsg('Enter a valid UK registration.'); return; }
+    setLookup('loading'); setLookupMsg('');
+    try {
+      const { data, error: lookupError } = await supabase.functions.invoke('dvla-vehicle-lookup', { body: { registration: cleaned } });
+      if (lookupError || !data?.make) {
+        // Lookup unavailable or vehicle not found — continue with the reg so the dealer can still quote.
+        setVehicle({ reg: cleaned });
+        setLookup('idle'); setEditingReg(false);
+        return;
+      }
+      if (data.manufactureDate) {
+        const ageYears = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+        if (ageYears > 15) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.'); return; }
+      }
+      setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType });
+      setLookup('idle'); setEditingReg(false);
+    } catch {
+      setVehicle({ reg: cleaned });
+      setLookup('idle'); setEditingReg(false);
+    }
+  };
+
+  useEffect(() => {
+    const regParam = searchParams.get('reg');
+    if (regParam && normaliseReg(regParam) !== vehicle?.reg) {
+      setRegInput(normaliseReg(regParam));
+      void lookupVehicle(regParam);
+      searchParams.delete('reg');
+      setSearchParams(searchParams, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
   const { save, saving } = useDealerQuoteSave(3);
   const { toast } = useToast();
