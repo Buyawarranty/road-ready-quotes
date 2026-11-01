@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { readDealerImpersonation } from '@/hooks/useDealerImpersonation';
 
 interface DealerProfile {
   id: string;
