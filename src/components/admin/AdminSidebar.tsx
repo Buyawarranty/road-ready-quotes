@@ -504,6 +504,12 @@ export const defaultTabs: Tab[] = [
     description: 'Approve dealer company name changes'
   },
   {
+    id: 'dealer-cancellations',
+    label: 'Cancellation Requests',
+    icon: Receipt,
+    description: 'Process dealer cancellation requests, fees and refunds'
+  },
+  {
     id: 'trader-pricing',
     label: 'Trader Pricing',
     icon: Calculator,

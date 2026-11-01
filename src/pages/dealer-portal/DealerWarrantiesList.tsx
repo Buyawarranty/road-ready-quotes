@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
-import { Download, FileText, CreditCard, Loader2, Mail } from 'lucide-react';
+import { Download, FileText, CreditCard, Loader2, Mail, XCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,8 +33,37 @@ const DealerWarrantiesList = () => {
   const [emailNote, setEmailNote] = useState('');
   const [sending, setSending] = useState(false);
 
+  const [emailTarget, setEmailTarget] = useState<'customer' | 'me'>('customer');
+  const [cancelRow, setCancelRow] = useState<DealerPdfRow | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+
+  const { data: pendingCancelIds = [], refetch: refetchCancels } = useQuery({
+    queryKey: ['dealer-cancel-requests', dealer?.id],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from('dealer_cancellation_requests').select('customer_id').eq('status', 'pending');
+      return ((data || []) as { customer_id: string }[]).map((r) => r.customer_id);
+    },
+    enabled: !!dealer?.id,
+  });
+  const pendingCancel = useMemo(() => new Set(pendingCancelIds), [pendingCancelIds]);
+
+  const submitCancellation = async () => {
+    if (!cancelRow || !dealer?.id) return;
+    if (cancelReason.trim().length < 3) { toast.error('Please give a reason for the cancellation'); return; }
+    setCancelling(true);
+    const { error } = await (supabase as any).from('dealer_cancellation_requests')
+      .insert({ dealer_id: dealer.id, customer_id: cancelRow.id, reason: cancelReason.trim() });
+    setCancelling(false);
+    if (error) { toast.error(error.code === '23505' ? 'A cancellation request is already pending for this warranty' : error.message); return; }
+    toast.success('Cancellation request sent to Panda Protect');
+    setCancelRow(null);
+    refetchCancels();
+  };
+
   const openEmailDialog = (r: DealerPdfRow) => {
     setEmailRow(r);
+    setEmailTarget('customer');
     setEmailTo(r.email || '');
     setEmailNote('');
   };
@@ -289,6 +318,7 @@ const DealerWarrantiesList = () => {
                         <TableCell>{renderStatus(w)}</TableCell>
                         <TableCell>{renderActiveStatus(w)}</TableCell>
                         <TableCell className="text-right">
+                          <div className="flex flex-col items-end gap-1.5">
                           <Button
                             size="sm"
                             variant="outline"
@@ -298,6 +328,14 @@ const DealerWarrantiesList = () => {
                             <Mail className="h-4 w-4 mr-2" />
                             {w.payment_status === 'paid' ? 'Resend documents' : 'Email warranty'}
                           </Button>
+                          {pendingCancel.has(w.id) ? (
+                            <span className="text-xs font-semibold text-orange-700">Cancellation requested</span>
+                          ) : !['cancelled', 'refunded'].includes(String((w as any).status || '').toLowerCase()) && (
+                            <Button size="sm" variant="ghost" className="text-gray-600 hover:text-red-600 text-xs h-7" onClick={() => { setCancelRow(w); setCancelReason(''); }}>
+                              <XCircle className="h-3.5 w-3.5 mr-1" />Request cancellation
+                            </Button>
+                          )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -439,22 +477,30 @@ const DealerWarrantiesList = () => {
       <Dialog open={!!emailRow} onOpenChange={(o) => !o && setEmailRow(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Email warranty to customer</DialogTitle>
+            <DialogTitle>Email warranty</DialogTitle>
             <DialogDescription>
               Sends the warranty details for{' '}
-              <span className="font-semibold uppercase">{emailRow?.registration_plate}</span> straight to your
-              customer. Replies come back to your dealer email.
+              <span className="font-semibold uppercase">{emailRow?.registration_plate}</span> to your customer or to yourself.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Send to">
+              {(['customer', 'me'] as const).map((k) => (
+                <Button key={k} type="button" variant="outline" role="radio" aria-checked={emailTarget === k}
+                  onClick={() => { setEmailTarget(k); setEmailTo(k === 'me' ? (dealer as any)?.email || '' : emailRow?.email || ''); }}
+                  className={emailTarget === k ? 'border-orange-500 bg-orange-50 text-orange-700 font-bold' : ''}>
+                  {k === 'customer' ? 'Email customer' : 'Email myself'}
+                </Button>
+              ))}
+            </div>
             <div className="space-y-2">
-              <Label htmlFor="customer-email">Customer email</Label>
+              <Label htmlFor="customer-email">{emailTarget === 'me' ? 'Your email' : 'Customer email'}</Label>
               <Input
                 id="customer-email"
                 type="email"
                 value={emailTo}
                 onChange={(e) => setEmailTo(e.target.value)}
-                placeholder="customer@example.com"
+                placeholder="name@example.com"
                 className="bg-gray-100"
               />
             </div>
@@ -477,6 +523,27 @@ const DealerWarrantiesList = () => {
             <Button onClick={sendWarrantyToCustomer} disabled={sending} className="bg-orange-500 hover:bg-orange-600 text-white">
               {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
               Send warranty
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!cancelRow} onOpenChange={(o) => !o && setCancelRow(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request cancellation</DialogTitle>
+            <DialogDescription>
+              For <span className="font-semibold uppercase">{cancelRow?.registration_plate}</span>. Panda Protect will review it, work out any cancellation fee or refund, and update the warranty.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="cancel-reason">Reason for cancelling</Label>
+            <Textarea id="cancel-reason" rows={3} value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} placeholder="e.g. Customer returned the vehicle" className="bg-gray-100" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelRow(null)} disabled={cancelling}>Back</Button>
+            <Button onClick={submitCancellation} disabled={cancelling} className="bg-orange-500 hover:bg-orange-600 text-white">
+              {cancelling && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}Send request
             </Button>
           </DialogFooter>
         </DialogContent>
