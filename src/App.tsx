@@ -314,6 +314,7 @@ const DealerProfileSettings = lazy(() => import("./pages/dealer-portal/settings/
 const DealerApiDocs = lazy(() => import("./pages/dealer-portal/settings/DealerApiDocs"));
 const DealerWidget = lazy(() => import("./pages/DealerWidget"));
 import { DealerJourneyProvider } from "@/contexts/DealerJourneyContext";
+import { MANAGE_MY_CLAIM_ENABLED, COMPREHENSIVE_QUOTE_URL } from "@/lib/dealerProductAvailability";
 
 
 const queryClient = new QueryClient({
@@ -450,7 +451,7 @@ const App = () => {
                     <Route path="/dealer-portal/quote/pricing" element={<DealerJourneyProvider><DealerJourneyStep3 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/confirmation" element={<DealerJourneyProvider><DealerJourneyStep5 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/claim-handling" element={<DealerJourneyProvider><DealerClaimHandling /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/quote/claim-handling" element={MANAGE_MY_CLAIM_ENABLED ? <DealerJourneyProvider><DealerClaimHandling /></DealerJourneyProvider> : <Navigate to={COMPREHENSIVE_QUOTE_URL} replace />} />
                     <Route path="/dealer-portal/applications" element={<FinanceApplicationsList />} />
                     <Route path="/dealer-portal/applications/new" element={<FinanceApplicationNew />} />
                     <Route path="/dealer-portal/applications/:id" element={<FinanceApplicationDetail />} />
