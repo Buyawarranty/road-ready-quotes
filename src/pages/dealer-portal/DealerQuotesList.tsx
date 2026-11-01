@@ -16,7 +16,7 @@ import { DateRange } from 'react-day-picker';
 const PAGE_SIZE = 10;
 
 const STEP_PATHS: Record<number, string> = {
-  1: '/dealer-portal/quote/vehicle',
+  1: '/dealer-portal/quote/pricing',
   2: '/dealer-portal/quote/customer',
   3: '/dealer-portal/quote/pricing',
   4: '/dealer-portal/quote/checkout',

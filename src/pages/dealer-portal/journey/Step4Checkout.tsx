@@ -446,7 +446,7 @@ const Step4Checkout: React.FC = () => {
                   <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Vehicle</p>
                   <button
                     type="button"
-                    onClick={() => navigate('/dealer-portal/quote/vehicle')}
+                    onClick={() => navigate('/dealer-portal/quote/pricing')}
                     className="text-xs text-orange-600 font-semibold inline-flex items-center gap-1"
                   >
                     <Pencil className="w-3 h-3" /> Edit

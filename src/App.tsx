@@ -298,7 +298,14 @@ const DealerWarrantiesList = lazy(() => import("./pages/dealer-portal/DealerWarr
 const DealerStartClaim = lazy(() => import("./pages/dealer-portal/claims/StartClaim"));
 const DealerAnalytics = lazy(() => import("./pages/dealer-portal/DealerAnalytics"));
 const DealerCustomersList = lazy(() => import("./pages/dealer-portal/DealerCustomersList"));
-const DealerJourneyStep1 = lazy(() => import("./pages/dealer-portal/journey/Step1Vehicle"));
+/**
+ * The old vehicle-details step is retired: registration entry now lives on the
+ * pricing page, so every legacy quote-entry URL lands there with any ?reg= kept.
+ */
+const DealerQuoteEntry = () => {
+  const { search } = useLocation();
+  return <Navigate to={`/dealer-portal/quote/pricing${search}`} replace />;
+};
 const DealerJourneyStep2 = lazy(() => import("./pages/dealer-portal/journey/Step2Customer"));
 const DealerJourneyStep3 = lazy(() => import("./pages/dealer-portal/journey/Step3Pricing"));
 const DealerJourneyStep4 = lazy(() => import("./pages/dealer-portal/journey/Step4Checkout"));
