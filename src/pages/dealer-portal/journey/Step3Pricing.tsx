@@ -98,6 +98,7 @@ const Step3Pricing: React.FC = () => {
   const [emailQuote, setEmailQuote] = useState<string | null>(null);
   const [email, setEmail] = useState(customer?.email || '');
   const [emailBusy, setEmailBusy] = useState(false);
+  const [opening, setOpening] = useState(false);
   const boostCfg = config?.boost?.active ? config.boost : null;
   const boostOn = Boolean(boost && boostCfg);
   const selectedBoost = boostOn && boostCfg && term ? boostForTerm(boostCfg, term) : null;
@@ -144,13 +145,29 @@ const Step3Pricing: React.FC = () => {
     if (action === 'email') setEmailQuote(id);
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
+  /** Opens the customer-safe quote in its own tab so the trade view never shares a screen with it. */
+  const openCustomerTab = async () => {
+    if (opening) return;
+    if (!valid) { setError('Choose a warranty length and a valid customer selling price before opening the customer view.'); return; }
+    setOpening(true);
+    // The tab must open inside the click itself, or the browser blocks it; it is pointed at the quote once saved.
+    const tab = window.open('about:blank', '_blank');
+    const id = await persist();
+    if (!id) { tab?.close(); setOpening(false); return; }
+    const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
+    const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
+    url.searchParams.set('pay', id);
+    if (tab) tab.location.href = url.href;
+    else setError('Your browser blocked the new tab. Allow pop-ups for this site and try again.');
+    setOpening(false);
+  };
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="flex flex-wrap items-start justify-between gap-3">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p></div>
       <div className="grid grid-cols-2 gap-2" role="group" aria-label="Quote view">
         <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-10 gap-2 px-4 font-bold ${trade ? '!border-crm-orange !bg-crm-orange-soft !text-crm-orange' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
-        <Button variant="outline" aria-pressed={!trade} aria-label="Customer View" onClick={() => setView('customer')} className={`h-10 gap-2 px-4 font-bold ${!trade ? '!border-crm-orange !bg-crm-orange-soft !text-crm-orange' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />CV</Button>
+        <Button variant="outline" aria-label="Open Customer View in a new tab" title="Opens the customer quote in a new tab" disabled={opening} onClick={() => { void openCustomerTab(); }} className={`h-10 gap-2 px-4 font-bold !border-crm-orange !bg-crm-orange-soft !text-crm-orange`}>{opening ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye />}CV</Button>
       </div>
     </header>
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-card px-4 py-3" aria-label="Vehicle">

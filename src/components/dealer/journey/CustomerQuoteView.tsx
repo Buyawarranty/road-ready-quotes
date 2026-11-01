@@ -23,6 +23,8 @@ export interface CustomerQuoteViewProps {
   dealerName?: string;
   quoteControls?: React.ReactNode;
   paymentSection?: React.ReactNode;
+  /** Copy-link / WhatsApp / email controls for whoever is holding the quote. */
+  shareSection?: React.ReactNode;
 }
 
 const fmt = (n: number) =>
@@ -48,6 +50,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   included = [],
   quoteControls,
   paymentSection,
+  shareSection,
 }) => {
   useEffect(() => {
     if (!open) return;
@@ -106,6 +109,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               <h2 className="mb-4 flex items-center gap-2 text-base font-bold"><CreditCard className="h-5 w-5 text-crm-orange" />Payment</h2>
               {paymentSection}
             </section>}
+            {shareSection}
           </div>
           <aside className="rounded-lg border border-crm-line bg-card p-5 lg:sticky lg:top-6">
             <h2 className="border-b border-crm-line pb-3 text-base font-bold">Your cover summary</h2>
