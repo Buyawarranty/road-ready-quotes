@@ -87,6 +87,21 @@ const DealerAdminSignUps: React.FC = () => {
   const [notesLoading, setNotesLoading] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const navigate = useNavigate();
+  const { startImpersonation } = useDealerImpersonation();
+
+  const viewAsDealer = (signup: Signup) => {
+    if (!signup.dealer_id) return;
+    startImpersonation(
+      signup.dealer_id,
+      signup.dealership_name || signup.contact_name || 'Dealer',
+      signup.email_address,
+    );
+    toast.success(`Now viewing the dealer portal as ${signup.dealership_name || signup.contact_name || 'this dealer'}`, {
+      description: 'Your admin session stays active. Use the banner to exit.',
+    });
+    navigate('/dealer-portal/dashboard');
+  };
 
   const load = async () => {
     setLoading(true);
