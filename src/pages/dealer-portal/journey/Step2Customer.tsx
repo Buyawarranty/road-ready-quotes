@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { fireDealerConfetti } from '@/lib/dealerConfetti';
 import { useNavigate } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
@@ -21,6 +22,12 @@ const PANDA_WHATSAPP = '443302295045';
 const PANDA_EMAIL = 'support@pandaprotect.co.uk';
 
 const Step2Customer: React.FC = () => {
+  useEffect(() => {
+    if (sessionStorage.getItem('dealer_confetti_light') === '1') {
+      sessionStorage.removeItem('dealer_confetti_light');
+      setTimeout(() => fireDealerConfetti(0.1), 200);
+    }
+  }, []);
   const navigate = useNavigate();
   const { vehicle, customer, plan, setCustomer } = useDealerJourney();
   const { dealer } = useDealerAuth();

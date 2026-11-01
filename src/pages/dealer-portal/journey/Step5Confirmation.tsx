@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle2, FileText } from 'lucide-react';
+import { fireDealerConfetti } from '@/lib/dealerConfetti';
 
 const Step5Confirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ const Step5Confirmation: React.FC = () => {
   useEffect(() => {
     // Clear journey state — order has been written
     reset();
+    if (method !== 'invoice') {
+      const ck = `dealer_confetti_${id || 'x'}`;
+      if (!sessionStorage.getItem(ck)) { sessionStorage.setItem(ck, '1'); setTimeout(() => fireDealerConfetti(1), 300); }
+    }
     // Card payments (Stripe / Worldpay): email warranty details to the dealer's
     // registered account email. The invoice path is emailed server-side already.
     if (id && method !== 'invoice') {
