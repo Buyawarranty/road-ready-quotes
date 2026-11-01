@@ -4,6 +4,7 @@ import { validateAnnualPlan } from '../../../supabase/functions/_shared/dealerAn
 const plan = { duration_months: 24, dealer_price: 200, retail_price: 695, excess: 0, labour_rate: 100, claim_limit: 2000 };
 const product = { months: 24, dealer_price: 200, min_price: 200, max_price: 1400, active: true };
 const boost = { active: true, claim_limit: 5000, dealer_price: 60, retail_price: 60 };
+const tiered = { active: true, claim_limit: 5000, dealer_price: 60, retail_price: 60, terms: [{ months: 12, dealer_price: 20, retail_price: 60 }, { months: 24, dealer_price: 40, retail_price: 100 }, { months: 36, dealer_price: 60, retail_price: 140 }] };
 it('accepts approved £200 cost and £695 retail with fixed cover', () => assert.equal(validateAnnualPlan(plan, product), null));
 it('rejects inactive four-year charging', () => assert.ok(validateAnnualPlan({ ...plan, duration_months: 48 }, { ...product, months: 48, active: false })));
 it('rejects changed dealer cost', () => assert.ok(validateAnnualPlan({ ...plan, dealer_price: 100 }, product)));
@@ -16,3 +17,8 @@ it('boost adds £60 cost and raises the claim limit to £5,000', () => assert.eq
 it('rejects boost charged at the base cost', () => assert.ok(validateAnnualPlan({ ...plan, dealer_price: 200, claim_limit: 5000, boost: true }, product, { claim: 3000, boost })));
 it('rejects a £5,000 limit without the boost', () => assert.ok(validateAnnualPlan({ ...plan, claim_limit: 5000 }, product, { claim: 3000, boost })));
 it('rejects boost when it is switched off in admin', () => assert.ok(validateAnnualPlan({ ...plan, dealer_price: 260, retail_price: 755, claim_limit: 5000, boost: true }, product, { claim: 3000, boost: { ...boost, active: false } })));
+it('charges the two year boost at £40 cost and £100 retail', () => assert.equal(validateAnnualPlan({ ...plan, dealer_price: 240, retail_price: 795, claim_limit: 5000, boost: true }, product, { claim: 3000, boost: tiered }), null));
+it('rejects a two year boost charged at the one year cost', () => assert.ok(validateAnnualPlan({ ...plan, dealer_price: 220, retail_price: 795, claim_limit: 5000, boost: true }, product, { claim: 3000, boost: tiered })));
+it('charges the three year boost at £60 cost', () => assert.equal(validateAnnualPlan({ duration_months: 36, dealer_price: 360, retail_price: 1135, excess: 0, labour_rate: 100, claim_limit: 5000, boost: true }, { months: 36, dealer_price: 300, min_price: 300, max_price: null, active: true }, { claim: 3000, boost: tiered }), null));
+it('rejects a three year boost charged at the two year cost', () => assert.ok(validateAnnualPlan({ duration_months: 36, dealer_price: 340, retail_price: 1135, excess: 0, labour_rate: 100, claim_limit: 5000, boost: true }, { months: 36, dealer_price: 300, min_price: 300, max_price: null, active: true }, { claim: 3000, boost: tiered })));
+it('uses the standard boost price for a term with no price of its own', () => assert.equal(validateAnnualPlan({ duration_months: 48, dealer_price: 460, retail_price: 1455, excess: 0, labour_rate: 100, claim_limit: 5000, boost: true }, { months: 48, dealer_price: 400, min_price: 400, max_price: null, active: true, approvals_complete: true }, { claim: 3000, boost: tiered }), null));
