@@ -39,6 +39,28 @@ export const useDealerAuth = () => {
     return (data || []).map((r: any) => r.role as string);
   };
 
+  // Admin "view as dealer": load the impersonated dealer by id. RLS only lets
+  // admins read other dealers' rows, so non-admins silently fall back to their
+  // own dealer profile.
+  const loadDealer = async (userId: string) => {
+    const impersonation = readDealerImpersonation();
+    if (impersonation) {
+      const { data } = await supabase
+        .from('dealers')
+        .select('*')
+        .eq('id', impersonation.dealerId)
+        .neq('user_id', userId)
+        .maybeSingle();
+      if (data) return data as DealerProfile;
+    }
+    const { data } = await supabase
+      .from('dealers')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return data as DealerProfile | null;
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -50,12 +72,12 @@ export const useDealerAuth = () => {
 
         if (session?.user) {
           setTimeout(async () => {
-            const [{ data }, userRoles] = await Promise.all([
-              supabase.from('dealers').select('*').eq('user_id', session.user.id).maybeSingle(),
+            const [dealerProfile, userRoles] = await Promise.all([
+              loadDealer(session.user.id),
               loadRoles(session.user.id),
             ]);
             if (mounted) {
-              setDealer(data as DealerProfile | null);
+              setDealer(dealerProfile);
               setRoles(userRoles);
               setLoading(false);
             }
