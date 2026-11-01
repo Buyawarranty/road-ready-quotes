@@ -179,9 +179,10 @@ const Step3Pricing: React.FC = () => {
     {cover && <section className="grid grid-cols-2 gap-4 rounded-xl border border-crm-line bg-card p-4 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the', text: 'value of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
-    <section className="flex items-center gap-3 rounded-xl bg-crm-gold-soft p-4 opacity-80" aria-label="£5,000 claim limit boost">
-      <Zap className="h-7 w-7 shrink-0 text-crm-orange" />
-      <div className="min-w-0 flex-1"><h2 className="font-bold">£5,000 Claim Limit Boost</h2><p className="text-xs leading-4 text-muted-foreground">Increase the per-claim limit to £5,000. Coming soon.</p></div>
+    <section className="flex items-center gap-3 rounded-xl border border-crm-line bg-card p-4" aria-label="£5,000 claim limit boost">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-muted"><Zap className="h-5 w-5 text-crm-navy" /></span>
+      <div className="min-w-0 flex-1"><h2 className="font-bold text-crm-navy">£5,000 Claim Limit Boost</h2><p className="text-xs leading-4 text-muted-foreground">Increase the per-claim limit to £5,000.</p></div>
+      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground">Coming soon</span>
       <Switch disabled checked={false} aria-label="Add claim limit boost (not available yet)" />
     </section>
     <Collapsible className="rounded-xl border border-crm-line bg-card">
