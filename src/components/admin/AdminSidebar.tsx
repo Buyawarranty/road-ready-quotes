@@ -498,6 +498,12 @@ export const defaultTabs: Tab[] = [
     description: 'When dealers can choose Invoice me at checkout'
   },
   {
+    id: 'dealer-profile-changes',
+    label: 'Profile Changes',
+    icon: Receipt,
+    description: 'Approve dealer company name changes'
+  },
+  {
     id: 'trader-pricing',
     label: 'Trader Pricing',
     icon: Calculator,
