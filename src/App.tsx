@@ -444,7 +444,7 @@ const App = () => {
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     {/* Dealer portal app routes */}
                     <Route path="/dealer-portal/dashboard" element={<DealerDashboard />} />
-                    <Route path="/dealer-portal/quotes/create" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/quotes/create" element={<DealerQuoteEntry />} />
                     <Route path="/dealer-portal/quotes" element={<DealerJourneyProvider><DealerQuotesList /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
                     <Route path="/dealer-portal/claims" element={<Navigate to="/dealer-portal/dashboard" replace />} />
@@ -452,8 +452,8 @@ const App = () => {
                     <Route path="/dealer-portal/customers" element={<DealerCustomersList />} />
                     <Route path="/dealer-portal/analytics" element={<DealerAnalytics />} />
                     {/* Dealer multi-step quote journey */}
-                    <Route path="/dealer-portal/quote" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
-                    <Route path="/dealer-portal/quote/vehicle" element={<DealerJourneyProvider><DealerJourneyStep1 /></DealerJourneyProvider>} />
+                    <Route path="/dealer-portal/quote" element={<DealerQuoteEntry />} />
+                    <Route path="/dealer-portal/quote/vehicle" element={<DealerQuoteEntry />} />
                     <Route path="/dealer-portal/quote/customer" element={<DealerJourneyProvider><DealerJourneyStep2 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/pricing" element={<DealerJourneyProvider><DealerJourneyStep3 /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/quote/checkout" element={<DealerJourneyProvider><DealerJourneyStep4 /></DealerJourneyProvider>} />

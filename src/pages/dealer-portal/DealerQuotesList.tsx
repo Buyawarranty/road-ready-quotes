@@ -24,7 +24,7 @@ const STEP_PATHS: Record<number, string> = {
 };
 
 const STEP_LABELS: Record<number, string> = {
-  1: 'Vehicle details',
+  1: 'Warranty quote',
   2: 'Customer details',
   3: 'Plan & pricing',
   4: 'Checkout',
