@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import pandaClaimApproved from '@/assets/panda-claim-approved.webp';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
@@ -560,6 +561,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('email_address', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                         placeholder="e.g. you@dealership.co.uk"
+                        aria-invalid={!!(touched.email && errors.email)}
                         className={`${regInputCls} ${touched.email && errors.email ? 'border-destructive' : ''}`}
                       />
                     </Field>
@@ -581,6 +583,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('phone_number', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
                         placeholder="e.g. 07960 123 456"
+                        aria-invalid={!!(touched.phone && errors.phone)}
                         className={`${regInputCls} ${touched.phone && errors.phone ? 'border-destructive' : ''}`}
                       />
                     </Field>
@@ -604,6 +607,7 @@ const DealerComingSoon = () => {
                         onChange={(e) => set('heard_about_us', e.target.value)}
                         onBlur={() => setTouched((t) => ({ ...t, url: true }))}
                         placeholder="https://www.autotrader.co.uk/dealers/..."
+                        aria-invalid={!!(touched.url && errors.url)}
                         className={`${regInputCls} ${touched.url && errors.url ? 'border-destructive' : ''}`}
                       />
                     </Field>
@@ -777,7 +781,7 @@ const Field: React.FC<{
       )}
     </div>
     {error && (
-      <p className="text-xs text-destructive mt-1.5 font-medium">{error}</p>
+      <DealerFieldError>{error}</DealerFieldError>
     )}
   </label>
 );

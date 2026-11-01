@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -254,7 +255,7 @@ const Step1Vehicle: React.FC = () => {
             <div className="grid gap-4 lg:grid-cols-2">
               <div>
                 <label className="mb-2 block text-[11px] font-bold tracking-[0.12em] text-muted-foreground">VEHICLE REGISTRATION</label>
-                <div className="vehicle-reg-plate vehicle-reg-plate--quote max-w-xl">
+                <div className={`vehicle-reg-plate vehicle-reg-plate--quote max-w-xl ${validation.reg ? 'vehicle-reg-plate--error' : ''}`}>
                   <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
                   <input
                     ref={regInputRef}
@@ -265,7 +266,7 @@ const Step1Vehicle: React.FC = () => {
                     className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()}
                   />
                 </div>
-                {validation.reg && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.reg}</p>}
+                {validation.reg && <DealerFieldError>{validation.reg}</DealerFieldError>}
                 {lookupState === 'success' && (
                   <p className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-bold text-crm-green">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Vehicle recognised: AUDI Q5 · 2018 · Diesel
@@ -299,7 +300,7 @@ const Step1Vehicle: React.FC = () => {
                   <Input value={mileage} onChange={(event) => { setMileage(event.target.value.replace(/\D/g, '')); setValidation((current) => ({ ...current, mileage: '' })); }} className={`h-12 border-crm-line pr-14 ${lookupState === 'success' ? 'border-crm-green bg-crm-green-soft' : 'bg-background'}`} />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">miles</span>
                 </div>
-                {validation.mileage && <p className="mt-1 text-[11px] font-semibold text-crm-red">{validation.mileage}</p>}
+                {validation.mileage && <DealerFieldError>{validation.mileage}</DealerFieldError>}
               </div>
             </div>
           </CardContent>
@@ -351,7 +352,7 @@ const Step1Vehicle: React.FC = () => {
             >
               Continue <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
-            {validation.plan && <p className="mt-2 text-[11px] font-semibold text-crm-red">{validation.plan}</p>}
+            {validation.plan && <DealerFieldError>{validation.plan}</DealerFieldError>}
 
 
           </CardContent>

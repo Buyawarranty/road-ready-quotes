@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { Loader2 } from 'lucide-react';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 
 // Standard UK plate formats (current + older + Northern Ireland)
 const UK_PLATE_REGEX = /^(?:[A-Z]{2}[0-9]{2}\s?[A-Z]{3}|[A-Z][0-9]{1,3}\s?[A-Z]{3}|[A-Z]{3}\s?[0-9]{1,3}[A-Z]?|[A-Z]{1,3}\s?[0-9]{1,4})$/i;
@@ -70,11 +71,7 @@ export const DealerRegHero: React.FC = () => {
         />
       </div>
 
-      {error && (
-        <p className="text-sm text-red-600 font-medium px-1" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <DealerFieldError>{error}</DealerFieldError>}
 
       <Button
         type="submit"

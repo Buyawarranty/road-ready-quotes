@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -142,7 +143,7 @@ const Step3Pricing: React.FC = () => {
             onMouseUp={event => event.preventDefault()}
           />
         </div>
-        {lookupMsg && <p role="alert" className="text-sm font-semibold text-destructive">{lookupMsg}</p>}
+        {lookupMsg && <DealerFieldError>{lookupMsg}</DealerFieldError>}
         <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-14 w-full gap-2 !bg-crm-orange text-base font-bold !text-primary-foreground hover:!bg-crm-orange/90">
           {lookup === 'loading' ? <><Loader2 className="h-5 w-5 animate-spin" />Looking up vehicle…</> : <>Get prices<ArrowRight className="h-5 w-5" /></>}
         </Button>
@@ -169,7 +170,7 @@ const Step3Pricing: React.FC = () => {
       <Button variant="outline" aria-pressed={!trade} onClick={() => setView('customer')} className={`h-11 justify-start ${!trade ? '!border-crm-orange !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90' : '!border-crm-line !bg-card !text-crm-navy'}`}><Eye />Customer View</Button>
     </div>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
-    {pricingError && <div role="alert" className="flex items-center gap-3 text-destructive">Warranty prices are unavailable.<Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
+    {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
     <section className="rounded-2xl border border-crm-line bg-card p-5 sm:p-6" aria-label="Warranty length">
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -229,7 +230,7 @@ const Step3Pricing: React.FC = () => {
         {trade && <Button className="col-span-2 h-14 text-base font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div>
     </section>
-    {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
+    {error && <DealerFieldError>{error}</DealerFieldError>}
     <p className="text-xs text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>
   </div>
   <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader><Input aria-label="Exact customer selling price" type="number" step="0.01" min={product?.min_price} max={product?.max_price ?? undefined} value={exactValue} onChange={e => setExactValue(e.target.value)} /><p className="text-xs text-muted-foreground">Including VAT. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,6 @@ import {
   Check,
   CheckCircle2,
   FileText,
-  Info,
   Loader2,
   Pencil,
   Trash2,
@@ -82,7 +82,7 @@ const StepDot: React.FC<{ n: StepNumber; label: string; current: StepNumber }> =
 };
 
 const FieldError: React.FC<{ message?: string }> = ({ message }) =>
-  message ? <p className="text-xs text-red-600 mt-1">{message}</p> : null;
+  message ? <DealerFieldError>{message}</DealerFieldError> : null;
 
 const StartClaim: React.FC = () => {
   const navigate = useNavigate();
@@ -741,11 +741,7 @@ const StartClaim: React.FC = () => {
               <span>I confirm the information provided is accurate and that I am authorised to submit this claim.</span>
             </label>
 
-            {submitError && (
-              <p className="flex items-start gap-2 text-sm text-red-600">
-                <Info className="h-4 w-4 mt-0.5 shrink-0" /> {submitError}
-              </p>
-            )}
+            {submitError && <DealerFieldError>{submitError}</DealerFieldError>}
           </div>
         )}
 

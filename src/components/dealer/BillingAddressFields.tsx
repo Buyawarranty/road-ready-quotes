@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { BillingAddress, COUNTRY_OPTIONS } from '@/lib/dealerBilling';
 
 interface Props {
@@ -21,7 +22,7 @@ const Field: React.FC<{
       {label} {required && <span className="text-orange-600">*</span>}
     </Label>
     {children}
-    {error && <p className="text-xs text-red-600">{error}</p>}
+    {error && <DealerFieldError>{error}</DealerFieldError>}
   </div>
 );
 
