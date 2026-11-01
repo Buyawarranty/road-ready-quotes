@@ -27,6 +27,13 @@ export function sellingPriceOptions(product: AnnualWarrantyProduct | undefined, 
   for (let v = first; v <= hi; v += 100) if (v >= lo) out.push(v);
   return out;
 }
+export interface AnnualBoostTerm { months: number; dealer_price: number; retail_price: number }
+export interface AnnualBoostConfig { active: boolean; claim_limit: number; dealer_price: number; retail_price: number; terms?: AnnualBoostTerm[] }
+export function boostForTerm<T extends { dealer_price: number; retail_price: number; terms?: AnnualBoostTerm[] }>(boost: T | undefined | null, months: number): T | undefined {
+  if (!boost) return undefined;
+  const term = boost.terms?.find(item => item.months === months);
+  return term ? { ...boost, dealer_price: term.dealer_price, retail_price: term.retail_price } : boost;
+}
 export const potentialProfit = (retail: number, cost: number) => (priceInPence(retail) - priceInPence(cost)) / 100;
 export const annualProductActive = (product: AnnualWarrantyProduct) => product.active && (product.months !== 48 || product.approvals_complete === true);
 
