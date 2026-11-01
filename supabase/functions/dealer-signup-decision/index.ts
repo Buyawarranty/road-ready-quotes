@@ -176,8 +176,13 @@ serve(async (req) => {
 
     if (createErr) {
       // user probably already exists -> look them up and reset password
-      const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      const existing = list?.users?.find((u) => (u.email || "").toLowerCase() === email);
+      let existing: { id: string } | undefined;
+      for (let page = 1; page <= 50 && !existing; page++) {
+        const { data: list } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+        const users = list?.users ?? [];
+        existing = users.find((u) => (u.email || "").toLowerCase() === email);
+        if (users.length < 1000) break;
+      }
       if (!existing) {
         console.error("createUser failed:", createErr);
         return new Response(JSON.stringify({ error: createErr.message }), {
