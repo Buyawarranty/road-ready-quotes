@@ -131,7 +131,7 @@ const Step3Pricing: React.FC = () => {
     const id = await save({ overridePlan: plan, silent: true });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return null; }
     if (next) { sessionStorage.setItem('dealer_confetti_light', '1'); navigate('/dealer-portal/quote/customer'); }
-    else toast({ title: `Quote saved in Quotes: ${id.slice(0, 8).toUpperCase()}` });
+    else toast({ title: `Draft saved for ${vehicle?.reg}` });
     return id;
   };
   const share = async (action: 'whatsapp' | 'email' | 'print' | 'pay') => {
