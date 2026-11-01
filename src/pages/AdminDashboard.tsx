@@ -109,6 +109,7 @@ const DealerAdminDealersTab = lazy(() => import('@/pages/dealer-admin/DealerAdmi
 const DealerAdminTradersTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraders'));
 const DealerAdminSalesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSales'));
 const DealerAdminInvoicesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminInvoices'));
+const DealerAdminPayLaterTab = lazy(() => import('@/pages/dealer-admin/DealerAdminPayLater'));
 const DealerAdminTraderPricingTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraderPricing'));
 const DealerFinanceTab = lazy(() => import('@/components/admin/dealer/DealerFinanceTab'));
 
@@ -929,6 +930,8 @@ const AdminDashboard = () => {
         return <DealerAdminSalesTab />;
       case 'dealer-invoices':
         return <DealerAdminInvoicesTab />;
+      case 'dealer-paylater':
+        return <DealerAdminPayLaterTab />;
       case 'trader-pricing':
         return <DealerAdminTraderPricingTab />;
       case 'dealer-finance':

@@ -6617,6 +6617,62 @@ export type Database = {
           },
         ]
       }
+      dealer_paylater_overrides: {
+        Row: {
+          dealer_id: string
+          mode: string
+          note: string | null
+          updated_at: string
+        }
+        Insert: {
+          dealer_id: string
+          mode?: string
+          note?: string | null
+          updated_at?: string
+        }
+        Update: {
+          dealer_id?: string
+          mode?: string
+          note?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_paylater_overrides_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: true
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_paylater_settings: {
+        Row: {
+          block_on_overdue: boolean
+          id: number
+          payment_term_days: number
+          required_paid_warranties: number
+          unlock_rule: string
+          updated_at: string
+        }
+        Insert: {
+          block_on_overdue?: boolean
+          id?: number
+          payment_term_days?: number
+          required_paid_warranties?: number
+          unlock_rule?: string
+          updated_at?: string
+        }
+        Update: {
+          block_on_overdue?: boolean
+          id?: number
+          payment_term_days?: number
+          required_paid_warranties?: number
+          unlock_rule?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dealer_quote_templates: {
         Row: {
           claim_limit: number
@@ -14895,6 +14951,10 @@ export type Database = {
           used_3mo: number
           used_6mo: number
         }[]
+      }
+      get_dealer_paylater_eligibility: {
+        Args: { p_dealer_id: string }
+        Returns: Json
       }
       get_document_version_for_date: {
         Args: { _on_date: string; _plan_type: string }

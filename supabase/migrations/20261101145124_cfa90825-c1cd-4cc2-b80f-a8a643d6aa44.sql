@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.get_dealer_paylater_eligibility(uuid) FROM PUBLIC, anon;

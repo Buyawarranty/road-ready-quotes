@@ -26,6 +26,14 @@ type Method = 'pay_now' | 'invoice';
 
 const PAYMENT_TERM_DAYS = 30;
 
+interface PayLaterEligibility {
+  eligible: boolean;
+  reason: 'new' | 'overdue' | 'blocked' | null;
+  paid_count: number;
+  required: number;
+  term_days: number;
+}
+
 const formatDate = (d: Date) =>
   d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -38,6 +46,8 @@ const Step4Checkout: React.FC = () => {
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
   const [creditBlocked, setCreditBlocked] = useState(false);
+  const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
+  const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,22 +55,19 @@ const Step4Checkout: React.FC = () => {
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
-  // Invoice eligibility — blocked when the dealer has an overdue unpaid invoice
+  // Invoice eligibility comes from the admin-controlled pay later rules
   useEffect(() => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - PAYMENT_TERM_DAYS);
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('dealer_id', dealer.id)
-        .neq('payment_status', 'paid')
-        .lt('signup_date', cutoff.toISOString())
-        .limit(1);
-      if (cancelled || error) return;
-      const blocked = (data || []).length > 0;
+      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
+        p_dealer_id: dealer.id,
+      });
+      if (cancelled || error || !data) return;
+      const e = data as PayLaterEligibility;
+      setEligibility(e);
+      if (e.term_days) setTermDays(e.term_days);
+      const blocked = !e.eligible;
       setCreditBlocked(blocked);
       if (blocked) setMethod('pay_now');
     })();
@@ -71,9 +78,9 @@ const Step4Checkout: React.FC = () => {
 
   const dueDate = useMemo(() => {
     const d = new Date();
-    d.setDate(d.getDate() + PAYMENT_TERM_DAYS);
+    d.setDate(d.getDate() + termDays);
     return d;
-  }, []);
+  }, [termDays]);
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
@@ -285,9 +292,23 @@ const Step4Checkout: React.FC = () => {
                   <Lock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                   <div className="text-xs text-amber-900">
                     <p className="font-bold">
-                      Pay later unavailable — your dealer account has an overdue balance.
+                      {eligibility?.reason === 'new'
+                        ? 'Pay later unlocks once your account is established.'
+                        : eligibility?.reason === 'blocked'
+                          ? 'Pay later is not switched on for your account yet.'
+                          : 'Pay later unavailable. Your dealer account has an overdue balance.'}
                     </p>
-                    <span
+                    {eligibility?.reason === 'new' && (
+                      <p className="mt-1">
+                        Pay in full for {Math.max(1, eligibility.required - eligibility.paid_count)} more warranty
+                        {eligibility.required - eligibility.paid_count === 1 ? '' : 's'} to unlock Invoice me. Paid so far:{' '}
+                        {eligibility.paid_count} of {eligibility.required}.
+                      </p>
+                    )}
+                    {eligibility?.reason === 'blocked' && (
+                      <p className="mt-1">Call 0330 229 5045 if you would like to talk about invoice terms.</p>
+                    )}
+                    {(eligibility?.reason === 'overdue' || !eligibility) && <span
                       role="link"
                       tabIndex={0}
                       onClick={(e) => {
@@ -300,7 +321,7 @@ const Step4Checkout: React.FC = () => {
                       className="mt-1.5 inline-flex items-center gap-1 font-bold text-amber-800 underline cursor-pointer"
                     >
                       View outstanding invoices <ChevronRight className="w-3 h-3" />
-                    </span>
+                    </span>}
                   </div>
                 </div>
               </div>
@@ -310,7 +331,7 @@ const Step4Checkout: React.FC = () => {
                   <div>
                     <p className="text-gray-500">Payment terms</p>
                     <p className="font-bold text-gray-900 flex items-center gap-1">
-                      <CalendarDays className="w-3.5 h-3.5 text-orange-500" /> {PAYMENT_TERM_DAYS} days
+                      <CalendarDays className="w-3.5 h-3.5 text-orange-500" /> {termDays} days
                     </p>
                   </div>
                   <div>
@@ -412,9 +433,9 @@ const Step4Checkout: React.FC = () => {
         {/* Order summary */}
         <aside className="order-2 lg:sticky lg:top-6 self-start">
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-yellow-300 px-5 py-3">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-gray-900">Order summary</p>
-              <p className="font-bold text-gray-900">
+            <div className="bg-primary px-5 py-3">
+              <p className="text-[10px] uppercase tracking-widest font-bold text-primary-foreground/90">Order summary</p>
+              <p className="font-bold text-primary-foreground">
                 {planName} · {termLabel}
               </p>
             </div>
