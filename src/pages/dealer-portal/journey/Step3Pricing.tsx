@@ -222,7 +222,7 @@ const Step3Pricing: React.FC = () => {
         <span className="block text-base font-extrabold leading-5">£5,000 Claim Limit Boost</span>
         <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
       </span>
-      {boostCfg && <span className="hidden whitespace-nowrap text-sm font-bold sm:inline">{trade ? 'Additional dealer cost' : 'Additional cost'}: {term ? gbp(trade ? (boostForTerm(boostCfg, term)?.dealer_price ?? 0) : (boostForTerm(boostCfg, term)?.retail_price ?? 0)) : `from ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}
+      {boostCfg && <span className="hidden whitespace-nowrap text-sm font-bold sm:inline">{term ? `Only ${gbp(trade ? (boostForTerm(boostCfg, term)?.dealer_price ?? 0) : (boostForTerm(boostCfg, term)?.retail_price ?? 0))}` : `From only ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}
       <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
     </label>
     <Collapsible className="rounded-xl border border-crm-line bg-card">
