@@ -19,6 +19,7 @@ type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'cl
 
 interface Signup {
   id: string;
+  dealer_id?: string | null;
   dealership_name: string | null;
   contact_name: string | null;
   email_address: string;

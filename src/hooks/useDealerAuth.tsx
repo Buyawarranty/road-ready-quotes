@@ -96,12 +96,12 @@ export const useDealerAuth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const [{ data }, userRoles] = await Promise.all([
-          supabase.from('dealers').select('*').eq('user_id', session.user.id).maybeSingle(),
+        const [dealerProfile, userRoles] = await Promise.all([
+          loadDealer(session.user.id),
           loadRoles(session.user.id),
         ]);
         if (mounted) {
-          setDealer(data as DealerProfile | null);
+          setDealer(dealerProfile);
           setRoles(userRoles);
         }
       }
