@@ -45,22 +45,19 @@ const Step4Checkout: React.FC = () => {
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
-  // Invoice eligibility — blocked when the dealer has an overdue unpaid invoice
+  // Invoice eligibility comes from the admin-controlled pay later rules
   useEffect(() => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - PAYMENT_TERM_DAYS);
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('dealer_id', dealer.id)
-        .neq('payment_status', 'paid')
-        .lt('signup_date', cutoff.toISOString())
-        .limit(1);
-      if (cancelled || error) return;
-      const blocked = (data || []).length > 0;
+      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
+        p_dealer_id: dealer.id,
+      });
+      if (cancelled || error || !data) return;
+      const e = data as PayLaterEligibility;
+      setEligibility(e);
+      if (e.term_days) setTermDays(e.term_days);
+      const blocked = !e.eligible;
       setCreditBlocked(blocked);
       if (blocked) setMethod('pay_now');
     })();
@@ -71,9 +68,9 @@ const Step4Checkout: React.FC = () => {
 
   const dueDate = useMemo(() => {
     const d = new Date();
-    d.setDate(d.getDate() + PAYMENT_TERM_DAYS);
+    d.setDate(d.getDate() + termDays);
     return d;
-  }, []);
+  }, [termDays]);
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
