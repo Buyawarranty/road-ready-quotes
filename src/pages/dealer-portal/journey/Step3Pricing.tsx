@@ -238,7 +238,7 @@ const Step3Pricing: React.FC = () => {
         <p className="mt-1">Mechanical and electrical failures. It is not designed for pre-existing faults, routine servicing, tyres, brake pads and wear items, accident damage, trader-owned vehicles, or hire and reward use (taxis, rentals, couriers).</p>
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Full terms and exclusions</a></CollapsibleContent>
     </Collapsible>
-    <section className="grid items-stretch gap-4 pt-2 md:grid-cols-[auto_minmax(0,1fr)]" aria-label="Quote summary">
+    <section className="grid items-center gap-3 pt-2 md:grid-cols-[auto_minmax(0,1fr)]" aria-label="Quote summary">
       {trade ? <div className="flex items-center justify-end gap-3 rounded-2xl border border-crm-line bg-card p-3">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-crm-green-soft"><TrendingUp className="h-4 w-4 text-crm-green-deep" /></span>
         <div className="min-w-0 text-right">
