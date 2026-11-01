@@ -555,6 +555,21 @@ const DealerAdminSignUps: React.FC = () => {
                     Approving creates the trader's dealer portal account and emails their login details.
                     Declining emails them a polite note inviting them to apply again.
                   </p>
+                  {selected.dealer_id && (
+                    <div className="border-t border-gray-200 pt-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => viewAsDealer(selected)}
+                        className="w-full border-[#eb4b00]/40 text-[#eb4b00] hover:bg-orange-50"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View dealer portal as this trader
+                      </Button>
+                      <p className="mt-1.5 text-xs text-gray-500">
+                        Opens their dealer portal exactly as they see it. Your admin login stays active and you can exit at any time.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
