@@ -219,10 +219,10 @@ const Step3Pricing: React.FC = () => {
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
             <span className="flex items-start justify-between gap-2">
-              <strong className="text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</strong>
+              <strong className="text-xl font-black leading-6">{months / 12} Year Warranty</strong>
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-card' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-3 w-3 rounded-full bg-crm-orange" />}</span>
             </span>
-            <span className="mt-1 text-base font-bold">{months / 12} Year Warranty</span>
+            <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
             <span className="text-sm text-muted-foreground">{trade ? `Dealer cost: ${cardCost != null ? gbp(cardCost) : '—'}` : 'per vehicle, inc. VAT'}</span>
             {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />Profit {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
