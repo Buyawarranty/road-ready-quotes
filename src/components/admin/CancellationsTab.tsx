@@ -198,6 +198,7 @@ export const CancellationsTab: React.FC<{
       const { data, error } = await supabase
         .from('customers')
         .select('id, name, email, phone, registration_plate, vehicle_make, vehicle_model, plan_type, payment_type, status, final_amount, created_at, updated_at, assigned_to, warranty_number, cancellation_note, cancellation_note_updated_at, is_test_cancellation, is_deleted, deleted_at')
+        .eq('brand', 'pandaprotect')
         .or('status.ilike.cancelled,status.ilike.refunded,is_deleted.eq.true')
         .order('updated_at', { ascending: false })
         .limit(5000);

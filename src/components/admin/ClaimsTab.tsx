@@ -100,6 +100,7 @@ export const ClaimsTab = ({
       const { data, error } = await supabase
         .from('claims_submissions')
         .select('*')
+        .eq('brand', 'pandaprotect')
         .order('created_at', { ascending: false });
       if (error) {
         toast({ title: 'Error', description: 'Failed to fetch claims', variant: 'destructive' });

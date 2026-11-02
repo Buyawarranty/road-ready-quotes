@@ -37,6 +37,7 @@ const ContactSubmissionsTab = () => {
       const { data, error } = await supabase
         .from('contact_submissions')
         .select('*')
+        .eq('brand', 'pandaprotect')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

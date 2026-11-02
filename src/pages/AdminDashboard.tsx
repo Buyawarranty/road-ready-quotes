@@ -1,3 +1,5 @@
+import { resolvePandaSection } from '@/lib/pandaAdminSections';
+import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -697,7 +699,37 @@ const AdminDashboard = () => {
 
 
   const renderContent = (effectiveUserRole: string | null, effectiveUserPermissions: Record<string, boolean> | null) => {
-    switch (activeTab) {
+    const section = resolvePandaSection(activeTab);
+    // Merged Panda Protect sections: several former screens shown as tabs.
+    if (section === 'dealer-dealers') {
+      return <AdminSectionTabs tabs={[
+        { id: 'signups', label: 'Sign-ups', render: () => <DealerAdminSignUpsTab /> },
+        { id: 'dealers', label: 'Dealers', render: () => <DealerAdminDealersTab /> },
+        { id: 'traders', label: 'Traders', render: () => <DealerAdminTradersTab /> },
+      ]} />;
+    }
+    if (section === 'dealer-cancellations') {
+      return <AdminSectionTabs tabs={[
+        { id: 'requests', label: 'Requests', render: () => <DealerAdminCancellationsTab /> },
+        { id: 'processed', label: 'Processed', render: () => <CancellationsTab /> },
+        { id: 'refunds', label: 'Refunds', render: () => <RefundsPaidTab /> },
+      ]} />;
+    }
+    if (section === 'dealer-invoices') {
+      return <AdminSectionTabs tabs={[
+        { id: 'invoices', label: 'Invoices', render: () => <DealerAdminInvoicesTab /> },
+        { id: 'paylater', label: 'Pay later rules', render: () => <DealerAdminPayLaterTab /> },
+        { id: 'finance', label: 'Dealer finance', render: () => <DealerFinanceTab /> },
+      ]} />;
+    }
+    if (section === 'complaints' && isTabAllowedForRole('complaints', effectiveUserRole, effectiveUserPermissions)) {
+      return <AdminSectionTabs tabs={[
+        { id: 'complaints', label: 'Complaints', render: () => <ComplaintsTab /> },
+        { id: 'contact', label: 'Contact messages', render: () => <ContactSubmissionsTab /> },
+        { id: 'feedback', label: 'Staff feedback', render: () => <AgentFeedbackTab userRole={effectiveUserRole} /> },
+      ]} />;
+    }
+    switch (section) {
       case 'overview':
       case 'call-stats':
         return <ManagerOverviewTab onNavigateToTab={handleTabChange} userRole={effectiveUserRole} />;

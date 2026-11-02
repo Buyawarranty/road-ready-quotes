@@ -1635,6 +1635,7 @@ export const CustomersTab = ({
       let activeQuery = supabase
         .from('customers')
         .select(creditCols)
+        .eq('brand', 'pandaprotect')
         .eq('is_deleted', false)
         .ilike('status', 'active');
 
@@ -1984,7 +1985,8 @@ export const CustomersTab = ({
         // Fallback: try without joining policies table
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('customers')
-          .select('*');
+          .select('*')
+          .eq('brand', 'pandaprotect');
           
         if (fallbackError) {
           console.error('❌ Fallback query error:', fallbackError);
