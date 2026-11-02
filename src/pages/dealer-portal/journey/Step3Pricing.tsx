@@ -224,7 +224,7 @@ const Step3Pricing: React.FC = () => {
             </span>
             <span className="mt-1 text-base font-bold">{months / 12} Year Warranty</span>
             <span className="text-sm text-muted-foreground">{trade ? `Dealer cost: ${cardCost != null ? gbp(cardCost) : '—'}` : 'per vehicle, inc. VAT'}</span>
-            {trade && cardRetail != null && cardCost != null && <span className="mt-3 rounded-md border border-crm-line bg-card px-3 py-1.5 text-sm font-extrabold text-crm-green">Profit: {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
+            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />Profit {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </button>;
         })}
