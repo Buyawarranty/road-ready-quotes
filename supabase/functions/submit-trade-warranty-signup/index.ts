@@ -154,7 +154,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: `${brand.name} <noreply@${brand.domain}>`,
+          from: `${brand.name} <${brand.helloEmail}>`,
           to: [brand.helloEmail],
           reply_to: payload.email_address,
           subject: "New Trade Warranty Interest Registration",
