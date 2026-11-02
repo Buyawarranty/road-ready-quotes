@@ -264,21 +264,24 @@ const Step3Pricing: React.FC = () => {
         </div>
         <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
     </Collapsible>
-    <section className="grid items-center gap-3 pt-2 lg:grid-cols-[minmax(260px,420px)_minmax(0,1fr)]" aria-label="Quote summary">
-      {trade ? <div className="flex items-stretch gap-4 rounded-[10px] border border-crm-line bg-card px-5 py-4">
+    <section className="grid gap-3 pt-2" aria-label="Quote summary">
+      <div className="flex flex-wrap items-center gap-3">
+      {trade ? <div className="flex shrink-0 items-stretch gap-3 rounded-[10px] border border-crm-line bg-card px-3 py-2">
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0">
-          <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
-          <strong className="block text-5xl font-black leading-[3.25rem] text-crm-green">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
+          <strong className="block text-3xl font-black leading-9 text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
           {term && <button type="button" className="mt-0.5 text-xs font-semibold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button>}
         </div>
-      </div> : <div className="flex items-center rounded-2xl border border-crm-line bg-card px-5 py-4"><p className="text-sm text-muted-foreground">Customer price<strong className="block text-5xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
-      <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:justify-end">
+      </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
+      <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
         {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : 'col-span-2'}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : ''}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
-        {trade && <Button className="col-span-2 h-14 w-full px-6 text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
-        {trade && <p className="col-span-2 flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground sm:justify-end"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
+      </div></div>
+      <div className="grid gap-2">
+        {trade && <Button className="h-14 w-full px-6 text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+        {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
       </div>
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
