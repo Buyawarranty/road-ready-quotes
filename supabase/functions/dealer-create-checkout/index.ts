@@ -264,8 +264,11 @@ Deno.serve(async (req: Request) => {
     const pendingCustomerId = result.id;
 
     const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
+    const embedded = (body as { embedded?: boolean }).embedded === true;
+    const returnUrl = `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`;
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      ...(embedded ? { ui_mode: 'embedded' as const, return_url: returnUrl } : { success_url: returnUrl, cancel_url: `${origin}/dealer-portal/quote/checkout` }),
       payment_method_types: ['card'],
       customer_email: dealer.email,
       line_items: [
@@ -281,8 +284,6 @@ Deno.serve(async (req: Request) => {
           quantity: 1,
         },
       ],
-      success_url: `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/dealer-portal/quote/checkout`,
       metadata: {
         dealer_id: dealer.id,
         customer_id: pendingCustomerId,
@@ -297,6 +298,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         checkout_url: session.url,
+        client_secret: session.client_secret,
         customer_id: pendingCustomerId,
         session_id: session.id,
       }),
