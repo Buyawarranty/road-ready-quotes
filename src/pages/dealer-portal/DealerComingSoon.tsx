@@ -313,9 +313,11 @@ const DealerComingSoon = () => {
             <span className="rounded-md border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary">Dealer</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-5 text-sm font-semibold text-crm-navy">
+            <Link to="/dealer-portal/claims/new" className="hidden md:inline-flex items-center gap-2 hover:text-primary"><FileWarning className="h-5 w-5" /> Claims</Link>
             <Link to="/faq/traders/" className="hidden sm:inline-flex items-center gap-2 hover:text-primary"><HelpCircle className="h-5 w-5" /> Help</Link>
             <span className="hidden h-6 w-px bg-border sm:block" />
-            <a href="tel:03309122535" className="inline-flex items-center gap-2 hover:text-primary"><Headphones className="h-5 w-5" /> Contact us</a>
+            <a href="tel:03309122535" className="hidden sm:inline-flex items-center gap-2 hover:text-primary"><Headphones className="h-5 w-5" /> Contact us</a>
+            <button type="button" onClick={revealLogin} className="inline-flex min-h-10 items-center gap-2 rounded-md border border-border px-3 hover:border-primary hover:text-primary"><User className="h-4 w-4" /> Log in</button>
           </div>
         </div>
       </header>
