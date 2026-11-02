@@ -387,13 +387,16 @@ const DealerComingSoon = () => {
                     className="flex gap-2"
                   >
                     <input
+                      ref={regInputRef}
                       value={regDraft}
                       onChange={(e) => setRegDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 8))}
                       placeholder="ENTER REG"
                       aria-label="Vehicle registration"
                       autoCapitalize="characters"
+                      maxLength={8}
                       className={`${inputCls} font-black tracking-widest`}
                     />
+
                     <Button type="submit" className="min-h-11 shrink-0 font-bold">Find</Button>
                   </form>
                 ) : (
@@ -405,32 +408,41 @@ const DealerComingSoon = () => {
               </div>
               <div>
                 <span className="mb-1.5 block text-sm font-semibold text-crm-navy">
-                  Vehicle <span className="font-normal text-muted-foreground">(auto found)</span>
+                  Vehicle{' '}
+                  <span className="font-normal text-muted-foreground">
+                    {showVehicle ? '(auto found)' : '(we’ll find it automatically)'}
+                  </span>
                 </span>
+
                 <div className="flex min-h-12 items-center justify-between gap-3 rounded-lg border border-border bg-muted px-4 py-2">
                   <div className="min-w-0">
-                    {savedVehicle ? (
+                    {savedVehicle && !editingReg ? (
                       <>
                         <p className="truncate font-bold text-crm-navy">{savedVehicle.title}</p>
                         {savedVehicle.fuel && <p className="text-xs text-muted-foreground">{savedVehicle.fuel}</p>}
                       </>
                     ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {pendingReg ? 'Looking up your vehicle…' : 'Enter a registration to find the vehicle'}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{vehicleHint}</p>
                     )}
+
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    {savedVehicle && (
+                    {showVehicle && (
                       <span className="hidden items-center gap-1 rounded-full bg-crm-green-soft px-2.5 py-1 text-xs font-bold text-crm-green sm:inline-flex">
                         <Check className="h-3.5 w-3.5" /> Vehicle found
                       </span>
                     )}
                     {pendingReg && !editingReg && (
-                      <button type="button" onClick={() => { setRegDraft(pendingReg.toUpperCase()); setEditingReg(true); }} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
+                      <button type="button" onClick={startEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
                         <Pencil className="h-3.5 w-3.5" /> Edit
                       </button>
                     )}
+                    {pendingReg && editingReg && (
+                      <button type="button" onClick={cancelEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
+                        Keep {pendingReg.toUpperCase()}
+                      </button>
+                    )}
+
                   </div>
                 </div>
               </div>
