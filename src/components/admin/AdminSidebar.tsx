@@ -1,3 +1,4 @@
+import { PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2 } from 'lucide-react';
 import { useAdminSidebarCollapsed } from '@/hooks/useAdminSidebarCollapsed';
@@ -530,6 +531,14 @@ export const defaultTabs: Tab[] = [
 ];
 
 
+// Keep only Panda Protect sections, in the agreed order and with their names.
+const pandaize = (tabs: Tab[]): Tab[] => {
+  const byId = new Map(tabs.map(t => [t.id, t]));
+  return PANDA_SECTION_ORDER
+    .filter(s => byId.has(s.id))
+    .map(s => ({ ...byId.get(s.id)!, label: s.label, description: s.description }));
+};
+
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange, userRole, userPermissions }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tabs, setTabs] = useState<Tab[]>(defaultTabs);
@@ -759,7 +768,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
 
 
   // Staff Hub is available to all staff
-  const filterRestricted = (tabs: Tab[]) => {
+  const filterRestricted = (tabs: Tab[]) => pandaize(filterRestrictedRaw(tabs));
+  const filterRestrictedRaw = (tabs: Tab[]) => {
     const withPerms = applyExplicitPermissionOverrides(tabs);
     // Price Updates is hard-restricted to management + Accounts, regardless of
     // any per-user tab permission grant.
@@ -797,7 +807,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
       return;
     }
     
-    const savedOrder = localStorage.getItem('adminSidebarOrder');
+    const savedOrder = localStorage.getItem('adminSidebarOrderPP');
     if (savedOrder) {
       try {
         const orderIds = JSON.parse(savedOrder);
@@ -822,7 +832,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
   // Save order to localStorage whenever it changes
   const saveOrder = (newTabs: Tab[]) => {
     const orderIds = newTabs.map(tab => tab.id);
-    localStorage.setItem('adminSidebarOrder', JSON.stringify(orderIds));
+    localStorage.setItem('adminSidebarOrderPP', JSON.stringify(orderIds));
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
