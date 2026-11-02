@@ -50,7 +50,8 @@ const DealerLogin = () => {
       // target page (own dealer or admin "view as dealer"); otherwise the
       // dealer page bounces back here and the screen flickers in a loop.
       const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-      if (cancelled || (!dealer && !(isAdmin && readDealerImpersonation()))) return;
+      // Staff only reach dealer pages via "view as dealer", never as a dealer login.
+      if (cancelled || (isAdmin ? !readDealerImpersonation() : !dealer)) return;
       const redirect = searchParams.get('redirect');
       const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
       if (redirect && redirect.startsWith('/dealer')) {
