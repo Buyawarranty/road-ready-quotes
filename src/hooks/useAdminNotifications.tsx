@@ -43,6 +43,7 @@ export const useAdminNotifications = (userRole?: string | null) => {
         .from('claims_submissions')
         .select('id, name, email, created_at')
         .eq('status', 'new')
+        .eq('brand', 'pandaprotect')
         .order('created_at', { ascending: false })
         .limit(20);
 
@@ -167,6 +168,7 @@ export const useAdminNotifications = (userRole?: string | null) => {
         event: 'INSERT',
         schema: 'public',
         table: 'claims_submissions',
+        filter: 'brand=eq.pandaprotect',
       }, (payload) => {
         const data = payload.new as { name: string; email: string };
         // Only show claim toast for admin/super_admin

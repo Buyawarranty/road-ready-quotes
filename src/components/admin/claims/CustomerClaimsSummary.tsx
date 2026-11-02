@@ -52,6 +52,7 @@ export const CustomerClaimsSummary: React.FC<CustomerClaimsSummaryProps> = ({
       let query = supabase
         .from('claims_submissions')
         .select('id, claim_reason, payment_amount, status, created_at, paid_at, vehicle_registration')
+        .eq('brand', 'pandaprotect')
         .order('created_at', { ascending: false });
 
       // Match by email OR vehicle registration
@@ -111,18 +112,14 @@ export const CustomerClaimsSummary: React.FC<CustomerClaimsSummaryProps> = ({
 
   // Single metric view for separate columns
   if (showOnly === 'claimsMade') {
-    const searchTerm = vehicleReg || customerEmail || '';
     return (
       <div className="flex flex-col gap-1">
         <Badge
           variant="outline"
-          className="font-mono cursor-pointer hover:bg-accent transition-colors"
-          onClick={() => {
-            window.location.href = `/admin-dashboard/?tab=claims&search=${encodeURIComponent(searchTerm)}`;
-          }}
-          title="Click to view claim details"
+          className="font-mono"
+          title="Claims are worked by the Buy A Warranty claims desk"
         >
-          <ExternalLink className="w-3 h-3 mr-1" />
+          <FileText className="w-3 h-3 mr-1" />
           {totalClaims} claim{totalClaims !== 1 ? 's' : ''}
         </Badge>
         <Button

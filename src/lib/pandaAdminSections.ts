@@ -7,7 +7,8 @@ export const PANDA_SECTION_ORDER: { id: string; label: string; description: stri
   { id: 'dealer-dealers', label: 'Dealers', description: 'Sign-ups, approved dealers and traders in one place' },
   { id: 'dealer-sales', label: 'Dealer sales', description: 'Warranties sold by each dealer' },
   { id: 'customers', label: 'Customers', description: "Dealers' end customers" },
-  { id: 'claims', label: 'Claims', description: 'Claims on Panda Protect warranties' },
+  // 'claims' is retired: warranty claims are worked by the Buy A Warranty
+  // claims desk, so this dashboard must not offer its own claims queue.
   { id: 'dealer-cancellations', label: 'Cancellations & refunds', description: 'Requests, processed cancellations and refunds' },
   { id: 'dealer-invoices', label: 'Dealer billing', description: 'Invoices, pay later rules and dealer finance' },
   { id: 'trader-pricing', label: 'Pricing', description: 'Trade warranty pricing' },
@@ -32,6 +33,7 @@ export const PANDA_SECTION_IDS = new Set(PANDA_SECTION_ORDER.map((s) => s.id));
 export const PANDA_SECTION_ALIASES: Record<string, string> = {
   'dealer-signups': 'dealer-dealers',
   'dealer-traders': 'dealer-dealers',
+  claims: 'dealer-overview',
   cancellations: 'dealer-cancellations',
   'refunds-paid': 'dealer-cancellations',
   'dealer-paylater': 'dealer-invoices',
