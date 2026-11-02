@@ -36,7 +36,7 @@ serve(async (req) => {
 
   try {
     const body = (await req.json()) as Payload & { brand?: unknown };
-    const brand = resolveBrand(req, { brand: body?.brand });
+    const brand = resolveBrand(req, { force: 'pandaprotect' });
     const ADMIN_URL_BASE = `${brand.siteUrl}/admin-dashboard/?tab=dealer-signups`;
     const {
       id, created_at,
@@ -107,8 +107,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `${brand.name} <noreply@${brand.domain}>`,
-        to: [brand.helloEmail, brand.infoEmail],
+        from: `${brand.name} <${brand.helloEmail}>`,
+        to: [brand.helloEmail],
         reply_to: email_address,
         subject,
         html,
