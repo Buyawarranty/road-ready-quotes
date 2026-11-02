@@ -5,6 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Pop-up notification colours must exist on every page (toasts render outside .dealer-crm). */
+:root {
+  --crm-green: 151 81% 38%;
+  --crm-pink: 358 100% 69%;
+}
+
 /* Dealer CRM palette. Scoped tokens keep the operational portal distinct. */
 .dealer-crm {
   --crm-navy: 227 75% 17%;
