@@ -30,6 +30,7 @@ interface AutocompleteSuggestion {
 }
 
 interface AddressAutocompleteProps {
+  id?: string;
   onAddressSelect: (address: AddressData) => void;
   placeholder?: string;
   className?: string;
@@ -51,6 +52,7 @@ const isValidUKPostcode = (postcode: string): boolean => {
 };
 
 export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
+  id,
   onAddressSelect,
   placeholder = "Start typing postcode or address...",
   className,
@@ -78,6 +80,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const debounceRef = useRef<NodeJS.Timeout>();
   const isSelectingRef = useRef(false); // Prevent closing during selection
   const queryRef = useRef(initialValue); // Last typed query (needed by Postcoder retrieve)
+  const requestRef = useRef(0);
 
   // Check postcode validity whenever input changes
   useEffect(() => {
@@ -121,6 +124,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // Fetch suggestions from getaddress.io or Postcoder via edge function
   // IMPORTANT: This function NEVER clears or modifies inputValue
   const fetchSuggestions = useCallback(async (term: string, pathfilter?: string) => {
+    const request = ++requestRef.current;
     // Don't search for very short terms
     if (term.length < 3) {
       setSuggestions([]);
@@ -139,6 +143,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         : { action: 'autocomplete', term };
 
       const { data, error } = await supabase.functions.invoke(functionName, { body });
+      if (request !== requestRef.current) return;
 
       if (error) {
         // API call failed - show fallback message but NEVER clear input
@@ -183,13 +188,14 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         }
       }
     } catch (err) {
+      if (request !== requestRef.current) return;
       // Catch any unexpected errors - NEVER crash, NEVER clear input
       console.error('Error in fetchSuggestions:', err);
       setSuggestions([]);
       setLookupFailed(true);
       onLookupError?.(true);
     } finally {
-      setIsLoading(false);
+      if (request === requestRef.current) setIsLoading(false);
     }
   }, [onLookupError, provider]);
 
@@ -201,6 +207,11 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
       setInputValue(value); // Always preserve what user types
       onInputChange?.(value);
       queryRef.current = value;
+      // Ignore older requests immediately, including during the debounce delay.
+      requestRef.current += 1;
+      setIsLoading(false);
+      setSuggestions([]);
+      setShowDropdown(false);
       setHasSelected(false);
       setSelectedIndex(-1);
       
@@ -243,6 +254,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
 
     setIsLoading(true);
     setShowDropdown(false);
+    requestRef.current += 1;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     // Keep the chosen result visible while its full details are retrieved.
     setInputValue(suggestion.address);
@@ -351,9 +364,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           break;
         case 'Enter':
           e.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-            handleSelectAddress(suggestions[selectedIndex]);
-          }
+          handleSelectAddress(suggestions[selectedIndex >= 0 ? selectedIndex : 0]);
           break;
         case 'Escape':
           setShowDropdown(false);
@@ -369,6 +380,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
+      requestRef.current += 1;
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
@@ -379,6 +391,7 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
     <div className="relative w-full">
       <div className="relative">
         <Input
+          id={id}
           ref={inputRef}
           type="text"
           value={inputValue}
@@ -388,6 +401,8 @@ export const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
             try {
               if (suggestions.length > 0 && !hasSelected) {
                 setShowDropdown(true);
+              } else if (!hasSelected && inputValue.trim().length >= 3 && !isLoading) {
+                fetchSuggestions(inputValue);
               }
             } catch (err) {
               // Never crash on focus
