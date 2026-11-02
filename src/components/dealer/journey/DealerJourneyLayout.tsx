@@ -119,7 +119,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
   }
 
   if (!dealer) {
-    return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+    return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   }
 
   return (

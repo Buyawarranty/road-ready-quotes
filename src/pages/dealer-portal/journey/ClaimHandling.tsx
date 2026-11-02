@@ -206,7 +206,7 @@ const ClaimHandlingPage: React.FC = () => {
   }, [fee, term, excess, labour, parts, claim]);
 
   if (!loading && !dealer) {
-    return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+    return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   }
 
   const toggleAddOn = (key: string) =>
