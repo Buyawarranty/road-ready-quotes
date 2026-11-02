@@ -191,19 +191,22 @@ serve(async (req) => {
       </html>
     `;
 
-    try {
-      await resend.emails.send({
-        from: brandFrom(brand, 'Customer Care', 'noreply'),
-        to: [email],
-        subject: `Reset Your ${brand.name} Portal Password`,
-        html: emailHtml,
-      });
+    const { data: sent, error: sendError } = await resend.emails.send({
+      from: brandFrom(brand, 'Customer Care', 'noreply'),
+      to: [email],
+      subject: `Reset Your ${brand.name} Portal Password`,
+      html: emailHtml,
+    });
 
-      logStep('Password reset email sent successfully', { email });
-    } catch (emailError) {
-      logStep('Error sending email', emailError);
-      // Continue anyway as the Supabase system might also send an email
+    if (sendError) {
+      logStep('Error sending email', { from: brandFrom(brand, 'Customer Care', 'noreply'), error: sendError });
+      return new Response(
+        JSON.stringify({ success: false, error: 'We could not send the reset email right now. Please try again shortly or contact support.' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+
+    logStep('Password reset email sent successfully', { email, id: sent?.id });
 
     return new Response(
       JSON.stringify({
