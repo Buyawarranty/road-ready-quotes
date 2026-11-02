@@ -339,28 +339,58 @@ const StartClaim: React.FC = () => {
       .filter(Boolean)
       .join('\n');
 
-    const { error } = await supabase.from('dealer_admin_claims').insert({
-      dealer_id: dealer.id,
-      customer_id: vehicle.customerId,
-      claim_reference: ref,
-      customer_name: vehicle.customerName || name,
-      customer_email: email.trim(),
-      customer_phone: phone.trim(),
-      registration_plate: vehicle.reg,
-      vehicle_make: vehicle.make,
-      vehicle_model: vehicle.model,
-      fault_description: description,
-      status: 'submitted',
-      attachments: files.map((f) => ({ name: f.name, size: f.size, path: f.path, url: f.url })),
-    });
+    const { data: saved, error } = await supabase
+      .from('dealer_admin_claims')
+      .insert({
+        dealer_id: dealer.id,
+        customer_id: vehicle.customerId,
+        claim_reference: ref,
+        customer_name: vehicle.customerName || name,
+        customer_email: email.trim(),
+        customer_phone: phone.trim(),
+        registration_plate: vehicle.reg,
+        vehicle_make: vehicle.make,
+        vehicle_model: vehicle.model,
+        fault_description: description,
+        status: 'submitted',
+        attachments: files.map((f) => ({ name: f.name, size: f.size, path: f.path, url: f.url })),
+      })
+      .select('id')
+      .single();
 
     setSubmitting(false);
-    if (error) {
+    if (error || !saved?.id) {
       setSubmitError('Something went wrong while submitting the claim. Your information has been saved. Please try again.');
       return;
     }
     sessionStorage.removeItem('dealerClaimDraft');
     setReference(ref);
+
+    // Panda Protect does not triage warranty claims: hand the claim straight to
+    // the Buy A Warranty claims desk. Never block the dealer on this step.
+    void supabase.functions
+      .invoke('forward-claim-to-baw', {
+        body: {
+          claimId: saved.id,
+          contactName: vehicle.customerName || name,
+          contactEmail: email.trim(),
+          contactPhone: phone.trim(),
+          registrationPlate: vehicle.reg,
+          vehicleMake: vehicle.make ?? '',
+          vehicleModel: vehicle.model ?? '',
+          mileage: Number(mileage) || 0,
+          occurredOn: occurredOn.trim(),
+          whenHappens: whenHappens.trim(),
+          faultDescription: description,
+          otherDetails: otherDetails.trim(),
+          driveable: driveable === 'yes',
+          repairStarted: repairStarted === 'yes',
+          repairGarage: repairDetails.trim(),
+          warrantyPlan: vehicle.plan ?? '',
+          dealerName: dealer.company_name || dealer.name,
+        },
+      })
+      .catch((err) => console.warn('Could not notify the claims desk:', err));
   };
 
   const vehicleLine = useMemo(() => {
