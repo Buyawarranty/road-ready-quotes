@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight, Check, TrendingUp, ShieldCheck, FileText, LogIn, Eye, EyeOff,
-  Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info,
+  Building2, User, Mail, Phone, Globe, HelpCircle, Headphones, Info, Pencil, FileWarning,
 } from 'lucide-react';
 import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
