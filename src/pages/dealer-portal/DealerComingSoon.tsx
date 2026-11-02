@@ -44,9 +44,27 @@ const PLAN_LABELS: Record<string, string> = {
 
 const DealerComingSoon = () => {
   const [searchParams] = useSearchParams();
-  const pendingReg =
+  const [pendingReg, setPendingReg] = useState(
     searchParams.get('reg')?.trim() ||
-    (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : '');
+    (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : ''),
+  );
+  const [editingReg, setEditingReg] = useState(false);
+  const [regDraft, setRegDraft] = useState(pendingReg.toUpperCase());
+  const saveReg = (value: string) => {
+    const reg = value.replace(/\s+/g, '').toUpperCase();
+    if (!reg) return;
+    try { localStorage.setItem('dealerPendingReg', reg); } catch { /* ignore */ }
+    setPendingReg(reg);
+    setEditingReg(false);
+  };
+  // Where a signed-in dealer goes next: an explicit dealer redirect, else
+  // straight to pricing when a vehicle is saved, else the dashboard.
+  const nextDealerPath = () => {
+    const redirect = searchParams.get('redirect');
+    const regQs = pendingReg ? `?reg=${encodeURIComponent(pendingReg.toUpperCase())}` : '';
+    if (redirect && redirect.startsWith('/dealer')) return `${redirect}${regQs}`;
+    return pendingReg ? `/dealer-portal/quote/pricing${regQs}` : '/dealer-portal/dashboard';
+  };
   const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
   const [form, setForm] = useState(initialForm);
@@ -86,12 +104,7 @@ const DealerComingSoon = () => {
         .eq('user_id', session.user.id)
         .maybeSingle();
       if (cancelled || !dealer) return;
-      const redirect = searchParams.get('redirect');
-      if (redirect && redirect.startsWith('/dealer')) {
-        navigate(pendingReg ? `${redirect}?reg=${encodeURIComponent(pendingReg)}` : redirect, { replace: true });
-      } else {
-        navigate('/dealer-portal/dashboard', { replace: true });
-      }
+      navigate(nextDealerPath(), { replace: true });
     })();
     return () => { cancelled = true; };
   }, []);
@@ -266,12 +279,7 @@ const DealerComingSoon = () => {
         return;
       }
 
-      const redirect = searchParams.get('redirect');
-      if (redirect) {
-        navigate(pendingReg ? `${redirect}?reg=${encodeURIComponent(pendingReg)}` : redirect);
-      } else {
-        navigate('/dealer-portal/dashboard');
-      }
+      navigate(nextDealerPath());
     } catch (err: any) {
       toast.error(err?.message || 'Login failed. Please check your details and try again.');
     } finally {
@@ -325,71 +333,93 @@ const DealerComingSoon = () => {
             <span>for UK motor dealers</span>
           </h1>
 
-          {pendingReg && (
-            <div className="signup-saved-reg mx-auto mt-7 flex max-w-2xl flex-col items-stretch gap-3 rounded-xl border border-crm-line bg-card px-4 py-3 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex min-w-0 items-center gap-3 text-left">
-                <div className="vehicle-reg-plate vehicle-reg-plate--quote w-36 shrink-0" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
-                  <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
-                  <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
-                </div>
-                <div className="min-w-0">
-                  {savedVehicle?.title && (
-                    <>
-                      <p className="text-base font-bold leading-tight text-crm-navy">{savedVehicle.title}</p>
-                      {savedVehicle.fuel && (
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{savedVehicle.fuel}</p>
-                      )}
-                    </>
-                  )}
-                  <p className="text-sm text-muted-foreground">
-                    Registration <span className="font-bold text-crm-navy">{pendingReg.toUpperCase()}</span> is saved for your quote.
-                  </p>
-                </div>
-              </div>
-              <Button
-                type="button"
-                onClick={revealLogin}
-                className="min-h-11 shrink-0 gap-2 bg-primary px-6 font-bold text-primary-foreground hover:bg-primary/90"
-              >
-                <LogIn className="h-4 w-4" /> Log in
-              </Button>
-            </div>
-          )}
-
-          <div className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:flex-row sm:justify-center">
-            {/* Register */}
-            <button
-              type="button"
-              onClick={revealForm}
-              className="group inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Register your dealership
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </button>
-
-            {/* Log in */}
-            <button
-              type="button"
-              onClick={revealLogin}
-              className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-md border border-crm-navy/20 bg-card px-6 py-3.5 text-sm font-bold text-crm-navy transition-colors hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              Log in
-            </button>
-          </div>
-          <p className="mx-auto mt-4 text-sm text-muted-foreground">
-            Free dealer sign-up · No setup fees, no contracts · Quote in seconds
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">
+            Cover vehicles with confidence. Quick quotes, instant setup and fast claims.
           </p>
 
-          <div className="mx-auto mt-8 flex max-w-3xl justify-center">
-            <img
-              src={pandaClaimApproved}
-              alt="Vehicle with bonnet open as Panda Protect approves a claim covering parts, labour and workshop payment"
-              width={1536}
-              height={1024}
-              loading="eager"
-              decoding="sync"
-              className="w-full h-auto"
-            />
+          {/* One card: registration → vehicle → next step */}
+          <div className="mx-auto mt-7 max-w-4xl rounded-2xl border border-crm-line bg-card p-4 text-left shadow-sm sm:p-6">
+            <div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_1fr] sm:items-end">
+              <div>
+                <span className="mb-1.5 block text-sm font-semibold text-crm-navy">Registration number</span>
+                {editingReg || !pendingReg ? (
+                  <form
+                    onSubmit={(e) => { e.preventDefault(); saveReg(regDraft); }}
+                    className="flex gap-2"
+                  >
+                    <input
+                      value={regDraft}
+                      onChange={(e) => setRegDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 8))}
+                      placeholder="ENTER REG"
+                      aria-label="Vehicle registration"
+                      autoCapitalize="characters"
+                      className={`${inputCls} font-black tracking-widest`}
+                    />
+                    <Button type="submit" className="min-h-11 shrink-0 font-bold">Find</Button>
+                  </form>
+                ) : (
+                  <div className="vehicle-reg-plate vehicle-reg-plate--quote w-full" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
+                    <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
+                    <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
+                  </div>
+                )}
+              </div>
+              <div>
+                <span className="mb-1.5 block text-sm font-semibold text-crm-navy">
+                  Vehicle <span className="font-normal text-muted-foreground">(auto found)</span>
+                </span>
+                <div className="flex min-h-12 items-center justify-between gap-3 rounded-lg border border-border bg-muted px-4 py-2">
+                  <div className="min-w-0">
+                    {savedVehicle ? (
+                      <>
+                        <p className="truncate font-bold text-crm-navy">{savedVehicle.title}</p>
+                        {savedVehicle.fuel && <p className="text-xs text-muted-foreground">{savedVehicle.fuel}</p>}
+                      </>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        {pendingReg ? 'Looking up your vehicle…' : 'Enter a registration to find the vehicle'}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    {savedVehicle && (
+                      <span className="hidden items-center gap-1 rounded-full bg-crm-green-soft px-2.5 py-1 text-xs font-bold text-crm-green sm:inline-flex">
+                        <Check className="h-3.5 w-3.5" /> Vehicle found
+                      </span>
+                    )}
+                    {pendingReg && !editingReg && (
+                      <button type="button" onClick={() => { setRegDraft(pendingReg.toUpperCase()); setEditingReg(true); }} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-[1.3fr_1fr]">
+              <button
+                type="button"
+                onClick={revealLogin}
+                className="group inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <LogIn className="h-5 w-5" /> Log in to see your quote
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+              </button>
+              <button
+                type="button"
+                onClick={revealForm}
+                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md border border-crm-navy/20 bg-card px-6 py-3.5 text-base font-bold text-crm-navy transition-colors hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <Building2 className="h-5 w-5" /> Register your dealership
+              </button>
+            </div>
+            <p className="mt-3 text-center text-sm text-muted-foreground">
+              Quotes are for registered dealers. {pendingReg ? 'We’ll keep this vehicle saved and take you straight to its prices once you log in.' : 'Log in and we’ll take you straight to pricing.'}
+            </p>
+            <p className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
+              <span>Free dealer sign-up</span><span>No setup fees</span><span>No contracts</span><span>Quote in seconds</span>
+            </p>
           </div>
 
 
