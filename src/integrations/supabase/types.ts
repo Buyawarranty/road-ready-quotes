@@ -5447,6 +5447,7 @@ export type Database = {
           approved_amount: number | null
           assigned_to: string | null
           attachments: Json | null
+          baw_submission_id: string | null
           claim_reference: string
           created_at: string
           customer_email: string | null
@@ -5456,6 +5457,9 @@ export type Database = {
           customer_phone: string | null
           dealer_id: string | null
           fault_description: string | null
+          forward_error: string | null
+          forward_status: string
+          forwarded_at: string | null
           id: string
           internal_notes: string | null
           is_test: boolean
@@ -5474,6 +5478,7 @@ export type Database = {
           approved_amount?: number | null
           assigned_to?: string | null
           attachments?: Json | null
+          baw_submission_id?: string | null
           claim_reference?: string
           created_at?: string
           customer_email?: string | null
@@ -5483,6 +5488,9 @@ export type Database = {
           customer_phone?: string | null
           dealer_id?: string | null
           fault_description?: string | null
+          forward_error?: string | null
+          forward_status?: string
+          forwarded_at?: string | null
           id?: string
           internal_notes?: string | null
           is_test?: boolean
@@ -5501,6 +5509,7 @@ export type Database = {
           approved_amount?: number | null
           assigned_to?: string | null
           attachments?: Json | null
+          baw_submission_id?: string | null
           claim_reference?: string
           created_at?: string
           customer_email?: string | null
@@ -5510,6 +5519,9 @@ export type Database = {
           customer_phone?: string | null
           dealer_id?: string | null
           fault_description?: string | null
+          forward_error?: string | null
+          forward_status?: string
+          forwarded_at?: string | null
           id?: string
           internal_notes?: string | null
           is_test?: boolean
