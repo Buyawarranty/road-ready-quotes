@@ -41,3 +41,4 @@
 - [x] Make Customer View open the customer-safe quote in its own browser tab (quote saved with its payment reference) and add copy-link, WhatsApp and email sharing inside that tab. Customer-view render and copy interaction verified in the browser; signed-in dealer click still needs the external session.
 
 - [ ] /auth (managers) must never land on dealer pages; explain /auth vs /admin-dashboard
+- [ ] Pricing: profit figure gold, smaller profit box beside Save draft / Share quote
