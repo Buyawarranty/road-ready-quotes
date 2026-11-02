@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { isAdminRole } from '@/lib/adminRoles';
+import { readDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import {
   Eye,
   EyeOff,
@@ -45,8 +46,11 @@ const DealerLogin = () => {
         .from('user_roles')
         .select('role')
         .eq('user_id', session.user.id);
+      // Only auto-forward when a dealer profile will actually load on the
+      // target page (own dealer or admin "view as dealer"); otherwise the
+      // dealer page bounces back here and the screen flickers in a loop.
       const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-      if (cancelled || (!dealer && !isAdmin)) return;
+      if (cancelled || (!dealer && !(isAdmin && readDealerImpersonation()))) return;
       const redirect = searchParams.get('redirect');
       const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
       if (redirect && redirect.startsWith('/dealer')) {
@@ -85,6 +89,13 @@ const DealerLogin = () => {
           .select('role')
           .eq('user_id', userId);
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
+        if (isAdmin && !readDealerImpersonation()) {
+          const { data: ownDealer } = await supabase.from('dealers').select('id').eq('user_id', userId).maybeSingle();
+          if (!ownDealer) {
+            navigate('/admin-dashboard?tab=dealer-traders');
+            return;
+          }
+        }
         if (isAdmin) {
           const redirect = searchParams.get('redirect');
           navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
