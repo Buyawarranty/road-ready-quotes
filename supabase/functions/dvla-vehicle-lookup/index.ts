@@ -239,10 +239,14 @@ function getRegistrationYear(registration: string): number | null {
 }
 
 async function getAccessToken(): Promise<string> {
-  const clientId = Deno.env.get('MOT_CLIENT_ID');
-  const clientSecret = Deno.env.get('MOT_CLIENT_SECRET');
-  const tokenUrl = Deno.env.get('MOT_TOKEN_URL');
-  const scopeUrl = Deno.env.get('MOT_SCOPE_URL');
+  // Same tolerance as fetch-mot-history: strip stray spaces/newlines and cope
+  // with the token and scope URLs having been saved the wrong way round.
+  const clean = (v?: string) => (v || '').replace(/\s+/g, '');
+  const clientId = clean(Deno.env.get('MOT_CLIENT_ID'));
+  const clientSecret = (Deno.env.get('MOT_CLIENT_SECRET') || '').trim();
+  let tokenUrl = clean(Deno.env.get('MOT_TOKEN_URL'));
+  let scopeUrl = clean(Deno.env.get('MOT_SCOPE_URL'));
+  if (!tokenUrl.includes('/oauth2/') && scopeUrl.includes('/oauth2/')) [tokenUrl, scopeUrl] = [scopeUrl, tokenUrl];
 
   if (!clientId || !clientSecret || !tokenUrl || !scopeUrl) {
     throw new Error('Missing MOT API configuration');
