@@ -338,7 +338,6 @@ const DealerHome = () => {
             <article className="home-plan-card">
               <div className="home-plan-card-photo-wrap">
                 <OptimizedImage src={pandaCustomerPhoto} alt="A happy customer reading her warranty confirmation on her phone" width={1024} height={640} loading="lazy" />
-                <span className="home-plan-card-active"><Check aria-hidden="true" />Your Warranty is Active</span>
               </div>
               <div className="home-plan-card-body">
                 <h3><span className="home-plan-card-badge">3</span>Your customer receives everything</h3>

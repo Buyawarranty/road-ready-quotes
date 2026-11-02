@@ -2790,8 +2790,6 @@ body {
 .public-dealer-home .home-plan-card-doc-gear { position: absolute; right: 0.85rem; bottom: 0.85rem; display: grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 999px; background: hsl(var(--home-orange)); color: hsl(var(--home-surface)); box-shadow: 0 8px 18px -10px rgb(15 23 42 / 0.45); }
 .public-dealer-home .home-plan-card-doc-gear svg { width: 1.1rem; height: 1.1rem; }
 .public-dealer-home .home-plan-card-photo-wrap { position: relative; }
-.public-dealer-home .home-plan-card-active { position: absolute; top: 0.7rem; right: 0.7rem; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.6rem; border-radius: 0.55rem; background: hsl(var(--home-card) / 0.95); border: 1px solid hsl(var(--home-line) / 0.7); color: hsl(var(--home-ink)); font-size: 0.72rem; font-weight: 800; box-shadow: 0 6px 14px -10px rgb(15 23 42 / 0.4); }
-.public-dealer-home .home-plan-card-active svg { width: 0.85rem; height: 0.85rem; color: hsl(var(--home-green)); stroke-width: 3; }
 .public-dealer-home .home-plan-accent { color: hsl(var(--home-orange)); }
 .public-dealer-home .home-plan-sub { margin: 0 0 1rem; font-size: 1.05rem; font-weight: 700; color: hsl(var(--home-ink)); }
 .public-dealer-home .home-plan-copy { display: grid; gap: 0.75rem; margin: 0 0 1.4rem; }
