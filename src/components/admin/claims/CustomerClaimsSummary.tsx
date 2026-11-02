@@ -52,6 +52,7 @@ export const CustomerClaimsSummary: React.FC<CustomerClaimsSummaryProps> = ({
       let query = supabase
         .from('claims_submissions')
         .select('id, claim_reason, payment_amount, status, created_at, paid_at, vehicle_registration')
+        .eq('brand', 'pandaprotect')
         .order('created_at', { ascending: false });
 
       // Match by email OR vehicle registration
