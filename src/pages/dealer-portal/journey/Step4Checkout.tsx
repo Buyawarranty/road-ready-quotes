@@ -6,6 +6,12 @@ import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLa
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { loadStripe } from '@stripe/stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+
+const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 import { useToast } from '@/hooks/use-toast';
 import {
   CreditCard,
@@ -45,6 +51,7 @@ const Step4Checkout: React.FC = () => {
 
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [creditBlocked, setCreditBlocked] = useState(false);
   const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
   const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
@@ -139,10 +146,11 @@ const Step4Checkout: React.FC = () => {
           boost: options.boost === true,
         },
         discount_pct,
+        embedded: method === 'pay_now' && !!stripePromise,
       },
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; customer_id?: string };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string };
   };
 
   const handleSubmit = async () => {
@@ -159,6 +167,11 @@ const Step4Checkout: React.FC = () => {
       const data = await createRecord();
 
       if (method === 'pay_now') {
+        if (data?.client_secret && stripePromise) {
+          setClientSecret(data.client_secret);
+          setSubmitting(false);
+          return;
+        }
         const url = data?.checkout_url;
         if (!url) throw new Error('No checkout URL returned');
         window.location.href = url;
@@ -569,6 +582,17 @@ const Step4Checkout: React.FC = () => {
           </div>
         </aside>
       </div>
+      <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>
+        <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-6">
+          <DialogTitle>Pay securely by card</DialogTitle>
+          <DialogDescription>Enter your card details below. You stay on this page.</DialogDescription>
+          {clientSecret && stripePromise && (
+            <EmbeddedCheckoutProvider key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          )}
+        </DialogContent>
+      </Dialog>
     </DealerJourneyLayout>
   );
 };

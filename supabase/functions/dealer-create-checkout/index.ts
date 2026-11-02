@@ -264,7 +264,7 @@ Deno.serve(async (req: Request) => {
     const pendingCustomerId = result.id;
 
     const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
-    const embedded = body?.embedded === true;
+    const embedded = (body as { embedded?: boolean }).embedded === true;
     const returnUrl = `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`;
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
