@@ -42,10 +42,13 @@ interface MOTHistoryResponse {
 }
 
 async function getAccessToken(): Promise<string> {
-  const clientId = Deno.env.get('MOT_CLIENT_ID');
-  const clientSecret = Deno.env.get('MOT_CLIENT_SECRET');
-  const tokenUrl = Deno.env.get('MOT_TOKEN_URL');
-  const scopeUrl = Deno.env.get('MOT_SCOPE_URL');
+  const clean = (v?: string) => (v || '').replace(/\s+/g, '');
+  const clientId = clean(Deno.env.get('MOT_CLIENT_ID'));
+  const clientSecret = (Deno.env.get('MOT_CLIENT_SECRET') || '').trim();
+  let tokenUrl = clean(Deno.env.get('MOT_TOKEN_URL'));
+  let scopeUrl = clean(Deno.env.get('MOT_SCOPE_URL'));
+  // Tolerate the two values being entered the wrong way round.
+  if (!tokenUrl.includes('/oauth2/') && scopeUrl.includes('/oauth2/')) [tokenUrl, scopeUrl] = [scopeUrl, tokenUrl];
 
   if (!clientId || !clientSecret || !tokenUrl || !scopeUrl) {
     throw new Error('Missing MOT API configuration');
@@ -75,7 +78,7 @@ async function getAccessToken(): Promise<string> {
 }
 
 async function fetchMOTHistory(registration: string, accessToken: string): Promise<MOTHistoryResponse> {
-  const apiKey = Deno.env.get('MOT_API_KEY');
+  const apiKey = (Deno.env.get('MOT_API_KEY') || '').trim();
   
   if (!apiKey) {
     throw new Error('Missing MOT API key');
