@@ -49,14 +49,33 @@ const DealerComingSoon = () => {
     (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : ''),
   );
   const [editingReg, setEditingReg] = useState(false);
-  const [regDraft, setRegDraft] = useState(pendingReg.toUpperCase());
+  const [regDraft, setRegDraft] = useState('');
+  const [lookupTick, setLookupTick] = useState(0);
+  const [lookupDone, setLookupDone] = useState(false);
+  const regInputRef = useRef<HTMLInputElement>(null);
+  // Changing vehicle: start a fresh search with the grey ENTER REG hint, while
+  // Cancel keeps the saved plate one click away so nothing is lost.
+  const startEditReg = () => {
+    setRegDraft('');
+    setEditingReg(true);
+    requestAnimationFrame(() => regInputRef.current?.focus());
+  };
+  const cancelEditReg = () => {
+    setEditingReg(false);
+    setRegDraft('');
+  };
   const saveReg = (value: string) => {
     const reg = value.replace(/\s+/g, '').toUpperCase();
     if (!reg) return;
     try { localStorage.setItem('dealerPendingReg', reg); } catch { /* ignore */ }
     setPendingReg(reg);
     setEditingReg(false);
+    setSavedVehicle(null);
+    setLookupDone(false);
+    // re-run the lookup even when the same plate is searched again
+    setLookupTick((t) => t + 1);
   };
+
   // Where a signed-in dealer goes next: an explicit dealer redirect, else
   // straight to pricing when a vehicle is saved, else the dashboard.
   const nextDealerPath = () => {
@@ -77,20 +96,24 @@ const DealerComingSoon = () => {
 
   useEffect(() => {
     const reg = pendingReg.trim().toUpperCase();
-    if (!reg) { setSavedVehicle(null); return; }
+    if (!reg) { setSavedVehicle(null); setLookupDone(false); return; }
     let active = true;
     supabase.functions
       .invoke('dvla-vehicle-lookup', { body: { registrationNumber: reg } })
       .then(({ data }: { data: { found?: boolean; make?: string; model?: string; yearOfManufacture?: number; fuelType?: string } | null }) => {
-        if (!active || !data?.found) return;
+        if (!active) return;
+        setLookupDone(true);
+        if (!data?.found) return;
+
         const name = [data.make, data.model].filter(Boolean).join(' ');
         if (!name) return;
         const year = data.yearOfManufacture ? ` (${data.yearOfManufacture})` : '';
         setSavedVehicle({ title: `${name.toUpperCase()}${year}`, fuel: data.fuelType || '' });
       })
-      .catch(() => {});
+      .catch(() => { if (active) setLookupDone(true); });
     return () => { active = false; };
-  }, [pendingReg]);
+  }, [pendingReg, lookupTick]);
+
 
   // If already signed in as a dealer, skip the signup form entirely.
   useEffect(() => {
@@ -298,7 +321,21 @@ const DealerComingSoon = () => {
     else toast.success('Confirmation email sent — check your inbox (and spam folder).');
   };
 
+  // While a dealer is searching for a different vehicle, the panel must not
+  // claim a vehicle is found — it only speaks once a lookup has returned.
+  const showVehicle = !!savedVehicle && !editingReg;
+  const vehicleHint = editingReg
+    ? (regDraft.trim()
+        ? `Press Find to look up ${regDraft.trim().toUpperCase()}`
+        : 'Enter a registration to find the vehicle')
+    : pendingReg
+      ? (lookupDone
+          ? 'Check the registration and try again.'
+          : 'Looking up your vehicle…')
+      : 'Enter a registration to find the vehicle';
+
   return (
+
     <div className="dealer-crm public-marketing-page public-dealer-signup min-h-screen bg-background">
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
@@ -350,13 +387,16 @@ const DealerComingSoon = () => {
                     className="flex gap-2"
                   >
                     <input
+                      ref={regInputRef}
                       value={regDraft}
                       onChange={(e) => setRegDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 8))}
                       placeholder="ENTER REG"
                       aria-label="Vehicle registration"
                       autoCapitalize="characters"
+                      maxLength={8}
                       className={`${inputCls} font-black tracking-widest`}
                     />
+
                     <Button type="submit" className="min-h-11 shrink-0 font-bold">Find</Button>
                   </form>
                 ) : (
@@ -368,32 +408,41 @@ const DealerComingSoon = () => {
               </div>
               <div>
                 <span className="mb-1.5 block text-sm font-semibold text-crm-navy">
-                  Vehicle <span className="font-normal text-muted-foreground">(auto found)</span>
+                  Vehicle{' '}
+                  <span className="font-normal text-muted-foreground">
+                    {showVehicle ? '(auto found)' : '(we’ll find it automatically)'}
+                  </span>
                 </span>
+
                 <div className="flex min-h-12 items-center justify-between gap-3 rounded-lg border border-border bg-muted px-4 py-2">
                   <div className="min-w-0">
-                    {savedVehicle ? (
+                    {savedVehicle && !editingReg ? (
                       <>
                         <p className="truncate font-bold text-crm-navy">{savedVehicle.title}</p>
                         {savedVehicle.fuel && <p className="text-xs text-muted-foreground">{savedVehicle.fuel}</p>}
                       </>
                     ) : (
-                      <p className="text-sm text-muted-foreground">
-                        {pendingReg ? 'Looking up your vehicle…' : 'Enter a registration to find the vehicle'}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{vehicleHint}</p>
                     )}
+
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    {savedVehicle && (
+                    {showVehicle && (
                       <span className="hidden items-center gap-1 rounded-full bg-crm-green-soft px-2.5 py-1 text-xs font-bold text-crm-green sm:inline-flex">
                         <Check className="h-3.5 w-3.5" /> Vehicle found
                       </span>
                     )}
                     {pendingReg && !editingReg && (
-                      <button type="button" onClick={() => { setRegDraft(pendingReg.toUpperCase()); setEditingReg(true); }} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
+                      <button type="button" onClick={startEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
                         <Pencil className="h-3.5 w-3.5" /> Edit
                       </button>
                     )}
+                    {pendingReg && editingReg && (
+                      <button type="button" onClick={cancelEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
+                        Keep {pendingReg.toUpperCase()}
+                      </button>
+                    )}
+
                   </div>
                 </div>
               </div>
