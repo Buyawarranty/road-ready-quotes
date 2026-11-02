@@ -42,3 +42,4 @@
 
 - [x] /auth (managers) must never land on dealer pages; explain /auth vs /admin-dashboard
 - [x] Pricing: profit figure gold, smaller profit box beside Save draft / Share quote
+- [x] Fix MOT mileage lookup: re-entered DVSA credentials through the secure form and made both MOT lookups ignore stray spaces in the saved settings. Live checks return real vehicle, MOT and mileage data for AB12CDE (Vauxhall Astra, 43,244 miles, MOT valid to 11 Jun 2027).
