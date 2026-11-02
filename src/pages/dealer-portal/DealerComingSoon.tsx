@@ -675,6 +675,18 @@ const DealerComingSoon = () => {
               )}
             </div>
           )}
+          {/* Vehicle image sits below the quote card so mobile dealers reach the form first */}
+          <div className="mx-auto mt-10 flex max-w-3xl justify-center">
+            <img
+              src={pandaClaimApproved}
+              alt="Vehicle with bonnet open as Panda Protect approves a claim covering parts, labour and workshop payment"
+              width={1536}
+              height={1024}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full"
+            />
+          </div>
         </div>
       </section>
 
