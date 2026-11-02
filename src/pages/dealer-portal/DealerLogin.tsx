@@ -89,16 +89,15 @@ const DealerLogin = () => {
           .select('role')
           .eq('user_id', userId);
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-        if (isAdmin && !readDealerImpersonation()) {
-          const { data: ownDealer } = await supabase.from('dealers').select('id').eq('user_id', userId).maybeSingle();
-          if (!ownDealer) {
-            navigate('/admin-dashboard?tab=dealer-traders');
-            return;
-          }
-        }
         if (isAdmin) {
-          const redirect = searchParams.get('redirect');
-          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
+          // Staff logins never sign in to the dealer portal; staff use /auth
+          // and reach dealer views only through "view as dealer".
+          await supabase.auth.signOut();
+          toast({
+            title: 'Staff account',
+            description: 'This is a Panda Protect staff login. Please sign in at /auth. Dealers need their own separate login.',
+            variant: 'destructive',
+          });
           return;
         }
       }
