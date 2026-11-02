@@ -203,11 +203,11 @@ const Step2Customer: React.FC = () => {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
+              <label htmlFor="customer-address-search" className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <AddressAutocomplete placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
-                  onInputChange={(value) => update('postcode', value)}
+                <AddressAutocomplete id="customer-address-search" placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
+                  onLookupError={(failed) => { if (failed) setManualAddress(true); }}
                   onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
               </div>
               {!manualAddress && (
@@ -220,7 +220,9 @@ const Step2Customer: React.FC = () => {
             {manualAddress && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {field('address_line1', 'Address line 1 *', 'text', 'address-line1', Home, 'e.g. 12 High Street')}
+                {field('address_line2', 'Address line 2', 'text', 'address-line2', Home)}
                 {field('town', 'Town *', 'text', 'address-level2', MapPin, 'e.g. Manchester')}
+                {field('postcode', 'Postcode *', 'text', 'postal-code', MapPin, 'e.g. SW1A 1AA')}
               </div>
             )}
           </section>
