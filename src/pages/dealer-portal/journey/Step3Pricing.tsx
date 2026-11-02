@@ -270,7 +270,7 @@ const Step3Pricing: React.FC = () => {
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0">
           <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
-          <strong className="block text-3xl font-black leading-9 text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <strong className="block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
           {term && <button type="button" className="mt-0.5 text-xs font-semibold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button>}
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
