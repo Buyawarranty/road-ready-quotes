@@ -44,7 +44,6 @@ const Auth = () => {
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
     if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return null;
-    if (redirect.startsWith('/dealer-portal')) return redirect;
     if (redirect.startsWith('/admin-dashboard')) return redirect;
     if (redirect.startsWith('/customer-dashboard')) return redirect;
     return null;
@@ -69,14 +68,19 @@ const Auth = () => {
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
+      if (!hasAdminRole && dealerData) {
+        // /auth is the managers' sign-in; dealer accounts must use the dealer login.
+        await supabase.auth.signOut();
+        setSignInError('This sign-in is for Panda Protect managers. Dealers, please use the dealer login.');
+        setLoading(false);
+        return;
+      }
       const canUseRequestedPath = Boolean(requestedPath);
       const targetPath = canUseRequestedPath
         ? requestedPath
         : hasAdminRole
         ? '/admin-dashboard/'
-        : dealerData
-          ? '/dealer-portal/dashboard'
-          : fallbackPath;
+        : fallbackPath;
 
       navigate(targetPath, { replace: true });
       window.setTimeout(() => {
