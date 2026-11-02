@@ -278,11 +278,9 @@ const Step3Pricing: React.FC = () => {
         {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
         <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : ''}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
+        {trade && <Button className="h-12 px-5 text-base font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
-      <div className="grid gap-2">
-        {trade && <Button className="h-14 w-full px-6 text-lg font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
-        {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
-      </div>
+      {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
     {!vehicle?.reg ? <p className="text-xs font-bold text-crm-orange">Enter the vehicle registration above to save or continue.</p> : <p className="text-xs text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>}
