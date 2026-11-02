@@ -1096,6 +1096,7 @@ export const CustomersTab = ({
         const { data, error } = await supabase
           .from('customers')
           .select('*, customer_policies!customer_id(id, policy_number, policy_end_date, policy_start_date, status, warranty_number, claim_limit, payment_amount)')
+          .eq('brand', 'pandaprotect')
           .or([
             `name.ilike.${like}`,
             `first_name.ilike.${like}`,
@@ -1635,6 +1636,7 @@ export const CustomersTab = ({
       let activeQuery = supabase
         .from('customers')
         .select(creditCols)
+        .eq('brand', 'pandaprotect')
         .eq('is_deleted', false)
         .ilike('status', 'active');
 
@@ -1858,6 +1860,7 @@ export const CustomersTab = ({
               email
             )
           `)
+          .eq('brand', 'pandaprotect')
           .not('email', 'ilike', '%@test.com%')
           .not('email', 'ilike', '%testuser%')
           .not('email', 'ilike', '%guest@%')
@@ -1984,7 +1987,8 @@ export const CustomersTab = ({
         // Fallback: try without joining policies table
         const { data: fallbackData, error: fallbackError } = await supabase
           .from('customers')
-          .select('*');
+          .select('*')
+          .eq('brand', 'pandaprotect');
           
         if (fallbackError) {
           console.error('❌ Fallback query error:', fallbackError);
@@ -2267,6 +2271,7 @@ export const CustomersTab = ({
             email
           )
         `)
+          .eq('brand', 'pandaprotect')
         .eq('is_deleted', true)
         .order('deleted_at', { ascending: false })
         .limit(1000);
