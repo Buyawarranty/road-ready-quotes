@@ -325,8 +325,15 @@ const Auth = () => {
   };
 
   const handleResetPassword = async () => {
-    // Default to the support inbox when no email has been entered
-    const resetEmail = email.trim() || 'info@buyawarranty.co.uk';
+    const resetEmail = email.trim();
+    if (!resetEmail) {
+      toast({
+        title: "Enter your email",
+        description: "Type your email address above, then press Forgot your password.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       setLoading(true);

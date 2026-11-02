@@ -15,6 +15,7 @@ const PasswordReset = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [isValidSession, setIsValidSession] = useState(false);
   
   useEffect(() => {
@@ -235,20 +236,44 @@ const PasswordReset = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="password">New Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">New Password</Label>
+              <button
+                type="button"
+                className="text-sm font-semibold text-primary underline"
+                onClick={() => {
+                  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+                  const bytes = crypto.getRandomValues(new Uint32Array(14));
+                  const suggested = Array.from(bytes, (b) => chars[b % chars.length]).join('');
+                  setPassword(suggested);
+                  setConfirmPassword(suggested);
+                  setShowPassword(true);
+                }}
+              >
+                Suggest a strong password
+              </button>
+            </div>
             <Input
               id="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
             />
+            <button type="button" className="mt-1 text-sm text-muted-foreground underline" onClick={() => setShowPassword((s) => !s)}>
+              {showPassword ? 'Hide password' : 'Show password'}
+            </button>
+            {showPassword && password && (
+              <p className="mt-1 text-sm text-muted-foreground">Save this password somewhere safe before you continue.</p>
+            )}
           </div>
           <div>
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm your new password"
