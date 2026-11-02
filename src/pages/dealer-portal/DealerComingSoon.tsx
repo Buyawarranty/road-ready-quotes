@@ -49,14 +49,33 @@ const DealerComingSoon = () => {
     (typeof window !== 'undefined' ? localStorage.getItem('dealerPendingReg') || '' : ''),
   );
   const [editingReg, setEditingReg] = useState(false);
-  const [regDraft, setRegDraft] = useState(pendingReg.toUpperCase());
+  const [regDraft, setRegDraft] = useState('');
+  const [lookupTick, setLookupTick] = useState(0);
+  const [lookupDone, setLookupDone] = useState(false);
+  const regInputRef = useRef<HTMLInputElement>(null);
+  // Changing vehicle: start a fresh search with the grey ENTER REG hint, while
+  // Cancel keeps the saved plate one click away so nothing is lost.
+  const startEditReg = () => {
+    setRegDraft('');
+    setEditingReg(true);
+    requestAnimationFrame(() => regInputRef.current?.focus());
+  };
+  const cancelEditReg = () => {
+    setEditingReg(false);
+    setRegDraft('');
+  };
   const saveReg = (value: string) => {
     const reg = value.replace(/\s+/g, '').toUpperCase();
     if (!reg) return;
     try { localStorage.setItem('dealerPendingReg', reg); } catch { /* ignore */ }
     setPendingReg(reg);
     setEditingReg(false);
+    setSavedVehicle(null);
+    setLookupDone(false);
+    // re-run the lookup even when the same plate is searched again
+    setLookupTick((t) => t + 1);
   };
+
   // Where a signed-in dealer goes next: an explicit dealer redirect, else
   // straight to pricing when a vehicle is saved, else the dashboard.
   const nextDealerPath = () => {
@@ -77,20 +96,24 @@ const DealerComingSoon = () => {
 
   useEffect(() => {
     const reg = pendingReg.trim().toUpperCase();
-    if (!reg) { setSavedVehicle(null); return; }
+    if (!reg) { setSavedVehicle(null); setLookupDone(false); return; }
     let active = true;
     supabase.functions
       .invoke('dvla-vehicle-lookup', { body: { registrationNumber: reg } })
       .then(({ data }: { data: { found?: boolean; make?: string; model?: string; yearOfManufacture?: number; fuelType?: string } | null }) => {
-        if (!active || !data?.found) return;
+        if (!active) return;
+        setLookupDone(true);
+        if (!data?.found) return;
+
         const name = [data.make, data.model].filter(Boolean).join(' ');
         if (!name) return;
         const year = data.yearOfManufacture ? ` (${data.yearOfManufacture})` : '';
         setSavedVehicle({ title: `${name.toUpperCase()}${year}`, fuel: data.fuelType || '' });
       })
-      .catch(() => {});
+      .catch(() => { if (active) setLookupDone(true); });
     return () => { active = false; };
-  }, [pendingReg]);
+  }, [pendingReg, lookupTick]);
+
 
   // If already signed in as a dealer, skip the signup form entirely.
   useEffect(() => {
@@ -298,7 +321,21 @@ const DealerComingSoon = () => {
     else toast.success('Confirmation email sent — check your inbox (and spam folder).');
   };
 
+  // While a dealer is searching for a different vehicle, the panel must not
+  // claim a vehicle is found — it only speaks once a lookup has returned.
+  const showVehicle = !!savedVehicle && !editingReg;
+  const vehicleHint = editingReg
+    ? (regDraft.trim()
+        ? `Press Find to look up ${regDraft.trim().toUpperCase()}`
+        : 'Enter a registration to find the vehicle')
+    : pendingReg
+      ? (lookupDone
+          ? 'Check the registration and try again.'
+          : 'Looking up your vehicle…')
+      : 'Enter a registration to find the vehicle';
+
   return (
+
     <div className="dealer-crm public-marketing-page public-dealer-signup min-h-screen bg-background">
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
