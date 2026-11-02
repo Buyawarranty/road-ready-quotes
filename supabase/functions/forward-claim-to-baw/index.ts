@@ -250,12 +250,14 @@ serve(async (req: Request) => {
     })
 
     const text = await response.text()
-    let result: { success?: boolean; id?: string; error?: string } = {}
+    let result: { success?: boolean; submissionId?: string; id?: string; error?: string } = {}
     try {
       result = JSON.parse(text)
     } catch {
       /* their intake replied with something that was not JSON */
     }
+
+    const deskRef = result.submissionId ?? result.id ?? null
 
     if (!response.ok || result.success === false) {
       const reason = result.error ?? `Claims desk replied ${response.status}`
@@ -266,9 +268,9 @@ serve(async (req: Request) => {
       })
     }
 
-    await mark('sent', result.id ?? null, null)
+    await mark('sent', deskRef, null)
     return new Response(
-      JSON.stringify({ ok: true, bawSubmissionId: result.id ?? null, filesSent: files.length }),
+      JSON.stringify({ ok: true, bawSubmissionId: deskRef, filesSent: files.length }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (error) {
