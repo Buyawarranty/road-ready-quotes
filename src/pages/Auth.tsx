@@ -40,6 +40,8 @@ const Auth = () => {
   
   const [loading, setLoading] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
+  const [authTab, setAuthTab] = useState<'signin' | 'signup'>('signin');
+  const [signUpSentTo, setSignUpSentTo] = useState<string | null>(null);
 
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
@@ -291,26 +293,19 @@ const Auth = () => {
         throw error;
       }
 
-      console.log("Sign up successful:", data.user?.email);
-      
-      // Send a branded welcome / confirmation email straight to the
-      // address the person registered with.
-      supabase.functions
-        .invoke('send-signup-confirmation', { body: { email, brand: currentBrandKey() } })
-        .then(({ error: mailError }) => {
-          if (mailError) console.error('Signup welcome email failed:', mailError);
-        })
-        .catch((mailError) => console.error('Signup welcome email failed:', mailError));
+      // An existing address comes back as a "success" with no identities and no email is sent.
+      if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        setAuthTab('signin');
+        setSignInError('An account with this email already exists. Sign in below, or use "Forgot your password?" to set a new one.');
+        return;
+      }
 
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully! Please check your email to confirm your account.",
-      });
-
-      // For immediate testing, navigate to customer dashboard
       if (data.session) {
         navigate('/customer-dashboard', { replace: true });
+        return;
       }
+
+      setSignUpSentTo(email);
       
     } catch (error: any) {
       console.error("Sign up failed:", error);
@@ -511,25 +506,27 @@ const Auth = () => {
               alt="Panda Protect" 
               className="h-12 w-auto mx-auto mb-4"
             />
-            <CardTitle className="text-xl md:text-2xl">Welcome</CardTitle>
+            <CardTitle className="text-xl md:text-2xl">{authTab === 'signin' ? 'Sign in' : 'Create your account'}</CardTitle>
             <CardDescription className="text-sm">
-              Sign in to your account or create a new one
+              {authTab === 'signin'
+                ? 'Already have an account? Enter your email and password.'
+                : 'New here? Enter your email and choose a password. We will email you a link to confirm your account.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
-            <Tabs defaultValue="signin" className="w-full">
+            <Tabs value={authTab} onValueChange={(v) => { setAuthTab(v as 'signin' | 'signup'); setSignUpSentTo(null); }} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 gap-2 bg-transparent p-0 h-auto">
                 <TabsTrigger
                   value="signin"
                   className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
                 >
-                  Sign In
+                  I have an account
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
                   className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
                 >
-                  Sign Up
+                  I'm new
                 </TabsTrigger>
               </TabsList>
               
@@ -600,6 +597,20 @@ const Auth = () => {
               </TabsContent>
               
               <TabsContent value="signup">
+                {signUpSentTo ? (
+                  <div className="space-y-4 text-center" role="status">
+                    <div className="rounded-lg border-2 border-primary bg-primary/5 p-4 text-left text-sm text-foreground">
+                      <p className="font-bold">Check your inbox</p>
+                      <p className="mt-1">We've sent a confirmation link to <strong>{signUpSentTo}</strong>.</p>
+                      <ol className="mt-2 list-decimal pl-5 space-y-1">
+                        <li>Open the email from Panda Protect (check spam if it's not there in a few minutes).</li>
+                        <li>Click the confirmation link.</li>
+                        <li>Come back here and sign in with your email and password.</li>
+                      </ol>
+                    </div>
+                    <Button className="w-full" onClick={() => { setSignUpSentTo(null); setAuthTab('signin'); }}>Go to sign in</Button>
+                  </div>
+                ) : (
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div>
                     <Label htmlFor="signup-email">Email</Label>
@@ -645,9 +656,11 @@ const Auth = () => {
                     disabled={loading}
                     className="w-full"
                   >
-                    {loading ? 'Creating Account...' : 'Create Account'}
+                    {loading ? 'Creating account...' : 'Create account'}
                   </Button>
+                  <p className="text-center text-xs text-muted-foreground">Password must be at least 6 characters.</p>
                 </form>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>
