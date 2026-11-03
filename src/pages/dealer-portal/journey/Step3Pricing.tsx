@@ -122,6 +122,27 @@ const Step3Pricing: React.FC = () => {
   const cover = baseCover ? { ...baseCover, claim: boostOn && boostCfg ? boostCfg.claim_limit : baseCover.claim } : baseCover;
   const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg);
   const trade = view === 'trade';
+  /** Dealer and customer figures for one term, boost included — shared by the reg row and the cards. */
+  const termPrices = (months: number) => {
+    const p = config?.terms.find(item => item.months === months);
+    if (!p) return null;
+    const cardBoost = boostOn && boostCfg ? boostForTerm(boostCfg, months) : null;
+    const baseCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price - savedBoostCost : p.dealer_price;
+    const baseRetail = prices[months] ?? p.retail_price;
+    return {
+      cost: baseCost != null ? baseCost + (cardBoost?.dealer_price || 0) : undefined,
+      retail: baseRetail != null ? baseRetail + (cardBoost?.retail_price || 0) : undefined,
+    };
+  };
+  const fromShown = (() => {
+    const shown = (config?.terms || []).filter(annualProductActive)
+      .map(p => { const v = termPrices(p.months); return v ? (trade ? v.cost : v.retail) : undefined; })
+      .filter((v): v is number => typeof v === 'number');
+    return shown.length ? Math.min(...shown) : null;
+  })();
+  const rowPrice = term && product ? (trade ? cost : retail) : fromShown;
+  const rowLabel = term && product ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : 'From';
+
   const termLabel = term ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : '';
   const summary = [{ label: 'Warranty term', value: termLabel }, { label: 'Customer excess', value: gbp(cover?.excess || 0) }, { label: 'Labour rate', value: `${gbp(cover?.labour || 0)}/hour` }, { label: 'Per eligible claim', value: gbp(cover?.claim || 0) }];
   const payload: CustomerQuotePayload = { vehicle, coverTitle: 'Comprehensive Warranty', price: retail, specs: summary, dealerName: dealer?.company_name, included: ['Mechanical & electrical cover', 'UK claims support', ...(boostOn ? ['£5,000 claim limit boost'] : [])], coverSubtitle: quoteId ? `Quote ${quoteId.slice(0, 8).toUpperCase()}` : 'Warranty quotation' };
@@ -173,27 +194,33 @@ const Step3Pricing: React.FC = () => {
     </header>
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-card px-4 py-3" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
-        <form className="flex w-full flex-wrap items-center gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
-          <div className="vehicle-reg-plate vehicle-reg-plate--quote w-44 shrink-0 sm:w-56">
-            <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
-            <input value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
+        <form className="flex w-full flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
+          <div className="flex min-w-0 flex-nowrap items-center gap-2 sm:gap-3">
+            <div className="w-32 shrink-0 sm:w-44"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim">
+              <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
+              <input value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
+            </div></div>
+            {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
+            <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-10 shrink-0 gap-1.5 px-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base">{lookup === 'loading' ? <><Loader2 className="h-4 w-4 animate-spin" />Looking up…</> : <>Get prices<ArrowRight className="h-4 w-4" /></>}</Button>
           </div>
-          <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-11 gap-2 px-5 font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90">{lookup === 'loading' ? <><Loader2 className="h-4 w-4 animate-spin" />Looking up vehicle…</> : <>Get prices<ArrowRight className="h-4 w-4" /></>}</Button>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>}
         </form>
+
       ) : (
         <>
-          <div className="w-40 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
-          <div className="min-w-0 flex-1"><p className="text-lg font-extrabold leading-6">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-sm text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
-          <Button variant="outline" className="h-10 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>
+          <div className="w-32 shrink-0 sm:w-40"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
+          <div className="min-w-[10rem] flex-1"><p className="text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
+          {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
+          <Button variant="outline" className="h-10 shrink-0 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>
+
         </>
       )}
     </section>
     {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-muted/60 px-4 py-3" aria-label="Current mileage">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
+      <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
+      <div className="min-w-0 flex-1 basis-full sm:basis-auto"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
       <div className="flex items-center gap-1.5">
         <button type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
@@ -202,8 +229,9 @@ const Step3Pricing: React.FC = () => {
         <button type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
-      {confirmed ? <span className="flex h-10 items-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button variant="outline" className="h-10 !border-crm-orange !bg-card font-bold !text-crm-orange" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+      {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
+        : <Button className="h-10 w-full shrink-0 justify-center !bg-crm-orange font-bold !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+
     </section>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
@@ -211,11 +239,8 @@ const Step3Pricing: React.FC = () => {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
         {[12, 24, 36].map(months => {
           const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
-          const cardBoost = boostOn && boostCfg ? boostForTerm(boostCfg, months) : null;
-          const baseCardCost = isAnnualQuoteSnapshot(savedPlan?.selected_options) && savedPlan?.duration_months === months ? savedPlan.dealer_price - savedBoostCost : p?.dealer_price;
-          const baseCardRetail = prices[months] ?? p?.retail_price;
-          const cardCost = baseCardCost != null ? baseCardCost + (cardBoost?.dealer_price || 0) : undefined;
-          const cardRetail = baseCardRetail != null ? baseCardRetail + (cardBoost?.retail_price || 0) : undefined;
+          const card = termPrices(months); const cardCost = card?.cost; const cardRetail = card?.retail;
+
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
