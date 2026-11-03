@@ -375,7 +375,6 @@ const Step4Checkout: React.FC = () => {
       <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} disabled={submitting} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-crm-blue">
         <ArrowLeft className="h-4 w-4" /> Back to customer details
       </button>
-      </div>
       <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>
         <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-6">
           <DialogTitle>Pay securely by card</DialogTitle>
