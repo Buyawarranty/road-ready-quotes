@@ -378,98 +378,80 @@ const DealerComingSoon = () => {
 
           {/* One card: registration → vehicle → next step */}
           <div className="mx-auto mt-7 max-w-4xl rounded-2xl border border-crm-line bg-card p-4 text-left shadow-sm sm:p-6">
-            <div className="grid gap-4 sm:grid-cols-[minmax(0,15rem)_1fr] sm:items-end">
-              <div>
-                <span className="mb-1.5 block text-sm font-semibold text-crm-navy">Registration number</span>
-                {editingReg || !pendingReg ? (
-                  <form
-                    onSubmit={(e) => { e.preventDefault(); saveReg(regDraft); }}
-                    className="flex gap-2"
-                  >
-                    <input
-                      ref={regInputRef}
-                      value={regDraft}
-                      onChange={(e) => setRegDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 8))}
-                      placeholder="ENTER REG"
-                      aria-label="Vehicle registration"
-                      autoCapitalize="characters"
-                      maxLength={8}
-                      className={`${inputCls} font-black tracking-widest`}
-                    />
-
-                    <Button type="submit" className="min-h-11 shrink-0 font-bold">Find</Button>
-                  </form>
-                ) : (
-                  <div className="vehicle-reg-plate vehicle-reg-plate--quote w-full" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
-                    <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
-                    <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
-                  </div>
-                )}
-              </div>
-              <div>
-                <span className="mb-1.5 block text-sm font-semibold text-crm-navy">
-                  Vehicle{' '}
-                  <span className="font-normal text-muted-foreground">
-                    {showVehicle ? '(auto found)' : '(we’ll find it automatically)'}
-                  </span>
-                </span>
-
-                <div className="flex min-h-12 items-center justify-between gap-3 rounded-lg border border-border bg-muted px-4 py-2">
-                  <div className="min-w-0">
-                    {savedVehicle && !editingReg ? (
-                      <>
-                        <p className="truncate font-bold text-crm-navy">{savedVehicle.title}</p>
-                        {savedVehicle.fuel && <p className="text-xs text-muted-foreground">{savedVehicle.fuel}</p>}
-                      </>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">{vehicleHint}</p>
-                    )}
-
-                  </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    {showVehicle && (
-                      <span className="hidden items-center gap-1 rounded-full bg-crm-green-soft px-2.5 py-1 text-xs font-bold text-crm-green sm:inline-flex">
-                        <Check className="h-3.5 w-3.5" /> Vehicle found
-                      </span>
-                    )}
-                    {pendingReg && !editingReg && (
-                      <button type="button" onClick={startEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
-                        <Pencil className="h-3.5 w-3.5" /> Edit
-                      </button>
-                    )}
-                    {pendingReg && editingReg && (
-                      <button type="button" onClick={cancelEditReg} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-navy underline hover:text-primary">
-                        Keep {pendingReg.toUpperCase()}
-                      </button>
-                    )}
-
-                  </div>
+            <span className="mb-1.5 block text-sm font-semibold text-crm-navy">Registration number</span>
+            {editingReg || !pendingReg ? (
+              <form
+                onSubmit={(e) => { e.preventDefault(); saveReg(regDraft); }}
+                className="flex gap-2"
+              >
+                <input
+                  ref={regInputRef}
+                  value={regDraft}
+                  onChange={(e) => setRegDraft(e.target.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '').slice(0, 8))}
+                  placeholder="ENTER REG"
+                  aria-label="Vehicle registration"
+                  autoCapitalize="characters"
+                  maxLength={8}
+                  className={`${inputCls} font-black tracking-widest`}
+                />
+                <Button type="submit" className="min-h-11 shrink-0 font-bold">Find</Button>
+              </form>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-[minmax(0,15rem)_1fr]">
+                <div className="vehicle-reg-plate vehicle-reg-plate--quote w-full" aria-label={`Registration ${pendingReg.toUpperCase()}`}>
+                  <span className="vehicle-reg-plate__country"><span>GB</span><span>UK</span></span>
+                  <span className="vehicle-reg-plate__text">{pendingReg.toUpperCase()}</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={revealLogin}
+                  className="group inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <LogIn className="h-5 w-5" /> Log in to see your quote
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                </button>
               </div>
+            )}
+
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+              {showVehicle ? (
+                <span className="inline-flex items-center gap-1">
+                  <Check className="h-4 w-4 text-crm-green" />
+                  <span className="font-semibold text-crm-navy">{savedVehicle!.title}</span>
+                  {savedVehicle!.fuel && <span>· {savedVehicle!.fuel}</span>}
+                </span>
+              ) : (
+                <span>{vehicleHint}</span>
+              )}
+              {pendingReg && !editingReg && (
+                <button type="button" onClick={startEditReg} className="inline-flex items-center gap-1 font-semibold text-crm-navy underline hover:text-primary">
+                  <Pencil className="h-3.5 w-3.5" /> Change
+                </button>
+              )}
+              {pendingReg && editingReg && (
+                <button type="button" onClick={cancelEditReg} className="font-semibold text-crm-navy underline hover:text-primary">
+                  Keep {pendingReg.toUpperCase()}
+                </button>
+              )}
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-[1.3fr_1fr]">
+            {(editingReg || !pendingReg) && (
               <button
                 type="button"
                 onClick={revealLogin}
-                className="group inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group mt-4 inline-flex w-full min-h-[52px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               >
                 <LogIn className="h-5 w-5" /> Log in to see your quote
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-5 w-5" />
               </button>
-              <button
-                type="button"
-                onClick={revealForm}
-                className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-md border border-crm-navy/20 bg-card px-6 py-3.5 text-base font-bold text-crm-navy transition-colors hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Building2 className="h-5 w-5" /> Register your dealership
+            )}
+
+            <p className="mt-4 border-t border-crm-line pt-4 text-center text-sm text-muted-foreground">
+              New to Panda Protect?{' '}
+              <button type="button" onClick={revealForm} className="inline-flex items-center gap-1 font-bold text-crm-navy underline hover:text-primary">
+                <Building2 className="h-4 w-4" /> Register your dealership
               </button>
-            </div>
-            <p className="mt-3 text-center text-sm text-muted-foreground">
-              Quotes are for registered dealers. {pendingReg ? 'We’ll keep this vehicle saved and take you straight to its prices once you log in.' : 'Log in and we’ll take you straight to pricing.'}
-            </p>
-            <p className="mt-3 flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
-              <span>Free dealer sign-up</span><span>No setup fees</span><span>No contracts</span><span>Quote in seconds</span>
+              <span className="mt-1 block text-xs">Free sign-up · No setup fees · No contracts</span>
             </p>
           </div>
 
