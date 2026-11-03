@@ -32,15 +32,16 @@ const Step3Pricing: React.FC = () => {
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
   const [lookupMsg, setLookupMsg] = useState('');
   const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
+  const [mileageConfirmed, setMileageConfirmed] = useState(false);
   const commitMileage = (raw: string) => {
     const n = Number(raw.replace(/[^0-9]/g, ''));
-    if (vehicle && raw.trim() !== '' && Number.isFinite(n)) setVehicle({ ...vehicle, mileage: n } as any);
+    if (vehicle && raw.trim() !== '' && Number.isFinite(n)) { setVehicle({ ...vehicle, mileage: n } as any); setMileageConfirmed(true); }
   };
   const stepMileage = (delta: number) => {
     const current = Number(mileageInput.replace(/[^0-9]/g, '')) || Number(vehicle?.mileage) || 0;
     const next = Math.max(0, current + delta);
     setMileageInput(String(next));
-    commitMileage(String(next));
+    setMileageConfirmed(false);
   };
 
   const lookupVehicle = async (rawReg: string) => {
@@ -61,6 +62,7 @@ const Step3Pricing: React.FC = () => {
       }
       setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
       if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));
+      setMileageConfirmed(false);
       setLookup('idle'); setEditingReg(false);
     } catch {
       setVehicle({ reg: cleaned });
