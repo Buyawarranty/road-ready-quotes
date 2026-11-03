@@ -504,25 +504,27 @@ const Auth = () => {
               alt="Panda Protect" 
               className="h-12 w-auto mx-auto mb-4"
             />
-            <CardTitle className="text-xl md:text-2xl">Welcome</CardTitle>
+            <CardTitle className="text-xl md:text-2xl">{authTab === 'signin' ? 'Sign in' : 'Create your account'}</CardTitle>
             <CardDescription className="text-sm">
-              Sign in to your account or create a new one
+              {authTab === 'signin'
+                ? 'Already have an account? Enter your email and password.'
+                : 'New here? Enter your email and choose a password. We will email you a link to confirm your account.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
-            <Tabs defaultValue="signin" className="w-full">
+            <Tabs value={authTab} onValueChange={(v) => { setAuthTab(v as 'signin' | 'signup'); setSignUpSentTo(null); }} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6 gap-2 bg-transparent p-0 h-auto">
                 <TabsTrigger
                   value="signin"
                   className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
                 >
-                  Sign In
+                  I have an account
                 </TabsTrigger>
                 <TabsTrigger
                   value="signup"
                   className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
                 >
-                  Sign Up
+                  I'm new
                 </TabsTrigger>
               </TabsList>
               
