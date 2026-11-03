@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { DEFAULT_TRADER_CONFIG } from '@/lib/traderPricingDefaults';
+import { AnnualPriceEditor } from '@/components/admin/AnnualPriceEditor';
 
 interface Row {
   id: string;
@@ -109,6 +110,7 @@ const DealerAdminTraderPricing: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <AnnualPriceEditor />
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Trader Pricing</h1>

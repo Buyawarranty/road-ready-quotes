@@ -15955,6 +15955,10 @@ export type Database = {
         }
         Returns: Json
       }
+      update_annual_dealer_prices: {
+        Args: { _terms: Json }
+        Returns: undefined
+      }
       update_campaign_analytics: {
         Args: { p_campaign_id: string }
         Returns: undefined
