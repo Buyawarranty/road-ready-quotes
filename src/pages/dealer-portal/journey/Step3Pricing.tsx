@@ -16,7 +16,6 @@ import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload 
 import { Check, ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
-import { Switch } from '@/components/ui/switch';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
@@ -223,8 +222,8 @@ const Step3Pricing: React.FC = () => {
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-card' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-3 w-3 rounded-full bg-crm-orange" />}</span>
             </span>
             <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
-            <span className="text-sm text-muted-foreground">{trade ? `Dealer cost: ${cardCost != null ? gbp(cardCost) : '—'}` : 'per vehicle, inc. VAT'}</span>
-            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />Profit {gbp(Math.round(potentialProfit(cardRetail, cardCost)))}</span>}
+            <span className="text-sm text-muted-foreground">{trade ? `Customer pays ${cardRetail != null ? gbp(cardRetail) : '—'} inc. VAT` : 'per vehicle, inc. VAT'}</span>
+            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </button>;
         })}
@@ -233,15 +232,21 @@ const Step3Pricing: React.FC = () => {
     {cover && <section className="grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
-    <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors ${boostOn ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-orange/40 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'cursor-not-allowed opacity-60'}`} aria-label="£5,000 claim limit boost">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-orange" /></span>
+    <div className={`flex flex-wrap items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-orange/40 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-orange" /></span>
       <span className="min-w-0 flex-1">
         <span className="block text-base font-extrabold leading-5">£5,000 Claim Limit Boost</span>
         <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
       </span>
-      {boostCfg && <span className="hidden whitespace-nowrap text-sm font-bold sm:inline">{term ? `Only ${gbp(trade ? (boostForTerm(boostCfg, term)?.dealer_price ?? 0) : (boostForTerm(boostCfg, term)?.retail_price ?? 0))}` : `From only ${gbp(trade ? (boostLead?.dealer_price ?? 0) : (boostLead?.retail_price ?? 0))}`}</span>}
-      <Switch disabled={!boostCfg} checked={boostOn} onCheckedChange={v => { setBoost(v); setError(''); }} aria-label="Add £5,000 claim limit boost" />
-    </label>
+      {boostCfg && (() => { const boostPrice = term ? (boostForTerm(boostCfg, term)?.[trade ? 'dealer_price' : 'retail_price'] ?? 0) : (boostLead?.[trade ? 'dealer_price' : 'retail_price'] ?? 0); return (
+      <span className="flex shrink-0 flex-wrap items-center gap-3">
+        <span className="whitespace-nowrap text-sm font-bold">{term ? `Only ${gbp(boostPrice)}` : `From only ${gbp(boostPrice)}`}</span>
+        <button type="button" onClick={() => { setBoost(!boostOn); setError(''); }} aria-pressed={boostOn} aria-label="Add £5,000 claim limit boost"
+          className={`inline-flex h-12 items-center gap-1.5 rounded-lg px-5 text-base font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${boostOn ? 'border-2 border-crm-green bg-card text-crm-green-deep' : 'bg-crm-orange text-primary-foreground hover:bg-crm-orange/90'}`}>
+          {boostOn ? <><Check className="h-4 w-4" />Added</> : 'Add boost'}
+        </button>
+      </span>); })()}
+    </div>
     <Collapsible className="rounded-xl border border-crm-line bg-card">
       <CollapsibleTrigger className="group flex w-full items-center gap-3 p-3 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted"><FileText className="h-5 w-5" /></span><span className="flex-1 text-base">What's covered?</span><ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" /></CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden px-4 pb-4 text-sm text-muted-foreground data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"><p className="font-bold text-crm-navy">Parts and labour covered</p>
