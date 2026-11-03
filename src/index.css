@@ -129,6 +129,31 @@
   letter-spacing: 0;
 }
 
+/* Slim plate for one-line reg rows: width comes from the wrapper element. */
+.dealer-crm .vehicle-reg-plate--quote.vehicle-reg-plate--slim,
+.dealer-crm .vehicle-reg-plate--list.vehicle-reg-plate--slim {
+  min-height: 2.6rem;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  border-width: 2px;
+  border-radius: 0.45rem;
+}
+
+.dealer-crm .vehicle-reg-plate--slim .vehicle-reg-plate__country {
+  gap: 0.05rem;
+  font-size: 0.55rem;
+}
+
+.dealer-crm .vehicle-reg-plate--slim .vehicle-reg-plate__text {
+  padding: 0 0.3rem;
+  font-size: clamp(0.9rem, 10cqi, 1.2rem);
+}
+
+.dealer-crm .vehicle-reg-plate--slim .vehicle-reg-plate__input {
+  min-height: 2.6rem;
+  font-size: clamp(0.9rem, 10cqi, 1.25rem);
+}
+
+
 .dealer-crm .vehicle-reg-plate--highlight {
   border-color: hsl(var(--crm-orange));
   animation: reg-plate-highlight 0.9s ease-in-out 2;
