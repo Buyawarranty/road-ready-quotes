@@ -70,10 +70,12 @@ const Auth = () => {
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
-      if (!hasAdminRole && dealerData) {
-        // /auth is the managers' sign-in; dealer accounts must use the dealer login.
+      if (!hasAdminRole) {
+        // /auth is staff-only; access is granted by an administrator, never by self sign-up.
         await supabase.auth.signOut();
-        setSignInError('This sign-in is for Panda Protect managers. Dealers, please use the dealer login.');
+        setSignInError(dealerData
+          ? 'This sign-in is for Panda Protect managers. Dealers, please use the dealer login.'
+          : 'This account has not been authorised yet. Ask a Panda Protect administrator to give you access.');
         setLoading(false);
         return;
       }
@@ -506,29 +508,16 @@ const Auth = () => {
               alt="Panda Protect" 
               className="h-12 w-auto mx-auto mb-4"
             />
-            <CardTitle className="text-xl md:text-2xl">{authTab === 'signin' ? 'Sign in' : 'Create your account'}</CardTitle>
+            <CardTitle className="text-xl md:text-2xl">Staff sign in</CardTitle>
             <CardDescription className="text-sm">
-              {authTab === 'signin'
-                ? 'Already have an account? Enter your email and password.'
-                : 'New here? Enter your email and choose a password. We will email you a link to confirm your account.'}
+              Enter the email and password your administrator set up for you.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-4 md:px-6">
-            <Tabs value={authTab} onValueChange={(v) => { setAuthTab(v as 'signin' | 'signup'); setSignUpSentTo(null); }} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 gap-2 bg-transparent p-0 h-auto">
-                <TabsTrigger
-                  value="signin"
-                  className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
-                >
-                  I have an account
-                </TabsTrigger>
-                <TabsTrigger
-                  value="signup"
-                  className="text-sm font-semibold rounded-lg border-2 border-gray-300 bg-white py-2.5 text-gray-700 data-[state=active]:border-primary data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-none"
-                >
-                  I'm new
-                </TabsTrigger>
-              </TabsList>
+            <Tabs value="signin" className="w-full">
+              <p className="mb-4 rounded-lg border-2 border-border bg-muted px-3 py-2 text-sm text-foreground">
+                No account? Staff access is given by a Panda Protect administrator only — ask your manager to invite you.
+              </p>
               
               <TabsContent value="signin">
                 <form onSubmit={handleSignIn} className="space-y-4">
