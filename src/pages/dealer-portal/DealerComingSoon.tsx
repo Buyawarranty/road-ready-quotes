@@ -446,13 +446,17 @@ const DealerComingSoon = () => {
               </button>
             )}
 
-            <p className="mt-4 border-t border-crm-line pt-4 text-center text-sm text-muted-foreground">
-              New to Panda Protect?{' '}
-              <button type="button" onClick={revealForm} className="inline-flex items-center gap-1 font-bold text-crm-navy underline hover:text-primary">
-                <Building2 className="h-4 w-4" /> Register your dealership
+            <div className="mt-5 border-t border-crm-line pt-5 text-center">
+              <p className="text-base font-semibold text-crm-navy">New to Panda Protect?</p>
+              <button
+                type="button"
+                onClick={revealForm}
+                className="mt-2 inline-flex w-full min-h-[52px] items-center justify-center gap-2 rounded-md border-2 border-crm-navy bg-card px-6 py-3.5 text-base font-bold text-crm-navy shadow-sm transition-colors hover:bg-crm-navy hover:text-card"
+              >
+                <Building2 className="h-5 w-5" /> Register your dealership
               </button>
-              <span className="mt-1 block text-xs">Free sign-up · No setup fees · No contracts</span>
-            </p>
+              <p className="mt-2 text-sm text-muted-foreground">Free sign-up · No setup fees · No contracts</p>
+            </div>
           </div>
 
 
