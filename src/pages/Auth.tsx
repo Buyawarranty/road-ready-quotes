@@ -291,26 +291,19 @@ const Auth = () => {
         throw error;
       }
 
-      console.log("Sign up successful:", data.user?.email);
-      
-      // Send a branded welcome / confirmation email straight to the
-      // address the person registered with.
-      supabase.functions
-        .invoke('send-signup-confirmation', { body: { email, brand: currentBrandKey() } })
-        .then(({ error: mailError }) => {
-          if (mailError) console.error('Signup welcome email failed:', mailError);
-        })
-        .catch((mailError) => console.error('Signup welcome email failed:', mailError));
+      // An existing address comes back as a "success" with no identities and no email is sent.
+      if (data.user && (data.user.identities?.length ?? 0) === 0) {
+        setAuthTab('signin');
+        setSignInError('An account with this email already exists. Sign in below, or use "Forgot your password?" to set a new one.');
+        return;
+      }
 
-      toast({
-        title: "Account Created",
-        description: "Your account has been created successfully! Please check your email to confirm your account.",
-      });
-
-      // For immediate testing, navigate to customer dashboard
       if (data.session) {
         navigate('/customer-dashboard', { replace: true });
+        return;
       }
+
+      setSignUpSentTo(email);
       
     } catch (error: any) {
       console.error("Sign up failed:", error);
