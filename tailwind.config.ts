@@ -88,7 +88,9 @@ export default {
 					red: 'hsl(var(--crm-red))',
 					'red-soft': 'hsl(var(--crm-red-soft))',
 					canvas: 'hsl(var(--crm-canvas))',
-					line: 'hsl(var(--crm-line))'
+					line: 'hsl(var(--crm-line))',
+					grey: 'hsl(var(--crm-grey))'
+
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
