@@ -32,15 +32,16 @@ const Step3Pricing: React.FC = () => {
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
   const [lookupMsg, setLookupMsg] = useState('');
   const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
+  const [mileageConfirmed, setMileageConfirmed] = useState(false);
   const commitMileage = (raw: string) => {
     const n = Number(raw.replace(/[^0-9]/g, ''));
-    if (vehicle && raw.trim() !== '' && Number.isFinite(n)) setVehicle({ ...vehicle, mileage: n } as any);
+    if (vehicle && raw.trim() !== '' && Number.isFinite(n)) { setVehicle({ ...vehicle, mileage: n } as any); setMileageConfirmed(true); }
   };
   const stepMileage = (delta: number) => {
     const current = Number(mileageInput.replace(/[^0-9]/g, '')) || Number(vehicle?.mileage) || 0;
     const next = Math.max(0, current + delta);
     setMileageInput(String(next));
-    commitMileage(String(next));
+    setMileageConfirmed(false);
   };
 
   const lookupVehicle = async (rawReg: string) => {
@@ -61,6 +62,7 @@ const Step3Pricing: React.FC = () => {
       }
       setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
       if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));
+      setMileageConfirmed(false);
       setLookup('idle'); setEditingReg(false);
     } catch {
       setVehicle({ reg: cleaned });
@@ -188,16 +190,16 @@ const Step3Pricing: React.FC = () => {
         </>
       )}
     </section>
-    {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageInput !== '' && Number(vehicle?.mileage) === n; return (
+    {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-muted/60 px-4 py-3" aria-label="Current mileage">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">Update in steps of 100 or type the figure.</p></div>
+      <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
       <div className="flex items-center gap-1.5">
-        <button type="button" aria-label="Reduce mileage by 100 miles" onClick={() => stepMileage(-100)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
+        <button type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
-          onChange={(e) => setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))} onBlur={(e) => commitMileage(e.target.value)}
+          onChange={(e) => { setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7)); setMileageConfirmed(false); }} onBlur={(e) => commitMileage(e.target.value)}
           className="h-10 w-32 rounded-md border border-crm-line bg-card px-3 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
-        <button type="button" aria-label="Increase mileage by 100 miles" onClick={() => stepMileage(100)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
+        <button type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
       {confirmed ? <span className="flex h-10 items-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep"><Check className="h-4 w-4" />Mileage confirmed</span>
