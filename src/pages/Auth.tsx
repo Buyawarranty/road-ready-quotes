@@ -70,10 +70,12 @@ const Auth = () => {
 
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
-      if (!hasAdminRole && dealerData) {
-        // /auth is the managers' sign-in; dealer accounts must use the dealer login.
+      if (!hasAdminRole) {
+        // /auth is staff-only; access is granted by an administrator, never by self sign-up.
         await supabase.auth.signOut();
-        setSignInError('This sign-in is for Panda Protect managers. Dealers, please use the dealer login.');
+        setSignInError(dealerData
+          ? 'This sign-in is for Panda Protect managers. Dealers, please use the dealer login.'
+          : 'This account has not been authorised yet. Ask a Panda Protect administrator to give you access.');
         setLoading(false);
         return;
       }
