@@ -21,6 +21,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
 const normaliseReg = (value: string) => value.replace(/\s+/g, '').toUpperCase();
 
+/** Warranty lengths a dealer can quote (months), the one pre-selected, and the one flagged as most popular. */
+const TERM_CHOICES = [12, 24, 36, 48];
+const DEFAULT_TERM = 36;
+const POPULAR_TERM = 36;
+
+
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,7 +90,7 @@ const Step3Pricing: React.FC = () => {
   const { save, saving } = useDealerQuoteSave(3);
   const { toast } = useToast();
   const [view, setView] = useState<'trade' | 'customer'>('trade');
-  const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || null);
+  const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || DEFAULT_TERM);
   // Saved quotes store totals including any boost; the page works with base warranty prices.
   const savedOpts = (savedPlan?.selected_options || {}) as Record<string, any>;
   const savedBoostCost = savedOpts.boost === true ? Number(savedOpts.boost_dealer_price || 0) : 0;
@@ -236,16 +242,19 @@ const Step3Pricing: React.FC = () => {
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
     <section aria-label="Warranty length">
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Warranty duration">
-        {[12, 24, 36].map(months => {
-          const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p);
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4" role="radiogroup" aria-label="Warranty duration">
+        {TERM_CHOICES.map(months => {
+          const p = config?.terms.find(item => item.months === months); const available = p && annualProductActive(p); const popular = months === POPULAR_TERM;
+
           const card = termPrices(months); const cardCost = card?.cost; const cardRetail = card?.retail;
 
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+            <span className="flex h-5 items-center"><span className={`rounded-full bg-crm-navy px-2.5 py-0.5 text-[0.62rem] font-black uppercase tracking-[0.1em] text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span></span>
             <span className="flex items-start justify-between gap-2">
               <strong className="text-xl font-black leading-6">{months / 12} Year Warranty</strong>
+
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-card' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-3 w-3 rounded-full bg-crm-orange" />}</span>
             </span>
             <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
