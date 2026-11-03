@@ -6,12 +6,16 @@ export const ADMIN_ROLES = [
   'guest',
   'sales',
   'sales_lead',
+  'sales_manager',
+  'performance_manager',
   'blog_writer',
   'dev_tester',
   'accounts_manager',
   'accounts_payroll',
   'lead_gen',
   'accounts',
+  'claims_agent',
+  'claims_manager',
 ];
 
 export const isAdminRole = (role: string | null | undefined) => Boolean(role && ADMIN_ROLES.includes(role));
