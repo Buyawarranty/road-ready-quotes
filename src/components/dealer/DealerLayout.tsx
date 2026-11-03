@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { isAdminRole } from '@/lib/adminRoles';
 import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
@@ -67,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
-  const { user, dealer, isTrader, loading, signOut } = useDealerAuth();
+  const { user, dealer, roles, isTrader, loading, signOut } = useDealerAuth();
   const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -88,8 +89,20 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) navigate('/dealer-portal/coming-soon', { replace: true });
-  }, [loading, user, navigate]);
+    if (loading) return;
+    if (!user) {
+      navigate('/dealer-portal/coming-soon', { replace: true });
+      return;
+    }
+    if (!dealer) {
+      // Staff account not using "view as dealer", or a non-dealer user
+      if (roles.some((role) => isAdminRole(role))) {
+        navigate('/admin-dashboard/', { replace: true });
+      } else {
+        navigate('/dealer-portal/login', { replace: true });
+      }
+    }
+  }, [loading, user, dealer, roles, navigate]);
 
   // Traders are limited to sales (quotes) and plans/pricing sections
   useEffect(() => {
@@ -107,7 +120,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </div>
     );
   }
-  if (!user) return null;
+  if (!user || !dealer) return null;
 
   // Gate: dealer must exist AND be approved (status = 'active')
   const dealerStatus = dealer?.status;
