@@ -40,6 +40,8 @@ const Auth = () => {
   
   const [loading, setLoading] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
+  const [authTab, setAuthTab] = useState<'signin' | 'signup'>('signin');
+  const [signUpSentTo, setSignUpSentTo] = useState<string | null>(null);
 
   const getSafeRedirectPath = useCallback(() => {
     const redirect = searchParams.get('redirect');
@@ -595,6 +597,20 @@ const Auth = () => {
               </TabsContent>
               
               <TabsContent value="signup">
+                {signUpSentTo ? (
+                  <div className="space-y-4 text-center" role="status">
+                    <div className="rounded-lg border-2 border-primary bg-primary/5 p-4 text-left text-sm text-foreground">
+                      <p className="font-bold">Check your inbox</p>
+                      <p className="mt-1">We've sent a confirmation link to <strong>{signUpSentTo}</strong>.</p>
+                      <ol className="mt-2 list-decimal pl-5 space-y-1">
+                        <li>Open the email from Panda Protect (check spam if it's not there in a few minutes).</li>
+                        <li>Click the confirmation link.</li>
+                        <li>Come back here and sign in with your email and password.</li>
+                      </ol>
+                    </div>
+                    <Button className="w-full" onClick={() => { setSignUpSentTo(null); setAuthTab('signin'); }}>Go to sign in</Button>
+                  </div>
+                ) : (
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div>
                     <Label htmlFor="signup-email">Email</Label>
@@ -640,9 +656,11 @@ const Auth = () => {
                     disabled={loading}
                     className="w-full"
                   >
-                    {loading ? 'Creating Account...' : 'Create Account'}
+                    {loading ? 'Creating account...' : 'Create account'}
                   </Button>
+                  <p className="text-center text-xs text-muted-foreground">Password must be at least 6 characters.</p>
                 </form>
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>
