@@ -294,7 +294,7 @@ const Step3Pricing: React.FC = () => {
             <Download className="h-4 w-4 shrink-0 text-crm-navy" />
           </a>
         </div>
-        <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
+        <a href="/what-is-covered/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
     </Collapsible>
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
       <div className="flex flex-wrap items-center gap-3">
