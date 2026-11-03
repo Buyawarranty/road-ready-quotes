@@ -26,6 +26,10 @@ import {
   AlertTriangle,
   Lock,
   Pencil,
+  Car,
+  User,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 
 type Method = 'pay_now' | 'invoice';
@@ -195,393 +199,182 @@ const Step4Checkout: React.FC = () => {
     }
   };
 
-  const OptionCard = ({
-    value,
-    icon: Icon,
-    title,
-    sub,
-    badge,
-    disabled,
-    children,
-  }: {
-    value: Method;
-    icon: React.ElementType;
-    title: string;
-    sub: string;
-    badge?: string;
-    disabled?: boolean;
-    children?: React.ReactNode;
-  }) => {
-    const active = method === value && !disabled;
-    return (
-      <button
-        type="button"
-        onClick={() => !disabled && setMethod(value)}
-        aria-pressed={active}
-        disabled={disabled}
-        className={`w-full text-left rounded-xl border-2 p-4 sm:p-5 transition-colors ${
-          disabled
-            ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-70'
-            : active
-            ? 'border-orange-500 bg-orange-50'
-            : 'border-gray-200 bg-white hover:border-orange-300'
-        }`}
-      >
-        <div className="flex items-start gap-3 sm:gap-4">
-          <div
-            className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-              active ? 'border-orange-500 bg-orange-500' : 'border-gray-300 bg-white'
-            }`}
-          >
-            {active && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 mb-1">
-              <Icon className={`w-5 h-5 ${disabled ? 'text-gray-400' : 'text-orange-500'}`} />
-              <h3 className="font-bold text-gray-900 text-lg">{title}</h3>
-              {badge && (
-                <span className="text-[10px] uppercase tracking-wider font-bold bg-gray-900 text-white px-2 py-0.5 rounded">
-                  {badge}
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-gray-600">{sub}</p>
-            {children && <div className="mt-3">{children}</div>}
-          </div>
-        </div>
-      </button>
-    );
-  };
+  const boostOn = options.boost === true;
+  const shownClaim = boostOn ? Math.max(claimLimit ?? 0, 5000) : claimLimit;
+  const productName = planName === 'Comprehensive Warranty' ? 'Platinum Plan' : planName;
+  const coverLine = [
+    termLabel,
+    shownClaim !== undefined ? `£${shownClaim.toLocaleString()} claim limit` : null,
+    excess !== undefined ? `£${excess} excess` : null,
+    labour !== undefined ? `£${labour}/hr labour rate` : null,
+  ].filter(Boolean).join(' · ');
 
-  const Benefit = ({ children }: { children: React.ReactNode }) => (
-    <li className="flex items-start gap-2">
-      <ShieldCheck className="w-3.5 h-3.5 text-orange-500 mt-0.5 flex-shrink-0" />
-      <span>{children}</span>
-    </li>
+  const accountAvailable = !creditBlocked && !!eligibility;
+  const accountSelected = method === 'invoice' && accountAvailable;
+  const ctaLabel = accountSelected ? 'Issue warranty using dealer account' : `Pay £${total.toFixed(2)} & issue warranty`;
+  const ctaDisabled = submitting || (method === 'invoice' && creditBlocked);
+
+  const Radio = ({ on }: { on: boolean }) => (
+    <span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-crm-orange' : 'border-border'}`}>
+      {on && <span className="h-2.5 w-2.5 rounded-full bg-crm-orange" />}
+    </span>
   );
 
-  const ctaLabel =
-    method === 'pay_now'
-      ? `Pay £${total.toFixed(2)} & issue warranty`
-      : `Issue warranty & add £${total.toFixed(2)} to account`;
+  const optionClass = (on: boolean) =>
+    `w-full rounded-xl border p-4 text-left transition-colors ${on ? 'border-crm-orange bg-crm-orange-soft' : 'border-border bg-card hover:border-crm-orange/50'}`;
 
-  const ctaDisabled = submitting || (method === 'invoice' && creditBlocked);
+  const blockedTitle = 'Dealer account billing unavailable';
+  const blockedText =
+    eligibility?.reason === 'new'
+      ? `Account billing unlocks once your account is established. Pay by card for ${Math.max(1, (eligibility.required ?? 0) - (eligibility.paid_count ?? 0))} more warranty${(eligibility.required - eligibility.paid_count) === 1 ? '' : 's'} to unlock it (${eligibility.paid_count} of ${eligibility.required} so far).`
+      : eligibility?.reason === 'blocked'
+        ? 'Account billing is not switched on for your dealership. Call 0330 229 5045 to talk about account terms.'
+        : eligibility?.reason === 'overdue'
+          ? 'Your dealer account has an overdue balance. Clear outstanding invoices to use account billing.'
+          : 'Checking whether account billing is available for your dealership.';
 
   return (
     <DealerJourneyLayout
       step={4}
-      title="Checkout"
-      subtitle="Choose how you'd like to pay for this warranty."
-      backTo="/dealer-portal/quote/pricing"
+      title="Review & issue warranty"
+      subtitle="Confirm the customer, vehicle and warranty details before issuing."
+      backTo="/dealer-portal/quote/customer"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-        {/* Payment options */}
-        <div className="space-y-4 order-1">
-          <h2 className="text-xs uppercase tracking-[0.2em] text-gray-400 font-bold">Payment method</h2>
-
-          <OptionCard
-            value="pay_now"
-            icon={CreditCard}
-            title="Pay in full"
-            sub="Pay securely by card. The warranty is issued as soon as payment is confirmed."
-            badge="Pay now"
-          >
-            <ul className="space-y-1.5 text-xs text-gray-600">
-              <Benefit>Secure payment via Stripe</Benefit>
-              <Benefit>Warranty issued after successful payment</Benefit>
-              <Benefit>Documents available in your account</Benefit>
-            </ul>
-          </OptionCard>
-
-          <OptionCard
-            value="invoice"
-            icon={FileText}
-            title="Invoice me (Pay later)"
-            sub="Add this warranty to your dealer account and pay on your agreed terms."
-            disabled={creditBlocked}
-          >
-            {creditBlocked ? (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-                <div className="flex items-start gap-2">
-                  <Lock className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-xs text-amber-900">
-                    <p className="font-bold">
-                      {eligibility?.reason === 'new'
-                        ? 'Pay later unlocks once your account is established.'
-                        : eligibility?.reason === 'blocked'
-                          ? 'Pay later is not switched on for your account yet.'
-                          : 'Pay later unavailable. Your dealer account has an overdue balance.'}
-                    </p>
-                    {eligibility?.reason === 'new' && (
-                      <p className="mt-1">
-                        Pay in full for {Math.max(1, eligibility.required - eligibility.paid_count)} more warranty
-                        {eligibility.required - eligibility.paid_count === 1 ? '' : 's'} to unlock Invoice me. Paid so far:{' '}
-                        {eligibility.paid_count} of {eligibility.required}.
-                      </p>
-                    )}
-                    {eligibility?.reason === 'blocked' && (
-                      <p className="mt-1">Call 0330 229 5045 if you would like to talk about invoice terms.</p>
-                    )}
-                    {(eligibility?.reason === 'overdue' || !eligibility) && <span
-                      role="link"
-                      tabIndex={0}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/dealer-portal/warranties');
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') navigate('/dealer-portal/warranties');
-                      }}
-                      className="mt-1.5 inline-flex items-center gap-1 font-bold text-amber-800 underline cursor-pointer"
-                    >
-                      View outstanding invoices <ChevronRight className="w-3 h-3" />
-                    </span>}
-                  </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[52fr_48fr]">
+        {/* Warranty details */}
+        <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-bold text-crm-navy">Warranty details</h2>
+            <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">
+              <Pencil className="h-4 w-4" /> Edit
+            </button>
+          </div>
+          <div className="rounded-xl border border-border p-4 sm:p-5">
+            <div className="grid gap-5 sm:grid-cols-2 sm:divide-x sm:divide-border">
+              <div className="flex gap-3">
+                <Car className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Vehicle</p>
+                  <span className="mt-1.5 inline-block rounded-md border border-crm-navy bg-crm-gold-pure px-2.5 py-0.5 text-lg font-extrabold tracking-wide text-crm-navy">{vehicle.reg}</span>
+                  <p className="mt-1 break-words text-sm text-muted-foreground">
+                    {[[vehicle.make, vehicle.model].filter(Boolean).join(' '), vehicle.year, vehicle.fuel_type].filter(Boolean).join(' · ')}
+                  </p>
                 </div>
               </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs">
+              <div className="flex gap-3 sm:pl-5">
+                <User className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</p>
+                  {customerComplete ? (
+                    <>
+                      <p className="mt-1 break-words text-lg font-bold text-crm-navy">{customer.name}</p>
+                      <p className="break-all text-sm text-muted-foreground">{customer.email}</p>
+                      {customer.phone && <p className="text-sm text-muted-foreground">{customer.phone}</p>}
+                    </>
+                  ) : (
+                    <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} className="mt-1 text-sm font-semibold text-crm-blue underline">Add customer details</button>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 flex gap-3 border-t border-border pt-5">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Comprehensive Warranty</p>
+                <p className="text-lg font-bold text-crm-navy">{productName}</p>
+                <p className="text-sm text-muted-foreground">{coverLine}</p>
+                {boostOn && (
+                  <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-crm-green-soft px-2.5 py-1 text-xs font-bold text-crm-green-deep">
+                    <Check className="h-3.5 w-3.5" /> Claim boost added · £{(shownClaim ?? 5000).toLocaleString()} per claim
+                  </span>
+                )}
+              </div>
+              <button type="button" onClick={() => navigate('/dealer-portal/quote/pricing')} className="inline-flex h-fit items-center gap-1 text-sm font-semibold text-crm-blue">
+                <Pencil className="h-4 w-4" /> Edit
+              </button>
+            </div>
+          </div>
+          <div className="mt-5 flex gap-3 rounded-xl bg-crm-blue-soft p-4">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-crm-blue" />
+            <div>
+              <p className="font-bold text-crm-navy">What happens next?</p>
+              <p className="text-sm text-muted-foreground">Once payment is confirmed, your warranty will be issued and the documents will be available in your dealer account.</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Payment */}
+        <section className="self-start rounded-xl border border-border bg-card p-5 sm:p-6">
+          <h2 className="mb-4 text-xl font-bold text-crm-navy">Payment to Panda Protect</h2>
+          <div className="space-y-3">
+            <button type="button" onClick={() => setMethod('pay_now')} aria-pressed={method === 'pay_now'} className={optionClass(method === 'pay_now')}>
+              <div className="flex gap-3">
+                <Radio on={method === 'pay_now'} />
+                <CreditCard className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
+                <div>
+                  <p className="font-bold text-crm-navy">Pay now by card</p>
+                  <p className="text-sm text-muted-foreground">Pay securely by card (powered by Stripe).</p>
+                  <p className="text-sm text-muted-foreground">Warranty issued after successful payment.</p>
+                </div>
+              </div>
+            </button>
+
+            {accountAvailable ? (
+              <button type="button" onClick={() => setMethod('invoice')} aria-pressed={accountSelected} className={optionClass(accountSelected)}>
+                <div className="flex gap-3">
+                  <Radio on={accountSelected} />
+                  <FileText className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                   <div>
-                    <p className="text-gray-500">Payment terms</p>
-                    <p className="font-bold text-gray-900 flex items-center gap-1">
-                      <CalendarDays className="w-3.5 h-3.5 text-orange-500" /> {termDays} days
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500">Payment due</p>
-                    <p className="font-bold text-gray-900">{formatDate(dueDate)}</p>
+                    <p className="font-bold text-crm-navy">Dealer account billing</p>
+                    <p className="text-sm text-muted-foreground">Pay through your Panda Protect dealer account on your agreed terms.</p>
+                    <p className="text-sm text-muted-foreground">{termDays}-day terms · due {formatDate(dueDate)}</p>
                   </div>
                 </div>
-                <ul className="space-y-1.5 text-xs text-gray-600">
-                  <Benefit>Warranty issued straight away</Benefit>
-                  <Benefit>Added to your dealer account</Benefit>
-                  <Benefit>No card payment required today</Benefit>
-                  <Benefit>Invoice available in your account</Benefit>
-                </ul>
+              </button>
+            ) : (
+              <div className="flex gap-3 rounded-xl border border-border bg-muted p-4">
+                <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+                <div>
+                  <p className="font-bold text-crm-navy">{eligibility ? blockedTitle : 'Dealer account billing'}</p>
+                  <p className="text-sm text-muted-foreground">{blockedText}</p>
+                  {eligibility?.reason === 'overdue' && (
+                    <button type="button" onClick={() => navigate('/dealer-portal/warranties')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
+                      View outstanding invoices <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
             )}
-          </OptionCard>
+          </div>
 
-          {method === 'invoice' && !creditBlocked && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-amber-900">
-                <span className="font-bold">Important</span> — Warranties linked to an unpaid invoice may be paused and
-                claims will be unavailable until payment is received.
-              </p>
-            </div>
-          )}
-
-          {/* Good to know */}
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 flex items-start gap-2">
-            <Info className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-            <div className="text-xs text-gray-600">
-              <p className="font-bold text-gray-900">Good to know</p>
-              {method === 'pay_now' ? (
-                <p className="mt-0.5">
-                  Your warranty will be issued as soon as payment is confirmed and will appear in your dealer account.
-                </p>
-              ) : (
-                <>
-                  <p className="mt-0.5">
-                    Your warranty will be issued when the order is confirmed and added to your dealer account.
-                  </p>
-                  <p>Payment will be required according to your agreed terms.</p>
-                </>
-              )}
+          <div className="mt-6 flex items-start justify-between gap-4 border-t border-border pt-5">
+            <p className="text-lg font-bold text-crm-navy">Total payable to Panda Protect</p>
+            <div className="text-right">
+              <p className="text-3xl font-extrabold text-crm-navy">£{total.toFixed(2)}</p>
+              <p className="text-sm text-muted-foreground">Includes VAT</p>
             </div>
           </div>
 
-          {!customerComplete && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-bold text-amber-900">Customer details required</p>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => navigate('/dealer-portal/quote/customer')}
-                className="border-amber-300 text-amber-900 hover:bg-amber-100"
-              >
-                Complete details <ChevronRight className="w-3 h-3 ml-1" />
-              </Button>
-            </div>
-          )}
+          {submitError && <div className="mt-4"><DealerFieldError>{submitError}</DealerFieldError></div>}
 
-          <p className="text-xs text-gray-500 pt-2 border-t border-gray-200">
-            By issuing this warranty, you confirm that the vehicle, customer and cover details shown are correct.
+          <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
+            {submitting ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
+            ) : !customerComplete ? (
+              <>Complete customer details</>
+            ) : (
+              <>{!accountSelected && <Lock className="mr-2 h-4 w-4" />}{ctaLabel} <ArrowRight className="ml-2 h-4 w-4" /></>
+            )}
+          </Button>
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+            {accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
           </p>
-
-          {submitError && <DealerFieldError>{submitError}</DealerFieldError>}
-
-          <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center sm:justify-between gap-3">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/dealer-portal/quote/customer')}
-              className="h-12 rounded-lg bg-muted text-crm-navy hover:bg-crm-line border-transparent px-6 font-bold"
-              disabled={submitting}
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" /> Back
-            </Button>
-
-            <Button
-              onClick={handleSubmit}
-              disabled={ctaDisabled}
-              className="h-12 rounded-lg bg-crm-orange text-primary-foreground text-base font-bold px-6 w-full sm:flex-1 sm:ml-6 animate-breathing"
-            >
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  {method === 'pay_now' ? 'Processing payment…' : 'Issuing warranty…'}
-                </>
-              ) : !customerComplete ? (
-                <>Complete customer details</>
-              ) : (
-                <>
-                  {ctaLabel} <ChevronRight className="h-4 w-4 ml-1" />
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-
-        {/* Order summary */}
-        <aside className="order-2 lg:sticky lg:top-6 self-start">
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="bg-primary px-5 py-3">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-primary-foreground/90">Order summary</p>
-              <p className="font-bold text-primary-foreground">
-                {planName} · {termLabel}
-              </p>
-            </div>
-            <div className="p-5 space-y-4 text-sm">
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Vehicle</p>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/dealer-portal/quote/pricing')}
-                    className="text-xs text-orange-600 font-semibold inline-flex items-center gap-1"
-                  >
-                    <Pencil className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                <span className="inline-block bg-yellow-300 border border-gray-900 rounded px-2 py-0.5 font-extrabold tracking-wide text-gray-900">
-                  {vehicle.reg}
-                </span>
-                <p className="text-gray-600 text-xs mt-1 break-words">
-                  {[vehicle.make, vehicle.model].filter(Boolean).join(' ') || '—'}
-                </p>
-                <p className="text-gray-500 text-xs">
-                  {[vehicle.year, vehicle.fuel_type].filter(Boolean).join(' · ')}
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">Customer</p>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/dealer-portal/quote/customer')}
-                    className="text-xs text-orange-600 font-semibold inline-flex items-center gap-1"
-                  >
-                    <Pencil className="w-3 h-3" /> Edit
-                  </button>
-                </div>
-                {customerComplete ? (
-                  <>
-                    <p className="font-semibold text-gray-900 break-words">{customer.name}</p>
-                    <p className="text-gray-600 text-xs break-all">{customer.email}</p>
-                    {customer.phone && <p className="text-gray-600 text-xs">{customer.phone}</p>}
-                  </>
-                ) : (
-                  <p className="text-xs font-semibold text-amber-700">Customer details required</p>
-                )}
-              </div>
-
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-2">
-                  Warranty details
-                </p>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Warranty</span>
-                    <span className="font-semibold text-gray-900">{planName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Duration</span>
-                    <span className="font-semibold text-gray-900">{termLabel}</span>
-                  </div>
-                  {excess !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Excess</span>
-                      <span className="font-semibold text-gray-900">£{excess}</span>
-                    </div>
-                  )}
-                  {claimLimit !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Claim limit</span>
-                      <span className="font-semibold text-gray-900">£{claimLimit.toLocaleString()}</span>
-                    </div>
-                  )}
-                  {labour !== undefined && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Labour rate</span>
-                      <span className="font-semibold text-gray-900">£{labour}/hr</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 pt-4 space-y-1.5">
-                <p className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Price</p>
-                <div className="flex justify-between text-gray-600">
-                  <span>Warranty price excluding VAT</span>
-                  <span>£{netPrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>VAT (20%)</span>
-                  <span>£{vatAmount.toFixed(2)}</span>
-                </div>
-                {discount_pct > 0 && (
-                  <div className="flex justify-between text-orange-600 font-semibold">
-                    <span>Dealer discount applied</span>
-                    <span>−{discount_pct}%</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-lg font-extrabold text-gray-900 pt-2 border-t border-gray-200 mt-2">
-                  <span>Total</span>
-                  <span>£{total.toFixed(2)}</span>
-                </div>
-                <p className="text-[11px] text-gray-500 text-right">inc. VAT</p>
-              </div>
-            </div>
-
-            {/* Dynamic footer */}
-            <div className="border-t border-gray-200 bg-gray-50 px-5 py-4 flex items-start gap-2">
-              {method === 'pay_now' ? (
-                <>
-                  <Lock className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-xs text-gray-600">
-                    <p className="font-bold text-gray-900">Secure payment</p>
-                    <p className="mt-0.5">Payments securely processed via Stripe.</p>
-                    <p>Your payment information is encrypted and secure.</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <FileText className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-xs text-gray-600">
-                    <p className="font-bold text-gray-900">Dealer account payment</p>
-                    <p className="mt-0.5">
-                      This warranty will be added to your dealer account and invoiced on your agreed payment terms.
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </aside>
+        </section>
       </div>
+
+      <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} disabled={submitting} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-crm-blue">
+        <ArrowLeft className="h-4 w-4" /> Back to customer details
+      </button>
       <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>
         <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-6">
           <DialogTitle>Pay securely by card</DialogTitle>
