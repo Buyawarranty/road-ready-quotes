@@ -210,7 +210,7 @@ const Step3Pricing: React.FC = () => {
       ) : (
         <>
           <div className="w-32 shrink-0 sm:w-40"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
-          <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
+          <div className="min-w-[10rem] flex-1"><p className="text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
           {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
           <Button variant="outline" className="h-10 shrink-0 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>
 
@@ -219,8 +219,8 @@ const Step3Pricing: React.FC = () => {
     </section>
     {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-muted/60 px-4 py-3" aria-label="Current mileage">
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
+      <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
+      <div className="min-w-0 flex-1 basis-full sm:basis-auto"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
       <div className="flex items-center gap-1.5">
         <button type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
@@ -229,8 +229,9 @@ const Step3Pricing: React.FC = () => {
         <button type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
-      {confirmed ? <span className="flex h-10 items-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button className="h-10 shrink-0 !bg-crm-orange font-bold !text-primary-foreground hover:!bg-crm-orange/90" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+      {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
+        : <Button className="h-10 w-full shrink-0 justify-center !bg-crm-orange font-bold !text-primary-foreground hover:!bg-crm-orange/90 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+
     </section>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
