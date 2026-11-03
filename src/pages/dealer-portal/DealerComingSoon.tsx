@@ -285,8 +285,10 @@ const DealerComingSoon = () => {
           .select('role')
           .eq('user_id', userId);
         if ((roles || []).some((r: any) => isAdminRole(r.role as string))) {
-          const redirect = searchParams.get('redirect');
-          navigate(redirect && redirect.startsWith('/dealer') ? redirect : '/dealer-portal/dashboard');
+          // Staff logins never sign in to the dealer portal; staff use /auth
+          // and reach dealer views only through "view as dealer".
+          await supabase.auth.signOut();
+          toast.error('This is a Panda Protect staff login. Please sign in at /auth. Dealers need their own separate login.');
           return;
         }
       }

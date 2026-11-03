@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { isAdminRole } from '@/lib/adminRoles';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -67,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
-  const { user, dealer, isTrader, loading, signOut } = useDealerAuth();
+  const { user, dealer, roles, isTrader, loading, signOut } = useDealerAuth();
   const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -88,8 +89,19 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !user) navigate('/dealer-portal/coming-soon', { replace: true });
-  }, [loading, user, navigate]);
+    if (loading) return;
+    if (!user) {
+      navigate('/dealer-portal/coming-soon', { replace: true });
+      return;
+    }
+    // Signed in but no dealer profile loads: a staff account that is not using
+    // "view as dealer" belongs in the admin dashboard; anyone else must sign in
+    // with a dealer account. Never show the dealer portal to a non-dealer login.
+    if (!dealer) {
+      const isStaff = roles.some((r) => isAdminRole(r));
+      navigate(isStaff ? '/admin-dashboard/' : '/dealer-portal/login', { replace: true });
+    }
+  }, [loading, user, dealer, roles, navigate]);
 
   // Traders are limited to sales (quotes) and plans/pricing sections
   useEffect(() => {
@@ -107,7 +119,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </div>
     );
   }
-  if (!user) return null;
+  if (!user || !dealer) return null;
 
   // Gate: dealer must exist AND be approved (status = 'active')
   const dealerStatus = dealer?.status;
