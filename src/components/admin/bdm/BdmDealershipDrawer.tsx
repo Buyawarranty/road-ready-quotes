@@ -216,7 +216,7 @@ const BdmDealershipDrawer: React.FC<Props> = ({ dealershipId, staff, isManager, 
                 </ol>
                 {stages.length > 0 && (
                   <div>
-                    <p className="mb-1 text-xs font-semibold uppercase text-muted-foreground">Stage history</p>
+                    <p className="mb-1 text-xs font-semibold text-muted-foreground">Stage history</p>
                     <ul className="space-y-1 text-xs">
                       {stages.map(s => (
                         <li key={s.id}>{fmt(s.created_at)} · {s.from_stage ? `${stageLabel(s.from_stage)} → ` : ''}{stageLabel(s.to_stage)} · {s.changed_by ? staffName(s.changed_by) : 'Automatic'}</li>

@@ -285,7 +285,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       {pager}
       <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full min-w-[1400px] text-sm">
-          <thead className="border-b bg-muted/70 text-xs uppercase text-muted-foreground">
+          <thead className="border-b bg-muted/70 text-xs text-muted-foreground">
             <tr>
               <th className="bg-muted p-2 text-right font-medium">#</th>
               <SortHead col="stage">Status</SortHead>
