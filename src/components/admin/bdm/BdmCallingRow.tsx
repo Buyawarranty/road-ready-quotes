@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Bell, Copy, Mail, MessageSquare, Minus, NotebookPen, Phone, Plus, Send } from 'lucide-react';
-import { BDM_STAGES, BdmDealership } from '@/lib/bdm/bdmShared';
+import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
 
@@ -35,9 +35,10 @@ interface Props {
   onOpen: (id: string, tab?: string) => void;
   onChanged: () => void;
   rowNumber?: number;
+  striped?: boolean;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssigned, onOpen, onChanged, rowNumber }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssigned, onOpen, onChanged, rowNumber, striped }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -82,18 +83,22 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const copyPhone = async () => { if (!phone) return; await navigator.clipboard.writeText(phone); toast({ title: 'Number copied' }); };
 
   return (
-    <tr className={`border-b last:border-0 hover:bg-muted/30 ${overdue ? 'border-l-2 border-l-destructive' : ''}`}>
-      {rowNumber != null && <td className="p-2 text-right font-semibold tabular-nums text-muted-foreground">{rowNumber}</td>}
+    <tr className={`border-b last:border-0 ${striped ? 'bg-muted/40' : 'bg-card'} hover:bg-accent/40 ${overdue ? 'border-l-2 border-l-destructive' : ''}`}>
+      {rowNumber != null && <td className="bg-muted/70 p-2 text-right font-semibold tabular-nums text-muted-foreground">{rowNumber}</td>}
       {/* Status */}
       <td className="p-2">
         <Select value={stage} onValueChange={changeStage}>
-          <SelectTrigger className="h-8 w-[150px] text-xs" aria-label={`Status for ${r.name}`}><SelectValue /></SelectTrigger>
-          <SelectContent>{BDM_STAGES.map(s => <SelectItem key={s.id} value={s.id}>{s.label}</SelectItem>)}</SelectContent>
+          <SelectTrigger className={`h-8 w-[150px] text-xs font-semibold ${STAGE_TONE[stage] ?? 'bg-muted text-foreground'}`} aria-label={`Status for ${r.name}`}><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {BDM_STAGES.map(s => (
+              <SelectItem key={s.id} value={s.id} className={`font-semibold ${STAGE_TONE[s.id] ?? 'bg-muted text-foreground'}`}>{s.label}</SelectItem>
+            ))}
+          </SelectContent>
         </Select>
         {dnc && <p className="mt-0.5 text-[11px] font-semibold text-destructive">Do not contact</p>}
       </td>
       {/* Calls */}
-      <td className="p-2">
+      <td className="bg-crm-blue-soft/60 p-2">
         <div className="flex items-center gap-1">
           <Button size="icon" variant="outline" className="h-7 w-7" disabled={calls === 0} onClick={() => adjust(-1)} aria-label="Remove a call"><Minus className="h-3 w-3" /></Button>
           <span className="flex min-w-[2.5rem] items-center justify-center gap-1 font-semibold"><Phone className="h-3 w-3 text-muted-foreground" />{calls}</span>
@@ -101,7 +106,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
         </div>
       </td>
       {/* Actions */}
-      <td className="p-2">
+      <td className="bg-muted/50 p-2">
         <div className="flex items-center gap-1">
           {phone && !dnc && (
             <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-primary" aria-label={`Call ${r.name}`}>
@@ -136,7 +141,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
         ) : <span className="text-xs text-muted-foreground">No number</span>}
       </td>
       {/* WhatsApp */}
-      <td className="p-2">
+      <td className="bg-crm-green-soft/50 p-2">
         {phone && !dnc ? (
           <Button asChild size="sm" variant="outline" className="h-8 gap-1 border-success/50 text-success hover:bg-success/10">
             <a href={`https://wa.me/${toWhatsAppDigits(phone)}`} target="_blank" rel="noopener noreferrer" onClick={() => logContact('whatsapp')}><WhatsAppIcon />WhatsApp</a>
