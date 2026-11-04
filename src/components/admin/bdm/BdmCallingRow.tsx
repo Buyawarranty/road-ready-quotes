@@ -136,7 +136,17 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
             </Button>
           )}
-          <Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Set a reminder" onClick={() => onOpen(r.id, 'activity')}><Bell className="h-4 w-4" /></Button>
+          <Button variant="ghost" title={followLabel} aria-label={followLabel}
+            className={`h-9 w-11 gap-0 rounded-md px-1 leading-none hover:bg-transparent ${
+              followDays == null ? 'text-muted-foreground'
+              : followDays < 0 ? 'bg-destructive/10 text-destructive'
+              : followDays === 0 ? 'bg-crm-orange-soft text-crm-orange'
+              : 'bg-crm-blue-soft/70 text-foreground'
+            }`}
+            onClick={() => onOpen(r.id, 'activity')}>
+            <span className="text-sm font-bold tabular-nums">{followDays == null ? '—' : Math.abs(followDays)}</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{followWord}</span>
+          </Button>
         </div>
       </td>
       {/* Dealership + contact */}
