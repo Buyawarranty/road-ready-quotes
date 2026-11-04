@@ -3,6 +3,7 @@
 // they never show; old links to them land on the nearest Panda Protect section.
 
 export const PANDA_SECTION_ORDER: { id: string; label: string; description: string }[] = [
+  { id: 'bdm-contacts', label: 'BDM contacts', description: 'Dealership prospects, calls, follow-ups and pipeline' },
   { id: 'dealer-overview', label: 'Overview', description: 'Dealer sales, warranties and money owed at a glance' },
   { id: 'dealer-dealers', label: 'Dealers', description: 'Sign-ups, approved dealers and traders in one place' },
   { id: 'dealer-sales', label: 'Dealer sales', description: 'Warranties sold by each dealer' },

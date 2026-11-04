@@ -457,6 +457,12 @@ export const defaultTabs: Tab[] = [
     description: 'Opt a customer out of all marketing emails by entering their email'
   },
   {
+    id: 'bdm-contacts',
+    label: 'BDM contacts',
+    icon: PhoneCall,
+    description: 'Dealership prospects, calls, follow-ups and pipeline'
+  },
+  {
     id: 'dealer-overview',
     label: 'Dealer Overview',
     icon: Building2,
