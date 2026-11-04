@@ -5,12 +5,23 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, Copy, Mail, MessageSquare, Minus, NotebookPen, Phone, Plus, Send } from 'lucide-react';
+import { Copy, Mail, MessageSquare, Minus, NotebookPen, Phone, Plus, Send } from 'lucide-react';
 import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
 
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : 'Never');
+
+/** Whole days from today to a follow-up date: 0 = today, negative = overdue. */
+const dayDiff = (iso?: string | null) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const target = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((target - today) / 86400000);
+};
 
 /** UK number → international digits for WhatsApp (07… → 447…). */
 export const toWhatsAppDigits = (raw: string) => {
@@ -51,6 +62,12 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const email = c?.email || r.email || null;
   const dnc = !!r.do_not_contact;
   const tel = phone?.replace(/\s/g, '') ?? '';
+  const followDays = dayDiff(r.next_follow_up_at);
+  const followWord = followDays == null ? 'set' : followDays < 0 ? 'late' : followDays === 0 ? 'due' : 'in';
+  const followLabel = followDays == null ? 'No follow-up set — add one'
+    : followDays === 0 ? 'Follow up today'
+    : followDays > 0 ? `Follow up in ${followDays} day${followDays === 1 ? '' : 's'}`
+    : `Overdue by ${Math.abs(followDays)} day${Math.abs(followDays) === 1 ? '' : 's'}`;
 
   const adjust = async (delta: 1 | -1) => {
     if (delta === -1 && calls === 0) return;
