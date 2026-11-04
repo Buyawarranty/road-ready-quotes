@@ -1,3 +1,4 @@
+import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
 import { resolvePandaSection } from '@/lib/pandaAdminSections';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
 import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
@@ -710,7 +711,8 @@ const AdminDashboard = () => {
     }
     if (section === 'dealer-cancellations') {
       return <AdminSectionTabs tabs={[
-        { id: 'requests', label: 'Requests', render: () => <DealerAdminCancellationsTab /> },
+        { id: 'website', label: 'Website requests', render: () => <WebsiteCancellationRequests /> },
+        { id: 'requests', label: 'Dealer requests', render: () => <DealerAdminCancellationsTab /> },
         { id: 'processed', label: 'Processed', render: () => <CancellationsTab /> },
         { id: 'refunds', label: 'Refunds', render: () => <RefundsPaidTab /> },
       ]} />;
