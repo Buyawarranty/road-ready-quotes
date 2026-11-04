@@ -73,22 +73,22 @@ serve(async (req: Request) => {
         console.log('User already exists, fetching existing user...');
         
         // Get the existing user by email using per_page limit
-        const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers({
-          page: 1,
-          perPage: 1000
-        });
-        
-        if (listError) {
-          console.error('Error listing users:', listError);
-          return new Response(JSON.stringify({ error: 'Failed to find existing user' }), {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
+        // Page through all users (there can be more than 1000)
+        const target = email.toLowerCase();
+        let existingUser: any = null;
+        for (let page = 1; page <= 50 && !existingUser; page++) {
+          const { data: pageData, error: listError } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+          if (listError) {
+            console.error('Error listing users:', listError);
+            return new Response(JSON.stringify({ error: 'Failed to find existing user' }), {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+          }
+          const users = pageData?.users ?? [];
+          existingUser = users.find(u => u.email?.toLowerCase() === target) ?? null;
+          if (users.length < 1000) break;
         }
-        
-        console.log('Total users found:', existingUsers?.users?.length);
-        
-        const existingUser = existingUsers.users.find(u => u.email?.toLowerCase() === email.toLowerCase());
         
         if (!existingUser) {
           console.error('User not found in list for email:', email);
