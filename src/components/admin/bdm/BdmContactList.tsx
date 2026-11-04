@@ -46,7 +46,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [debounced, setDebounced] = useState('');
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [kpiFilter, setKpiFilter] = useState<string | null>(null);
-  const [sort, setSort] = useState<{ col: string; asc: boolean }>({ col: 'next_follow_up_at', asc: true });
+  const [sort, setSort] = useState<{ col: string; asc: boolean }>({ col: 'created_at', asc: false });
   const [kpis, setKpis] = useState<any>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [openTab, setOpenTab] = useState('overview');
@@ -232,9 +232,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           <Select value={`${sort.col}:${sort.asc ? 'asc' : 'desc'}`} onValueChange={v => { const [col, d] = v.split(':'); setSort({ col, asc: d === 'asc' }); }}>
             <SelectTrigger className="h-9 w-full sm:w-auto sm:min-w-[160px]" aria-label="Sort by"><SelectValue placeholder="Sort by" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="next_follow_up_at:asc">Sort: Next follow-up</SelectItem>
               <SelectItem value="created_at:desc">Newest first</SelectItem>
               <SelectItem value="created_at:asc">Oldest first</SelectItem>
+              <SelectItem value="next_follow_up_at:asc">Next follow-up</SelectItem>
               <SelectItem value="activity_count:desc">Most active</SelectItem>
               <SelectItem value="activity_count:asc">Least active</SelectItem>
               <SelectItem value="order_count:desc">Most orders</SelectItem>
@@ -248,7 +248,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           {filterSelect('stock', 'Stock', [['0-20', '0–20 vehicles'], ['21-50', '21–50'], ['51-100', '51–100'], ['101-0', 'Over 100']])}
           {filterSelect('account', 'Account', [['linked', 'Has dealer account'], ['none', 'No account yet'], ['dnc', 'Do not contact']])}
           {filterSelect('bdm', 'BDM', [['mine', 'Mine'], ['none', 'Unassigned'], ...staff.map(s => [s.user_id, s.name] as [string, string])])}
-          {filterSelect('spoken', 'Last spoken', [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['over30', 'Over 30 days ago'], ['never', 'Never']])}
+          {filterSelect('spoken', 'Last spoken', [['never', 'Not spoken to'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['over30', 'Over 30 days ago']])}
           {filterSelect('priority', 'Priority', BDM_PRIORITIES.map(p => [p.id, p.label]))}
           {filtersActive && <Button variant="ghost" size="sm" className="h-9" onClick={() => { setFilters(NO_FILTERS); setKpiFilter(null); setSearch(''); }}>Clear filters</Button>}
         </div>
