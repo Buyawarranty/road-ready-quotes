@@ -2,6 +2,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      // Email password-reset links can land on the homepage when Supabase
+      // swaps a redirect URL that isn't on its allow list for the Site URL.
+      // Forward recovery links to the reset page before the app starts, so
+      // the "set a new password" form always shows.
+      (function () {
+        try {
+          var h = window.location.hash || '';
+          var q = window.location.search || '';
+          var isRecovery = /(^|[#&?])type=recovery(&|$)/.test(h) || /[?&]type=recovery(&|$)/.test(q);
+          var p = window.location.pathname.replace(/\/+$/, '');
+          if (isRecovery && p !== '/reset-password') {
+            window.history.replaceState(null, '', '/reset-password/' + q + h);
+          }
+        } catch (e) { /* never block page load */ }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta name="google-site-verification" content="fWcj3wg61VARUKWRoVyuybGJ4Mj30y-jp1sDInkrl0Y" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -33,7 +33,7 @@ serve(async (req: Request) => {
   try {
     const body: InviteUserRequest = await req.json();
     const { email, firstName, lastName, password, role, permissions } = body;
-    const brand: Brand = resolveBrand(req, { brand: body?.brand });
+    const brand: Brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
 
     // Generate invitation token and password (use provided password or generate one)
     const invitationToken = crypto.randomUUID();

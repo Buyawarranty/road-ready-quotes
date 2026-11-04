@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
+import { currentBrandKey } from '@/lib/brand';
 import { toast } from 'sonner';
 import { ArrowLeft, Mail, Send, Lock, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -27,7 +28,7 @@ const ForgotPassword: React.FC = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email }
+        body: { email, brand: currentBrandKey() }
       });
 
       if (error || data?.success === false) {

@@ -86,7 +86,7 @@ export const DEFAULT_BRAND: BrandKey = "buyawarranty";
 export function brandKeyFrom(value: unknown): BrandKey | null {
   if (!value || typeof value !== "string") return null;
   const v = value.toLowerCase();
-  if (v.includes("pandaprotect") || v === "panda" || v === "panda protect") {
+  if (v.includes("pandaprotect") || v.includes("panda-protect") || v.includes("road-ready-quotes") || v === "panda" || v === "panda protect") {
     return "pandaprotect";
   }
   if (v.includes("buyawarranty") || v === "baw" || v === "buy a warranty") {

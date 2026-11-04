@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { isAdminRole } from '@/lib/adminRoles';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -28,6 +29,18 @@ const PasswordReset = () => {
       // First, handle hash-based URL parameters (most common format)
       const hash = window.location.hash.substring(1);
       const hashParams = new URLSearchParams(hash);
+
+      // Supabase reports an expired or already-used link in the URL.
+      const linkError = hashParams.get('error_code') || searchParams.get('error_code') || hashParams.get('error') || searchParams.get('error');
+      if (linkError) {
+        toast({
+          title: "Reset link expired",
+          description: "This password reset link has expired or was already used. Please request a new one.",
+          variant: "destructive",
+        });
+        setTimeout(() => navigate('/forgot-password/'), 3000);
+        return;
+      }
       
       // Then check regular URL parameters as fallback
       const accessToken = hashParams.get('access_token') || searchParams.get('access_token');
@@ -170,16 +183,17 @@ const PasswordReset = () => {
           .select('role')
           .eq('user_id', session.user.id);
 
-        // Define admin roles that should go to admin dashboard
-        const adminRoles = ['super_admin', 'admin', 'member', 'viewer', 'guest', 'sales', 'sales_lead', 'blog_writer', 'dev_tester', 'accounts_manager', 'accounts_payroll', 'lead_gen', 'accounts'];
-        
-        // Check if user has ANY admin role
-        const hasAdminRole = roleData && roleData.some(r => adminRoles.includes(r.role));
-
+        // Staff go to the admin dashboard, dealers to the dealer portal.
+        const hasAdminRole = (roleData || []).some(r => isAdminRole(r.role as string));
         if (hasAdminRole) {
-          navigate('/admin-dashboard', { replace: true });
+          navigate('/admin-dashboard/', { replace: true });
         } else {
-          navigate('/customer-dashboard', { replace: true });
+          const { data: dealer } = await supabase
+            .from('dealers')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .maybeSingle();
+          navigate(dealer ? '/dealer-portal/dashboard' : '/customer-dashboard/', { replace: true });
         }
       } else {
         navigate('/auth', { replace: true });
