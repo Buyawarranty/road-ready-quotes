@@ -720,6 +720,11 @@ export const UserPermissionsTab = () => {
   };
 
   const toggleUserStatus = async (userId: string, isActive: boolean) => {
+    // Deactivating now blocks sign-in, so never let an admin switch themselves off.
+    if (isActive && userId === currentAdminUser?.id) {
+      toast.error('You cannot switch off your own access.');
+      return;
+    }
     const targetUser = users.find(u => u.id === userId);
     const displayName = targetUser ? `${targetUser.first_name || ''} ${targetUser.last_name || ''}`.trim() || targetUser.email : 'this user';
 

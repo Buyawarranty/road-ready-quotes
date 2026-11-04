@@ -71,15 +71,22 @@ const Auth = () => {
       const { roleData, dealerData } = await Promise.race([lookups, timeout]);
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
       const isSuperAdmin = roleData?.some((r) => r.role === 'super_admin');
-      if (hasAdminRole && !isSuperAdmin) {
-        // Per-user dashboard access switch (User Permissions → Admin dashboard access).
+      if (hasAdminRole) {
+        // Per-user access switches in User Permissions: the Deactivate button (is_active)
+        // and the Admin dashboard access tick box (permissions.admin_dashboard_access).
         const { data: adminUserRow } = await supabase
           .from('admin_users')
-          .select('permissions')
+          .select('permissions, is_active')
           .eq('user_id', userId)
           .maybeSingle();
+        if (adminUserRow && adminUserRow.is_active === false) {
+          await supabase.auth.signOut();
+          setSignInError('Your access has been switched off. Ask a Panda Protect administrator to switch it back on.');
+          setLoading(false);
+          return;
+        }
         const perms = adminUserRow?.permissions as Record<string, boolean> | null;
-        if (perms?.admin_dashboard_access === false) {
+        if (!isSuperAdmin && perms?.admin_dashboard_access === false) {
           await supabase.auth.signOut();
           setSignInError('Your admin dashboard access has been switched off. Ask a Panda Protect administrator to switch it back on.');
           setLoading(false);
