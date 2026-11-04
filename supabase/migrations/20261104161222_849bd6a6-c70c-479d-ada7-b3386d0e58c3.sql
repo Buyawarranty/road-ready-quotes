@@ -1,0 +1,2 @@
+INSERT INTO public.user_roles (user_id, role) VALUES ('7bd0428d-1200-49a6-9fad-4d081bd5160d','super_admin') ON CONFLICT DO NOTHING;
+INSERT INTO public.admin_users (user_id, email, role, is_active) SELECT '7bd0428d-1200-49a6-9fad-4d081bd5160d','buyawarranty1@gmail.com','super_admin',true WHERE NOT EXISTS (SELECT 1 FROM public.admin_users WHERE user_id='7bd0428d-1200-49a6-9fad-4d081bd5160d');
