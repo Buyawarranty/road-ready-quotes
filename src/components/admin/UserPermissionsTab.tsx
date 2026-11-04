@@ -215,6 +215,7 @@ export const UserPermissionsTab = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [sendInviteEmail, setSendInviteEmail] = useState(true);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [currentAdminUser, setCurrentAdminUser] = useState<AdminUser | null>(null);
@@ -575,7 +576,7 @@ export const UserPermissionsTab = () => {
     try {
       const { teamId, ...invitePayload } = inviteData;
       const { data, error } = await supabase.functions.invoke('invite-admin-user', {
-        body: invitePayload
+        body: { ...invitePayload, sendEmail: sendInviteEmail }
       });
 
       if (error) {
@@ -584,7 +585,9 @@ export const UserPermissionsTab = () => {
         throw new Error(msg);
       }
 
-      toast.success('User login created');
+      if (!sendInviteEmail) toast.success('User login created — copy the details below to send them');
+      else if (data?.emailSent) toast.success(`User login created and invitation emailed to ${inviteData.email}`);
+      else toast.error(`Login created, but the invitation email could not be sent${data?.emailError ? `: ${data.emailError}` : ''}. Copy the details below instead.`);
       setRevealedCreds({ email: inviteData.email, password: data.tempPassword, loginUrl: loginUrlForRole(inviteData.role) });
 
       // Persist team assignment for the new admin user (if a team was chosen)
@@ -1371,6 +1374,19 @@ export const UserPermissionsTab = () => {
                   Set a custom password or leave empty to auto-generate a secure one
                 </p>
               </div>
+
+              <label className="flex items-start gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4"
+                  checked={sendInviteEmail}
+                  onChange={(e) => setSendInviteEmail(e.target.checked)}
+                />
+                <span>
+                  <strong>Email them an invitation</strong>
+                  <span className="block text-xs text-muted-foreground">Sends their email, password and the staff sign-in link (/auth). Untick to just copy and send the details yourself.</span>
+                </span>
+              </label>
 
               <div>
                 <Label htmlFor="role">Role</Label>
