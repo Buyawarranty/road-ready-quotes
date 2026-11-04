@@ -252,9 +252,11 @@ const handler = async (req: Request): Promise<Response> => {
         subject: emailSubject,
         html: emailHtml,
       }),
-    });
+    }).catch((e) => { console.error(e); return null; });
 
-    if (!emailResponse.ok) {
+    if (!emailResponse) {
+      console.error("Email send threw");
+    } else if (!emailResponse.ok) {
       // The request is already saved for the admin dashboard, so email failure must not lose it.
       console.error("Resend API error:", await emailResponse.text());
     } else {
