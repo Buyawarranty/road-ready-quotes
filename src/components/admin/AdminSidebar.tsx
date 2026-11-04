@@ -636,6 +636,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
       });
     }
     
+    if (userRole === 'bdm' || userRole === 'manager') {
+      const ids = userRole === 'bdm' ? BDM_ROLE_TABS : MANAGER_ROLE_TABS;
+      return defaultTabs.filter(tab => ids.includes(tab.id));
+    }
+
     if (userRole === 'blog_writer') {
       // Blog writers see blogs-data and landing-pages tabs + Staff Hub
       return defaultTabs.filter(tab => tab.id === 'blogs-data' || tab.id === 'landing-pages' || tab.id === 'staff-hub' || tab.id === 'unsubscribe' || tab.id === 'account');

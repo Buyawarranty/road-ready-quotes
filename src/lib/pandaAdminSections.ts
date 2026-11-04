@@ -51,3 +51,10 @@ export const resolvePandaSection = (tab: string): string => {
 };
 
 export const PANDA_BRAND = 'pandaprotect';
+
+/** Default sections for the BDM job: work the contact list only. */
+export const BDM_ROLE_TABS = ['bdm-contacts', 'staff-hub', 'timesheets', 'account'];
+/** Default sections for the Manager job: most CRM views, but no staff access, pricing or system settings. */
+export const MANAGER_ROLE_TABS = PANDA_SECTION_ORDER.map((s) => s.id).filter(
+  (id) => !['user-permissions', 'trader-pricing', 'feature-flags', 'plans', 'document-mapping'].includes(id),
+);

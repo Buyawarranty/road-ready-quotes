@@ -125,13 +125,15 @@ const ConcessionsTab = lazy(() => import('@/components/admin/ConcessionsTab').th
 
 
 
-const ROLE_PRIORITY = ['super_admin', 'admin', 'claims_agent', 'claims_manager', 'member', 'performance_manager', 'sales_manager', 'sales_lead', 'lead_gen', 'accounts_manager', 'accounts_payroll', 'accounts', 'viewer', 'guest', 'sales', 'blog_writer', 'dev_tester'];
+const ROLE_PRIORITY = ['super_admin', 'admin', 'claims_agent', 'claims_manager', 'member', 'performance_manager', 'sales_manager', 'sales_lead', 'lead_gen', 'accounts_manager', 'accounts_payroll', 'accounts', 'viewer', 'guest', 'sales', 'blog_writer', 'dev_tester', 'manager', 'bdm'];
 const CLAIMS_AGENT_TABS = ['claims', 'complaints', 'customers', 'discount-codes', 'discounts-given', 'cancellations', 'refunds-paid', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
 const CLAIMS_MANAGER_TABS = ['claims', 'complaints', 'attendance', 'hr', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
 const SALES_TABS = ['overview', 'new-leads', 'recontact-leads', 'get-quote', 'selling-tips', 'discount-codes', 'timesheets', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
 const SALES_LEAD_TABS = ['overview', 'new-leads', 'call-tracking', 'recontact-leads', 'get-quote', 'sales-scoreboard', 'customers', 'collect-payments', 'analytics', 'selling-tips', 'discount-codes', 'timesheets', 'attendance', 'staff-hub', 'lead-teams', 'agent-feedback', 'unsubscribe', 'account'];
 const SALES_MANAGER_TABS = ['overview', 'concessions', 'new-leads', 'call-tracking', 'call-stats', 'recontact-leads', 'get-quote', 'sales-scoreboard', 'sales-agent-targets', 'customers', 'collect-payments', 'analytics', 'selling-tips', 'discount-codes', 'timesheets', 'attendance', 'hr', 'staff-hub', 'lead-teams', 'agent-feedback', 'orr-test-lab', 'price-updates', 'vehicle-stats', 'banners-billboards', 'sms-tracking', 'user-permissions', 'claims', 'unsubscribe', 'account'];
 const PERFORMANCE_MANAGER_TABS = SALES_MANAGER_TABS;
+const BDM_TABS = BDM_ROLE_TABS;
+const MANAGER_TABS = MANAGER_ROLE_TABS;
 
 const hasExplicitTopLevelTabPermissions = (permissions?: Record<string, boolean> | null) => {
   return !!permissions && Object.keys(permissions).some(key => /^tab_[^_]+$/.test(key));
@@ -201,6 +203,8 @@ const isTabAllowedForRole = (rawTab: string, role: string | null, permissions?: 
       ? isExplicitlyPermittedTab(tab, permissions)
       : PERFORMANCE_MANAGER_TABS.includes(tab);
   }
+  if (role === 'bdm') return BDM_TABS.includes(tab);
+  if (role === 'manager') return MANAGER_TABS.includes(tab);
   if (role === 'sales') return SALES_TABS.includes(tab);
   if (tab === 'claims') return false;
   if (permissions && Object.keys(permissions).length > 0) return false;

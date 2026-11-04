@@ -16,6 +16,8 @@ export const ADMIN_ROLES = [
   'accounts',
   'claims_agent',
   'claims_manager',
+  'bdm',
+  'manager',
 ];
 
 export const isAdminRole = (role: string | null | undefined) => Boolean(role && ADMIN_ROLES.includes(role));
