@@ -107,6 +107,7 @@ const AgentFeedbackTab = lazy(() => import('@/components/admin/feedback/AgentFee
 const CollectPaymentsTab = lazy(() => import('@/components/admin/CollectPaymentsTab').then(m => ({ default: m.CollectPaymentsTab })));
 import { CollectPaymentsBanner } from '@/components/admin/CollectPaymentsBanner';
 import { readAdminAccessCache, writeAdminAccessCache, clearAdminAccessCache } from '@/lib/adminAccessCache';
+import { ADMIN_ROLES } from '@/lib/adminRoles';
 
 const DealerAdminOverviewTab = lazy(() => import('@/pages/dealer-admin/DealerAdminOverview'));
 const DealerAdminSignUpsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSignUps'));
