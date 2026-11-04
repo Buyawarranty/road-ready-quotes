@@ -16,8 +16,8 @@ Deno.serve(async (req) => {
     const digits = (r[4] ?? "").replace(/\D/g, "").replace(/^44/, "").replace(/^0/, "");
     let dom: string | null = null;
     try { if (r[3]) dom = new URL(r[3]).hostname.replace(/^www\./, ""); } catch { /* */ }
-    return { name: r[0], town: r[1], address: r[2], website: r[3], website_domain: dom, phone: r[4],
-      phone_digits: digits || null, star_rating: r[5], review_count: r[6], vehicle_stock: r[7],
+    return { name: r[0], town: r[1], address: r[2], website: r[3], phone: r[4],
+      star_rating: r[5], review_count: r[6], vehicle_stock: r[7],
       stock_updated_at: r[7] != null ? new Date().toISOString() : null, autotrader_url: r[8],
       postcode: m ? m[1].toUpperCase() : null, county: parts.length >= 3 ? parts[parts.length - 2] : null,
       lead_source: "AutoTrader", stage: "new_lead", priority: "medium" };
