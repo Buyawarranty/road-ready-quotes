@@ -60,7 +60,7 @@ export const STAGE_TONE: Record<string, string> = {
   interested: 'bg-primary/15 text-primary',
   follow_up: 'bg-accent text-accent-foreground',
   onboarding: 'bg-primary/10 text-primary',
-  active_dealer: 'bg-emerald-100 text-emerald-800',
+  active_dealer: 'bg-crm-green-soft text-crm-green',
   not_interested: 'bg-destructive/10 text-destructive',
 };
 
