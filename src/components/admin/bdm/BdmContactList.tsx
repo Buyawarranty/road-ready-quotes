@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import {
-  AlertTriangle, ArrowUpDown, CalendarClock, Download, Loader2, MoreHorizontal, Phone, PhoneCall, Plus, Rocket, Star, Upload, UserCheck,
+  AlertTriangle, ArrowUpDown, CalendarClock, Download, Loader2, MoreHorizontal, Phone, PhoneCall, PhoneMissed, Plus, Rocket, Star, Upload, UserCheck,
 } from 'lucide-react';
 import {
   BDM_PRIORITIES, BDM_STAGES, BdmDealership, STAGE_TONE, findDuplicate, normalisePostcode, phoneDigits, stageLabel, websiteDomain,
@@ -243,6 +243,16 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
               <SelectItem value="vehicle_stock:asc">Least vehicles</SelectItem>
             </SelectContent>
           </Select>
+          <Button
+            type="button"
+            variant={filters.spoken === 'never' ? 'default' : 'outline'}
+            size="sm"
+            className="h-9"
+            aria-pressed={filters.spoken === 'never'}
+            onClick={() => setFilters(f => ({ ...f, spoken: f.spoken === 'never' ? 'all' : 'never' }))}
+          >
+            <PhoneMissed className="mr-1 h-4 w-4" /> Not spoken to
+          </Button>
           {filterSelect('stage', 'Stage', BDM_STAGES.map(s => [s.id, s.label]))}
           {filterSelect('follow', 'Follow-up', [['overdue', 'Overdue'], ['today', 'Today'], ['week', 'Next 7 days'], ['none', 'None set']])}
           {filterSelect('stock', 'Stock', [['0-20', '0–20 vehicles'], ['21-50', '21–50'], ['51-100', '51–100'], ['101-0', 'Over 100']])}
