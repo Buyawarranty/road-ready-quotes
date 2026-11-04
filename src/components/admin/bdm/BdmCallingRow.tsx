@@ -126,6 +126,14 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       <td className="p-2">
         <button type="button" onClick={() => onOpen(r.id)} className="text-left font-bold hover:underline">{r.name}</button>
         <p className="text-xs text-muted-foreground">{c?.full_name ? `${c.full_name} · ` : ''}{[r.town, r.postcode].filter(Boolean).join(' · ')}</p>
+        {(r.star_rating != null || r.vehicle_stock != null || r.website || r.autotrader_url) && (
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+            {r.star_rating != null && <span>★ {Number(r.star_rating).toFixed(1)}{r.review_count != null ? ` (${r.review_count} reviews)` : ''}</span>}
+            {r.vehicle_stock != null && <span>{r.vehicle_stock} cars in stock</span>}
+            {r.website && <a href={r.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Website</a>}
+            {r.autotrader_url && <a href={r.autotrader_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AutoTrader page</a>}
+          </p>
+        )}
         {showAssigned && <p className="text-[11px] text-muted-foreground">{assignedName ?? 'Unassigned'}</p>}
       </td>
       {/* Phone */}
