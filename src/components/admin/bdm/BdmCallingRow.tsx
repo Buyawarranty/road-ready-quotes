@@ -105,7 +105,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       {/* Status */}
       <td className="p-2">
         <Select value={stage} onValueChange={changeStage}>
-          <SelectTrigger className={`h-8 w-[150px] text-xs font-semibold ${STAGE_TONE[stage] ?? 'bg-muted text-foreground'}`} aria-label={`Status for ${r.name}`}><SelectValue /></SelectTrigger>
+          <SelectTrigger className={`h-8 w-[150px] border-transparent text-xs font-semibold ${STAGE_TONE[stage] ?? 'bg-muted text-foreground'}`} aria-label={`Status for ${r.name}`}><SelectValue /></SelectTrigger>
           <SelectContent>
             {BDM_STAGES.map(s => (
               <SelectItem key={s.id} value={s.id} className={`font-semibold ${STAGE_TONE[s.id] ?? 'bg-muted text-foreground'}`}>{s.label}</SelectItem>
