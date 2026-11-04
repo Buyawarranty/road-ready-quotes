@@ -14111,6 +14111,57 @@ export type Database = {
         }
         Relationships: []
       }
+      website_cancellation_requests: {
+        Row: {
+          admin_note: string | null
+          brand: string
+          created_at: string
+          email: string | null
+          email_sent: boolean
+          feedback: string | null
+          full_name: string | null
+          handled_at: string | null
+          id: string
+          reason: string
+          registration_plate: string
+          request_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_note?: string | null
+          brand?: string
+          created_at?: string
+          email?: string | null
+          email_sent?: boolean
+          feedback?: string | null
+          full_name?: string | null
+          handled_at?: string | null
+          id?: string
+          reason: string
+          registration_plate: string
+          request_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_note?: string | null
+          brand?: string
+          created_at?: string
+          email?: string | null
+          email_sent?: boolean
+          feedback?: string | null
+          full_name?: string | null
+          handled_at?: string | null
+          id?: string
+          reason?: string
+          registration_plate?: string
+          request_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       welcome_emails: {
         Row: {
           created_at: string

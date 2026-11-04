@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -14,6 +15,7 @@ interface CancellationRequest {
   fullName: string;
   reason: string;
   feedback?: string;
+  email?: string;
   brand?: string;
 }
 
@@ -29,10 +31,33 @@ const handler = async (req: Request): Promise<Response> => {
       fullName,
       reason,
       feedback,
+      email,
       brand: brandHint,
     }: CancellationRequest = await req.json();
 
     const brand = resolveBrand(req, { brand: brandHint });
+
+    const plate = String(registrationPlate || '').trim().toUpperCase().slice(0, 12);
+    const cleanReason = String(reason || '').trim().slice(0, 100);
+    const cleanEmail = email ? String(email).trim().slice(0, 255) : null;
+    if (!plate || !cleanReason || (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail))) {
+      return new Response(JSON.stringify({ success: false, error: 'Registration and reason are required' }), { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
+    const requestType = reason === 'CUSTOMER_STAYING' || reason === 'CANCELLATION_WITHDRAWN' ? 'withdrawn' : 'cancel';
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: saved, error: saveError } = await admin.from('website_cancellation_requests').insert({
+      registration_plate: plate,
+      email: cleanEmail,
+      full_name: fullName ? String(fullName).slice(0, 120) : null,
+      reason: cleanReason,
+      feedback: feedback ? String(feedback).slice(0, 4000) : null,
+      request_type: requestType,
+      brand: brand.key ?? 'pandaprotect',
+    }).select('id').single();
+    if (saveError) {
+      console.error('Could not save cancellation request', saveError);
+      return new Response(JSON.stringify({ success: false, error: 'Could not save request' }), { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } });
+    }
 
     console.log("Processing cancellation request for:", registrationPlate);
 
@@ -227,16 +252,16 @@ const handler = async (req: Request): Promise<Response> => {
         subject: emailSubject,
         html: emailHtml,
       }),
-    });
+    }).catch((e) => { console.error(e); return null; });
 
-    if (!emailResponse.ok) {
-      const errorText = await emailResponse.text();
-      console.error("Resend API error:", errorText);
-      throw new Error(`Failed to send email: ${errorText}`);
+    if (!emailResponse) {
+      console.error("Email send threw");
+    } else if (!emailResponse.ok) {
+      // The request is already saved for the admin dashboard, so email failure must not lose it.
+      console.error("Resend API error:", await emailResponse.text());
+    } else {
+      await admin.from('website_cancellation_requests').update({ email_sent: true }).eq('id', saved.id);
     }
-
-    const emailData = await emailResponse.json();
-    console.log("Email sent successfully:", emailData);
 
     return new Response(
       JSON.stringify({
