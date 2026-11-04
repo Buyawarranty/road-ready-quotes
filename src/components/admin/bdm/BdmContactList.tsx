@@ -182,6 +182,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           <span>Page {page + 1} of {pages}</span>
           <Button size="sm" variant="outline" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>Next</Button>
         </div>
+      </div>
   );
   return (
     <div className="space-y-4">
