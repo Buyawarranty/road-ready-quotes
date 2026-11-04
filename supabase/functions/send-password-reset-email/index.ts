@@ -32,7 +32,21 @@ serve(async (req) => {
 
     const body: ResetPasswordRequest & { brand?: string } = await req.json();
     const { email } = body;
-    const brand = resolveBrand(req, { brand: body?.brand });
+    const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
+    // Send people back to the site they asked from (Panda Protect runs on
+    // more than one domain). Supabase only honours redirect URLs on its
+    // allow list; anything else lands on the Site URL, which index.html
+    // forwards to /reset-password.
+    const requestOrigin = (() => {
+      try {
+        const raw = req.headers.get('origin') || req.headers.get('referer') || '';
+        const url = new URL(raw);
+        return url.protocol === 'https:' ? url.origin : null;
+      } catch {
+        return null;
+      }
+    })();
+    const resetRedirect = `${requestOrigin ?? brand.siteUrl}/reset-password`;
     
     logStep('Password reset email request received', { email });
 
@@ -88,7 +102,7 @@ serve(async (req) => {
       type: 'recovery',
       email: email,
       options: {
-        redirectTo: `${brand.siteUrl}/reset-password`
+        redirectTo: resetRedirect
       }
     });
 
@@ -100,7 +114,7 @@ serve(async (req) => {
     logStep('Generated reset link successfully', { hasActionLink: !!resetData?.properties?.action_link });
 
     // Use the generated action link for the reset
-    const resetLink = resetData?.properties?.action_link || `https://mzlpuxzwyrcyrgrongeb.supabase.co/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent(`${brand.siteUrl}/reset-password`)}`;
+    const resetLink = resetData?.properties?.action_link || `${supabaseUrl}/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent(resetRedirect)}`;
     
     // Send branded email
     const emailHtml = `

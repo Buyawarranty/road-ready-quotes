@@ -33,7 +33,7 @@ serve(async (req) => {
 
     const body: { email?: string; brand?: string } = await req.json();
     const { email } = body;
-    const brand = resolveBrand(req, { brand: body?.brand });
+    const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     const SITE_ORIGIN = brand.siteUrl;
     const cleanEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
 

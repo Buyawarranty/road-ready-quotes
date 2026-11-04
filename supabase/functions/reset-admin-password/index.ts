@@ -40,7 +40,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { userId, email } = body;
-    const brand: Brand = resolveBrand(req, { brand: body?.brand });
+    const brand: Brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     logStep("Request data", { userId, email });
 
     if (!userId || !email) {
