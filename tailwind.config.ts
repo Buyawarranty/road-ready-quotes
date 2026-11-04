@@ -89,7 +89,23 @@ export default {
 					'red-soft': 'hsl(var(--crm-red-soft))',
 					canvas: 'hsl(var(--crm-canvas))',
 					line: 'hsl(var(--crm-line))',
-					grey: 'hsl(var(--crm-grey))'
+					grey: 'hsl(var(--crm-grey))',
+					'tint-slate': 'hsl(var(--crm-tint-slate))',
+					'ink-slate': 'hsl(var(--crm-ink-slate))',
+					'tint-amber': 'hsl(var(--crm-tint-amber))',
+					'ink-amber': 'hsl(var(--crm-ink-amber))',
+					'tint-sky': 'hsl(var(--crm-tint-sky))',
+					'ink-sky': 'hsl(var(--crm-ink-sky))',
+					'tint-indigo': 'hsl(var(--crm-tint-indigo))',
+					'ink-indigo': 'hsl(var(--crm-ink-indigo))',
+					'tint-cream': 'hsl(var(--crm-tint-cream))',
+					'ink-cream': 'hsl(var(--crm-ink-cream))',
+					'tint-violet': 'hsl(var(--crm-tint-violet))',
+					'ink-violet': 'hsl(var(--crm-ink-violet))',
+					'tint-green': 'hsl(var(--crm-tint-green))',
+					'ink-green': 'hsl(var(--crm-ink-green))',
+					'tint-rose': 'hsl(var(--crm-tint-rose))',
+					'ink-rose': 'hsl(var(--crm-ink-rose))'
 
 				},
 				sidebar: {

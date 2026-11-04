@@ -35,16 +35,16 @@ export const BDM_OUTCOMES = [
 ] as const;
 
 export const OUTCOME_TONE: Record<string, string> = {
-  no_answer: 'bg-muted text-muted-foreground',
-  voicemail: 'bg-secondary text-secondary-foreground',
-  spoke: 'bg-crm-blue-soft/60 text-crm-blue',
-  interested: 'bg-crm-orange-soft/60 text-crm-orange',
-  callback: 'bg-secondary text-secondary-foreground',
-  info_requested: 'bg-crm-blue-soft/60 text-crm-blue',
-  demo_booked: 'bg-crm-orange-soft/60 text-crm-orange',
-  onboarding_agreed: 'bg-crm-green-soft/60 text-crm-green',
-  not_interested: 'bg-destructive/10 text-destructive',
-  wrong_number: 'bg-destructive/10 text-destructive',
+  no_answer: 'bg-crm-tint-amber text-crm-ink-amber',
+  voicemail: 'bg-crm-tint-sky text-crm-ink-sky',
+  spoke: 'bg-crm-tint-green text-crm-ink-green',
+  interested: 'bg-crm-tint-cream text-crm-ink-cream',
+  callback: 'bg-crm-tint-indigo text-crm-ink-indigo',
+  info_requested: 'bg-crm-tint-violet text-crm-ink-violet',
+  demo_booked: 'bg-crm-tint-green text-crm-ink-green',
+  onboarding_agreed: 'bg-crm-tint-green text-crm-ink-green',
+  not_interested: 'bg-crm-tint-rose text-crm-ink-rose',
+  wrong_number: 'bg-crm-tint-rose text-crm-ink-rose',
 };
 
 export const BDM_PRIORITIES = [
@@ -79,14 +79,14 @@ export const typeLabel = lookup(BDM_ACTIVITY_TYPES);
 export const priorityLabel = lookup(BDM_PRIORITIES);
 
 export const STAGE_TONE: Record<string, string> = {
-  new_lead: 'bg-muted text-foreground',
-  attempted: 'bg-muted text-muted-foreground',
-  contacted: 'bg-secondary text-secondary-foreground',
-  interested: 'bg-primary/15 text-primary',
-  follow_up: 'bg-accent text-accent-foreground',
-  onboarding: 'bg-primary/10 text-primary',
-  active_dealer: 'bg-crm-green-soft text-crm-green',
-  not_interested: 'bg-destructive/10 text-destructive',
+  new_lead: 'bg-crm-tint-slate text-crm-ink-slate',
+  attempted: 'bg-crm-tint-amber text-crm-ink-amber',
+  contacted: 'bg-crm-tint-sky text-crm-ink-sky',
+  interested: 'bg-crm-tint-cream text-crm-ink-cream',
+  follow_up: 'bg-crm-tint-indigo text-crm-ink-indigo',
+  onboarding: 'bg-crm-tint-violet text-crm-ink-violet',
+  active_dealer: 'bg-crm-tint-green text-crm-ink-green',
+  not_interested: 'bg-crm-tint-rose text-crm-ink-rose',
 };
 
 export interface BdmDealership {
