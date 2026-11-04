@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { autoMapColumns, findDuplicate, isConversation, parseStage, parseUkDate, safeCell } from '../bdm/bdmShared';
+import { autoMapColumns, BDM_DEFAULT_SORT, BDM_NOT_SPOKEN, BDM_SPOKEN_OPTIONS, findDuplicate, isConversation, parseStage, parseUkDate, safeCell } from '../bdm/bdmShared';
 
 const existing = [{ id: 'a', name: 'Northfield Motors Ltd', postcode: 'B31 2AB', phone_digits: '1210000000', website_domain: 'northfield.co.uk', dealer_id: 'd1' }];
 
@@ -35,5 +35,16 @@ describe('BDM contact list rules', () => {
     assert.equal(m.name, 'Dealership Name'); assert.equal(m.postcode, 'Post Code'); assert.equal(m.phone, 'Telephone'); assert.equal(m.vehicle_stock, 'Stock');
     assert.equal(parseStage('Follow up'), 'follow_up');
     assert.equal(parseStage('Active'), 'active_dealer');
+  });
+
+  it('opens the list on the most recently added dealerships', () => {
+    assert.equal(BDM_DEFAULT_SORT.col, 'created_at');
+    assert.equal(BDM_DEFAULT_SORT.asc, false);
+  });
+
+  it('offers one "not spoken to" filter among the last-spoken choices', () => {
+    const ids = BDM_SPOKEN_OPTIONS.map(([id]) => id);
+    assert.equal(ids.filter(id => id === BDM_NOT_SPOKEN).length, 1);
+    assert.equal(new Set(ids).size, ids.length);
   });
 });

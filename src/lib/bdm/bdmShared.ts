@@ -42,6 +42,18 @@ export const BDM_PRIORITIES = [
 
 // Outcomes that count as an actual conversation (updates "Last spoken").
 // Must match bdm_log_activity in the database.
+/** The contact list opens on the most recently added dealerships. */
+export const BDM_DEFAULT_SORT = { col: 'created_at', asc: false };
+
+/** "Not spoken to" means no conversation has ever been logged against the dealership. */
+export const BDM_NOT_SPOKEN = 'never';
+export const BDM_SPOKEN_OPTIONS: [string, string][] = [
+  [BDM_NOT_SPOKEN, 'Not spoken to'],
+  ['7', 'Last 7 days'],
+  ['30', 'Last 30 days'],
+  ['over30', 'Over 30 days ago'],
+];
+
 export const SPOKEN_OUTCOMES = new Set(['spoke', 'interested', 'callback', 'info_requested', 'demo_booked', 'onboarding_agreed', 'not_interested']);
 export const isConversation = (type: string, outcome?: string | null) =>
   type === 'meeting' || (!!outcome && SPOKEN_OUTCOMES.has(outcome));
