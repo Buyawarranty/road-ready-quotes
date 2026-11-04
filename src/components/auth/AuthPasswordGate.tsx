@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthPasswordGateProps {
   onUnlock: () => void;
@@ -18,6 +19,20 @@ export const AuthPasswordGate = ({ onUnlock }: AuthPasswordGateProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { toast } = useToast();
+  const [sending, setSending] = useState(false);
+
+  const sendReminder = async () => {
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-gate-password-reminder');
+      if (error || !data?.success) throw new Error(data?.error || error?.message || 'failed');
+      toast({ title: 'Reminder sent', description: 'The password reminder has been emailed to the admin inbox.' });
+    } catch {
+      toast({ title: 'Reminder not sent', description: 'We could not send the reminder email right now.', variant: 'destructive' });
+    } finally {
+      setSending(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +106,17 @@ export const AuthPasswordGate = ({ onUnlock }: AuthPasswordGateProps) => {
             </Button>
           </form>
           
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              disabled={sending}
+              onClick={sendReminder}
+              className="text-sm font-medium text-primary underline underline-offset-2 disabled:opacity-60"
+            >
+              {sending ? 'Sending reminder…' : 'Forgot the password? Email a reminder'}
+            </button>
+          </div>
+
           <div className="mt-6 text-center">
             <a 
               href="/" 
