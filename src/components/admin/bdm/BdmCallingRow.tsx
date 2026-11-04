@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Mail, MessageSquare, Minus, NotebookPen, Phone, Plus, Send } from 'lucide-react';
+import { Copy, Mail, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
 import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
@@ -57,6 +59,21 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const db = supabase.rpc as any;
+  const [editOpen, setEditOpen] = useState(false);
+  const toDay = (d?: string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '');
+  const [form, setForm] = useState({ email: '', last: '', follow: '', action: '' });
+  const openEdit = () => { setForm({ email: r.email ?? c?.email ?? '', last: toDay(r.last_spoken_at), follow: toDay(r.next_follow_up_at), action: r.next_action ?? '' }); setEditOpen(true); };
+  const saveEdit = async () => {
+    const em = form.email.trim();
+    if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { toast({ title: 'Enter a valid email address', variant: 'destructive' }); return; }
+    const iso = (d: string) => (d ? new Date(d + 'T00:00:00Z').toISOString() : null);
+    setSaving(true);
+    const { error } = await (supabase as any).from('bdm_dealerships').update({ email: em || null, last_spoken_at: iso(form.last), next_follow_up_at: iso(form.follow), next_action: form.action.trim().slice(0, 200) || null }).eq('id', r.id);
+    setSaving(false);
+    if (error) { toast({ title: 'Could not save changes', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Changes saved' }); setEditOpen(false); onChanged();
+  };
+  const editBtn = <button type="button" onClick={openEdit} className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="h-3 w-3" /></button>;
 
   const phone = c?.mobile || r.phone || c?.phone || null;
   const email = c?.email || r.email || null;
@@ -190,17 +207,17 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
             <span className="max-w-[170px] truncate text-xs" title={email}>{email}</span>
             {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send email"><a href={`mailto:${email}`} onClick={() => logContact('email')}><Send className="h-3.5 w-3.5" /></a></Button>}
           </div>
-        ) : <span className="text-xs text-muted-foreground">No email</span>}
+        ) : <button type="button" onClick={openEdit} className="text-xs text-muted-foreground underline-offset-2 hover:underline">No email · add</button>}
       </td>
       {/* Last spoken */}
-      <td className="p-2 whitespace-nowrap text-xs">{shortDate(r.last_spoken_at)}</td>
+      <td className="p-2 whitespace-nowrap text-xs">{shortDate(r.last_spoken_at)}{editBtn}</td>
       {/* Follow-up */}
       <td className="p-2">
-        <p className={`whitespace-nowrap text-xs ${overdue ? 'font-semibold text-destructive' : ''}`}>{r.next_follow_up_at ? shortDate(r.next_follow_up_at) : '—'}</p>
+        <p className={`whitespace-nowrap text-xs ${overdue ? 'font-semibold text-destructive' : ''}`}>{r.next_follow_up_at ? shortDate(r.next_follow_up_at) : '—'}{editBtn}</p>
         {r.next_action && <p className="max-w-[140px] truncate text-[11px] text-muted-foreground">{r.next_action}</p>}
       </td>
       {/* Latest note */}
-      <td className="p-2"><p className="max-w-[200px] truncate text-xs text-muted-foreground" title={r.latest_note ?? ''}>{r.latest_note ?? '—'}</p></td>
+      <td className="p-2"><button type="button" onClick={() => setNoteOpen(true)} className="flex max-w-[200px] items-center gap-1 text-left text-xs text-muted-foreground hover:text-foreground" title={r.latest_note ? `${r.latest_note} — click to add a note` : 'Add a note'}><span className="truncate">{r.latest_note ?? 'Add note'}</span><Pencil className="h-3 w-3 shrink-0" /></button></td>
 
       <Dialog open={noteOpen} onOpenChange={setNoteOpen}>
         <DialogContent>
@@ -212,6 +229,24 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
           <DialogFooter>
             <Button variant="outline" onClick={() => onOpen(r.id, 'activity')}>Full history</Button>
             <Button onClick={saveNote} disabled={saving || !note.trim()}>{saving ? 'Saving…' : 'Save note'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit details — {r.name}</DialogTitle>
+            <DialogDescription>Update the email, last spoken date and next follow-up.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="grid gap-1"><Label htmlFor={`em-${r.id}`}>Email</Label><Input id={`em-${r.id}`} type="email" maxLength={255} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} /></div>
+            <div className="grid gap-1"><Label htmlFor={`ls-${r.id}`}>Last spoken</Label><Input id={`ls-${r.id}`} type="date" value={form.last} onChange={e => setForm(f => ({ ...f, last: e.target.value }))} /></div>
+            <div className="grid gap-1"><Label htmlFor={`fu-${r.id}`}>Follow-up date</Label><Input id={`fu-${r.id}`} type="date" value={form.follow} onChange={e => setForm(f => ({ ...f, follow: e.target.value }))} /></div>
+            <div className="grid gap-1"><Label htmlFor={`na-${r.id}`}>Next action</Label><Input id={`na-${r.id}`} maxLength={200} value={form.action} onChange={e => setForm(f => ({ ...f, action: e.target.value }))} placeholder="e.g. Call back about pricing" /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={saveEdit} disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
