@@ -298,6 +298,10 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
               <SortHead col="last_spoken_at">Last spoken</SortHead>
               <SortHead col="next_follow_up_at">Follow-up</SortHead>
               <th className="p-2 text-left font-medium">Latest note</th>
+              <SortHead col="last_attempt_at">Agent activity</SortHead>
+              <SortHead col="created_at">Lead date</SortHead>
+              <th className="p-2 text-left font-medium">Customer activity</th>
+              <th className="p-2 text-left font-medium">Time to contact</th>
             </tr>
           </thead>
           <tbody>
