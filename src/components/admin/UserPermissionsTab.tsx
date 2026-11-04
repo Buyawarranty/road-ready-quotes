@@ -2231,6 +2231,29 @@ export const UserPermissionsTab = () => {
                         {(user.role === 'super_admin' || user.role === 'dev_tester') ? (
                           <p className="text-xs text-muted-foreground italic">This role automatically has access to all tabs and cannot be restricted here.</p>
                         ) : (
+                          <>
+                          {(() => {
+                            const perms = (user.permissions || {}) as Record<string, boolean>;
+                            const dashboardAllowed = perms.admin_dashboard_access !== false;
+                            const dashInputId = `inline-${user.id}-admin_dashboard_access`;
+                            return (
+                              <label
+                                htmlFor={dashInputId}
+                                className={`flex items-start gap-2 p-3 rounded border cursor-pointer transition-colors mb-3 ${dashboardAllowed ? 'bg-green-50 border-green-300' : 'bg-red-50 border-red-300'}`}
+                              >
+                                <Checkbox
+                                  id={dashInputId}
+                                  checked={dashboardAllowed}
+                                  onCheckedChange={(checked) => toggleDashboardAccess(user, checked === true)}
+                                  className="mt-0.5"
+                                />
+                                <span className="text-xs leading-tight">
+                                  <span className="font-semibold block">Admin dashboard access</span>
+                                  <span className="text-muted-foreground">Untick to stop this person signing in at pandaprotect.co.uk/auth. Their account and permissions are kept.</span>
+                                </span>
+                              </label>
+                            );
+                          })()}
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-[360px] overflow-y-auto">
                             {[...ADMIN_TABS].sort((a, b) => a.label.localeCompare(b.label)).map((tab) => {
                               const permKey = `tab_${tab.id}`;
