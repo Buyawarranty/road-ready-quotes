@@ -19,7 +19,7 @@ import { ViewAsStaffButton } from './ViewAsStaffButton';
 import { TeamActivityPanel } from './TeamActivityPanel';
 import { AdminAccessLogPanel } from './AdminAccessLogPanel';
 import { useAuth } from '@/hooks/useAuth';
-import { defaultTabs as SIDEBAR_TABS } from './AdminSidebar';
+import { PANDA_GRANTABLE_TABS as ADMIN_TABS } from '@/lib/permissions/pandaAdminTabs';
 
 interface AdminUser {
   id: string;
@@ -41,73 +41,6 @@ interface Permission {
   description: string;
   category: string;
 }
-
-// Define all admin tabs that can be granted as permissions
-const ADMIN_TABS = [
-  { id: 'new-leads', label: 'New Leads', description: 'Manage sales pipeline and lead assignments', hasGranular: true },
-  { id: 'recontact-leads', label: 'Recontact Leads', description: 'Past enquiries ready for follow-up' },
-  { id: 'renewals', label: 'Renewals', description: 'Renewals and upsells for active customers' },
-  { id: 'get-quote', label: 'Quotes & Orders', description: 'Generate quotes and process manual orders' },
-  { id: 'selling-tips', label: 'Sales Script', description: 'Sales script, tips and customer feedback' },
-  { id: 'customers', label: 'Customers', description: 'Manage customer accounts and policies', hasGranular: true },
-  { id: 'plans', label: 'Terms & Conditions', description: 'Upload Terms & Conditions and Platinum Plan PDFs (super admin by default)' },
-  { id: 'bulk-pricing', label: 'Bulk Pricing', description: 'Update pricing using CSV files' },
-  { id: 'special-plans', label: 'Special Vehicle Plans', description: 'Manage EV, PHEV, and Motorbike plans' },
-  { id: 'discount-codes', label: 'Discount Codes', description: 'Manage discount codes and promotions' },
-  { id: 'referrals', label: 'Referrals', description: 'Track customer referrals and conversions' },
-  { id: 'claims', label: 'Claims', description: 'Manage customer claim submissions' },
-  { id: 'reviews', label: 'Reviews', description: 'Monitor Trustpilot and Google reviews' },
-  { id: 'contact', label: 'Contact Submissions', description: 'Manage customer contact form submissions' },
-  { id: 'abandoned-carts', label: 'Abandoned Carts', description: 'Track and follow up with incomplete purchases' },
-  
-  { id: 'marketing-audience', label: 'Marketing Contacts', description: 'Unified mailing list for remarketing' },
-  { id: 'emails', label: 'Email Hub', description: 'Unified email management' },
-  { id: 'analytics', label: 'Analytics', description: 'View reports and analytics' },
-  { id: 'page-analytics', label: 'Page Analytics', description: 'Track page visits, traffic sources & Google Ads' },
-  { id: 'google-ads', label: 'Marketing Analytics', description: 'Google Ads, Facebook Ads, conversions & ROAS' },
-  { id: 'ab-testing', label: 'A/B Testing', description: 'Compare A vs B variants: visits, submissions, conversions' },
-  { id: 'vehicle-stats', label: 'Vehicle Stats', description: 'Analyse which vehicles sell the most warranties' },
-  { id: 'lead-backup', label: 'Lead Backup & Recovery', description: 'Backup all contacts, export & sync to marketing' },
-  { id: 'user-permissions', label: 'User Permissions', description: 'Manage admin user access and permissions' },
-  { id: 'document-mapping', label: 'Document Mapping', description: 'Manage plan to document mappings' },
-  { id: 'policy-documents', label: 'Policy Letters', description: 'Generate printable A4 policy letters for customers' },
-  { id: 'blogs-data', label: 'Blogs Data', description: 'Create and manage blog content with AI tools' },
-  { id: 'landing-pages', label: 'Landing Pages', description: 'Create SEO-optimised landing pages' },
-  { id: 'testing', label: 'Testing', description: 'Test APIs and create test data' },
-  { id: 'timesheets', label: 'Timesheets', description: 'Track work hours, deals and commissions' },
-  { id: 'sales-scoreboard', label: 'Sales Scoreboard', description: 'Leaderboard, awards and sales competition' },
-  { id: 'sales-agent-targets', label: 'Sales Agent Monthly Targets', description: 'Set monthly revenue targets (management)' },
-  { id: 'discounts-given', label: 'Discounts Given', description: 'Track agent discounts vs retail pricing' },
-  { id: 'cancellations', label: 'Cancellations', description: 'Cancelled & refunded warranties (commission reconciliation)' },
-  { id: 'refunds-paid', label: 'Refunds Paid', description: 'Refunds issued to customers (commission reconciliation)' },
-  { id: 'attribution-settings', label: 'Attribution Settings', description: 'Configure lead source attribution rules' },
-  { id: 'staff-hub', label: 'Staff Hub', description: 'Internal staff resources and tools' },
-  { id: 'feature-flags', label: 'Feature Flags', description: 'Toggle experimental features on/off' },
-  { id: 'ghl-sync-log', label: 'GHL Sync Log', description: 'GoHighLevel synchronisation audit log' },
-  { id: 'security', label: 'Security', description: 'Security scans, blocked IPs and audit logs' },
-  { id: 'unsubscribe', label: 'Unsubscribe', description: 'Manually unsubscribe customers from emails or remove from new leads' },
-  { id: 'overview', label: 'Live Calls Data', description: 'Manager landing page — live KPIs, hourly performance, queue and alerts' },
-  { id: 'call-tracking', label: 'Call rail', description: 'Inbound call tracking and assignments' },
-  
-  { id: 'complaints', label: 'Complaints', description: 'Manage customer complaints and resolutions' },
-  { id: 'lead-teams', label: 'Lead Teams', description: 'Team allocation, workstreams and Open Round Robin' },
-  { id: 'attendance', label: 'Attendance & Rota', description: 'Working days rota and weekend shift sign-ups' },
-  { id: 'goldmine-leads', label: 'Goldmine Leads', description: 'High-intent leads flagged for priority follow-up' },
-  { id: 'call-stats', label: 'Call Stats', description: 'Detailed call statistics and speed-to-dial (merged into Live Calls Data)' },
-  { id: 'account', label: 'Account Settings', description: 'Manage your account and password' },
-];
-
-// Auto-merge any sidebar tab that isn't in ADMIN_TABS yet, so newly added
-// sections in the sidebar automatically appear in the Bulk Access Management
-// list without needing a manual update here.
-(() => {
-  const existing = new Set(ADMIN_TABS.map(t => t.id));
-  SIDEBAR_TABS.forEach(t => {
-    if (!existing.has(t.id)) {
-      ADMIN_TABS.push({ id: t.id, label: t.label, description: t.description || '' });
-    }
-  });
-})();
 
 
 // Granular permissions for specific tabs
