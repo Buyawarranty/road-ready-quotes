@@ -28,6 +28,10 @@ describe('Panda Protect admin menu with the claims section retired', () => {
     }
   });
 
+  it('lists BDM contacts as the first section', () => {
+    assert.equal(PANDA_SECTION_ORDER[0].id, 'bdm-contacts');
+  });
+
   it('still hides retired Buy A Warranty sections behind Overview', () => {
     assert.equal(resolvePandaSection('new-leads'), 'dealer-overview');
     assert.equal(resolvePandaSection('analytics'), 'dealer-overview');

@@ -1,3 +1,4 @@
+import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
 import { resolvePandaSection } from '@/lib/pandaAdminSections';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
@@ -954,6 +955,8 @@ const AdminDashboard = () => {
         return <StaffHubTab />;
       case 'agent-feedback':
         return <AgentFeedbackTab userRole={effectiveUserRole} />;
+      case 'bdm-contacts':
+        return <BdmContactList userRole={effectiveUserRole} />;
       case 'dealer-overview':
         return <DealerAdminOverviewTab />;
       case 'dealer-signups':

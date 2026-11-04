@@ -1,0 +1,3 @@
+REVOKE EXECUTE ON FUNCTION public.bdm_is_super(uuid), public.bdm_is_manager(uuid), public.bdm_is_staff(uuid), public.bdm_can_access(uuid) FROM anon, public;
+GRANT EXECUTE ON FUNCTION public.bdm_is_super(uuid), public.bdm_is_manager(uuid), public.bdm_is_staff(uuid), public.bdm_can_access(uuid) TO authenticated;
+REVOKE EXECUTE ON FUNCTION public.bdm_stage_audit(), public.bdm_sync_signup(), public.bdm_sync_dealer() FROM anon, authenticated, public;
