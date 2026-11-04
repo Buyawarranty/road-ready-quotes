@@ -1,6 +1,6 @@
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
-import { resolvePandaSection } from '@/lib/pandaAdminSections';
+import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
 import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
