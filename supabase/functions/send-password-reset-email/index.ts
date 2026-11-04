@@ -10,6 +10,7 @@ const corsHeaders = {
 
 interface ResetPasswordRequest {
   email: string;
+  audience?: 'staff' | 'customer';
 }
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
@@ -32,6 +33,9 @@ serve(async (req) => {
 
     const body: ResetPasswordRequest & { brand?: string } = await req.json();
     const { email } = body;
+    // Staff (admin dashboard) and customers get the same recovery link, but staff
+    // copy points at /auth instead of the customer portal wording.
+    const isStaff = body.audience === 'staff';
     const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     // Send people back to the site they asked from (Panda Protect runs on
     // more than one domain). Supabase only honours redirect URLs on its
@@ -148,7 +152,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-                      We received a request to reset the password for your ${brand.name} customer portal account associated with <strong>${email}</strong>.
+                      We received a request to reset the password for your ${brand.name} ${isStaff ? 'admin dashboard' : 'customer portal'} account associated with <strong>${email}</strong>.
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
@@ -176,7 +180,9 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 20px 0 0 0;">
-                      If you need assistance, please contact our customer support team.
+                      ${isStaff
+                        ? `Once your new password is saved, sign in at ${brand.siteUrl}/auth.`
+                        : 'If you need assistance, please contact our customer support team.'}
                     </p>
                   </td>
                 </tr>
@@ -206,14 +212,14 @@ serve(async (req) => {
     `;
 
     const { data: sent, error: sendError } = await resend.emails.send({
-      from: brandFrom(brand, 'Customer Care', 'noreply'),
+      from: brandFrom(brand, isStaff ? 'Admin' : 'Customer Care', 'noreply'),
       to: [email],
-      subject: `Reset Your ${brand.name} Portal Password`,
+      subject: isStaff ? `Reset your ${brand.name} admin password` : `Reset Your ${brand.name} Portal Password`,
       html: emailHtml,
     });
 
     if (sendError) {
-      logStep('Error sending email', { from: brandFrom(brand, 'Customer Care', 'noreply'), error: sendError });
+      logStep('Error sending email', { from: brandFrom(brand, isStaff ? 'Admin' : 'Customer Care', 'noreply'), error: sendError });
       return new Response(
         JSON.stringify({ success: false, error: 'We could not send the reset email right now. Please try again shortly or contact support.' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
