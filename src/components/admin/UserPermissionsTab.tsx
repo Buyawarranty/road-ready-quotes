@@ -19,7 +19,7 @@ import { ViewAsStaffButton } from './ViewAsStaffButton';
 import { TeamActivityPanel } from './TeamActivityPanel';
 import { AdminAccessLogPanel } from './AdminAccessLogPanel';
 import { useAuth } from '@/hooks/useAuth';
-import { PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
+import { PANDA_GRANTABLE_TABS as ADMIN_TABS } from '@/lib/permissions/pandaAdminTabs';
 
 interface AdminUser {
   id: string;
@@ -42,15 +42,6 @@ interface Permission {
   category: string;
 }
 
-// Sections that can be granted as permissions: exactly the Panda Protect admin
-// sections listed in src/lib/pandaAdminSections.ts, so this screen can never
-// offer access to a section the dashboard doesn't actually show.
-const ADMIN_TABS = PANDA_SECTION_ORDER.map((s) => ({
-  id: s.id,
-  label: s.label,
-  description: s.description,
-  hasGranular: s.id === 'customers',
-}));
 
 // Granular permissions for specific tabs
 const GRANULAR_PERMISSIONS = {
