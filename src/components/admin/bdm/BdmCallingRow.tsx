@@ -34,9 +34,10 @@ interface Props {
   showAssigned: boolean;
   onOpen: (id: string, tab?: string) => void;
   onChanged: () => void;
+  rowNumber?: number;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssigned, onOpen, onChanged }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssigned, onOpen, onChanged, rowNumber }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -82,6 +83,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
 
   return (
     <tr className={`border-b last:border-0 hover:bg-muted/30 ${overdue ? 'border-l-2 border-l-destructive' : ''}`}>
+      {rowNumber != null && <td className="p-2 text-right font-semibold tabular-nums text-muted-foreground">{rowNumber}</td>}
       {/* Status */}
       <td className="p-2">
         <Select value={stage} onValueChange={changeStage}>
