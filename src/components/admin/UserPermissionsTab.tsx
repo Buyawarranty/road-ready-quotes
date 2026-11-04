@@ -682,7 +682,9 @@ export const UserPermissionsTab = () => {
       fetchUsers();
     } catch (error) {
       console.error('Error inviting user:', error);
-      toast.error('Failed to invite user');
+      let msg = '';
+      try { msg = (await (error as any)?.context?.json?.())?.error || ''; } catch { /* ignore */ }
+      toast.error(msg ? `Failed to invite user: ${msg}` : 'Failed to invite user');
     }
   };
 
