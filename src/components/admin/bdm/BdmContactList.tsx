@@ -314,7 +314,6 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </table>
       </div>
       {pager}
-      </div>
 
       <BdmDealershipDrawer dealershipId={openId} initialTab={openTab} staff={staff} isManager={isManager} onClose={() => setOpenId(null)} onChanged={refresh} />
       <BdmCallQueue open={queueOpen} onClose={() => setQueueOpen(false)} userId={userId} staff={staff} isManager={isManager} onChanged={refresh} />
