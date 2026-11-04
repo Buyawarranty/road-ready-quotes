@@ -1175,6 +1175,30 @@ export const UserPermissionsTab = () => {
     }
   };
 
+  // Inline auto-save toggle: allow or block signing in to the admin dashboard at /auth
+  const toggleDashboardAccess = async (targetUser: AdminUser, nextValue: boolean) => {
+    const nextPerms = { ...(targetUser.permissions || {}), admin_dashboard_access: nextValue };
+
+    setUsers(prev => prev.map(u => u.id === targetUser.id ? { ...u, permissions: nextPerms } : u));
+    setSavingPermsUserId(targetUser.id);
+
+    try {
+      const { error } = await supabase
+        .from('admin_users')
+        .update({ permissions: nextPerms })
+        .eq('id', targetUser.id);
+      if (error) throw error;
+      toast.success(nextValue
+        ? `${targetUser.first_name} can now sign in to the admin dashboard.`
+        : `${targetUser.first_name} can no longer sign in to the admin dashboard.`);
+    } catch (err: any) {
+      setUsers(prev => prev.map(u => u.id === targetUser.id ? { ...u, permissions: targetUser.permissions } : u));
+      toast.error('Failed to update dashboard access: ' + (err.message || 'unknown error'));
+    } finally {
+      setSavingPermsUserId(null);
+    }
+  };
+
   if (loading) {
     return <div className="flex items-center justify-center p-8">Loading...</div>;
   }
