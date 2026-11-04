@@ -1,1 +1,3 @@
 project_id = "gzauvmzsjchjfozahdxj"
+[functions.bdm-bulk-import-once]
+verify_jwt = false
