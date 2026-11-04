@@ -2049,6 +2049,7 @@ export type Database = {
           address: string | null
           assigned_bdm: string | null
           autotrader_url: string | null
+          call_count: number
           county: string | null
           created_at: string
           created_by: string | null
@@ -2087,6 +2088,7 @@ export type Database = {
           address?: string | null
           assigned_bdm?: string | null
           autotrader_url?: string | null
+          call_count?: number
           county?: string | null
           created_at?: string
           created_by?: string | null
@@ -2125,6 +2127,7 @@ export type Database = {
           address?: string | null
           assigned_bdm?: string | null
           autotrader_url?: string | null
+          call_count?: number
           county?: string | null
           created_at?: string
           created_by?: string | null
@@ -15263,6 +15266,10 @@ export type Database = {
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
       bdm_access_ok: { Args: { _uid: string }; Returns: boolean }
       bdm_account_summary: { Args: { p_dealership: string }; Returns: Json }
+      bdm_adjust_calls: {
+        Args: { p_dealership: string; p_delta: number }
+        Returns: number
+      }
       bdm_can_access: { Args: { _dealership: string }; Returns: boolean }
       bdm_export_full: {
         Args: { p_format: string; p_scope: string }
@@ -15294,6 +15301,10 @@ export type Database = {
           p_type: string
         }
         Returns: string
+      }
+      bdm_set_stage: {
+        Args: { p_dealership: string; p_stage: string }
+        Returns: undefined
       }
       bdm_staff_list: {
         Args: never
