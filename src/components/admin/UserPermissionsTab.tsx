@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { toast } from 'sonner';
-import { UserPlus, Shield, Eye, Users, Trash2, RotateCcw, Mail, Settings, Download, ShieldCheck, Key, Copy, Check, TestTube, ChevronDown, ChevronRight, FileText, Pencil, LogIn, ExternalLink, Info, PauseCircle, PlayCircle, X } from 'lucide-react';
+import { UserPlus, BellRing, Shield, Eye, Users, Trash2, RotateCcw, Mail, Settings, Download, ShieldCheck, Key, Copy, Check, TestTube, ChevronDown, ChevronRight, FileText, Pencil, LogIn, ExternalLink, Info, PauseCircle, PlayCircle, X } from 'lucide-react';
 import { AccessRequestsPanel } from './AccessRequestsPanel';
 import BdmTownAccessPanel from './bdm/BdmTownAccessPanel';
 import { ViewAsStaffButton } from './ViewAsStaffButton';
@@ -244,6 +244,7 @@ export const UserPermissionsTab = () => {
   const [revealedCreds, setRevealedCreds] = useState<{ email: string; password: string; loginUrl: string } | null>(null);
   const [generatingCredsId, setGeneratingCredsId] = useState<string | null>(null);
   const [sendingLoginId, setSendingLoginId] = useState<string | null>(null);
+  const [sendingResetId, setSendingResetId] = useState<string | null>(null);
 
   // Bulk access management
   const [bulkTabs, setBulkTabs] = useState<Set<string>>(new Set());
@@ -330,6 +331,26 @@ export const UserPermissionsTab = () => {
       toast.error(err.message || 'Failed to send login details');
     } finally {
       setSendingLoginId(null);
+    }
+  };
+
+  // Password reminder for a staff login: emails that person a recovery link so
+  // they set their own new password. The stored password is never revealed here.
+  const handleSendResetLink = async (u: AdminUser) => {
+    if (!confirm(`Email ${u.email} a password reset link?\n\nThey choose their own new password - you will not see it.`)) return;
+    setSendingResetId(u.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
+        body: { email: u.email, audience: 'staff', brand: 'pandaprotect' }
+      });
+      if (error) throw error;
+      if (data?.success === false) throw new Error(data?.error || 'Failed to send the reset email');
+      toast.success(`Password reset link emailed to ${u.email}`);
+    } catch (err: any) {
+      console.error('Send password reset link error:', err);
+      toast.error(err.message || 'Failed to send the password reset link');
+    } finally {
+      setSendingResetId(null);
     }
   };
 
@@ -2200,6 +2221,15 @@ export const UserPermissionsTab = () => {
                       >
                         <RotateCcw className="h-4 w-4" />
                       </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleSendResetLink(user)}
+                          disabled={sendingResetId === user.id}
+                          title="Email a password reset link (they choose their own new password)"
+                        >
+                          <BellRing className="h-4 w-4" />
+                        </Button>
                       <Button
                         size="sm"
                         variant="default"
@@ -2389,6 +2419,17 @@ export const UserPermissionsTab = () => {
                           <RotateCcw className="h-3 w-3 mr-1" />
                           Reset
                         </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleSendResetLink(u)}
+                            disabled={sendingResetId === u.id}
+                            title="Email a password reset link (they choose their own new password)"
+                            className="text-xs"
+                          >
+                            <BellRing className="h-3 w-3 mr-1" />
+                            {sendingResetId === u.id ? 'Sending…' : 'Reset link'}
+                          </Button>
                         <Button
                           size="sm"
                           variant="secondary"
