@@ -1,4 +1,4 @@
-import { PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
+import { PANDA_SECTION_ORDER, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2 } from 'lucide-react';
 import { useAdminSidebarCollapsed } from '@/hooks/useAdminSidebarCollapsed';
@@ -636,6 +636,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
       });
     }
     
+    if (userRole === 'bdm' || userRole === 'manager') {
+      const ids = userRole === 'bdm' ? BDM_ROLE_TABS : MANAGER_ROLE_TABS;
+      return defaultTabs.filter(tab => ids.includes(tab.id));
+    }
+
     if (userRole === 'blog_writer') {
       // Blog writers see blogs-data and landing-pages tabs + Staff Hub
       return defaultTabs.filter(tab => tab.id === 'blogs-data' || tab.id === 'landing-pages' || tab.id === 'staff-hub' || tab.id === 'unsubscribe' || tab.id === 'account');

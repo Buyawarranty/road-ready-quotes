@@ -54,13 +54,20 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [importOpen, setImportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [contactsBy, setContactsBy] = useState<Record<string, { full_name: string; phone: string | null; mobile: string | null }>>({});
+  const [towns, setTowns] = useState<{ town: string; dealerships: number }[]>([]);
+  const [town, setTown] = useState<string>('all');
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
     (supabase.rpc as any)('bdm_staff_list').then(({ data }: any) => setStaff(data || []));
-  }, []);
+    (supabase.rpc as any)('bdm_town_list').then(({ data }: any) => {
+      const list = data || [];
+      setTowns(list);
+      if (!isManager && list.length) setTown(list[0].town);
+    });
+  }, [isManager]);
   useEffect(() => { const t = setTimeout(() => setDebounced(search.trim()), 300); return () => clearTimeout(t); }, [search]);
-  useEffect(() => { setPage(0); }, [debounced, filters, kpiFilter, sort]);
+  useEffect(() => { setPage(0); }, [debounced, filters, kpiFilter, sort, town]);
 
   const loadKpis = useCallback(async () => {
     const { data } = await (supabase.rpc as any)('bdm_kpis');
@@ -82,6 +89,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       if (ids.length) ors.push(`id.in.(${ids.join(',')})`);
       q = q.or(ors.join(','));
     }
+    if (town !== 'all') q = q.eq('town', town);
     if (filters.stage !== 'all') q = q.eq('stage', filters.stage);
     if (filters.priority !== 'all') q = q.eq('priority', filters.priority);
     if (filters.bdm === 'mine' && userId) q = q.eq('assigned_bdm', userId);
@@ -119,7 +127,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       for (const c2 of cs || []) if (!m[c2.dealership_id]) m[c2.dealership_id] = c2;
       setContactsBy(m);
     }
-  }, [debounced, filters, kpiFilter, sort, page, userId, toast]);
+  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadKpis(); }, [loadKpis]);
@@ -207,6 +215,17 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       </div>
 
       <div className="space-y-2 rounded-lg border bg-card p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Label htmlFor="bdm-town" className="text-sm font-semibold">Town</Label>
+          <Select value={town} onValueChange={setTown}>
+            <SelectTrigger id="bdm-town" className="h-10 w-full sm:w-[260px] font-semibold"><SelectValue placeholder="Choose a town" /></SelectTrigger>
+            <SelectContent>
+              {isManager && <SelectItem value="all">All towns</SelectItem>}
+              {towns.map(t => <SelectItem key={t.town} value={t.town}>{t.town} ({t.dealerships})</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {!isManager && towns.length === 0 && <span className="text-sm text-muted-foreground">No towns have been opened to you yet. Ask an admin for access.</span>}
+        </div>
         <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, town or postcode..." className="h-10" />
         <div className="flex flex-wrap gap-2">
           {filterSelect('stage', 'Stage', BDM_STAGES.map(s => [s.id, s.label]))}

@@ -2047,6 +2047,7 @@ export type Database = {
         Row: {
           address: string | null
           assigned_bdm: string | null
+          autotrader_url: string | null
           county: string | null
           created_at: string
           created_by: string | null
@@ -2068,8 +2069,10 @@ export type Database = {
           phone_digits: string | null
           postcode: string | null
           priority: string
+          review_count: number | null
           signup_id: string | null
           stage: string
+          star_rating: number | null
           stock_updated_at: string | null
           town: string | null
           updated_at: string
@@ -2080,6 +2083,7 @@ export type Database = {
         Insert: {
           address?: string | null
           assigned_bdm?: string | null
+          autotrader_url?: string | null
           county?: string | null
           created_at?: string
           created_by?: string | null
@@ -2101,8 +2105,10 @@ export type Database = {
           phone_digits?: string | null
           postcode?: string | null
           priority?: string
+          review_count?: number | null
           signup_id?: string | null
           stage?: string
+          star_rating?: number | null
           stock_updated_at?: string | null
           town?: string | null
           updated_at?: string
@@ -2113,6 +2119,7 @@ export type Database = {
         Update: {
           address?: string | null
           assigned_bdm?: string | null
+          autotrader_url?: string | null
           county?: string | null
           created_at?: string
           created_by?: string | null
@@ -2134,8 +2141,10 @@ export type Database = {
           phone_digits?: string | null
           postcode?: string | null
           priority?: string
+          review_count?: number | null
           signup_id?: string | null
           stage?: string
+          star_rating?: number | null
           stock_updated_at?: string | null
           town?: string | null
           updated_at?: string
@@ -2320,6 +2329,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      bdm_town_access: {
+        Row: {
+          created_at: string
+          granted_by: string | null
+          id: string
+          town: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          town: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          town?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       blocked_ips: {
         Row: {
@@ -15228,6 +15261,7 @@ export type Database = {
         Args: { p_format: string; p_scope: string }
         Returns: Json
       }
+      bdm_has_town: { Args: { _town: string; _uid: string }; Returns: boolean }
       bdm_import_rows: {
         Args: { p_file_name: string; p_rows: Json }
         Returns: Json
@@ -15235,6 +15269,7 @@ export type Database = {
       bdm_is_manager: { Args: { _uid: string }; Returns: boolean }
       bdm_is_staff: { Args: { _uid: string }; Returns: boolean }
       bdm_is_super: { Args: { _uid: string }; Returns: boolean }
+      bdm_is_town_admin: { Args: { _uid: string }; Returns: boolean }
       bdm_kpis: { Args: never; Returns: Json }
       bdm_log_activity: {
         Args: {
@@ -15254,6 +15289,13 @@ export type Database = {
         Returns: {
           name: string
           user_id: string
+        }[]
+      }
+      bdm_town_list: {
+        Args: never
+        Returns: {
+          dealerships: number
+          town: string
         }[]
       }
       bulk_reassign_leads_to_agent: {
@@ -16556,6 +16598,8 @@ export type Database = {
         | "performance_manager"
         | "sales_manager"
         | "trader"
+        | "bdm"
+        | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -16806,6 +16850,8 @@ export const Constants = {
         "performance_manager",
         "sales_manager",
         "trader",
+        "bdm",
+        "manager",
       ],
     },
   },

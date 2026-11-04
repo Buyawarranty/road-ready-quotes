@@ -14,6 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { toast } from 'sonner';
 import { UserPlus, Shield, Eye, Users, Trash2, RotateCcw, Mail, Settings, Download, ShieldCheck, Key, Copy, Check, TestTube, ChevronDown, ChevronRight, FileText, Pencil, LogIn, ExternalLink, Info, PauseCircle, PlayCircle, X } from 'lucide-react';
 import { AccessRequestsPanel } from './AccessRequestsPanel';
+import BdmTownAccessPanel from './bdm/BdmTownAccessPanel';
 import { ViewAsStaffButton } from './ViewAsStaffButton';
 
 import { TeamActivityPanel } from './TeamActivityPanel';
@@ -625,7 +626,7 @@ export const UserPermissionsTab = () => {
     if (!editingUser) return;
 
     try {
-      const validRoles = ['admin', 'super_admin', 'member', 'viewer', 'guest', 'blog_writer', 'sales', 'sales_lead', 'sales_manager', 'dev_tester', 'customer', 'lead_gen', 'claims_agent', 'claims_manager', 'performance_manager', 'accounts', 'accounts_manager'] as const;
+      const validRoles = ['admin', 'super_admin', 'member', 'viewer', 'guest', 'blog_writer', 'sales', 'sales_lead', 'sales_manager', 'dev_tester', 'customer', 'lead_gen', 'claims_agent', 'claims_manager', 'performance_manager', 'accounts', 'accounts_manager', 'bdm', 'manager'] as const;
       const roleValue = validRoles.includes(editingUser.role as any) 
         ? editingUser.role as typeof validRoles[number]
         : 'guest';
@@ -1195,6 +1196,8 @@ export const UserPermissionsTab = () => {
         </Card>
       )}
 
+      <BdmTownAccessPanel />
+
       {/* Staff Login Guidance */}
       <Card className="border-blue-200 bg-blue-50/60">
         <CardContent className="py-4">
@@ -1367,6 +1370,8 @@ export const UserPermissionsTab = () => {
                     <SelectItem value="accounts_manager">Accounts Manager - Full New Leads access (like Super Admin) + accounts tools</SelectItem>
                     <SelectItem value="claims_agent">Claims Agent - Same access as Admin (filtered) with full Claims access</SelectItem>
                     <SelectItem value="claims_manager">Claims Manager - Claims tab only (incl. Vehicle Intelligence)</SelectItem>
+                    <SelectItem value="bdm">BDM - Works the BDM contact list (only towns you open to them)</SelectItem>
+                    <SelectItem value="manager">Manager - Views most CRM sections; BDM list limited to opened towns</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -1722,6 +1727,8 @@ export const UserPermissionsTab = () => {
                     <SelectItem value="accounts_manager">Accounts Manager - Full New Leads access (like Super Admin) + accounts tools</SelectItem>
                     <SelectItem value="claims_agent">Claims Agent - Same access as Admin (filtered) with full Claims access</SelectItem>
                     <SelectItem value="claims_manager">Claims Manager - Claims tab only (incl. Vehicle Intelligence)</SelectItem>
+                    <SelectItem value="bdm">BDM - Works the BDM contact list (only towns you open to them)</SelectItem>
+                    <SelectItem value="manager">Manager - Views most CRM sections; BDM list limited to opened towns</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
