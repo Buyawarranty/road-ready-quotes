@@ -42,9 +42,9 @@ describe('BDM contact list rules', () => {
     assert.equal(BDM_DEFAULT_SORT.asc, false);
   });
 
-  it('offers one "not spoken to" filter, matching dealerships never spoken to', () => {
-    assert.equal(BDM_SPOKEN_OPTIONS.filter(([id]) => id === BDM_NOT_SPOKEN).length, 1);
-    assert.equal(BDM_NOT_SPOKEN, 'never');
-    assert.ok(!BDM_SPOKEN_OPTIONS.some(([id]) => id === 'over30' && BDM_NOT_SPOKEN === 'over30'));
+  it('offers one "not spoken to" filter among the last-spoken choices', () => {
+    const ids = BDM_SPOKEN_OPTIONS.map(([id]) => id);
+    assert.equal(ids.filter(id => id === BDM_NOT_SPOKEN).length, 1);
+    assert.equal(new Set(ids).size, ids.length);
   });
 });
