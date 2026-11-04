@@ -8,11 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Mail, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
+import { Copy, Mail, MailX, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
 import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
 
+const dur = (ms: number) => { const m = Math.max(0, Math.round(ms / 60000)); if (m < 60) return `${m} min`; const h = Math.round(m / 60); if (h < 48) return `${h} hr`; return `${Math.round(h / 24)} days`; };
+const ago = (d: string) => `${dur(Date.now() - new Date(d).getTime())} ago`;
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : 'Never');
 
 /** Whole days from today to a follow-up date: 0 = today, negative = overdue. */
@@ -60,6 +62,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const db = supabase.rpc as any;
+  const firstTouch = r.last_spoken_at || r.last_attempt_at;
   const [editOpen, setEditOpen] = useState(false);
   const toDay = (d?: string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '');
   const [form, setForm] = useState({ email: '', last: '', follow: '', action: '' });
@@ -154,6 +157,11 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
             </Button>
           )}
+          {!email && (
+            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" title="No email — add one" aria-label={`Add an email for ${r.name}`} onClick={openEdit}>
+              <MailX className="h-4 w-4" />
+            </Button>
+          )}
           <BdmReminderPopover dealershipId={r.id} name={r.name} onSaved={onChanged} />
           <Button variant="ghost" title={followLabel} aria-label={followLabel}
             className={`h-9 w-11 gap-0 rounded-md px-1 leading-none hover:bg-transparent ${
@@ -220,6 +228,22 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       </td>
       {/* Latest note */}
       <td className="p-2"><button type="button" onClick={() => setNoteOpen(true)} className="flex max-w-[200px] items-center gap-1 text-left text-xs text-muted-foreground hover:text-foreground" title={r.latest_note ? `${r.latest_note} — click to add a note` : 'Add a note'}><span className="truncate">{r.latest_note ?? 'Add note'}</span><Pencil className="h-3 w-3 shrink-0" /></button></td>
+
+      {/* Agent activity */}
+      <td className="p-2 text-xs">
+        {r.last_attempt_at
+          ? <><p>{ago(r.last_attempt_at)}</p>{r.last_outcome && <p className="text-muted-foreground">{r.last_outcome.replace(/_/g, ' ')}</p>}</>
+          : <p className="italic text-muted-foreground">No agent activity</p>}
+      </td>
+      {/* Lead date */}
+      <td className="p-2 whitespace-nowrap text-xs">{new Date(r.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
+      {/* Customer activity */}
+      <td className="p-2 text-xs">
+        {r.dealer_id ? <p className="font-medium text-success">Dealer account</p> : <p className="italic text-muted-foreground">Not signed up</p>}
+        {r.stock_updated_at && <p className="text-muted-foreground">Stock updated {ago(r.stock_updated_at)}</p>}
+      </td>
+      {/* Time to contact */}
+      <td className="p-2 whitespace-nowrap text-xs">{firstTouch ? dur(new Date(firstTouch).getTime() - new Date(r.created_at).getTime()) : <span className="italic text-muted-foreground">Not contacted</span>}</td>
 
       <Dialog open={noteOpen} onOpenChange={setNoteOpen}>
         <DialogContent>
