@@ -12,7 +12,7 @@ import {
   AlertTriangle, ArrowUpDown, CalendarClock, Download, Loader2, MoreHorizontal, Phone, PhoneCall, PhoneMissed, Plus, Rocket, Star, Upload, UserCheck,
 } from 'lucide-react';
 import {
-  BDM_PRIORITIES, BDM_STAGES, BdmDealership, STAGE_TONE, findDuplicate, normalisePostcode, phoneDigits, stageLabel, websiteDomain,
+  BDM_DEFAULT_SORT, BDM_NOT_SPOKEN, BDM_PRIORITIES, BDM_SPOKEN_OPTIONS, BDM_STAGES, BdmDealership, STAGE_TONE, findDuplicate, normalisePostcode, phoneDigits, stageLabel, websiteDomain,
 } from '@/lib/bdm/bdmShared';
 import BdmDealershipDrawer from './BdmDealershipDrawer';
 import BdmCallQueue from './BdmCallQueue';
@@ -46,7 +46,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [debounced, setDebounced] = useState('');
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [kpiFilter, setKpiFilter] = useState<string | null>(null);
-  const [sort, setSort] = useState<{ col: string; asc: boolean }>({ col: 'created_at', asc: false });
+  const [sort, setSort] = useState<{ col: string; asc: boolean }>(BDM_DEFAULT_SORT);
   const [kpis, setKpis] = useState<any>(null);
   const [openId, setOpenId] = useState<string | null>(null);
   const [openTab, setOpenTab] = useState('overview');
@@ -110,7 +110,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     if (filters.spoken === '7') q = q.gte('last_spoken_at', addDays(today, -7).toISOString());
     if (filters.spoken === '30') q = q.gte('last_spoken_at', addDays(today, -30).toISOString());
     if (filters.spoken === 'over30') q = q.lt('last_spoken_at', addDays(today, -30).toISOString());
-    if (filters.spoken === 'never') q = q.is('last_spoken_at', null);
+    if (filters.spoken === BDM_NOT_SPOKEN) q = q.is('last_spoken_at', null);
     if (kpiFilter === 'due_today') q = q.eq('do_not_contact', false).gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
     if (kpiFilter === 'overdue') q = q.eq('do_not_contact', false).lt('next_follow_up_at', today.toISOString());
     if (kpiFilter === 'interested') q = q.eq('stage', 'interested');
@@ -245,11 +245,11 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </Select>
           <Button
             type="button"
-            variant={filters.spoken === 'never' ? 'default' : 'outline'}
+            variant={filters.spoken === BDM_NOT_SPOKEN ? 'default' : 'outline'}
             size="sm"
             className="h-9"
-            aria-pressed={filters.spoken === 'never'}
-            onClick={() => setFilters(f => ({ ...f, spoken: f.spoken === 'never' ? 'all' : 'never' }))}
+            aria-pressed={filters.spoken === BDM_NOT_SPOKEN}
+            onClick={() => setFilters(f => ({ ...f, spoken: f.spoken === BDM_NOT_SPOKEN ? 'all' : BDM_NOT_SPOKEN }))}
           >
             <PhoneMissed className="mr-1 h-4 w-4" /> Not spoken to
           </Button>
@@ -258,7 +258,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           {filterSelect('stock', 'Stock', [['0-20', '0–20 vehicles'], ['21-50', '21–50'], ['51-100', '51–100'], ['101-0', 'Over 100']])}
           {filterSelect('account', 'Account', [['linked', 'Has dealer account'], ['none', 'No account yet'], ['dnc', 'Do not contact']])}
           {filterSelect('bdm', 'BDM', [['mine', 'Mine'], ['none', 'Unassigned'], ...staff.map(s => [s.user_id, s.name] as [string, string])])}
-          {filterSelect('spoken', 'Last spoken', [['never', 'Not spoken to'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['over30', 'Over 30 days ago']])}
+          {filterSelect('spoken', 'Last spoken', BDM_SPOKEN_OPTIONS)}
           {filterSelect('priority', 'Priority', BDM_PRIORITIES.map(p => [p.id, p.label]))}
           {filtersActive && <Button variant="ghost" size="sm" className="h-9" onClick={() => { setFilters(NO_FILTERS); setKpiFilter(null); setSearch(''); }}>Clear filters</Button>}
         </div>
