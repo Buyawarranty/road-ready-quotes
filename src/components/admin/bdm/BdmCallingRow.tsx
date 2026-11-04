@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
+import BdmReminderPopover from './BdmReminderPopover';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -153,6 +154,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
             </Button>
           )}
+          <BdmReminderPopover dealershipId={r.id} name={r.name} onSaved={onChanged} />
           <Button variant="ghost" title={followLabel} aria-label={followLabel}
             className={`h-9 w-11 gap-0 rounded-md px-1 leading-none hover:bg-transparent ${
               followDays == null ? 'text-muted-foreground'
