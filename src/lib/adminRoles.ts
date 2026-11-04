@@ -1,6 +1,3 @@
-// Single source of truth for Panda Protect staff roles. Every login gate
-// (/auth, the dealer login, the dealer-portal pages and the admin dashboard)
-// must use this list so a staff account is never treated as a dealer.
 export const ADMIN_ROLES = [
   'super_admin',
   'admin',
