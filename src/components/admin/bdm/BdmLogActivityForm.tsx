@@ -77,7 +77,7 @@ const BdmLogActivityForm: React.FC<Props> = ({ dealershipId, contacts, staff, ca
           <div className="mt-1 flex flex-wrap gap-1.5">
             {BDM_OUTCOMES.map(o => (
               <button key={o.id} type="button" onClick={() => setOutcome(o.id)} aria-pressed={outcome === o.id}
-                className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${outcome === o.id ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'bg-background hover:bg-muted'}`}>
+                className={`rounded-full border px-2.5 py-1 text-xs font-medium transition-opacity ${outcome === o.id ? 'border-crm-orange bg-crm-orange text-primary-foreground' : `border-transparent hover:opacity-75 ${OUTCOME_TONE[o.id] ?? 'bg-muted text-muted-foreground'}`}`}>
                 {o.label}
               </button>
             ))}
