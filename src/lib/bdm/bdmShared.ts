@@ -34,6 +34,19 @@ export const BDM_OUTCOMES = [
   { id: 'wrong_number', label: 'Wrong number' },
 ] as const;
 
+export const OUTCOME_TONE: Record<string, string> = {
+  no_answer: 'bg-muted text-muted-foreground',
+  voicemail: 'bg-secondary text-secondary-foreground',
+  spoke: 'bg-crm-blue-soft/60 text-crm-blue',
+  interested: 'bg-crm-orange-soft/60 text-crm-orange',
+  callback: 'bg-secondary text-secondary-foreground',
+  info_requested: 'bg-crm-blue-soft/60 text-crm-blue',
+  demo_booked: 'bg-crm-orange-soft/60 text-crm-orange',
+  onboarding_agreed: 'bg-crm-green-soft/60 text-crm-green',
+  not_interested: 'bg-destructive/10 text-destructive',
+  wrong_number: 'bg-destructive/10 text-destructive',
+};
+
 export const BDM_PRIORITIES = [
   { id: 'low', label: 'Low' },
   { id: 'medium', label: 'Medium' },
