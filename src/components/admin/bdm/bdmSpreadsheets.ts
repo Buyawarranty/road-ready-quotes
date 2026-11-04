@@ -44,12 +44,10 @@ export async function runBdmExport(kind: ExportKind) {
 }
 
 export function downloadBdmTemplate() {
-  const headings = IMPORT_FIELDS.filter(f => f.id !== 'contact_email').map(f => f.label)
-    .concat(['Email'])
-    .map(h => (h === 'Dealership email' ? 'Dealership Email' : h));
+  const headings = IMPORT_FIELDS.map(f => f.label);
   const example = (o: Record<string, string>) => Object.fromEntries(headings.map(h => [h, o[h] ?? '']));
   const rows = [
-    example({ 'Dealership name': 'EXAMPLE – Northfield Motors', Postcode: 'B31 2AB', 'Town / city': 'Birmingham', 'Phone number': '0121 000 0000', 'Vehicle stock count': '45', 'Contact name': 'Sam Example', 'Job title': 'Sales Manager', 'Contact mobile': '07700 900000', Email: 'sam@example.com', Website: 'example.com', 'Pipeline stage': 'New lead', 'Next follow-up date': '15/11/2026', 'Follow-up action': 'Intro call', 'Lead priority': 'High', 'Lead source': 'Autotrader list', 'Do not contact': 'No' }),
+    example({ 'Dealership name': 'EXAMPLE – Northfield Motors', Postcode: 'B31 2AB', 'Town / city': 'Birmingham', 'Phone number': '0121 000 0000', 'Vehicle stock count': '45', 'Contact name': 'Sam Example', 'Job title': 'Sales Manager', 'Contact mobile': '07700 900000', 'Contact email': 'sam@example.com', Website: 'example.com', 'Pipeline stage': 'New lead', 'Next follow-up date': '15/11/2026', 'Follow-up action': 'Intro call', 'Lead priority': 'High', 'Lead source': 'Autotrader list', 'Do not contact': 'No' }),
     example({ 'Dealership name': 'EXAMPLE – Riverside Car Sales', Postcode: 'LS1 4AP', 'Town / city': 'Leeds', 'Phone number': '0113 000 0000', 'Vehicle stock count': '20', 'Contact name': 'Alex Example', 'Pipeline stage': 'Interested', 'Latest notes': 'Asked for trade pricing', 'Lead priority': 'Medium', 'Do not contact': 'No' }),
   ];
   const instructions = [
