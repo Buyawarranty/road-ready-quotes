@@ -37,3 +37,17 @@ describe('Panda Protect admin menu with the claims section retired', () => {
     assert.equal(resolvePandaSection('analytics'), 'dealer-overview');
   });
 });
+
+import { BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '../pandaAdminSections';
+describe('BDM and Manager jobs', () => {
+  it('BDM works the contact list but cannot open staff permissions', () => {
+    expect(BDM_ROLE_TABS).toContain('bdm-contacts');
+    expect(BDM_ROLE_TABS).not.toContain('user-permissions');
+  });
+  it('Manager sees most CRM sections but not permissions or pricing', () => {
+    expect(MANAGER_ROLE_TABS).toContain('bdm-contacts');
+    expect(MANAGER_ROLE_TABS).toContain('dealer-dealers');
+    expect(MANAGER_ROLE_TABS).not.toContain('user-permissions');
+    expect(MANAGER_ROLE_TABS).not.toContain('trader-pricing');
+  });
+});
