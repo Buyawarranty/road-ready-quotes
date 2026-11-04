@@ -284,7 +284,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
 
       {pager}
       <div className="overflow-x-auto rounded-lg border bg-card">
-        <table className="w-full min-w-[1400px] text-sm">
+        <table className="w-full min-w-[1800px] text-sm">
           <thead className="border-b bg-muted/70 text-xs text-muted-foreground">
             <tr>
               <th className="bg-muted p-2 text-right font-medium">#</th>
@@ -306,9 +306,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={11} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
+              <tr><td colSpan={15} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
             ) : rows.length === 0 ? (
-              <tr><td colSpan={11} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
+              <tr><td colSpan={15} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
             ) : rows.map((r, i) => (
               <BdmCallingRow
                 key={r.id}
