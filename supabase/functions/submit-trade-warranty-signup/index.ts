@@ -96,6 +96,23 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // One application per company: block repeats by email or dealership name.
+    const orFilters = [`email_address.ilike.${payload.email_address.replace(/[,()]/g, "")}`];
+    if (payload.dealership_name) {
+      orFilters.push(`dealership_name.ilike.${payload.dealership_name.replace(/[,()%*]/g, "")}`);
+    }
+    const { data: existing } = await supabase
+      .from("trade_warranty_signups")
+      .select("id")
+      .or(orFilters.join(","))
+      .limit(1);
+    if (existing && existing.length > 0) {
+      return new Response(JSON.stringify({ error: "already_registered", message: "Your company has already registered. Our team will be in touch — there's no need to apply again." }), {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const { data: signup, error: insertError } = await supabase
       .from("trade_warranty_signups")
       .insert(payload)

@@ -9,7 +9,7 @@ import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import pandaClaimApproved from '@/assets/panda-claim-approved.webp';
+import dealerSupportDesk from '@/assets/panda-dealer-support-desk.png.asset.json';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
 import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
@@ -88,7 +88,13 @@ const DealerComingSoon = () => {
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmittedState] = useState(() => {
+    try { return localStorage.getItem('pp_dealer_signup_done') === '1'; } catch { return false; }
+  });
+  const setSubmitted = (v: boolean) => {
+    setSubmittedState(v);
+    try { if (v) localStorage.setItem('pp_dealer_signup_done', '1'); } catch { /* ignore */ }
+  };
   const [errors, setErrors] = useState<{ email?: string; phone?: string; url?: string }>({});
   const [touched, setTouched] = useState<{ email?: boolean; phone?: boolean; url?: boolean }>({});
   const [savedVehicle, setSavedVehicle] = useState<{ title: string; fuel: string } | null>(null);
@@ -190,6 +196,14 @@ const DealerComingSoon = () => {
 
       const response = await supabase.functions.invoke('submit-trade-warranty-signup', { body: payload });
       if (response.error) {
+        let details: any = null;
+        try { details = await (response.error as any).context?.json?.(); } catch { /* ignore */ }
+        if (details?.error === 'already_registered') {
+          setSubmitted(true);
+          scrollFormIntoView();
+          toast.info(details.message);
+          return;
+        }
         const message = response.error.message || 'Failed to submit';
         const shouldFallback = /edge function|failed to send|failed to fetch|network/i.test(message);
         if (shouldFallback) await submitViaDatabaseFallback(payload);
@@ -560,13 +574,6 @@ const DealerComingSoon = () => {
                   </div>
                   <h3 className="text-2xl font-black text-crm-navy">Thank you — form received.</h3>
                   <p className="text-muted-foreground">Once we go live, a member of our team will be in touch with you shortly.</p>
-                  <button
-                    type="button"
-                    onClick={() => setSubmitted(false)}
-                    className="text-sm font-semibold text-primary hover:underline mt-2"
-                  >
-                    Submit another response
-                  </button>
                 </div>
               ) : (
                 <>
@@ -713,10 +720,10 @@ const DealerComingSoon = () => {
           {/* Vehicle image sits below the quote card so mobile dealers reach the form first */}
           <div className="mx-auto mt-10 flex max-w-3xl justify-center">
             <img
-              src={pandaClaimApproved}
-              alt="Vehicle with bonnet open as Panda Protect approves a claim covering parts, labour and workshop payment"
-              width={1536}
-              height={1024}
+              src={dealerSupportDesk.url}
+              alt="Panda Protect mascot giving a thumbs up beside a support agent using the dealer portal"
+              width={1472}
+              height={1056}
               loading="lazy"
               decoding="async"
               className="h-auto w-full"
