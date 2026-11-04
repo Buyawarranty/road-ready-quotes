@@ -184,8 +184,16 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </div>
       </div>
   );
+  // Contact data protection: block copy/cut/right-click/drag for everyone except Super Admin (who can export anyway).
+  const block = (e: React.SyntheticEvent) => {
+    if (isSuper) return;
+    const t = e.target as HTMLElement;
+    if (e.type === 'contextmenu' && t.closest('input, textarea')) return;
+    e.preventDefault();
+    if (e.type === 'copy' || e.type === 'cut') toast({ title: 'Copying is switched off', description: 'Contact details on this page are protected.' });
+  };
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${isSuper ? '' : 'select-none'}`} onCopy={block} onCut={block} onContextMenu={block} onDragStart={block}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">BDM contact list</h1>
