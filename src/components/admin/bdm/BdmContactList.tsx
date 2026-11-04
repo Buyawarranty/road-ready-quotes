@@ -228,6 +228,20 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </div>
         <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, town or postcode..." className="h-10" />
         <div className="flex flex-wrap gap-2">
+          <Select value={`${sort.col}:${sort.asc ? 'asc' : 'desc'}`} onValueChange={v => { const [col, d] = v.split(':'); setSort({ col, asc: d === 'asc' }); }}>
+            <SelectTrigger className="h-9 w-full sm:w-auto sm:min-w-[160px]" aria-label="Sort by"><SelectValue placeholder="Sort by" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="next_follow_up_at:asc">Sort: Next follow-up</SelectItem>
+              <SelectItem value="created_at:desc">Newest first</SelectItem>
+              <SelectItem value="created_at:asc">Oldest first</SelectItem>
+              <SelectItem value="activity_count:desc">Most active</SelectItem>
+              <SelectItem value="activity_count:asc">Least active</SelectItem>
+              <SelectItem value="order_count:desc">Most orders</SelectItem>
+              <SelectItem value="order_count:asc">Least orders</SelectItem>
+              <SelectItem value="vehicle_stock:desc">Most vehicles</SelectItem>
+              <SelectItem value="vehicle_stock:asc">Least vehicles</SelectItem>
+            </SelectContent>
+          </Select>
           {filterSelect('stage', 'Stage', BDM_STAGES.map(s => [s.id, s.label]))}
           {filterSelect('follow', 'Follow-up', [['overdue', 'Overdue'], ['today', 'Today'], ['week', 'Next 7 days'], ['none', 'None set']])}
           {filterSelect('stock', 'Stock', [['0-20', '0–20 vehicles'], ['21-50', '21–50'], ['51-100', '51–100'], ['101-0', 'Over 100']])}
