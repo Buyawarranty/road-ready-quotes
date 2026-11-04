@@ -632,6 +632,16 @@ const AdminDashboard = () => {
         setUserPermissions(adminUserData.permissions as Record<string, boolean>);
       }
 
+      // Per-user dashboard access switch (User Permissions → Admin dashboard access).
+      // Super admin can never be locked out.
+      const perms = adminUserData?.permissions as Record<string, boolean> | null;
+      if (primaryRole !== 'super_admin' && perms?.admin_dashboard_access === false) {
+        clearAdminAccessCache();
+        await supabase.auth.signOut();
+        navigate('/auth', { replace: true });
+        return;
+      }
+
       // Remember this verified access so the next load paints instantly.
       // UI-only cache — RLS still enforces every read/write server-side.
       if (permissionsResult) {
