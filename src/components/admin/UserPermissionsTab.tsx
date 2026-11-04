@@ -2280,6 +2280,7 @@ export const UserPermissionsTab = () => {
                               );
                             })}
                           </div>
+                          </>
                         )}
                       </div>
                     </TableCell>
