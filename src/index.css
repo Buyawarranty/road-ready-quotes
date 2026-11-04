@@ -9,6 +9,24 @@
 :root {
   --crm-green: 151 81% 38%;
   --crm-pink: 358 100% 69%;
+
+  /* Status / outcome pills: soft tint with a deep, tone-matched ink. */
+  --crm-tint-slate: 233 16% 89%;
+  --crm-ink-slate: 240 5% 14%;
+  --crm-tint-amber: 45 96% 89%;
+  --crm-ink-amber: 28 76% 28%;
+  --crm-tint-sky: 208 93% 94%;
+  --crm-ink-sky: 206 60% 32%;
+  --crm-tint-indigo: 219 89% 93%;
+  --crm-ink-indigo: 224 67% 38%;
+  --crm-tint-cream: 30 98% 96%;
+  --crm-ink-cream: 13 58% 31%;
+  --crm-tint-violet: 251 100% 96%;
+  --crm-ink-violet: 251 62% 34%;
+  --crm-tint-green: 151 60% 94%;
+  --crm-ink-green: 152 65% 20%;
+  --crm-tint-rose: 353 85% 94%;
+  --crm-ink-rose: 351 53% 36%;
 }
 
 /* Dealer CRM palette. Scoped tokens keep the operational portal distinct. */
