@@ -23,6 +23,7 @@ interface InviteUserRequest {
   role: 'admin' | 'member' | 'viewer' | 'guest' | 'blog_writer' | 'sales';
   permissions: Record<string, boolean>;
   brand?: string;
+  sendEmail?: boolean;
 }
 
 serve(async (req: Request) => {
@@ -221,9 +222,11 @@ serve(async (req: Request) => {
       console.error('Error storing invitation:', invitationError);
     }
 
-    // Send invitation email
-    try {
-      await resend.emails.send({
+    // Send invitation email (optional)
+    let emailSent = false;
+    let emailError: string | null = null;
+    if (body.sendEmail !== false) try {
+      const { error: sendErr } = await resend.emails.send({
         from: `${brand.name} Customer Care <${brand.noReplyEmail}>`,
         to: [email],
         subject: `You've been invited to the ${brand.name} Admin Dashboard`,
@@ -258,14 +261,19 @@ serve(async (req: Request) => {
           <p>Best regards,<br>The ${brand.name} Team</p>
         `
       });
-    } catch (emailError) {
-      console.error('Error sending invitation email:', emailError);
+      if (sendErr) { emailError = sendErr.message; console.error('Invitation email rejected:', sendErr); }
+      else emailSent = true;
+    } catch (err) {
+      emailError = err instanceof Error ? err.message : String(err);
+      console.error('Error sending invitation email:', err);
     }
 
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'User invited successfully',
-      tempPassword 
+      tempPassword,
+      emailSent,
+      emailError
     }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
