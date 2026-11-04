@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
   const rows: any[] = await req.json();
   const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const urls = rows.map((r) => r[8]).filter(Boolean);
-  const { data: ex, error: e1 } = await sb.from("bdm_dealerships").select("autotrader_url").in("autotrader_url", urls);
+  const { data: ex, error: e1 } = await sb.from("bdm_dealerships").select("autotrader_url").not("autotrader_url", "is", null).limit(20000);
   if (e1) return new Response(JSON.stringify(e1), { status: 500 });
   const have = new Set((ex ?? []).map((x: any) => x.autotrader_url));
   const pc = /([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})\s*$/i;
