@@ -2045,6 +2045,7 @@ export type Database = {
       }
       bdm_dealerships: {
         Row: {
+          activity_count: number
           address: string | null
           assigned_bdm: string | null
           autotrader_url: string | null
@@ -2065,6 +2066,7 @@ export type Database = {
           name: string
           next_action: string | null
           next_follow_up_at: string | null
+          order_count: number
           phone: string | null
           phone_digits: string | null
           postcode: string | null
@@ -2081,6 +2083,7 @@ export type Database = {
           website_domain: string | null
         }
         Insert: {
+          activity_count?: number
           address?: string | null
           assigned_bdm?: string | null
           autotrader_url?: string | null
@@ -2101,6 +2104,7 @@ export type Database = {
           name: string
           next_action?: string | null
           next_follow_up_at?: string | null
+          order_count?: number
           phone?: string | null
           phone_digits?: string | null
           postcode?: string | null
@@ -2117,6 +2121,7 @@ export type Database = {
           website_domain?: string | null
         }
         Update: {
+          activity_count?: number
           address?: string | null
           assigned_bdm?: string | null
           autotrader_url?: string | null
@@ -2137,6 +2142,7 @@ export type Database = {
           name?: string
           next_action?: string | null
           next_follow_up_at?: string | null
+          order_count?: number
           phone?: string | null
           phone_digits?: string | null
           postcode?: string | null
