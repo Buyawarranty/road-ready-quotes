@@ -169,7 +169,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const SortHead: React.FC<{ col: string; children: React.ReactNode; tone?: string }> = ({ col, children, tone }) => (
     <th className={`p-2 text-left font-medium ${tone ?? ''}`}>
       <button type="button" onClick={() => toggleSort(col)} className="inline-flex items-center gap-1 hover:text-foreground">
-        {children}<ArrowUpDown className={`h-3 w-3 ${sort.col === col ? 'text-foreground' : 'opacity-40'}`} />
+        {children}<ArrowUpDown className={`h-3 w-3 ${sort.col === col ? 'text-foreground' : 'text-muted-foreground'}`} />
       </button>
     </th>
   );
