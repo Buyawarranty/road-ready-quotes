@@ -1943,6 +1943,384 @@ export type Database = {
           },
         ]
       }
+      bdm_activities: {
+        Row: {
+          activity_type: string
+          bdm_user_id: string | null
+          contact_name: string | null
+          created_at: string
+          dealership_id: string
+          id: string
+          next_action: string | null
+          next_follow_up_at: string | null
+          notes: string | null
+          outcome: string | null
+        }
+        Insert: {
+          activity_type: string
+          bdm_user_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          dealership_id: string
+          id?: string
+          next_action?: string | null
+          next_follow_up_at?: string | null
+          notes?: string | null
+          outcome?: string | null
+        }
+        Update: {
+          activity_type?: string
+          bdm_user_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          dealership_id?: string
+          id?: string
+          next_action?: string | null
+          next_follow_up_at?: string | null
+          notes?: string | null
+          outcome?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_activities_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bdm_contacts: {
+        Row: {
+          created_at: string
+          dealership_id: string
+          email: string | null
+          full_name: string
+          id: string
+          is_decision_maker: boolean
+          is_primary: boolean
+          job_title: string | null
+          mobile: string | null
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dealership_id: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_decision_maker?: boolean
+          is_primary?: boolean
+          job_title?: string | null
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dealership_id?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_decision_maker?: boolean
+          is_primary?: boolean
+          job_title?: string | null
+          mobile?: string | null
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_contacts_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bdm_dealerships: {
+        Row: {
+          address: string | null
+          assigned_bdm: string | null
+          county: string | null
+          created_at: string
+          created_by: string | null
+          current_provider: string | null
+          dealer_id: string | null
+          do_not_contact: boolean
+          email: string | null
+          est_monthly_sales: number | null
+          id: string
+          last_attempt_at: string | null
+          last_outcome: string | null
+          last_spoken_at: string | null
+          latest_note: string | null
+          lead_source: string | null
+          name: string
+          next_action: string | null
+          next_follow_up_at: string | null
+          phone: string | null
+          phone_digits: string | null
+          postcode: string | null
+          priority: string
+          signup_id: string | null
+          stage: string
+          stock_updated_at: string | null
+          town: string | null
+          updated_at: string
+          vehicle_stock: number | null
+          website: string | null
+          website_domain: string | null
+        }
+        Insert: {
+          address?: string | null
+          assigned_bdm?: string | null
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_provider?: string | null
+          dealer_id?: string | null
+          do_not_contact?: boolean
+          email?: string | null
+          est_monthly_sales?: number | null
+          id?: string
+          last_attempt_at?: string | null
+          last_outcome?: string | null
+          last_spoken_at?: string | null
+          latest_note?: string | null
+          lead_source?: string | null
+          name: string
+          next_action?: string | null
+          next_follow_up_at?: string | null
+          phone?: string | null
+          phone_digits?: string | null
+          postcode?: string | null
+          priority?: string
+          signup_id?: string | null
+          stage?: string
+          stock_updated_at?: string | null
+          town?: string | null
+          updated_at?: string
+          vehicle_stock?: number | null
+          website?: string | null
+          website_domain?: string | null
+        }
+        Update: {
+          address?: string | null
+          assigned_bdm?: string | null
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_provider?: string | null
+          dealer_id?: string | null
+          do_not_contact?: boolean
+          email?: string | null
+          est_monthly_sales?: number | null
+          id?: string
+          last_attempt_at?: string | null
+          last_outcome?: string | null
+          last_spoken_at?: string | null
+          latest_note?: string | null
+          lead_source?: string | null
+          name?: string
+          next_action?: string | null
+          next_follow_up_at?: string | null
+          phone?: string | null
+          phone_digits?: string | null
+          postcode?: string | null
+          priority?: string
+          signup_id?: string | null
+          stage?: string
+          stock_updated_at?: string | null
+          town?: string | null
+          updated_at?: string
+          vehicle_stock?: number | null
+          website?: string | null
+          website_domain?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_dealerships_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bdm_export_log: {
+        Row: {
+          created_at: string
+          format: string
+          id: string
+          scope: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          format: string
+          id?: string
+          scope: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          format?: string
+          id?: string
+          scope?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bdm_import_errors: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          job_id: string
+          row_number: number | null
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          job_id: string
+          row_number?: number | null
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          job_id?: string
+          row_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_import_errors_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_import_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bdm_import_jobs: {
+        Row: {
+          created_at: string
+          created_count: number
+          failed_count: number
+          file_name: string | null
+          id: string
+          skipped_count: number
+          updated_count: number
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_count?: number
+          failed_count?: number
+          file_name?: string | null
+          id?: string
+          skipped_count?: number
+          updated_count?: number
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_count?: number
+          failed_count?: number
+          file_name?: string | null
+          id?: string
+          skipped_count?: number
+          updated_count?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      bdm_stage_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          dealership_id: string
+          from_stage: string | null
+          id: string
+          to_stage: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          dealership_id: string
+          from_stage?: string | null
+          id?: string
+          to_stage: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          dealership_id?: string
+          from_stage?: string | null
+          id?: string
+          to_stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_stage_history_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bdm_tasks: {
+        Row: {
+          action: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          dealership_id: string
+          due_at: string
+          id: string
+          status: string
+        }
+        Insert: {
+          action?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          dealership_id: string
+          due_at: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          action?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          dealership_id?: string
+          due_at?: string
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_tasks_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocked_ips: {
         Row: {
           blocked_at: string
@@ -14844,6 +15222,40 @@ export type Database = {
       }
       auto_expire_discount_codes: { Args: never; Returns: number }
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
+      bdm_account_summary: { Args: { p_dealership: string }; Returns: Json }
+      bdm_can_access: { Args: { _dealership: string }; Returns: boolean }
+      bdm_export_full: {
+        Args: { p_format: string; p_scope: string }
+        Returns: Json
+      }
+      bdm_import_rows: {
+        Args: { p_file_name: string; p_rows: Json }
+        Returns: Json
+      }
+      bdm_is_manager: { Args: { _uid: string }; Returns: boolean }
+      bdm_is_staff: { Args: { _uid: string }; Returns: boolean }
+      bdm_is_super: { Args: { _uid: string }; Returns: boolean }
+      bdm_kpis: { Args: never; Returns: Json }
+      bdm_log_activity: {
+        Args: {
+          p_assigned?: string
+          p_contact: string
+          p_dealership: string
+          p_follow_up: string
+          p_next_action: string
+          p_notes: string
+          p_outcome: string
+          p_type: string
+        }
+        Returns: string
+      }
+      bdm_staff_list: {
+        Args: never
+        Returns: {
+          name: string
+          user_id: string
+        }[]
+      }
       bulk_reassign_leads_to_agent: {
         Args: {
           p_date_from?: string
