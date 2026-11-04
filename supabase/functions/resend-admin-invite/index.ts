@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const body: ResendInviteRequest = await req.json();
     const { userId, email } = body;
-    const brand: Brand = resolveBrand(req, { brand: body?.brand });
+    const brand: Brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
 
     // Get user details from admin_users table
     const { data: adminUser, error: fetchError } = await supabaseClient
