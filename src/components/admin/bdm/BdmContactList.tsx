@@ -21,7 +21,7 @@ import BdmImportDialog from './BdmImportDialog';
 import type { BdmStaff } from './BdmLogActivityForm';
 import { downloadBdmTemplate, runBdmExport, ExportKind } from './bdmSpreadsheets';
 
-const PAGE = 25;
+const PAGE = 200;
 const MANAGER_ROLES = ['super_admin', 'admin', 'sales_manager'];
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -174,6 +174,15 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     </th>
   );
 
+  const pager = (
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">{count === 0 ? 0 : page * PAGE + 1}–{Math.min(count, (page + 1) * PAGE)} of {count} dealership{count === 1 ? '' : 's'}</span>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous</Button>
+          <span>Page {page + 1} of {pages}</span>
+          <Button size="sm" variant="outline" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>Next</Button>
+        </div>
+  );
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -264,10 +273,12 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </div>
       </div>
 
+      {pager}
       <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full min-w-[1400px] text-sm">
           <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
             <tr>
+              <th className="p-2 text-right font-medium">#</th>
               <SortHead col="stage">Status</SortHead>
               <SortHead col="call_count">Calls</SortHead>
               <th className="p-2 text-left font-medium">Actions</th>
@@ -282,12 +293,13 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={10} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
+              <tr><td colSpan={11} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
             ) : rows.length === 0 ? (
-              <tr><td colSpan={10} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
-            ) : rows.map(r => (
+              <tr><td colSpan={11} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
+            ) : rows.map((r, i) => (
               <BdmCallingRow
                 key={r.id}
+                rowNumber={page * PAGE + i + 1}
                 r={r as any}
                 c={contactsBy[r.id]}
                 overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
@@ -300,13 +312,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-muted-foreground">{count} dealership{count === 1 ? '' : 's'}</span>
-        <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous</Button>
-          <span>Page {page + 1} of {pages}</span>
-          <Button size="sm" variant="outline" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>Next</Button>
-        </div>
+      {pager}
       </div>
 
       <BdmDealershipDrawer dealershipId={openId} initialTab={openTab} staff={staff} isManager={isManager} onClose={() => setOpenId(null)} onChanged={refresh} />
