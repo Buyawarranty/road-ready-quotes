@@ -578,11 +578,14 @@ export const UserPermissionsTab = () => {
         body: invitePayload
       });
 
-      if (error) throw error;
+      if (error) {
+        let msg = error.message;
+        try { const ctx = await (error as any).context?.json?.(); if (ctx?.error) msg = ctx.error; } catch { /* ignore */ }
+        throw new Error(msg);
+      }
 
-      toast.success(`User invited successfully! Password: ${data.tempPassword}`, {
-        duration: 10000
-      });
+      toast.success('User login created');
+      setRevealedCreds({ email: inviteData.email, password: data.tempPassword, loginUrl: loginUrlForRole(inviteData.role) });
 
       // Persist team assignment for the new admin user (if a team was chosen)
       if (teamId && teamId !== '__all__') {
@@ -1283,12 +1286,13 @@ export const UserPermissionsTab = () => {
           <DialogTrigger asChild>
             <Button>
               <UserPlus className="h-4 w-4 mr-2" />
-              Invite User
+              Create user login
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Invite New User</DialogTitle>
+              <DialogTitle>Create a new user login</DialogTitle>
+              <p className="text-sm text-muted-foreground">Set their username (email) and password, then choose their access level. They sign in at /auth.</p>
             </DialogHeader>
             <div className="space-y-4 pr-2">
               <div className="grid grid-cols-2 gap-4">
@@ -1323,14 +1327,23 @@ export const UserPermissionsTab = () => {
               </div>
               
               <div>
-                <Label htmlFor="password">Initial Password</Label>
-                <Input
-                  id="password"
-                  type="text"
-                  value={inviteData.password}
-                  onChange={(e) => setInviteData(prev => ({ ...prev, password: e.target.value }))}
-                  placeholder="Leave empty to auto-generate"
-                />
+                <Label htmlFor="password">Password</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="password"
+                    type="text"
+                    autoComplete="new-password"
+                    value={inviteData.password}
+                    onChange={(e) => setInviteData(prev => ({ ...prev, password: e.target.value }))}
+                    placeholder="At least 8 characters, or leave empty to auto-generate"
+                  />
+                  <Button type="button" variant="outline" onClick={() => {
+                    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+                    const buf = new Uint32Array(14); crypto.getRandomValues(buf);
+                    const pw = Array.from(buf, n => chars[n % chars.length]).join('');
+                    setInviteData(prev => ({ ...prev, password: pw }));
+                  }}>Generate</Button>
+                </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Set a custom password or leave empty to auto-generate a secure one
                 </p>
