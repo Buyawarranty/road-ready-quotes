@@ -42,14 +42,14 @@ export const DealerPublicHeader: React.FC = () => {
               />
             </Link>
 
-            <nav className="hidden xl:flex items-center" aria-label="Main navigation">
+            <nav className="hidden lg:flex items-center" aria-label="Main navigation">
               {NAV_ITEMS.map((item) => (
                 <Link key={item.label} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined} className={`public-header-nav-link${location.pathname === item.to ? ' is-active' : ''}`}>
                   {item.label}
                 </Link>
               ))}
 
-              <Popover>
+              <div className="hidden xl:block"><Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="public-header-call" aria-label="Open call options">
                     <Phone aria-hidden="true" /> Call Us
@@ -79,7 +79,7 @@ export const DealerPublicHeader: React.FC = () => {
                     <span><strong>WhatsApp Us</strong><small>Start a chat</small></span>
                   </a>
                 </PopoverContent>
-              </Popover>
+              </Popover></div>
 
               <Link to="/dealer-portal/signup" className="home-header-quote-link">
                 Dealer Sign Up <ArrowRight aria-hidden="true" />
@@ -89,16 +89,23 @@ export const DealerPublicHeader: React.FC = () => {
               </Link>
             </nav>
 
+            <div className="flex items-center gap-2 lg:hidden">
+              <Link to="/dealer-portal/login" className="home-header-login-link !px-3 !py-2 text-sm"><LogIn aria-hidden="true" /> Login</Link>
+              <Link to="/dealer-portal/signup" className="home-header-quote-link !px-3 !py-2 text-sm">Sign Up</Link>
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="xl:hidden public-header-menu-button" aria-label="Open menu">
+                <Button variant="ghost" size="icon" className="lg:hidden public-header-menu-button" aria-label="Open menu">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="public-mobile-menu w-[min(90vw,380px)] overflow-y-auto">
                 <div className="flex h-full flex-col pt-8">
                   <OptimizedImage src={pandaProtectLogo} alt="Panda Protect" className="h-10 w-auto self-start object-contain" width={1226} height={594} />
-                  <nav className="mt-7 flex flex-col" aria-label="Mobile navigation">
+                  <div className="mt-6 grid gap-3">
+                    <Button asChild className="home-header-quote-link"><Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Dealer Sign Up <ArrowRight /></Link></Button>
+                    <Button asChild variant="outline" className="home-header-login-link"><Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)}><LogIn /> Login</Link></Button>
+                  </div>
+                  <nav className="mt-5 flex flex-col" aria-label="Mobile navigation">
                     {NAV_ITEMS.map((item) => (
                       <Link key={item.label} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined} onClick={() => setMobileOpen(false)} className={`public-mobile-nav-link${location.pathname === item.to ? ' is-active' : ''}`}>
                         {item.label}<ArrowRight aria-hidden="true" />
@@ -114,13 +121,10 @@ export const DealerPublicHeader: React.FC = () => {
                     <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="public-whatsapp-option"><MessageCircle aria-hidden="true" /><span><strong>WhatsApp Us</strong><small>Start a chat</small></span></a>
                   </div>
 
-                  <div className="mt-auto grid gap-3 pt-6">
-                    <Button asChild className="home-header-quote-link"><Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Dealer Sign Up <ArrowRight /></Link></Button>
-                    <Button asChild variant="outline" className="home-header-login-link"><Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)}><LogIn /> Login</Link></Button>
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>
+            </div>
           </div>
         </div>
       </header>
