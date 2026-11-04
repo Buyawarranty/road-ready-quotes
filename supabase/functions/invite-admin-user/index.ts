@@ -52,6 +52,32 @@ serve(async (req: Request) => {
       });
     }
 
+    // Only active Super Admins and Admins may create staff logins; only Super Admin can create another Super Admin.
+    const { data: callerRows } = await supabase
+      .from('admin_users').select('role').eq('user_id', user.id).eq('is_active', true);
+    const callerRoles = (callerRows || []).map((r: any) => r.role);
+    const callerIsSuper = callerRoles.includes('super_admin');
+    if (!callerIsSuper && !callerRoles.includes('admin')) {
+      return new Response(JSON.stringify({ error: 'Only Super Admin or Admin can create staff logins' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    if ((role as string) === 'super_admin' && !callerIsSuper) {
+      return new Response(JSON.stringify({ error: 'Only a Super Admin can create another Super Admin' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !role) {
+      return new Response(JSON.stringify({ error: 'A valid email and access level are required' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    if (password && password.trim().length > 0 && password.trim().length < 8) {
+      return new Response(JSON.stringify({ error: 'Password must be at least 8 characters' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // Try to create user in auth.users
     let userId: string;
     let isExistingUser = false;
