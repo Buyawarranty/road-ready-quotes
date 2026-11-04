@@ -97,6 +97,7 @@ export interface BdmDealership {
   assigned_bdm: string | null; dealer_id: string | null; last_attempt_at: string | null; last_spoken_at: string | null;
   last_outcome: string | null; next_follow_up_at: string | null; next_action: string | null; latest_note: string | null;
   created_at: string;
+  star_rating?: number | null; review_count?: number | null; autotrader_url?: string | null;
 }
 
 export const normalisePostcode = (p?: string | null) => (p || '').replace(/\s+/g, '').toUpperCase();
