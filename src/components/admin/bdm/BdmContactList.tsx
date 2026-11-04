@@ -146,11 +146,11 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   };
 
   const kpiCards = [
-    { id: 'due_today', label: 'Calls due today', icon: CalendarClock, value: kpis?.due_today },
-    { id: 'overdue', label: 'Overdue follow-ups', icon: AlertTriangle, value: kpis?.overdue, alert: true },
-    { id: 'interested', label: 'Interested dealers', icon: Star, value: kpis?.interested },
-    { id: 'onboarding', label: 'Onboarding', icon: Rocket, value: kpis?.onboarding },
-    { id: 'activated', label: 'Activated this month', icon: UserCheck, value: kpis?.activated },
+    { id: 'due_today', label: 'Calls due today', icon: CalendarClock, value: kpis?.due_today, tone: 'bg-secondary' },
+    { id: 'overdue', label: 'Overdue follow-ups', icon: AlertTriangle, value: kpis?.overdue, alert: true, tone: 'bg-destructive/5' },
+    { id: 'interested', label: 'Interested dealers', icon: Star, value: kpis?.interested, tone: 'bg-crm-orange-soft' },
+    { id: 'onboarding', label: 'Onboarding', icon: Rocket, value: kpis?.onboarding, tone: 'bg-muted/50' },
+    { id: 'activated', label: 'Activated this month', icon: UserCheck, value: kpis?.activated, tone: 'bg-crm-green-soft' },
   ];
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(NO_FILTERS) || !!kpiFilter || !!search;
   const pages = Math.max(1, Math.ceil(count / PAGE));
@@ -166,8 +166,8 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     </Select>
   );
 
-  const SortHead: React.FC<{ col: string; children: React.ReactNode }> = ({ col, children }) => (
-    <th className="p-2 text-left font-medium">
+  const SortHead: React.FC<{ col: string; children: React.ReactNode; tone?: string }> = ({ col, children, tone }) => (
+    <th className={`p-2 text-left font-medium ${tone ?? ''}`}>
       <button type="button" onClick={() => toggleSort(col)} className="inline-flex items-center gap-1 hover:text-foreground">
         {children}<ArrowUpDown className={`h-3 w-3 ${sort.col === col ? 'text-foreground' : 'opacity-40'}`} />
       </button>
@@ -175,7 +175,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   );
 
   const pager = (
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2 text-sm">
         <span className="text-muted-foreground">{count === 0 ? 0 : page * PAGE + 1}–{Math.min(count, (page + 1) * PAGE)} of {count} dealership{count === 1 ? '' : 's'}</span>
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous</Button>
@@ -226,14 +226,14 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
         {kpiCards.map(k => (
           <button key={k.id} type="button" onClick={() => setKpiFilter(f => (f === k.id ? null : k.id))} aria-pressed={kpiFilter === k.id}
-            className={`rounded-lg border bg-card p-3 text-left transition-colors hover:border-crm-orange ${kpiFilter === k.id ? 'border-crm-orange ring-1 ring-crm-orange' : ''}`}>
+            className={`rounded-lg border p-3 text-left transition-colors hover:border-crm-orange ${k.tone} ${kpiFilter === k.id ? 'border-crm-orange ring-1 ring-crm-orange' : ''}`}>
             <div className="flex items-center gap-2 text-xs text-muted-foreground"><k.icon className="h-4 w-4" />{k.label}</div>
             <p className={`mt-1 text-2xl font-bold ${k.alert && k.value ? 'text-destructive' : ''}`}>{k.value ?? '–'}</p>
           </button>
         ))}
       </div>
 
-      <div className="space-y-2 rounded-lg border bg-card p-3">
+      <div className="space-y-2 rounded-lg border bg-muted/25 p-3">
         <div className="flex flex-wrap items-center gap-2">
           <Label htmlFor="bdm-town" className="text-sm font-semibold">Town</Label>
           <Select value={town} onValueChange={setTown}>
@@ -285,15 +285,15 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       {pager}
       <div className="overflow-x-auto rounded-lg border bg-card">
         <table className="w-full min-w-[1400px] text-sm">
-          <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
+          <thead className="border-b bg-muted/70 text-xs uppercase text-muted-foreground">
             <tr>
-              <th className="p-2 text-right font-medium">#</th>
+              <th className="bg-muted p-2 text-right font-medium">#</th>
               <SortHead col="stage">Status</SortHead>
-              <SortHead col="call_count">Calls</SortHead>
-              <th className="p-2 text-left font-medium">Actions</th>
+              <SortHead col="call_count" tone="bg-crm-blue-soft/60">Calls</SortHead>
+              <th className="bg-muted/50 p-2 text-left font-medium">Actions</th>
               <SortHead col="name">Dealership / contact</SortHead>
               <th className="p-2 text-left font-medium">Phone</th>
-              <th className="p-2 text-left font-medium">WhatsApp</th>
+              <th className="bg-crm-green-soft/50 p-2 text-left font-medium">WhatsApp</th>
               <th className="p-2 text-left font-medium">Email</th>
               <SortHead col="last_spoken_at">Last spoken</SortHead>
               <SortHead col="next_follow_up_at">Follow-up</SortHead>
@@ -309,6 +309,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
               <BdmCallingRow
                 key={r.id}
                 rowNumber={page * PAGE + i + 1}
+                striped={i % 2 === 1}
                 r={r as any}
                 c={contactsBy[r.id]}
                 overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
