@@ -16,6 +16,7 @@ import {
 } from '@/lib/bdm/bdmShared';
 import BdmDealershipDrawer from './BdmDealershipDrawer';
 import BdmCallQueue from './BdmCallQueue';
+import BdmCallingRow from './BdmCallingRow';
 import BdmImportDialog from './BdmImportDialog';
 import type { BdmStaff } from './BdmLogActivityForm';
 import { downloadBdmTemplate, runBdmExport, ExportKind } from './bdmSpreadsheets';
@@ -53,7 +54,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [queueOpen, setQueueOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [contactsBy, setContactsBy] = useState<Record<string, { full_name: string; phone: string | null; mobile: string | null }>>({});
+  const [contactsBy, setContactsBy] = useState<Record<string, { full_name: string; phone: string | null; mobile: string | null; email?: string | null }>>({});
   const [towns, setTowns] = useState<{ town: string; dealerships: number }[]>([]);
   const [town, setTown] = useState<string>('all');
 
@@ -121,7 +122,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     const list: BdmDealership[] = data || [];
     setRows(list); setCount(c ?? 0); setLoading(false);
     if (list.length) {
-      const { data: cs } = await db.from('bdm_contacts').select('dealership_id, full_name, phone, mobile, is_primary')
+      const { data: cs } = await db.from('bdm_contacts').select('dealership_id, full_name, phone, mobile, email, is_primary')
         .in('dealership_id', list.map(r => r.id)).order('is_primary', { ascending: false });
       const m: Record<string, any> = {};
       for (const c2 of cs || []) if (!m[c2.dealership_id]) m[c2.dealership_id] = c2;
@@ -254,68 +255,38 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-card">
-        <table className="w-full min-w-[900px] text-sm">
-          <thead className="border-b bg-muted/40 text-xs text-muted-foreground">
+        <table className="w-full min-w-[1400px] text-sm">
+          <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
             <tr>
-              <SortHead col="name">Dealership</SortHead>
-              <SortHead col="vehicle_stock">Vehicles</SortHead>
-              <th className="p-2 text-left font-medium">Contact</th>
-              <SortHead col="stage">Stage</SortHead>
+              <SortHead col="stage">Status</SortHead>
+              <SortHead col="call_count">Calls</SortHead>
+              <th className="p-2 text-left font-medium">Actions</th>
+              <SortHead col="name">Dealership / contact</SortHead>
+              <th className="p-2 text-left font-medium">Phone</th>
+              <th className="p-2 text-left font-medium">WhatsApp</th>
+              <th className="p-2 text-left font-medium">Email</th>
               <SortHead col="last_spoken_at">Last spoken</SortHead>
-              <SortHead col="next_follow_up_at">Next follow-up</SortHead>
-              <th className="p-2 text-left font-medium">Notes (latest)</th>
-              <th className="p-2 text-right font-medium">Actions</th>
+              <SortHead col="next_follow_up_at">Follow-up</SortHead>
+              <th className="p-2 text-left font-medium">Latest note</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
+              <tr><td colSpan={10} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
             ) : rows.length === 0 ? (
-              <tr><td colSpan={8} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
-            ) : rows.map(r => {
-              const c = contactsBy[r.id];
-              const phone = r.phone || c?.phone || c?.mobile;
-              const overdue = r.next_follow_up_at && new Date(r.next_follow_up_at) < today;
-              return (
-                <tr key={r.id} className={`border-b last:border-0 hover:bg-muted/30 ${overdue ? 'border-l-2 border-l-destructive' : ''}`}>
-                  <td className="p-2">
-                    <button type="button" onClick={() => open(r.id)} className="text-left font-bold hover:underline">{r.name}</button>
-                    <p className="text-xs text-muted-foreground">{[r.town, r.postcode].filter(Boolean).join(' · ')}{r.do_not_contact && <span className="ml-1 text-destructive">· Do not contact</span>}</p>
-                  </td>
-                  <td className="p-2">{r.vehicle_stock ?? '—'}</td>
-                  <td className="p-2">
-                    <p>{c?.full_name ?? '—'}</p>
-                    {phone && <a href={`tel:${phone.replace(/\s/g, '')}`} className="text-xs text-primary hover:underline">{phone}</a>}
-                  </td>
-                  <td className="p-2"><span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${STAGE_TONE[r.stage] ?? 'bg-muted'}`}>{stageLabel(r.stage)}</span></td>
-                  <td className="p-2 whitespace-nowrap">{shortDate(r.last_spoken_at)}</td>
-                  <td className="p-2">
-                    <p className={`whitespace-nowrap ${overdue ? 'font-semibold text-destructive' : ''}`}>{shortDate(r.next_follow_up_at)}</p>
-                    {r.next_action && <p className="max-w-[160px] truncate text-xs text-muted-foreground">{r.next_action}</p>}
-                  </td>
-                  <td className="p-2"><p className="max-w-[220px] truncate text-xs text-muted-foreground" title={r.latest_note ?? ''}>{r.latest_note ?? '—'}</p></td>
-                  <td className="p-2 text-right">
-                    <div className="flex justify-end gap-1">
-                      {phone && !r.do_not_contact && (
-                        <Button asChild size="icon" variant="ghost" aria-label={`Call ${r.name}`}><a href={`tel:${phone.replace(/\s/g, '')}`}><Phone className="h-4 w-4" /></a></Button>
-                      )}
-                      <Button size="sm" variant="outline" onClick={() => open(r.id, 'activity')}>Log call</Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" aria-label="More actions"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => open(r.id, 'activity')}>Add note</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => open(r.id, 'activity')}>Schedule follow-up</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => open(r.id, 'overview')}>Edit details</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => open(r.id, 'activity')}>Contact history</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => open(r.id, 'contacts')}>Contacts</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    {isManager && <p className="mt-0.5 text-[11px] text-muted-foreground">{staffName(r.assigned_bdm) ?? 'Unassigned'}</p>}
-                  </td>
-                </tr>
-              );
-            })}
+              <tr><td colSpan={10} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
+            ) : rows.map(r => (
+              <BdmCallingRow
+                key={r.id}
+                r={r as any}
+                c={contactsBy[r.id]}
+                overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
+                assignedName={staffName(r.assigned_bdm)}
+                showAssigned={isManager}
+                onOpen={open}
+                onChanged={refresh}
+              />
+            ))}
           </tbody>
         </table>
       </div>
