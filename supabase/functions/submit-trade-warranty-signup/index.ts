@@ -171,8 +171,8 @@ serve(async (req) => {
       const applicantHtml = `
         <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-            <div style="background:#1e3a5f;padding:24px;">
-              <h1 style="margin:0;color:#ffffff;font-size:20px;">${brand.name}</h1>
+            <div style="background:#ffffff;padding:20px 24px;border-bottom:4px solid #EC6F33;text-align:left;">
+              <img src="https://www.pandaprotect.co.uk/panda-protect-logo-email.png" alt="${brand.name}" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0;" />
             </div>
             <div style="padding:28px;color:#111827;">
               <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">We've received your interest</h2>
@@ -184,7 +184,7 @@ serve(async (req) => {
                 <div style="padding:4px 0;"><strong>Email:</strong> ${esc(payload.email_address)}</div>
                 <div style="padding:4px 0;"><strong>Phone:</strong> ${esc(payload.phone_number)}</div>
               </div>
-              <p style="line-height:1.6;">We'll be in touch within 1 business day to let you know the outcome. If your application is approved you'll receive your dealer portal login details by email.</p>
+              <p style="line-height:1.6;">We'll be in touch within 3 to 5 working days to let you know the outcome. If your application is approved you'll receive your dealer portal login details by email.</p>
               <p style="line-height:1.6;">Kind regards,<br/>The ${brand.name} Trade Team</p>
             </div>
             <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
