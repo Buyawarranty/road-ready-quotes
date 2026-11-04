@@ -17,7 +17,7 @@ export function parseReminder(text: string, now = new Date()): Date | null {
   let h = 9, m = 0;
   const tm = t.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/);
   const hasTime = tm && (tm[3] || tm[2]);
-  if (hasTime && tm) { h = +tm[1] % 12 + (tm[3] === 'pm' ? 12 : tm[3] === 'am' ? 0 : (+tm[1] === 12 ? 12 : 0)); if (!tm[3]) h = +tm[1]; m = tm[2] ? +tm[2] : 0; }
+  if (hasTime && tm) { h = tm[3] ? (+tm[1] % 12) + (tm[3] === 'pm' ? 12 : 0) : +tm[1]; m = tm[2] ? +tm[2] : 0; }
   if (h > 23 || m > 59) return null;
   let d: Date | null = null;
   const inN = t.match(/in\s+(\d+)\s*(hour|hr|day|week)s?/);
