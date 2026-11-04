@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { BDM_ACTIVITY_TYPES, BDM_OUTCOMES } from '@/lib/bdm/bdmShared';
+import { BDM_ACTIVITY_TYPES, BDM_OUTCOMES, OUTCOME_TONE } from '@/lib/bdm/bdmShared';
 
 export interface BdmStaff { user_id: string; name: string }
 
