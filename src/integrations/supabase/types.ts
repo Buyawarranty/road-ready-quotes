@@ -15255,11 +15255,16 @@ export type Database = {
       }
       auto_expire_discount_codes: { Args: never; Returns: number }
       backfill_lead_data_from_step2: { Args: never; Returns: Json }
+      bdm_access_ok: { Args: { _uid: string }; Returns: boolean }
       bdm_account_summary: { Args: { p_dealership: string }; Returns: Json }
       bdm_can_access: { Args: { _dealership: string }; Returns: boolean }
       bdm_export_full: {
         Args: { p_format: string; p_scope: string }
         Returns: Json
+      }
+      bdm_has_role: {
+        Args: { _roles: string[]; _uid: string }
+        Returns: boolean
       }
       bdm_has_town: { Args: { _town: string; _uid: string }; Returns: boolean }
       bdm_import_rows: {
