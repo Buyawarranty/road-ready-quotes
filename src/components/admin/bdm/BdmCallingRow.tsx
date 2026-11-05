@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import BdmReminderPopover from './BdmReminderPopover';
 import BdmQuickNotePopover from './BdmQuickNotePopover';
+import BdmEditNotes from './BdmEditNotes';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -280,6 +281,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
             <div className="grid gap-1"><Label htmlFor={`fu-${r.id}`}>Follow-up date</Label><Input id={`fu-${r.id}`} type="date" value={form.follow} onChange={e => setForm(f => ({ ...f, follow: e.target.value }))} /></div>
             <div className="grid gap-1"><Label htmlFor={`na-${r.id}`}>Next action</Label><Input id={`na-${r.id}`} maxLength={200} value={form.action} onChange={e => setForm(f => ({ ...f, action: e.target.value }))} placeholder="e.g. Call back about pricing" /></div>
           </div>
+          <BdmEditNotes dealershipId={r.id} dealershipName={r.name} onSaved={onChanged} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
             <Button onClick={saveEdit} disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</Button>

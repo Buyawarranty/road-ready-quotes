@@ -31,6 +31,7 @@ import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner'
 import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
+import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
 
 import { OpenPoolLeadAlert } from '@/components/admin/leads/OpenPoolLeadAlert';
@@ -1198,6 +1199,7 @@ const AdminDashboardInner: React.FC<{
 
       {/* Fresh-lead top banner + floating popup for the current agent */}
       <NewLeadAlerts />
+      <BdmNoteAlerts />
 
 
       {/* Persistent "Take lead" popup for agents on Open Pool mode */}
