@@ -56,19 +56,31 @@ const Auth = () => {
     const requestedPath = getSafeRedirectPath();
 
     try {
-      const timeout = new Promise<{ roleData: any[] | null; dealerData: any | null }>((resolve) => {
-        window.setTimeout(() => resolve({ roleData: null, dealerData: null }), 4000);
+      // A slow or failed lookup must never look like "no staff role" — that
+      // used to sign real staff out as "not authorised". Allow a generous
+      // wait, and on timeout/error ask them to try again instead.
+      type Lookup = { roleData: any[]; dealerData: any | null } | null;
+      const timeout = new Promise<Lookup>((resolve) => {
+        window.setTimeout(() => resolve(null), 15000);
       });
 
-      const lookups = Promise.all([
+      const lookups: Promise<Lookup> = Promise.all([
         supabase.from('user_roles').select('role').eq('user_id', userId),
         supabase.from('dealers').select('id').eq('user_id', userId).maybeSingle(),
-      ]).then(([rolesResult, dealerResult]) => ({
-        roleData: rolesResult.data || [],
-        dealerData: dealerResult.data || null,
-      }));
+      ]).then(([rolesResult, dealerResult]) =>
+        rolesResult.error ? null : {
+          roleData: rolesResult.data || [],
+          dealerData: dealerResult.data || null,
+        });
 
-      const { roleData, dealerData } = await Promise.race([lookups, timeout]);
+      const lookup = await Promise.race([lookups, timeout]);
+      if (!lookup) {
+        await supabase.auth.signOut();
+        setSignInError('We could not check your access just now. Please try signing in again.');
+        setLoading(false);
+        return;
+      }
+      const { roleData, dealerData } = lookup;
       const hasAdminRole = roleData?.some((r) => isAdminRole(r.role as string));
       const isSuperAdmin = roleData?.some((r) => r.role === 'super_admin');
       if (hasAdminRole) {
@@ -116,8 +128,10 @@ const Auth = () => {
         }
       }, 300);
     } catch (error) {
-      console.error('Post-login redirect failed, using fallback:', error);
-      navigate(requestedPath || fallbackPath, { replace: true });
+      console.error('Post-login access check failed:', error);
+      await supabase.auth.signOut();
+      setSignInError('We could not check your access just now. Please try signing in again.');
+      setLoading(false);
     }
   }, [getSafeRedirectPath, navigate]);
 
