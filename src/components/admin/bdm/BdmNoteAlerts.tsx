@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SidebarAlertPortal } from '@/components/admin/SidebarAlertSlot';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { NotebookPen, X } from 'lucide-react';
@@ -38,9 +39,9 @@ export const BdmNoteAlerts: React.FC = () => {
 
   if (items.length === 0) return null;
   return (
-    <div className="fixed bottom-4 left-4 z-40 grid w-[280px] max-w-[calc(100vw-2rem)] gap-2">
+    <SidebarAlertPortal><div className="grid gap-2">
       {items.slice(0, 4).map(a => (
-        <div key={a.id} className="rounded-lg border-2 border-primary bg-card p-3 shadow-lg">
+        <div key={a.id} className="rounded-lg border-2 border-primary bg-card p-3 shadow-sm">
           <div className="flex items-start gap-2">
             <NotebookPen className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div className="min-w-0 flex-1">
@@ -54,7 +55,7 @@ export const BdmNoteAlerts: React.FC = () => {
         </div>
       ))}
       {items.length > 4 && <div className="text-center text-xs text-muted-foreground">+{items.length - 4} more</div>}
-    </div>
+    </div></SidebarAlertPortal>
   );
 };
 
