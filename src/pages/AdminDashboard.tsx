@@ -31,6 +31,7 @@ import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner'
 import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
+import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
 
@@ -721,7 +722,7 @@ const AdminDashboard = () => {
     // Merged Panda Protect sections: several former screens shown as tabs.
     if (section === 'dealer-dealers') {
       return <AdminSectionTabs tabs={[
-        { id: 'signups', label: 'Sign-ups', render: () => <DealerAdminSignUpsTab /> },
+        { id: 'signups', label: <SignupsTabLabel />, render: () => <DealerAdminSignUpsTab /> },
         { id: 'dealers', label: 'Dealers', render: () => <DealerAdminDealersTab /> },
         { id: 'traders', label: 'Traders', render: () => <DealerAdminTradersTab /> },
       ]} />;
@@ -1200,6 +1201,7 @@ const AdminDashboardInner: React.FC<{
       {/* Fresh-lead top banner + floating popup for the current agent */}
       <NewLeadAlerts />
       <BdmNoteAlerts />
+      <SignupAlerts />
 
 
       {/* Persistent "Take lead" popup for agents on Open Pool mode */}
