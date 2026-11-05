@@ -241,8 +241,10 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       <td className="p-2 whitespace-nowrap text-xs">{new Date(r.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
       {/* Customer activity */}
       <td className="p-2 text-xs">
-        {r.dealer_id ? <p className="font-medium text-success">Dealer account</p> : <p className="italic text-muted-foreground">Not signed up</p>}
-        {r.stock_updated_at && <p className="text-muted-foreground">Stock updated {ago(r.stock_updated_at)}</p>}
+        <p className={`whitespace-nowrap ${r.dealer_id ? 'font-medium text-success' : 'italic text-muted-foreground'}`}>
+          {r.dealer_id ? 'Dealer account' : 'Not signed up'}
+          {r.stock_updated_at && <span className="font-normal not-italic"> updated {agoTight(r.stock_updated_at)}</span>}
+        </p>
       </td>
       {/* Time to contact */}
       <td className="p-2 whitespace-nowrap text-xs">{firstTouch ? dur(new Date(firstTouch).getTime() - new Date(r.created_at).getTime()) : <span className="italic text-muted-foreground">Not contacted</span>}</td>
