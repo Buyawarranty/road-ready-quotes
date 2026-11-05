@@ -469,11 +469,28 @@ const DealerAdminSignUps: React.FC = () => {
                   <tr key={r.id} onClick={() => openDetail(r)}
                     className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
                     <Td className="whitespace-nowrap">
-                      <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <Check className="w-4 h-4 mr-1" />
-                        {(r.approved_at || r.status === 'approved') ? 'Resend login' : 'Approve'}
-                      </Button>
+                      {(r.approved_at || r.status === 'approved') ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                            className="bg-green-600 hover:bg-green-700 text-white">
+                            <Check className="w-4 h-4 mr-1" />
+                            Approved
+                          </Button>
+                          <Button size="sm" variant="outline"
+                            onClick={(e) => { e.stopPropagation(); resendForRow(r); }}
+                            disabled={rowResending === r.id}>
+                            {rowResending === r.id
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Mail className="w-4 h-4 mr-1" />}
+                            Resend login
+                          </Button>
+                        </span>
+                      ) : (
+                        <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                          className="bg-[#eb4b00] hover:bg-[#c93f00] text-white">
+                          Approve
+                        </Button>
+                      )}
                     </Td>
                     <Td className="whitespace-nowrap text-gray-600">
                       {format(new Date(r.created_at), 'd MMM yyyy')}
