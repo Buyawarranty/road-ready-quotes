@@ -1006,6 +1006,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
             'mt-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4',
             collapsed ? 'h-[calc(100%-120px)]' : 'h-[calc(100%-180px)]',
           )}>
+            {!collapsed && <SidebarAlertSlotTarget />}
 
             <SortableContext
               items={tabs.map(tab => tab.id)}
