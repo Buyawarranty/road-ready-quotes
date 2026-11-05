@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { fireDealerConfetti } from '@/lib/dealerConfetti';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -81,6 +82,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
+  const [rowResending, setRowResending] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [noteIndex, setNoteIndex] = useState<NoteIndexRow[]>([]);
   const [notes, setNotes] = useState<SignupNote[]>([]);
@@ -288,6 +290,7 @@ const DealerAdminSignUps: React.FC = () => {
       setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, ...patch } : row)));
       setSelected({ ...selected, ...patch });
       setDecisionNotes('');
+      if (decision === 'approve') fireDealerConfetti(0.4);
       toast.success(
         decision === 'approve'
           ? 'Approved — login details emailed to the trader.'
@@ -325,6 +328,22 @@ const DealerAdminSignUps: React.FC = () => {
       toast.error(e?.message || 'Could not send login details');
     } finally {
       setResending(false);
+    }
+  };
+
+  const resendForRow = async (row: Signup) => {
+    setRowResending(row.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
+        body: { signup_id: row.id, decision: 'resend' },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success(`Login details sent to ${(data as any)?.sent_to || row.email_address}`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not send login details');
+    } finally {
+      setRowResending(null);
     }
   };
 
@@ -450,11 +469,28 @@ const DealerAdminSignUps: React.FC = () => {
                   <tr key={r.id} onClick={() => openDetail(r)}
                     className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
                     <Td className="whitespace-nowrap">
-                      <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                        <Check className="w-4 h-4 mr-1" />
-                        {(r.approved_at || r.status === 'approved') ? 'Resend login' : 'Approve'}
-                      </Button>
+                      {(r.approved_at || r.status === 'approved') ? (
+                        <span className="inline-flex items-center gap-2">
+                          <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                            className="bg-green-600 hover:bg-green-700 text-white">
+                            <Check className="w-4 h-4 mr-1" />
+                            Approved
+                          </Button>
+                          <Button size="sm" variant="outline"
+                            onClick={(e) => { e.stopPropagation(); resendForRow(r); }}
+                            disabled={rowResending === r.id}>
+                            {rowResending === r.id
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Mail className="w-4 h-4 mr-1" />}
+                            Resend login
+                          </Button>
+                        </span>
+                      ) : (
+                        <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                          className="bg-[#eb4b00] hover:bg-[#c93f00] text-white">
+                          Approve
+                        </Button>
+                      )}
                     </Td>
                     <Td className="whitespace-nowrap text-gray-600">
                       {format(new Date(r.created_at), 'd MMM yyyy')}
@@ -533,27 +569,45 @@ const DealerAdminSignUps: React.FC = () => {
                     className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm min-h-[70px]"
                   />
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={() => decide('approve')}
-                      disabled={deciding !== null}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    >
-                      {deciding === 'approve'
-                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        : <Check className="w-4 h-4 mr-2" />}
-                      Approve & send login details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => decide('reject')}
-                      disabled={deciding !== null}
-                      className="border-red-300 text-red-700 hover:bg-red-50"
-                    >
-                      {deciding === 'reject'
-                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        : <Ban className="w-4 h-4 mr-2" />}
-                      Decline
-                    </Button>
+                    {(selected.approved_at || selected.status === 'approved') ? (
+                      <Button
+                        disabled
+                        className="bg-green-600 text-white opacity-100 cursor-default"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Approved
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => decide('approve')}
+                        disabled={deciding !== null}
+                        className="bg-[#eb4b00] hover:bg-[#c93f00] text-white"
+                      >
+                        {deciding === 'approve'
+                          ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          : <Mail className="w-4 h-4 mr-2" />}
+                        Approve & send login details
+                      </Button>
+                    )}
+                    {!(selected.approved_at || selected.status === 'approved') && (
+                      selected.rejected_at || selected.status === 'rejected' ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">
+                          <Ban className="w-4 h-4" /> Declined
+                        </span>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          onClick={() => decide('reject')}
+                          disabled={deciding !== null}
+                          className="border-red-300 text-red-700 hover:bg-red-50"
+                        >
+                          {deciding === 'reject'
+                            ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            : <Ban className="w-4 h-4 mr-2" />}
+                          Decline
+                        </Button>
+                      )
+                    )}
                   </div>
                   <p className="text-xs text-gray-500">
                     Approving creates the trader's dealer portal account and emails their login details.
