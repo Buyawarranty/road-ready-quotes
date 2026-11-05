@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 import {
-  AlertTriangle, ArrowUpDown, CalendarClock, Download, Loader2, MoreHorizontal, Phone, PhoneCall, PhoneMissed, Plus, Rocket, Star, Upload, UserCheck,
+  AlertTriangle, ArrowUp, ArrowDown, ArrowUpDown, Bookmark, Building2, CalendarCheck, CalendarClock, ChevronDown, Download, Flame, MapPin, PhoneOff, Search, Trash2, User, UserPlus, Users, Loader2, MoreHorizontal, Phone, PhoneCall, PhoneMissed, Plus, Rocket, Star, Upload, UserCheck,
 } from 'lucide-react';
 import {
   BDM_DEFAULT_SORT, BDM_NOT_SPOKEN, BDM_PRIORITIES, BDM_SPOKEN_OPTIONS, BDM_STAGES, BdmDealership, STAGE_TONE, findDuplicate, normalisePostcode, phoneDigits, stageLabel, websiteDomain,
@@ -24,6 +24,9 @@ import type { BdmStaff } from './BdmLogActivityForm';
 import { downloadBdmTemplate, runBdmExport, ExportKind } from './bdmSpreadsheets';
 
 const PAGE = 200;
+const VIEWS_KEY = 'bdm-saved-views';
+type SavedView = { name: string; town: string; filters: any; kpiFilter: string | null; sort: { col: string; asc: boolean }; search: string; location: string };
+const pct = (a?: number, b?: number) => (b ? Math.round(((a ?? 0) - b) / b * 100) : null);
 const MANAGER_ROLES = ['super_admin', 'admin', 'sales_manager'];
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -51,6 +54,8 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   useEffect(() => { const t = setTimeout(() => setDebLocation(location), 350); return () => clearTimeout(t); }, [location]);
   const [sort, setSort] = useState<{ col: string; asc: boolean }>(BDM_DEFAULT_SORT);
   const [kpis, setKpis] = useState<any>(null);
+  const [days, setDays] = useState(7);
+  const [savedViews, setSavedViews] = useState<SavedView[]>(() => { try { return JSON.parse(localStorage.getItem(VIEWS_KEY) || '[]'); } catch { return []; } });
   const [openId, setOpenId] = useState<string | null>(null);
   const [openTab, setOpenTab] = useState('overview');
   const [addOpen, setAddOpen] = useState(false);
@@ -74,9 +79,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   useEffect(() => { setPage(0); }, [debounced, filters, kpiFilter, sort, town, debLocation]);
 
   const loadKpis = useCallback(async () => {
-    const { data } = await (supabase.rpc as any)('bdm_kpis');
+    const { data } = await (supabase.rpc as any)('bdm_dashboard_stats', { _days: days, _town: town === 'all' ? null : town });
     setKpis(data);
-  }, []);
+  }, [days, town]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -110,9 +115,11 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     }
     if (kpiFilter === 'due_today') q = q.eq('do_not_contact', false).gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
     if (kpiFilter === 'overdue') q = q.eq('do_not_contact', false).lt('next_follow_up_at', today.toISOString());
-    if (kpiFilter === 'interested') q = q.eq('stage', 'interested');
-    if (kpiFilter === 'onboarding') q = q.eq('stage', 'onboarding');
-    if (kpiFilter === 'activated') q = q.eq('stage', 'active_dealer').not('dealer_id', 'is', null);
+    if (kpiFilter === 'hot') q = q.or('stage.eq.interested,priority.eq.high');
+    if (kpiFilter === 'never') q = q.is('last_spoken_at', null).eq('do_not_contact', false);
+    if (kpiFilter === 'unassigned') q = q.is('assigned_bdm', null);
+    if (kpiFilter === 'mine' && userId) q = q.eq('assigned_bdm', userId);
+    if (kpiFilter === 'new') q = q.gte('created_at', new Date(Date.now() - days * 864e5).toISOString());
     q = q.order(sort.col, { ascending: sort.asc, nullsFirst: false }).order('name').range(page * PAGE, page * PAGE + PAGE - 1);
     const { data, count: c, error } = await q;
     if (error) toast({ title: 'Could not load dealerships', description: error.message, variant: 'destructive' });
@@ -125,7 +132,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       for (const c2 of cs || []) if (!m[c2.dealership_id]) m[c2.dealership_id] = c2;
       setContactsBy(m);
     }
-  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town, debLocation]);
+  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town, debLocation, days]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadKpis(); }, [loadKpis]);
@@ -142,13 +149,6 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     setExporting(false);
   };
 
-  const kpiCards = [
-    { id: 'due_today', label: 'Calls due today', icon: CalendarClock, value: kpis?.due_today, tone: 'bg-secondary' },
-    { id: 'overdue', label: 'Overdue follow-ups', icon: AlertTriangle, value: kpis?.overdue, alert: true, tone: 'bg-destructive/5' },
-    { id: 'interested', label: 'Interested dealers', icon: Star, value: kpis?.interested, tone: 'bg-crm-orange-soft' },
-    { id: 'onboarding', label: 'Onboarding', icon: Rocket, value: kpis?.onboarding, tone: 'bg-muted/50' },
-    { id: 'activated', label: 'Activated this month', icon: UserCheck, value: kpis?.activated, tone: 'bg-crm-green-soft' },
-  ];
   const filtersActive = JSON.stringify(filters) !== JSON.stringify(NO_FILTERS) || !!kpiFilter || !!search || !!location;
   const pages = Math.max(1, Math.ceil(count / PAGE));
   const today = startOfToday();
@@ -179,52 +179,135 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     e.preventDefault();
     if (e.type === 'copy' || e.type === 'cut') toast({ title: 'Copying is switched off', description: 'Contact details on this page are protected.' });
   };
+  const saveView = () => {
+    const name = window.prompt('Name this view');
+    if (!name?.trim()) return;
+    const next = [...savedViews.filter(v => v.name !== name.trim()), { name: name.trim(), town, filters, kpiFilter, sort, search, location }];
+    setSavedViews(next); localStorage.setItem(VIEWS_KEY, JSON.stringify(next));
+    toast({ title: 'View saved', description: name.trim() });
+  };
+  const applyView = (v: SavedView) => {
+    setTown(v.town); setFilters({ ...NO_FILTERS, ...v.filters }); setKpiFilter(v.kpiFilter); setSort(v.sort); setSearch(v.search); setLocation(v.location);
+  };
+  const deleteView = (name: string) => {
+    const next = savedViews.filter(v => v.name !== name);
+    setSavedViews(next); localStorage.setItem(VIEWS_KEY, JSON.stringify(next));
+  };
+  const toggleKpi = (id: string) => setKpiFilter(f => (f === id ? null : id));
+  const callsPct = pct(kpis?.calls, kpis?.calls_prev);
+  const leadsPct = pct(kpis?.new_leads, kpis?.new_leads_prev);
+  const Trend = ({ v }: { v: number | null }) => v === null ? <span className="text-muted-foreground">vs previous {days} days</span> : (
+    <span className={v >= 0 ? 'text-crm-ink-green' : 'text-destructive'}>
+      {v >= 0 ? <ArrowUp className="inline h-3 w-3" /> : <ArrowDown className="inline h-3 w-3" />}{v >= 0 ? '+' : ''}{v}% <span className="text-muted-foreground">vs previous {days} days</span>
+    </span>
+  );
+  const fmt = (n?: number) => (n === undefined || n === null ? '–' : n.toLocaleString('en-GB'));
+  const cards = [
+    { id: null, label: 'Total calls', icon: Phone, value: kpis?.calls, sub: <Trend v={callsPct} />, card: 'bg-crm-tint-green', ic: 'text-crm-ink-green' },
+    { id: null, label: 'Dealerships', icon: Building2, value: kpis?.dealerships, sub: <span className="text-muted-foreground">{town === 'all' ? 'Active in CRM' : town}</span>, card: 'bg-crm-tint-blue', ic: 'text-crm-ink-blue' },
+    { id: 'new', label: 'New leads', icon: UserPlus, value: kpis?.new_leads, sub: <Trend v={leadsPct} />, card: 'bg-crm-tint-cream', ic: 'text-crm-ink-cream' },
+    { id: 'due_today', label: 'Follow-ups due', icon: CalendarCheck, value: kpis?.due_today, sub: <span className="text-destructive">{fmt(kpis?.overdue)} overdue</span>, card: 'bg-crm-tint-rose', ic: 'text-crm-ink-rose' },
+    { id: 'hot', label: 'Hot prospects', icon: Flame, value: kpis?.hot, sub: <span className="text-muted-foreground">Interested + high priority</span>, card: 'bg-crm-orange-soft', ic: 'text-crm-orange' },
+    { id: 'never', label: 'Never contacted', icon: PhoneOff, value: kpis?.never, sub: <span className="text-muted-foreground">No completed contact</span>, card: 'bg-crm-tint-rose', ic: 'text-destructive' },
+  ];
+  const quick = [
+    { id: 'mine', label: 'My leads', icon: User, n: kpis?.mine, tone: '' },
+    { id: 'due_today', label: 'Due today', icon: CalendarClock, n: kpis?.due_today, tone: 'border-crm-orange text-crm-orange' },
+    { id: 'overdue', label: 'Overdue', icon: AlertTriangle, n: kpis?.overdue, tone: 'border-destructive/50 text-destructive' },
+    { id: 'hot', label: 'Hot prospects', icon: Flame, n: kpis?.hot, tone: '' },
+    { id: 'never', label: 'Never contacted', icon: PhoneOff, n: kpis?.never, tone: '' },
+    { id: 'unassigned', label: 'Unassigned', icon: Users, n: kpis?.unassigned, tone: '' },
+  ];
+
   return (
     <div className={`space-y-4 ${isSuper ? '' : 'select-none'}`} onCopy={block} onCut={block} onContextMenu={block} onDragStart={block}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">BDM contact list</h1>
-          <p className="text-sm text-muted-foreground">Manage dealership contacts, log calls, track your pipeline and hit your targets.</p>
+          <h1 className="text-2xl font-bold">BDM dashboard</h1>
+          <p className="text-sm text-muted-foreground">Manage dealership pipeline, calls and follow-ups</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => setQueueOpen(true)} variant="outline"><PhoneCall className="mr-2 h-4 w-4" />Start call list</Button>
-          <Button onClick={() => setAddOpen(true)} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90"><Plus className="mr-2 h-4 w-4" />Add dealership</Button>
+          <Select value={String(days)} onValueChange={v => setDays(Number(v))}>
+            <SelectTrigger className="h-10 w-[150px]" aria-label="Period"><CalendarClock className="mr-2 h-4 w-4" /><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">Today</SelectItem>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
           {isSuper && (
-            <>
-              <Button variant="outline" onClick={() => setImportOpen(true)}><Upload className="mr-2 h-4 w-4" />Import</Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" disabled={exporting}>{exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Export</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => doExport('dealerships-xlsx')}>Dealerships — Excel</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => doExport('dealerships-csv')}>Dealerships — CSV</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => doExport('full-xlsx')}>Full CRM — Excel</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => doExport('full-csv')}>Full CRM — CSV (ZIP)</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={downloadBdmTemplate}>Download Excel template</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={exporting}>{exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}Export</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => doExport('dealerships-xlsx')}>Dealerships — Excel</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport('dealerships-csv')}>Dealerships — CSV</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport('full-xlsx')}>Full CRM — Excel</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => doExport('full-csv')}>Full CRM — CSV (ZIP)</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={downloadBdmTemplate}>Download Excel template</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline"><Bookmark className="mr-2 h-4 w-4" />Saved views<ChevronDown className="ml-2 h-4 w-4" /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              {savedViews.length === 0 && <div className="px-2 py-1.5 text-sm text-muted-foreground">No saved views yet</div>}
+              {savedViews.map(v => (
+                <DropdownMenuItem key={v.name} onClick={() => applyView(v)} className="justify-between">
+                  <span className="truncate">{v.name}</span>
+                  <button type="button" aria-label={`Delete ${v.name}`} onClick={e => { e.stopPropagation(); deleteView(v.name); }} className="text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5" /></button>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={saveView}><Plus className="mr-2 h-4 w-4" />Save current view</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
-        {kpiCards.map(k => (
-          <button key={k.id} type="button" onClick={() => setKpiFilter(f => (f === k.id ? null : k.id))} aria-pressed={kpiFilter === k.id}
-            className={`rounded-lg border p-3 text-left transition-colors hover:border-crm-orange ${k.tone} ${kpiFilter === k.id ? 'border-crm-orange ring-1 ring-crm-orange' : ''}`}>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground"><k.icon className="h-4 w-4" />{k.label}</div>
-            <p className={`mt-1 text-2xl font-bold ${k.alert && k.value ? 'text-destructive' : ''}`}>{k.value ?? '–'}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setQueueOpen(true)} variant="outline" size="sm"><PhoneCall className="mr-2 h-4 w-4" />Start call list</Button>
+        <Button onClick={() => setAddOpen(true)} size="sm" className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90"><Plus className="mr-2 h-4 w-4" />Add dealership</Button>
+        {isSuper && <Button variant="outline" size="sm" onClick={() => setImportOpen(true)}><Upload className="mr-2 h-4 w-4" />Import</Button>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+        {cards.map(k => {
+          const Tag: any = k.id ? 'button' : 'div';
+          return (
+            <Tag key={k.label} {...(k.id ? { type: 'button', onClick: () => toggleKpi(k.id!), 'aria-pressed': kpiFilter === k.id } : {})}
+              className={`flex gap-3 rounded-xl border p-3 text-left ${k.card} ${k.id ? 'transition-colors hover:border-crm-orange' : ''} ${k.id && kpiFilter === k.id ? 'border-crm-orange ring-1 ring-crm-orange' : ''}`}>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background/70"><k.icon className={`h-5 w-5 ${k.ic}`} /></span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold">{k.label}</span>
+                <span className="block text-2xl font-bold leading-tight">{fmt(k.value)}</span>
+                <span className="block text-xs">{k.sub}</span>
+              </span>
+            </Tag>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm"><strong>Quick views</strong> <span className="text-muted-foreground">(one-click filters):</span></span>
+        {quick.map(qv => (
+          <button key={qv.id} type="button" onClick={() => toggleKpi(qv.id)} aria-pressed={kpiFilter === qv.id}
+            className={`inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1.5 text-sm font-medium transition-colors hover:border-crm-orange ${qv.tone} ${kpiFilter === qv.id ? 'bg-crm-orange-soft ring-1 ring-crm-orange' : ''}`}>
+            <qv.icon className="h-4 w-4" />{qv.label} ({fmt(qv.n)})
           </button>
         ))}
       </div>
 
-      <div className="space-y-2 rounded-lg border bg-muted/25 p-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Label htmlFor="bdm-town" className="text-sm font-semibold">Town</Label>
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-orange/30 bg-crm-orange-soft/60 p-3">
+          <Label htmlFor="bdm-town" className="flex items-center gap-1.5 text-sm font-semibold text-crm-orange"><MapPin className="h-4 w-4" />Area / location</Label>
           <Select value={town} onValueChange={setTown}>
-            <SelectTrigger id="bdm-town" className="h-10 w-full sm:w-[260px] font-semibold"><SelectValue placeholder="Choose a town" /></SelectTrigger>
+            <SelectTrigger id="bdm-town" className="h-10 w-full border-crm-orange bg-background font-semibold sm:w-[300px]"><SelectValue placeholder="Choose a town" /></SelectTrigger>
             <SelectContent>
               {isManager && <SelectItem value="all">All towns</SelectItem>}
               {towns.map(t => <SelectItem key={t.town} value={t.town}>{t.town} ({t.dealerships})</SelectItem>)}
@@ -232,7 +315,10 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </Select>
           {!isManager && towns.length === 0 && <span className="text-sm text-muted-foreground">No towns have been opened to you yet. Ask an admin for access.</span>}
         </div>
-        <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, town or postcode..." className="h-10" />
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, postcode..." className="h-10 pl-9" />
+        </div>
         <div className="flex flex-wrap gap-2">
           <Select value={`${sort.col}:${sort.asc ? 'asc' : 'desc'}`} onValueChange={v => { const [col, d] = v.split(':'); setSort({ col, asc: d === 'asc' }); }}>
             <SelectTrigger className="h-9 w-full sm:w-auto sm:min-w-[160px]" aria-label="Sort by"><SelectValue placeholder="Sort by" /></SelectTrigger>
