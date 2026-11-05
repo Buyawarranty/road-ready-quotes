@@ -89,7 +89,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const dnc = !!r.do_not_contact;
   const tel = phone?.replace(/\s/g, '') ?? '';
   const followDays = dayDiff(r.next_follow_up_at);
-  const followWord = followDays == null ? 'set' : followDays < 0 ? 'late' : followDays === 0 ? '' : 'in';
+  const followWord = followDays == null ? '' : followDays < 0 ? 'late' : followDays === 0 ? '' : 'in';
   const followLabel = followDays == null ? 'No follow-up set — add one'
     : followDays === 0 ? 'Follow up today'
     : followDays > 0 ? `Follow up in ${followDays} day${followDays === 1 ? '' : 's'}`
@@ -175,7 +175,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               : followDays === 0 ? 'bg-crm-orange-soft text-crm-orange'
               : 'bg-crm-blue-soft/70 text-foreground'
             }`}>
-            <span className="text-sm font-bold tabular-nums">{followDays == null ? '—' : followDays === 0 ? 'Today' : Math.abs(followDays)}</span>
+            <span className="text-sm font-bold tabular-nums">{followDays == null ? <Bell className="h-4 w-4" /> : followDays === 0 ? 'Today' : Math.abs(followDays)}</span>
             <span className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{followWord}</span>
           </Button>
           } />
