@@ -192,6 +192,7 @@ const Step2Customer: React.FC = () => {
           </section>
         ) : (
           <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
+            <h2 className="text-lg font-bold text-crm-navy">Customer details</h2>
             {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
             {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
             {field('email', 'Email *', 'email', 'email', Mail, 'e.g. john@example.com')}
