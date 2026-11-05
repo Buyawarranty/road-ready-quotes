@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import BdmReminderPopover from './BdmReminderPopover';
+import BdmQuickNotePopover from './BdmQuickNotePopover';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -153,7 +154,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               <a href={`tel:${tel}`} onClick={() => adjust(1)}><Phone className="h-4 w-4" /></a>
             </Button>
           )}
-          <Button size="sm" variant="outline" className="h-8 gap-1" onClick={() => setNoteOpen(true)}><NotebookPen className="h-4 w-4" />Notes</Button>
+          <BdmQuickNotePopover dealershipId={r.id} dealershipName={r.name} contactName={c?.full_name} onSaved={onChanged} onOpenFull={() => onOpen(r.id, 'activity')} />
           {email && !dnc && (
             <Button asChild size="icon" variant="ghost" className="h-8 w-8" aria-label={`Email ${r.name}`}>
               <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
