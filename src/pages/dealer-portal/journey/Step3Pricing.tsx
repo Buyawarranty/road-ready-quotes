@@ -184,7 +184,7 @@ const Step3Pricing: React.FC = () => {
     if (!id) { tab?.close(); setOpening(false); return; }
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
     const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
-    url.searchParams.set('pay', id);
+    url.searchParams.set('view', 'cv');
     if (tab) tab.location.href = url.href;
     else setError('Your browser blocked the new tab. Allow pop-ups for this site and try again.');
     setOpening(false);
@@ -193,10 +193,6 @@ const Step3Pricing: React.FC = () => {
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="flex flex-wrap items-start justify-between gap-3">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p></div>
-      <div className="grid grid-cols-2 gap-2" role="group" aria-label="Quote view">
-        <Button variant="outline" aria-pressed={trade} aria-label="Trade View" onClick={() => setView('trade')} className={`h-10 gap-2 px-4 font-bold ${trade ? '!border-crm-orange !bg-crm-orange-soft !text-crm-orange' : '!border-crm-line !bg-card !text-crm-navy'}`}><Store />TV</Button>
-        <Button variant="outline" aria-label="Open Customer View in a new tab" title="Opens the customer quote in a new tab" disabled={opening} onClick={() => { void openCustomerTab(); }} className={`h-10 gap-2 px-4 font-bold !border-crm-orange !bg-crm-orange-soft !text-crm-orange`}>{opening ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye />}CV</Button>
-      </div>
     </header>
     <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-card px-4 py-3" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
@@ -321,6 +317,16 @@ const Step3Pricing: React.FC = () => {
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
         {trade && <Button className="h-12 px-5 text-base font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
+      <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label="Quote view">
+        <button type="button" aria-pressed={trade} onClick={() => setView('trade')} className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-navy ${trade ? 'border-crm-navy bg-crm-blue-soft' : 'border-crm-line bg-card hover:border-crm-navy/40'}`}>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-navy text-primary-foreground"><Store className="h-5 w-5" /></span>
+          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Trade view</strong><span className="block text-xs text-muted-foreground">Your cost, selling price and profit — for your eyes only</span></span>
+        </button>
+        <button type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="flex items-center gap-3 rounded-xl border-2 border-crm-green bg-crm-green-soft px-4 py-3 text-left transition-colors hover:bg-crm-green-soft/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-green disabled:opacity-60">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
+          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-green-deep">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
+        </button>
+      </div>
       {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
