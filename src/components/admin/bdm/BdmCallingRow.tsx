@@ -15,6 +15,8 @@ export type BdmRowContact = { full_name: string; phone: string | null; mobile: s
 
 const dur = (ms: number) => { const m = Math.max(0, Math.round(ms / 60000)); if (m < 60) return `${m} min`; const h = Math.round(m / 60); if (h < 48) return `${h} hr`; return `${Math.round(h / 24)} days`; };
 const ago = (d: string) => `${dur(Date.now() - new Date(d).getTime())} ago`;
+/** Same as ago() but with the unit tucked against the number: "9hr ago", "20min ago", "3 days ago". */
+const agoTight = (d: string) => ago(d).replace(' min ', 'min ').replace(' hr ', 'hr ');
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : 'Never');
 
 /** Whole days from today to a follow-up date: 0 = today, negative = overdue. */
@@ -239,8 +241,10 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       <td className="p-2 whitespace-nowrap text-xs">{new Date(r.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
       {/* Customer activity */}
       <td className="p-2 text-xs">
-        {r.dealer_id ? <p className="font-medium text-success">Dealer account</p> : <p className="italic text-muted-foreground">Not signed up</p>}
-        {r.stock_updated_at && <p className="text-muted-foreground">Stock updated {ago(r.stock_updated_at)}</p>}
+        <p className={`whitespace-nowrap ${r.dealer_id ? 'font-medium text-success' : 'italic text-muted-foreground'}`}>
+          {r.dealer_id ? 'Dealer account' : 'Not signed up'}
+          {r.stock_updated_at && <span className="font-normal not-italic"> updated {agoTight(r.stock_updated_at)}</span>}
+        </p>
       </td>
       {/* Time to contact */}
       <td className="p-2 whitespace-nowrap text-xs">{firstTouch ? dur(new Date(firstTouch).getTime() - new Date(r.created_at).getTime()) : <span className="italic text-muted-foreground">Not contacted</span>}</td>
