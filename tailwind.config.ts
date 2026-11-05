@@ -103,6 +103,8 @@ export default {
 					'tint-violet': 'hsl(var(--crm-tint-violet))',
 					'ink-violet': 'hsl(var(--crm-ink-violet))',
 					'tint-green': 'hsl(var(--crm-tint-green))',
+					'tint-mint': 'hsl(var(--crm-tint-mint))',
+					'ink-mint': 'hsl(var(--crm-ink-mint))',
 					'ink-green': 'hsl(var(--crm-ink-green))',
 					'tint-rose': 'hsl(var(--crm-tint-rose))',
 					'ink-rose': 'hsl(var(--crm-ink-rose))'

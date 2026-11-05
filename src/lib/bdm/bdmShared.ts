@@ -79,7 +79,7 @@ export const typeLabel = lookup(BDM_ACTIVITY_TYPES);
 export const priorityLabel = lookup(BDM_PRIORITIES);
 
 export const STAGE_TONE: Record<string, string> = {
-  new_lead: 'bg-crm-tint-slate text-crm-ink-slate',
+  new_lead: 'bg-crm-tint-mint text-crm-ink-mint',
   attempted: 'bg-crm-tint-amber text-crm-ink-amber',
   contacted: 'bg-crm-tint-sky text-crm-ink-sky',
   interested: 'bg-crm-tint-cream text-crm-ink-cream',
