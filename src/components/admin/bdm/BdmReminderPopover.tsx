@@ -80,7 +80,7 @@ const BdmReminderPopover: React.FC<Props> = ({ dealershipId, name, onSaved }) =>
           <Bell className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-80 space-y-3">
+      <PopoverContent align="end" className="w-[min(320px,calc(100vw-1.5rem))] space-y-3">
         <p className="text-sm font-semibold">Remind me</p>
         <div className="relative">
           <Sparkles className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-crm-orange" />

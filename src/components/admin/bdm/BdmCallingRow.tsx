@@ -251,7 +251,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       <td className="p-2 whitespace-nowrap text-xs">{firstTouch ? dur(new Date(firstTouch).getTime() - new Date(r.created_at).getTime()) : <span className="italic text-muted-foreground">Not contacted</span>}</td>
 
       <Dialog open={noteOpen} onOpenChange={setNoteOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[400px]">
           <DialogHeader>
             <DialogTitle>Add a note — {r.name}</DialogTitle>
             <DialogDescription>{r.latest_note ? `Latest note: ${r.latest_note}` : 'No notes yet.'}</DialogDescription>
@@ -264,7 +264,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
         </DialogContent>
       </Dialog>
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[420px]">
           <DialogHeader>
             <DialogTitle>Edit details — {r.name}</DialogTitle>
             <DialogDescription>Update the email, last spoken date and next follow-up.</DialogDescription>

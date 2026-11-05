@@ -36,7 +36,7 @@ export const MultiFilter: React.FC<{ label: string; allLabel: string; options: F
         {label}: {summary(value, options)} <ChevronDown className="h-4 w-4 opacity-70" />
       </button>
     </PopoverTrigger>
-    <PopoverContent align="start" className="w-60 p-1">
+    <PopoverContent align="start" className="w-60 max-w-[calc(100vw-1.5rem)] p-1">
       <button type="button" onClick={() => onChange([])} className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm font-medium hover:bg-muted/60">
         <Check className={`h-4 w-4 text-crm-orange ${value.length ? 'opacity-0' : ''}`} />{allLabel}
       </button>
@@ -65,7 +65,7 @@ export const MoreFilters: React.FC<{
           <SlidersHorizontal className="h-4 w-4" />More filters{active ? ` (${active})` : ''}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="max-h-[70vh] w-72 overflow-y-auto p-2">
+      <PopoverContent align="end" className="max-h-[70vh] w-72 max-w-[calc(100vw-1.5rem)] overflow-y-auto p-2">
         <p className="px-2 pb-1 text-sm font-semibold">More filters</p>
         {groups.map(g => {
           const Icon = ICONS[g.icon];
