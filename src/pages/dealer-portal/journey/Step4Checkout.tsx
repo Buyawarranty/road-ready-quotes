@@ -294,12 +294,18 @@ const Step4Checkout: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="mt-5 flex gap-3 rounded-xl bg-crm-blue-soft p-4">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-crm-blue" />
-            <div>
-              <p className="font-bold text-crm-navy">What happens next?</p>
-              <p className="text-sm text-muted-foreground">Once payment is confirmed, your warranty will be issued and the documents will be available in your dealer account.</p>
-            </div>
+          <div className="mt-5 rounded-xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep">What happens next?</p>
+            <ul className="mt-3 space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
+                <span className="text-sm font-medium text-crm-navy">Your dealership sees the warranty confirmed in the dealer portal.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
+                <span className="text-sm font-medium text-crm-navy">The customer receives their warranty documents and a login for their own dashboard.</span>
+              </li>
+            </ul>
           </div>
         </section>
 
