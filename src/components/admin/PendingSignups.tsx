@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SidebarAlertPortal } from '@/components/admin/SidebarAlertSlot';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -65,9 +66,9 @@ export const SignupAlerts: React.FC = () => {
   const show = items.filter((s) => !dismissed.includes(s.id));
   if (show.length === 0) return null;
   return (
-    <div className="fixed bottom-4 left-4 z-40 grid w-[280px] max-w-[calc(100vw-2rem)] gap-2" style={{ marginBottom: 0 }}>
+    <SidebarAlertPortal><div className="grid gap-2">
       {show.slice(0, 3).map((s) => (
-        <div key={s.id} className="rounded-lg border-2 border-primary bg-card p-3 shadow-lg">
+        <div key={s.id} className="rounded-lg border-2 border-primary bg-card p-3 shadow-sm">
           <div className="flex items-start gap-2">
             <UserPlus className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div className="min-w-0 flex-1">
@@ -76,7 +77,7 @@ export const SignupAlerts: React.FC = () => {
                 {new Date(s.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · waiting to be authorised
               </div>
               <button type="button" className="mt-1 text-xs font-medium text-primary underline"
-                onClick={() => { navigate('/admin-dashboard/?tab=dealer-dealers'); dismiss(s.id); }}>
+                onClick={() => { navigate('/admin-dashboard/?tab=dealer-dealers&sub=signups'); dismiss(s.id); }}>
                 Review sign-up
               </button>
             </div>
@@ -85,7 +86,7 @@ export const SignupAlerts: React.FC = () => {
         </div>
       ))}
       {show.length > 3 && <div className="text-center text-xs text-muted-foreground">+{show.length - 3} more sign-ups</div>}
-    </div>
+    </div></SidebarAlertPortal>
   );
 };
 

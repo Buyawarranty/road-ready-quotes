@@ -1,4 +1,5 @@
 import { PendingSignupBadge } from '@/components/admin/PendingSignups';
+import { SidebarAlertSlotTarget } from '@/components/admin/SidebarAlertSlot';
 import { PANDA_SECTION_ORDER, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2 } from 'lucide-react';
