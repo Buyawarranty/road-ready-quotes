@@ -15,6 +15,8 @@ export type BdmRowContact = { full_name: string; phone: string | null; mobile: s
 
 const dur = (ms: number) => { const m = Math.max(0, Math.round(ms / 60000)); if (m < 60) return `${m} min`; const h = Math.round(m / 60); if (h < 48) return `${h} hr`; return `${Math.round(h / 24)} days`; };
 const ago = (d: string) => `${dur(Date.now() - new Date(d).getTime())} ago`;
+/** Same as ago() but with the unit tucked against the number: "9hr ago", "20min ago", "3 days ago". */
+const agoTight = (d: string) => ago(d).replace(' min ', 'min ').replace(' hr ', 'hr ');
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : 'Never');
 
 /** Whole days from today to a follow-up date: 0 = today, negative = overdue. */
