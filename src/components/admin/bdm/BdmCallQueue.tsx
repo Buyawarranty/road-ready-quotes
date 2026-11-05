@@ -41,7 +41,7 @@ const BdmCallQueue: React.FC<{ open: boolean; onClose: () => void; userId: strin
 
   return (
     <Dialog open={open} onOpenChange={o => !o && onClose()}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[92vh] w-[min(520px,calc(100vw-2rem))] max-w-[520px] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Today's call list</DialogTitle>
           <DialogDescription>
