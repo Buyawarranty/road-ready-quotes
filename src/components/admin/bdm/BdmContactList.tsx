@@ -91,26 +91,20 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       q = q.or(ors.join(','));
     }
     if (town !== 'all') q = q.eq('town', town);
-    if (filters.stage !== 'all') q = q.eq('stage', filters.stage);
-    if (filters.priority !== 'all') q = q.eq('priority', filters.priority);
-    if (filters.bdm === 'mine' && userId) q = q.eq('assigned_bdm', userId);
-    else if (filters.bdm === 'none') q = q.is('assigned_bdm', null);
-    else if (filters.bdm !== 'all') q = q.eq('assigned_bdm', filters.bdm);
-    if (filters.account === 'linked') q = q.not('dealer_id', 'is', null);
-    if (filters.account === 'none') q = q.is('dealer_id', null);
-    if (filters.account === 'dnc') q = q.eq('do_not_contact', true);
-    if (filters.stock !== 'all') {
-      const [lo, hi] = filters.stock.split('-').map(Number);
-      q = q.gte('vehicle_stock', lo); if (hi) q = q.lte('vehicle_stock', hi);
+    if (filters.stage.length) q = q.in('stage', filters.stage);
+    if (filters.priority.length) q = q.in('priority', filters.priority);
+    if (filters.bdm.length) {
+      const ids = filters.bdm.map(b => (b === 'mine' ? userId : b)).filter(b => b && b !== 'none') as string[];
+      const parts = [...(ids.length ? [`assigned_bdm.in.(${ids.join(',')})`] : []), ...(filters.bdm.includes('none') ? ['assigned_bdm.is.null'] : [])];
+      if (parts.length) q = q.or(parts.join(','));
     }
-    if (filters.follow === 'overdue') q = q.lt('next_follow_up_at', today.toISOString());
-    if (filters.follow === 'today') q = q.gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
-    if (filters.follow === 'week') q = q.gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 7).toISOString());
-    if (filters.follow === 'none') q = q.is('next_follow_up_at', null);
-    if (filters.spoken === '7') q = q.gte('last_spoken_at', addDays(today, -7).toISOString());
-    if (filters.spoken === '30') q = q.gte('last_spoken_at', addDays(today, -30).toISOString());
-    if (filters.spoken === 'over30') q = q.lt('last_spoken_at', addDays(today, -30).toISOString());
-    if (filters.spoken === BDM_NOT_SPOKEN) q = q.is('last_spoken_at', null);
+    // Each ticked option inside a group widens the match (OR); different groups narrow it (AND).
+    const groups = bdmFilterConditions(filters, today);
+    for (const g of groups) q = q.filter('id', 'not.is', null).or(g);
+    if (location.trim()) {
+      const l = location.trim().replace(/[%,()]/g, ' ');
+      q = q.or([`county.ilike.%${l}%`, `town.ilike.%${l}%`, `postcode.ilike.${l.replace(/\s+/g, '')}%`, `postcode.ilike.${l}%`, `address.ilike.%${l}%`].join(','));
+    }
     if (kpiFilter === 'due_today') q = q.eq('do_not_contact', false).gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
     if (kpiFilter === 'overdue') q = q.eq('do_not_contact', false).lt('next_follow_up_at', today.toISOString());
     if (kpiFilter === 'interested') q = q.eq('stage', 'interested');
