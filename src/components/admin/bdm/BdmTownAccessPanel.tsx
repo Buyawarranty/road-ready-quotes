@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { MapPin, X } from 'lucide-react';
+import { Check, MapPin, X } from 'lucide-react';
 
 type Staff = { user_id: string; name: string; role: string };
 type Grant = { id: string; user_id: string; town: string };
@@ -25,6 +25,9 @@ const BdmTownAccessPanel: React.FC = () => {
 
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState('');
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const saved = grants.filter(g => g.user_id === who).map(g => g.town).sort().join('|');
+  const dirty = [...picked].sort().join('|') !== saved;
 
   const load = useCallback(async () => {
     const { data: g } = await db.from('bdm_town_access').select('id, user_id, town').order('town');
@@ -57,7 +60,7 @@ const BdmTownAccessPanel: React.FC = () => {
     })();
   }, [load]);
 
-  useEffect(() => { setPicked(new Set(grants.filter(g => g.user_id === who).map(g => g.town))); }, [who, grants]);
+  useEffect(() => { setSavedAt(null); setPicked(new Set(grants.filter(g => g.user_id === who).map(g => g.town))); }, [who, grants]);
 
   if (!allowed) return null;
 
@@ -74,7 +77,7 @@ const BdmTownAccessPanel: React.FC = () => {
     if (!err && remove.length) ({ error: err } = await db.from('bdm_town_access').delete().in('id', remove));
     setBusy(false);
     if (err) { toast.error(err.message); return; }
-    toast.success(`Saved — ${picked.size} town${picked.size === 1 ? '' : 's'} opened`); load();
+    setSavedAt(new Date()); toast.success(`Saved — ${picked.size} town${picked.size === 1 ? '' : 's'} opened`); load();
   };
   const revoke = async (id: string) => {
     const { error } = await db.from('bdm_town_access').delete().eq('id', id);
@@ -121,7 +124,12 @@ const BdmTownAccessPanel: React.FC = () => {
               {shown.length === 0 && <p className="text-sm text-muted-foreground">No towns found.</p>}
             </div>
           </div>
-          <Button onClick={save} disabled={busy || !who} className="justify-self-end bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : 'Save town access'}</Button>
+          <div className="flex items-center justify-end gap-3">
+            {who && (dirty
+              ? <span className="text-sm font-medium text-crm-ink-amber">Unsaved changes</span>
+              : savedAt && <span className="flex items-center gap-1 text-sm font-medium text-crm-ink-green"><Check className="h-4 w-4" />Saved at {savedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>)}
+            <Button onClick={save} disabled={busy || !who || !dirty} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : !dirty && who ? 'Saved' : 'Save town access'}</Button>
+          </div>
         </div>
         {byUser.length === 0 ? (
           <p className="text-sm text-muted-foreground">No towns opened yet.</p>
