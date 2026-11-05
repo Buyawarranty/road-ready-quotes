@@ -636,6 +636,7 @@ const DealerComingSoon = () => {
                       valid={emailValid}
                     >
                       <input
+                        ref={emailInputRef}
                         type="text"
                         inputMode="email"
                         autoCapitalize="none"
@@ -658,6 +659,7 @@ const DealerComingSoon = () => {
                       valid={phoneValid}
                     >
                       <input
+                        ref={phoneInputRef}
                         type="text"
                         inputMode="tel"
                         autoCapitalize="none"
@@ -682,6 +684,7 @@ const DealerComingSoon = () => {
                       valid={urlValid}
                     >
                       <input
+                        ref={urlInputRef}
                         type="text"
                         inputMode="url"
                         autoCapitalize="none"
