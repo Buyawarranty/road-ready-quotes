@@ -163,7 +163,14 @@ const DealerComingSoon = () => {
     if (!urlValid) e.url = 'Please paste a valid website or listing URL.';
     setErrors(e);
     setTouched({ email: true, phone: true, url: true });
-    if (Object.keys(e).length > 0) scrollFormIntoView();
+    if (Object.keys(e).length > 0) {
+      // Jump straight to the first field that needs fixing, not the top of the form.
+      const firstBad = e.email ? emailInputRef : e.phone ? phoneInputRef : urlInputRef;
+      requestAnimationFrame(() => {
+        firstBad.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstBad.current?.focus({ preventScroll: true });
+      });
+    }
     return Object.keys(e).length === 0;
   };
 
