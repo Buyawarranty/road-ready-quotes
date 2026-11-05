@@ -18,6 +18,8 @@ import BdmDealershipDrawer from './BdmDealershipDrawer';
 import BdmCallQueue from './BdmCallQueue';
 import BdmCallingRow from './BdmCallingRow';
 import BdmImportDialog from './BdmImportDialog';
+import { MultiFilter, MoreFilters } from './BdmFilterMenus';
+import { BDM_FILTER_OPTIONS, BDM_NO_FILTERS, BdmFilters, bdmFilterConditions } from '@/lib/bdm/bdmFilters';
 import type { BdmStaff } from './BdmLogActivityForm';
 import { downloadBdmTemplate, runBdmExport, ExportKind } from './bdmSpreadsheets';
 
@@ -27,10 +29,8 @@ const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); retur
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—');
 
-type Filters = {
-  stage: string; follow: string; stock: string; account: string; bdm: string; spoken: string; priority: string;
-};
-const NO_FILTERS: Filters = { stage: 'all', follow: 'all', stock: 'all', account: 'all', bdm: 'all', spoken: 'all', priority: 'all' };
+type Filters = BdmFilters & { bdm: string[] };
+const NO_FILTERS: Filters = { ...BDM_NO_FILTERS, bdm: [] };
 
 const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => {
   const { toast } = useToast();
@@ -46,6 +46,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [debounced, setDebounced] = useState('');
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [kpiFilter, setKpiFilter] = useState<string | null>(null);
+  const [location, setLocation] = useState('');
+  const [debLocation, setDebLocation] = useState('');
+  useEffect(() => { const t = setTimeout(() => setDebLocation(location), 350); return () => clearTimeout(t); }, [location]);
   const [sort, setSort] = useState<{ col: string; asc: boolean }>(BDM_DEFAULT_SORT);
   const [kpis, setKpis] = useState<any>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -100,7 +103,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     }
     // Each ticked option inside a group widens the match (OR); different groups narrow it (AND).
     const groups = bdmFilterConditions(filters, today);
-    for (const g of groups) q = q.filter('id', 'not.is', null).or(g);
+    for (const g of groups) q = q.or(g);
     if (location.trim()) {
       const l = location.trim().replace(/[%,()]/g, ' ');
       q = q.or([`county.ilike.%${l}%`, `town.ilike.%${l}%`, `postcode.ilike.${l.replace(/\s+/g, '')}%`, `postcode.ilike.${l}%`, `address.ilike.%${l}%`].join(','));
