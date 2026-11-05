@@ -577,7 +577,7 @@ export const StaffHubTab: React.FC = () => {
           }
         }}
       >
-        <DialogContent className="max-w-5xl w-[95vw] h-[90vh] flex flex-col p-0 gap-0">
+        <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0 gap-0">
           <DialogHeader className="p-4 border-b">
             <DialogTitle className="truncate pr-8">{viewerDoc?.title}</DialogTitle>
             <DialogDescription className="truncate">
