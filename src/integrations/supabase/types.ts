@@ -2330,6 +2330,50 @@ export type Database = {
         }
         Relationships: []
       }
+      bdm_note_assignments: {
+        Row: {
+          assigned_by: string
+          assigned_by_name: string | null
+          assigned_to: string
+          created_at: string
+          dealership_id: string
+          dealership_name: string | null
+          id: string
+          note: string
+          read_at: string | null
+        }
+        Insert: {
+          assigned_by?: string
+          assigned_by_name?: string | null
+          assigned_to: string
+          created_at?: string
+          dealership_id: string
+          dealership_name?: string | null
+          id?: string
+          note: string
+          read_at?: string | null
+        }
+        Update: {
+          assigned_by?: string
+          assigned_by_name?: string | null
+          assigned_to?: string
+          created_at?: string
+          dealership_id?: string
+          dealership_name?: string | null
+          id?: string
+          note?: string
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_note_assignments_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bdm_stage_history: {
         Row: {
           changed_by: string | null
