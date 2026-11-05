@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -18,9 +20,11 @@ const BdmTownAccessPanel: React.FC = () => {
   const [towns, setTowns] = useState<string[]>([]);
   const [grants, setGrants] = useState<Grant[]>([]);
   const [who, setWho] = useState('');
-  const [town, setTown] = useState('');
   const [busy, setBusy] = useState(false);
   const db = supabase as any;
+
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [filter, setFilter] = useState('');
 
   const load = useCallback(async () => {
     const { data: g } = await db.from('bdm_town_access').select('id, user_id, town').order('town');
@@ -31,38 +35,52 @@ const BdmTownAccessPanel: React.FC = () => {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const { data: me } = await db.from('admin_users').select('role').eq('user_id', u.user.id).eq('is_active', true);
-      const ok = (me || []).some((r: any) => ['super_admin', 'admin'].includes(r.role));
-      setAllowed(ok);
+      const { data: ok } = await db.rpc('bdm_is_town_admin', { _uid: u.user.id });
+      setAllowed(!!ok);
       if (!ok) return;
-      const [{ data: s }, { data: t }] = await Promise.all([
-        db.from('admin_users').select('user_id, first_name, last_name, email, role').eq('is_active', true).order('first_name'),
+      const [{ data: s }, { data: t }, { data: au }] = await Promise.all([
+        db.rpc('bdm_staff_list'),
         db.rpc('bdm_town_list'),
+        db.from('admin_users').select('user_id, role'),
       ]);
-      setStaff((s || []).filter((x: any) => x.user_id && !['super_admin', 'admin'].includes(x.role)).map((x: any) => ({
-        user_id: x.user_id, role: x.role,
-        name: [x.first_name, x.last_name].filter(Boolean).join(' ') || x.email,
-      })));
+      const roleOf = new Map((au || []).map((x: any) => [x.user_id, x.role]));
+      const list: Staff[] = [];
+      for (const x of (s || [])) {
+        if (x.user_id === u.user.id) continue;
+        const { data: top } = await db.rpc('bdm_is_town_admin', { _uid: x.user_id });
+        if (top) continue;
+        list.push({ user_id: x.user_id, name: x.name, role: (roleOf.get(x.user_id) as string) || 'staff' });
+      }
+      setStaff(list);
       setTowns((t || []).map((x: any) => x.town));
       load();
     })();
   }, [load]);
 
+  useEffect(() => { setPicked(new Set(grants.filter(g => g.user_id === who).map(g => g.town))); }, [who, grants]);
+
   if (!allowed) return null;
 
-  const grant = async () => {
-    if (!who || !town) { toast.error('Choose a staff member and a town'); return; }
+  const toggle = (t: string) => setPicked(p => { const n = new Set(p); n.has(t) ? n.delete(t) : n.add(t); return n; });
+  const save = async () => {
+    if (!who) { toast.error('Choose a staff member first'); return; }
     setBusy(true);
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await db.from('bdm_town_access').insert({ user_id: who, town, granted_by: u.user?.id });
+    const current = grants.filter(g => g.user_id === who);
+    const add = [...picked].filter(t => !current.some(g => g.town === t));
+    const remove = current.filter(g => !picked.has(g.town)).map(g => g.id);
+    let err: any = null;
+    if (add.length) ({ error: err } = await db.from('bdm_town_access').insert(add.map(town => ({ user_id: who, town, granted_by: u.user?.id }))));
+    if (!err && remove.length) ({ error: err } = await db.from('bdm_town_access').delete().in('id', remove));
     setBusy(false);
-    if (error) { toast.error(error.code === '23505' ? 'They already have this town' : error.message); return; }
-    toast.success(`${town} opened`); setTown(''); load();
+    if (err) { toast.error(err.message); return; }
+    toast.success(`Saved — ${picked.size} town${picked.size === 1 ? '' : 's'} opened`); load();
   };
   const revoke = async (id: string) => {
     const { error } = await db.from('bdm_town_access').delete().eq('id', id);
     if (error) toast.error(error.message); else load();
   };
+  const shown = towns.filter(t => t.toLowerCase().includes(filter.toLowerCase()));
 
   const byUser = staff.map(s => ({ ...s, towns: grants.filter(g => g.user_id === s.user_id) })).filter(s => s.towns.length);
 
@@ -75,26 +93,35 @@ const BdmTownAccessPanel: React.FC = () => {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+        <div className="grid gap-3">
           <div>
             <Label>Staff member</Label>
             <Select value={who} onValueChange={setWho}>
-              <SelectTrigger><SelectValue placeholder="Choose staff" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={staff.length ? 'Choose staff' : 'No BDM or Manager logins yet'} /></SelectTrigger>
               <SelectContent>
                 {staff.map(s => <SelectItem key={s.user_id} value={s.user_id}>{s.name} · {s.role.replace('_', ' ')}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label>Town</Label>
-            <Select value={town} onValueChange={setTown}>
-              <SelectTrigger><SelectValue placeholder="Choose town" /></SelectTrigger>
-              <SelectContent>
-                {towns.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center justify-between gap-2">
+              <Label>Towns ({picked.size} ticked)</Label>
+              <div className="flex gap-2 text-xs">
+                <button type="button" className="underline" disabled={!who} onClick={() => setPicked(new Set([...picked, ...shown]))}>Tick all</button>
+                <button type="button" className="underline" disabled={!who} onClick={() => setPicked(new Set())}>Clear</button>
+              </div>
+            </div>
+            <Input className="my-2" placeholder="Search towns" value={filter} onChange={e => setFilter(e.target.value)} />
+            <div className={`grid max-h-64 gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2 ${who ? '' : 'pointer-events-none opacity-50'}`}>
+              {shown.map(t => (
+                <label key={t} className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm hover:bg-accent">
+                  <Checkbox checked={picked.has(t)} onCheckedChange={() => toggle(t)} />{t}
+                </label>
+              ))}
+              {shown.length === 0 && <p className="text-sm text-muted-foreground">No towns found.</p>}
+            </div>
           </div>
-          <Button onClick={grant} disabled={busy} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">Give access</Button>
+          <Button onClick={save} disabled={busy || !who} className="justify-self-end bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : 'Save town access'}</Button>
         </div>
         {byUser.length === 0 ? (
           <p className="text-sm text-muted-foreground">No towns opened yet.</p>
