@@ -32,7 +32,7 @@ const summary = (value: string[], options: FilterOption[]) =>
 export const MultiFilter: React.FC<{ label: string; allLabel: string; options: FilterOption[]; value: string[]; onChange: (v: string[]) => void }> = ({ label, allLabel, options, value, onChange }) => (
   <Popover>
     <PopoverTrigger asChild>
-      <button type="button" className={`inline-flex h-9 items-center gap-1 rounded-md border bg-background px-3 text-sm hover:bg-muted/50 ${value.length ? 'border-crm-orange font-semibold' : ''}`}>
+      <button type="button" className={`inline-flex h-9 items-center gap-1 rounded-md border bg-background px-3 text-sm font-medium hover:bg-muted/50 ${value.length ? 'border-crm-orange bg-crm-orange/5' : ''}`}>
         {label}: {summary(value, options)} <ChevronDown className="h-4 w-4 opacity-70" />
       </button>
     </PopoverTrigger>
@@ -61,7 +61,7 @@ export const MoreFilters: React.FC<{
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button type="button" className={`inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-semibold hover:bg-muted/50 ${active ? 'border-crm-orange' : ''}`}>
+        <button type="button" className={`inline-flex h-9 items-center gap-2 rounded-md border bg-background px-3 text-sm font-medium hover:bg-muted/50 ${active ? 'border-crm-orange bg-crm-orange/5' : ''}`}>
           <SlidersHorizontal className="h-4 w-4" />More filters{active ? ` (${active})` : ''}
         </button>
       </PopoverTrigger>

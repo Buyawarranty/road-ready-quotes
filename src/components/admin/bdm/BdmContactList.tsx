@@ -323,7 +323,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </div>
         <div className="flex flex-wrap gap-2">
           <Select value={`${sort.col}:${sort.asc ? 'asc' : 'desc'}`} onValueChange={v => { const [col, d] = v.split(':'); setSort({ col, asc: d === 'asc' }); }}>
-            <SelectTrigger className="h-9 w-full sm:w-auto sm:min-w-[160px]" aria-label="Sort by"><SelectValue placeholder="Sort by" /></SelectTrigger>
+            <SelectTrigger className="h-9 w-full rounded-md px-3 text-sm font-medium sm:w-auto sm:min-w-[160px]" aria-label="Sort by"><SelectValue placeholder="Sort by" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="created_at:desc">Newest first</SelectItem>
               <SelectItem value="created_at:asc">Oldest first</SelectItem>
@@ -340,7 +340,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
             type="button"
             variant={filters.spoken.length === 1 && filters.spoken[0] === BDM_NOT_SPOKEN ? 'default' : 'outline'}
             size="sm"
-            className="h-9"
+            className="h-9 rounded-md px-3 text-sm font-medium"
             onClick={() => setFilters(f => ({ ...f, spoken: f.spoken.length === 1 && f.spoken[0] === BDM_NOT_SPOKEN ? [] : [BDM_NOT_SPOKEN] }))}
           >
             <PhoneMissed className="mr-1 h-4 w-4" /> Not spoken to
