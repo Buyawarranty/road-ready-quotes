@@ -309,7 +309,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-orange/30 bg-crm-orange-soft/60 p-3">
           <Label htmlFor="bdm-town" className="flex items-center gap-1.5 text-sm font-semibold text-crm-orange"><MapPin className="h-4 w-4" />Area / location</Label>
           <Select value={town} onValueChange={setTown}>
-            <SelectTrigger id="bdm-town" className="h-10 w-full border-crm-orange bg-background font-semibold sm:w-[300px]"><SelectValue placeholder="Choose a town" /></SelectTrigger>
+            <SelectTrigger id="bdm-town" className="h-10 w-full border border-border bg-background font-semibold sm:w-[300px]"><SelectValue placeholder="Choose a town" /></SelectTrigger>
             <SelectContent>
               {isManager && <SelectItem value="all">{isFullAccess ? 'All towns' : 'All my towns'}</SelectItem>}
               {towns.map(t => <SelectItem key={t.town} value={t.town}>{t.town} ({t.dealerships})</SelectItem>)}
@@ -319,7 +319,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
         </div>
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, postcode..." className="h-10 pl-9" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search dealership, contact, phone, postcode..." className="h-10 border-2 border-foreground/40 pl-9" />
         </div>
         <div className="flex flex-wrap gap-2">
           <Select value={`${sort.col}:${sort.asc ? 'asc' : 'desc'}`} onValueChange={v => { const [col, d] = v.split(':'); setSort({ col, asc: d === 'asc' }); }}>
