@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { fireDealerConfetti } from '@/lib/dealerConfetti';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -288,6 +289,7 @@ const DealerAdminSignUps: React.FC = () => {
       setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, ...patch } : row)));
       setSelected({ ...selected, ...patch });
       setDecisionNotes('');
+      if (decision === 'approve') fireDealerConfetti(0.4);
       toast.success(
         decision === 'approve'
           ? 'Approved — login details emailed to the trader.'
