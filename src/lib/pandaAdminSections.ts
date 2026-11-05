@@ -4,6 +4,7 @@
 
 export const PANDA_SECTION_ORDER: { id: string; label: string; description: string }[] = [
   { id: 'bdm-contacts', label: 'BDM contacts', description: 'Dealership prospects, calls, follow-ups and pipeline' },
+  { id: 'bdm-allocation', label: 'BDM allocation', description: 'Give town access and block leads per person' },
   { id: 'dealer-overview', label: 'Overview', description: 'Dealer sales, warranties and money owed at a glance' },
   { id: 'dealer-dealers', label: 'Dealers', description: 'Sign-ups, approved dealers and traders in one place' },
   { id: 'dealer-sales', label: 'Dealer sales', description: 'Warranties sold by each dealer' },
@@ -56,5 +57,5 @@ export const PANDA_BRAND = 'pandaprotect';
 export const BDM_ROLE_TABS = ['bdm-contacts', 'staff-hub', 'timesheets', 'account'];
 /** Default sections for the Manager job: most CRM views, but no staff access, pricing or system settings. */
 export const MANAGER_ROLE_TABS = PANDA_SECTION_ORDER.map((s) => s.id).filter(
-  (id) => !['user-permissions', 'trader-pricing', 'feature-flags', 'plans', 'document-mapping'].includes(id),
+  (id) => !['user-permissions', 'bdm-allocation', 'trader-pricing', 'feature-flags', 'plans', 'document-mapping'].includes(id),
 );

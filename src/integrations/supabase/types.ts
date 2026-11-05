@@ -1943,6 +1943,44 @@ export type Database = {
           },
         ]
       }
+      bdm_access_blocks: {
+        Row: {
+          blocked_by: string | null
+          created_at: string
+          dealership_id: string | null
+          id: string
+          reason: string | null
+          town: string | null
+          user_id: string
+        }
+        Insert: {
+          blocked_by?: string | null
+          created_at?: string
+          dealership_id?: string | null
+          id?: string
+          reason?: string | null
+          town?: string | null
+          user_id: string
+        }
+        Update: {
+          blocked_by?: string | null
+          created_at?: string
+          dealership_id?: string | null
+          id?: string
+          reason?: string | null
+          town?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_access_blocks_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bdm_activities: {
         Row: {
           activity_type: string
@@ -15283,6 +15321,10 @@ export type Database = {
       bdm_import_rows: {
         Args: { p_file_name: string; p_rows: Json }
         Returns: Json
+      }
+      bdm_is_blocked: {
+        Args: { _dealership: string; _town: string; _uid: string }
+        Returns: boolean
       }
       bdm_is_manager: { Args: { _uid: string }; Returns: boolean }
       bdm_is_staff: { Args: { _uid: string }; Returns: boolean }
