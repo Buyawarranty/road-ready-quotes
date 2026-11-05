@@ -28,6 +28,7 @@ const VIEWS_KEY = 'bdm-saved-views';
 type SavedView = { name: string; town: string; filters: any; kpiFilter: string | null; sort: { col: string; asc: boolean }; search: string; location: string };
 const pct = (a?: number, b?: number) => (b ? Math.round(((a ?? 0) - b) / b * 100) : null);
 const MANAGER_ROLES = ['super_admin', 'admin', 'sales_manager'];
+const FULL_ACCESS_ROLES = ['super_admin', 'admin'];
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—');
@@ -39,6 +40,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const { toast } = useToast();
   const isSuper = userRole === 'super_admin';
   const isManager = !!userRole && MANAGER_ROLES.includes(userRole);
+  const isFullAccess = !!userRole && FULL_ACCESS_ROLES.includes(userRole);
   const [userId, setUserId] = useState<string | null>(null);
   const [staff, setStaff] = useState<BdmStaff[]>([]);
   const [rows, setRows] = useState<BdmDealership[]>([]);
@@ -204,7 +206,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const fmt = (n?: number) => (n === undefined || n === null ? '–' : n.toLocaleString('en-GB'));
   const cards = [
     { id: null, label: 'Total calls', icon: Phone, value: kpis?.calls, sub: <Trend v={callsPct} />, card: 'bg-crm-tint-green', ic: 'text-crm-ink-green' },
-    { id: null, label: 'Dealerships', icon: Building2, value: kpis?.dealerships, sub: <span className="text-muted-foreground">{town === 'all' ? 'Active in CRM' : town}</span>, card: 'bg-crm-tint-sky', ic: 'text-crm-ink-sky' },
+    { id: null, label: 'Dealerships', icon: Building2, value: kpis?.dealerships, sub: <span className="text-muted-foreground">{town === 'all' ? (isFullAccess ? 'Active in CRM' : 'Visible to you') : town}</span>, card: 'bg-crm-tint-sky', ic: 'text-crm-ink-sky' },
     { id: 'new', label: 'New leads', icon: UserPlus, value: kpis?.new_leads, sub: <Trend v={leadsPct} />, card: 'bg-crm-tint-cream', ic: 'text-crm-ink-cream' },
     { id: 'due_today', label: 'Follow-ups due', icon: CalendarCheck, value: kpis?.due_today, sub: <span className="text-destructive">{fmt(kpis?.overdue)} overdue</span>, card: 'bg-crm-tint-rose', ic: 'text-crm-ink-rose' },
     { id: 'hot', label: 'Hot prospects', icon: Flame, value: kpis?.hot, sub: <span className="text-muted-foreground">Interested + high priority</span>, card: 'bg-crm-orange-soft', ic: 'text-crm-orange' },
@@ -309,11 +311,11 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           <Select value={town} onValueChange={setTown}>
             <SelectTrigger id="bdm-town" className="h-10 w-full border-crm-orange bg-background font-semibold sm:w-[300px]"><SelectValue placeholder="Choose a town" /></SelectTrigger>
             <SelectContent>
-              {isManager && <SelectItem value="all">All towns</SelectItem>}
+              {isManager && <SelectItem value="all">{isFullAccess ? 'All towns' : 'All my towns'}</SelectItem>}
               {towns.map(t => <SelectItem key={t.town} value={t.town}>{t.town} ({t.dealerships})</SelectItem>)}
             </SelectContent>
           </Select>
-          {!isManager && towns.length === 0 && <span className="text-sm text-muted-foreground">No towns have been opened to you yet. Ask an admin for access.</span>}
+          {towns.length === 0 && <span className="text-sm text-muted-foreground">No towns have been opened to you yet. Ask an admin for access.</span>}
         </div>
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
