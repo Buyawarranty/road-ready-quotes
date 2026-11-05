@@ -50,8 +50,9 @@ const DealerLogin = () => {
       // target page (own dealer or admin "view as dealer"); otherwise the
       // dealer page bounces back here and the screen flickers in a loop.
       const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-      // Staff only reach dealer pages via "view as dealer", never as a dealer login.
-      if (cancelled || (isAdmin ? !readDealerImpersonation() : !dealer)) return;
+      // An account with its own dealer profile always goes in (even if it also
+      // holds a staff role); staff-only accounts only via "view as dealer".
+      if (cancelled || !(dealer || (isAdmin && readDealerImpersonation()))) return;
       const redirect = searchParams.get('redirect');
       const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
       if (redirect && redirect.startsWith('/dealer')) {
@@ -84,33 +85,24 @@ const DealerLogin = () => {
 
       const userId = signInData.session?.user?.id;
 
-      if (userId) {
-        const { data: roles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId);
-        const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-        if (isAdmin) {
-          // Staff logins never sign in to the dealer portal; staff use /auth
-          // and reach dealer views only through "view as dealer".
-          await supabase.auth.signOut();
-          toast({
-            title: 'Staff account',
-            description: 'This is a Panda Protect staff login. Please sign in at /auth. Dealers need their own separate login.',
-            variant: 'destructive',
-          });
-          return;
-        }
-      }
-
-      const { data: dealer } = await supabase
-        .from('dealers')
-        .select('id')
-        .eq('user_id', userId as string)
-        .maybeSingle();
+      // The dealer login is for accounts that own a dealer profile. Some
+      // dealers also hold a staff role (e.g. accounts copied from Buy A
+      // Warranty); they still land in the dealer portal from here, and in the
+      // admin dashboard from /auth. Staff-only accounts are turned away.
+      const [{ data: dealer }, { data: roles }] = await Promise.all([
+        supabase.from('dealers').select('id').eq('user_id', userId as string).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id', userId as string),
+      ]);
       if (!dealer) {
+        const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         await supabase.auth.signOut();
-        toast({ title: 'Access denied', description: 'No dealer account found for this email.', variant: 'destructive' });
+        toast(isAdmin
+          ? {
+              title: 'Staff account',
+              description: 'This is a Panda Protect staff login with no dealer account. Please sign in at /auth.',
+              variant: 'destructive',
+            }
+          : { title: 'Access denied', description: 'No dealer account found for this email.', variant: 'destructive' });
         return;
       }
 

@@ -303,26 +303,18 @@ const DealerComingSoon = () => {
       }
 
       const userId = signInData.session?.user?.id;
-      if (userId) {
-        const { data: roles } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', userId);
-        if ((roles || []).some((r: any) => isAdminRole(r.role as string))) {
-          await supabase.auth.signOut();
-          toast.error('This is a Panda Protect staff login. Please sign in at /auth. Dealers need their own separate login.');
-          return;
-        }
-      }
-
-      const { data: dealer } = await supabase
-        .from('dealers')
-        .select('id')
-        .eq('user_id', userId as string)
-        .maybeSingle();
+      // Accounts that own a dealer profile go to the dealer portal, even if
+      // they also hold a staff role; staff-only accounts are turned away.
+      const [{ data: dealer }, { data: roles }] = await Promise.all([
+        supabase.from('dealers').select('id').eq('user_id', userId as string).maybeSingle(),
+        supabase.from('user_roles').select('role').eq('user_id', userId as string),
+      ]);
       if (!dealer) {
+        const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         await supabase.auth.signOut();
-        toast.error('No dealer account found for this email.');
+        toast.error(isAdmin
+          ? 'This is a Panda Protect staff login with no dealer account. Please sign in at /auth.'
+          : 'No dealer account found for this email.');
         return;
       }
 

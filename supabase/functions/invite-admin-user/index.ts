@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.50.2";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
+import { requireStaffAdmin } from "../_shared/staffAuth.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -41,28 +42,12 @@ serve(async (req: Request) => {
     const tempPassword = password && password.trim().length >= 6 ? password.trim() : await generatePassword();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    // Get the inviter info
-    const authHeader = req.headers.get('Authorization');
-    const token = authHeader?.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Only active Super Admins and Admins may create staff logins; only Super Admin can create another Super Admin.
-    const { data: callerRows } = await supabase
-      .from('admin_users').select('role').eq('user_id', user.id).eq('is_active', true);
-    const callerRoles = (callerRows || []).map((r: any) => r.role);
-    const callerIsSuper = callerRoles.includes('super_admin');
-    if (!callerIsSuper && !callerRoles.includes('admin')) {
-      return new Response(JSON.stringify({ error: 'Only Super Admin or Admin can create staff logins' }), {
-        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
+    // Only active Super Admins and Admins may create staff logins (role from
+    // user_roles or admin_users); only a Super Admin can create another Super Admin.
+    const caller = await requireStaffAdmin(req, { corsHeaders });
+    if (caller instanceof Response) return caller;
+    const user = caller.user;
+    const callerIsSuper = caller.isSuperAdmin;
     if ((role as string) === 'super_admin' && !callerIsSuper) {
       return new Response(JSON.stringify({ error: 'Only a Super Admin can create another Super Admin' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
