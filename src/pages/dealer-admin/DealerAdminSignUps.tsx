@@ -82,6 +82,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
+  const [rowResending, setRowResending] = useState<string | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [noteIndex, setNoteIndex] = useState<NoteIndexRow[]>([]);
   const [notes, setNotes] = useState<SignupNote[]>([]);
@@ -327,6 +328,22 @@ const DealerAdminSignUps: React.FC = () => {
       toast.error(e?.message || 'Could not send login details');
     } finally {
       setResending(false);
+    }
+  };
+
+  const resendForRow = async (row: Signup) => {
+    setRowResending(row.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
+        body: { signup_id: row.id, decision: 'resend' },
+      });
+      if (error) throw new Error(error.message);
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast.success(`Login details sent to ${(data as any)?.sent_to || row.email_address}`);
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not send login details');
+    } finally {
+      setRowResending(null);
     }
   };
 
