@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export interface AdminSectionTab {
   id: string;
-  label: string;
+  label: React.ReactNode;
   render: () => React.ReactNode;
 }
 
