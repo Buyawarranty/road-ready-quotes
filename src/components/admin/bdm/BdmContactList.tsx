@@ -204,7 +204,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const fmt = (n?: number) => (n === undefined || n === null ? '–' : n.toLocaleString('en-GB'));
   const cards = [
     { id: null, label: 'Total calls', icon: Phone, value: kpis?.calls, sub: <Trend v={callsPct} />, card: 'bg-crm-tint-green', ic: 'text-crm-ink-green' },
-    { id: null, label: 'Dealerships', icon: Building2, value: kpis?.dealerships, sub: <span className="text-muted-foreground">{town === 'all' ? 'Active in CRM' : town}</span>, card: 'bg-crm-tint-blue', ic: 'text-crm-ink-blue' },
+    { id: null, label: 'Dealerships', icon: Building2, value: kpis?.dealerships, sub: <span className="text-muted-foreground">{town === 'all' ? 'Active in CRM' : town}</span>, card: 'bg-crm-tint-sky', ic: 'text-crm-ink-sky' },
     { id: 'new', label: 'New leads', icon: UserPlus, value: kpis?.new_leads, sub: <Trend v={leadsPct} />, card: 'bg-crm-tint-cream', ic: 'text-crm-ink-cream' },
     { id: 'due_today', label: 'Follow-ups due', icon: CalendarCheck, value: kpis?.due_today, sub: <span className="text-destructive">{fmt(kpis?.overdue)} overdue</span>, card: 'bg-crm-tint-rose', ic: 'text-crm-ink-rose' },
     { id: 'hot', label: 'Hot prospects', icon: Flame, value: kpis?.hot, sub: <span className="text-muted-foreground">Interested + high priority</span>, card: 'bg-crm-orange-soft', ic: 'text-crm-orange' },
