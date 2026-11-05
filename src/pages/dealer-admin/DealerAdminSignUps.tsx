@@ -569,27 +569,45 @@ const DealerAdminSignUps: React.FC = () => {
                     className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm min-h-[70px]"
                   />
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={() => decide('approve')}
-                      disabled={deciding !== null}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                    >
-                      {deciding === 'approve'
-                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        : <Check className="w-4 h-4 mr-2" />}
-                      Approve & send login details
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => decide('reject')}
-                      disabled={deciding !== null}
-                      className="border-red-300 text-red-700 hover:bg-red-50"
-                    >
-                      {deciding === 'reject'
-                        ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        : <Ban className="w-4 h-4 mr-2" />}
-                      Decline
-                    </Button>
+                    {(selected.approved_at || selected.status === 'approved') ? (
+                      <Button
+                        disabled
+                        className="bg-green-600 text-white opacity-100 cursor-default"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Approved
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => decide('approve')}
+                        disabled={deciding !== null}
+                        className="bg-[#eb4b00] hover:bg-[#c93f00] text-white"
+                      >
+                        {deciding === 'approve'
+                          ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          : <Mail className="w-4 h-4 mr-2" />}
+                        Approve & send login details
+                      </Button>
+                    )}
+                    {!(selected.approved_at || selected.status === 'approved') && (
+                      selected.rejected_at || selected.status === 'rejected' ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-red-100 px-3 py-2 text-sm font-semibold text-red-700">
+                          <Ban className="w-4 h-4" /> Declined
+                        </span>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          onClick={() => decide('reject')}
+                          disabled={deciding !== null}
+                          className="border-red-300 text-red-700 hover:bg-red-50"
+                        >
+                          {deciding === 'reject'
+                            ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            : <Ban className="w-4 h-4 mr-2" />}
+                          Decline
+                        </Button>
+                      )
+                    )}
                   </div>
                   <p className="text-xs text-gray-500">
                     Approving creates the trader's dealer portal account and emails their login details.
