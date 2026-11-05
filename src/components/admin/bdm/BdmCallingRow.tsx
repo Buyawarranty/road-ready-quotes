@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Mail, MailX, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
+import { Bell, Copy, Mail, MailX, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
 import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
