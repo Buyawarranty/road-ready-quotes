@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.bdm_is_blocked(uuid, uuid, text) FROM PUBLIC, anon;
