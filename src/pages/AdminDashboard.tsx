@@ -336,6 +336,10 @@ const AdminDashboard = () => {
   };
   const urlTab = rawUrlTab ? (TAB_ALIASES[rawUrlTab] ?? rawUrlTab) : null;
   const [activeTab, setActiveTab] = useState<string>(urlTab || 'get-quote');
+  // Follow in-app links that change ?tab= (e.g. live alert "Review sign-up")
+  useEffect(() => {
+    if (urlTab && urlTab !== 'overview') setActiveTab((cur) => (cur === urlTab ? cur : urlTab));
+  }, [urlTab]);
   const { collapsed: sidebarCollapsed } = useAdminSidebarCollapsed();
   // Public slug used in the URL bar (reverse map for tab ids that were renamed)
   const publicSlugFor = (id: string) => (id === 'overview' ? 'live-calls-data' : id);
