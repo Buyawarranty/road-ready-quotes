@@ -77,12 +77,13 @@ serve(async (req) => {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    const { data: adminRow } = await admin
-      .from("admin_users")
-      .select("id, is_active")
-      .eq("user_id", userData.user.id)
-      .maybeSingle();
-    if (!adminRow || adminRow.is_active === false) {
+    // Active admin_users staff, or anyone holding an Admin / Super Admin role.
+    const [{ data: adminRow }, { data: callerRoles }] = await Promise.all([
+      admin.from("admin_users").select("id, is_active").eq("user_id", userData.user.id).maybeSingle(),
+      admin.from("user_roles").select("role").eq("user_id", userData.user.id),
+    ]);
+    const hasAdminRole = (callerRoles ?? []).some((r: { role: string }) => r.role === "admin" || r.role === "super_admin");
+    if (adminRow?.is_active === false || (!adminRow && !hasAdminRole)) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
