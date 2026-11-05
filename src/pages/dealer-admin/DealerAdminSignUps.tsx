@@ -281,8 +281,12 @@ const DealerAdminSignUps: React.FC = () => {
       if (error) throw new Error(error.message);
       if ((data as any)?.error) throw new Error((data as any).error);
       const newStatus: Status = decision === 'approve' ? 'approved' : 'rejected';
-      setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, status: newStatus } : row)));
-      setSelected({ ...selected, status: newStatus });
+      const stamp = new Date().toISOString();
+      const patch: any = decision === 'approve'
+        ? { status: newStatus, approved_at: stamp, rejected_at: null }
+        : { status: newStatus, rejected_at: stamp, approved_at: null };
+      setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, ...patch } : row)));
+      setSelected({ ...selected, ...patch });
       setDecisionNotes('');
       toast.success(
         decision === 'approve'
@@ -449,7 +453,7 @@ const DealerAdminSignUps: React.FC = () => {
                       <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white">
                         <Check className="w-4 h-4 mr-1" />
-                        {r.approved_at ? 'Resend login' : 'Approve'}
+                        {(r.approved_at || r.status === 'approved') ? 'Resend login' : 'Approve'}
                       </Button>
                     </Td>
                     <Td className="whitespace-nowrap text-gray-600">
