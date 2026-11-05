@@ -27,7 +27,7 @@ const PAGE = 200;
 const VIEWS_KEY = 'bdm-saved-views';
 type SavedView = { name: string; town: string; filters: any; kpiFilter: string | null; sort: { col: string; asc: boolean }; search: string; location: string };
 const pct = (a?: number, b?: number) => (b ? Math.round(((a ?? 0) - b) / b * 100) : null);
-const MANAGER_ROLES = ['super_admin', 'admin', 'sales_manager'];
+const MANAGER_ROLES = ['super_admin', 'admin', 'sales_manager', 'manager'];
 const FULL_ACCESS_ROLES = ['super_admin', 'admin'];
 const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
