@@ -125,6 +125,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     q = q.order(sort.col, { ascending: sort.asc, nullsFirst: false }).order('name').range(page * PAGE, page * PAGE + PAGE - 1);
     const { data, count: c, error } = await q;
     if (error) toast({ title: 'Could not load dealerships', description: error.message, variant: 'destructive' });
+    if (error) { setLoading(false); return; } // keep the current list on screen instead of blanking it
     const list: BdmDealership[] = data || [];
     setRows(list); setCount(c ?? 0); setLoading(false);
     if (list.length) {
@@ -390,7 +391,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
             </tr>
           </thead>
           <tbody>
-            {loading ? (
+            {loading && rows.length === 0 ? (
               <tr><td colSpan={15} className="p-6 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></td></tr>
             ) : rows.length === 0 ? (
               <tr><td colSpan={15} className="p-6 text-center text-muted-foreground">No dealerships match.</td></tr>
