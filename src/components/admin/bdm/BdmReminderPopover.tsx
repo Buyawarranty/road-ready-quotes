@@ -41,7 +41,7 @@ const fmt = (d: Date) => d.toLocaleString('en-GB', { weekday: 'short', day: 'num
 
 interface Props { dealershipId: string; name: string; trigger?: React.ReactNode; onSaved: () => void }
 
-const BdmReminderPopover: React.FC<Props> = ({ dealershipId, name, onSaved }) => {
+const BdmReminderPopover: React.FC<Props> = ({ dealershipId, name, trigger, onSaved }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [text, setText] = useState('');
@@ -76,9 +76,9 @@ const BdmReminderPopover: React.FC<Props> = ({ dealershipId, name, onSaved }) =>
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Set a reminder for ${name}`} title="Set a reminder">
+        {trigger ?? <Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Set a reminder for ${name}`} title="Set a reminder">
           <Bell className="h-4 w-4" />
-        </Button>
+        </Button>}
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[min(320px,calc(100vw-1.5rem))] space-y-3">
         <p className="text-sm font-semibold">Remind me</p>

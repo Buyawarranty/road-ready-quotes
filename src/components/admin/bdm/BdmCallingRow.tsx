@@ -68,22 +68,24 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const firstTouch = r.last_spoken_at || r.last_attempt_at;
   const [editOpen, setEditOpen] = useState(false);
   const toDay = (d?: string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '');
-  const [form, setForm] = useState({ email: '', last: '', follow: '', action: '' });
-  const openEdit = () => { setForm({ email: r.email ?? c?.email ?? '', last: toDay(r.last_spoken_at), follow: toDay(r.next_follow_up_at), action: r.next_action ?? '' }); setEditOpen(true); };
+  const [form, setForm] = useState({ phone: '', email: '', last: '', follow: '', action: '' });
+  const openEdit = () => { setForm({ phone: r.phone ?? c?.mobile ?? c?.phone ?? '', email: r.email ?? c?.email ?? '', last: toDay(r.last_spoken_at), follow: toDay(r.next_follow_up_at), action: r.next_action ?? '' }); setEditOpen(true); };
   const saveEdit = async () => {
     const em = form.email.trim();
     if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { toast({ title: 'Enter a valid email address', variant: 'destructive' }); return; }
+    const ph = form.phone.trim();
+    if (ph && ph.replace(/\D/g, '').length < 7) { toast({ title: 'Enter a valid phone number', variant: 'destructive' }); return; }
     const iso = (d: string) => (d ? new Date(d + 'T00:00:00Z').toISOString() : null);
     setSaving(true);
-    const { error } = await (supabase as any).from('bdm_dealerships').update({ email: em || null, last_spoken_at: iso(form.last), next_follow_up_at: iso(form.follow), next_action: form.action.trim().slice(0, 200) || null }).eq('id', r.id);
+    const { error } = await (supabase as any).from('bdm_dealerships').update({ phone: ph.slice(0, 30) || null, email: em || null, last_spoken_at: iso(form.last), next_follow_up_at: iso(form.follow), next_action: form.action.trim().slice(0, 200) || null }).eq('id', r.id);
     setSaving(false);
     if (error) { toast({ title: 'Could not save changes', description: error.message, variant: 'destructive' }); return; }
     toast({ title: 'Changes saved' }); setEditOpen(false); onChanged();
   };
   const editBtn = <button type="button" onClick={openEdit} className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="h-3 w-3" /></button>;
 
-  const phone = c?.mobile || r.phone || c?.phone || null;
-  const email = c?.email || r.email || null;
+  const phone = r.phone || c?.mobile || c?.phone || null;
+  const email = r.email || c?.email || null;
   const dnc = !!r.do_not_contact;
   const tel = phone?.replace(/\s/g, '') ?? '';
   const followDays = dayDiff(r.next_follow_up_at);
@@ -165,18 +167,18 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
               <MailX className="h-4 w-4" />
             </Button>
           )}
-          <BdmReminderPopover dealershipId={r.id} name={r.name} onSaved={onChanged} />
+          <BdmReminderPopover dealershipId={r.id} name={r.name} onSaved={onChanged} trigger={
           <Button variant="ghost" title={followLabel} aria-label={followLabel}
             className={`h-9 w-11 gap-0 rounded-md px-1 leading-none hover:bg-transparent ${
               followDays == null ? 'text-muted-foreground'
               : followDays < 0 ? 'bg-destructive/10 text-destructive'
               : followDays === 0 ? 'bg-crm-orange-soft text-crm-orange'
               : 'bg-crm-blue-soft/70 text-foreground'
-            }`}
-            onClick={() => onOpen(r.id, 'activity')}>
+            }`}>
             <span className="text-sm font-bold tabular-nums">{followDays == null ? '—' : followDays === 0 ? 'Today' : Math.abs(followDays)}</span>
             <span className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">{followWord}</span>
           </Button>
+          } />
         </div>
       </td>
       {/* Dealership + contact */}
@@ -202,8 +204,9 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
             </a>
             <Button size="icon" variant="ghost" className="h-7 w-7" onClick={copyPhone} aria-label="Copy number"><Copy className="h-3.5 w-3.5" /></Button>
             {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send text"><a href={`sms:${tel}`}><MessageSquare className="h-3.5 w-3.5" /></a></Button>}
+            {editBtn}
           </div>
-        ) : <span className="text-xs text-muted-foreground">No number</span>}
+        ) : <button type="button" onClick={openEdit} className="text-xs text-muted-foreground underline-offset-2 hover:underline">No number · add</button>}
       </td>
       {/* WhatsApp */}
       <td className="bg-crm-green-soft/50 p-2">
@@ -219,6 +222,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
           <div className="flex items-center gap-1">
             <span className="max-w-[170px] truncate text-xs" title={email}>{email}</span>
             {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send email"><a href={`mailto:${email}`} onClick={() => logContact('email')}><Send className="h-3.5 w-3.5" /></a></Button>}
+            {editBtn}
           </div>
         ) : <button type="button" onClick={openEdit} className="text-xs text-muted-foreground underline-offset-2 hover:underline">No email · add</button>}
       </td>
@@ -267,9 +271,10 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
             <DialogTitle>Edit details — {r.name}</DialogTitle>
-            <DialogDescription>Update the email, last spoken date and next follow-up.</DialogDescription>
+            <DialogDescription>Update the phone, email, last spoken date and next follow-up.</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3">
+            <div className="grid gap-1"><Label htmlFor={`ph-${r.id}`}>Phone</Label><Input id={`ph-${r.id}`} type="tel" maxLength={30} value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} /></div>
             <div className="grid gap-1"><Label htmlFor={`em-${r.id}`}>Email</Label><Input id={`em-${r.id}`} type="email" maxLength={255} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} /></div>
             <div className="grid gap-1"><Label htmlFor={`ls-${r.id}`}>Last spoken</Label><Input id={`ls-${r.id}`} type="date" value={form.last} onChange={e => setForm(f => ({ ...f, last: e.target.value }))} /></div>
             <div className="grid gap-1"><Label htmlFor={`fu-${r.id}`}>Follow-up date</Label><Input id={`fu-${r.id}`} type="date" value={form.follow} onChange={e => setForm(f => ({ ...f, follow: e.target.value }))} /></div>
