@@ -2028,6 +2028,38 @@ export type Database = {
           },
         ]
       }
+      bdm_call_ticks: {
+        Row: {
+          created_at: string
+          dealership_id: string
+          delta: number
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          dealership_id: string
+          delta: number
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          dealership_id?: string
+          delta?: number
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_call_ticks_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bdm_contacts: {
         Row: {
           created_at: string
@@ -15309,6 +15341,10 @@ export type Database = {
         Returns: number
       }
       bdm_can_access: { Args: { _dealership: string }; Returns: boolean }
+      bdm_dashboard_stats: {
+        Args: { _days?: number; _town?: string }
+        Returns: Json
+      }
       bdm_export_full: {
         Args: { p_format: string; p_scope: string }
         Returns: Json
