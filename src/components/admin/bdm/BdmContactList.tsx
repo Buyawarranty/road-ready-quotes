@@ -18,6 +18,8 @@ import BdmDealershipDrawer from './BdmDealershipDrawer';
 import BdmCallQueue from './BdmCallQueue';
 import BdmCallingRow from './BdmCallingRow';
 import BdmImportDialog from './BdmImportDialog';
+import { MultiFilter, MoreFilters } from './BdmFilterMenus';
+import { BDM_FILTER_OPTIONS, BDM_NO_FILTERS, BdmFilters, bdmFilterConditions } from '@/lib/bdm/bdmFilters';
 import type { BdmStaff } from './BdmLogActivityForm';
 import { downloadBdmTemplate, runBdmExport, ExportKind } from './bdmSpreadsheets';
 
@@ -27,10 +29,8 @@ const startOfToday = () => { const d = new Date(); d.setHours(0, 0, 0, 0); retur
 const addDays = (d: Date, n: number) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const shortDate = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '—');
 
-type Filters = {
-  stage: string; follow: string; stock: string; account: string; bdm: string; spoken: string; priority: string;
-};
-const NO_FILTERS: Filters = { stage: 'all', follow: 'all', stock: 'all', account: 'all', bdm: 'all', spoken: 'all', priority: 'all' };
+type Filters = BdmFilters & { bdm: string[] };
+const NO_FILTERS: Filters = { ...BDM_NO_FILTERS, bdm: [] };
 
 const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => {
   const { toast } = useToast();
@@ -46,6 +46,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [debounced, setDebounced] = useState('');
   const [filters, setFilters] = useState<Filters>(NO_FILTERS);
   const [kpiFilter, setKpiFilter] = useState<string | null>(null);
+  const [location, setLocation] = useState('');
+  const [debLocation, setDebLocation] = useState('');
+  useEffect(() => { const t = setTimeout(() => setDebLocation(location), 350); return () => clearTimeout(t); }, [location]);
   const [sort, setSort] = useState<{ col: string; asc: boolean }>(BDM_DEFAULT_SORT);
   const [kpis, setKpis] = useState<any>(null);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -68,7 +71,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     });
   }, [isManager]);
   useEffect(() => { const t = setTimeout(() => setDebounced(search.trim()), 300); return () => clearTimeout(t); }, [search]);
-  useEffect(() => { setPage(0); }, [debounced, filters, kpiFilter, sort, town]);
+  useEffect(() => { setPage(0); }, [debounced, filters, kpiFilter, sort, town, debLocation]);
 
   const loadKpis = useCallback(async () => {
     const { data } = await (supabase.rpc as any)('bdm_kpis');
@@ -91,26 +94,20 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       q = q.or(ors.join(','));
     }
     if (town !== 'all') q = q.eq('town', town);
-    if (filters.stage !== 'all') q = q.eq('stage', filters.stage);
-    if (filters.priority !== 'all') q = q.eq('priority', filters.priority);
-    if (filters.bdm === 'mine' && userId) q = q.eq('assigned_bdm', userId);
-    else if (filters.bdm === 'none') q = q.is('assigned_bdm', null);
-    else if (filters.bdm !== 'all') q = q.eq('assigned_bdm', filters.bdm);
-    if (filters.account === 'linked') q = q.not('dealer_id', 'is', null);
-    if (filters.account === 'none') q = q.is('dealer_id', null);
-    if (filters.account === 'dnc') q = q.eq('do_not_contact', true);
-    if (filters.stock !== 'all') {
-      const [lo, hi] = filters.stock.split('-').map(Number);
-      q = q.gte('vehicle_stock', lo); if (hi) q = q.lte('vehicle_stock', hi);
+    if (filters.stage.length) q = q.in('stage', filters.stage);
+    if (filters.priority.length) q = q.in('priority', filters.priority);
+    if (filters.bdm.length) {
+      const ids = filters.bdm.map(b => (b === 'mine' ? userId : b)).filter(b => b && b !== 'none') as string[];
+      const parts = [...(ids.length ? [`assigned_bdm.in.(${ids.join(',')})`] : []), ...(filters.bdm.includes('none') ? ['assigned_bdm.is.null'] : [])];
+      if (parts.length) q = q.or(parts.join(','));
     }
-    if (filters.follow === 'overdue') q = q.lt('next_follow_up_at', today.toISOString());
-    if (filters.follow === 'today') q = q.gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
-    if (filters.follow === 'week') q = q.gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 7).toISOString());
-    if (filters.follow === 'none') q = q.is('next_follow_up_at', null);
-    if (filters.spoken === '7') q = q.gte('last_spoken_at', addDays(today, -7).toISOString());
-    if (filters.spoken === '30') q = q.gte('last_spoken_at', addDays(today, -30).toISOString());
-    if (filters.spoken === 'over30') q = q.lt('last_spoken_at', addDays(today, -30).toISOString());
-    if (filters.spoken === BDM_NOT_SPOKEN) q = q.is('last_spoken_at', null);
+    // Each ticked option inside a group widens the match (OR); different groups narrow it (AND).
+    const groups = bdmFilterConditions(filters, today);
+    for (const g of groups) q = q.or(g);
+    if (debLocation.trim()) {
+      const l = debLocation.trim().replace(/[%,()]/g, ' ');
+      q = q.or([`county.ilike.%${l}%`, `town.ilike.%${l}%`, `postcode.ilike.${l.replace(/\s+/g, '')}%`, `postcode.ilike.${l}%`, `address.ilike.%${l}%`].join(','));
+    }
     if (kpiFilter === 'due_today') q = q.eq('do_not_contact', false).gte('next_follow_up_at', today.toISOString()).lt('next_follow_up_at', addDays(today, 1).toISOString());
     if (kpiFilter === 'overdue') q = q.eq('do_not_contact', false).lt('next_follow_up_at', today.toISOString());
     if (kpiFilter === 'interested') q = q.eq('stage', 'interested');
@@ -128,7 +125,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       for (const c2 of cs || []) if (!m[c2.dealership_id]) m[c2.dealership_id] = c2;
       setContactsBy(m);
     }
-  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town]);
+  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town, debLocation]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadKpis(); }, [loadKpis]);
@@ -152,19 +149,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     { id: 'onboarding', label: 'Onboarding', icon: Rocket, value: kpis?.onboarding, tone: 'bg-muted/50' },
     { id: 'activated', label: 'Activated this month', icon: UserCheck, value: kpis?.activated, tone: 'bg-crm-green-soft' },
   ];
-  const filtersActive = JSON.stringify(filters) !== JSON.stringify(NO_FILTERS) || !!kpiFilter || !!search;
+  const filtersActive = JSON.stringify(filters) !== JSON.stringify(NO_FILTERS) || !!kpiFilter || !!search || !!location;
   const pages = Math.max(1, Math.ceil(count / PAGE));
   const today = startOfToday();
-
-  const filterSelect = (k: keyof Filters, label: string, options: [string, string][]) => (
-    <Select value={filters[k]} onValueChange={v => setFilters(f => ({ ...f, [k]: v }))}>
-      <SelectTrigger className="h-9 w-full sm:w-auto sm:min-w-[140px]" aria-label={label}><SelectValue /></SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">{label}: all</SelectItem>
-        {options.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
-      </SelectContent>
-    </Select>
-  );
 
   const SortHead: React.FC<{ col: string; children: React.ReactNode; tone?: string }> = ({ col, children, tone }) => (
     <th className={`p-2 text-left font-medium ${tone ?? ''}`}>
@@ -263,22 +250,32 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
           </Select>
           <Button
             type="button"
-            variant={filters.spoken === BDM_NOT_SPOKEN ? 'default' : 'outline'}
+            variant={filters.spoken.length === 1 && filters.spoken[0] === BDM_NOT_SPOKEN ? 'default' : 'outline'}
             size="sm"
             className="h-9"
-            aria-pressed={filters.spoken === BDM_NOT_SPOKEN}
-            onClick={() => setFilters(f => ({ ...f, spoken: f.spoken === BDM_NOT_SPOKEN ? 'all' : BDM_NOT_SPOKEN }))}
+            onClick={() => setFilters(f => ({ ...f, spoken: f.spoken.length === 1 && f.spoken[0] === BDM_NOT_SPOKEN ? [] : [BDM_NOT_SPOKEN] }))}
           >
             <PhoneMissed className="mr-1 h-4 w-4" /> Not spoken to
           </Button>
-          {filterSelect('stage', 'Stage', BDM_STAGES.map(s => [s.id, s.label]))}
-          {filterSelect('follow', 'Follow-up', [['overdue', 'Overdue'], ['today', 'Today'], ['week', 'Next 7 days'], ['none', 'None set']])}
-          {filterSelect('stock', 'Stock', [['0-20', '0–20 vehicles'], ['21-50', '21–50'], ['51-100', '51–100'], ['101-0', 'Over 100']])}
-          {filterSelect('account', 'Account', [['linked', 'Has dealer account'], ['none', 'No account yet'], ['dnc', 'Do not contact']])}
-          {filterSelect('bdm', 'BDM', [['mine', 'Mine'], ['none', 'Unassigned'], ...staff.map(s => [s.user_id, s.name] as [string, string])])}
-          {filterSelect('spoken', 'Last spoken', BDM_SPOKEN_OPTIONS)}
-          {filterSelect('priority', 'Priority', BDM_PRIORITIES.map(p => [p.id, p.label]))}
-          {filtersActive && <Button variant="ghost" size="sm" className="h-9" onClick={() => { setFilters(NO_FILTERS); setKpiFilter(null); setSearch(''); }}>Clear filters</Button>}
+          <MultiFilter label="Status" allLabel="All statuses" options={BDM_FILTER_OPTIONS.stage} value={filters.stage} onChange={v => setFilters(f => ({ ...f, stage: v }))} />
+          <MultiFilter label="Follow-up" allLabel="All follow-ups" options={BDM_FILTER_OPTIONS.follow} value={filters.follow} onChange={v => setFilters(f => ({ ...f, follow: v }))} />
+          <MultiFilter label="Last spoken" allLabel="All" options={BDM_FILTER_OPTIONS.spoken} value={filters.spoken} onChange={v => setFilters(f => ({ ...f, spoken: v }))} />
+          <MultiFilter label="Priority" allLabel="All priorities" options={BDM_FILTER_OPTIONS.priority} value={filters.priority} onChange={v => setFilters(f => ({ ...f, priority: v }))} />
+          <MoreFilters
+            groups={[
+              { key: 'calls', label: 'Calls', hint: '0, 1–2, 3–5, 6+', icon: 'calls', options: BDM_FILTER_OPTIONS.calls },
+              { key: 'attempted', label: 'Last attempted', hint: 'Never, Today, 7 days, 30+ days', icon: 'attempted', options: BDM_FILTER_OPTIONS.attempted },
+              { key: 'stock', label: 'Stock', hint: '0, 1–5, 6–20, 20+', icon: 'stock', options: BDM_FILTER_OPTIONS.stock },
+              { key: 'account', label: 'Account status', hint: 'Active, Not signed up, Do not contact', icon: 'account', options: BDM_FILTER_OPTIONS.account },
+              { key: 'activity', label: 'Last activity', hint: 'Today, 7 days, 30+ days', icon: 'activity', options: BDM_FILTER_OPTIONS.activity },
+              ...(isManager ? [{ key: 'bdm', label: 'BDM', hint: 'Mine, unassigned or a named BDM', icon: 'bdm' as const, options: [{ id: 'mine', label: 'Mine' }, { id: 'none', label: 'Unassigned' }, ...staff.map(s => ({ id: s.user_id, label: s.name }))] }] : []),
+            ]}
+            values={filters as unknown as Record<string, string[]>}
+            onChange={(k, v) => setFilters(f => ({ ...f, [k]: v }))}
+            location={location}
+            onLocation={setLocation}
+          />
+          {filtersActive && <Button variant="ghost" size="sm" className="h-9" onClick={() => { setFilters(NO_FILTERS); setKpiFilter(null); setSearch(''); setLocation(''); }}>Clear filters</Button>}
         </div>
       </div>
 
