@@ -99,6 +99,9 @@ const DealerComingSoon = () => {
   const [touched, setTouched] = useState<{ email?: boolean; phone?: boolean; url?: boolean }>({});
   const [savedVehicle, setSavedVehicle] = useState<{ title: string; fuel: string } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const urlInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const reg = pendingReg.trim().toUpperCase();
