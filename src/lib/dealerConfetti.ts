@@ -12,9 +12,9 @@ export function fireDealerConfetti(intensity = 1) {
   const base = {
     colors: COLOURS,
     scalar: 1.6,
-    gravity: 1.2, // falls fast instead of floating around
+    gravity: 1.6, // falls fast instead of floating around
     drift: 0, // no sideways bias, so the burst stays centred
-    ticks: 120, // pieces disappear quickly
+    ticks: 80, // pieces disappear quickly
     shapes: ['square', 'circle'] as confetti.Shape[],
     zIndex: 9999,
   };
@@ -25,7 +25,7 @@ export function fireDealerConfetti(intensity = 1) {
   confetti({ ...base, particleCount: count, spread: 100, startVelocity: 60, origin: { x: 0.5, y: 0.45 } });
 
   // mirrored side cannons keep the spread balanced left and right
-  const end = Date.now() + 250 + 500 * intensity;
+  const end = Date.now() + 200 + 300 * intensity;
   const perSide = Math.max(2, Math.round(4 * intensity));
   const frame = () => {
     confetti({ ...base, particleCount: perSide, angle: 65, spread: 55, startVelocity: 50, origin: { x: 0.03, y: 0.5 } });
