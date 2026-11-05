@@ -81,7 +81,7 @@ const BdmAllocationTab: React.FC = () => {
     });
     setBusy(false);
     if (error) { toast.error(error.code === '23505' ? 'Already blocked' : error.message); return; }
-    toast.success('Blocked'); setPicked(null); setQ(''); setTown(''); setReason(''); load();
+    toast.success('Block saved'); setPicked(null); setQ(''); setTown(''); setReason(''); load();
   };
   const unblock = async (id: string) => {
     const { error } = await db.from('bdm_access_blocks').delete().eq('id', id);
@@ -158,7 +158,7 @@ const BdmAllocationTab: React.FC = () => {
               <Input value={reason} onChange={e => setReason(e.target.value)} placeholder="e.g. Existing relationship with another BDM" />
             </div>
           </div>
-          <Button onClick={addBlock} disabled={busy} variant="destructive">Block</Button>
+          <Button onClick={addBlock} disabled={busy} variant="destructive">{busy ? 'Saving…' : 'Save block'}</Button>
 
           {grouped.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nobody is blocked.</p>
