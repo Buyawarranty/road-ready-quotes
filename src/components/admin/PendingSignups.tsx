@@ -88,3 +88,8 @@ export const SignupAlerts: React.FC = () => {
     </div>
   );
 };
+
+export const SignupsTabLabel: React.FC = () => {
+  const n = usePendingSignups().length;
+  return <>{n ? `Sign-ups to authorise (${n})` : 'Sign-ups'}</>;
+};

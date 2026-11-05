@@ -31,7 +31,7 @@ import { IncomingCallBanner } from '@/components/admin/calls/IncomingCallBanner'
 import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
-import { SignupAlerts, usePendingSignups } from '@/components/admin/PendingSignups';
+import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
 
@@ -717,13 +717,12 @@ const AdminDashboard = () => {
   }
 
 
-  const pendingSignupCount = usePendingSignups().length;
   const renderContent = (effectiveUserRole: string | null, effectiveUserPermissions: Record<string, boolean> | null) => {
     const section = resolvePandaSection(activeTab);
     // Merged Panda Protect sections: several former screens shown as tabs.
     if (section === 'dealer-dealers') {
       return <AdminSectionTabs tabs={[
-        { id: 'signups', label: pendingSignupCount ? `Sign-ups to authorise (${pendingSignupCount})` : 'Sign-ups', render: () => <DealerAdminSignUpsTab /> },
+        { id: 'signups', label: <SignupsTabLabel />, render: () => <DealerAdminSignUpsTab /> },
         { id: 'dealers', label: 'Dealers', render: () => <DealerAdminDealersTab /> },
         { id: 'traders', label: 'Traders', render: () => <DealerAdminTradersTab /> },
       ]} />;
