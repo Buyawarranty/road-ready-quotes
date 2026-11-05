@@ -62,7 +62,7 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
           <NotebookPen className="h-4 w-4" />Notes
         </button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[340px] p-3">
+      <PopoverContent align="start" className="w-[min(340px,calc(100vw-1.5rem))] p-3">
         <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Quick note (optional)</p>
         <textarea
           autoFocus
