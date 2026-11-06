@@ -205,12 +205,13 @@ const PasswordReset = () => {
         if (hasAdminRole) {
           navigate('/admin-dashboard/', { replace: true });
         } else {
-          const { data: dealer } = await supabase
-            .from('dealers')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-          navigate(dealer ? '/dealer-portal/dashboard' : '/customer-dashboard/', { replace: true });
+          // Everyone else signs in again on the dealer login with the new password.
+          await supabase.auth.signOut();
+          toast({
+            title: "Password updated",
+            description: "Please sign in to the dealer dashboard with your new password.",
+          });
+          navigate('/dealer-portal/login', { replace: true });
         }
       } else {
         navigate('/auth', { replace: true });
