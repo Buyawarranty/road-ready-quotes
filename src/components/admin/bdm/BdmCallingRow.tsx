@@ -144,33 +144,33 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       {/* Calls */}
       <td className="bg-crm-blue-soft/60 p-2">
         <div className="flex items-center gap-1">
-          <Button size="icon" variant="outline" className="h-7 w-7" disabled={calls === 0} onClick={() => adjust(-1)} aria-label="Remove a call"><Minus className="h-3 w-3" /></Button>
+          <Button size="icon" variant="outline" className="h-9 w-9 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-destructive/10 hover:text-destructive" disabled={calls === 0} onClick={() => adjust(-1)} aria-label="Remove a call"><Minus className="h-4 w-4" /></Button>
           <span className="flex min-w-[2.5rem] items-center justify-center gap-1 font-semibold"><Phone className="h-3 w-3 text-muted-foreground" />{calls}</span>
-          <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => adjust(1)} aria-label="Add a call"><Plus className="h-3 w-3" /></Button>
+          <Button size="icon" variant="outline" className="h-9 w-9 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-success/10 hover:text-success" onClick={() => adjust(1)} aria-label="Add a call"><Plus className="h-4 w-4" /></Button>
         </div>
       </td>
       {/* Actions */}
       <td className="bg-muted/50 p-2">
         <div className="flex items-center gap-1">
           {phone && !dnc && (
-            <Button asChild size="icon" variant="ghost" className="h-8 w-8 text-primary" aria-label={`Call ${r.name}`}>
+            <Button asChild size="icon" variant="ghost" className="h-10 w-10 text-primary transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-primary/10" aria-label={`Call ${r.name}`}>
               <a href={`tel:${tel}`} onClick={() => adjust(1)}><Phone className="h-4 w-4" /></a>
             </Button>
           )}
           <BdmQuickNotePopover dealershipId={r.id} dealershipName={r.name} contactName={c?.full_name} onSaved={onChanged} onOpenFull={() => onOpen(r.id, 'activity')} />
           {email && !dnc && (
-            <Button asChild size="icon" variant="ghost" className="h-8 w-8" aria-label={`Email ${r.name}`}>
+            <Button asChild size="icon" variant="ghost" className="h-10 w-10 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-primary/10 hover:text-primary" aria-label={`Email ${r.name}`}>
               <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
             </Button>
           )}
           {!email && (
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive" title="No email — add one" aria-label={`Add an email for ${r.name}`} onClick={openEdit}>
+            <Button size="icon" variant="ghost" className="h-10 w-10 text-destructive transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-destructive/10" title="No email — add one" aria-label={`Add an email for ${r.name}`} onClick={openEdit}>
               <MailX className="h-4 w-4" />
             </Button>
           )}
           <BdmReminderPopover dealershipId={r.id} name={r.name} onSaved={onChanged} trigger={
           <Button variant="ghost" title={followLabel} aria-label={followLabel}
-            className={`h-9 w-11 gap-0 rounded-md px-1 leading-none hover:bg-transparent ${
+            className={`h-10 w-12 gap-0 rounded-md px-1 leading-none transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-accent ${
               followDays == null ? 'text-muted-foreground'
               : followDays < 0 ? 'bg-destructive/10 text-destructive'
               : followDays === 0 ? 'bg-crm-orange-soft text-crm-orange'
