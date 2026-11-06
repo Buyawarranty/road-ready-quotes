@@ -39,7 +39,7 @@ const DealerPublicFooter: React.FC = () => {
             <p className="dealer-footer-blurb">
               Panda Protect – Get fast, affordable cover tailored to your car, van, SUV or motorbike. 'Panda Protect'
               vehicle warranty plans are designed to suit your driving needs – with simple online quotes, flexible
-              options, and reliable protection. If your vehicle is under 15 years old and has fewer than 150,000 miles,
+              options, and reliable protection. If your vehicle is under 12 years old and has fewer than 120,000 miles,
               you're eligible for comprehensive warranty cover with Panda Protect today.
             </p>
             <div className="dealer-footer-contact">

@@ -27,7 +27,7 @@ export type AgeBand = {
 
 /**
  * Proposed age-based pricing model (Aug 2026).
- * Replaces the old mileage split (under/over 120k) as the primary driver.
+ * Replaces the old mileage split (under/over 150k) as the primary driver.
  * PREVIEW ONLY — nothing here touches Quotes & Orders or live Step 3/4 pricing.
  */
 export const PROPOSED_AGE_BANDS: AgeBand[] = [
@@ -685,7 +685,7 @@ export default function AgeBandPricingPreview({
             <CardTitle>Proposed age-based pricing</CardTitle>
             <CardDescription>
               New model: an age band sets the base price, then a mileage factor is applied on top.
-              This replaces the old under/over 120,000 mile split.
+              This replaces the old under/over 150,000 mile split.
             </CardDescription>
           </div>
           <Badge variant="secondary">Preview only — nothing is live</Badge>

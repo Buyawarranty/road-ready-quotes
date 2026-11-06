@@ -1,7 +1,7 @@
 /**
  * Single source of truth for how old a vehicle is.
  *
- * Age drives the 15-year eligibility boundary and the age-band pricing, so every
+ * Age drives the 12-year eligibility boundary and the age-band pricing, so every
  * surface (Quotes & Orders, Step 3/4, the homepage reg entry) must measure it the
  * same way:
  *
@@ -82,8 +82,8 @@ export function preciseVehicleAgeYears(input: VehicleAgeInput): number | null {
   return getVehicleAge(input).ageYears;
 }
 
-/** True when the vehicle is past the 15-year cover boundary. */
-export function isOverMaxVehicleAge(input: VehicleAgeInput, maxYears = 15): boolean {
+/** True when the vehicle is past the 12-year cover boundary. */
+export function isOverMaxVehicleAge(input: VehicleAgeInput, maxYears = 12): boolean {
   const { ageYears } = getVehicleAge(input);
   return ageYears !== null && ageYears > maxYears;
 }

@@ -165,7 +165,7 @@ const AudiWarranty = () => {
                 ))}
               </div>
               <p className="text-lg font-semibold text-primary mt-6">
-                👉 We are the primary warranty provider offering protection up to 150,000 miles on selected plans.
+                👉 We are the primary warranty provider offering protection up to 120,000 miles on selected plans.
               </p>
             </div>
           </div>
@@ -346,7 +346,7 @@ const AudiWarranty = () => {
                 </table>
               </div>
               <p className="text-lg font-semibold mt-6">
-                All ages. All mileages (up to 150,000 miles on selected plans).
+                All ages. All mileages (up to 120,000 miles on selected plans).
               </p>
             </div>
           </div>
@@ -407,7 +407,7 @@ const AudiWarranty = () => {
                 <tbody>
                   {[
                     { feature: "Covers used + older Audis", ours: true, oem: false },
-                    { feature: "Covers up to 150,000 miles", ours: true, oem: false },
+                    { feature: "Covers up to 120,000 miles", ours: true, oem: false },
                     { feature: "Repair at any VAT-registered garage", ours: true, oem: "Must use Audi" },
                     { feature: "Flexible monthly payments", ours: true, oem: false },
                     { feature: "Covers multimedia & technology faults", ours: true, oem: "Limited" }

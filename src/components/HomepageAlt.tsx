@@ -46,8 +46,8 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
     const value = e.target.value.replace(/,/g, '');
     if (value === '' || /^\d+$/.test(value)) {
       const numValue = parseInt(value) || 0;
-      if (numValue > 150000) {
-        setMileageError('Maximum mileage is 150,000');
+      if (numValue > 120000) {
+        setMileageError('Maximum mileage is 120,000');
       } else {
         setMileageError('');
       }
@@ -57,8 +57,8 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
 
   const handleSliderChange = (value: number[]) => {
     setMileage(value[0].toString());
-    if (value[0] > 150000) {
-      setMileageError('Maximum mileage is 150,000');
+    if (value[0] > 120000) {
+      setMileageError('Maximum mileage is 120,000');
     } else {
       setMileageError('');
     }
@@ -80,9 +80,9 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
     }
 
     const mileageNum = parseInt(mileage);
-    if (mileageNum > 150000) {
+    if (mileageNum > 120000) {
       toast.error('Mileage too high', {
-        description: 'Maximum mileage is 150,000 miles.',
+        description: 'Maximum mileage is 120,000 miles.',
       });
       return;
     }
@@ -108,9 +108,9 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
       const currentYear = new Date().getFullYear();
       const vehicleAge = currentYear - vehicleYear;
 
-      if (vehicleAge > 15) {
+      if (vehicleAge > 12) {
         toast.error('Vehicle too old', {
-          description: 'Sorry, we can only provide cover for vehicles up to 15 years old.',
+          description: 'Sorry, we can only provide cover for vehicles up to 12 years old.',
         });
         setIsLoading(false);
         return;
@@ -202,13 +202,13 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
                       <Slider
                         value={[parseInt(mileage) || 0]}
                         onValueChange={handleSliderChange}
-                        max={150000}
+                        max={120000}
                         step={1000}
                         className="w-full"
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-2">
                         <span>0</span>
-                        <span>150,000</span>
+                        <span>120,000</span>
                       </div>
                     </div>
                   </div>
@@ -223,7 +223,7 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
                 </Button>
 
                 <p className="text-xs text-center text-gray-500">
-                  Available for vehicles under 15 years old with less than 150,000 miles
+                  Available for vehicles under 12 years old with less than 120,000 miles
                 </p>
               </div>
 

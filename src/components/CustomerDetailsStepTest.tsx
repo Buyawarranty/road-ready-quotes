@@ -590,9 +590,9 @@ const CustomerDetailsStepTest: React.FC<CustomerDetailsStepTestProps> = ({
                         />
                         {validatedFields.mileage && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-600" />}
                       </div>
-                      {customerData.mileage && Number(customerData.mileage) > 150000 ? (
+                      {customerData.mileage && Number(customerData.mileage) > 120000 ? (
                         <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-2">
-                          <p className="text-red-600 text-sm font-medium">Sorry, we only cover vehicles under 150,000 miles.</p>
+                          <p className="text-red-600 text-sm font-medium">Sorry, we only cover vehicles under 120,000 miles.</p>
                         </div>
                       ) : fieldErrors.mileage ? (
                         <p className="text-red-500 text-xs mt-1">{fieldErrors.mileage}</p>

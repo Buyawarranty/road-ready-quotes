@@ -37,10 +37,10 @@ function testMileageBoundaries1Year() {
   const result2 = calculateVehiclePriceAdjustment(vehicle2, 1);
   console.assert(result2.adjustmentAmount === 200, 'Mileage 120001 should have +£200 surcharge');
 
-  // Should apply +£200 surcharge at 150,000 miles
-  const vehicle3 = createVehicleData({ mileage: '150000' });
+  // Should apply +£200 surcharge at 120,000 miles
+  const vehicle3 = createVehicleData({ mileage: '120000' });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 1);
-  console.assert(result3.adjustmentAmount === 200, 'Mileage 150000 should have +£200 surcharge');
+  console.assert(result3.adjustmentAmount === 200, 'Mileage 120000 should have +£200 surcharge');
 
   // Should NOT apply surcharge at 150,001 miles
   const vehicle4 = createVehicleData({ mileage: '150001' });
@@ -60,9 +60,9 @@ function testMileageBoundaries2Year() {
   const result2 = calculateVehiclePriceAdjustment(vehicle2, 2);
   console.assert(result2.adjustmentAmount === 400, 'Mileage 120001 should have +£400 surcharge');
 
-  const vehicle3 = createVehicleData({ mileage: '150000' });
+  const vehicle3 = createVehicleData({ mileage: '120000' });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 2);
-  console.assert(result3.adjustmentAmount === 400, 'Mileage 150000 should have +£400 surcharge');
+  console.assert(result3.adjustmentAmount === 400, 'Mileage 120000 should have +£400 surcharge');
 
   const vehicle4 = createVehicleData({ mileage: '150001' });
   const result4 = calculateVehiclePriceAdjustment(vehicle4, 2);
@@ -81,9 +81,9 @@ function testMileageBoundaries3Year() {
   const result2 = calculateVehiclePriceAdjustment(vehicle2, 3);
   console.assert(result2.adjustmentAmount === 600, 'Mileage 120001 should have +£600 surcharge');
 
-  const vehicle3 = createVehicleData({ mileage: '150000' });
+  const vehicle3 = createVehicleData({ mileage: '120000' });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 3);
-  console.assert(result3.adjustmentAmount === 600, 'Mileage 150000 should have +£600 surcharge');
+  console.assert(result3.adjustmentAmount === 600, 'Mileage 120000 should have +£600 surcharge');
 
   const vehicle4 = createVehicleData({ mileage: '150001' });
   const result4 = calculateVehiclePriceAdjustment(vehicle4, 3);
@@ -106,12 +106,12 @@ function testAgeBoundaries() {
   const result2 = calculateVehiclePriceAdjustment(vehicle2, 1);
   console.assert(result2.adjustmentAmount === 200, '13 years old should have +£200 surcharge');
 
-  // 1-Year: Should apply +£200 surcharge at 15 years old
+  // 1-Year: Should apply +£200 surcharge at 12 years old
   const vehicle3 = createVehicleData({ year: String(currentYear - 15), mileage: '50000' });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 1);
-  console.assert(result3.adjustmentAmount === 200, '15 years old should have +£200 surcharge');
+  console.assert(result3.adjustmentAmount === 200, '12 years old should have +£200 surcharge');
 
-  // 1-Year: Should NOT apply surcharge at 16 years old (> 15 years)
+  // 1-Year: Should NOT apply surcharge at 16 years old (> 12 years)
   const vehicle4 = createVehicleData({ year: String(currentYear - 16), mileage: '50000' });
   const result4 = calculateVehiclePriceAdjustment(vehicle4, 1);
   console.assert(result4.adjustmentAmount === 0, '16 years old should have no surcharge');
@@ -154,7 +154,7 @@ function testPreciseAgeBoundaries() {
   const result2 = calculateVehiclePriceAdjustment(vehicle2, 1);
   console.assert(result2.adjustmentAmount === 200, '12 years + 1 day old should have +£200 surcharge');
 
-  // Calculate a date that is exactly 15 years ago (SHOULD qualify)
+  // Calculate a date that is exactly 12 years ago (SHOULD qualify)
   const exactly15YearsAgo = new Date(now);
   exactly15YearsAgo.setFullYear(exactly15YearsAgo.getFullYear() - 15);
   const vehicle3 = createVehicleData({ 
@@ -162,9 +162,9 @@ function testPreciseAgeBoundaries() {
     mileage: '50000' 
   });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 1);
-  console.assert(result3.adjustmentAmount === 200, 'Exactly 15 years old should have +£200 surcharge');
+  console.assert(result3.adjustmentAmount === 200, 'Exactly 12 years old should have +£200 surcharge');
 
-  // Calculate a date that is 15 years and 1 day ago (should NOT qualify - over 15)
+  // Calculate a date that is 12 years and 1 day ago (should NOT qualify - over 12)
   const over15YearsAgo = new Date(now);
   over15YearsAgo.setFullYear(over15YearsAgo.getFullYear() - 15);
   over15YearsAgo.setDate(over15YearsAgo.getDate() - 1);
@@ -173,7 +173,7 @@ function testPreciseAgeBoundaries() {
     mileage: '50000' 
   });
   const result4 = calculateVehiclePriceAdjustment(vehicle4, 1);
-  console.assert(result4.adjustmentAmount === 0, '15 years + 1 day old should have no surcharge (over 15)');
+  console.assert(result4.adjustmentAmount === 0, '12 years + 1 day old should have no surcharge (over 12)');
 
   // Test BL62 GVO scenario: Feb 2013 vehicle (12 years 10 months old as of Dec 2025)
   // This should now qualify since it's > 12 years
@@ -203,7 +203,7 @@ function testNonStackingBehavior() {
   console.assert(result2.adjustmentAmount === 400, 'Both conditions (2-year): should be +£400, not +£800');
 
   // SINGLE surcharge when BOTH mileage AND age qualify (3-year)
-  const vehicle3 = createVehicleData({ year: String(currentYear - 15), mileage: '150000' });
+  const vehicle3 = createVehicleData({ year: String(currentYear - 15), mileage: '120000' });
   const result3 = calculateVehiclePriceAdjustment(vehicle3, 3);
   console.assert(result3.adjustmentAmount === 600, 'Both conditions (3-year): should be +£600, not +£1200');
 

@@ -75,7 +75,7 @@ const audiFAQs = [
   },
   {
     question: "Can I buy cover after the Audi manufacturer warranty expires?",
-    answer: "Yes. We cover vehicles up to 150,000 miles and 15 years old, so you can get protection even after the Audi factory warranty has ended or if you purchased your Audi used."
+    answer: "Yes. We cover vehicles up to 120,000 miles and 12 years old, so you can get protection even after the Audi factory warranty has ended or if you purchased your Audi used."
   },
   {
     question: "Can I use my own garage for Audi warranty repairs?",
@@ -216,9 +216,9 @@ const AudiWarrantyLanding: React.FC = () => {
       if (data?.found) {
         if (data.manufactureDate) {
           const ageInMs = Date.now() - new Date(data.manufactureDate).getTime();
-          if (ageInMs / (365.25 * 24 * 60 * 60 * 1000) > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
-            toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
+          if (ageInMs / (365.25 * 24 * 60 * 60 * 1000) > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+            toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
             setIsLookingUp(false);
             return;
           }
@@ -317,8 +317,8 @@ const AudiWarrantyLanding: React.FC = () => {
     "audience": { "@type": "Audience", "audienceType": "Used Audi car owners in England, Scotland, Wales and Northern Ireland" },
     "additionalProperty": [
       { "@type": "PropertyValue", "name": "Coverage Area", "value": "United Kingdom — England, Scotland, Wales, Northern Ireland" },
-      { "@type": "PropertyValue", "name": "Max Vehicle Age", "value": "15 years" },
-      { "@type": "PropertyValue", "name": "Max Mileage at Inception", "value": "150,000 miles" },
+      { "@type": "PropertyValue", "name": "Max Vehicle Age", "value": "12 years" },
+      { "@type": "PropertyValue", "name": "Max Mileage at Inception", "value": "120,000 miles" },
       { "@type": "PropertyValue", "name": "Claims Limit", "value": "Unlimited claims value" },
       { "@type": "PropertyValue", "name": "Garage Network", "value": "Any VAT-registered garage in the UK" }
     ]
@@ -434,7 +434,7 @@ const AudiWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "How to get an Audi extended warranty quote in the UK",
-    "description": "Get an instant Audi extended warranty quote online in 60 seconds. Available for all Audi models up to 15 years old and 150,000 miles.",
+    "description": "Get an instant Audi extended warranty quote online in 60 seconds. Available for all Audi models up to 12 years old and 120,000 miles.",
     "totalTime": "PT1M",
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter your Audi registration", "text": "Type your Audi registration number and we automatically look up your vehicle details via the DVLA database" },
@@ -503,7 +503,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <meta name="subject" content="Audi Extended Warranty UK" />
         <meta name="topic" content="Used Audi car warranty, extended warranty plans, mechanical breakdown cover" />
         <meta name="summary" content="Panda Protect offers used Audi extended warranty plans from £25/month covering all models from A3 to Q8 and e-tron. Includes S tronic gearbox, quattro drivetrain, TFSI/TDI engines and EV components. Available at any VAT-registered garage across England, Scotland, Wales and Northern Ireland." />
-        <meta name="abstract" content="Comprehensive Audi aftermarket warranty provider in the UK. Covers mechanical and electrical failures on used Audi vehicles up to 15 years old and 150,000 miles." />
+        <meta name="abstract" content="Comprehensive Audi aftermarket warranty provider in the UK. Covers mechanical and electrical failures on used Audi vehicles up to 12 years old and 120,000 miles." />
         <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />
@@ -976,7 +976,7 @@ const AudiWarrantyLanding: React.FC = () => {
                   { icon: Wrench, title: 'Dealer-level repairs and diagnostics', desc: 'Professional repairs at any VAT-registered garage across the UK.' },
                   { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' },
                   { icon: Users, title: 'UK support team that knows Audi systems', desc: 'Our friendly UK-based team handles claims quickly and fairly.' },
-                  { icon: Car, title: 'High mileage Audi warranty plans', desc: 'Cover vehicles up to 150,000 miles with no mileage restrictions during cover.' },
+                  { icon: Car, title: 'High mileage Audi warranty plans', desc: 'Cover vehicles up to 120,000 miles with no mileage restrictions during cover.' },
                   { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' },
                 ].map((benefit, index) => (
                   <div key={index} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100">
@@ -1100,7 +1100,7 @@ const AudiWarrantyLanding: React.FC = () => {
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
                   <div className="flex items-center gap-2 md:gap-3">
                     <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm md:text-base text-gray-700">Cover vehicles up to 150,000 miles</span>
+                    <span className="text-sm md:text-base text-gray-700">Cover vehicles up to 120,000 miles</span>
                   </div>
                   <div className="flex items-center gap-2 md:gap-3">
                     <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" />

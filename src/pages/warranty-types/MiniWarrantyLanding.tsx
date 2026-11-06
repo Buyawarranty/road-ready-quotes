@@ -42,7 +42,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is a MINI extended warranty worth it?", answer: "Yes. MINIs share BMW engineering which means specialist parts and labour costs. A timing chain or turbo failure can cost £1,500–£4,000. Our warranty protects you from unexpected bills." },
   { question: "How much does a MINI extended warranty cost?", answer: `MINI warranty prices start from £${startingPrice}/month depending on model, mileage, and claim limit. Flexible monthly or annual payments available.` },
-  { question: "Can I get cover after my MINI dealer warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, even after manufacturer warranty has expired." },
+  { question: "Can I get cover after my MINI dealer warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, even after manufacturer warranty has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK, including MINI specialists and independent garages." },
   { question: "Is the MINI Electric covered?", answer: "Yes, our comprehensive plan covers electric components including the electric motor, battery management system, and power electronics." },
   { question: "Are turbo models covered?", answer: "Yes, all turbocharged MINI models are fully covered including the turbocharger, intercooler, and boost control systems." },
@@ -104,7 +104,7 @@ const MiniWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

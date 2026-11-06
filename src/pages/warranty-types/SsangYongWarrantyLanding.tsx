@@ -52,7 +52,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: `Is a ${brandName} extended warranty worth it in the UK?`, answer: `Yes, ${brandName} vehicles are rugged and reliable but specialist parts and 4x4 systems can be costly to repair. Our extended warranty protects key components like the engine, gearbox, transfer case, electrics, and more.` },
   { question: `How much does a ${brandName} extended warranty cost?`, answer: `Extended ${brandName} warranty prices start from £${startingPrice} a month. We offer flexible monthly or annual payment options to suit your budget.` },
-  { question: `Can I buy a ${brandName} warranty after my original warranty has expired?`, answer: `Yes, you can buy cover even if your ${brandName} is outside its manufacturer warranty or was purchased used. We cover vehicles up to 150,000 miles and 15 years old.` },
+  { question: `Can I buy a ${brandName} warranty after my original warranty has expired?`, answer: `Yes, you can buy cover even if your ${brandName} is outside its manufacturer warranty or was purchased used. We cover vehicles up to 120,000 miles and 12 years old.` },
   { question: `Can I use my own garage for ${brandName} warranty repairs?`, answer: `Yes, you can choose any VAT-registered garage across the UK. You're not restricted to ${brandName} dealers.` },
   { question: `Does the warranty cover 4x4 and pickup components?`, answer: `Yes, our comprehensive plan covers 4x4 specific components including the transfer case, front and rear differentials, locking hubs, and electronic 4WD systems. Pickup-specific components are also covered.` },
   { question: `Is roadside assistance included?`, answer: `Yes, our comprehensive plan includes 24/7 roadside assistance and recovery anywhere in the UK.` },
@@ -118,7 +118,7 @@ const SsangYongWarrantyLanding: React.FC = () => {
         if (data.manufactureDate) {
           const manufactureDate = new Date(data.manufactureDate);
           const vehicleAgePrecise = (now.getTime() - manufactureDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-          if (vehicleAgePrecise > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+          if (vehicleAgePrecise > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
         }
         const vehicleData = { regNumber, mileage, make: data.make || brandMake, model: data.model, fuelType: data.fuelType, transmission: data.transmission, year: data.yearOfManufacture, vehicleType: 'car', manufactureDate: data.manufactureDate };
         saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

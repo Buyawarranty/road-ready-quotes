@@ -43,7 +43,7 @@ const VanWarrantyNew = () => {
     },
     {
       question: "Do you cover high-mileage vans?",
-      answer: "Yes. We're the leading UK provider offering plans for vans with up to 150,000 miles at policy start."
+      answer: "Yes. We're the leading UK provider offering plans for vans with up to 120,000 miles at policy start."
     },
     {
       question: "Can I use my own garage for repairs?",
@@ -72,12 +72,12 @@ const VanWarrantyNew = () => {
     <>
       <DealerPublicHeader />
       <SEOHead
-        title="Van Extended Warranty | Used Van Cover up to 150,000 Miles"
-        description="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
+        title="Van Extended Warranty | Used Van Cover up to 120,000 Miles"
+        description="Get a trusted extended warranty for vans up to 120,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
         keywords="van warranty UK, van extended warranty, used van warranty, commercial van warranty, high mileage van warranty, van breakdown cover, UK van warranty, new van warranty, van warranty companies"
         canonical="https://pandaprotect.co.uk/van-warranty/"
-        ogTitle="Van Extended Warranty | Used Van Cover up to 150,000 Miles"
-        ogDescription="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
+        ogTitle="Van Extended Warranty | Used Van Cover up to 120,000 Miles"
+        ogDescription="Get a trusted extended warranty for vans up to 120,000 miles. Protect new or used vans from costly repairs with flexible, affordable UK warranty plans."
         ogImage="https://pandaprotect.co.uk/van-warranty-og.jpg"
         geoRegion="GB"
         geoPlacename="United Kingdom"
@@ -87,14 +87,14 @@ const VanWarrantyNew = () => {
       <OrganizationSchema />
       <WebPageSchema
         name="Van Extended Warranty UK | Trusted Van Cover"
-        description="Get a trusted extended warranty for vans up to 150,000 miles. Protect new or used commercial vans from costly repairs with flexible, affordable UK warranty plans. Instant quotes available."
+        description="Get a trusted extended warranty for vans up to 120,000 miles. Protect new or used commercial vans from costly repairs with flexible, affordable UK warranty plans. Instant quotes available."
         url="https://pandaprotect.co.uk/van-warranty/"
         specialty="Van Warranty & Commercial Vehicle Protection"
       />
       <FAQSchema faqs={vanWarrantyFAQs} />
       <ProductSchema
         name="Van Extended Warranty UK"
-        description="Comprehensive extended warranty for new and used vans up to 150,000 miles. Covers mechanical and electrical breakdowns with flexible UK-wide protection."
+        description="Comprehensive extended warranty for new and used vans up to 120,000 miles. Covers mechanical and electrical breakdowns with flexible UK-wide protection."
         price="69"
         priceCurrency="GBP"
         brand="Panda Protect"
@@ -185,7 +185,7 @@ const VanWarrantyNew = () => {
             
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Protection for vehicles up to 150,000 miles and 15 years.
+                Protection for vehicles up to 120,000 miles and 12 years.
               </p>
             </div>
           </div>
@@ -217,7 +217,7 @@ const VanWarrantyNew = () => {
               <div className="bg-card p-6 rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow">
                 <Zap className="h-12 w-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-foreground">High Mileage Cover</h3>
-                <p className="text-muted-foreground">Protection available for vans up to 150,000 miles</p>
+                <p className="text-muted-foreground">Protection available for vans up to 120,000 miles</p>
               </div>
               <div className="bg-card p-6 rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow">
                 <Clock className="h-12 w-12 text-primary mb-4" />
@@ -523,7 +523,7 @@ const VanWarrantyNew = () => {
                   Every van is different, which is why our warranty plans are designed around your needs. Choose short-term or multi-year protection, add optional upgrades, and pay the way that suits you best.
                 </p>
                 <p className="text-xl font-semibold text-foreground mb-6">
-                  We are the only UK warranty provider offering cover for vans up to 150,000 miles at the start of the policy.
+                  We are the only UK warranty provider offering cover for vans up to 120,000 miles at the start of the policy.
                 </p>
                 <p className="text-lg text-muted-foreground">
                   That means even high-mileage vans can stay protected with the same confidence, reliability, and level of service.

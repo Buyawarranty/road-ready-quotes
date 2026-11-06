@@ -327,10 +327,10 @@ export const ConfirmExternalPaymentTab: React.FC<ConfirmExternalPaymentTabProps>
         const vehicleYear = parseInt(data.yearOfManufacture || data.year, 10);
         if (!isNaN(vehicleYear) && vehicleYear > 0) {
           const vehicleAge = currentYear - vehicleYear;
-          if (vehicleAge > 15) {
+          if (vehicleAge > 12) {
             toast({
               title: "Vehicle Too Old",
-              description: `This vehicle is ${vehicleAge} years old. We only cover vehicles up to 15 years old.`,
+              description: `This vehicle is ${vehicleAge} years old. We only cover vehicles up to 12 years old.`,
               variant: "destructive",
             });
             return;

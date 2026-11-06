@@ -41,7 +41,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is a Suzuki extended warranty worth it?", answer: "Yes. While Suzukis are reliable, unexpected repairs like CVT gearbox or turbo failures can cost £1,500–£3,500. Our warranty gives you peace of mind from just £19/month." },
   { question: "How much does a Suzuki extended warranty cost?", answer: `Suzuki warranty prices start from £${startingPrice}/month depending on model, mileage, and claim limit. Flexible monthly or annual payments available.` },
-  { question: "Can I get cover after my Suzuki dealer warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, even after manufacturer warranty has expired." },
+  { question: "Can I get cover after my Suzuki dealer warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, even after manufacturer warranty has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK, including Suzuki specialists and independent garages." },
   { question: "Is the Suzuki Jimny covered?", answer: "Yes, we cover all Suzuki models including the Jimny, with full protection for the 4WD system, transfer case, and all mechanical components." },
   { question: "Are hybrid Suzuki models covered?", answer: "Yes, all Suzuki mild hybrid and self-charging hybrid systems are fully covered including the electric motor, battery management, and power electronics." },
@@ -103,7 +103,7 @@ const SuzukiWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

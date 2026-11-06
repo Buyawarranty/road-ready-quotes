@@ -156,7 +156,7 @@ const citroenFAQs = [
   },
   {
     question: "Can I buy a Citroën warranty after the manufacturer warranty expires?",
-    answer: "Yes, you can buy cover even if your Citroën is outside its original manufacturer warranty or if you purchased it used. We cover vehicles up to 150,000 miles and 15 years old."
+    answer: "Yes, you can buy cover even if your Citroën is outside its original manufacturer warranty or if you purchased it used. We cover vehicles up to 120,000 miles and 12 years old."
   },
   {
     question: "Can I use my own garage for Citroën warranty repairs?",
@@ -288,9 +288,9 @@ const CitroenWarrantyLanding: React.FC = () => {
         if (data.manufactureDate) {
           const manufactureDate = new Date(data.manufactureDate);
           const vehicleAgePrecise = (now.getTime() - manufactureDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-          if (vehicleAgePrecise > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
-            toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
+          if (vehicleAgePrecise > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+            toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
             setIsLookingUp(false);
             return;
           }
@@ -622,7 +622,7 @@ const CitroenWarrantyLanding: React.FC = () => {
                   { icon: Wrench, title: 'PureTech & BlueHDi specialists', desc: 'We understand Citroën\'s advanced engine technology and cover all key components.' },
                   { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' },
                   { icon: Users, title: 'UK support team', desc: 'Our friendly UK-based team handles claims quickly and fairly.' },
-                  { icon: Car, title: 'High mileage Citroën warranty plans', desc: 'Cover vehicles up to 150,000 miles with no mileage restrictions during cover.' },
+                  { icon: Car, title: 'High mileage Citroën warranty plans', desc: 'Cover vehicles up to 120,000 miles with no mileage restrictions during cover.' },
                   { icon: Clock, title: 'Flexible monthly payments', desc: 'Cancel anytime and get a pro-rata refund. No lock-in contracts.' },
                 ].map((benefit, index) => (
                   <div key={index} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100">
@@ -689,7 +689,7 @@ const CitroenWarrantyLanding: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6">Drive your Citroën with confidence<br /><span className="text-brand-orange">You're covered</span></h2>
                 <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">Once you have your Citroën warranty, drive with complete peace of mind. If something goes wrong, simply call our claims team and we'll take care of everything.</p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
-                  {['Cover vehicles up to 150,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
+                  {['Cover vehicles up to 120,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">{item}</span></div>
                   ))}
                 </div>

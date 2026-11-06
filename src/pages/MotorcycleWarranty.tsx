@@ -113,7 +113,7 @@ const MotorcycleWarranty = () => {
       
       <ProductSchema
         name="Motorcycle Extended Warranty"
-        description="Comprehensive extended warranty coverage for motorcycles including engine, gearbox, electrical systems, ECU, fuel injection, braking, suspension and more. Available for used bikes up to 150,000 miles."
+        description="Comprehensive extended warranty coverage for motorcycles including engine, gearbox, electrical systems, ECU, fuel injection, braking, suspension and more. Available for used bikes up to 120,000 miles."
         price="20.00"
         brand="Panda Protect"
         category="Motorcycle Insurance & Warranty"
@@ -181,7 +181,7 @@ const MotorcycleWarranty = () => {
             <TrustCallbackPanel />
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Protection for motorcycles up to 150,000 miles and 15 years.
+                Protection for motorcycles up to 120,000 miles and 12 years.
               </p>
             </div>
           </div>
@@ -212,7 +212,7 @@ const MotorcycleWarranty = () => {
             </div>
             <div className="text-center mt-8">
               <p className="text-lg font-semibold text-primary">
-                We are the only motorcycle warranty provider offering cover for high-mileage bikes up to 150,000 miles.
+                We are the only motorcycle warranty provider offering cover for high-mileage bikes up to 120,000 miles.
               </p>
             </div>
           </div>

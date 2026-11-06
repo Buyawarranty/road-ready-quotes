@@ -22,11 +22,6 @@ export const TERM_ELIGIBILITY_TABLE: TermEligibilityRow[] = [
   },
   {
     position: '11–12 years or 100,001–120,000 miles',
-    automaticTerms: '1, 2 and 3 years',
-    treatment: 'Three years subject to model-risk configuration',
-  },
-  {
-    position: '13–15 years or 120,001–150,000 miles',
     automaticTerms: '1 and 2 years',
     treatment: 'No automatic three-year term at launch',
   },
@@ -41,7 +36,7 @@ export const TERM_ELIGIBILITY_TABLE: TermEligibilityRow[] = [
     treatment: 'Manual decision',
   },
   {
-    position: 'Over 15 years or over 150,000 miles',
+    position: 'Over 12 years or over 120,000 miles',
     automaticTerms: 'None',
     treatment: 'No automatic online quote',
   },
@@ -85,14 +80,14 @@ export function evaluateTermEligibility(input: EligibilityInput): EligibilityRes
   }
 
   // Hard limits first.
-  if ((age !== null && age > 15) || (miles !== null && miles > 150000)) {
+  if ((age !== null && age > 12) || (miles !== null && miles > 120000)) {
     return {
       allowedTerms: [],
       blocked: true,
-      band: 'Over 15 years or over 150,000 miles',
+      band: 'Over 12 years or over 120,000 miles',
       severity: 'blocked',
       warning:
-        'Outside automatic cover (over 15 years or over 150,000 miles). No automatic online quote — refer this one.',
+        'Outside automatic cover (over 12 years or over 120,000 miles). No automatic online quote — refer this one.',
     };
   }
 
@@ -107,27 +102,15 @@ export function evaluateTermEligibility(input: EligibilityInput): EligibilityRes
     };
   }
 
-  const in13to15 = (age !== null && age >= 13 && age <= 15) || (miles !== null && miles > 120000);
-  if (in13to15) {
-    return {
-      allowedTerms: [12, 24],
-      blocked: false,
-      band: '13–15 years or 120,001–150,000 miles',
-      severity: 'warning',
-      warning:
-        'One and two year terms only at launch for this age or mileage. There is no automatic three-year term.',
-    };
-  }
-
   const in11to12 = (age !== null && age >= 11 && age <= 12) || (miles !== null && miles > 100000);
   if (in11to12) {
     return {
-      allowedTerms: [12, 24, 36],
+      allowedTerms: [12, 24],
       blocked: false,
       band: '11–12 years or 100,001–120,000 miles',
-      severity: 'info',
+      severity: 'warning',
       warning:
-        'Three years is allowed here but depends on the model-risk configuration. Check before you promise a three-year price.',
+        'One and two year terms only at launch for this age or mileage. There is no automatic three-year term.',
     };
   }
 

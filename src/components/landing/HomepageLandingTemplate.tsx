@@ -105,8 +105,8 @@ const HomepageLandingTemplate: React.FC<HomepageLandingTemplateProps> = ({
       setMileageError('Please enter a valid mileage');
       return false;
     }
-    if (numericMileage > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles');
+    if (numericMileage > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles');
       return false;
     }
     setMileageError('');
@@ -155,7 +155,7 @@ const HomepageLandingTemplate: React.FC<HomepageLandingTemplateProps> = ({
         const ageInYears = (now.getTime() - manufactureDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
         
         if (ageInYears >= 15) {
-          setVehicleAgeError('Sorry, we only cover vehicles under 15 years old');
+          setVehicleAgeError('Sorry, we only cover vehicles under 12 years old');
           setIsLookingUp(false);
           return;
         }

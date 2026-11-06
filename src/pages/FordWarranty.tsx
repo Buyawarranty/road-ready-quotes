@@ -218,7 +218,7 @@ const FordWarranty = () => {
                 ))}
               </div>
               <p className="text-lg font-semibold text-primary text-center mt-6">
-                👉 We are also the only warranty provider offering cover on vehicles up to 150,000 miles.
+                👉 We are also the only warranty provider offering cover on vehicles up to 120,000 miles.
               </p>
             </div>
           </div>
@@ -342,7 +342,7 @@ const FordWarranty = () => {
                       </tr>
                       <tr className="border-b border-gray-100">
                         <td className="py-3 px-4 font-semibold">High-Mileage Plan</td>
-                        <td className="py-3 px-4">Cars & vans up to 150,000 miles</td>
+                        <td className="py-3 px-4">Cars & vans up to 120,000 miles</td>
                         <td className="py-3 px-4">Designed for commercial vehicles and motorway users</td>
                       </tr>
                     </tbody>

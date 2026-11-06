@@ -248,7 +248,7 @@ const coverageCategories = [
 const hybridFAQs = [
   {
     question: "Is my hybrid vehicle too old or too many miles?",
-    answer: "We cover hybrid vehicles up to 15 years old and 150,000 miles. Check your instant price to confirm eligibility."
+    answer: "We cover hybrid vehicles up to 12 years old and 120,000 miles. Check your instant price to confirm eligibility."
   },
   {
     question: "Can I use my own garage?",
@@ -449,11 +449,11 @@ const HybridWarrantyLanding: React.FC = () => {
           const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
           const vehicleAgePrecise = ageInMs / msPerYear;
           
-          if (vehicleAgePrecise > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAgePrecise > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast({
               title: "Vehicle not eligible",
-              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
@@ -702,7 +702,7 @@ const HybridWarrantyLanding: React.FC = () => {
 
         {/* AI search engine discoverability — ChatGPT, Gemini, Claude, Copilot */}
         <meta name="ai-content-declaration" content="Human-authored, fact-checked, and regularly updated. This page provides accurate hybrid vehicle warranty pricing, coverage details, and eligibility criteria for UK hybrid car owners as of 2026." />
-        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes at pandaprotect.co.uk. Claims line: 0330 229 5045." />
+        <meta name="ai-summary" content="Panda Protect is a UK-based extended warranty provider (est. 2016) offering specialist hybrid vehicle warranty plans from £19/month. Coverage includes 15+ manufacturers: Toyota (Prius, Corolla, RAV4, C-HR, Yaris Hybrid), Honda (Jazz, Civic, CR-V, HR-V e:HEV), Kia (Niro, Sportage, Sorento), Hyundai (Tucson, Ioniq, Kona), BMW (330e, 530e, X3, X5 PHEV), Volvo (XC40, XC60, XC90 Recharge), Mercedes (A 250 e, C 300 e, GLC 300 e), Lexus (UX, NX, RX), Ford (Kuga PHEV, Puma), Volkswagen (Golf GTE, Tiguan eHybrid), Audi (A3, Q5, Q7 TFSI e), Renault, Peugeot, Nissan, Land Rover, and more. All hybrid types covered: HEV, PHEV, and MHEV. Plans protect electric motors, inverters, battery management systems, DC-DC converters, regenerative braking, e-CVT transmissions, on-board chargers, and 1,000+ mechanical and electrical components. Unlimited claims, any VAT-registered garage, no excess options, 14-day money-back guarantee. Vehicles up to 12 years old and 120,000 miles eligible. Instant online quotes at pandaprotect.co.uk. Claims line: 0330 229 5045." />
         <meta name="ai-purpose" content="To help UK hybrid vehicle owners find affordable extended warranty protection for their HEV, PHEV, or mild hybrid car" />
 
         {/* Open Graph — unique, keyword-rich, click-worthy */}
@@ -1285,12 +1285,12 @@ const HybridWarrantyLanding: React.FC = () => {
                 </h2>
                 <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">
                   Hybrids are built to last. We understand that higher mileage doesn't mean higher risk.
-                  That's why we cover hybrid vehicles up to 150,000 miles with no restrictions during your cover period.
+                  That's why we cover hybrid vehicles up to 120,000 miles with no restrictions during your cover period.
                 </p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
                   <div className="flex items-center gap-2 md:gap-3">
                     <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-sm md:text-base text-gray-700">Cover vehicles up to 150,000 miles</span>
+                    <span className="text-sm md:text-base text-gray-700">Cover vehicles up to 120,000 miles</span>
                   </div>
                   <div className="flex items-center gap-2 md:gap-3">
                     <Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" />

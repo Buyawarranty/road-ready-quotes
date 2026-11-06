@@ -122,12 +122,12 @@ const PILLARS: Pillar[] = [
     items: [
       {
         q: 'What variants of dealer warranties does Panda Protect offer?',
-        plain: 'We offer a range of dealer warranties designed for used cars, commercial vehicles, and specialist stock. Our cover plans can be tailored to match your specific forecourt profile, protecting qualifying vehicles up to 15 years old or 150,000 miles at the time of policy inception. Dealers can choose warranty terms, claim limits, and levels of cover that best match their forecourt inventory.',
+        plain: 'We offer a range of dealer warranties designed for used cars, commercial vehicles, and specialist stock. Our cover plans can be tailored to match your specific forecourt profile, protecting qualifying vehicles up to 12 years old or 120,000 miles at the time of policy inception. Dealers can choose warranty terms, claim limits, and levels of cover that best match their forecourt inventory.',
         a: (
           <>
             We offer a range of dealer warranties designed for used cars, commercial vehicles, and specialist stock. Our
             cover plans can be tailored to match your specific forecourt profile, protecting qualifying vehicles up to{' '}
-            <strong>15 years old</strong> or <strong>150,000 miles</strong> at the time of policy inception. Dealers can
+            <strong>12 years old</strong> or <strong>120,000 miles</strong> at the time of policy inception. Dealers can
             choose warranty terms, claim limits, and levels of cover that best match their forecourt inventory.
           </>
         ),

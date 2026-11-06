@@ -84,11 +84,11 @@ const LandRoverWarranty: React.FC = () => {
       <DealerPublicHeader />
       <SEOHead
         title="Land Rover Extended Warranty UK | Cover All Models 2012–2026"
-        description="Protect your Land Rover with an affordable extended warranty. Cover for Defender, Range Rover, Discovery & Evoque. Instant quotes, 150,000-mile limit, flexible UK plans from £20/month."
+        description="Protect your Land Rover with an affordable extended warranty. Cover for Defender, Range Rover, Discovery & Evoque. Instant quotes, 120,000-mile limit, flexible UK plans from £20/month."
         keywords="Land Rover warranty, Range Rover warranty, Defender warranty, Discovery warranty, Land Rover extended warranty UK, Range Rover Sport warranty, Evoque warranty, Velar warranty, used Land Rover warranty, Land Rover car warranty"
         canonical="https://pandaprotect.co.uk/car-extended-warranty/land-rover/"
         ogTitle="Land Rover Extended Warranty UK | Defender, Range Rover & Discovery Cover"
-        ogDescription="Affordable extended warranty for all Land Rover models 2012–2026. Instant quotes, flexible plans, 150,000-mile limit. Protect your Defender, Range Rover, Discovery or Evoque today."
+        ogDescription="Affordable extended warranty for all Land Rover models 2012–2026. Instant quotes, flexible plans, 120,000-mile limit. Protect your Defender, Range Rover, Discovery or Evoque today."
         ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         geoRegion="GB"
         geoPlacename="United Kingdom"
@@ -126,7 +126,7 @@ const LandRoverWarranty: React.FC = () => {
                   Land Rover Extended Warranty for Every Model
                 </h1>
                 <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                  Protect your Land Rover from costly repairs with trusted UK warranty cover. Instant quotes, flexible plans, and protection for vehicles up to 150,000 miles.
+                  Protect your Land Rover from costly repairs with trusted UK warranty cover. Instant quotes, flexible plans, and protection for vehicles up to 120,000 miles.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button
@@ -196,7 +196,7 @@ const LandRoverWarranty: React.FC = () => {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Protection for Land Rover vehicles up to 150,000 miles and 15 years old.
+                Protection for Land Rover vehicles up to 120,000 miles and 12 years old.
               </p>
             </div>
           </div>
@@ -228,7 +228,7 @@ const LandRoverWarranty: React.FC = () => {
               <div className="bg-card p-6 rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow">
                 <Zap className="h-12 w-12 text-primary mb-4" />
                 <h3 className="text-xl font-semibold mb-3 text-foreground">High Mileage Cover</h3>
-                <p className="text-muted-foreground">Protection available for Land Rovers up to 150,000 miles</p>
+                <p className="text-muted-foreground">Protection available for Land Rovers up to 120,000 miles</p>
               </div>
               <div className="bg-card p-6 rounded-lg shadow-sm border border-border hover:shadow-md transition-shadow">
                 <Clock className="h-12 w-12 text-primary mb-4" />
@@ -501,7 +501,7 @@ const LandRoverWarranty: React.FC = () => {
                   Every Land Rover is different, which is why our warranty plans are designed around your specific model. Choose short-term or multi-year protection, add optional upgrades, and pay the way that suits you best.
                 </p>
                 <p className="text-xl font-semibold text-foreground mb-6">
-                  We are one of the only UK warranty providers offering cover for Land Rovers up to 150,000 miles at the start of the policy.
+                  We are one of the only UK warranty providers offering cover for Land Rovers up to 120,000 miles at the start of the policy.
                 </p>
                 <p className="text-lg text-muted-foreground">
                   That means even high-mileage Land Rovers can stay protected with the same confidence, reliability, and level of service.

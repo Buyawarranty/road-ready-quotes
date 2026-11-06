@@ -341,7 +341,7 @@ const EVWarranty = () => {
             
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Protection for vehicles up to 150,000 miles and 15 years.
+                Protection for vehicles up to 120,000 miles and 12 years.
               </p>
             </div>
           </div>
@@ -484,7 +484,7 @@ const EVWarranty = () => {
             </p>
             <ul className="space-y-4 max-w-2xl mx-auto">
               {[
-                "Accepted for vehicles up to 15 years old and 150,000 miles",
+                "Accepted for vehicles up to 12 years old and 120,000 miles",
                 "Cover available after private sale or dealer purchase",
                 "Immediate protection, no lengthy inspections",
                 "Transferable to new owners if you sell your car"

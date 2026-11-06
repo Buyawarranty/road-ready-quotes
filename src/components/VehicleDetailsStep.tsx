@@ -118,8 +118,8 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
       return; // Don't update if not a valid positive number
     }
     
-    if (numericValue > 150000) {
-      setMileageError('Vehicle mileage exceeds our maximum of 150,000 miles');
+    if (numericValue > 120000) {
+      setMileageError('Vehicle mileage exceeds our maximum of 120,000 miles');
       setMileage(cleanValue); // Still show what they typed
       return;
     } else {
@@ -210,11 +210,11 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
         console.log('Vehicle not found in DVLA database for registration:', regNumber);
         
         // Check if the error is specifically about vehicle age
-        if (data.error && data.error.includes('15 years')) {
-          console.log('Vehicle blocked: Over 15 years old');
+        if (data.error && data.error.includes('12 years')) {
+          console.log('Vehicle blocked: Over 12 years old');
           toast({
             title: "Vehicle Not Eligible",
-            description: "We cannot offer warranties for vehicles over 15 years of age.",
+            description: "We cannot offer warranties for vehicles over 12 years of age.",
             variant: "destructive",
           });
           // Do NOT offer manual entry for age-blocked vehicles
@@ -244,7 +244,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
       } else {
         toast({
           title: "Oops! We couldn't find that registration. 🚗💨",
-          description: "Double-check the number and try again. If it's still not working, the vehicle might be over 15 years old or not supported in our cover.",
+          description: "Double-check the number and try again. If it's still not working, the vehicle might be over 12 years old or not supported in our cover.",
           variant: "destructive",
         });
       }
@@ -265,7 +265,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
     const yearValue = e.target.value;
     setYear(yearValue);
     
-    // Check if vehicle is older than 15 years
+    // Check if vehicle is older than 12 years
     if (yearValue) {
       const currentYear = new Date().getFullYear();
       const vehicleYear = parseInt(yearValue);
@@ -277,8 +277,8 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
       
       const vehicleAge = currentYear - vehicleYear;
       
-      if (vehicleAge > 15) {
-        setYearError('We cannot offer warranties for vehicles over 15 years of age');
+      if (vehicleAge > 12) {
+        setYearError('We cannot offer warranties for vehicles over 12 years of age');
       } else if (vehicleYear > currentYear) {
         setYearError('Year cannot be in the future');
       } else {
@@ -397,11 +397,11 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
           console.log('Vehicle not found in DVLA database for registration:', regNumber);
           
           // Check if error is about vehicle age
-          if (data.error && data.error.includes('15 years')) {
-            console.log('Vehicle blocked: Over 15 years old');
+          if (data.error && data.error.includes('12 years')) {
+            console.log('Vehicle blocked: Over 12 years old');
             toast({
               title: "Vehicle Not Eligible",
-              description: "We cannot offer warranties for vehicles over 15 years of age.",
+              description: "We cannot offer warranties for vehicles over 12 years of age.",
               variant: "destructive",
             });
             setIsLookingUp(false);
@@ -430,7 +430,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
         } else {
           toast({
             title: "Oops! We couldn't find that registration. 🚗💨",
-            description: "Double-check the number and try again. If it's still not working, the vehicle might be over 15 years old or not supported in our cover.",
+            description: "Double-check the number and try again. If it's still not working, the vehicle might be over 12 years old or not supported in our cover.",
             variant: "destructive",
           });
         }
@@ -443,16 +443,16 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
     
     if (showManualEntry) {
       // Manual entry validation
-      if (regNumber && mileage && make && model && year && vehicleType && numericMileage <= 150000 && mileageError === '' && yearError === '') {
+      if (regNumber && mileage && make && model && year && vehicleType && numericMileage <= 120000 && mileageError === '' && yearError === '') {
         // Double-check vehicle age (defensive check)
         const currentYear = new Date().getFullYear();
         const vehicleYear = parseInt(year);
         const vehicleAge = currentYear - vehicleYear;
         
-        if (vehicleAge > 15) {
+        if (vehicleAge > 12) {
           toast({
             title: "Vehicle Not Eligible",
-            description: "We cannot offer warranties for vehicles over 15 years of age.",
+            description: "We cannot offer warranties for vehicles over 12 years of age.",
             variant: "destructive",
           });
           return;
@@ -515,7 +515,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
       }
     } else {
       // Auto-detected car validation
-      if (regNumber && mileage && numericMileage <= 150000 && mileageError === '') {
+      if (regNumber && mileage && numericMileage <= 120000 && mileageError === '') {
         // Check if vehicle is blocked
         if (vehicleData?.blocked) {
           toast({
@@ -527,10 +527,10 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
         }
         
         // Check if there's an age-related error
-        if (vehicleData?.error && vehicleData.error.includes('15 years')) {
+        if (vehicleData?.error && vehicleData.error.includes('12 years')) {
           toast({
             title: "Vehicle Not Eligible",
-            description: "We cannot offer warranties for vehicles over 15 years of age.",
+            description: "We cannot offer warranties for vehicles over 12 years of age.",
             variant: "destructive",
           });
           return;
@@ -569,8 +569,8 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
   const rawMileage = mileage.replace(/,/g, '');
   const numericMileage = parseInt(rawMileage) || 0;
 
-  const isManualFormValid = regNumber && mileage && make && model && year && vehicleType && numericMileage <= 150000 && mileageError === '' && yearError === '' && regError === '';
-  const isAutoFormValid = regNumber && mileage && numericMileage <= 150000 && mileageError === '' && regError === '';
+  const isManualFormValid = regNumber && mileage && make && model && year && vehicleType && numericMileage <= 120000 && mileageError === '' && yearError === '' && regError === '';
+  const isAutoFormValid = regNumber && mileage && numericMileage <= 120000 && mileageError === '' && regError === '';
 
   return (
     <div>
@@ -713,13 +713,13 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
              </div>
            )}
 
-           {vehicleData && !vehicleData.found && vehicleData.error && vehicleData.error.includes('15 years') && (
+           {vehicleData && !vehicleData.found && vehicleData.error && vehicleData.error.includes('12 years') && (
              <div className="bg-orange-50 border border-orange-200 rounded-[4px] p-4 mb-4">
                <h3 className="text-lg font-bold text-orange-800 mb-2">
                  Sorry, We Can't Cover This Vehicle
                </h3>
                <p className="text-sm text-orange-700 mb-2">
-                 We can't provide a warranty for vehicles that are more than 15 years old.
+                 We can't provide a warranty for vehicles that are more than 12 years old.
                </p>
                <p className="text-sm text-orange-700">
                  If your car is newer than that, feel free to try again. We may just need to run a couple of extra checks 🔍 before we can confirm your cover.
@@ -727,13 +727,13 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
              </div>
            )}
 
-            {vehicleData && !vehicleData.found && (!vehicleData.error || (!vehicleData.error.includes('15 years') && !vehicleData.error.includes('Warranty Coverage Not Available'))) && (
+            {vehicleData && !vehicleData.found && (!vehicleData.error || (!vehicleData.error.includes('12 years') && !vehicleData.error.includes('Warranty Coverage Not Available'))) && (
              <div className="bg-orange-50 border border-orange-200 rounded-[4px] p-4 mb-4">
                <p className="text-lg font-bold text-orange-800 mb-2">
                  Oops! We couldn't find that registration. 🚗💨
                </p>
                <p className="text-sm text-orange-700 mb-2">
-                 Double-check the number and try again. If it's still not working, the vehicle might be over 15 years old or not supported in our cover.
+                 Double-check the number and try again. If it's still not working, the vehicle might be over 12 years old or not supported in our cover.
                </p>
                <p className="text-sm text-orange-700">
                  You can enter your vehicle details manually below to get a quote.

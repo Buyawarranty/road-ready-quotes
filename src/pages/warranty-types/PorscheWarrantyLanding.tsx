@@ -41,7 +41,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is a Porsche extended warranty worth it?", answer: "Absolutely. Porsche repairs are among the most expensive due to specialist engineering and premium parts. A single engine or PDK gearbox repair can cost £5,000–£15,000. Our warranty gives you peace of mind." },
   { question: "How much does a Porsche extended warranty cost?", answer: `Porsche warranty prices start from £${startingPrice}/month depending on model, mileage, and claim limit. We offer flexible payment options.` },
-  { question: "Can I buy cover after my Porsche Approved warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, even if your manufacturer warranty has expired." },
+  { question: "Can I buy cover after my Porsche Approved warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, even if your manufacturer warranty has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK, including Porsche specialists and independent garages." },
   { question: "Does it cover the Taycan electric model?", answer: "Yes, our comprehensive plan covers electric components including the electric motor, battery management, power electronics, and thermal management." },
   { question: "Is the PDK gearbox covered?", answer: "Yes, the PDK dual-clutch transmission is fully covered under our warranty including the mechatronics unit, clutch packs, and actuators." },
@@ -103,7 +103,7 @@ const PorscheWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

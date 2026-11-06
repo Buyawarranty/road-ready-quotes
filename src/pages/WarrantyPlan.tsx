@@ -1101,7 +1101,7 @@ const WarrantyPlan = () => {
                         <h5 className="font-semibold text-blue-800 mb-2">Eligibility Criteria:</h5>
                         <ul className="space-y-1 text-blue-700">
                           <li>• Mileage under 60,000 miles at the start of the warranty</li>
-                          <li>• Vehicle age under 15 years at the start of the warranty</li>
+                          <li>• Vehicle age under 12 years at the start of the warranty</li>
                         </ul>
                       </div>
                     </div>

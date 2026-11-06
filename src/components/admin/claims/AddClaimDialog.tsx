@@ -213,7 +213,7 @@ export const AddClaimDialog: React.FC<AddClaimDialogProps> = ({
               value={formData.mileageAtClaim}
               onChange={(value) => setFormData({ ...formData, mileageAtClaim: value })}
               min={0}
-              max={150000}
+              max={120000}
             />
           </div>
 

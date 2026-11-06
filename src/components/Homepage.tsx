@@ -217,8 +217,8 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
     }
     
     // Check mileage validation before proceeding
-    if (numericMileage > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (numericMileage > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
       return;
     }
     
@@ -239,14 +239,14 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
       console.log('DVSA lookup result:', data);
       
       // Check for age-related blocking when vehicle is not found
-      if (!data?.found && data?.error && data.error.includes('15 years')) {
-        console.log('Vehicle blocked: Over 15 years old');
+      if (!data?.found && data?.error && data.error.includes('12 years')) {
+        console.log('Vehicle blocked: Over 12 years old');
         toast({
           title: "Vehicle Not Eligible",
-          description: "We cannot offer warranties for vehicles over 15 years of age.",
+          description: "We cannot offer warranties for vehicles over 12 years of age.",
           variant: "destructive",
         });
-        setVehicleAgeError('We cannot offer warranties for vehicles over 15 years old');
+        setVehicleAgeError('We cannot offer warranties for vehicles over 12 years old');
         setIsLookingUp(false);
         return;
       }
@@ -269,7 +269,7 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
         const now = new Date();
         let vehicleAgePrecise: number | null = null;
         
-        // Try to use manufactureDate for precise age calculation (15 years and 1 day check)
+        // Try to use manufactureDate for precise age calculation (12 years and 1 day check)
         if (data.manufactureDate) {
           const manufactureDate = new Date(data.manufactureDate);
           if (!isNaN(manufactureDate.getTime())) {
@@ -280,15 +280,15 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
             console.log('🔍 Precise age calculation:', {
               manufactureDate: data.manufactureDate,
               vehicleAgePrecise: vehicleAgePrecise.toFixed(4),
-              threshold: '> 15 years'
+              threshold: '> 12 years'
             });
             
-            // Block if over 15 years (15 years and 1 day or older)
-            if (vehicleAgePrecise > 15) {
-              setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+            // Block if over 12 years (12 years and 1 day or older)
+            if (vehicleAgePrecise > 12) {
+              setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
               toast({
                 title: "Vehicle Not Eligible",
-                description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+                description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
                 variant: "destructive",
               });
               setIsLookingUp(false);
@@ -303,11 +303,11 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
           const vehicleYear = parseInt(data.yearOfManufacture);
           const vehicleAge = currentYear - vehicleYear;
           
-          if (vehicleAge > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAge > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast({
               title: "Vehicle Not Eligible",
-              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
