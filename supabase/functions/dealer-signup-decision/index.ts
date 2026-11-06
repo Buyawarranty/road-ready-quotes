@@ -224,7 +224,7 @@ serve(async (req) => {
 
     if (createErr) {
       // user probably already exists -> look them up and reset password
-      let existing: { id: string } | undefined;
+      let existing: { id: string; user_metadata?: Record<string, unknown> } | undefined;
       for (let page = 1; page <= 50 && !existing; page++) {
         const { data: list } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
         const users = list?.users ?? [];
@@ -238,7 +238,7 @@ serve(async (req) => {
         });
       }
       userId = existing.id;
-      await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { must_change_password: true } });
+      await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { ...(existing.user_metadata ?? {}), must_change_password: true } });
     } else {
       userId = created.user?.id ?? null;
     }
