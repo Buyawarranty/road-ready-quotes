@@ -10,6 +10,7 @@ import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import dealerSupportDesk from '@/assets/panda-dealer-support-portal.webp.asset.json';
+import dealerSupportDeskLocal from '@/assets/panda-dealer-support-portal.webp';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
 import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
@@ -750,13 +751,13 @@ const DealerComingSoon = () => {
           {/* Vehicle image sits below the quote card so mobile dealers reach the form first */}
           <figure className="mx-auto mt-10 flex max-w-2xl flex-col items-center">
             <img
-              src={dealerSupportDesk.url}
+              src={dealerSupportDeskLocal}
               alt="Panda Protect mascot giving a thumbs up beside a dealer support agent using the Panda Protect dealer portal for policies, claims and dealer support"
               width={1000}
               height={741}
               loading="lazy"
               decoding="async"
-              className="h-auto w-full max-w-xl"
+              className="h-auto w-full !max-w-[25rem]"
             />
             <figcaption className="mt-4 text-center">
               <h2 className="text-lg font-bold text-crm-navy sm:text-xl">Dealer support, here for your dealership</h2>
