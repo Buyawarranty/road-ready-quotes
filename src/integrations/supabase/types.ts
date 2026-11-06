@@ -13926,6 +13926,7 @@ export type Database = {
           rejected_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["trade_warranty_signup_status"]
+          town: string | null
           updated_at: string
         }
         Insert: {
@@ -13946,6 +13947,7 @@ export type Database = {
           rejected_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["trade_warranty_signup_status"]
+          town?: string | null
           updated_at?: string
         }
         Update: {
@@ -13966,6 +13968,7 @@ export type Database = {
           rejected_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["trade_warranty_signup_status"]
+          town?: string | null
           updated_at?: string
         }
         Relationships: [
