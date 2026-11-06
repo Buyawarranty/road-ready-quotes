@@ -16,6 +16,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { fireDealerConfetti } from '@/lib/dealerConfetti';
+import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -399,6 +400,7 @@ const DealerAdminSignUps: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Trade Warranty interest registrations from the dealer portal.</p>
         </div>
         <div className="flex gap-2">
+          <AddDealerDialog label="Add trader" size="sm" onCreated={load} />
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
           </Button>
