@@ -98,8 +98,46 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const signupId: string | undefined = body?.signup_id;
-    const decision: string | undefined = body?.decision;
+    let signupId: string | undefined = body?.signup_id;
+    let decision: string | undefined = body?.decision;
+    let manualCreate = false;
+
+    // Manual dealer creation by staff: record it as a signup, then approve it.
+    if (decision === "create") {
+      const m = body?.manual ?? {};
+      const mEmail = (m.email ?? "").toString().trim().toLowerCase();
+      const mPhone = (m.phone ?? "").toString().trim();
+      const mCompany = (m.company_name ?? "").toString().trim();
+      const mName = (m.contact_name ?? "").toString().trim();
+      if (!mCompany || !mEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mEmail) || !mPhone) {
+        return new Response(JSON.stringify({ error: "Dealership name, a valid email and phone number are required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: dup } = await admin.from("dealers").select("id").ilike("email", mEmail).maybeSingle();
+      if (dup) {
+        return new Response(JSON.stringify({ error: "A dealer with this email already exists" }), {
+          status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: ins, error: insErr } = await admin.from("trade_warranty_signups").insert({
+        dealership_name: mCompany.slice(0, 200),
+        contact_name: mName.slice(0, 200) || null,
+        email_address: mEmail,
+        phone_number: mPhone.slice(0, 40),
+        additional_information: "Added manually by staff",
+        heard_about_us: "Added manually",
+        status: "new",
+      }).select("id").single();
+      if (insErr || !ins) {
+        return new Response(JSON.stringify({ error: insErr?.message || "Could not record dealer" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      signupId = ins.id;
+      decision = "approve";
+      manualCreate = true;
+    }
     const notes: string | null = body?.notes?.toString().trim() || null;
     const alternateEmail: string | null =
       body?.alternate_email?.toString().trim().toLowerCase() || null;
@@ -304,7 +342,7 @@ serve(async (req) => {
       )
     );
 
-    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error }), {
+    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error, ...(manualCreate ? { login_email: email, temp_password: password } : {}) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {

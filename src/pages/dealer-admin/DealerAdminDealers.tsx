@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Loader2, Search, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 
 interface DealerRow {
   id: string;
@@ -83,9 +84,12 @@ const DealerAdminDealers: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Dealers</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage dealer accounts and their discount tier.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Dealers</h1>
+          <p className="text-muted-foreground text-sm mt-1">Manage dealer accounts and their discount tier.</p>
+        </div>
+        <AddDealerDialog onCreated={load} />
       </div>
 
       <Card className="border-2">
