@@ -237,7 +237,6 @@ const DealerComingSoon = () => {
             contact_name: form.contact_name.trim() || null,
             email_address: form.email_address.trim(),
             phone_number: form.phone_number.trim(),
-        town: form.town.trim() || null,
             town: form.town.trim() || null,
             monthly_vehicle_sales: null,
             current_warranty_provider: null,
