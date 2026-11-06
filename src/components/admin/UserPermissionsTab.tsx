@@ -16,6 +16,7 @@ import { UserPlus, BellRing, Shield, Eye, Users, Trash2, RotateCcw, Mail, Settin
 import { AccessRequestsPanel } from './AccessRequestsPanel';
 import BdmTownAccessPanel from './bdm/BdmTownAccessPanel';
 import { ViewAsStaffButton } from './ViewAsStaffButton';
+import { ViewAsDropdown } from './ViewAsDropdown';
 
 import { TeamActivityPanel } from './TeamActivityPanel';
 import { AdminAccessLogPanel } from './AdminAccessLogPanel';
@@ -1257,6 +1258,18 @@ export const UserPermissionsTab = () => {
                 Reload
               </Button>
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {currentAdminUser?.role === 'super_admin' && (
+        <Card>
+          <CardContent className="py-3 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-semibold text-sm">View the dashboard as a staff member</p>
+              <p className="text-xs text-muted-foreground">Pick anyone to see exactly what they see. Choose “Myself” to go back.</p>
+            </div>
+            <ViewAsDropdown />
           </CardContent>
         </Card>
       )}
