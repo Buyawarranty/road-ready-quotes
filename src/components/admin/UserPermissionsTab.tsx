@@ -17,6 +17,7 @@ import { AccessRequestsPanel } from './AccessRequestsPanel';
 import BdmTownAccessPanel from './bdm/BdmTownAccessPanel';
 import { ViewAsStaffButton } from './ViewAsStaffButton';
 import { ViewAsDropdown } from './ViewAsDropdown';
+import { ViewAsAuditLog } from './ViewAsAuditLog';
 
 import { TeamActivityPanel } from './TeamActivityPanel';
 import { AdminAccessLogPanel } from './AdminAccessLogPanel';
@@ -1273,6 +1274,7 @@ export const UserPermissionsTab = () => {
           </CardContent>
         </Card>
       )}
+      {currentAdminUser?.role === 'super_admin' && <ViewAsAuditLog />}
 
       <BdmTownAccessPanel />
 
