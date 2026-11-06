@@ -756,7 +756,7 @@ const DealerComingSoon = () => {
               height={741}
               loading="lazy"
               decoding="async"
-              className="h-auto w-full max-w-[25rem]"
+              className="h-auto w-full !max-w-[25rem]"
             />
             <figcaption className="mt-4 text-center">
               <h2 className="text-lg font-bold text-crm-navy sm:text-xl">Dealer support, here for your dealership</h2>
