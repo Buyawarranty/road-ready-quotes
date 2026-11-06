@@ -118,7 +118,12 @@ serve(async (req) => {
     logStep('Generated reset link successfully', { hasActionLink: !!resetData?.properties?.action_link });
 
     // Use the generated action link for the reset
-    const resetLink = resetData?.properties?.action_link || `${supabaseUrl}/auth/v1/recover?email=${encodeURIComponent(email)}&redirect_to=${encodeURIComponent(resetRedirect)}`;
+    // Link straight to our own reset page with the one-time code; the page
+    // verifies it in the browser. Keeps the backend address out of the email,
+    // avoids the redirect allow list, and stops mail scanners using the link up.
+    const hashedToken = resetData?.properties?.hashed_token;
+    if (!hashedToken) throw new Error('Could not create a reset link');
+    const resetLink = `${resetRedirect}?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`;
     
     // Send branded email
     const emailHtml = `
@@ -167,13 +172,7 @@ serve(async (req) => {
                       </a>
                     </div>
                     
-                    <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 30px 0 20px 0; border-top: 1px solid #e5e7eb; padding-top: 20px;">
-                      If the button doesn't work, you can copy and paste this link into your browser:
-                    </p>
                     
-                    <p style="color: #6b7280; font-size: 12px; word-break: break-all; background-color: #f3f4f6; padding: 10px; border-radius: 4px;">
-                      ${resetLink}
-                    </p>
                     
                     <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 20px 0;">
                       If you didn't request this password reset, please ignore this email. Your password will remain unchanged.

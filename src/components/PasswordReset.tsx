@@ -55,6 +55,23 @@ const PasswordReset = () => {
         searchParamsSize: Array.from(searchParams.entries()).length
       });
       
+      const tokenHash = searchParams.get('token_hash');
+      if (type === 'recovery' && tokenHash) {
+        const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+        if (error || !data.session) {
+          toast({
+            title: "Reset link expired",
+            description: "This password reset link has expired or was already used. Please request a new one.",
+            variant: "destructive",
+          });
+          setTimeout(() => navigate('/forgot-password/'), 3000);
+        } else {
+          setIsValidSession(true);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        return;
+      }
+
       if (type === 'recovery' && accessToken && refreshToken) {
         try {
           console.log('Attempting to set session with recovery tokens...');
