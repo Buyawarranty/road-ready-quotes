@@ -205,7 +205,7 @@ const ROLE_DEFAULT_PERMISSIONS: Record<string, Record<string, boolean>> = {
 };
 
 // /auth is the single canonical staff gateway (all roles).
-const ADMIN_GATEWAY_URL = 'https://pandaprotect.co.uk/auth';
+const ADMIN_GATEWAY_URL = `${typeof window !== 'undefined' ? window.location.origin : 'https://pandaprotect.co.uk'}/auth`;
 const loginUrlForRole = (_role?: string | null) => ADMIN_GATEWAY_URL;
 
 export const UserPermissionsTab = () => {
@@ -1270,12 +1270,12 @@ export const UserPermissionsTab = () => {
                   <Shield className="h-4 w-4 text-blue-700 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Admin / Management</p>
-                    <code className="text-xs font-mono break-all">https://pandaprotect.co.uk/auth</code>
+                    <code className="text-xs font-mono break-all">{ADMIN_GATEWAY_URL}</code>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard('https://pandaprotect.co.uk/auth', 'login-url-auth')} title="Copy">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard(ADMIN_GATEWAY_URL, 'login-url-auth')} title="Copy">
                     {copiedField === 'login-url-auth' ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
                   </Button>
-                  <a href="https://pandaprotect.co.uk/auth" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
+                  <a href={ADMIN_GATEWAY_URL} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>
@@ -1283,12 +1283,12 @@ export const UserPermissionsTab = () => {
                   <Users className="h-4 w-4 text-blue-700 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Sales Agents / Staff</p>
-                    <code className="text-xs font-mono break-all">https://pandaprotect.co.uk/auth</code>
+                    <code className="text-xs font-mono break-all">{ADMIN_GATEWAY_URL}</code>
                   </div>
-                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard('https://pandaprotect.co.uk/auth', 'login-url-sales')} title="Copy">
+                  <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => copyToClipboard(ADMIN_GATEWAY_URL, 'login-url-sales')} title="Copy">
                     {copiedField === 'login-url-sales' ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
                   </Button>
-                  <a href="https://pandaprotect.co.uk/auth" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
+                  <a href={ADMIN_GATEWAY_URL} target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:text-blue-900" title="Open">
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>
