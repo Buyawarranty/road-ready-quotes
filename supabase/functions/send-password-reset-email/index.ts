@@ -35,7 +35,7 @@ serve(async (req) => {
     const { email } = body;
     // Staff (admin dashboard) and customers get the same recovery link, but staff
     // copy points at /auth instead of the customer portal wording.
-    const isStaff = body.audience === 'staff';
+    let isStaff = body.audience === 'staff';
     const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     // Send people back to the site they asked from (Panda Protect runs on
     // more than one domain). Supabase only honours redirect URLs on its
@@ -93,6 +93,7 @@ serve(async (req) => {
         supabaseClient.from('admin_users').select('id').eq('user_id', uid).eq('is_active', true).maybeSingle(),
         supabaseClient.from('dealers').select('id').eq('user_id', uid).maybeSingle(),
       ]);
+      if (staffRow) isStaff = true;
       if (!staffRow && !dealerRow) {
         logStep('Account is not Panda Protect staff or dealer; no reset sent', { email });
         user = undefined;

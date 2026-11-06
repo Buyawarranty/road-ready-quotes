@@ -57,11 +57,24 @@ const PasswordReset = () => {
       
       const tokenHash = searchParams.get('token_hash');
       if (type === 'recovery' && tokenHash) {
-        const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
-        if (error || !data.session) {
+        // A one-time code can only be used once; never verify the same code twice
+        // (a second run of this check would report a valid link as expired).
+        const w = window as unknown as { __ppRecovery?: Record<string, Promise<{ ok: boolean }>> };
+        w.__ppRecovery = w.__ppRecovery || {};
+        if (!w.__ppRecovery[tokenHash]) {
+          w.__ppRecovery[tokenHash] = supabase.auth
+            .verifyOtp({ token_hash: tokenHash, type: 'recovery' })
+            .then(async ({ data, error }) => {
+              if (!error && data.session) return { ok: true };
+              const { data: s } = await supabase.auth.getSession();
+              return { ok: !!s.session };
+            });
+        }
+        const { ok } = await w.__ppRecovery[tokenHash];
+        if (!ok) {
           toast({
             title: "Reset link expired",
-            description: "This password reset link has expired or was already used. Please request a new one.",
+            description: "Only the newest reset email works — each new request cancels the earlier links. Please request one more and open only that email.",
             variant: "destructive",
           });
           setTimeout(() => navigate('/forgot-password/'), 3000);
