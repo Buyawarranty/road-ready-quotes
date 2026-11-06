@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import DealerFieldError from '@/components/dealer/DealerFieldError';
+import { DealerFieldError } from '@/components/dealer/DealerFieldError';
 
 /** Lets a signed-in dealer replace their temporary password. */
 const DealerChangePassword: React.FC = () => {

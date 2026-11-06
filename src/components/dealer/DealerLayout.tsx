@@ -382,6 +382,12 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
             </button>
           </div>
         )}
+        {user?.user_metadata?.must_change_password && !location.pathname.startsWith('/dealer-portal/settings/profile') && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary/40 bg-primary/10 p-4">
+            <p className="text-sm font-semibold text-foreground">You're using a temporary password. Please choose your own.</p>
+            <button type="button" onClick={() => navigate('/dealer-portal/settings/profile#change-password')} className="rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">Change password</button>
+          </div>
+        )}
         {children}
       </main>
     </div>

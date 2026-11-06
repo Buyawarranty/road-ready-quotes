@@ -218,6 +218,7 @@ serve(async (req) => {
         full_name: signup.contact_name || "",
         company_name: signup.dealership_name || "",
         role: "trader",
+        must_change_password: true,
       },
     });
 
@@ -237,7 +238,7 @@ serve(async (req) => {
         });
       }
       userId = existing.id;
-      await admin.auth.admin.updateUserById(existing.id, { password });
+      await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { must_change_password: true } });
     } else {
       userId = created.user?.id ?? null;
     }
