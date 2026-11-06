@@ -323,8 +323,18 @@ export const UserPermissionsTab = () => {
           name: (u as any).first_name || (u as any).name || '',
         }
       });
-      if (error) throw error;
-      if (data?.success === false) throw new Error(data?.error || 'Failed to send');
+      if (error) {
+        const ctx = (error as any)?.context;
+        const details = ctx?.json ? await ctx.json().catch(() => null) : null;
+        throw new Error(details?.error || error.message);
+      }
+      if (data?.success === false) {
+        if (data?.password) {
+          setRevealedCreds({ email: u.email, password: data.password, loginUrl: loginUrlForRole(u.role) });
+        }
+        toast.error(data?.error || 'Login email was not sent', { duration: 12000 });
+        return;
+      }
       toast.success(`Login details emailed to ${u.email}`);
     } catch (err: any) {
       console.error('Send login details error:', err);
