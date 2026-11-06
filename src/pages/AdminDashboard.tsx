@@ -148,6 +148,10 @@ const isExplicitlyPermittedTab = (tab: string, permissions?: Record<string, bool
 };
 
 const getFirstPermittedTab = (role: string | null, permissions?: Record<string, boolean> | null) => {
+  // Admins land on Dealers → Dealers by default.
+  if (role === 'super_admin' || role === 'admin' || permissions?.['tab_dealer-dealers'] === true) {
+    return 'dealer-dealers';
+  }
   const preferredOrder = role === 'claims_agent' || role === 'claims_manager'
     ? ['claims', 'customers', 'discount-codes', 'discounts-given', 'cancellations', 'refunds-paid', 'staff-hub', 'account']
     : ['get-quote', 'customers', 'new-leads', 'claims', 'discount-codes', 'timesheets', 'staff-hub', 'account'];
