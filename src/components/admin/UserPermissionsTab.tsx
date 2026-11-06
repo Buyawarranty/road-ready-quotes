@@ -1699,6 +1699,15 @@ export const UserPermissionsTab = () => {
                 </div>
               </div>
               <div>
+                <Label className="text-xs text-muted-foreground">Gateway password (first screen)</Label>
+                <div className="flex items-center gap-2 mt-1">
+                  <code className="flex-1 bg-muted px-2 py-2 rounded text-sm font-mono font-bold break-all">PandaPanda2026!!</code>
+                  <Button size="sm" variant="ghost" onClick={() => copyToClipboard('PandaPanda2026!!', 'rev-gate')}>
+                    {copiedField === 'rev-gate' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+                  </Button>
+                </div>
+              </div>
+              <div>
                 <Label className="text-xs text-muted-foreground">Email</Label>
                 <div className="flex items-center gap-2 mt-1">
                   <code className="flex-1 bg-muted px-2 py-2 rounded text-xs font-mono break-all">{revealedCreds.email}</code>
@@ -1719,7 +1728,7 @@ export const UserPermissionsTab = () => {
               <Button
                 className="w-full"
                 onClick={() => copyToClipboard(
-                  `Login URL: ${revealedCreds.loginUrl}\nEmail: ${revealedCreds.email}\nPassword: ${revealedCreds.password}`,
+                  `Login URL: ${revealedCreds.loginUrl}\nGateway password: PandaPanda2026!!\nEmail: ${revealedCreds.email}\nPassword: ${revealedCreds.password}`,
                   'rev-all'
                 )}
               >
