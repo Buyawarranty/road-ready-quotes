@@ -33,6 +33,7 @@ const initialForm = {
   contact_name: '',
   email_address: '',
   phone_number: '',
+  town: '',
   heard_about_us: '',
   additional_information: '',
 };
@@ -197,6 +198,7 @@ const DealerComingSoon = () => {
         contact_name: form.contact_name.trim() || null,
         email_address: form.email_address.trim(),
         phone_number: form.phone_number.trim(),
+        town: form.town.trim() || null,
         monthly_vehicle_sales: null,
         current_warranty_provider: null,
         interested_in: initialInterestedIn || null,
@@ -235,6 +237,8 @@ const DealerComingSoon = () => {
             contact_name: form.contact_name.trim() || null,
             email_address: form.email_address.trim(),
             phone_number: form.phone_number.trim(),
+        town: form.town.trim() || null,
+            town: form.town.trim() || null,
             monthly_vehicle_sales: null,
             current_warranty_provider: null,
             interested_in: initialInterestedIn || null,
@@ -606,6 +610,17 @@ const DealerComingSoon = () => {
                         value={form.dealership_name}
                         onChange={(e) => set('dealership_name', e.target.value)}
                         placeholder="e.g. ABC Motors Ltd"
+                        className={regInputCls}
+                      />
+                    </Field>
+
+                    <Field label="Town or city" icon={Building2} valid={form.town.trim().length > 1}>
+                      <input
+                        type="text"
+                        value={form.town}
+                        onChange={(e) => set('town', e.target.value)}
+                        placeholder="e.g. Birmingham"
+                        autoComplete="address-level2"
                         className={regInputCls}
                       />
                     </Field>

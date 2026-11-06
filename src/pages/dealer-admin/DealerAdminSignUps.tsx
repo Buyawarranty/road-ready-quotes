@@ -34,6 +34,7 @@ interface Signup {
   additional_information: string | null;
 
   status: Status;
+  town?: string | null;
   approved_at?: string | null;
   rejected_at?: string | null;
   created_at: string;
@@ -230,7 +231,7 @@ const DealerAdminSignUps: React.FC = () => {
       setNoteDraft('');
       await fetchNotes(selected.id);
       if (inserted) setNoteIndex((idx) => [...idx, inserted as NoteIndexRow]);
-      toast.success('Note added');
+      toast.success('Note saved — also added to the dealer contact list history');
     }
     setSavingNote(false);
   };
@@ -256,6 +257,33 @@ const DealerAdminSignUps: React.FC = () => {
       if (selected) fetchNotes(selected.id);
       toast.success('Note deleted');
     }
+  };
+
+  const [towns, setTowns] = useState<string[]>([]);
+  const [newTown, setNewTown] = useState('');
+  const [savingTown, setSavingTown] = useState(false);
+  useEffect(() => {
+    (supabase.rpc as any)('bdm_town_list').then(({ data }: any) => {
+      setTowns(Array.from(new Set(((data || []) as { town: string }[]).map((t) => t.town).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b)));
+    });
+  }, []);
+  useEffect(() => { setNewTown(''); }, [selected?.id]);
+
+  const saveTown = async (town: string) => {
+    if (!selected) return;
+    const value = town.trim().replace(/\s+/g, ' ');
+    if (!value) return;
+    setSavingTown(true);
+    const { error } = await supabase.from('trade_warranty_signups')
+      .update({ town: value } as any).eq('id', selected.id);
+    setSavingTown(false);
+    if (error) { toast.error(error.message); return; }
+    setSelected({ ...selected, town: value });
+    setRows((rs) => rs.map((r) => (r.id === selected.id ? { ...r, town: value } : r)));
+    if (!towns.includes(value)) setTowns((t) => [...t, value].sort((a, b) => a.localeCompare(b)));
+    setNewTown('');
+    toast.success(`Town set to ${value} — the dealer contact list is updated too`);
   };
 
   const updateStatus = async (id: string, status: Status) => {
@@ -637,6 +665,29 @@ const DealerAdminSignUps: React.FC = () => {
                 </div>
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">Town or city</div>
+                  <Select value={selected.town || ''} onValueChange={(v) => saveTown(v)} disabled={savingTown}>
+                    <SelectTrigger className="h-9 text-sm">
+                      <SelectValue placeholder="Choose a town" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {(selected.town && !towns.includes(selected.town) ? [selected.town, ...towns] : towns).map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2">
+                    <Input value={newTown} onChange={(e) => setNewTown(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); saveTown(newTown); } }}
+                      placeholder="Or add a new town…" className="h-9 text-sm" disabled={savingTown} />
+                    <Button size="sm" variant="outline" onClick={() => saveTown(newTown)} disabled={savingTown || !newTown.trim()}>
+                      {savingTown ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4 mr-1" />}Add
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-500">Puts this dealership under that town in the dealer contact list.</p>
+                </div>
+
+                <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
                   <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
                     <StickyNote className="w-3.5 h-3.5" /> Notes
                     {notes.length > 0 && (
@@ -661,7 +712,7 @@ const DealerAdminSignUps: React.FC = () => {
                   {notesLoading ? (
                     <div className="py-3 flex justify-center"><Loader2 className="w-4 h-4 animate-spin text-gray-400" /></div>
                   ) : notes.length === 0 ? (
-                    <p className="text-sm text-gray-400">No notes yet. Only admin staff can see these notes.</p>
+                    <p className="text-sm text-gray-400">No notes yet. Notes are also saved to this dealership's history in the dealer contact list.</p>
                   ) : (
                     <ul className="space-y-2">
                       {notes.map((n) => (
@@ -707,6 +758,7 @@ const DealerAdminSignUps: React.FC = () => {
                 <DetailGrid>
                   <DetailRow label="Submission Date" value={format(new Date(selected.created_at), 'd MMM yyyy, HH:mm')} />
                   <DetailRow label="Dealership Name" value={selected.dealership_name} />
+                  <DetailRow label="Town or city" value={selected.town} />
                   <DetailRow label="Contact Name" value={selected.contact_name} />
                   <DetailRow label="Email Address" value={selected.email_address}
                     href={`mailto:${selected.email_address}`} icon={Mail} />
