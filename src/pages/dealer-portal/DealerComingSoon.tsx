@@ -9,7 +9,7 @@ import { isAdminRole } from '@/lib/adminRoles';
 import DealerFAQSection from '@/components/dealer/DealerFAQSection';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
-import dealerSupportDesk from '@/assets/panda-dealer-support-desk.png.asset.json';
+import dealerSupportDesk from '@/assets/panda-dealer-support-portal.webp.asset.json';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
 import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
 import { supabase } from '@/integrations/supabase/client';
@@ -359,7 +359,18 @@ const DealerComingSoon = () => {
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
         <meta name="description" content="Offer trade warranties to your customers without the paperwork. Register for early dealer access to Panda Protect — UK motor trade warranty for cars, vans, EVs and motorcycles." />
-        <meta name="robots" content="noindex" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/dealer-portal/signup/" />
+        <meta property="og:title" content="Dealer sign-up – Trade Warranty | Panda Protect" />
+        <meta property="og:description" content="Register your dealership for Panda Protect trade warranties with a dedicated dealer portal for quotes, policies, claims and dealer support." />
+        <meta property="og:url" content="https://pandaprotect.co.uk/dealer-portal/signup/" />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org', '@type': 'WebPage',
+          name: 'Panda Protect dealer sign-up',
+          url: 'https://pandaprotect.co.uk/dealer-portal/signup/',
+          description: 'Register your UK dealership for Panda Protect trade warranties. The dealer portal covers quotes, policies, claims and dealer support.',
+          primaryImageOfPage: { '@type': 'ImageObject', url: 'https://pandaprotect.co.uk' + dealerSupportDesk.url, caption: 'Panda Protect dealer support team using the dealer portal' },
+          publisher: { '@type': 'Organization', name: 'Panda Protect', url: 'https://pandaprotect.co.uk' },
+        })}</script>
       </Helmet>
 
       <header className="border-b border-border bg-card">
@@ -737,17 +748,21 @@ const DealerComingSoon = () => {
             </div>
           )}
           {/* Vehicle image sits below the quote card so mobile dealers reach the form first */}
-          <div className="mx-auto mt-10 flex max-w-3xl justify-center">
+          <figure className="mx-auto mt-10 flex max-w-2xl flex-col items-center">
             <img
               src={dealerSupportDesk.url}
-              alt="Panda Protect mascot giving a thumbs up beside a support agent using the dealer portal"
-              width={1472}
-              height={1056}
+              alt="Panda Protect mascot giving a thumbs up beside a dealer support agent using the Panda Protect dealer portal for policies, claims and dealer support"
+              width={1000}
+              height={741}
               loading="lazy"
               decoding="async"
-              className="h-auto w-full"
+              className="h-auto w-full max-w-xl"
             />
-          </div>
+            <figcaption className="mt-4 text-center">
+              <h2 className="text-lg font-bold text-crm-navy sm:text-xl">Dealer support, here for your dealership</h2>
+              <p className="mt-1 text-sm text-muted-foreground">One dealer portal for trade warranty quotes, policies and documents, claims tracking and help from our UK support team.</p>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
