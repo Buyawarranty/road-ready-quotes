@@ -44,12 +44,13 @@ const BdmTownAccessPanel: React.FC = () => {
       const [{ data: s }, { data: t }, { data: au }] = await Promise.all([
         db.rpc('bdm_staff_list'),
         db.rpc('bdm_town_list'),
-        db.from('admin_users').select('user_id, role'),
+        db.from('admin_users').select('user_id, role').eq('is_active', true),
       ]);
+      // Only real, active Panda Protect staff accounts — not old copied roles.
       const roleOf = new Map((au || []).map((x: any) => [x.user_id, x.role]));
       const list: Staff[] = [];
       for (const x of (s || [])) {
-        if (x.user_id === u.user.id) continue;
+        if (x.user_id === u.user.id || !roleOf.has(x.user_id)) continue;
         const { data: top } = await db.rpc('bdm_is_town_admin', { _uid: x.user_id });
         if (top) continue;
         list.push({ user_id: x.user_id, name: x.name, role: (roleOf.get(x.user_id) as string) || 'staff' });
