@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ViewAsAgent {
@@ -56,7 +56,39 @@ export const ViewAsProvider: React.FC<ViewAsProviderProps> = ({
   realPermissions,
   realAdminUserId,
 }) => {
-  const [viewAsAgent, setViewAsAgent] = useState<ViewAsAgent | null>(null);
+  const [viewAsAgent, setViewAsAgentState] = useState<ViewAsAgent | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
+
+  // Every view-as start/stop is written to the audit log server-side.
+  const setViewAsAgent = useCallback(async (agent: ViewAsAgent | null) => {
+    const db = supabase as any;
+    if (sessionIdRef.current) {
+      const id = sessionIdRef.current;
+      sessionIdRef.current = null;
+      const { error } = await db.rpc('end_view_as_session', { _session_id: id });
+      if (error) console.error('View-as audit end failed:', error);
+    }
+    if (agent) {
+      const { data, error } = await db.rpc('start_view_as_session', { _target_admin_user_id: agent.id });
+      if (error) {
+        console.error('View-as audit start failed:', error);
+        return; // never impersonate without an audit record
+      }
+      sessionIdRef.current = data as string;
+    }
+    setViewAsAgentState(agent);
+  }, []);
+
+  // Close an open session when the tab closes or the dashboard unmounts.
+  useEffect(() => {
+    const close = () => {
+      if (!sessionIdRef.current) return;
+      (supabase as any).rpc('end_view_as_session', { _session_id: sessionIdRef.current });
+      sessionIdRef.current = null;
+    };
+    window.addEventListener('pagehide', close);
+    return () => { window.removeEventListener('pagehide', close); close(); };
+  }, []);
   const [availableAgents, setAvailableAgents] = useState<ViewAsAgent[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(false);
 
