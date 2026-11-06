@@ -14450,6 +14450,45 @@ export type Database = {
         }
         Relationships: []
       }
+      view_as_audit_log: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          id: string
+          started_at: string
+          target_admin_user_id: string
+          target_email: string | null
+          target_name: string | null
+          target_role: string | null
+          viewer_email: string | null
+          viewer_user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          target_admin_user_id: string
+          target_email?: string | null
+          target_name?: string | null
+          target_role?: string | null
+          viewer_email?: string | null
+          viewer_user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          started_at?: string
+          target_admin_user_id?: string
+          target_email?: string | null
+          target_name?: string | null
+          target_role?: string | null
+          viewer_email?: string | null
+          viewer_user_id?: string
+        }
+        Relationships: []
+      }
       warranties_2000_audit_log: {
         Row: {
           action_type: string
@@ -15578,6 +15617,10 @@ export type Database = {
         Args: { p_cart_metadata: Json }
         Returns: Database["public"]["Enums"]["lead_source"]
       }
+      end_view_as_session: {
+        Args: { _session_id?: string }
+        Returns: undefined
+      }
       enforce_agent_cap: {
         Args: { p_agent_id: string; p_override?: boolean }
         Returns: Json
@@ -16592,6 +16635,10 @@ export type Database = {
       soft_delete_customer: {
         Args: { admin_uuid: string; customer_uuid: string }
         Returns: undefined
+      }
+      start_view_as_session: {
+        Args: { _target_admin_user_id: string }
+        Returns: string
       }
       sweep_open_round_robin: { Args: never; Returns: Json }
       sync_leads_to_marketing_audience: { Args: never; Returns: Json }
