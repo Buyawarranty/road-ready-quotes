@@ -168,6 +168,24 @@ const PasswordReset = () => {
 
     setLoading(true);
     try {
+      // Only registered Panda Protect staff or dealers may set a password here.
+      const { data: { user: me } } = await supabase.auth.getUser();
+      if (me) {
+        const [{ data: staffRow }, { data: dealerRow }] = await Promise.all([
+          supabase.from('admin_users').select('id').eq('user_id', me.id).eq('is_active', true).maybeSingle(),
+          supabase.from('dealers').select('id').eq('user_id', me.id).maybeSingle(),
+        ]);
+        if (!staffRow && !dealerRow) {
+          await supabase.auth.signOut();
+          toast({
+            title: "No Panda Protect account",
+            description: "This email isn't registered with us yet. Please sign up as a dealer first.",
+            variant: "destructive",
+          });
+          navigate('/dealer-portal/signup', { replace: true });
+          return;
+        }
+      }
       const { error } = await supabase.auth.updateUser({
         password: password
       });
@@ -205,7 +223,7 @@ const PasswordReset = () => {
         if (hasAdminRole) {
           navigate('/admin-dashboard/', { replace: true });
         } else {
-          // Everyone else signs in again on the dealer login with the new password.
+          // Everyone else signs in again (the dealer login turns away non-dealers) on the dealer login with the new password.
           await supabase.auth.signOut();
           toast({
             title: "Password updated",
