@@ -7735,7 +7735,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                   Override Age Limit
                 </DialogTitle>
                 <DialogDescription>
-                  You are about to allow a vehicle older than 12 years to be quoted/ordered. This vehicle will be priced using the same pricing as vehicles between 12 years 1 day and 12 years old.
+                  You are about to allow a vehicle older than 12 years to be quoted/ordered. This vehicle will be priced using the same pricing as vehicles between 12 years 1 day and 15 years old.
                 </DialogDescription>
               </DialogHeader>
               <div className="py-2">

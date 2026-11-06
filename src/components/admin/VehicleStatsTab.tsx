@@ -716,7 +716,7 @@ const MILEAGE_BUCKETS = [
   { label: '60–80k', min: 60001, max: 80000 },
   { label: '80–100k', min: 80001, max: 100000 },
   { label: '100–120k', min: 100001, max: 120000 },
-  { label: '120–120k', min: 120001, max: 120000 },
+  { label: '120–150k', min: 120001, max: 150000 },
   { label: '120k+', min: 150001, max: 9_999_999 },
 ];
 
@@ -1137,7 +1137,7 @@ const MATRIX_AGE = [
 const MATRIX_MI = [
   { label: '0–40k', min: 0, max: 40000 },
   { label: '40–80k', min: 40001, max: 80000 },
-  { label: '80–120k', min: 80001, max: 120000 },
+  { label: '80–150k', min: 80001, max: 150000 },
   { label: '120k+', min: 120001, max: 9_999_999 },
 ];
 
