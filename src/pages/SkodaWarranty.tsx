@@ -129,7 +129,7 @@ const SkodaWarranty = () => {
                 A Škoda extended warranty protects your car once the factory warranty ends. It covers mechanical and electrical failures, pays for parts, labour and diagnostics, and helps you avoid costly repair bills. You can choose flexible cover for new, used and high-mileage Škoda models, matched to your car's age and mileage.
               </p>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Škoda vehicles are known for reliability, yet modern engines, electronics and hybrid systems can still be expensive to repair. Whether you drive an Octavia, Superb, Kodiaq, Karoq, Fabia, Scala, Enyaq iV or Kamiq, extended cover gives long-term peace of mind. Panda Protect also protects high-mileage cars with cover available up to 150,000 miles.
+                Škoda vehicles are known for reliability, yet modern engines, electronics and hybrid systems can still be expensive to repair. Whether you drive an Octavia, Superb, Kodiaq, Karoq, Fabia, Scala, Enyaq iV or Kamiq, extended cover gives long-term peace of mind. Panda Protect also protects high-mileage cars with cover available up to 120,000 miles.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button onClick={navigateToQuoteForm} size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
@@ -324,7 +324,7 @@ const SkodaWarranty = () => {
                 </table>
               </div>
               <p className="text-lg font-semibold mt-6">
-                We also cover used Škoda models, approved-used vehicles and high-mileage cars up to 150,000 miles.
+                We also cover used Škoda models, approved-used vehicles and high-mileage cars up to 120,000 miles.
               </p>
             </div>
           </div>
@@ -346,7 +346,7 @@ const SkodaWarranty = () => {
                     "Use any VAT-registered garage",
                     "Fast approval process",
                     "Direct payment to repairers",
-                    "Cover up to 150,000 miles",
+                    "Cover up to 120,000 miles",
                     "Mechanical and electrical protection",
                     "EV and hybrid component cover",
                     "No hidden fees"

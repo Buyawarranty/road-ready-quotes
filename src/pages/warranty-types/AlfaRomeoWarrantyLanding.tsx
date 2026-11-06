@@ -39,7 +39,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is an Alfa Romeo extended warranty worth it?", answer: "Yes. Alfa Romeo vehicles use sophisticated Italian engineering with specialist parts that can be expensive to source and fit. Our warranty prevents unexpected repair bills." },
   { question: "How much does an Alfa Romeo warranty cost?", answer: `From £${startingPrice}/month depending on model, mileage, and claim limit. Flexible monthly or annual payments.` },
-  { question: "Can I buy cover after the manufacturer warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, regardless of whether manufacturer cover has expired." },
+  { question: "Can I buy cover after the manufacturer warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, regardless of whether manufacturer cover has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK — you're not restricted to Alfa Romeo dealers." },
   { question: "Is the MultiAir engine covered?", answer: "Yes, all Alfa Romeo engines including the MultiAir and twin-turbo units are covered including turbochargers, injectors, and timing components." },
   { question: "How do I make a claim?", answer: "Call our UK claims team or submit online. We authorise quickly — your garage contacts us and we settle the bill directly." },
@@ -99,7 +99,7 @@ const AlfaRomeoWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Vehicle too old for cover.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Vehicle too old for cover.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vd = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vd));

@@ -79,7 +79,7 @@ const BMWWarranty: React.FC = () => {
       <DealerPublicHeader />
       <SEOHead
         title="BMW Car Extended Warranty | Used BMW Cover & Instant Quotes"
-        description="Protect your BMW from costly repairs with an extended BMW warranty. Instant quotes, UK garages, flexible payment plans, and cover for used BMWs up to 150,000 miles."
+        description="Protect your BMW from costly repairs with an extended BMW warranty. Instant quotes, UK garages, flexible payment plans, and cover for used BMWs up to 120,000 miles."
         keywords="BMW warranty, BMW extended warranty, used BMW warranty, BMW car warranty UK, BMW warranty cost, BMW mechanical warranty"
         canonical="https://pandaprotect.co.uk/car-extended-warranty/bmw/"
         geoRegion="GB"
@@ -161,7 +161,7 @@ const BMWWarranty: React.FC = () => {
               </div>
 
               <p className="text-lg font-semibold text-primary mb-6">
-                We are the only warranty provider offering high mileage cover up to 150,000 miles, ideal for older or used BMWs.
+                We are the only warranty provider offering high mileage cover up to 120,000 miles, ideal for older or used BMWs.
               </p>
 
               <Button 
@@ -412,7 +412,7 @@ const BMWWarranty: React.FC = () => {
           </div>
 
           <p className="text-center text-lg text-gray-700 mt-8">
-            All models are eligible for our used, new and high-mileage BMW extended warranty plans (up to 150,000 miles).
+            All models are eligible for our used, new and high-mileage BMW extended warranty plans (up to 120,000 miles).
           </p>
         </div>
       </section>

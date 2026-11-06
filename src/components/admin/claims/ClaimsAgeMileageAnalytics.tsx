@@ -40,8 +40,8 @@ const MILEAGE_BANDS = [
   { label: '60–80k', min: 60001, max: 80000 },
   { label: '80–100k', min: 80001, max: 100000 },
   { label: '100–120k', min: 100001, max: 120000 },
-  { label: '120–150k', min: 120001, max: 150000 },
-  { label: '150k+', min: 150001, max: 9999999 },
+  { label: '120–120k', min: 120001, max: 120000 },
+  { label: '120k+', min: 150001, max: 9999999 },
 ];
 
 const currentYear = new Date().getFullYear();

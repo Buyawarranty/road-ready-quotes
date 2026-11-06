@@ -74,7 +74,7 @@ const MercedesWarranty = () => {
     },
     {
       question: "Does an extended warranty cover used Mercedes cars?",
-      answer: "Yes. Used Mercedes vehicles qualify as long as they meet mileage and age requirements. We also cover high-mileage Mercedes, including up to 150,000 miles - a limit most providers do not offer."
+      answer: "Yes. Used Mercedes vehicles qualify as long as they meet mileage and age requirements. We also cover high-mileage Mercedes, including up to 120,000 miles - a limit most providers do not offer."
     }
   ];
 
@@ -107,10 +107,10 @@ const MercedesWarranty = () => {
       <DealerPublicHeader />
       <SEOHead
         title="Mercedes-Benz Extended Warranty UK | Used Car Cover from £24/month"
-        description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 150,000 miles. 4.7★ Trustpilot. Fast claims. Use code SAVE10NOW for 10% off."
+        description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 120,000 miles. 4.7★ Trustpilot. Fast claims. Use code SAVE10NOW for 10% off."
         keywords="mercedes extended warranty, mercedes warranty UK, used mercedes warranty, mercedes c class warranty, mercedes e class warranty, mercedes amg warranty, mercedes benz warranty, mercedes used car warranty, mercedes high mileage warranty"
         ogTitle="Mercedes-Benz Extended Warranty | Protect Your Mercedes from £24/month"
-        ogDescription="UK's trusted Mercedes extended warranty. Covers engine, gearbox, MBUX, electrics & more. High-mileage cover up to 150,000 miles. 14-day money back guarantee."
+        ogDescription="UK's trusted Mercedes extended warranty. Covers engine, gearbox, MBUX, electrics & more. High-mileage cover up to 120,000 miles. 14-day money back guarantee."
         ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
         canonical="https://pandaprotect.co.uk/warranty-types/mercedes/"
         geoRegion="GB"
@@ -124,7 +124,7 @@ const MercedesWarranty = () => {
       
       <WebPageSchema
         name="Mercedes-Benz Extended Warranty UK | Panda Protect"
-        description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 150,000 miles. Fast claims & wide garages."
+        description="Protect your Mercedes from costly repairs with our extended warranty. Covers new, used and high-mileage Mercedes up to 120,000 miles. Fast claims & wide garages."
         url="https://pandaprotect.co.uk/warranty-types/mercedes/"
         lastReviewed={new Date().toISOString()}
         significantLink="https://pandaprotect.co.uk/"
@@ -247,7 +247,7 @@ const MercedesWarranty = () => {
               </p>
               <div className="bg-primary/10 border-l-4 border-primary p-6 rounded-r-lg">
                 <p className="text-lg font-semibold">
-                  ✅ We are the only warranty provider offering high-mileage protection up to 150,000 miles.
+                  ✅ We are the only warranty provider offering high-mileage protection up to 120,000 miles.
                 </p>
               </div>
             </div>
@@ -476,7 +476,7 @@ const MercedesWarranty = () => {
                     </tr>
                     <tr>
                       <td className="p-4 font-semibold">High-Mileage Warranty</td>
-                      <td className="p-4">Cars up to 150,000 miles</td>
+                      <td className="p-4">Cars up to 120,000 miles</td>
                       <td className="p-4">Listed part coverage + diagnostics</td>
                     </tr>
                   </tbody>

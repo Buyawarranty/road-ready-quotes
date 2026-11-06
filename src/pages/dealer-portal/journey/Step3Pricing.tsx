@@ -64,7 +64,7 @@ const Step3Pricing: React.FC = () => {
       }
       if (data.manufactureDate) {
         const ageYears = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (ageYears > 15) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.'); return; }
+        if (ageYears > 12) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.'); return; }
       }
       setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
       if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));

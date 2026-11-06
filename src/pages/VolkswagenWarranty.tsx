@@ -195,7 +195,7 @@ const VolkswagenWarranty = () => {
                 ))}
               </div>
               <p className="text-lg font-semibold text-primary mt-6">
-                👉 We are the only warranty provider offering mileage cover up to 150,000 miles on selected plans.
+                👉 We are the only warranty provider offering mileage cover up to 120,000 miles on selected plans.
               </p>
             </div>
           </div>

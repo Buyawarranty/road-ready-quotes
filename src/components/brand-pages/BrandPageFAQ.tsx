@@ -7,7 +7,7 @@ const leftColumnFAQs = [
   {
     id: 'old-high-mileage',
     question: 'Is my car too old or too many miles?',
-    answer: 'We cover many older and higher mileage vehicles up to 15 years old and 150,000 miles. Check your instant price to confirm.'
+    answer: 'We cover many older and higher mileage vehicles up to 12 years old and 120,000 miles. Check your instant price to confirm.'
   },
   {
     id: 'whats-covered-warranty',

@@ -170,7 +170,7 @@ const vanFAQs = [
   },
   {
     question: "Is my van too old or too many miles?",
-    answer: "We cover vans up to 15 years old and 150,000 miles at the start of your policy. Once covered, there are no mileage restrictions during your warranty period."
+    answer: "We cover vans up to 12 years old and 120,000 miles at the start of your policy. Once covered, there are no mileage restrictions during your warranty period."
   },
   {
     question: "Can I use my own garage for repairs?",
@@ -374,11 +374,11 @@ const VanWarrantyLanding: React.FC = () => {
           const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
           const vehicleAgePrecise = ageInMs / msPerYear;
           
-          if (vehicleAgePrecise > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAgePrecise > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast({
               title: "Vehicle not eligible",
-              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
@@ -1085,7 +1085,7 @@ const VanWarrantyLanding: React.FC = () => {
                   { icon: Wrench, title: 'Minimise downtime with fast claims', desc: 'We know time is money. Quick authorisation gets you back on the road.' },
                   { icon: ThumbsUp, title: 'Transparent limits, zero hidden fees', desc: 'The price you see is the price you pay. No surprises, no small print.' },
                   { icon: Users, title: 'Friendly UK team that understands vans', desc: 'Our team handles claims quickly and fairly — real people, not robots.' },
-                  { icon: Truck, title: 'High mileage commercial vans welcome', desc: 'We cover vans up to 150,000 miles with no restrictions during cover.' },
+                  { icon: Truck, title: 'High mileage commercial vans welcome', desc: 'We cover vans up to 120,000 miles with no restrictions during cover.' },
                   { icon: Clock, title: 'Flexible payments, cancel anytime', desc: 'Monthly payments with no lock-in. Cancel and get a pro-rata refund.' },
                 ].map((benefit, index) => (
                   <div key={index} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100">
@@ -1205,11 +1205,11 @@ const VanWarrantyLanding: React.FC = () => {
                   <span className="text-brand-orange">— you're covered</span>
                 </h2>
                 <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">
-                  Commercial vans work hard — we get it. High mileage is normal for a working vehicle. That's why we cover vans up to 150,000 miles with no restrictions during your policy.
+                  Commercial vans work hard — we get it. High mileage is normal for a working vehicle. That's why we cover vans up to 120,000 miles with no restrictions during your policy.
                 </p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
                   {[
-                    'Cover vehicles up to 150,000 miles',
+                    'Cover vehicles up to 120,000 miles',
                     'No mileage restrictions during cover',
                     'Unlimited claims throughout your policy',
                     'Claim limits: £1,000, £2,000, £3,000 or £5,000',

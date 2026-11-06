@@ -133,7 +133,7 @@ const NissanWarranty = () => {
                 Protect your Nissan from rising repair costs with cover that works across the UK. Modern Nissans use advanced engines, sensors, electric modules and CVT gearboxes that can be expensive to repair. Our Nissan extended warranty gives you reliable protection whether you drive a Juke, Qashqai, Micra, X Trail or Leaf.
               </p>
               <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto mt-4 leading-relaxed">
-                We are also one of the only warranty providers offering high mileage cover up to 150,000 miles. This makes our plans ideal for older and used Nissan vehicles.
+                We are also one of the only warranty providers offering high mileage cover up to 120,000 miles. This makes our plans ideal for older and used Nissan vehicles.
               </p>
             </div>
 

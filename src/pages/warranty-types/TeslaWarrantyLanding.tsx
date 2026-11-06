@@ -44,7 +44,7 @@ type ModelCategory = keyof typeof teslaModelCategories;
 const teslaFAQs = [
   { question: "Is a Tesla extended warranty worth it in the UK?", answer: "Yes. Tesla vehicles feature advanced electric drivetrains, large battery packs, sophisticated thermal management systems, and complex electronics that can be very costly to repair outside the manufacturer network. Our extended warranty protects key components like the drive unit, power electronics, on-board charger, and suspension, preventing unexpected repair bills." },
   { question: "How much does a Tesla extended warranty cost in the UK?", answer: "Extended Tesla warranty prices typically start from £19 a month, depending on your Tesla model, mileage, and chosen claim limit. We offer plans from just 60p a day with flexible monthly or annual payment options." },
-  { question: "Can I buy a Tesla extended warranty after my original warranty has expired?", answer: "Yes, you can buy cover even if your Tesla is outside its original 4-year/50,000-mile manufacturer warranty, or if you purchased it used. We cover vehicles up to 150,000 miles and 15 years old." },
+  { question: "Can I buy a Tesla extended warranty after my original warranty has expired?", answer: "Yes, you can buy cover even if your Tesla is outside its original 4-year/50,000-mile manufacturer warranty, or if you purchased it used. We cover vehicles up to 120,000 miles and 12 years old." },
   { question: "Can I use my own garage for Tesla warranty repairs?", answer: "Yes, absolutely. You can choose any VAT-registered garage across the UK, including Tesla-approved body shops and independent EV specialists. We have a network of approved garages nationwide." },
   { question: "Does the warranty cover Tesla battery and drive unit?", answer: "Yes, our comprehensive plan includes cover for key EV components including the electric drive unit, power electronics module, DC-DC converter, on-board charger, battery management system (BMS), thermal management, and regenerative braking system." },
   { question: "Is roadside assistance included with my Tesla warranty?", answer: "Yes, our comprehensive plan includes 24/7 roadside assistance and recovery anywhere in the UK. If your Tesla breaks down or runs out of charge unexpectedly, we'll send help to get you to the nearest charging point or garage." },
@@ -96,7 +96,7 @@ const TeslaWarrantyLanding: React.FC = () => {
       if (data?.found) {
         if (data.manufactureDate) {
           const agePrecise = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-          if (agePrecise > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+          if (agePrecise > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
         }
         const vehicleData = { regNumber, mileage, make: data.make || 'TESLA', model: data.model, fuelType: data.fuelType || 'ELECTRIC', transmission: data.transmission, year: data.yearOfManufacture, vehicleType: 'car', manufactureDate: data.manufactureDate };
         saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));
@@ -272,7 +272,7 @@ const TeslaWarrantyLanding: React.FC = () => {
             </div>
             <div className="grid lg:grid-cols-3 gap-6 md:gap-8 items-start">
               <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6">
-                {[{ icon: Zap, title: 'Specialist EV component cover', desc: 'Drive unit, power electronics, on-board charger, and thermal management all covered.' }, { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' }, { icon: Users, title: 'UK support team that understands Tesla', desc: 'Our friendly UK-based team handles claims quickly and fairly.' }, { icon: Car, title: 'High mileage Tesla warranty plans', desc: 'Cover vehicles up to 150,000 miles with no mileage restrictions during cover.' }, { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' }].map((b, i) => (
+                {[{ icon: Zap, title: 'Specialist EV component cover', desc: 'Drive unit, power electronics, on-board charger, and thermal management all covered.' }, { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' }, { icon: Users, title: 'UK support team that understands Tesla', desc: 'Our friendly UK-based team handles claims quickly and fairly.' }, { icon: Car, title: 'High mileage Tesla warranty plans', desc: 'Cover vehicles up to 120,000 miles with no mileage restrictions during cover.' }, { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' }].map((b, i) => (
                   <div key={i} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100"><div className="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center flex-shrink-0"><b.icon className="w-5 h-5 md:w-6 md:h-6 text-brand-orange" /></div><div><h3 className="text-base md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1">{b.title}</h3><p className="text-gray-600 text-xs md:text-sm">{b.desc}</p></div></div>
                 ))}
               </div>
@@ -325,7 +325,7 @@ const TeslaWarrantyLanding: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6">Drive your Tesla with confidence<br /><span className="text-brand-orange">You're covered</span></h2>
                 <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">Once you have your Tesla warranty, drive with complete peace of mind. If something goes wrong, simply call our claims team and we'll take care of everything.</p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
-                  {['Cover vehicles up to 150,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
+                  {['Cover vehicles up to 120,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">{item}</span></div>
                   ))}
                 </div>

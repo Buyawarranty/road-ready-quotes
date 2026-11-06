@@ -63,7 +63,7 @@ const HyundaiWarranty = () => {
     },
     {
       question: "Can I get a warranty on a used Hyundai with high mileage?",
-      answer: "Yes. We are one of the only UK warranty providers offering cover up to 150,000 miles, including: Hyundai Tucson, Hyundai Santa Fe, Hyundai i30 / i40, Kona Electric / Ioniq EV. Most warranty companies stop at 100,000 miles. We go further."
+      answer: "Yes. We are one of the only UK warranty providers offering cover up to 120,000 miles, including: Hyundai Tucson, Hyundai Santa Fe, Hyundai i30 / i40, Kona Electric / Ioniq EV. Most warranty companies stop at 100,000 miles. We go further."
     },
     {
       question: "Are hybrid and electric Hyundai models included? (Ioniq / Kona / Ioniq 5 / Ioniq 6)",
@@ -76,7 +76,7 @@ const HyundaiWarranty = () => {
       <DealerPublicHeader />
       <SEOHead
         title="Hyundai Extended Warranty | Used Hyundai Cover & Instant Quotes"
-        description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
+        description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 120,000 miles."
         keywords="hyundai extended warranty, hyundai warranty UK, used hyundai warranty, hyundai ioniq warranty, hyundai tucson warranty, hyundai kona warranty"
         canonical="https://pandaprotect.co.uk/car-extended-warranty/hyundai/"
       />
@@ -85,7 +85,7 @@ const HyundaiWarranty = () => {
       
       <WebPageSchema
         name="Hyundai Extended Warranty - Panda Protect"
-        description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 150,000 miles."
+        description="Extend your Hyundai warranty and protect against expensive repairs. Get instant quotes for used Hyundai cover, including high-mileage cars up to 120,000 miles."
         url="https://pandaprotect.co.uk/car-extended-warranty/hyundai/"
         lastReviewed={new Date().toISOString()}
         significantLink="https://pandaprotect.co.uk/"
@@ -172,7 +172,7 @@ const HyundaiWarranty = () => {
                 ))}
               </div>
               <p className="text-lg font-semibold text-primary mt-6">
-                We are the only UK warranty provider offering high-mileage cover up to 150,000 miles.
+                We are the only UK warranty provider offering high-mileage cover up to 120,000 miles.
               </p>
             </div>
           </div>
@@ -372,7 +372,7 @@ const HyundaiWarranty = () => {
                 Hyundai Models We Cover
               </h2>
               <p className="text-lg text-muted-foreground text-center mb-12">
-                We provide cover for all Hyundai vehicles - including used and high-mileage up to 150,000 miles.
+                We provide cover for all Hyundai vehicles - including used and high-mileage up to 120,000 miles.
               </p>
               <div className="bg-card rounded-lg border overflow-hidden">
                 <div className="overflow-x-auto">

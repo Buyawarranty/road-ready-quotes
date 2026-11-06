@@ -246,7 +246,7 @@ const FAQ = () => {
         Key Features:
         - Warranty costs from £12/month
         - Plans available for 1, 2, or 3 years
-        - Vehicles up to 15 years old and 150,000 miles eligible
+        - Vehicles up to 12 years old and 120,000 miles eligible
         - Cover begins immediately with no waiting period (pre-existing faults excluded)
         - Fast claim processing (within 90 minutes of approval)
         - Direct payment to garages or reimbursement
@@ -308,7 +308,7 @@ const FAQ = () => {
       } else if (lowerQuery.includes('transfer') || lowerQuery.includes('sell') || lowerQuery.includes('new owner')) {
         response = 'Yes, the warranty is transferable to a new owner when you sell your vehicle privately. This adds value to your car and is a great selling point. There is a £30 fee for transferring the warranty. Contact us to arrange the transfer.';
       } else if (lowerQuery.includes('age') || lowerQuery.includes('old') || lowerQuery.includes('mileage') || lowerQuery.includes('eligible')) {
-        response = 'We cover vehicles up to 15 years old and up to 150,000 miles. We offer warranty plans for 1, 2, or 3 years. Whether your vehicle is petrol, diesel, hybrid, or electric, we likely have coverage available.';
+        response = 'We cover vehicles up to 12 years old and up to 120,000 miles. We offer warranty plans for 1, 2, or 3 years. Whether your vehicle is petrol, diesel, hybrid, or electric, we likely have coverage available.';
       } else if (lowerQuery.includes('breakdown') || lowerQuery.includes('recovery') || lowerQuery.includes('roadside')) {
         response = 'We offer 24/7 Vehicle Recovery as an add-on for £4/month. This covers recovery costs when you\'ve already been recovered. We also offer European coverage and vehicle rental during repairs as additional options.';
       } else if (lowerQuery.includes('service') || lowerQuery.includes('maintenance') || lowerQuery.includes('mot')) {

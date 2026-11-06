@@ -48,7 +48,7 @@ type ModelCategory = keyof typeof hyundaiModelCategories;
 const hyundaiFAQs = [
   { question: "Is a Hyundai extended warranty worth it in the UK?", answer: "Yes, modern Hyundais feature advanced T-GDi turbo engines, DCT gearboxes, SmartSense safety tech, and hybrid/EV systems that can be costly to repair. Our extended warranty protects key components like the engine, transmission, fuel injectors, and ECUs, preventing sudden repair bills." },
   { question: "How much does a Hyundai extended warranty cost in the UK?", answer: "Extended Hyundai warranty prices typically start from £19 a month, depending on your Hyundai model, mileage, and chosen claim limit. We offer plans from just 60p a day with flexible monthly or annual payment options." },
-  { question: "Can I buy a Hyundai extended warranty after my original warranty has expired?", answer: "Yes, you can buy cover even if your Hyundai is outside its original 5-year manufacturer warranty, or if you purchased it used. We cover vehicles up to 150,000 miles and 15 years old." },
+  { question: "Can I buy a Hyundai extended warranty after my original warranty has expired?", answer: "Yes, you can buy cover even if your Hyundai is outside its original 5-year manufacturer warranty, or if you purchased it used. We cover vehicles up to 120,000 miles and 12 years old." },
   { question: "Can I use my own garage for Hyundai warranty repairs?", answer: "Yes, absolutely. You can choose any VAT-registered garage across the UK instead of being restricted to Hyundai dealers. We have a network of approved garages nationwide." },
   { question: "Does the warranty cover hybrid and electric Hyundai models?", answer: "Yes, our comprehensive plan includes cover for Hyundai's electric and hybrid components including the electric motor, battery management system, power electronics, on-board charger, and thermal management systems on models like the IONIQ 5, IONIQ 6, Kona Electric, and Tucson Hybrid." },
   { question: "Is roadside assistance included?", answer: "Yes, our comprehensive plan includes 24/7 roadside assistance and recovery anywhere in the UK. If your Hyundai breaks down, we'll send help to get you back on the road or recover your vehicle to a garage." },
@@ -100,7 +100,7 @@ const HyundaiWarrantyLanding: React.FC = () => {
       if (data?.found) {
         if (data.manufactureDate) {
           const agePrecise = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-          if (agePrecise > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+          if (agePrecise > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle not eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
         }
         const vehicleData = { regNumber, mileage, make: data.make || 'HYUNDAI', model: data.model, fuelType: data.fuelType, transmission: data.transmission, year: data.yearOfManufacture, vehicleType: 'car', manufactureDate: data.manufactureDate };
         saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));
@@ -274,7 +274,7 @@ const HyundaiWarrantyLanding: React.FC = () => {
             </div>
             <div className="grid lg:grid-cols-3 gap-6 md:gap-8 items-start">
               <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-6">
-                {[{ icon: Wrench, title: 'Dealer-level repairs and diagnostics', desc: 'Professional repairs at any VAT-registered garage across the UK.' }, { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' }, { icon: Users, title: 'UK support team that knows Hyundai systems', desc: 'Our friendly UK-based team handles claims quickly and fairly.' }, { icon: Car, title: 'High mileage Hyundai warranty plans', desc: 'Cover vehicles up to 150,000 miles with no mileage restrictions during cover.' }, { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' }].map((b, i) => (
+                {[{ icon: Wrench, title: 'Dealer-level repairs and diagnostics', desc: 'Professional repairs at any VAT-registered garage across the UK.' }, { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' }, { icon: Users, title: 'UK support team that knows Hyundai systems', desc: 'Our friendly UK-based team handles claims quickly and fairly.' }, { icon: Car, title: 'High mileage Hyundai warranty plans', desc: 'Cover vehicles up to 120,000 miles with no mileage restrictions during cover.' }, { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' }].map((b, i) => (
                   <div key={i} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100"><div className="w-10 h-10 md:w-12 md:h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center flex-shrink-0"><b.icon className="w-5 h-5 md:w-6 md:h-6 text-brand-orange" /></div><div><h3 className="text-base md:text-lg font-bold text-gray-900 mb-0.5 md:mb-1">{b.title}</h3><p className="text-gray-600 text-xs md:text-sm">{b.desc}</p></div></div>
                 ))}
               </div>
@@ -327,7 +327,7 @@ const HyundaiWarrantyLanding: React.FC = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6">Drive your Hyundai with confidence<br /><span className="text-brand-orange">You're covered</span></h2>
                 <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">Once you have your Hyundai warranty, drive with complete peace of mind. If something goes wrong, simply call our claims team and we'll take care of everything.</p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
-                  {['Cover vehicles up to 150,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
+                  {['Cover vehicles up to 120,000 miles', 'No mileage restrictions during cover', 'Unlimited claims value'].map((item, i) => (
                     <div key={i} className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">{item}</span></div>
                   ))}
                 </div>

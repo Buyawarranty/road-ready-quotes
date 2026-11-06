@@ -41,7 +41,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is a Cadillac extended warranty worth it?", answer: "Absolutely. Cadillacs are luxury American vehicles with complex systems. An engine or transmission failure can cost £3,000–£8,000. Our warranty protects you from unexpected bills at a fraction of the cost." },
   { question: "How much does a Cadillac extended warranty cost?", answer: `Cadillac warranty prices start from £${startingPrice}/month depending on model, mileage, and claim limit. Flexible monthly or annual payments available.` },
-  { question: "Can I get cover after my Cadillac dealer warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, even after manufacturer warranty has expired." },
+  { question: "Can I get cover after my Cadillac dealer warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, even after manufacturer warranty has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK, including Cadillac specialists and independent garages." },
   { question: "Is the Cadillac Escalade covered?", answer: "Yes, we cover all Escalade variants including the full V8 engine, air suspension, 4WD system, and all electronic components." },
   { question: "Are imported Cadillacs covered?", answer: "Yes, we cover UK-registered Cadillacs regardless of where they were originally purchased, subject to standard eligibility checks." },
@@ -103,7 +103,7 @@ const CadillacWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

@@ -316,8 +316,8 @@ export default function LiveQuotePage() {
       errors.mileage = 'Please confirm the current mileage.';
     } else {
       const mileage = parseInt(customerData.mileage);
-      if (mileage > 150000) {
-        errors.mileage = 'Sorry, we only cover vehicles under 150,000 miles.';
+      if (mileage > 120000) {
+        errors.mileage = 'Sorry, we only cover vehicles under 120,000 miles.';
       }
     }
     
@@ -442,7 +442,7 @@ export default function LiveQuotePage() {
       case 'mileage':
         if (!value.trim()) return 'Please confirm the current mileage.';
         const mileage = parseInt(value);
-        if (mileage > 150000) return 'Sorry, we only cover vehicles under 150,000 miles.';
+        if (mileage > 120000) return 'Sorry, we only cover vehicles under 120,000 miles.';
         return null;
       default:
         return null;
@@ -1404,10 +1404,10 @@ export default function LiveQuotePage() {
                       ))}
                     </select>
                   </div>
-                  {customerData.mileage && Number(customerData.mileage) > 150000 && (
+                  {customerData.mileage && Number(customerData.mileage) > 120000 && (
                     <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mt-2">
                       <p className="text-red-600 text-sm font-medium">
-                        Sorry, we only cover vehicles under 150,000 miles.
+                        Sorry, we only cover vehicles under 120,000 miles.
                       </p>
                     </div>
                   )}

@@ -69,8 +69,8 @@ const QuoteFormInline: React.FC<QuoteFormInlineProps> = ({
     }
 
     const numericMileage = parseInt(effectiveMileage.replace(/,/g, ''));
-    if (numericMileage > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (numericMileage > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
       return;
     }
 
@@ -84,9 +84,9 @@ const QuoteFormInline: React.FC<QuoteFormInlineProps> = ({
       if (error) throw error;
 
       // Age checks
-      if (!data?.found && data?.error && data.error.includes('15 years')) {
-        toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
-        setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+      if (!data?.found && data?.error && data.error.includes('12 years')) {
+        toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
+        setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
         setIsLookingUp(false);
         return;
       }
@@ -107,9 +107,9 @@ const QuoteFormInline: React.FC<QuoteFormInlineProps> = ({
           if (!isNaN(manufactureDate.getTime())) {
             const ageInMs = now.getTime() - manufactureDate.getTime();
             vehicleAgePrecise = ageInMs / (365.25 * 24 * 60 * 60 * 1000);
-            if (vehicleAgePrecise > 15) {
-              setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
-              toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
+            if (vehicleAgePrecise > 12) {
+              setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+              toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
               setIsLookingUp(false);
               return;
             }
@@ -118,9 +118,9 @@ const QuoteFormInline: React.FC<QuoteFormInlineProps> = ({
 
         if (vehicleAgePrecise === null && data.yearOfManufacture) {
           const vehicleAge = now.getFullYear() - parseInt(data.yearOfManufacture);
-          if (vehicleAge > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
-            toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
+          if (vehicleAge > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+            toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
             setIsLookingUp(false);
             return;
           }

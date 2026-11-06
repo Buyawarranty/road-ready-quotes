@@ -41,7 +41,7 @@ type ModelCategory = keyof typeof modelCategories;
 const faqs = [
   { question: "Is an Infiniti extended warranty worth it?", answer: "Absolutely. Infiniti vehicles use premium Nissan-derived engineering with luxury components. A turbo or gearbox failure can cost £2,000–£5,000. Our warranty protects you from unexpected bills." },
   { question: "How much does an Infiniti extended warranty cost?", answer: `Infiniti warranty prices start from £${startingPrice}/month depending on model, mileage, and claim limit. Flexible monthly or annual payments available.` },
-  { question: "Can I get cover after my Infiniti dealer warranty expires?", answer: "Yes, we cover vehicles up to 150,000 miles and 15 years old, even after manufacturer warranty has expired." },
+  { question: "Can I get cover after my Infiniti dealer warranty expires?", answer: "Yes, we cover vehicles up to 120,000 miles and 12 years old, even after manufacturer warranty has expired." },
   { question: "Can I use my own garage?", answer: "Yes, any VAT-registered garage in the UK, including Infiniti specialists and independent garages." },
   { question: "Are turbo models covered?", answer: "Yes, all turbocharged Infiniti models are fully covered including the turbocharger, intercooler, and boost control systems." },
   { question: "Is the Infiniti Q50 covered?", answer: "Yes, we cover all Q50 variants including the 2.0t, 3.0t twin-turbo, and hybrid models with full mechanical and electrical protection." },
@@ -103,7 +103,7 @@ const InfinitiWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

@@ -42,7 +42,7 @@ export function mapVehicleToBandKeys(
     floorKey?: string;
   } = {};
 
-  // Age band — labels are ranges like "6–7 years" / "12 years" / "Over 15 years".
+  // Age band — labels are ranges like "6–7 years" / "12 years" / "Over 12 years".
   const age = vehicle.ageYears;
   if (age != null) {
     const parsed = model.ageBands.map(b => {

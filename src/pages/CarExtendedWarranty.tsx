@@ -106,8 +106,8 @@ const CarExtendedWarranty: React.FC = () => {
       setSliderMileage(numericValue);
     }
     
-    if (value && numericValue > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (value && numericValue > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
     } else {
       setMileageError('');
     }
@@ -129,8 +129,8 @@ const CarExtendedWarranty: React.FC = () => {
     setSliderMileage(value);
     setMileage(value.toLocaleString());
     
-    if (value > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (value > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
     } else {
       setMileageError('');
     }
@@ -165,8 +165,8 @@ const CarExtendedWarranty: React.FC = () => {
       return;
     }
     
-    if (numericMileage > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (numericMileage > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
       return;
     }
     
@@ -182,11 +182,11 @@ const CarExtendedWarranty: React.FC = () => {
         throw error;
       }
       
-      if (!data?.found && data?.error && data.error.includes('15 years')) {
+      if (!data?.found && data?.error && data.error.includes('12 years')) {
         toast.error('Vehicle Not Eligible', {
-          description: 'Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.',
+          description: 'Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.',
         });
-        setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+        setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
         setIsLookingUp(false);
         return;
       }
@@ -205,7 +205,7 @@ const CarExtendedWarranty: React.FC = () => {
         const now = new Date();
         let vehicleAgePrecise: number | null = null;
         
-        // Try to use manufactureDate for precise age calculation (15 years and 1 day check)
+        // Try to use manufactureDate for precise age calculation (12 years and 1 day check)
         if (data.manufactureDate) {
           const manufactureDate = new Date(data.manufactureDate);
           if (!isNaN(manufactureDate.getTime())) {
@@ -213,10 +213,10 @@ const CarExtendedWarranty: React.FC = () => {
             const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
             vehicleAgePrecise = ageInMs / msPerYear;
             
-            if (vehicleAgePrecise > 15) {
-              setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+            if (vehicleAgePrecise > 12) {
+              setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
               toast.error('Vehicle Not Eligible', {
-                description: 'Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.',
+                description: 'Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.',
               });
               setIsLookingUp(false);
               return;
@@ -230,10 +230,10 @@ const CarExtendedWarranty: React.FC = () => {
           const vehicleYear = parseInt(data.yearOfManufacture);
           const vehicleAge = currentYear - vehicleYear;
           
-          if (vehicleAge > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAge > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast.error('Vehicle Not Eligible', {
-              description: 'Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.',
+              description: 'Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.',
             });
             setIsLookingUp(false);
             return;
@@ -557,12 +557,12 @@ const CarExtendedWarranty: React.FC = () => {
                     <tr className="border-b-2 border-gray-300">
                       <td className="p-3 font-medium border-2 border-gray-300">Duration</td>
                       <td className="p-3 border-2 border-gray-300">Typically 3 years / 60,000 miles</td>
-                      <td className="p-3 border-2 border-gray-300">Flexible – choose your term up to 150,000 miles</td>
+                      <td className="p-3 border-2 border-gray-300">Flexible – choose your term up to 120,000 miles</td>
                     </tr>
                     <tr className="border-b-2 border-gray-300 bg-white">
                       <td className="p-3 font-medium border-2 border-gray-300">Coverage</td>
                       <td className="p-3 border-2 border-gray-300">New cars only</td>
-                      <td className="p-3 border-2 border-gray-300">Used cars up to 15 years old & nearly-new cars</td>
+                      <td className="p-3 border-2 border-gray-300">Used cars up to 12 years old & nearly-new cars</td>
                     </tr>
                     <tr className="border-b-2 border-gray-300">
                       <td className="p-3 font-medium border-2 border-gray-300">Provider</td>
@@ -770,11 +770,11 @@ const CarExtendedWarranty: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-4 mb-8">
               <div className="flex items-start gap-3">
                 <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700">Is under 15 years old</span>
+                <span className="text-gray-700">Is under 12 years old</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700">Has done less than 150,000 miles</span>
+                <span className="text-gray-700">Has done less than 120,000 miles</span>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
@@ -805,27 +805,27 @@ const CarExtendedWarranty: React.FC = () => {
                   <tr className="border-b">
                     <td className="p-4 border-2 border-gray-300">Standard petrol/diesel car</td>
                     <td className="p-4 text-green-600 font-semibold border-2 border-gray-300">✓ Eligible</td>
-                    <td className="p-4 border-2 border-gray-300">Must be under 15 years old and less than 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Must be under 12 years old and less than 120,000 miles</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300 bg-gray-50">
                     <td className="p-4 border-2 border-gray-300">Electric vehicle (EV)</td>
                     <td className="p-4 text-green-600 font-semibold border-2 border-gray-300">✓ Eligible</td>
-                    <td className="p-4 border-2 border-gray-300">Must be under 15 years old and less than 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Must be under 12 years old and less than 120,000 miles</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300">
                     <td className="p-4 border-2 border-gray-300">Hybrid or Plug-in Hybrid (PHEV)</td>
                     <td className="p-4 text-green-600 font-semibold border-2 border-gray-300">✓ Eligible</td>
-                    <td className="p-4 border-2 border-gray-300">Must be under 15 years old and less than 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Must be under 12 years old and less than 120,000 miles</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300 bg-gray-50">
                     <td className="p-4 border-2 border-gray-300">Commercial vehicles under 3.5 tonnes</td>
                     <td className="p-4 text-green-600 font-semibold border-2 border-gray-300">✓ Eligible</td>
-                    <td className="p-4 border-2 border-gray-300">Must be under 15 years old and less than 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Must be under 12 years old and less than 120,000 miles</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300">
                     <td className="p-4 border-2 border-gray-300">Motorcycles</td>
                     <td className="p-4 text-green-600 font-semibold border-2 border-gray-300">✓ Eligible</td>
-                    <td className="p-4 border-2 border-gray-300">Must be under 15 years old and less than 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Must be under 12 years old and less than 120,000 miles</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300 bg-gray-50">
                     <td className="p-4 border-2 border-gray-300">High-performance vehicles (e.g. BMW M, Audi RS, Mercedes-AMG)</td>
@@ -848,12 +848,12 @@ const CarExtendedWarranty: React.FC = () => {
                     <td className="p-4 border-2 border-gray-300">Excluded if modified from manufacturer specifications</td>
                   </tr>
                   <tr className="border-b-2 border-gray-300 bg-gray-50">
-                    <td className="p-4 border-2 border-gray-300">Vehicles over 15 years old</td>
+                    <td className="p-4 border-2 border-gray-300">Vehicles over 12 years old</td>
                     <td className="p-4 text-red-600 font-semibold border-2 border-gray-300">✗ Ineligible</td>
                     <td className="p-4 border-2 border-gray-300">Not eligible unless explicitly approved</td>
                   </tr>
                   <tr>
-                    <td className="p-4 border-2 border-gray-300">Vehicles over 150,000 miles</td>
+                    <td className="p-4 border-2 border-gray-300">Vehicles over 120,000 miles</td>
                     <td className="p-4 text-red-600 font-semibold border-2 border-gray-300">✗ Ineligible</td>
                     <td className="p-4 border-2 border-gray-300">Not eligible unless explicitly approved</td>
                   </tr>

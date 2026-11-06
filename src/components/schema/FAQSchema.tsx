@@ -52,7 +52,7 @@ export const FAQSchema = ({ faqs }: FAQSchemaProps) => {
 export const defaultWarrantyFAQs: FAQ[] = [
   {
     question: "What vehicles are eligible for warranty?",
-    answer: "Vehicles under 15 years old with less than 150,000 miles are eligible for Panda Protect cover."
+    answer: "Vehicles under 12 years old with less than 120,000 miles are eligible for Panda Protect cover."
   },
   {
     question: "How quickly can I get a quote?",

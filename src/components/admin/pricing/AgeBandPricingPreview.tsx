@@ -39,8 +39,8 @@ export const PROPOSED_AGE_BANDS: AgeBand[] = [
   { key: '12', label: '12 years', oneYear: 699, treatment: 'High age band' },
   { key: '13', label: '13 years', oneYear: 799, treatment: 'Provisional; tighter term rules' },
   { key: '14', label: '14 years', oneYear: 849, treatment: 'Provisional; tighter term rules' },
-  { key: '15', label: '15 years', oneYear: 899, treatment: 'Provisional; tighter term rules' },
-  { key: '15+', label: 'Over 15 years', oneYear: null, treatment: 'Decline or manual referral' },
+  { key: '15', label: '12 years', oneYear: 899, treatment: 'Provisional; tighter term rules' },
+  { key: '15+', label: 'Over 12 years', oneYear: null, treatment: 'Decline or manual referral' },
 ];
 
 export type MileageBand = {
@@ -59,8 +59,8 @@ export const PROPOSED_MILEAGE_BANDS: MileageBand[] = [
   { key: '60-80k', label: '60,001–80,000', min: 60001, max: 80000, factor: 1.05, customerLabel: 'Typical mileage' },
   { key: '80-100k', label: '80,001–100,000', min: 80001, max: 100000, factor: 1.1, customerLabel: 'Higher mileage' },
   { key: '100-120k', label: '100,001–120,000', min: 100001, max: 120000, factor: 1.15, customerLabel: 'Higher mileage' },
-  { key: '120-150k', label: '120,001–150,000', min: 120001, max: 150000, factor: 1.25, customerLabel: 'High mileage' },
-  { key: '150k+', label: 'Over 150,000', min: 150001, max: null, factor: null, customerLabel: 'Decline or manual referral' },
+  { key: '120-120k', label: '120,001–120,000', min: 120001, max: 120000, factor: 1.25, customerLabel: 'High mileage' },
+  { key: '120k+', label: 'Over 120,000', min: 150001, max: null, factor: null, customerLabel: 'Decline or manual referral' },
 ];
 
 export type PowertrainFactor = {
@@ -1441,7 +1441,7 @@ export default function AgeBandPricingPreview({
 
         <div className="rounded-md border bg-muted/30 p-4">
           <p className="mb-2 text-sm font-semibold">
-            Over 15 years or over 150,000 miles — what the customer would see
+            Over 12 years or over 120,000 miles — what the customer would see
           </p>
           <p className="text-sm text-muted-foreground">{MANUAL_REFERRAL_MESSAGE}</p>
           <div className="mt-3 flex flex-wrap gap-2">

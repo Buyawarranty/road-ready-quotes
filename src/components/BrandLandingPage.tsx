@@ -249,8 +249,8 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
       return;
     }
     
-    if (numericMileage > 150000) {
-      setMileageError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+    if (numericMileage > 120000) {
+      setMileageError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
       return;
     }
     
@@ -270,14 +270,14 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
 
       console.log('DVSA lookup result:', data);
       
-      if (!data?.found && data?.error && data.error.includes('15 years')) {
-        console.log('Vehicle blocked: Over 15 years old');
+      if (!data?.found && data?.error && data.error.includes('12 years')) {
+        console.log('Vehicle blocked: Over 12 years old');
         toast({
           title: "Vehicle Not Eligible",
-          description: "We cannot offer warranties for vehicles over 15 years of age.",
+          description: "We cannot offer warranties for vehicles over 12 years of age.",
           variant: "destructive",
         });
-        setVehicleAgeError('We cannot offer warranties for vehicles over 15 years old');
+        setVehicleAgeError('We cannot offer warranties for vehicles over 12 years old');
         setIsLookingUp(false);
         return;
       }
@@ -308,14 +308,14 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
             console.log('🔍 Precise age calculation:', {
               manufactureDate: data.manufactureDate,
               vehicleAgePrecise: vehicleAgePrecise.toFixed(4),
-              threshold: '> 15 years'
+              threshold: '> 12 years'
             });
             
-            if (vehicleAgePrecise > 15) {
-              setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+            if (vehicleAgePrecise > 12) {
+              setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
               toast({
                 title: "Vehicle Not Eligible",
-                description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+                description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
                 variant: "destructive",
               });
               setIsLookingUp(false);
@@ -329,11 +329,11 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
           const vehicleYear = parseInt(data.yearOfManufacture);
           const vehicleAge = currentYear - vehicleYear;
           
-          if (vehicleAge > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAge > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast({
               title: "Vehicle Not Eligible",
-              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
@@ -554,7 +554,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
                     />
                   </div>
                   <p className="text-xs sm:text-sm text-black text-left mt-0.5">
-                    Protection for vehicles up to 150,000 miles and 15 years.
+                    Protection for vehicles up to 120,000 miles and 12 years.
                   </p>
 
                   {/* Mileage Quick Select */}

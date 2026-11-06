@@ -170,9 +170,9 @@ const PeugeotWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) {
-          setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
-          toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" });
+        if (age > 12) {
+          setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+          toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" });
           setIsLookingUp(false);
           return;
         }
@@ -589,7 +589,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
                   { icon: Wrench, title: 'PureTech & EAT8 specialist cover', desc: 'Full cover for PureTech timing belt, turbo, and EAT8 automatic gearbox issues.' },
                   { icon: ThumbsUp, title: 'Transparent limits and zero hidden fees', desc: 'The price you see is the price you pay. No surprises.' },
                   { icon: Users, title: 'UK support team that knows Peugeot systems', desc: 'Our friendly UK-based team handles claims quickly and fairly.' },
-                  { icon: Car, title: 'High mileage Peugeot warranty plans', desc: 'Cover vehicles up to 150,000 miles with no mileage restrictions during cover.' },
+                  { icon: Car, title: 'High mileage Peugeot warranty plans', desc: 'Cover vehicles up to 120,000 miles with no mileage restrictions during cover.' },
                   { icon: Clock, title: 'Flexible monthly payments with no long contracts', desc: 'Cancel anytime and get a pro-rata refund. No lock-in.' },
                 ].map((benefit, index) => (
                   <div key={index} className="flex gap-3 md:gap-4 bg-white p-3 md:p-5 rounded-xl shadow-sm border border-gray-100">
@@ -693,7 +693,7 @@ const PeugeotWarrantyLanding: React.FC = () => {
                   We want to get you back on the road as soon as possible.
                 </p>
                 <div className="space-y-2 md:space-y-3 text-left max-w-md mx-auto lg:mx-0">
-                  <div className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">Cover vehicles up to 150,000 miles</span></div>
+                  <div className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">Cover vehicles up to 120,000 miles</span></div>
                   <div className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">No mileage restrictions during cover</span></div>
                   <div className="flex items-center gap-2 md:gap-3"><Check className="w-4 h-4 md:w-5 md:h-5 text-green-500 flex-shrink-0" /><span className="text-sm md:text-base text-gray-700">Unlimited claims value</span></div>
                 </div>

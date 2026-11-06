@@ -894,7 +894,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
     const m = Number(step1MotMileageResolved);
     const formatted = m.toLocaleString();
     setMileage(formatted);
-    setSliderMileage(Math.min(m, 150000));
+    setSliderMileage(Math.min(m, 120000));
     setStep1AutoFilledMileage(formatted);
     setStep1MileagePrefilledReg(reg);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1449,7 +1449,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
         if (age.ageYears !== null && age.ageYears > 15 && !ageOverrideEnabled) {
           toast({
             title: 'Vehicle Too Old',
-            description: `This vehicle is ${age.ageYears.toFixed(1)} years old. We only cover vehicles up to 15 years old.`,
+            description: `This vehicle is ${age.ageYears.toFixed(1)} years old. We only cover vehicles up to 12 years old.`,
             variant: 'destructive',
           });
           return;
@@ -1534,10 +1534,10 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
     }
 
     const numericMileage = parseInt(effectiveMileage.replace(/[^0-9]/g, ''), 10);
-    if (!isNaN(numericMileage) && numericMileage > 150000) {
+    if (!isNaN(numericMileage) && numericMileage > 120000) {
       toast({
         title: "Vehicle Not Eligible",
-        description: "We cannot cover vehicles with over 150,000 miles. Please try a different vehicle.",
+        description: "We cannot cover vehicles with over 120,000 miles. Please try a different vehicle.",
         variant: "destructive",
       });
       return;
@@ -1624,7 +1624,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
         if (age.ageYears !== null && age.ageYears > 15 && !ageOverrideEnabled) {
           toast({
             title: "Vehicle Too Old",
-            description: `This vehicle is ${age.ageYears.toFixed(1)} years old (from ${age.source === 'year_of_manufacture' ? 'year of manufacture' : 'first registration'}). We only cover vehicles up to 15 years old.`,
+            description: `This vehicle is ${age.ageYears.toFixed(1)} years old (from ${age.source === 'year_of_manufacture' ? 'year of manufacture' : 'first registration'}). We only cover vehicles up to 12 years old.`,
             variant: "destructive",
           });
           setIsLookingUp(false);
@@ -1760,7 +1760,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
         if (age.ageYears !== null && age.ageYears > 15 && !ageOverrideEnabled) {
           toast({
             title: "Vehicle Too Old",
-            description: `This vehicle is ${age.ageYears.toFixed(1)} years old (from ${age.source === 'year_of_manufacture' ? 'year of manufacture' : 'first registration'}). We only cover vehicles up to 15 years old.`,
+            description: `This vehicle is ${age.ageYears.toFixed(1)} years old (from ${age.source === 'year_of_manufacture' ? 'year of manufacture' : 'first registration'}). We only cover vehicles up to 12 years old.`,
             variant: "destructive",
           });
           setIsQuickConfirming(false);
@@ -3548,7 +3548,7 @@ Questions? Call 0330 229 5040`;
                     {!autoPreview.loading && autoPreview.data && (() => {
                       const d = autoPreview.data!;
                       const numericMileage = parseInt((mileage || '').replace(/[^0-9]/g, ''), 10) || sliderMileage;
-                      const mileageOver = numericMileage > 150000;
+                      const mileageOver = numericMileage > 120000;
                       const ageOver = typeof d.ageYears === 'number' && d.ageYears > 15;
                       const eligible = !d.blocked && !mileageOver && (!ageOver || ageOverrideEnabled);
                       return (
@@ -3596,7 +3596,7 @@ Questions? Call 0330 229 5040`;
                   <p className="mb-3 text-sm text-muted-foreground">
                     {step1MotMileageResolved
                       ? "We've suggested this using your latest MOT record."
-                      : 'Up to 150,000 miles.'}
+                      : 'Up to 120,000 miles.'}
                   </p>
 
                   {step1MotMileageResolved && (
@@ -3633,7 +3633,7 @@ Questions? Call 0330 229 5040`;
                         onChange={handleMileageChange}
                         placeholder={step1MotMileageResolved ? `e.g. ${(Number(step1MotMileageResolved) + 5000).toLocaleString('en-GB')}` : 'e.g. 105,000'}
                         className={`h-11 sm:h-12 w-full rounded-lg border bg-background px-3 pr-10 text-base text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                          (parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) > 150000
+                          (parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) > 120000
                             ? 'border-[#FF385C] focus-visible:ring-[#FF385C]'
                             : (parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) >= 1000
                               ? 'border-[#0BA360]'
@@ -3641,7 +3641,7 @@ Questions? Call 0330 229 5040`;
                         }`}
                       />
                       {(parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) >= 1000 &&
-                        (parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) <= 150000 && (
+                        (parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0) <= 120000 && (
                         <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#0BA360] pointer-events-none" />
                       )}
                     </div>
@@ -3665,7 +3665,7 @@ Questions? Call 0330 229 5040`;
                                 type="button"
                                 onClick={() => {
                                   setMileage(target.toLocaleString());
-                                  setSliderMileage(Math.min(target, 150000));
+                                  setSliderMileage(Math.min(target, 120000));
                                 }}
                                 className={`px-4 py-2 rounded-lg border-2 text-sm font-semibold transition-all ${
                                   isSelected
@@ -3680,7 +3680,7 @@ Questions? Call 0330 229 5040`;
                         </div>
                         {(() => {
                           const entered = parseInt(mileage.replace(/[^0-9]/g, ''), 10) || 0;
-                          if (entered < 1000 || entered > 150000) return null;
+                          if (entered < 1000 || entered > 120000) return null;
                           return (
                             <p className="mt-2 text-sm text-[#0BA360] flex items-center gap-1.5">
                               <Check className="w-4 h-4" />
@@ -3711,14 +3711,14 @@ Questions? Call 0330 229 5040`;
                         }}
                       />
                       <Label htmlFor="ageOverride" className="text-sm font-medium cursor-pointer text-gray-700">
-                        Override 15-year age limit <span className="text-xs text-muted-foreground font-normal">(super admin / manager only)</span>
+                        Override 12-year age limit <span className="text-xs text-muted-foreground font-normal">(super admin / manager only)</span>
                       </Label>
                     </div>
                     {ageOverrideEnabled && (
                       <Alert className="mt-1.5 py-2 border border-amber-300 bg-amber-50">
                         <AlertCircle className="h-4 w-4 text-amber-700" />
                         <AlertDescription className="text-sm text-amber-900">
-                          Age override is active. Vehicles older than 15 years will be priced using 12–15 year pricing.
+                          Age override is active. Vehicles older than 12 years will be priced using 12–15 year pricing.
                         </AlertDescription>
                       </Alert>
                     )}
@@ -3726,7 +3726,7 @@ Questions? Call 0330 229 5040`;
                 ) : (
                   <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/40 p-2.5 flex items-center gap-2 text-xs text-muted-foreground">
                     <AlertCircle className="h-3.5 w-3.5" />
-                    <span>15-year age limit override is restricted to super admins and managers.</span>
+                    <span>12-year age limit override is restricted to super admins and managers.</span>
                   </div>
                 )}
 
@@ -7735,7 +7735,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                   Override Age Limit
                 </DialogTitle>
                 <DialogDescription>
-                  You are about to allow a vehicle older than 15 years to be quoted/ordered. This vehicle will be priced using the same pricing as vehicles between 12 years 1 day and 15 years old.
+                  You are about to allow a vehicle older than 12 years to be quoted/ordered. This vehicle will be priced using the same pricing as vehicles between 12 years 1 day and 12 years old.
                 </DialogDescription>
               </DialogHeader>
               <div className="py-2">
@@ -7752,7 +7752,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                     setShowAgeOverrideConfirm(false);
                     toast({
                       title: "Age Override Enabled",
-                      description: "You can now proceed with vehicles older than 15 years.",
+                      description: "You can now proceed with vehicles older than 12 years.",
                     });
                   }}
                 >

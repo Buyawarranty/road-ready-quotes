@@ -31,8 +31,8 @@ describe('Mileage surcharge boundaries', () => {
     expect(r.adjustmentAmount).toBe(100);
   });
 
-  it('150,000 miles DOES trigger surcharge', () => {
-    const r = calculateVehiclePriceAdjustment(makeVehicle({ mileage: '150000', year: '2020' }), 1);
+  it('120,000 miles DOES trigger surcharge', () => {
+    const r = calculateVehiclePriceAdjustment(makeVehicle({ mileage: '120000', year: '2020' }), 1);
     expect(r.adjustmentAmount).toBe(100);
   });
 
@@ -74,7 +74,7 @@ describe('Age surcharge boundaries', () => {
   });
 
   it('14 years 364 days old DOES trigger surcharge (just under 15)', () => {
-    // Use year-based fallback for exact 15-year boundary (manufactureDate precision issues)
+    // Use year-based fallback for exact 12-year boundary (manufactureDate precision issues)
     const r = calculateVehiclePriceAdjustment(makeVehicle({ mileage: '50000', manufactureDate: yearsAgoISO(14, 364) }), 1);
     expect(r.adjustmentAmount).toBe(100);
   });

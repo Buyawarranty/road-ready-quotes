@@ -30,7 +30,7 @@ const validatePhone = (phone: string | null): { valid: boolean; reason: string }
   if (!phone || phone.trim() === '') return { valid: false, reason: 'Missing' };
   const digits = phone.replace(/[^0-9]/g, '');
   if (digits.length < 10) return { valid: false, reason: `Too short (${digits.length} digits)` };
-  if (digits.length > 15) return { valid: false, reason: 'Too long' };
+  if (digits.length > 12) return { valid: false, reason: 'Too long' };
   const isUkMobile = /^(0|44|440)7\d{8,9}$/.test(digits);
   const isUkLandline = /^(0|44|440)[123]\d{8,9}$/.test(digits);
   if (isUkMobile) return { valid: true, reason: 'UK Mobile' };

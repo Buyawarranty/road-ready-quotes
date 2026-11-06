@@ -98,7 +98,7 @@ const Terms = () => {
       content: (
         <div className="space-y-6">
           <p className="text-gray-600">
-            Covers vehicles up to 15 years old and 150,000 miles. Cover begins immediately; pre-existing faults are excluded.
+            Covers vehicles up to 12 years old and 120,000 miles. Cover begins immediately; pre-existing faults are excluded.
           </p>
         </div>
       )

@@ -92,7 +92,7 @@ export const LIVE_CODE_SURCHARGE_MODEL: VehicleSurchargeModel = {
       blockedLabourRates: [],
     },
   ],
-  mileage: { fromMiles: 120001, toMiles: 150000, surcharge: { 1: 200, 2: 250, 3: 300 } },
+  mileage: { fromMiles: 120001, toMiles: 120000, surcharge: { 1: 200, 2: 250, 3: 300 } },
   age: { fromYears: 12, toYears: 15, surcharge: { 1: 200, 2: 250, 3: 300 } },
   reliabilityExemptMakes: ['honda', 'toyota'],
   motorbikePctOfStandard: 50,

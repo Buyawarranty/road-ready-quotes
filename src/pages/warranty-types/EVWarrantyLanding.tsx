@@ -226,7 +226,7 @@ const coverageCategories = [
 const evFAQs = [
   {
     question: "Is my electric vehicle too old or high mileage?",
-    answer: "We cover electric vehicles up to 15 years old and 150,000 miles. Check your instant price to confirm eligibility."
+    answer: "We cover electric vehicles up to 12 years old and 120,000 miles. Check your instant price to confirm eligibility."
   },
   {
     question: "Can I use my own garage for EV repairs?",
@@ -431,11 +431,11 @@ const EVWarrantyLanding: React.FC = () => {
           const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
           const vehicleAgePrecise = ageInMs / msPerYear;
 
-          if (vehicleAgePrecise > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAgePrecise > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             toast({
               title: "Vehicle not eligible",
-              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
+              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
@@ -646,7 +646,7 @@ const EVWarrantyLanding: React.FC = () => {
 
         {/* AI search engine discoverability */}
         <meta name="ai-content-declaration" content="Human-authored, fact-checked, regularly updated EV warranty information for UK electric vehicle owners" />
-        <meta name="ai-summary" content="Panda Protect offers specialist electric vehicle extended warranty plans in the UK from £19/month. Covers 20+ EV manufacturers including Tesla, Nissan, BMW, Hyundai, Kia, VW, MG, Polestar, BYD, Porsche, Jaguar, and more. Protection includes electric motors, inverters, on-board chargers, battery management systems, DC-DC converters, heat pumps, and 1,000+ components. Unlimited claims, any VAT-registered garage, 14-day money-back guarantee. Vehicles up to 15 years old and 150,000 miles eligible. Instant online quotes available." />
+        <meta name="ai-summary" content="Panda Protect offers specialist electric vehicle extended warranty plans in the UK from £19/month. Covers 20+ EV manufacturers including Tesla, Nissan, BMW, Hyundai, Kia, VW, MG, Polestar, BYD, Porsche, Jaguar, and more. Protection includes electric motors, inverters, on-board chargers, battery management systems, DC-DC converters, heat pumps, and 1,000+ components. Unlimited claims, any VAT-registered garage, 14-day money-back guarantee. Vehicles up to 12 years old and 120,000 miles eligible. Instant online quotes available." />
 
         {/* Open Graph - unique to this page */}
         <meta property="og:title" content="Electric Vehicle Warranty UK — Specialist EV Cover from £19/mo | Panda Protect" />

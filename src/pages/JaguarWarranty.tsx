@@ -203,7 +203,7 @@ const JaguarWarranty = () => {
                   <CheckCircle2 className="w-12 h-12 text-primary mb-4" />
                   <h3 className="text-xl font-semibold mb-3">High Mileage Accepted</h3>
                   <p className="text-muted-foreground">
-                    We cover vehicles up to 150,000 miles - perfect for older Jaguars still delivering luxury performance.
+                    We cover vehicles up to 120,000 miles - perfect for older Jaguars still delivering luxury performance.
                   </p>
                 </div>
               </div>
@@ -358,7 +358,7 @@ const JaguarWarranty = () => {
                 </p>
                 <div className="bg-primary/10 p-6 rounded-lg border-l-4 border-primary">
                   <p className="text-lg font-semibold">
-                    ⭐ We offer flexible cover for vehicles up to 150,000 miles, which is significantly higher than many traditional warranty providers. This ensures older Jaguars still receive meaningful protection.
+                    ⭐ We offer flexible cover for vehicles up to 120,000 miles, which is significantly higher than many traditional warranty providers. This ensures older Jaguars still receive meaningful protection.
                   </p>
                 </div>
               </div>
@@ -478,7 +478,7 @@ const JaguarWarranty = () => {
                       "Nationwide repair network across the UK",
                       "Fast claims process",
                       "Cover for hybrids and electric systems on I-Pace",
-                      "Cover for high-mileage vehicles up to 150,000 miles"
+                      "Cover for high-mileage vehicles up to 120,000 miles"
                     ].map((advantage, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-1" />

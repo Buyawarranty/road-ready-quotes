@@ -102,7 +102,7 @@ const BYDWarrantyLanding: React.FC = () => {
       if (error) throw error;
       if (data?.found && data.manufactureDate) {
         const age = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (age > 15) { setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
+        if (age > 12) { setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old'); toast({ title: "Vehicle Not Eligible", description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.", variant: "destructive" }); setIsLookingUp(false); return; }
       }
       const vehicleData = { regNumber, mileage, make: data?.found ? (data.make || brandMake) : undefined, model: data?.found ? data.model : undefined, fuelType: data?.found ? data.fuelType : undefined, transmission: data?.found ? data.transmission : undefined, year: data?.found ? data.yearOfManufacture : undefined, vehicleType: 'car', manufactureDate: data?.found ? data.manufactureDate : undefined };
       saveWithTimestamp('buyawarranty_vehicleData', JSON.stringify(vehicleData));

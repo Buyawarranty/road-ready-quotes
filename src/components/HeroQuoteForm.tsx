@@ -83,10 +83,10 @@ export const HeroQuoteForm: React.FC<HeroQuoteFormProps> = ({ onRegistrationSubm
     }
 
     const mileageNum = parseInt(effectiveMileage, 10);
-    if (mileageNum > 150000) {
+    if (mileageNum > 120000) {
       toast({
         title: "Mileage Too High",
-        description: "Maximum mileage is 150,000. For higher mileage vehicles, please call us on 0330 229 5045.",
+        description: "Maximum mileage is 120,000. For higher mileage vehicles, please call us on 0330 229 5045.",
         variant: "destructive",
       });
       return;
@@ -123,7 +123,7 @@ export const HeroQuoteForm: React.FC<HeroQuoteFormProps> = ({ onRegistrationSubm
       const now = new Date();
       let vehicleAgePrecise: number | null = null;
       
-      // Try to use manufactureDate for precise age calculation (15 years and 1 day check)
+      // Try to use manufactureDate for precise age calculation (12 years and 1 day check)
       if (data.manufactureDate) {
         const manufactureDate = new Date(data.manufactureDate);
         if (!isNaN(manufactureDate.getTime())) {
@@ -131,8 +131,8 @@ export const HeroQuoteForm: React.FC<HeroQuoteFormProps> = ({ onRegistrationSubm
           const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
           vehicleAgePrecise = ageInMs / msPerYear;
           
-          if (vehicleAgePrecise > 15) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+          if (vehicleAgePrecise > 12) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
             setIsLookingUp(false);
             return;
           }
@@ -145,8 +145,8 @@ export const HeroQuoteForm: React.FC<HeroQuoteFormProps> = ({ onRegistrationSubm
         const vehicleYear = parseInt(data.yearOfManufacture || data.year || '0', 10);
         const vehicleAge = currentYear - vehicleYear;
 
-        if (vehicleAge > 15) {
-          setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
+        if (vehicleAge > 12) {
+          setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
           setIsLookingUp(false);
           return;
         }
@@ -225,7 +225,7 @@ export const HeroQuoteForm: React.FC<HeroQuoteFormProps> = ({ onRegistrationSubm
                 />
               </div>
               <p className="text-sm text-black text-left mt-0.5">
-                Protection for vehicles up to 150,000 miles and 15 years.
+                Protection for vehicles up to 120,000 miles and 12 years.
               </p>
 
               {/* Mileage Quick Select */}
