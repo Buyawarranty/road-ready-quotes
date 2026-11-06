@@ -359,14 +359,14 @@ const DealerComingSoon = () => {
       <Helmet>
         <title>Register Your Interest – Trade Warranty | Panda Protect</title>
         <meta name="description" content="Offer trade warranties to your customers without the paperwork. Register for early dealer access to Panda Protect — UK motor trade warranty for cars, vans, EVs and motorcycles." />
-        <link rel="canonical" href="https://pandaprotect.co.uk/dealer-portal/signup" />
+        <link rel="canonical" href="https://pandaprotect.co.uk/dealer-portal/signup/" />
         <meta property="og:title" content="Dealer sign-up – Trade Warranty | Panda Protect" />
         <meta property="og:description" content="Register your dealership for Panda Protect trade warranties with a dedicated dealer portal for quotes, policies, claims and dealer support." />
-        <meta property="og:url" content="https://pandaprotect.co.uk/dealer-portal/signup" />
+        <meta property="og:url" content="https://pandaprotect.co.uk/dealer-portal/signup/" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org', '@type': 'WebPage',
           name: 'Panda Protect dealer sign-up',
-          url: 'https://pandaprotect.co.uk/dealer-portal/signup',
+          url: 'https://pandaprotect.co.uk/dealer-portal/signup/',
           description: 'Register your UK dealership for Panda Protect trade warranties. The dealer portal covers quotes, policies, claims and dealer support.',
           primaryImageOfPage: { '@type': 'ImageObject', url: 'https://pandaprotect.co.uk' + dealerSupportDesk.url, caption: 'Panda Protect dealer support team using the dealer portal' },
           publisher: { '@type': 'Organization', name: 'Panda Protect', url: 'https://pandaprotect.co.uk' },
