@@ -19,6 +19,7 @@ interface TradeWarrantySignupRequest {
   current_warranty_provider?: string | null;
   interested_in?: string | null;
   heard_about_us?: string | null;
+  town?: string | null;
   additional_information?: string | null;
 }
 
@@ -70,6 +71,7 @@ serve(async (req) => {
       current_warranty_provider: body.current_warranty_provider?.trim() || null,
       interested_in: body.interested_in?.trim() || null,
       heard_about_us: body.heard_about_us?.trim() || null,
+      town: typeof body.town === 'string' ? body.town.trim().slice(0, 80) || null : null,
       additional_information: body.additional_information?.trim() || null,
     };
 
@@ -149,6 +151,7 @@ serve(async (req) => {
             ${row("Current Warranty Provider", esc(payload.current_warranty_provider))}
             ${row("Interested In", esc(payload.interested_in))}
             ${row("Where They Sell Vehicles", payload.heard_about_us && /^https?:\/\//i.test(payload.heard_about_us) ? `<a href="${esc(payload.heard_about_us)}" target="_blank" style="color:${brand.accentColor};text-decoration:none;">${esc(payload.heard_about_us)}</a>` : esc(payload.heard_about_us))}
+            ${row("Town or city", esc(payload.town))}
             ${row("Additional Information", esc(payload.additional_information))}
           </table>
 
