@@ -14,7 +14,7 @@ const MileageSlider: React.FC<MileageSliderProps> = ({
   value, 
   onChange, 
   min = 0, 
-  max = 150000 
+  max = 120000 
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);

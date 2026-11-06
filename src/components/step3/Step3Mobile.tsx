@@ -159,16 +159,16 @@ const Step3Mobile: React.FC<Step3MobileProps> = ({
     const allDurations: DurationType[] = ['12months', '24months', '36months'];
 
     let ageBasedDurations: DurationType[] = allDurations;
-    if (vehicleAge === 15) {
+    if (vehicleAge === 12) {
       ageBasedDurations = ['12months'];
-    } else if (vehicleAge === 14) {
+    } else if (vehicleAge === 11) {
       ageBasedDurations = ['12months', '24months'];
     }
 
     let mileageBasedDurations: DurationType[] = allDurations;
-    if (vehicleMileage >= 140000) {
+    if (vehicleMileage >= 110000) {
       mileageBasedDurations = ['12months'];
-    } else if (vehicleMileage > 120000) {
+    } else if (vehicleMileage > 100000) {
       mileageBasedDurations = ['12months', '24months'];
     }
 
