@@ -73,7 +73,7 @@ export const MissedCallBanner = ({ calls, onAcknowledge }: MissedCallBannerProps
                   className="hidden md:flex bg-white text-red-700 hover:bg-red-50 font-semibold"
                   asChild
                 >
-                  <a href={`/dealer-admin/new-leads?id=${call.matched_lead_id}`}>
+                  <a href={`/admin-dashboard/?tab=new-leads&id=${call.matched_lead_id}`}>
                     <ExternalLink className="h-4 w-4 mr-1" /> View lead
                   </a>
                 </Button>

@@ -92,65 +92,12 @@ const ConditionalCookieBanner = () => {
 };
 
 
-const DEALER_ADMIN_TAB_MAP: Record<string, string> = {
-  '': 'dealer-overview',
-  'signups': 'dealer-signups',
-  'sign-ups': 'dealer-signups',
-  'sales': 'dealer-sales',
-  'dealers': 'dealer-dealers',
-  'traders': 'dealer-traders',
-  'invoices': 'dealer-invoices',
-  'trader-pricing': 'trader-pricing',
-  'finance': 'dealer-finance',
-  'analytics': 'analytics',
-  'new-leads': 'new-leads',
-  'quotes-orders': 'get-quote',
-  'sales-script': 'selling-tips',
-  'customers': 'customers',
-  'plans': 'plans',
-  'bulk-pricing': 'bulk-pricing',
-  'special-plans': 'special-plans',
-  'discount-codes': 'discount-codes',
-  'referrals': 'referrals',
-  'claims': 'claims',
-  'reviews': 'reviews',
-  'contact': 'contact',
-  'abandoned-carts': 'abandoned-carts',
-  'marketing-contacts': 'marketing-audience',
-  'email-hub': 'emails',
-  'page-analytics': 'page-analytics',
-  'marketing-analytics': 'google-ads',
-  'vehicle-stats': 'vehicle-stats',
-  'lead-backup': 'lead-backup',
-  'user-permissions': 'user-permissions',
-  'document-mapping': 'document-mapping',
-  'policy-letters': 'policy-documents',
-  'blog-writing': 'blogs-data',
-  'landing-pages': 'landing-pages',
-  'testing': 'testing',
-  'timesheets': 'timesheets',
-  'sales-scoreboard': 'sales-scoreboard',
-  'discounts-given': 'discounts-given',
-  'call-tracking': 'call-tracking',
-  'account': 'account',
-};
-
-const DealerAdminRedirect: React.FC = () => {
-  const location = useLocation();
-  const sub = location.pathname.replace(/^\/dealer-admin\/?/, '').replace(/\/$/, '');
-  const params = new URLSearchParams(location.search);
-
-  let tab = DEALER_ADMIN_TAB_MAP[sub];
-  if (!tab && sub.startsWith('finance/')) {
-    const rest = sub.slice('finance/'.length);
-    tab = 'dealer-finance';
-    if (!['lenders', 'rules', 'payouts'].includes(rest)) params.set('app', rest);
-  }
-  if (!tab) tab = 'dealer-overview';
-  params.set('tab', tab);
-
-  return <Navigate to={`/admin-dashboard/?${params.toString()}`} replace />;
-};
+// /dealer-admin was the old dealer back-office address. It now belongs to
+// dealerships, so it always lands on the dealer sign-in page; staff management
+// lives under Dealers in the admin dashboard.
+const DealerAdminRedirect: React.FC = () => (
+  <Navigate to="/dealer-portal/login" replace />
+);
 
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
