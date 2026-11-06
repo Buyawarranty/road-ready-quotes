@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Save, MapPin, Building2 } from 'lucide-react';
+import DealerChangePassword from '@/components/dealer/DealerChangePassword';
 import BillingAddressFields from '@/components/dealer/BillingAddressFields';
 import {
   BillingAddress,
@@ -173,6 +174,7 @@ const DealerProfileSettings: React.FC = () => {
             </div>
           </>
         )}
+        <DealerChangePassword />
       </div>
     </DealerLayout>
   );
