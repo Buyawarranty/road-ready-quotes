@@ -135,22 +135,12 @@ const DEALER_ADMIN_TAB_MAP: Record<string, string> = {
   'account': 'account',
 };
 
-const DealerAdminRedirect: React.FC = () => {
-  const location = useLocation();
-  const sub = location.pathname.replace(/^\/dealer-admin\/?/, '').replace(/\/$/, '');
-  const params = new URLSearchParams(location.search);
-
-  let tab = DEALER_ADMIN_TAB_MAP[sub];
-  if (!tab && sub.startsWith('finance/')) {
-    const rest = sub.slice('finance/'.length);
-    tab = 'dealer-finance';
-    if (!['lenders', 'rules', 'payouts'].includes(rest)) params.set('app', rest);
-  }
-  if (!tab) tab = 'dealer-overview';
-  params.set('tab', tab);
-
-  return <Navigate to={`/admin-dashboard/?${params.toString()}`} replace />;
-};
+// /dealer-admin was the old dealer back-office address. It now belongs to
+// dealerships, so it always lands on the dealer sign-in page; staff management
+// lives under Dealers in the admin dashboard.
+const DealerAdminRedirect: React.FC = () => (
+  <Navigate to="/dealer-portal/login" replace />
+);
 
 const ConditionalMain = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
