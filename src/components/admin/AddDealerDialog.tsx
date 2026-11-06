@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const empty = { company_name: '', contact_name: '', email: '', phone: '' };
 
-export const AddDealerDialog: React.FC<{ onCreated: () => void }> = ({ onCreated }) => {
+export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; size?: 'sm' | 'default' }> = ({ onCreated, label = 'Add dealer', size = 'default' }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
@@ -52,7 +52,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void }> = ({ onCreated
 
   return (
     <Dialog open={open} onOpenChange={close}>
-      <Button onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" />Add dealer</Button>
+      <Button size={size} onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-1" />{label}</Button>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{result ? 'Dealer added' : 'Add a dealer manually'}</DialogTitle>
