@@ -291,7 +291,9 @@ const DealerAdminSignUps: React.FC = () => {
       setSelected({ ...selected, ...patch });
       setDecisionNotes('');
       if (decision === 'approve') fireDealerConfetti(0.4);
-      toast.success(
+      if (decision === 'approve' && (data as any)?.email_sent === false) {
+        toast.error(`Approved, but the login email was NOT sent: ${(data as any)?.email_error}. Use Resend login once fixed.`, { duration: 15000 });
+      } else toast.success(
         decision === 'approve'
           ? 'Approved — login details emailed to the trader.'
           : 'Declined — notification email sent.'
@@ -322,6 +324,7 @@ const DealerAdminSignUps: React.FC = () => {
       });
       if (error) throw new Error(error.message);
       if ((data as any)?.error) throw new Error((data as any).error);
+      if ((data as any)?.email_sent === false) throw new Error(`Login email NOT sent: ${(data as any)?.email_error}`);
       toast.success(`Login details sent to ${(data as any)?.sent_to || alt || selected.email_address}`);
       setResendEmail('');
     } catch (e: any) {
@@ -339,6 +342,7 @@ const DealerAdminSignUps: React.FC = () => {
       });
       if (error) throw new Error(error.message);
       if ((data as any)?.error) throw new Error((data as any).error);
+      if ((data as any)?.email_sent === false) throw new Error(`Login email NOT sent: ${(data as any)?.email_error}`);
       toast.success(`Login details sent to ${(data as any)?.sent_to || row.email_address}`);
     } catch (e: any) {
       toast.error(e?.message || 'Could not send login details');

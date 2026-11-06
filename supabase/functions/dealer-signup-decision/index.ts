@@ -41,7 +41,7 @@ async function sendEmail(brand: Brand, to: string, subject: string, html: string
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) {
     console.warn("RESEND_API_KEY missing; skipping email to", to);
-    return;
+    return { ok: false, error: "Email service key is missing" };
   }
   const from = `${brand.name} <${brand.helloEmail}>`;
   const res = await fetch("https://api.resend.com/emails", {
@@ -49,7 +49,15 @@ async function sendEmail(brand: Brand, to: string, subject: string, html: string
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from, to: [to], subject, html }),
   });
-  if (!res.ok) console.error("Resend error:", await res.text());
+  const text = await res.text();
+  if (!res.ok) {
+    console.error("Resend error:", res.status, text);
+    let msg = text;
+    try { msg = JSON.parse(text)?.message || text; } catch { /* keep text */ }
+    return { ok: false, error: `Email service refused (${res.status}): ${msg}` };
+  }
+  console.log("Email sent to", to, text);
+  return { ok: true, error: null as string | null };
 }
 
 serve(async (req) => {
@@ -269,7 +277,7 @@ serve(async (req) => {
 
     // 4. welcome / credentials email
     const sendTo = alternateEmail || email;
-    await sendEmail(
+    const mail = await sendEmail(
       brand,
       sendTo,
       isResend
@@ -296,7 +304,7 @@ serve(async (req) => {
       )
     );
 
-    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo }), {
+    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
