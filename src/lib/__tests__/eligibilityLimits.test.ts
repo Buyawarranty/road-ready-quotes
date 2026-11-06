@@ -48,18 +48,18 @@ describe('Eligibility limits: 12 years / 120,000 miles', () => {
   });
 
   it('live validation blocks a 13-year-old vehicle', () => {
-    const r = validateVehicleEligibility({ year: String(NOW.getUTCFullYear() - 13), mileage: '50000' });
+    const r = validateVehicleEligibility({ regNumber: 'AB12CDE', year: String(NOW.getUTCFullYear() - 13), mileage: '50000' });
     assert.equal(r.isValid, false);
     assert.match(r.errorMessage ?? '', /120,000 miles and less than 12 years/);
   });
 
   it('live validation blocks mileage over 120,000', () => {
-    const r = validateVehicleEligibility({ year: String(NOW.getUTCFullYear() - 5), mileage: '120001' });
+    const r = validateVehicleEligibility({ regNumber: 'AB12CDE', year: String(NOW.getUTCFullYear() - 5), mileage: '120001' });
     assert.equal(r.isValid, false);
   });
 
   it('live validation allows a 12-year-old vehicle at 120,000 miles', () => {
-    const r = validateVehicleEligibility({ year: String(NOW.getUTCFullYear() - 12), mileage: '120000' });
+    const r = validateVehicleEligibility({ regNumber: 'AB12CDE', year: String(NOW.getUTCFullYear() - 12), mileage: '120000' });
     assert.equal(r.isValid, true);
   });
 });
