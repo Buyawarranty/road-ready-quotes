@@ -85,6 +85,20 @@ serve(async (req) => {
       if (user || users.users.length < 1000) break;
     }
 
+    // Only real Panda Protect accounts may reset: active staff or a dealer with
+    // their own dealer profile. Old copied logins get the same neutral reply.
+    if (user) {
+      const uid = (user as { id?: string }).id;
+      const [{ data: staffRow }, { data: dealerRow }] = await Promise.all([
+        supabaseClient.from('admin_users').select('id').eq('user_id', uid).eq('is_active', true).maybeSingle(),
+        supabaseClient.from('dealers').select('id').eq('user_id', uid).maybeSingle(),
+      ]);
+      if (!staffRow && !dealerRow) {
+        logStep('Account is not Panda Protect staff or dealer; no reset sent', { email });
+        user = undefined;
+      }
+    }
+
     if (!user) {
       // Don't reveal whether email exists or not for security
       logStep('User not found, but returning success for security', { email });

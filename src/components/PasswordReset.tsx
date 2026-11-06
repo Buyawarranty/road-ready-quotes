@@ -205,7 +205,7 @@ const PasswordReset = () => {
         if (hasAdminRole) {
           navigate('/admin-dashboard/', { replace: true });
         } else {
-          // Everyone else signs in again on the dealer login with the new password.
+          // Everyone else signs in again (the dealer login turns away non-dealers) on the dealer login with the new password.
           await supabase.auth.signOut();
           toast({
             title: "Password updated",
