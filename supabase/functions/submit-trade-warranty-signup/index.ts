@@ -138,6 +138,7 @@ serve(async (req) => {
 
       const html = `
         <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;padding:24px;color:#111827;">
+          <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0;" />
           <h2 style="margin:0 0 8px 0;color:#1e3a5f;">New Trade Warranty Interest Registration</h2>
           <p style="margin:0 0 16px 0;color:#374151;">A new Trade Warranty interest registration has been received.</p>
 
@@ -192,7 +193,7 @@ serve(async (req) => {
         <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
             <div style="background:#ffffff;padding:20px 24px;border-bottom:4px solid #EC6F33;text-align:left;">
-              <img src="https://www.pandaprotect.co.uk/panda-protect-logo-email.png" alt="${brand.name}" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0;" />
+              <img src="${brand.logoUrl}" alt="${brand.name}" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0;" />
             </div>
             <div style="padding:28px;color:#111827;">
               <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">We've received your interest</h2>

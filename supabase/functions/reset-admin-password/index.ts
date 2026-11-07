@@ -113,7 +113,8 @@ serve(async (req) => {
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f5f5f5;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 0;">
         <!-- Header -->
-        <div style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 30px 20px; text-align: center;">
+        <div style="background: #ffffff; color: #333; padding: 30px 20px; text-align: center;">
+            <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin:0 auto 24px;border:0;" />
             <h1 style="margin: 0; font-size: 28px; font-weight: bold;">🔐 Password Reset</h1>
             <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">${brand.name} Admin Dashboard</p>
         </div>

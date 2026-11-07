@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { validateSignupStatus } from '../_shared/dealerSignupStatus.ts';
 
 const esc = (v?: string | null) =>
   (v ?? "")
@@ -168,12 +169,12 @@ serve(async (req) => {
     const contactName = signup.contact_name || signup.dealership_name || "there";
 
     if (decision === 'status' || (decision === 'reject' && (signup.status === 'approved' || signup.approved_at))) {
-      const targetStatus = decision === 'reject' ? 'rejected' : String(body.status || '');
+      const targetStatus = validateSignupStatus(decision === 'reject' ? 'rejected' : body.status);
       const { data: changed, error } = await admin.rpc('set_dealer_signup_status', { p_signup_id: signupId, p_status: targetStatus, p_actor: userData.user.id, p_notes: notes });
       if (error) throw new Error(error.message);
       const mail = changed.withdrawn || body.notify === true ? await sendEmail(brand, email, `${brand.name} trade account update`, shell(brand, 'An update to your trade account', `
         <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
-        <p style="line-height:1.6;">We’re reviewing a few details on your trade account. ${changed.withdrawn ? 'Your approval has been temporarily withdrawn while we complete this update.' : 'We have updated your application status.'}</p>
+        <p style="line-height:1.6;">${targetStatus === 'approved' ? 'Your trade account approval has been restored. You can sign in with your existing password.' : changed.withdrawn ? 'We’re reviewing a few details on your trade account. Your approval has been temporarily withdrawn while we complete this update.' : 'We have updated your application status.'}</p>
         ${notes ? `<p style="line-height:1.6;">${esc(notes)}</p>` : ''}
         <p style="line-height:1.6;">Our team will contact you once the review is complete. If you have any questions in the meantime, please reply to this email or contact ${brand.helloEmail}.</p>
         <p style="line-height:1.6;">Existing paid warranties remain active.</p>
