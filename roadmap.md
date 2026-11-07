@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Correct BDM quick-link navigation and prevent delayed dashboard defaults from replacing a selected section.
+- [x] Make saved shortcuts real dashboard links and prevent delayed access checks from replacing a clicked section; isolated BDM/Dealers browser clicks and 13 tests pass, live signed-in check requires external session.
 - [x] Correct live customers_status_check to allow only Panda dealer Pending/unverified checkout rows; deployed dealer-create-checkout, verified constraint and 32 checkout/pricing tests pass.
 - [ ] Verify dealer Stripe checkout through a live signed-in account; external authentication prevents automated end-to-end payment checks.
 - [x] Separate staff/dealer sessions in simultaneous tabs, preserve staff view-as, and isolate password recovery; 10 targeted tests pass, browser fixture accounts retain separate sessions across login/reload/logout and portal navigation, preview build OK.
