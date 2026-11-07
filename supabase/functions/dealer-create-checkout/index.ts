@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
+import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -178,13 +179,11 @@ Deno.serve(async (req: Request) => {
       original_amount: plan.retail_price,
       discount_amount: +(plan.retail_price - payable).toFixed(2),
       discount_code: promo?.code || null,
-      status: payment_method === 'invoice' ? 'Active' : 'Pending',
-      payment_status: payment_method === 'invoice' ? 'invoice_pending' : 'pending',
+      ...dealerCheckoutState(payment_method),
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
       is_manual_entry: false,
-      payment_verified: payment_method === 'invoice',
       brand: 'pandaprotect',
     } as Record<string, unknown>;
 

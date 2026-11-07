@@ -1,4 +1,5 @@
 # Architecture rules
+- Dealer card checkout creates only Pending/unverified Panda dealer rows; the customer status constraint permits that scoped state and signed payment confirmation activates cover, so opening checkout cannot issue unpaid warranties.
 - Auth persistence is document-scoped by portal with separate staff/dealer keys and isolated recovery storage; crossing scopes reloads subscribers/caches, view-as keeps staff authorization, and ordinary logout defaults to local scope so simultaneous dashboards cannot replace or revoke one another's sessions.
 - Signup approval corrections use a service-only atomic status RPC that updates dealer access and signup history together; withdrawal never alters warranty/payment rows, and all Panda email headers resolve the official logo from shared brand configuration.
 - Dealer session/profile loading is bounded and retryable, keeps queries outside auth callbacks, and discards stale results; temporary read failures must not sign out approved dealers or leave endless spinners.
