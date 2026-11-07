@@ -4,6 +4,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
+import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -50,14 +51,18 @@ interface RequestBody {
   customer: CustomerPayload;
   plan: PlanPayload;
   discount_pct: number;
+  promo_code?: string;
+  preview_only?: boolean;
 }
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+    if (!SUPABASE_URL || !SERVICE_KEY || !ANON_KEY) throw new Error('Checkout configuration unavailable.');
     const STRIPE_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 
     const authHeader = req.headers.get('Authorization');
@@ -69,7 +74,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // Validate the calling user
-    const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    const userClient = createClient(SUPABASE_URL, ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: { user }, error: userErr } = await userClient.auth.getUser();
@@ -124,6 +129,26 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    const promoCode = String(body.promo_code || '').trim().toUpperCase();
+    let promo: { code: string; discount_amount: number; total: number; redemption_id?: string } | null = null;
+    if (promoCode) {
+      // Discounts can only use a server-validated product price; legacy caller totals are not eligible.
+      if (plan.pricing_version !== 'annual-v1') throw new Error('Refresh your quote to apply a promo code to the current warranty pricing.');
+      if (payment_method === 'worldpay') throw new Error('Promo codes are available for card or dealer account checkout.');
+      const { data: settings, error: settingsError } = await adminClient.from('dealer_admin_discount_codes').select('*').eq('code', promoCode).maybeSingle();
+      if (settingsError || !settings) throw new Error('Promo code is unavailable.');
+      calculateDealerPromo(plan.dealer_price, settings);
+      const { data, error } = await adminClient.rpc('dealer_promo_amount', { p_code: promoCode, p_dealer_id: dealer.id, p_base: plan.dealer_price });
+      if (error) throw new Error(error.message);
+      promo = data;
+    }
+    if (body.preview_only) return new Response(JSON.stringify(promo || { total: plan.dealer_price, discount_amount: 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    if (payment_method === 'invoice') {
+      const { data: eligible, error } = await userClient.rpc('get_dealer_paylater_eligibility', { p_dealer_id: dealer.id });
+      if (error || !eligible?.eligible) throw new Error('Dealer account billing is unavailable. Please pay by card.');
+    }
+    const payable = promo?.total ?? plan.dealer_price;
+
     // Build the customer row payload (shared by both paths)
     const startDate = new Date();
     const endDate = new Date(startDate);
@@ -150,9 +175,10 @@ Deno.serve(async (req: Request) => {
       claim_limit: Number.isFinite(Number(plan.claim_limit)) && plan.claim_limit ? Number(plan.claim_limit) : null,
       voluntary_excess: Number.isFinite(Number(plan.excess)) && plan.excess != null ? Number(plan.excess) : null,
       labour_rate: Number.isFinite(Number(plan.labour_rate)) && plan.labour_rate ? Number(plan.labour_rate) : null,
-      final_amount: plan.dealer_price,
+      final_amount: payable,
       original_amount: plan.retail_price,
-      discount_amount: +(plan.retail_price - plan.dealer_price).toFixed(2),
+      discount_amount: +(plan.retail_price - payable).toFixed(2),
+      discount_code: promo?.code || null,
       status: 'Active',
       payment_status: payment_method === 'invoice' ? 'invoice_pending' : 'pending',
       purchase_source: 'dealer',
@@ -208,8 +234,37 @@ Deno.serve(async (req: Request) => {
       }
     };
 
+    const reservePromo = async (customerId: string) => {
+      if (!promo) return null;
+      const { data, error } = await adminClient.rpc('dealer_promo_amount', { p_code: promoCode, p_dealer_id: dealer.id, p_base: plan.dealer_price, p_customer_id: customerId });
+      if (error) throw new Error(error.message);
+      if (Number(data.total) !== payable) throw new Error('Promo code changed. Please apply it again.');
+      return data.redemption_id as string;
+    };
+
     // === INVOICE PATH ===
     if (payment_method === 'invoice') {
+      // Reserve before issuance, then record this issued invoice as a completed use.
+      const invoiceCustomerId = crypto.randomUUID();
+      const redemptionId = await reservePromo(invoiceCustomerId);
+      const { error: invoiceError } = await adminClient.from('customers').insert({ ...customerRow, id: invoiceCustomerId });
+      if (invoiceError) {
+        if (redemptionId) await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('id', redemptionId);
+        throw new Error(invoiceError.message);
+      }
+      if (redemptionId) {
+        const invoiceKey = `invoice:${invoiceCustomerId}`;
+        const { error: linkError } = await adminClient.from('dealer_promo_redemptions').update({ stripe_session_id: invoiceKey }).eq('id', redemptionId);
+        if (linkError) throw new Error(linkError.message);
+        const { error } = await adminClient.rpc('complete_dealer_promo', { p_redemption_id: redemptionId, p_session_id: invoiceKey, p_amount: payable });
+        if (error) throw new Error(error.message);
+      }
+      await notifyDealer(invoiceCustomerId, 'invoice');
+      return new Response(JSON.stringify({ customer_id: invoiceCustomerId, method: 'invoice' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    /* Existing invoice upsert is superseded by atomic promo-aware issuance above. */
+    if (false) {
       const result = await upsertDealerCustomer();
       if ('error' in result) {
         console.error('Invoice upsert error', result.error);
@@ -262,12 +317,16 @@ Deno.serve(async (req: Request) => {
       });
     }
     const pendingCustomerId = result.id;
+    const redemptionId = await reservePromo(pendingCustomerId);
 
     const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
     const embedded = (body as { embedded?: boolean }).embedded === true;
     const returnUrl = `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`;
-    const session = await stripe.checkout.sessions.create({
+    let session;
+    try {
+    session = await stripe.checkout.sessions.create({
       mode: 'payment',
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
       ...(embedded ? { ui_mode: 'embedded' as const, return_url: returnUrl } : { success_url: returnUrl, cancel_url: `${origin}/dealer-portal/quote/checkout` }),
       payment_method_types: ['card'],
       customer_email: dealer.email,
@@ -279,7 +338,7 @@ Deno.serve(async (req: Request) => {
               name: `Dealer Warranty · ${plan.plan_type.toUpperCase()} · ${plan.duration_months}mo`,
               description: `${vehicle.reg} for ${customer.name}`,
             },
-            unit_amount: Math.round(plan.dealer_price * 100),
+            unit_amount: Math.round(payable * 100),
           },
           quantity: 1,
         },
@@ -292,8 +351,22 @@ Deno.serve(async (req: Request) => {
         duration_months: String(plan.duration_months),
         purchase_source: 'dealer',
         discount_pct: String(discount_pct),
+        promo_redemption_id: redemptionId || '',
+        dealer_promo_code: promo?.code || '',
+        dealer_base_amount: String(plan.dealer_price),
+        dealer_final_amount: String(payable),
       },
     });
+    } catch (error) {
+      if (redemptionId) await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('id', redemptionId);
+      throw error;
+    }
+    const { error: sessionError } = await adminClient.from('customers').update({ stripe_session_id: session.id }).eq('id', pendingCustomerId);
+    if (sessionError) { await stripe.checkout.sessions.expire(session.id); throw new Error(sessionError.message); }
+    if (redemptionId) {
+      const { error } = await adminClient.from('dealer_promo_redemptions').update({ stripe_session_id: session.id }).eq('id', redemptionId);
+      if (error) { await stripe.checkout.sessions.expire(session.id); throw new Error(error.message); }
+    }
 
     return new Response(
       JSON.stringify({
