@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Move signup Status beside Phone and enable safe approval withdrawal with polite trader notification.
+- [ ] Save the supplied Panda Protect logo and apply it to Panda email branding.
 - [x] Confirm KAM LTD is active and signed in; prevent endless dealer session/profile loading with bounded requests, retry controls and stale-result guards. 17 targeted tests pass.
 - [ ] Verify KAM LTD’s signed-in pricing page after publication; external authentication is unavailable, so the original first-login stall could not be reproduced with its account.
 - [x] Add Admin/Super Admin-only Panda dealer discount management and validated checkout promo entry; 36 rule/regression tests pass; payment functions deployed.
