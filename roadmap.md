@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Add Admin/Super Admin-only dealer discount codes and server-validated dealer checkout promo entry, matching Buy A Warranty controls without sharing brand data.
 - [x] Add personal saved quick links above every admin section, with selection and individual removal matching the reference; 13 tests and isolated desktop/mobile interactions pass.
 - [ ] Verify quick links inside the signed-in admin dashboard; external authentication is unavailable for automated checks.
 - [x] Fix customer Postcoder search: retry saved postcodes on focus, discard stale suggestions, and allow complete manual address entry when lookup is unavailable.
