@@ -6134,6 +6134,7 @@ export type Database = {
       }
       dealer_admin_discount_codes: {
         Row: {
+          campaign_source: string | null
           code: string
           created_at: string
           description: string | null
@@ -6141,6 +6142,7 @@ export type Database = {
           discount_value: number
           id: string
           is_active: boolean
+          min_order_amount: number
           times_used: number
           updated_at: string
           usage_limit: number | null
@@ -6148,6 +6150,7 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          campaign_source?: string | null
           code: string
           created_at?: string
           description?: string | null
@@ -6155,6 +6158,7 @@ export type Database = {
           discount_value?: number
           id?: string
           is_active?: boolean
+          min_order_amount?: number
           times_used?: number
           updated_at?: string
           usage_limit?: number | null
@@ -6162,6 +6166,7 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          campaign_source?: string | null
           code?: string
           created_at?: string
           description?: string | null
@@ -6169,6 +6174,7 @@ export type Database = {
           discount_value?: number
           id?: string
           is_active?: boolean
+          min_order_amount?: number
           times_used?: number
           updated_at?: string
           usage_limit?: number | null
@@ -7312,6 +7318,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "dealer_profile_change_requests_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_promo_redemptions: {
+        Row: {
+          base_amount: number
+          code: string
+          code_id: string
+          created_at: string
+          customer_id: string
+          dealer_id: string
+          discount_amount: number
+          expires_at: string
+          final_amount: number
+          id: string
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_amount: number
+          code: string
+          code_id: string
+          created_at?: string
+          customer_id: string
+          dealer_id: string
+          discount_amount: number
+          expires_at?: string
+          final_amount: number
+          id?: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_amount?: number
+          code?: string
+          code_id?: string
+          created_at?: string
+          customer_id?: string
+          dealer_id?: string
+          discount_amount?: number
+          expires_at?: string
+          final_amount?: number
+          id?: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_promo_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "dealer_admin_discount_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealer_promo_redemptions_dealer_id_fkey"
             columns: ["dealer_id"]
             isOneToOne: false
             referencedRelation: "dealers"
@@ -15575,6 +15644,14 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      complete_dealer_promo: {
+        Args: {
+          p_amount: number
+          p_redemption_id: string
+          p_session_id: string
+        }
+        Returns: undefined
+      }
       count_recontact_leads_available: {
         Args: never
         Returns: {
@@ -15610,6 +15687,15 @@ export type Database = {
       customer_cover_block_reason: {
         Args: { p_email?: string; p_phone?: string; p_reg?: string }
         Returns: string
+      }
+      dealer_promo_amount: {
+        Args: {
+          p_base: number
+          p_code: string
+          p_customer_id?: string
+          p_dealer_id: string
+        }
+        Returns: Json
       }
       delete_admin_user_cascade: {
         Args: { p_admin_user_id: string }

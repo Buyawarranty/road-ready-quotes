@@ -14,6 +14,7 @@ export const PANDA_SECTION_ORDER: { id: string; label: string; description: stri
   { id: 'dealer-cancellations', label: 'Cancellations & refunds', description: 'Requests, processed cancellations and refunds' },
   { id: 'dealer-invoices', label: 'Dealer billing', description: 'Invoices, pay later rules and dealer finance' },
   { id: 'trader-pricing', label: 'Pricing', description: 'Trade warranty pricing' },
+  { id: 'discount-codes', label: 'Discount codes', description: 'Panda Protect dealer promo codes and usage' },
   { id: 'dealer-profile-changes', label: 'Profile changes', description: 'Dealer company name change requests' },
   { id: 'complaints', label: 'Support inbox', description: 'Complaints, contact messages and staff feedback' },
   { id: 'policy-documents', label: 'Policy letters', description: 'Printed and posted warranty letters' },
@@ -57,5 +58,5 @@ export const PANDA_BRAND = 'pandaprotect';
 export const BDM_ROLE_TABS = ['bdm-contacts', 'staff-hub', 'timesheets', 'account'];
 /** Default sections for the Manager job: most CRM views, but no staff access, pricing or system settings. */
 export const MANAGER_ROLE_TABS = PANDA_SECTION_ORDER.map((s) => s.id).filter(
-  (id) => !['user-permissions', 'bdm-allocation', 'trader-pricing', 'feature-flags', 'plans', 'document-mapping'].includes(id),
+  (id) => !['user-permissions', 'bdm-allocation', 'trader-pricing', 'discount-codes', 'feature-flags', 'plans', 'document-mapping'].includes(id),
 );

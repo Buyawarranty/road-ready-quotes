@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,25 +14,26 @@ const Step5Confirmation: React.FC = () => {
   const { reset } = useDealerJourney();
   const method = searchParams.get('method') || 'pay_now';
   const id = searchParams.get('id');
+  const sessionId = searchParams.get('session_id');
+  const [confirmed, setConfirmed] = useState(method === 'invoice');
+  const [confirmError, setConfirmError] = useState('');
+  const [checking, setChecking] = useState(false);
+
+  const confirmPayment = async () => {
+    if (!id || !sessionId) { setConfirmError('Open your warranties to check the payment status.'); return; }
+    setChecking(true);
+    setConfirmError('');
+    const { data, error } = await supabase.functions.invoke('dealer-confirm-payment', { body: { customer_id: id, session_id: sessionId } });
+    setChecking(false);
+    if (error || !data?.confirmed) { setConfirmError(data?.error || 'Payment confirmation is pending. Please check again shortly.'); return; }
+    setConfirmed(true);
+    reset();
+    fireDealerConfetti(1);
+  };
 
   useEffect(() => {
-    // Clear journey state — order has been written
-    reset();
-    if (method !== 'invoice') {
-      const ck = `dealer_confetti_${id || 'x'}`;
-      if (!sessionStorage.getItem(ck)) { sessionStorage.setItem(ck, '1'); setTimeout(() => fireDealerConfetti(1), 300); }
-    }
-    // Card payments (Stripe / Worldpay): email warranty details to the dealer's
-    // registered account email. The invoice path is emailed server-side already.
-    if (id && method !== 'invoice') {
-      const key = `dealer_warranty_email_sent_${id}`;
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        supabase.functions
-          .invoke('dealer-warranty-email', { body: { customer_id: id, kind: 'paid' } })
-          .catch((e) => console.error('dealer warranty email failed', e));
-      }
-    }
+    if (method === 'invoice') reset();
+    else void confirmPayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -43,15 +44,15 @@ const Step5Confirmation: React.FC = () => {
     : null;
 
   return (
-    <DealerJourneyLayout step={5} title="Warranty issued" subtitle="The warranty is now in your dealer account." showBack={false}>
+    <DealerJourneyLayout step={5} title={confirmed ? 'Warranty issued' : 'Confirming payment'} subtitle={confirmed ? 'The warranty is now in your dealer account.' : 'Checking your payment with Stripe.'} showBack={false}>
       <Card className="bg-white border-gray-200">
         <CardContent className="pt-8 pb-8 text-center">
           <div className="inline-flex p-4 rounded-full bg-green-500/10 mb-4">
             <CheckCircle2 className="h-10 w-10 text-green-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Warranty issued</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{confirmed ? 'Warranty issued' : 'Payment confirmation'}</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            {isInvoice
+            {!confirmed ? (confirmError || 'Checking your payment…') : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
               : 'Your customer is now covered. A confirmation email has been sent.'}
           </p>
@@ -70,7 +71,7 @@ const Step5Confirmation: React.FC = () => {
             <div className="flex justify-between px-4 py-2">
               <span className="text-gray-600">Payment</span>
               <span className={`font-semibold ${isInvoice ? 'text-amber-700' : 'text-green-600'}`}>
-                {isInvoice ? 'Invoice pending' : 'Paid'}
+                {isInvoice ? 'Invoice pending' : confirmed ? 'Paid' : 'Awaiting confirmation'}
               </span>
             </div>
             {isInvoice && dueDate && (
@@ -89,6 +90,7 @@ const Step5Confirmation: React.FC = () => {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            {!confirmed && <Button variant="outline" disabled={checking} onClick={confirmPayment}>{checking ? 'Checking…' : 'Check payment'}</Button>}
             <Button
               onClick={() => navigate('/dealer-portal/warranties')}
               className="bg-orange-500 hover:bg-orange-600 text-white"

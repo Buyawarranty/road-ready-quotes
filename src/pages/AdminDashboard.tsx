@@ -1,4 +1,5 @@
 import BdmAllocationTab from '@/components/admin/bdm/BdmAllocationTab';
+import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
 import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS, PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
@@ -60,7 +61,7 @@ const GetQuoteTab = lazy(() => import('@/components/admin/GetQuoteTab').then(m =
 const CustomersTab = lazy(() => import('@/components/admin/CustomersTab').then(m => ({ default: m.CustomersTab })));
 const TermsAndConditionsTab = lazy(() => import('@/components/admin/TermsAndConditionsTab'));
 const SpecialVehiclePlansTab = lazy(() => import('@/components/admin/SpecialVehiclePlansTab'));
-const DiscountCodesTab = lazy(() => import('@/components/admin/DiscountCodesTab').then(m => ({ default: m.DiscountCodesTab })));
+const DiscountCodesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminDiscountCodes'));
 const ReferralsTab = lazy(() => import('@/components/admin/ReferralsTab').then(m => ({ default: m.ReferralsTab })));
 const AnalyticsTab = lazy(() => import('@/components/admin/AnalyticsTab').then(m => ({ default: m.AnalyticsTab })));
 const UnifiedEmailHub = lazy(() => import('@/components/admin/UnifiedEmailHub'));
@@ -182,6 +183,7 @@ const LIVE_CALLS_ALWAYS_ALLOWED_ROLES = new Set(['sales', 'sales_lead', 'sales_m
 
 const isTabAllowedForRole = (rawTab: string, role: string | null, permissions?: Record<string, boolean> | null) => {
   const tab = canonicalTabId(rawTab);
+  if (tab === 'discount-codes') return canManageDealerPromos(role);
   const permKey = `tab_${tab}`;
   if (tab === 'account') return true;
   if (tab === 'unsubscribe') return true;
@@ -781,7 +783,7 @@ const AdminDashboard = () => {
       case 'special-plans':
         return <SpecialVehiclePlansTab />;
       case 'discount-codes':
-        return <DiscountCodesTab />;
+        return canManageDealerPromos(effectiveUserRole) ? <DiscountCodesTab /> : <p className="p-6 text-muted-foreground">Discount codes are available to Admin and Super Admin only.</p>;
       case 'referrals':
         return <ReferralsTab />;
       case 'claims':
