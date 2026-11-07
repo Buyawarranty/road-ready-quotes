@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Add personal saved quick links above every admin section, with selection and individual removal matching the reference.
 - [x] Fix customer Postcoder search: retry saved postcodes on focus, discard stale suggestions, and allow complete manual address entry when lookup is unavailable.
 - [x] Match final pricing mockup with safe Trade/Customer views, annual price cards, fixed cover and £100 selling-price controls.
 - [x] Store requested annual prices in a Panda-only backend product and prepare inactive 48-month product.

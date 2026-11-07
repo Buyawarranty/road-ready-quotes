@@ -1,4 +1,5 @@
 # Architecture rules
+- Admin quick links are explicit per-auth-user Panda section IDs saved in browser storage, filtered through the dashboard's effective permissions; view-as cannot edit them. This preserves navigation access and keeps personal shortcuts separate without changing CRM data.
 
 - Dealer cancellation navigation reuses the dealer-scoped warranties list via its cancellations tab; status changes remain in the existing admin workflow.
 

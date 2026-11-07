@@ -1,7 +1,7 @@
 import BdmAllocationTab from '@/components/admin/bdm/BdmAllocationTab';
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
-import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
+import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS, PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
 import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
@@ -1252,6 +1252,8 @@ const AdminDashboardInner: React.FC<{
             userId={session?.user?.id ?? null}
             activeTab={activeTab}
             onSelect={handleTabChange}
+            allowedTabIds={PANDA_SECTION_ORDER.filter((section) => isTabAllowedForRole(section.id, displayRole, displayPermissions)).map((section) => section.id)}
+            readOnly={isImpersonating}
           />
           <main className="p-4 lg:p-6 overflow-y-auto h-[calc(100vh-104px)]">
             <TabErrorBoundary tabKey={activeTab} onRetry={() => window.location.reload()}>
