@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Fix dealer Stripe checkout rejected by customers_status_check; verify unpaid rows stay Pending and payment checkout can be created.
+- [x] Correct live customers_status_check to allow only Panda dealer Pending/unverified checkout rows; deployed dealer-create-checkout, verified constraint and 32 checkout/pricing tests pass.
+- [ ] Verify dealer Stripe checkout through a live signed-in account; external authentication prevents automated end-to-end payment checks.
 - [x] Separate staff/dealer sessions in simultaneous tabs, preserve staff view-as, and isolate password recovery; 10 targeted tests pass, browser fixture accounts retain separate sessions across login/reload/logout and portal navigation, preview build OK.
 - [ ] Verify simultaneous live staff/dealer dashboard accounts after publication; external authentication is unavailable for authenticated end-to-end checks.
 - [x] Move signup Status beside Phone, add confirmation/message editing, and atomic approval withdrawal/restoration with polite email and timestamped notes; paid warranties remain untouched.
