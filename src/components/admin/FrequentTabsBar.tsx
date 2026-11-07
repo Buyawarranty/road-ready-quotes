@@ -76,9 +76,16 @@ export const FrequentTabsBar: React.FC<Props> = ({
                     : 'bg-background text-foreground border-border'
                 )}
               >
-                <Button variant="ghost" size="sm" onClick={() => onSelect(tab.id)} title={tab.description}
-                  aria-current={active ? 'page' : undefined} className="min-w-0 rounded-full px-3 text-sm">
-                  <Icon className="h-4 w-4" /><span className="truncate">{tab.label}</span>
+                <Button asChild variant="ghost" size="sm" className="min-w-0 rounded-full px-3 text-sm">
+                  <a href={`/admin-dashboard/?tab=${encodeURIComponent(tab.id)}`} title={tab.description}
+                    aria-current={active ? 'page' : undefined}
+                    onClick={(event) => {
+                      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+                      event.preventDefault();
+                      onSelect(tab.id);
+                    }}>
+                    <Icon className="h-4 w-4" /><span className="truncate">{tab.label}</span>
+                  </a>
                 </Button>
                 {!readOnly && <Button variant="ghost" size="icon" className="h-9 w-8 shrink-0 rounded-full text-muted-foreground hover:text-destructive"
                   title={`Remove ${tab.label}`} aria-label={`Remove ${tab.label} quick link`}

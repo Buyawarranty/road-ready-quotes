@@ -367,6 +367,7 @@ const AdminDashboard = () => {
   const [userPermissions, setUserPermissions] = useState<Record<string, boolean> | null>(null);
   const [adminUserId, setAdminUserId] = useState<string | null>(null);
   const [hasSetInitialTab, setHasSetInitialTab] = useState(!!urlTab);
+  const initialTabHandledRef = React.useRef(Boolean(urlTab));
   const [selectedLeadForQuote, setSelectedLeadForQuote] = useState<LeadForQuote | null>(null);
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
@@ -383,6 +384,8 @@ const AdminDashboard = () => {
 
   // Handle tab changes and update history + URL
   const handleTabChange = useCallback((newTab: string, leadData?: LeadForQuote) => {
+    initialTabHandledRef.current = true;
+    setHasSetInitialTab(true);
     setTabHistory(prev => {
       // Don't add duplicate consecutive tabs
       if (prev[prev.length - 1] === newTab) return prev;
@@ -457,7 +460,8 @@ const AdminDashboard = () => {
     setHasAdminAccess(true);
     setAccessFromCache(true);
     setIsCheckingRole(false);
-    if (!hasSetInitialTab) {
+    if (!hasSetInitialTab && !initialTabHandledRef.current) {
+      initialTabHandledRef.current = true;
       setHasSetInitialTab(true);
       const defaultTab = getFirstPermittedTab(cached.role, cached.permissions ?? null);
       setActiveTab(defaultTab);
@@ -667,7 +671,8 @@ const AdminDashboard = () => {
       }
 
       // Set default tab based on role (only if no URL tab param was provided)
-      if (!hasSetInitialTab) {
+      if (!hasSetInitialTab && !initialTabHandledRef.current) {
+        initialTabHandledRef.current = true;
         setHasSetInitialTab(true);
 
         const defaultTab = getFirstPermittedTab(primaryRole, adminUserData?.permissions as Record<string, boolean> | null);
