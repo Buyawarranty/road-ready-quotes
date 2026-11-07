@@ -128,6 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
           <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0;" />
             <h1 style="color: #333; margin-bottom: 20px;">Admin Account Invitation Resent</h1>
             
             <p style="color: #666; margin-bottom: 20px;">Hello ${adminUser.first_name || ''},</p>

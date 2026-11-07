@@ -83,6 +83,7 @@ Deno.serve(async (req: Request) => {
 
     const html = `
       <div style="font-family:Arial,sans-serif;color:#333;max-width:620px;margin:0 auto;padding:24px">
+        <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0;" />
         <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">${kind === 'invoice' ? 'Warranty invoiced' : 'Warranty confirmed'}</h1>
         <p style="font-size:13px;color:#666;margin:0 0 18px">${dealer?.company_name || dealer?.name || 'Dealer account'} · ${new Date().toLocaleDateString('en-GB')}</p>
         <p style="font-size:14px;line-height:1.6">${intro}</p>

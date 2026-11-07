@@ -1,11 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 const esc = (v?: string | null) =>
   (v ?? "")
@@ -18,8 +14,8 @@ const esc = (v?: string | null) =>
 const shell = (brand: Brand, title: string, body: string) => `
 <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
   <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
-    <div style="background:#1e3a5f;padding:24px;">
-      <h1 style="margin:0;color:#ffffff;font-size:20px;">${brand.name}</h1>
+    <div style="background:#ffffff;padding:24px;border-bottom:1px solid #e5e7eb;">
+      <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;border:0;" />
     </div>
     <div style="padding:28px;color:#111827;">
       <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">${title}</h2>
@@ -67,8 +63,9 @@ serve(async (req) => {
   const PORTAL_URL = `${brand.siteUrl}/dealer-portal/login`;
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey) throw new Error('Account update configuration is unavailable.');
     const admin = createClient(supabaseUrl, serviceKey);
 
     // --- auth: must be an active admin user ---
@@ -91,7 +88,7 @@ serve(async (req) => {
       admin.from("user_roles").select("role").eq("user_id", userData.user.id),
     ]);
     const hasAdminRole = (callerRoles ?? []).some((r: { role: string }) => r.role === "admin" || r.role === "super_admin");
-    if (adminRow?.is_active === false || (!adminRow && !hasAdminRole)) {
+    if (adminRow?.is_active === false || !hasAdminRole) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -143,7 +140,7 @@ serve(async (req) => {
       body?.alternate_email?.toString().trim().toLowerCase() || null;
     const isResend = decision === "resend";
 
-    if (!signupId || (decision !== "approve" && decision !== "reject" && !isResend)) {
+    if (!signupId || !/^[0-9a-f-]{36}$/i.test(signupId) || (decision !== "approve" && decision !== "reject" && decision !== "status" && !isResend)) {
       return new Response(JSON.stringify({ error: "signup_id and decision (approve|reject|resend) are required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -169,6 +166,21 @@ serve(async (req) => {
 
     const email = (signup.email_address || "").trim().toLowerCase();
     const contactName = signup.contact_name || signup.dealership_name || "there";
+
+    if (decision === 'status' || (decision === 'reject' && (signup.status === 'approved' || signup.approved_at))) {
+      const targetStatus = decision === 'reject' ? 'rejected' : String(body.status || '');
+      const { data: changed, error } = await admin.rpc('set_dealer_signup_status', { p_signup_id: signupId, p_status: targetStatus, p_actor: userData.user.id, p_notes: notes });
+      if (error) throw new Error(error.message);
+      const mail = changed.withdrawn || body.notify === true ? await sendEmail(brand, email, `${brand.name} trade account update`, shell(brand, 'An update to your trade account', `
+        <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
+        <p style="line-height:1.6;">We’re reviewing a few details on your trade account. ${changed.withdrawn ? 'Your approval has been temporarily withdrawn while we complete this update.' : 'We have updated your application status.'}</p>
+        ${notes ? `<p style="line-height:1.6;">${esc(notes)}</p>` : ''}
+        <p style="line-height:1.6;">Our team will contact you once the review is complete. If you have any questions in the meantime, please reply to this email or contact ${brand.helloEmail}.</p>
+        <p style="line-height:1.6;">Existing paid warranties remain active.</p>
+        <p style="line-height:1.6;">Thank you for your patience,<br/>The ${brand.name} Trade Team</p>`)) : { ok: true, error: null };
+      return new Response(JSON.stringify({ success: true, ...changed, email_sent: mail.ok, email_error: mail.error }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    if (isResend && signup.status !== 'approved') throw new Error('Approve this application before resending login details.');
 
     // ---------------- REJECT ----------------
     if (decision === "reject") {
@@ -333,12 +345,12 @@ serve(async (req) => {
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
         <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:20px;margin:22px 0;">
           <div style="padding:6px 0;"><strong>Email:</strong> <span style="font-family:monospace;color:#1e3a5f;">${esc(email)}</span></div>
-          <div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password!)}</span></div>
+          <div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password)}</span></div>
         </div>
         <div style="text-align:center;margin:28px 0;">
           <a href="${PORTAL_URL}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
         </div>
-        <p style="line-height:1.6;font-size:14px;color:#6b7280;">For security, please change your password after your first login.</p>
+        <p style="line-height:1.6;font-size:14px;color:#6b7280;">After signing in, you can choose your own password in Settings → Change password.</p>
         <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${brand.name} Trade Team</p>`
       )
     );
