@@ -1,4 +1,7 @@
 # Roadmap
+- [x] Move signup Status beside Phone, add confirmation/message editing, and atomic approval withdrawal/restoration with polite email and timestamped notes; paid warranties remain untouched.
+- [x] Save supplied official logo, update shared Panda email branding and missing signup/staff/warranty headers, deploy 18 affected functions; logo URL returns 200 and 16 targeted tests pass.
+- [ ] Verify signed-in status correction and delivered email; external authentication prevents authenticated end-to-end checks.
 - [x] Confirm KAM LTD is active and signed in; prevent endless dealer session/profile loading with bounded requests, retry controls and stale-result guards. 17 targeted tests pass.
 - [ ] Verify KAM LTD’s signed-in pricing page after publication; external authentication is unavailable, so the original first-login stall could not be reproduced with its account.
 - [x] Add Admin/Super Admin-only Panda dealer discount management and validated checkout promo entry; 36 rule/regression tests pass; payment functions deployed.

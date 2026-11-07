@@ -106,11 +106,11 @@ Deno.serve(async (req: Request) => {
     const adminClient = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: dealer, error: dealerErr } = await adminClient
       .from('dealers')
-      .select('id, user_id, company_name, email, name')
+      .select('id, user_id, company_name, email, name, status')
       .eq('id', dealer_id)
       .maybeSingle();
 
-    if (dealerErr || !dealer || dealer.user_id !== user.id) {
+    if (dealerErr || !dealer || dealer.user_id !== user.id || dealer.status !== 'active') {
       return new Response(JSON.stringify({ error: 'Dealer not authorized' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

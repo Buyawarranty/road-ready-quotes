@@ -16668,6 +16668,15 @@ export type Database = {
         Args: { p_allow: boolean; p_user_id: string }
         Returns: undefined
       }
+      set_dealer_signup_status: {
+        Args: {
+          p_actor: string
+          p_notes?: string
+          p_signup_id: string
+          p_status: string
+        }
+        Returns: Json
+      }
       set_sale_credit_agent:
         | {
             Args: { p_admin_user_id: string; p_customer_id: string }

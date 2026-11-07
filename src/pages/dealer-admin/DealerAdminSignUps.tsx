@@ -17,6 +17,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { toast } from 'sonner';
 import { fireDealerConfetti } from '@/lib/dealerConfetti';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -75,6 +77,9 @@ const STATUS_LABEL: Record<string, string> = { needs_info: 'Needs more info' };
 
 const DealerAdminSignUps: React.FC = () => {
   const [rows, setRows] = useState<Signup[]>([]);
+  const [statusEdit, setStatusEdit] = useState<{ signup: Signup; status: Status } | null>(null);
+  const [statusMessage, setStatusMessage] = useState('');
+  const [statusSaving, setStatusSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
@@ -287,19 +292,27 @@ const DealerAdminSignUps: React.FC = () => {
   };
 
   const updateStatus = async (id: string, status: Status) => {
-    const prev = rows;
-    setRows((r) => r.map((row) => (row.id === id ? { ...row, status } : row)));
-    if (selected?.id === id) setSelected({ ...selected, status });
-    const { error } = await supabase
-      .from('trade_warranty_signups')
-      .update({ status })
-      .eq('id', id);
-    if (error) {
-      toast.error(error.message);
-      setRows(prev);
-    } else {
-      toast.success('Status updated');
-    }
+    const signup = rows.find(row => row.id === id);
+    if (!signup) return;
+    if (status === 'approved' && !signup.dealer_id) { openDetail(signup); toast.info('Use Approve to create this dealer’s login.'); return; }
+    setStatusEdit({ signup, status });
+    setStatusMessage('');
+  };
+
+  const saveStatus = async () => {
+    if (!statusEdit || statusSaving) return;
+    setStatusSaving(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { signup_id: statusEdit.signup.id, decision: 'status', status: statusEdit.status, notes: statusMessage.trim() || null, notify: true } });
+      if (error || data?.error) throw new Error(data?.error || error?.message || 'Status update failed');
+      const patch = { status: statusEdit.status, approved_at: statusEdit.status === 'approved' ? new Date().toISOString() : null, rejected_at: statusEdit.status === 'rejected' ? new Date().toISOString() : null };
+      setRows(value => value.map(row => row.id === statusEdit.signup.id ? { ...row, ...patch } : row));
+      if (selected?.id === statusEdit.signup.id) setSelected({ ...selected, ...patch });
+      if (data.email_sent === false) toast.error(`Status saved, but the email was not sent: ${data.email_error}`);
+      else toast.success('Status saved — account update email sent');
+      setStatusEdit(null);
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'Could not update status'); }
+    finally { setStatusSaving(false); }
   };
 
   const decide = async (decision: 'approve' | 'reject') => {
@@ -491,11 +504,11 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Contact</Th>
                   <Th>Email</Th>
                   <Th>Phone</Th>
+                  <Th>Status</Th>
                   <Th>Monthly Sales</Th>
                   <Th>Current Provider</Th>
                   <Th>Interested In</Th>
                   <Th>Notes</Th>
-                  <Th>Status</Th>
                 </tr>
               </thead>
               <tbody>
@@ -545,6 +558,7 @@ const DealerAdminSignUps: React.FC = () => {
                       <a href={`tel:${r.phone_number}`} onClick={(e) => e.stopPropagation()}
                         className="text-gray-700 hover:underline">{r.phone_number}</a>
                     </Td>
+                    <Td><div onClick={event => event.stopPropagation()}><Select value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
                     <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
                     <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
                     <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
@@ -555,9 +569,6 @@ const DealerAdminSignUps: React.FC = () => {
                         </span>
                       ) : <span className="text-gray-300">—</span>}
                     </Td>
-                    <Td>
-                      <Badge className={`capitalize ${statusColor[r.status]}`}>{STATUS_LABEL[r.status] ?? r.status}</Badge>
-                    </Td>
                   </tr>
                 ))}
               </tbody>
@@ -565,6 +576,9 @@ const DealerAdminSignUps: React.FC = () => {
           </div>
         )}
 
+        <Dialog open={!!statusEdit} onOpenChange={open => { if (!open && !statusSaving) setStatusEdit(null); }}>
+          <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Update signup status</DialogTitle></DialogHeader><p className="text-sm text-muted-foreground">{statusEdit?.signup.dealership_name} → {statusEdit?.status.replace('_', ' ')}</p><p className="text-sm text-foreground">An account update email will be sent. Withdrawing approval pauses dealer portal access; existing paid warranties remain active.</p><label htmlFor="status-message" className="text-sm font-semibold">Additional message (optional)</label><Textarea id="status-message" value={statusMessage} onChange={event => setStatusMessage(event.target.value)} placeholder="Add a brief explanation for the trader" /><DialogFooter><Button variant="outline" disabled={statusSaving} onClick={() => setStatusEdit(null)}>Cancel</Button><Button disabled={statusSaving} onClick={saveStatus}>{statusSaving ? 'Saving…' : 'Save and email trader'}</Button></DialogFooter></DialogContent>
+        </Dialog>
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">

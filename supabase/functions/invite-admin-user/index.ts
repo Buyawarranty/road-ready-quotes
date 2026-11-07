@@ -216,6 +216,7 @@ serve(async (req: Request) => {
         to: [email],
         subject: `You've been invited to the ${brand.name} Admin Dashboard`,
         html: `
+          <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0;" />
           <h1>Welcome to ${brand.name} Admin Dashboard</h1>
           <p>Hello ${firstName},</p>
           <p>You've been invited to join the ${brand.name} admin dashboard with ${role} access.</p>
