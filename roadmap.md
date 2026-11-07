@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Diagnose KAM LTD’s first-sign-in pricing-page spinner and prevent indefinite dealer loading without changing its approval or password.
 - [x] Add Admin/Super Admin-only Panda dealer discount management and validated checkout promo entry; 36 rule/regression tests pass; payment functions deployed.
 - [ ] Verify signed-in code creation, checkout redemption and payment return; external authentication is unavailable. Automatic Stripe webhook confirmation remains blocked by the missing STRIPE_WEBHOOK_SECRET; authenticated payment-return confirmation is implemented.
 - [x] Add personal saved quick links above every admin section, with selection and individual removal matching the reference; 13 tests and isolated desktop/mobile interactions pass.
