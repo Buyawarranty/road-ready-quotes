@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Separate staff/dealer sessions in simultaneous tabs, preserve staff view-as, and test cross-portal login/logout isolation.
+- [x] Separate staff/dealer sessions in simultaneous tabs, preserve staff view-as, and isolate password recovery; 10 targeted tests pass, browser fixture accounts retain separate sessions across login/reload/logout and portal navigation, preview build OK.
+- [ ] Verify simultaneous live staff/dealer dashboard accounts after publication; external authentication is unavailable for authenticated end-to-end checks.
 - [x] Move signup Status beside Phone, add confirmation/message editing, and atomic approval withdrawal/restoration with polite email and timestamped notes; paid warranties remain untouched.
 - [x] Save supplied official logo, update shared Panda email branding and missing signup/staff/warranty headers, deploy 18 affected functions; logo URL returns 200 and 16 targeted tests pass.
 - [ ] Verify signed-in status correction and delivered email; external authentication prevents authenticated end-to-end checks.
