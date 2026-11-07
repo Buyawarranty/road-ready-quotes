@@ -68,7 +68,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
-  const { user, dealer, roles, isTrader, loading, signOut } = useDealerAuth();
+  const { user, dealer, roles, isTrader, loading, loadError, retry, signOut } = useDealerAuth();
   const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,7 +89,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || loadError) return;
     if (!user) {
       navigate('/dealer-portal/coming-soon', { replace: true });
       return;
@@ -102,7 +102,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         navigate('/dealer-portal/login', { replace: true });
       }
     }
-  }, [loading, user, dealer, roles, navigate]);
+  }, [loading, loadError, user, dealer, roles, navigate]);
 
   // Traders are limited to sales (quotes) and plans/pricing sections
   useEffect(() => {
@@ -113,6 +113,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     }
   }, [loading, isTrader, location.pathname, navigate]);
 
+  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><h1 className="text-xl font-semibold text-foreground">Your dealer account needs to reload</h1><p className="text-sm text-muted-foreground">{loadError}</p><Button onClick={retry} className="w-full">Try again</Button><Button variant="outline" onClick={() => window.location.reload()} className="w-full">Reload page</Button></div></div>;
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">

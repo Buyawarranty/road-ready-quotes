@@ -30,7 +30,7 @@ const POPULAR_TERM = 36;
 const Step3Pricing: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { dealer, loading } = useDealerAuth();
+  const { dealer, loading, loadError, retry } = useDealerAuth();
   const { vehicle, customer, plan: savedPlan, setPlan, setVehicle, quoteId } = useDealerJourney();
   const [searchParams, setSearchParams] = useSearchParams();
   const [editingReg, setEditingReg] = useState(false);
@@ -189,6 +189,7 @@ const Step3Pricing: React.FC = () => {
     else setError('Your browser blocked the new tab. Allow pop-ups for this site and try again.');
     setOpening(false);
   };
+  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="flex flex-wrap items-start justify-between gap-3">

@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { readDealerImpersonation } from '@/hooks/useDealerImpersonation';
+import { boundedDealerAuth } from '@/lib/dealerAuthLoad';
 
 interface DealerProfile {
   id: string;
@@ -29,13 +30,16 @@ export const useDealerAuth = () => {
   const [dealer, setDealer] = useState<DealerProfile | null>(null);
   const [roles, setRoles] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const navigate = useNavigate();
 
   const loadRoles = async (userId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId);
+    if (error) throw error;
     return (data || []).map((r: any) => r.role as string);
   };
 
@@ -53,68 +57,76 @@ export const useDealerAuth = () => {
         .maybeSingle();
       if (data) return data as DealerProfile;
     }
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('dealers')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
+    if (error) throw error;
     return data as DealerProfile | null;
   };
 
   useEffect(() => {
     let mounted = true;
+    let generation = 0;
+    setLoading(true);
+    setLoadError(null);
+
+    const applySession = async (nextSession: Session | null) => {
+      const current = ++generation;
+      setSession(nextSession);
+      setUser(nextSession?.user ?? null);
+      if (!nextSession?.user) {
+        setDealer(null);
+        setRoles([]);
+        setLoading(false);
+        return;
+      }
+      try {
+        const [profile, userRoles] = await boundedDealerAuth(Promise.all([
+          loadDealer(nextSession.user.id), loadRoles(nextSession.user.id),
+        ]));
+        if (!mounted || current !== generation) return;
+        setDealer(profile);
+        setRoles(userRoles);
+        setLoadError(null);
+      } catch {
+        if (mounted && current === generation) setLoadError('We could not load your dealer account. Please try again.');
+      } finally {
+        if (mounted && current === generation) setLoading(false);
+      }
+    };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (_event, nextSession) => {
         if (!mounted) return;
-        setSession(session);
-        setUser(session?.user ?? null);
-
-        if (session?.user) {
-          setTimeout(async () => {
-            const [dealerProfile, userRoles] = await Promise.all([
-              loadDealer(session.user.id),
-              loadRoles(session.user.id),
-            ]);
-            if (mounted) {
-              setDealer(dealerProfile);
-              setRoles(userRoles);
-              setLoading(false);
-            }
-          }, 0);
-        } else {
-          setDealer(null);
-          setRoles([]);
-          setLoading(false);
-        }
+        // Leave the Supabase auth lock before making any profile requests.
+        setTimeout(() => { if (mounted) void applySession(nextSession); }, 0);
       }
     );
 
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        const [dealerProfile, userRoles] = await Promise.all([
-          loadDealer(session.user.id),
-          loadRoles(session.user.id),
-        ]);
-        if (mounted) {
-          setDealer(dealerProfile);
-          setRoles(userRoles);
+      try {
+        const { data: { session }, error } = await boundedDealerAuth(supabase.auth.getSession());
+        if (!mounted || generation > 0) return;
+        if (error) throw error;
+        await applySession(session);
+      } catch {
+        if (mounted && generation === 0) {
+          setLoadError('We could not load your dealer account. Please try again.');
+          setLoading(false);
         }
       }
-      setLoading(false);
     };
 
     getInitialSession();
 
     return () => {
       mounted = false;
+      generation++;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [retryKey]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -123,5 +135,6 @@ export const useDealerAuth = () => {
 
   const isTrader = roles.includes('trader');
 
-  return { user, session, dealer, roles, isTrader, loading, signOut };
+  const retry = () => setRetryKey(value => value + 1);
+  return { user, session, dealer, roles, isTrader, loading, loadError, retry, signOut };
 };
