@@ -163,23 +163,6 @@ serve(async (req) => {
 
       // Only process if payment was successful
       if (session.payment_status === "paid") {
-        if (session.metadata?.purchase_source === 'dealer' && session.metadata.customer_id) {
-          const amount = (session.amount_total || 0) / 100;
-          const { data: customer, error: lookupError } = await supabaseClient.from('customers')
-            .select('id, dealer_id, final_amount, payment_verified, stripe_session_id')
-            .eq('id', session.metadata.customer_id).eq('brand', 'pandaprotect').single();
-          if (lookupError || !customer || customer.dealer_id !== session.metadata.dealer_id || customer.stripe_session_id !== session.id || Math.round(Number(customer.final_amount) * 100) !== session.amount_total) throw new Error('Dealer payment does not match the warranty.');
-          if (session.metadata.promo_redemption_id) {
-            const { error } = await supabaseClient.rpc('complete_dealer_promo', { p_redemption_id: session.metadata.promo_redemption_id, p_session_id: session.id, p_amount: amount });
-            if (error) throw new Error(error.message);
-          }
-          if (!customer.payment_verified) {
-            const { error } = await supabaseClient.from('customers').update({ payment_status: 'paid', payment_verified: true, status: 'Active' }).eq('id', customer.id);
-            if (error) throw new Error(error.message);
-            await supabaseClient.functions.invoke('dealer-warranty-email', { body: { customer_id: customer.id, kind: 'paid' } });
-          }
-          return new Response(JSON.stringify({ received: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-        }
         // Check if this is a multi-warranty purchase
         if (session.metadata?.is_multi_warranty === "true") {
           logStep("Processing multi-warranty purchase", { sessionId: session.id });
