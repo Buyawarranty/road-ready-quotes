@@ -2,6 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 import { brokeredPreviewStorage } from './previewAuthStorage';
+import { portalAuthScope, portalAuthStorageKey } from '@/lib/portalAuthScope';
+import { readDealerImpersonation } from '@/hooks/useDealerImpersonation';
 
 const SUPABASE_URL = "https://gzauvmzsjchjfozahdxj.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6YXV2bXpzamNoamZvemFoZHhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwOTMyNTEsImV4cCI6MjA4MDY2OTI1MX0.MZ3q7tzW27WP2xEoM9BPN4BDJ4J14sEFiNev2NY6ons";
@@ -9,10 +11,21 @@ const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
+export const activePortalAuthScope = portalAuthScope(
+  window.location.pathname,
+  Boolean(readDealerImpersonation()),
+);
+
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: brokeredPreviewStorage(),
+    storageKey: portalAuthStorageKey('gzauvmzsjchjfozahdxj', activePortalAuthScope),
+    storage: activePortalAuthScope === 'recovery' ? sessionStorage : brokeredPreviewStorage(),
     persistSession: true,
     autoRefreshToken: true,
   }
 });
+
+// Supabase defaults to global logout, which revokes other sessions even with
+// distinct storage keys. Routine portal logout must revoke only this session.
+const signOutCurrentSession = supabase.auth.signOut.bind(supabase.auth);
+supabase.auth.signOut = (options) => signOutCurrentSession(options ?? { scope: 'local' });

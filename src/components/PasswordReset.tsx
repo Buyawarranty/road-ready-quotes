@@ -234,7 +234,10 @@ const PasswordReset = () => {
         // Staff go to the admin dashboard, dealers to the dealer portal.
         const hasAdminRole = (roleData || []).some(r => isAdminRole(r.role as string));
         if (hasAdminRole) {
-          navigate('/admin-dashboard/', { replace: true });
+          // Recovery has its own temporary session; never replace an already
+          // open staff dashboard with the account from a reset email.
+          await supabase.auth.signOut();
+          navigate('/auth/', { replace: true });
         } else {
           // Everyone else signs in again (the dealer login turns away non-dealers) on the dealer login with the new password.
           await supabase.auth.signOut();
