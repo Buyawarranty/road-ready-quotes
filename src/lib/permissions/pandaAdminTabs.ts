@@ -13,9 +13,12 @@ export interface GrantableTab {
   hasGranular: boolean;
 }
 
-export const PANDA_GRANTABLE_TABS: GrantableTab[] = PANDA_SECTION_ORDER.map((s) => ({
-  id: s.id,
-  label: s.label,
-  description: s.description,
-  hasGranular: s.id === 'customers',
+/** Derive checkbox options from the menu; never maintain a second section list. */
+export const buildGrantableTabs = (
+  sections: ReadonlyArray<{ id: string; label: string; description: string }>,
+): GrantableTab[] => sections.map((section) => ({
+  ...section,
+  hasGranular: section.id === 'customers',
 }));
+
+export const PANDA_GRANTABLE_TABS = buildGrantableTabs(PANDA_SECTION_ORDER);

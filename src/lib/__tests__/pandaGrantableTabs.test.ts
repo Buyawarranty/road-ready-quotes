@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { PANDA_SECTION_ORDER } from '../pandaAdminSections';
-import { PANDA_GRANTABLE_TABS } from '../permissions/pandaAdminTabs';
+import { buildGrantableTabs, PANDA_GRANTABLE_TABS } from '../permissions/pandaAdminTabs';
 
 // The access screens must only ever offer the sections the Panda Protect
 // dashboard actually shows, never the Buy A Warranty consumer sections.
@@ -23,7 +23,6 @@ describe('Panda Protect grantable permission sections', () => {
       'analytics',
       'call-tracking',
       'claims',
-      'discount-codes',
       'unsubscribe',
       'blogs-data',
       'landing-pages',
@@ -46,6 +45,7 @@ describe('Panda Protect grantable permission sections', () => {
       'dealer-cancellations',
       'dealer-invoices',
       'trader-pricing',
+      'discount-codes',
       'user-permissions',
       'account',
     ]) {
@@ -64,5 +64,15 @@ describe('Panda Protect grantable permission sections', () => {
   it('only offers extra detail switches where they exist', () => {
     const granular = PANDA_GRANTABLE_TABS.filter((t) => t.hasGranular).map((t) => t.id);
     assert.deepEqual(granular, ['customers']);
+  });
+
+  it('automatically includes a newly created dashboard section as an assignable option', () => {
+    const newSection = { id: 'new-admin-section', label: 'New section', description: 'New dashboard section' };
+    const options = buildGrantableTabs([...PANDA_SECTION_ORDER, newSection]);
+    assert.equal(options.length, PANDA_SECTION_ORDER.length + 1);
+    assert.deepEqual(options.find((option) => option.id === newSection.id), {
+      ...newSection,
+      hasGranular: false,
+    });
   });
 });
