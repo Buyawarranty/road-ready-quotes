@@ -150,9 +150,8 @@ Deno.serve(async (req: Request) => {
     const payable = promo?.total ?? plan.dealer_price;
 
     // Build the customer row payload (shared by both paths)
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + plan.duration_months);
+    const now = new Date();
+    const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
     const customerRow = {
       name: customer.name,
@@ -179,7 +178,7 @@ Deno.serve(async (req: Request) => {
       original_amount: plan.retail_price,
       discount_amount: +(plan.retail_price - payable).toFixed(2),
       discount_code: promo?.code || null,
-      status: 'Active',
+      status: payment_method === 'invoice' ? 'Active' : 'Pending',
       payment_status: payment_method === 'invoice' ? 'invoice_pending' : 'pending',
       purchase_source: 'dealer',
       dealer_id: dealer.id,
@@ -194,13 +193,21 @@ Deno.serve(async (req: Request) => {
     const upsertDealerCustomer = async () => {
       const { data: existing } = await adminClient
         .from('customers')
-        .select('id, payment_status, dealer_id')
+        .select('id, payment_status, dealer_id, payment_verified, stripe_session_id')
         .eq('email', customerRow.email as string)
         .eq('registration_plate', customerRow.registration_plate as string)
         .eq('dealer_id', dealer.id)
         .maybeSingle();
 
       if (existing?.id) {
+        if (existing.payment_verified || existing.payment_status === 'paid' || existing.payment_status === 'invoice_pending') return { error: { message: 'This customer and vehicle already have an issued warranty. Open the existing warranty instead.' } } as const;
+        if (existing.stripe_session_id && STRIPE_KEY) {
+          const previous = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
+          const session = await previous.checkout.sessions.retrieve(existing.stripe_session_id);
+          if (session.status === 'complete') return { error: { message: 'Payment already completed. Open the existing warranty.' } } as const;
+          if (session.status === 'open') await previous.checkout.sessions.expire(session.id);
+          await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('stripe_session_id', session.id).eq('status', 'reserved');
+        }
         const { error: updErr } = await adminClient
           .from('customers')
           .update(customerRow)
@@ -238,7 +245,10 @@ Deno.serve(async (req: Request) => {
       if (!promo) return null;
       const { data, error } = await adminClient.rpc('dealer_promo_amount', { p_code: promoCode, p_dealer_id: dealer.id, p_base: plan.dealer_price, p_customer_id: customerId });
       if (error) throw new Error(error.message);
-      if (Number(data.total) !== payable) throw new Error('Promo code changed. Please apply it again.');
+      if (Number(data.total) !== payable) {
+        await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('id', data.redemption_id);
+        throw new Error('Promo code changed. Please apply it again.');
+      }
       return data.redemption_id as string;
     };
 
