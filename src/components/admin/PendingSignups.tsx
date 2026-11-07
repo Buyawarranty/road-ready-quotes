@@ -3,6 +3,7 @@ import { SidebarAlertPortal } from '@/components/admin/SidebarAlertSlot';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 
 type Signup = { id: string; dealership_name: string | null; created_at: string };
 const PENDING = ['new', 'pending', 'needs_info', 'contacted', 'qualified'];
@@ -76,10 +77,10 @@ export const SignupAlerts: React.FC = () => {
               <div className="text-[11px] text-muted-foreground">
                 {new Date(s.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · waiting to be authorised
               </div>
-              <button type="button" className="mt-1 text-xs font-medium text-primary underline"
-                onClick={() => { navigate('/admin-dashboard/?tab=dealer-dealers&sub=signups'); dismiss(s.id); }}>
+              <Button type="button" variant="link" className="mt-1 h-auto min-h-9 justify-start p-0 text-xs font-medium"
+                onClick={() => { navigate(`/admin-dashboard/?tab=dealer-dealers&sub=signups&id=${encodeURIComponent(s.id)}`); dismiss(s.id); }}>
                 Review sign-up
-              </button>
+              </Button>
             </div>
             <button type="button" aria-label="Dismiss" onClick={() => dismiss(s.id)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
           </div>
