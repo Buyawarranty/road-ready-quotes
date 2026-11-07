@@ -263,24 +263,6 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ customer_id: invoiceCustomerId, method: 'invoice' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    /* Existing invoice upsert is superseded by atomic promo-aware issuance above. */
-    if (false) {
-      const result = await upsertDealerCustomer();
-      if ('error' in result) {
-        console.error('Invoice upsert error', result.error);
-        return new Response(JSON.stringify({ error: result.error.message }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      await notifyDealer(result.id, 'invoice');
-      return new Response(JSON.stringify({ customer_id: result.id, method: 'invoice' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-
     // === WORLDPAY PATH: create the pending customer row, frontend then opens the Worldpay page ===
     if (payment_method === 'worldpay') {
       const result = await upsertDealerCustomer();

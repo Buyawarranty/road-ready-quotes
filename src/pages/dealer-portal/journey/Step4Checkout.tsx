@@ -4,6 +4,7 @@ import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyCo
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { loadStripe } from '@stripe/stripe-js';
@@ -60,6 +61,10 @@ const Step4Checkout: React.FC = () => {
   const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
   const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [promoCode, setPromoCode] = useState('');
+  const [promo, setPromo] = useState<{ code: string; discount_amount: number; total: number } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [checkingPromo, setCheckingPromo] = useState(false);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -95,7 +100,7 @@ const Step4Checkout: React.FC = () => {
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
-  const total = plan.dealer_price;
+  const total = promo?.total ?? plan.dealer_price;
   const options = (plan.selected_options || {}) as Record<string, unknown>;
   const fullPriceBasis = options.price_basis === 'full-warranty';
   const netPrice = fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
@@ -123,7 +128,7 @@ const Step4Checkout: React.FC = () => {
     return error instanceof Error ? error.message : fallback;
   };
 
-  const createRecord = async () => {
+  const createRecord = async (preview = false) => {
     const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
       body: {
         quote_id: quoteId,
@@ -150,11 +155,21 @@ const Step4Checkout: React.FC = () => {
           boost: options.boost === true,
         },
         discount_pct,
+        promo_code: preview ? promoCode : promo?.code,
+        preview_only: preview,
         embedded: method === 'pay_now' && !!stripePromise,
       },
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; client_secret?: string; customer_id?: string };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; code: string; discount_amount: number; total: number };
+  };
+
+  const applyPromo = async () => {
+    setCheckingPromo(true);
+    setPromoError(null);
+    try { const data = await createRecord(true); setPromo({ code: data.code, discount_amount: data.discount_amount, total: data.total }); }
+    catch (error) { setPromo(null); setPromoError(error instanceof Error ? error.message : 'Please check your promo code.'); }
+    finally { setCheckingPromo(false); }
   };
 
   const handleSubmit = async () => {
@@ -212,7 +227,7 @@ const Step4Checkout: React.FC = () => {
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = accountSelected ? 'Issue warranty using dealer account' : `Pay £${total.toFixed(2)} & issue warranty`;
-  const ctaDisabled = submitting || (method === 'invoice' && creditBlocked);
+  const ctaDisabled = submitting || checkingPromo || (method === 'invoice' && creditBlocked);
 
   const Radio = ({ on }: { on: boolean }) => (
     <span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-crm-orange' : 'border-border'}`}>
@@ -353,7 +368,17 @@ const Step4Checkout: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-6 flex items-start justify-between gap-4 border-t border-border pt-5">
+          <div className="mt-6 border-t border-border pt-5">
+            <label htmlFor="dealer-promo" className="mb-2 block text-sm font-bold text-crm-navy">Promo code</label>
+            <div className="flex gap-2">
+              <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder="Enter promo code" className="min-w-0 flex-1" />
+              <Button variant="outline" disabled={!promoCode.trim() || checkingPromo || submitting} onClick={applyPromo}>{checkingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}</Button>
+            </div>
+            {promoError && <div className="mt-2"><DealerFieldError>{promoError}</DealerFieldError></div>}
+            {promo && <div className="mt-3 flex items-center justify-between gap-2 text-sm text-crm-green-deep"><span className="flex items-center gap-1"><Check className="h-4 w-4" />{promo.code} · £{promo.discount_amount.toFixed(2)} off</span><Button variant="ghost" size="sm" onClick={() => { setPromo(null); setPromoCode(''); }}>Remove</Button></div>}
+          </div>
+          {promo && <div className="mt-4 flex justify-between text-sm text-muted-foreground"><span>Before discount</span><span>£{plan.dealer_price.toFixed(2)}</span></div>}
+          <div className="mt-5 flex items-start justify-between gap-4 border-t border-border pt-5">
             <p className="text-lg font-bold text-crm-navy">Total payable to Panda Protect</p>
             <div className="text-right">
               <p className="text-3xl font-extrabold text-crm-navy">£{total.toFixed(2)}</p>
