@@ -8,6 +8,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { redirectWwwToNonWww } from "@/utils/wwwRedirect";
 import { preloadCriticalRoutes } from "@/utils/preloadRoutes";
+import { PortalSessionBoundary } from '@/components/PortalSessionBoundary';
 
 // Eager load critical components
 import Index from "./pages/Index";
@@ -306,6 +307,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PortalSessionBoundary>
             <ScrollToTop />
             <PageViewTracker />
             <PageViewLogger />
@@ -426,6 +428,7 @@ const App = () => {
               </ConditionalMain>
               <ConditionalFooter />
             </div>
+            </PortalSessionBoundary>
           </BrowserRouter>
         </CartProvider>
       </SubscriptionProvider>
