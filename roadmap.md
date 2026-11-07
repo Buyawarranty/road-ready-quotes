@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Confirm KAM LTD is active and signed in; prevent endless dealer session/profile loading with bounded requests, retry controls and stale-result guards. 17 targeted tests pass.
+- [ ] Verify KAM LTD’s signed-in pricing page after publication; external authentication is unavailable, so the original first-login stall could not be reproduced with its account.
 - [x] Add Admin/Super Admin-only Panda dealer discount management and validated checkout promo entry; 36 rule/regression tests pass; payment functions deployed.
 - [ ] Verify signed-in code creation, checkout redemption and payment return; external authentication is unavailable. Automatic Stripe webhook confirmation remains blocked by the missing STRIPE_WEBHOOK_SECRET; authenticated payment-return confirmation is implemented.
 - [x] Add personal saved quick links above every admin section, with selection and individual removal matching the reference; 13 tests and isolated desktop/mobile interactions pass.
