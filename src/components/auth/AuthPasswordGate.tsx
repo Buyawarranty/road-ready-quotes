@@ -37,7 +37,8 @@ export const AuthPasswordGate = ({ onUnlock }: AuthPasswordGateProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password === GATE_PASSWORD) {
+    // Tolerate spaces/line breaks picked up when copying it from an email.
+    if (password.trim() === GATE_PASSWORD) {
       // Store in session storage so user doesn't have to re-enter during session
       sessionStorage.setItem('authPageUnlocked', 'true');
       onUnlock();

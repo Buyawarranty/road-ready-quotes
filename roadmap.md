@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Apply the exact requested login fixes A–G, run focused regression tests, confirm frontend compilation and deploy dealer-signup-decision; live authenticated login verification is unavailable with external authentication.
 - [x] Set boost net profit to £100/£200/£300/£400 for one–four years using customer add-ons £120/£240/£360/£480 and unchanged dealer costs; only the Panda annual plan was updated, with 41 pricing/checkout tests passing. Live signed-in checkout remains unavailable with external authentication.
 - [x] Remove the term and price between ENTER REG and Get prices; retain pricing after vehicle lookup.
 - [x] Diagnose checkout duplicate-key failure, normalize email/plate matching, preserve owned unpaid records and protect paid/other-dealer records; targeted regression tests added.

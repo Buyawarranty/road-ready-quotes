@@ -1,4 +1,5 @@
 # Architecture rules
+- Staff and dealer password sign-in share tolerantSignIn: trim email, try the original password first and retry trimmed once only on invalid credentials; approval preserves existing dealer passwords except explicit resend, preventing copied whitespace and re-approval lockouts.
 - Dealer checkout matches the global normalized email/plate key before reuse, requires own Panda dealer ownership and unpaid state, and retries duplicate insert races once; paid cover stays untouched.
 - Customer-details field errors derive from dealerCustomerValidation and render through DealerFieldError; submit reveals all missing fields and focuses the first, keeping messages aligned with validation.
 - Assisted dealer checkout uses the explicit pending-details marker with blank unknown customer fields; both journey pages permit payment without bypassing signed payment confirmation.
