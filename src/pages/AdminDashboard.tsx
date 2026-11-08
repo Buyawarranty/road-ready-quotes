@@ -1251,10 +1251,10 @@ const AdminDashboardInner: React.FC<{
       />
 
 
-      <div className="flex-1 flex flex-col lg:flex-row">
+      <div className="min-w-0 flex-1 flex flex-col lg:flex-row">
         <AdminSidebar activeTab={activeTab} onTabChange={handleTabChange} userRole={displayRole} userPermissions={displayPermissions} />
         
-        <div className={`flex-1 ${sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64'} overflow-hidden transition-[margin] duration-300`}>
+        <div className={`min-w-0 flex-1 ${sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-64'} overflow-hidden transition-[margin] duration-300`}>
           <FrequentTabsBar
             userId={session?.user?.id ?? null}
             activeTab={activeTab}
@@ -1262,7 +1262,7 @@ const AdminDashboardInner: React.FC<{
             allowedTabIds={PANDA_SECTION_ORDER.filter((section) => isTabAllowedForRole(section.id, displayRole, displayPermissions)).map((section) => section.id)}
             readOnly={isImpersonating}
           />
-          <main className="p-4 lg:p-6 overflow-y-auto h-[calc(100vh-104px)]">
+          <main className="admin-mobile-content min-w-0 p-3 sm:p-4 lg:p-6 overflow-y-auto lg:h-[calc(100dvh-104px)]">
             <TabErrorBoundary tabKey={activeTab} onRetry={() => window.location.reload()}>
               <Suspense fallback={<TabFallback />}>
                 {renderContent(displayRole, displayPermissions)}

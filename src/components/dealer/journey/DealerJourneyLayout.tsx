@@ -156,7 +156,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                 size="sm"
                 disabled={saving || !vehicle?.reg}
                 onClick={handleSaveAndExit}
-                className="border-orange-500/40 bg-transparent text-orange-600 hover:bg-orange-100 hover:text-orange-300"
+                className="min-h-11 border-orange-500/40 bg-transparent text-orange-600 hover:bg-orange-100 hover:text-orange-300"
               >
                 {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
                 Save & exit
