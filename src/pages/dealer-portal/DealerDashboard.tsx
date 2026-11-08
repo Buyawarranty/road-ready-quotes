@@ -69,7 +69,7 @@ export default function DealerDashboard() {
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
               <Input value={reg} onChange={event => { setReg(event.target.value.toUpperCase()); setRegMissing(false); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()} />
             </div>
-            <Button type="submit" className="h-14 gap-2 px-5 font-bold sm:h-auto sm:self-stretch">Get quote <ArrowRight className="h-4 w-4" /></Button>
+            <Button type="submit" className="h-16 gap-3 px-6 text-xl font-extrabold sm:h-auto sm:min-h-16 sm:self-stretch [&_svg]:h-6 [&_svg]:w-6">Get quote <ArrowRight aria-hidden="true" /></Button>
           </div>
           <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/pricing')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
