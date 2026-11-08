@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Tidy mobile dealer quote spacing, centre key headings and notices, and check narrow-screen layouts.
+- [x] Tidy mobile quote, customer-view and dealer-login spacing; centre key headings and notices, align journey gutters. Isolated pricing/mileage controls checked at 320/393/768/1280px with no overflow or runtime errors; 20 pricing tests pass and build OK. Live signed-in verification remains unavailable with external authentication.
 - [x] Replace Panda logo across visible branding, email headers and search identity; optimise web asset and refresh favicon.
 - [x] Verify new logo bytes render at desktop/mobile sizes (local preview asset request fulfilled from verified live CDN bytes); affected email functions deployed. Live site branding requires publication; inbox delivery and search indexing are not verified.
 - [x] Add eye controls to all missing password fields; dealer settings visibility toggles verified independently on desktop/mobile in isolation without changing any account password, existing dealer login eye confirmed, build OK.
