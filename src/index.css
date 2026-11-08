@@ -175,6 +175,25 @@
   font-size: clamp(0.9rem, 10cqi, 1.25rem);
 }
 
+.dealer-crm .vehicle-reg-plate--entry {
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+}
+
+.dealer-crm .vehicle-reg-plate--entry .vehicle-reg-plate__input {
+  width: 100%;
+  padding: 0 0.125rem;
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .dealer-crm .vehicle-reg-plate--entry {
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+  .dealer-crm .vehicle-reg-plate--entry .vehicle-reg-plate__input {
+    font-size: 1rem;
+  }
+}
+
 
 .dealer-crm .vehicle-reg-plate--highlight {
   border-color: hsl(var(--crm-orange));
