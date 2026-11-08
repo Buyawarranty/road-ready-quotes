@@ -133,8 +133,13 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => (backTo ? navigate(backTo) : navigate(-1))}
-                  className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  onClick={() => {
+                    if (backTo) { navigate(backTo); return; }
+                    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
+                    if (idx > 0) navigate(-1);
+                    else navigate('/dealer-portal/dashboard');
+                  }}
+                  className="h-11 gap-2 px-3 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" /> Back
                 </Button>
