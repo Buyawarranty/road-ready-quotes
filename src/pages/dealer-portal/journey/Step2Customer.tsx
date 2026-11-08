@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
@@ -34,7 +35,7 @@ const Step2Customer: React.FC = () => {
   const { save, saving } = useDealerQuoteSave(2);
 
   const hasDetails = Boolean(customer?.name && !customer.address_line2?.startsWith('[Pending:'));
-  const [mode, setMode] = useState<Mode>(hasDetails ? 'self' : 'panda');
+  const [mode, setMode] = useState<Mode>('self');
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [note, setNote] = useState('');
   const [manualAddress, setManualAddress] = useState(hasDetails);
@@ -230,10 +231,31 @@ const Step2Customer: React.FC = () => {
 
         {error && <DealerFieldError>{error}</DealerFieldError>}
 
-        <Button type="button" disabled={saving} onClick={mode === 'panda' ? handoff : submitSelf}
-          className="h-auto min-h-12 w-full min-w-0 gap-2 whitespace-normal px-3 py-3 text-sm font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:ml-auto sm:mr-0 sm:flex sm:w-auto sm:min-w-[320px] sm:px-6 sm:text-base">
-          {saving ? <><Loader2 className="h-5 w-5 animate-spin" />Saving…</> : mode === 'panda' ? <>Request Panda Protect assistance<ArrowRight className="h-5 w-5" /></> : <>Continue to checkout<ArrowRight className="h-5 w-5" /></>}
-        </Button>
+        <div className="grid gap-3 sm:flex sm:justify-end" aria-label="Customer details actions">
+          <Button type="button" disabled={saving} onClick={() => {
+            if (mode === 'panda') {
+              setMode('self');
+              window.setTimeout(() => { const name = document.getElementById('c-name'); name?.scrollIntoView({ behavior: 'smooth', block: 'center' }); name?.focus({ preventScroll: true }); }, 0);
+              return;
+            }
+            submitSelf();
+          }} className="order-first h-auto min-h-12 min-w-0 gap-2 whitespace-normal px-4 py-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:order-last sm:text-base">
+            Continue to checkout<ArrowRight className="h-5 w-5 shrink-0" />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button type="button" variant="outline" disabled={saving} className="h-auto min-h-12 gap-2 whitespace-normal border-2 !border-crm-orange !bg-card px-4 py-3 text-sm font-bold !text-crm-orange hover:!bg-crm-orange-soft sm:text-base"><Headset className="h-5 w-5 shrink-0" />Need help or advice?</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild><a href="tel:03302295045"><Phone className="h-4 w-4" />Call us</a></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                if (mode === 'panda' && channel === 'whatsapp') { void handoff(); return; }
+                window.open(`https://wa.me/${PANDA_WHATSAPP}?text=${encodeURIComponent(`Hi Panda Protect, I'd like help with my warranty quote${vehicle?.reg ? ` for ${vehicle.reg}` : ''}.`)}`, '_blank', 'noopener,noreferrer');
+              }}><MessageCircle className="h-4 w-4" />WhatsApp us</DropdownMenuItem>
+              {mode === 'panda' && channel === 'email' && <DropdownMenuItem onClick={() => { void handoff(); }}><Mail className="h-4 w-4" />Email customer details</DropdownMenuItem>}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </DealerJourneyLayout>
   );
