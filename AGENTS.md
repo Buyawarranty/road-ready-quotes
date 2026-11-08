@@ -1,4 +1,5 @@
 # Architecture rules
+- Shared dialog and alert-dialog content enforce viewport centring, desktop width caps, edge gutters, internal scrolling and consistent padding so page overrides cannot stretch pop-ups across the screen.
 - Use the shared PasswordInput for new password entry fields, with independent show/hide controls; preserve existing eye-enabled fields to avoid duplicate controls.
 - Derive all staff section checkbox options from the Panda dashboard section catalog via buildGrantableTabs; never maintain a duplicate permission list, so each new section is automatically assignable without changing existing role or data restrictions.
 - Dealer card checkout creates only Pending/unverified Panda dealer rows; the customer status constraint permits that scoped state and signed payment confirmation activates cover, so opening checkout cannot issue unpaid warranties.
