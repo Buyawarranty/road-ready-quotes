@@ -248,7 +248,7 @@ const Step3Pricing: React.FC = () => {
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
           return <div role="radio" aria-checked={selected} aria-disabled={!available} tabIndex={available ? 0 : -1} key={months} onClick={() => { if (available) { setTerm(months); setError(''); } }} onKeyDown={event => { if (event.target === event.currentTarget && available && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setTerm(months); setError(''); } }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${!available ? 'opacity-60' : 'cursor-pointer'} ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-            <span className="flex h-5 items-center"><span className={`rounded-full bg-crm-navy px-2.5 py-0.5 text-[0.62rem] font-black uppercase tracking-[0.1em] text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span></span>
+            <span className="mb-3 flex h-6 items-center"><span className={`rounded-full bg-crm-green-deep px-3 py-1 text-[0.62rem] font-black uppercase text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span></span>
             <span className="flex items-start justify-between gap-2">
               <strong className="text-xl font-black leading-6">{months / 12} Year Warranty</strong>
 
