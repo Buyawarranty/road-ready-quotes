@@ -192,14 +192,14 @@ const Step3Pricing: React.FC = () => {
   if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
-    <header className="text-center sm:text-left">
+    <header className="px-1 pb-1 text-center sm:px-0 sm:text-left">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p></div>
     </header>
-    <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card px-3 py-3 sm:flex sm:flex-wrap sm:gap-3 sm:px-4" aria-label="Vehicle">
+    <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
         <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
-          <div className="flex min-w-0 flex-nowrap items-center gap-2 sm:gap-3">
-            <div className="w-28 shrink-0 sm:w-44"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim">
+          <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 sm:flex sm:gap-3">
+            <div className="min-w-0 sm:w-44 sm:shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim vehicle-reg-plate--entry">
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
               <input value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
