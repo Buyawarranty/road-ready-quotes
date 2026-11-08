@@ -112,12 +112,12 @@ const Step2Customer: React.FC = () => {
   const OptionCard: React.FC<{ value: Mode; icon: React.ElementType; title: string; sub: string }> = ({ value, icon: Icon, title, sub }) => {
     const active = mode === value;
     return (
-      <button type="button" role="radio" aria-checked={active} onClick={() => setMode(value)}
-        className={`flex flex-1 items-start gap-4 rounded-xl border-2 p-4 text-left text-crm-navy transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-        <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${active ? 'bg-crm-orange/15 text-crm-orange' : 'bg-muted text-crm-navy'}`}><Icon className="h-6 w-6" /></span>
-        <span className="min-w-0 flex-1"><span className="block text-lg font-bold leading-6">{title}</span><span className="mt-1 block text-sm text-muted-foreground">{sub}</span></span>
+      <Button variant="outline" type="button" role="radio" aria-checked={active} onClick={() => setMode(value)}
+        className={`flex h-auto min-w-0 flex-1 items-start gap-3 whitespace-normal rounded-lg border-2 p-3 text-left text-crm-navy transition sm:p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-crm-orange/15 text-crm-orange' : 'bg-muted text-crm-navy'}`}><Icon className="h-5 w-5" /></span>
+        <span className="min-w-0 flex-1"><span className="block text-base font-bold leading-6">{title}</span><span className="mt-1 block text-sm font-normal leading-5 text-muted-foreground">{sub}</span></span>
         <RadioDot active={active} />
-      </button>
+      </Button>
     );
   };
 
@@ -157,11 +157,10 @@ const Step2Customer: React.FC = () => {
 
   return (
     <DealerJourneyLayout step={2} title="Customer details" subtitle="How would you like to complete this warranty?" backTo="/dealer-portal/quote/pricing">
-      <div className="space-y-5 text-crm-navy">
-        <section className="rounded-2xl border border-crm-line bg-card p-5 sm:p-6" aria-label="How to complete this warranty">
-          <p className="text-xs font-bold uppercase tracking-widest text-crm-orange">Customer details</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-crm-navy sm:text-3xl">Who completes the details?</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Send them to us, or enter them yourself now.</p>
+      <div className="min-w-0 space-y-4 text-crm-navy sm:space-y-5">
+        <section aria-label="How to complete this warranty">
+          <h2 className="text-center text-lg font-extrabold text-crm-navy sm:text-left sm:text-2xl">Who completes the details?</h2>
+          <p className="mt-1 text-center text-sm leading-5 text-muted-foreground sm:text-left">Send them to us, or enter them yourself now.</p>
           <div className="mt-4 flex flex-col gap-3 sm:flex-row" role="radiogroup" aria-label="How to complete this warranty">
             <OptionCard value="panda" icon={Headset} title="Panda Protect does it for you" sub="Send us the customer details and we'll process the warranty for you." />
             <OptionCard value="self" icon={Pencil} title="I'll enter the details" sub="Complete the customer information now." />
@@ -169,18 +168,18 @@ const Step2Customer: React.FC = () => {
         </section>
 
         {mode === 'panda' ? (
-          <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
+          <section className="min-w-0 space-y-4 border-t border-crm-line pt-4 sm:pt-5">
             <h2 className="text-lg font-bold">Send us the details</h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Send by">
               {([{ key: 'whatsapp', icon: MessageCircle, label: 'WhatsApp' }, { key: 'email', icon: Mail, label: 'Email' }] as const).map(({ key, icon: Icon, label }) => {
                 const active = channel === key;
                 return (
-                  <button key={key} type="button" role="radio" aria-checked={active} onClick={() => setChannel(key)}
-                    className={`flex items-center gap-4 rounded-xl border-2 p-3 text-left transition ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-                    <span className={`flex h-12 w-12 items-center justify-center rounded-lg ${key === 'whatsapp' ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy'}`}><Icon className="h-6 w-6" /></span>
+                  <Button variant="outline" key={key} type="button" role="radio" aria-checked={active} onClick={() => setChannel(key)}
+                    className={`flex h-auto items-center gap-3 rounded-lg border-2 p-3 text-left transition ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${key === 'whatsapp' ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy'}`}><Icon className="h-5 w-5" /></span>
                     <span className="flex-1 text-lg font-bold">{label}</span>
                     <RadioDot active={active} />
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -188,10 +187,10 @@ const Step2Customer: React.FC = () => {
               <label htmlFor="handoff-note" className="mb-1 block text-sm font-medium">Quick note (optional)</label>
               <Textarea id="handoff-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Customer details coming this afternoon." />
             </div>
-            <p className="flex items-start gap-2 text-sm text-muted-foreground"><Info className="mt-0.5 h-4 w-4 shrink-0" />Your quote reference, vehicle and selected warranty are included automatically. The quote is saved as <strong className="text-crm-navy">Awaiting Panda Protect</strong> until we've activated it.</p>
+            <p className="flex items-start gap-2 text-sm leading-5 text-muted-foreground"><Info className="mt-0.5 h-4 w-4 shrink-0" /><span className="min-w-0">Your quote reference, vehicle and selected warranty are included automatically. The quote is saved as <strong className="text-crm-navy">Awaiting Panda Protect</strong> until we've activated it.</span></p>
           </section>
         ) : (
-          <section className="space-y-4 rounded-xl border border-crm-line bg-card p-4 sm:p-5">
+          <section className="min-w-0 space-y-4 border-t border-crm-line pt-4 sm:pt-5">
             <h2 className="text-lg font-bold text-crm-navy">Customer details</h2>
             {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
             {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
@@ -232,7 +231,7 @@ const Step2Customer: React.FC = () => {
         {error && <DealerFieldError>{error}</DealerFieldError>}
 
         <Button type="button" disabled={saving} onClick={mode === 'panda' ? handoff : submitSelf}
-          className={`h-14 w-full gap-2 px-6 text-base font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:ml-auto sm:mr-0 sm:flex sm:w-auto sm:min-w-[320px] ${saving ? '' : 'animate-breathing'}`}>
+          className="h-auto min-h-12 w-full min-w-0 gap-2 whitespace-normal px-3 py-3 text-sm font-bold !transition-none !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:ml-auto sm:mr-0 sm:flex sm:w-auto sm:min-w-[320px] sm:px-6 sm:text-base">
           {saving ? <><Loader2 className="h-5 w-5 animate-spin" />Saving…</> : mode === 'panda' ? <>Request Panda Protect assistance<ArrowRight className="h-5 w-5" /></> : <>Continue to checkout<ArrowRight className="h-5 w-5" /></>}
         </Button>
       </div>
