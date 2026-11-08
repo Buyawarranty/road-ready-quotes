@@ -6,6 +6,7 @@ import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
+import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -157,7 +158,7 @@ Deno.serve(async (req: Request) => {
 
     const customerRow = {
       name: customer.name,
-      email: customer.email.toLowerCase().trim(),
+      email: normalizeCheckoutEmail(customer.email),
       phone: customer.phone,
       first_name: customer.name.split(' ')[0] || customer.name,
       last_name: customer.name.split(' ').slice(1).join(' ') || null,
@@ -166,7 +167,7 @@ Deno.serve(async (req: Request) => {
       town: customer.town,
       postcode: customer.postcode.toUpperCase(),
       country: 'United Kingdom',
-      registration_plate: vehicle.reg.toUpperCase(),
+      registration_plate: normalizeCheckoutPlate(vehicle.reg),
       vehicle_make: vehicle.make || null,
       vehicle_model: vehicle.model || null,
       vehicle_year: vehicle.year || null,
@@ -190,17 +191,27 @@ Deno.serve(async (req: Request) => {
 
     // Helper: upsert dealer customer row by (email, registration_plate) for this dealer.
     // Reuses an existing dealer-owned pending row instead of failing on the unique index.
-    const upsertDealerCustomer = async () => {
-      const { data: existing } = await adminClient
+    const findExistingCustomer = async () => {
+      // Match the database's global normalized key, then enforce ownership before reuse.
+      const emailPattern = (customerRow.email as string).replace(/[\\%_]/g, '\\$&');
+      const platePattern = (customerRow.registration_plate as string).replace(/[\\%_]/g, '\\$&').split('').join('%');
+      const { data, error } = await adminClient
         .from('customers')
-        .select('id, payment_status, dealer_id, payment_verified, stripe_session_id')
-        .eq('email', customerRow.email as string)
-        .eq('registration_plate', customerRow.registration_plate as string)
-        .eq('dealer_id', dealer.id)
-        .maybeSingle();
+        .select('id, email, registration_plate, payment_status, dealer_id, brand, purchase_source, payment_verified, stripe_session_id')
+        .ilike('email', emailPattern)
+        .ilike('registration_plate', `%${platePattern}%`)
+        .in('status', ['Active', 'Pending', 'active', 'pending'])
+        .or('is_deleted.is.null,is_deleted.eq.false');
+      if (error) throw new Error('Unable to check the existing warranty record. Please try again.');
+      return data?.find(row => normalizeCheckoutEmail(row.email || '') === customerRow.email && normalizeCheckoutPlate(row.registration_plate || '') === customerRow.registration_plate);
+    };
+
+    const upsertDealerCustomer = async (retry = true): Promise<{ id: string } | { error: { message: string } }> => {
+      const existing = await findExistingCustomer();
 
       if (existing?.id) {
-        if (existing.payment_verified || existing.payment_status === 'paid' || existing.payment_status === 'invoice_pending') return { error: { message: 'This customer and vehicle already have an issued warranty. Open the existing warranty instead.' } } as const;
+        const reuseError = dealerCheckoutReuseError(existing, dealer.id);
+        if (reuseError) return { error: { message: reuseError } };
         if (existing.stripe_session_id && STRIPE_KEY) {
           const previous = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
           const session = await previous.checkout.sessions.retrieve(existing.stripe_session_id);
@@ -221,7 +232,8 @@ Deno.serve(async (req: Request) => {
         .insert(customerRow)
         .select('id')
         .single();
-      if (insertErr) return { error: insertErr } as const;
+      if (insertErr?.code === '23505' && retry) return upsertDealerCustomer(false);
+      if (insertErr) return { error: { message: insertErr.code === '23505' ? 'This warranty is being processed. Please wait a moment and try again.' : insertErr.message } };
       return { id: inserted.id } as const;
     };
 
@@ -254,13 +266,18 @@ Deno.serve(async (req: Request) => {
 
     // === INVOICE PATH ===
     if (payment_method === 'invoice') {
+      const existing = await findExistingCustomer();
+      if (existing) {
+        const reuseError = dealerCheckoutReuseError(existing, dealer.id);
+        throw new Error(reuseError || 'An unpaid card checkout already exists for this quote. Complete the card payment or contact Panda Protect to change the billing method.');
+      }
       // Reserve before issuance, then record this issued invoice as a completed use.
       const invoiceCustomerId = crypto.randomUUID();
       const redemptionId = await reservePromo(invoiceCustomerId);
       const { error: invoiceError } = await adminClient.from('customers').insert({ ...customerRow, id: invoiceCustomerId });
       if (invoiceError) {
         if (redemptionId) await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('id', redemptionId);
-        throw new Error(invoiceError.message);
+        throw new Error(invoiceError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review the existing warranty.' : invoiceError.message);
       }
       if (redemptionId) {
         const invoiceKey = `invoice:${invoiceCustomerId}`;

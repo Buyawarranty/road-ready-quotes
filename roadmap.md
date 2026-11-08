@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Diagnose checkout duplicate-key failure, normalize email/plate matching, preserve owned unpaid records and protect paid/other-dealer records; targeted regression tests added.
 - [x] Restore inline errors for blank and invalid customer fields, reveal address fields and focus the first error; six tests pass and isolated mobile/desktop form checks confirm errors clear after correction.
 - [x] Keep assisted customer details selected when proceeding to checkout, allow card payment, and leave unknown customer details blank; targeted rule tests added. Live authenticated payment remains unavailable with external authentication.
 - [x] Refresh Quotes page spacing, orange registration search, compact heading/filters and touch-friendly quote actions; isolated search/clear/sort/empty states verified at 320/393/1280px, no overflow or runtime errors, build OK. Live dealer records remain unverified with external authentication.
