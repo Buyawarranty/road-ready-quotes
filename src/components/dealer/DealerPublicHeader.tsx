@@ -110,29 +110,33 @@ export const DealerPublicHeader: React.FC = () => {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="public-mobile-menu w-[min(90vw,380px)] overflow-y-auto">
-                <div className="flex h-full flex-col pt-8">
-                  <OptimizedImage src={pandaProtectLogo} alt="Panda Protect" className="h-10 w-auto self-start object-contain" width={1226} height={594} />
-                  <div className="mt-6 grid gap-3">
-                    <Button asChild className="home-header-quote-link"><Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Dealer Sign Up <ArrowRight /></Link></Button>
-                    <Button asChild variant="outline" className="home-header-login-link"><Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)}><LogIn /> Login</Link></Button>
-                  </div>
-                  <nav className="mt-5 flex flex-col" aria-label="Mobile navigation">
+              <SheetContent side="right" className="public-mobile-menu w-[min(92vw,420px)] overflow-y-auto">
+                <div className="flex h-full flex-col px-2 pt-6 pb-6">
+                  <OptimizedImage src={pandaProtectLogo} alt="Panda Protect" className="h-9 w-auto self-start object-contain" width={1226} height={594} />
+
+                  <nav className="mt-9 flex flex-col gap-6" aria-label="Mobile navigation">
                     {NAV_ITEMS.map((item) => (
                       <Link key={item.label} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined} onClick={() => setMobileOpen(false)} className={`public-mobile-nav-link${location.pathname === item.to ? ' is-active' : ''}`}>
-                        {item.label}<ArrowRight aria-hidden="true" />
+                        {item.label}
                       </Link>
                     ))}
+                    <Link to="/dealer-portal/login" onClick={() => setMobileOpen(false)} className="public-mobile-nav-link public-mobile-login-link">
+                      <LogIn aria-hidden="true" /> Login
+                    </Link>
                   </nav>
 
                   <div className="public-mobile-contact">
-                    <div className="public-call-hours"><Clock3 aria-hidden="true" /> Mon-Fri 9am to 5:30pm</div>
+                    <div className="public-call-hours"><Clock3 aria-hidden="true" /> Mon-Sat 9am to 6pm</div>
                     <a href="tel:03309122535" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 912 2535</small></span></a>
                     <a href="tel:03302295045" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Make a Claim</strong><small>0330 229 5045</small></span></a>
                     <Button type="button" variant="ghost" className="public-callback-option" onClick={openCallback}><PhoneCall aria-hidden="true" /><span><strong>Request Call-Back</strong><small>We'll call you back</small></span></Button>
-                    <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="public-whatsapp-option"><MessageCircle aria-hidden="true" /><span><strong>WhatsApp Us</strong><small>Start a chat</small></span></a>
                   </div>
 
+                  <div className="mt-auto pt-6">
+                    <Button asChild className="home-header-quote-link w-full !min-h-[52px] text-base">
+                      <Link to="/dealer-portal/signup" onClick={() => setMobileOpen(false)}>Dealer Sign Up <ArrowRight aria-hidden="true" /></Link>
+                    </Button>
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
