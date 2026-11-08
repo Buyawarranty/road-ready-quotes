@@ -1,4 +1,5 @@
-import { test, expect } from 'bun:test';
+import { it as test } from 'node:test';
+import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 // Execute the actual approval branch without changing any live account.
@@ -19,8 +20,8 @@ for (const scenario of [
       from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: scenario.prior }) }) }) }),
       auth: { admin: { updateUserById: async (...args: any[]) => { updates.push(args); } } },
     };
-    expect(await runBranch(admin, { id: 'account', user_metadata: { retained: true } }, scenario.resend, 'Temporary!7')).toBe(scenario.password);
-    expect(updates.length).toBe(scenario.updates);
-    if (scenario.updates) expect(updates[0]).toEqual(['account', { password: 'Temporary!7', user_metadata: { retained: true, must_change_password: true } }]);
+    assert.equal(await runBranch(admin, { id: 'account', user_metadata: { retained: true } }, scenario.resend, 'Temporary!7'), scenario.password);
+    assert.equal(updates.length, scenario.updates);
+    if (scenario.updates) assert.deepEqual(updates[0], ['account', { password: 'Temporary!7', user_metadata: { retained: true, must_change_password: true } }]);
   });
 }
