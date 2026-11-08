@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Replace Panda logo across visible branding, email headers and search identity; optimise web asset and refresh favicon.
+- [ ] Verify logo rendering and affected email deployments.
 - [x] Add eye controls to all missing password fields; dealer settings visibility toggles verified independently on desktop/mobile in isolation without changing any account password, existing dealer login eye confirmed, build OK.
 - [x] Keep new dashboard sections automatically available as User permissions checkboxes from the shared section catalog; add a regression test covering a newly added section.
 - [x] Make saved shortcuts real dashboard links and prevent delayed access checks from replacing a clicked section; isolated BDM/Dealers browser clicks and 13 tests pass, live signed-in check requires external session.
