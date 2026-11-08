@@ -400,7 +400,7 @@ const KiaWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -496,7 +496,7 @@ const KiaWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
@@ -507,7 +507,7 @@ const KiaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Panda Protect",
-    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "url": "https://pandaprotect.co.uk",
     "telephone": "+44-800-917-9270",
     "email": "support@pandaprotect.co.uk",
@@ -584,7 +584,7 @@ const KiaWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Comprehensive Kia warranty coverage for Sportage, Ceed, Niro, Sorento, Picanto, Rio, EV6 and EV9. GDi engines, gearbox, electrics and more. Nationwide UK coverage with any VAT-registered garage." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/kia-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Kia Extended Warranty UK - Panda Protect" />
@@ -594,7 +594,7 @@ const KiaWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Kia Warranty UK | Sportage, Ceed, Niro, Sorento, EV6 from £24/mo" />
         <meta name="twitter:description" content="Protect your Kia Sportage, Ceed, Niro, Sorento with comprehensive extended warranty. EV and hybrid models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Kia extended warranty services in the UK, covering Sportage, Ceed, Niro, Sorento, Picanto, Rio, Stonic, EV6, and EV9 models. Human-authored and fact-checked." />
         <meta name="ai-summary" content="Panda Protect offers comprehensive Kia extended warranty plans in the UK from £24/month. Coverage includes GDi/T-GDi engines, DCT gearboxes, Kia Connect infotainment, electrical, hybrid and EV components for all Kia models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />

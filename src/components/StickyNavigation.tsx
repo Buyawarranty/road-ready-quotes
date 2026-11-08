@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Phone, Clock, PhoneCall, LogIn, ArrowRight } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import MobileNavigation from '@/components/MobileNavigation';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { useIsMobile } from '@/hooks/use-mobile';

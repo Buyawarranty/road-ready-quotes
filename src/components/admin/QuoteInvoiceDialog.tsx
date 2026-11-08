@@ -27,7 +27,7 @@ import { Download, FileText, Mail, RefreshCw } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 
-import logoAsset from '@/assets/buyawarranty-logo.png.asset.json';
+import logoAsset from '@/assets/panda-protect-logo-current.png.asset.json';
 
 const VAT_RATE = 0.2;
 

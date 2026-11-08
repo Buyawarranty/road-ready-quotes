@@ -89,7 +89,7 @@ const LandRoverWarranty: React.FC = () => {
         canonical="https://pandaprotect.co.uk/car-extended-warranty/land-rover/"
         ogTitle="Land Rover Extended Warranty UK | Defender, Range Rover & Discovery Cover"
         ogDescription="Affordable extended warranty for all Land Rover models 2012–2026. Instant quotes, flexible plans, 120,000-mile limit. Protect your Defender, Range Rover, Discovery or Evoque today."
-        ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        ogImage="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
         geoRegion="GB"
         geoPlacename="United Kingdom"
         geoPosition="54.5;-4.5"
@@ -110,7 +110,7 @@ const LandRoverWarranty: React.FC = () => {
         priceCurrency="GBP"
         brand="Panda Protect"
         category="Land Rover Extended Warranty & Vehicle Protection"
-        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
         availability="InStock"
         areaServed="GB"
       />

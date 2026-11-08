@@ -208,7 +208,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "name": "Vauxhall Extended Warranty UK",
     "description": "Comprehensive extended warranty for Vauxhall models including Corsa, Astra, Grandland, Mokka, Insignia, Crossland, Corsa-e, Mokka-e. Turbo engines, auto gearbox, EV components covered.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
     "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
@@ -248,7 +248,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016.",
     "foundingDate": "2016",
     "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" },
@@ -294,7 +294,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Comprehensive Vauxhall warranty coverage. Engine, gearbox, electrics & more. All models covered including EV. Any UK garage." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/vauxhall-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Vauxhall Extended Warranty UK - Panda Protect" />
@@ -303,7 +303,7 @@ const VauxhallWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Vauxhall Extended Warranty UK | From £19/month" />
         <meta name="twitter:description" content="UK's top-rated Vauxhall warranty. Corsa, Astra, Grandland & all models. 8,000+ components. Any UK garage." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta name="ai-content-declaration" content="This page provides information about Vauxhall extended warranty services in the UK. Human-authored and fact-checked." />
         <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="Panda Protect" />

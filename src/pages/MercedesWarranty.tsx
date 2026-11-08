@@ -111,7 +111,7 @@ const MercedesWarranty = () => {
         keywords="mercedes extended warranty, mercedes warranty UK, used mercedes warranty, mercedes c class warranty, mercedes e class warranty, mercedes amg warranty, mercedes benz warranty, mercedes used car warranty, mercedes high mileage warranty"
         ogTitle="Mercedes-Benz Extended Warranty | Protect Your Mercedes from £24/month"
         ogDescription="UK's trusted Mercedes extended warranty. Covers engine, gearbox, MBUX, electrics & more. High-mileage cover up to 120,000 miles. 14-day money back guarantee."
-        ogImage="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        ogImage="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
         canonical="https://pandaprotect.co.uk/warranty-types/mercedes/"
         geoRegion="GB"
         geoPlacename="United Kingdom"
@@ -137,7 +137,7 @@ const MercedesWarranty = () => {
         price="24.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
         availability="InStock"
         areaServed="United Kingdom"
       />

@@ -98,7 +98,7 @@ const HyundaiWarranty = () => {
         price="300.00"
         brand="Panda Protect"
         category="Car Insurance & Warranty"
-        image="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png"
+        image="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
         availability="https://schema.org/InStock"
         areaServed="United Kingdom"
       />

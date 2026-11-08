@@ -25,7 +25,7 @@ const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));
 const WarrantyBenefitsSection = lazy(() => import('@/components/homepage/WarrantyBenefitsSection'));
 
 // Assets - reuse shared assets
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 import trustpilotExcellent from '@/assets/trustpilot-excellent-box.webp';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
@@ -390,7 +390,7 @@ const HondaWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -486,7 +486,7 @@ const HondaWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
@@ -497,7 +497,7 @@ const HondaWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Panda Protect",
-    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "url": "https://pandaprotect.co.uk",
     "telephone": "+44-800-917-9270",
     "email": "support@pandaprotect.co.uk",
@@ -574,7 +574,7 @@ const HondaWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Comprehensive Honda warranty coverage for Civic, CR-V, Jazz, HR-V, ZR-V, Accord and e:HEV hybrids. Engine, gearbox, electrics and more. Nationwide UK coverage with any VAT-registered garage." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/honda-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Honda Extended Warranty UK - Panda Protect" />
@@ -584,7 +584,7 @@ const HondaWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Honda Warranty UK | Civic, CR-V, Jazz, HR-V from £19/mo" />
         <meta name="twitter:description" content="Protect your Honda Civic, CR-V, Jazz, HR-V, ZR-V with comprehensive extended warranty. Hybrid and EV models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         
         <meta name="ai-content-declaration" content="This page provides information about Honda extended warranty services in the UK, covering Civic, CR-V, Jazz, HR-V, ZR-V, Accord, Honda e, and e:Ny1 models. Human-authored and fact-checked." />
         <meta name="ai-summary" content="Panda Protect offers comprehensive Honda extended warranty plans in the UK from £19/month. Coverage includes engine, gearbox, electrical, hybrid and EV components for all Honda models 2012-2026. Nationwide garage network, unlimited claims, 14-day money-back guarantee." />

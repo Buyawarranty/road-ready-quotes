@@ -226,7 +226,7 @@ const DynamicLandingPage: React.FC = () => {
         keywords={page.focus_keyword || undefined}
         ogTitle={page.og_title || page.meta_title}
         ogDescription={page.og_description || page.meta_description}
-        ogImage={page.og_image_url || 'https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png'}
+        ogImage={page.og_image_url || 'https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png'}
         canonical={canonicalUrl}
         geoRegion="GB"
         geoPlacename="United Kingdom"

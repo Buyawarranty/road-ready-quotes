@@ -393,7 +393,7 @@ const NissanWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-330-229-5045",
@@ -520,7 +520,7 @@ const NissanWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted extended car warranty provider. Protecting vehicles since 2016 with comprehensive coverage and excellent customer service.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
@@ -596,7 +596,7 @@ const NissanWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Comprehensive Nissan warranty coverage. Engine, CVT gearbox, electrics & more. All models covered including EV. Nationwide UK coverage with any garage. Get your instant quote now." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/nissan-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Nissan Extended Warranty UK - Panda Protect" />
@@ -607,7 +607,7 @@ const NissanWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Nissan Extended Warranty UK | From £20/month" />
         <meta name="twitter:description" content="Protect your Nissan with comprehensive extended warranty. All models covered. Nationwide UK coverage. Get instant quote." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         
         {/* AI Search Engine Optimization */}
         <meta name="ai-content-declaration" content="This page provides information about Nissan extended warranty services in the UK. Human-authored and fact-checked." />

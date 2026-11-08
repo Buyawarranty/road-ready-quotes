@@ -279,7 +279,7 @@ const AudiWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -390,7 +390,7 @@ const AudiWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted extended car warranty provider covering Audi, BMW, Mercedes-Benz and all major brands. Protecting vehicles nationwide since 2016.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
@@ -484,7 +484,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Protect your used Audi from unexpected repair bills. S tronic, quattro, TFSI/TDI and EV components covered. Use any garage in England, Scotland, Wales or Northern Ireland. Plans from £25/mo — get your instant quote now." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/audi-warranty/" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Audi extended warranty UK — affordable used Audi warranty cover from Panda Protect" />
@@ -495,7 +495,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Used Audi Extended Warranty UK — Cover from £25/mo" />
         <meta name="twitter:description" content="All Audi models covered including A3, A4, Q5, Q7, e-tron. S tronic, quattro, TFSI/TDI and EV components. Any UK garage. Instant quote." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta name="twitter:image:alt" content="Panda Protect — Audi extended warranty cover UK" />
         
         {/* AI search engine discoverability */}

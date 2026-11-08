@@ -1,4 +1,5 @@
 # Architecture rules
+- Resolve Panda frontend logos through src/lib/pandaLogo.ts and email logos through shared brand configuration; this keeps replacements consistent without changing Buy A Warranty branding.
 - Shared dialog and alert-dialog content enforce viewport centring, desktop width caps, edge gutters, internal scrolling and consistent padding so page overrides cannot stretch pop-ups across the screen.
 - Use the shared PasswordInput for new password entry fields, with independent show/hide controls; preserve existing eye-enabled fields to avoid duplicate controls.
 - Derive all staff section checkbox options from the Panda dashboard section catalog via buildGrantableTabs; never maintain a duplicate permission list, so each new section is automatically assignable without changing existing role or data restrictions.

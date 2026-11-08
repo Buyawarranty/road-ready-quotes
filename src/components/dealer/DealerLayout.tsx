@@ -1,3 +1,4 @@
+import { pandaLogoUrl } from '@/lib/pandaLogo';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
@@ -215,7 +216,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         <div className="flex h-full items-center gap-4 px-4 lg:px-5">
             <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[230px]">
               <img
-                src="/panda-protect-logo.png"
+                src={pandaLogoUrl}
                 alt="Panda Protect"
                 className="h-9 w-auto"
               />
@@ -309,7 +310,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   <div className="flex flex-col h-full">
                     <div className="border-b border-crm-line p-5">
                       <img
-                        src="/panda-protect-logo.png"
+                        src={pandaLogoUrl}
                         alt="Panda Protect"
                         className="h-9 w-auto"
                       />

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, Check, ShieldCheck, Printer, Lock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoAssetUrl from '@/assets/panda-protect-v2.webp';
+import { pandaLogoUrl as logoAssetUrl } from '@/lib/pandaLogo';
 import pandaAssetUrl from '@/assets/customer-quote-panda.webp';
 
 export interface CustomerQuoteViewProps {

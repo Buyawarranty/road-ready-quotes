@@ -25,7 +25,7 @@ export const SEOHead = ({
   keywords = "car warranty UK, vehicle warranty, used car warranty, extended car warranty, warranty prices UK, cheap car warranty, best car warranty, van warranty, EV warranty, motorbike warranty",
   ogTitle,
   ogDescription,
-  ogImage = "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+  ogImage = "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
   ogImageWidth = "1200",
   ogImageHeight = "630",
   ogImageAlt = "Panda Protect - UK Car Warranty Provider",

@@ -12,7 +12,7 @@ import DealerFAQSchema from '@/components/dealer/DealerFAQSchema';
 import dealerSupportDesk from '@/assets/panda-dealer-support-portal.webp.asset.json';
 import dealerSupportDeskLocal from '@/assets/panda-dealer-support-portal.webp';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
-import pandaProtectLogo from '@/assets/panda-protect-logo.webp';
+import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';

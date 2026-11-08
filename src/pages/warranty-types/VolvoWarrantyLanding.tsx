@@ -116,13 +116,13 @@ const VolvoWarrantyLanding: React.FC = () => {
         <meta property="og:title" content="Volvo Extended Warranty UK | Top-Rated Cover from £25/mo — XC60, XC90, XC40 Recharge & T8 Protection" />
         <meta property="og:description" content="Protect your Volvo with the UK's top-rated extended warranty. AWD, T8 hybrid & air suspension covered. 8,000+ components. Any UK garage." />
         <meta property="og:type" content="website" /><meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/volvo-warranty/" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Panda Protect" /><meta property="og:locale" content="en_GB" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Volvo Extended Warranty UK | From £25/month" />
         <meta name="twitter:description" content="UK's top-rated Volvo warranty. XC40, XC60, XC90 & all models. AWD & T8 hybrid covered. 8,000+ components. Any garage." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta name="twitter:image:alt" content="Volvo Extended Warranty UK - Panda Protect" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="geo.region" content="GB" />
