@@ -221,87 +221,34 @@ const DealerQuotesList = () => {
 
   return (
     <DealerLayout>
-      {/* Header section — dark band */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 mb-6">
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wider text-orange-500">QUOTES</h1>
-            <span className="text-orange-500 text-2xl">◆</span>
+      <div className="mx-auto max-w-7xl space-y-4 pb-6">
+      <header className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold text-crm-navy">Quotes</h1>
+        <Button type="button" onClick={handleNewQuote} className="h-11 gap-2 px-4 font-bold"><Plus className="h-4 w-4" />New quote</Button>
+      </header>
+      <section aria-label="Quote filters" className="space-y-3 border-y border-crm-line py-4">
+        <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
+          <div className="relative min-w-0">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-orange" />
+            <Input aria-label="Search quotes" placeholder="ENTER REG or customer name" value={search} onChange={event => updateFilters(() => setSearch(event.target.value))} className="h-12 border-2 border-crm-orange bg-crm-orange-soft pl-11 pr-12 text-base font-semibold text-crm-navy placeholder:text-muted-foreground focus-visible:ring-crm-orange" />
+            {search && <Button type="button" variant="ghost" size="icon" aria-label="Clear search" onClick={() => updateFilters(() => setSearch(''))} className="absolute right-1 top-1/2 h-10 w-10 -translate-y-1/2 text-muted-foreground"><X className="h-4 w-4" /></Button>}
           </div>
-
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
-              {/* Search */}
-              <div className="relative w-full sm:max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                <Input
-                  placeholder="Search by reg, customer, make or model..."
-                  value={search}
-                  onChange={(e) => updateFilters(() => setSearch(e.target.value))}
-                  className="h-11 pl-9 pr-9 bg-white border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-400 focus-visible:ring-orange-500"
-                />
-                {search && (
-                  <button
-                    type="button"
-                    onClick={() => updateFilters(() => setSearch(''))}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    aria-label="Clear search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-
-              {/* Date filter */}
-              <DealerDateFilter
-                value={dateRange}
-                onChange={(range) => updateFilters(() => setDateRange(range))}
-              />
-
-              {/* Sort toggle */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => updateFilters(() => setSortDir(sortDir === 'desc' ? 'asc' : 'desc'))}
-                className="h-11 border-gray-300 bg-white text-gray-800 font-semibold hover:bg-gray-50"
-              >
-                {sortDir === 'desc' ? (
-                  <>
-                    Newest first <ArrowDown className="h-4 w-4 ml-1.5 text-orange-500" />
-                  </>
-                ) : (
-                  <>
-                    Oldest first <ArrowUp className="h-4 w-4 ml-1.5 text-orange-500" />
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleNewQuote}
-              className="h-auto self-start px-0 text-sm font-bold tracking-wide text-crm-orange hover:bg-transparent hover:text-crm-orange lg:self-auto"
-            >
-              <Plus className="h-5 w-5" /> New Quote
-            </Button>
-          </div>
-
-          <div className="mt-4 text-sm">
-            <span className="text-gray-600 font-semibold">Summary Stats: </span>
-            <span className="text-orange-500 font-bold">Total Quotes ({quotes.length})</span>
-            {(search || dateRange?.from) && (
-              <span className="text-gray-600 font-semibold"> · Showing {filtered.length} matching</span>
-            )}
-          </div>
+          <DealerDateFilter value={dateRange} onChange={range => updateFilters(() => setDateRange(range))} className="min-w-0 [&>button]:w-full [&_button]:min-w-0 [&_button]:w-full" />
+          <Button type="button" variant="outline" onClick={() => updateFilters(() => setSortDir(sortDir === 'desc' ? 'asc' : 'desc'))} className="h-11 gap-2 border-crm-line bg-card font-semibold text-crm-navy">
+            {sortDir === 'desc' ? <>Newest first<ArrowDown className="h-4 w-4 text-muted-foreground" /></> : <>Oldest first<ArrowUp className="h-4 w-4 text-muted-foreground" /></>}
+          </Button>
         </div>
-      </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground" aria-live="polite">
+          <span><strong className="text-crm-navy">{quotes.length}</strong> saved quotes</span>
+          <span>{search || dateRange?.from ? `${filtered.length} matching` : `${filtered.length} quotes`}</span>
+        </div>
+      </section>
 
       {/* Quote list */}
-      <div className="mt-6 space-y-3">
+      <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-            <p className="text-gray-600">
+          <div className="bg-card border border-crm-line rounded-lg px-4 py-8 text-center">
+            <p className="text-muted-foreground">
               {search || dateRange?.from ? 'No quotes match your search or filters.' : 'No saved quotes yet. Start a new quote to get going.'}
             </p>
           </div>
@@ -312,7 +259,7 @@ const DealerQuotesList = () => {
             return (
             <div
               key={q.id}
-              className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-orange-500/50 transition-colors"
+              className="bg-card border border-crm-line rounded-lg overflow-hidden hover:border-crm-orange/50 transition-colors"
             >
               <div className="flex flex-col md:flex-row">
                 {/* Vehicle registration plate */}
@@ -338,30 +285,28 @@ const DealerQuotesList = () => {
                 </div>
 
                 {/* Middle: details */}
-                <div className="flex-1 p-5 min-w-0">
+                <div className="flex-1 p-3 sm:p-4 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 tracking-wide uppercase truncate">
-                      {q.vehicle_reg || '—'}{' '}
-                      {[q.vehicle_make, q.vehicle_model].filter(Boolean).join(' ')}
+                    <h3 className="text-sm font-bold text-foreground break-words">
+                      Quote #{formatRef(q.id)}
                     </h3>
-                    <span className="text-gray-500 text-sm font-mono">#{formatRef(q.id)}</span>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-semibold text-gray-700">Step:</span>{' '}
-                    <span className="text-orange-600 font-medium">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-semibold text-foreground">Step:</span>{' '}
+                    <span className="text-crm-orange font-medium">
                       {q.status === 'awaiting_panda'
                         ? 'Awaiting Panda Protect'
                         : q.status === 'converted' || q.status === 'completed'
                         ? 'Completed'
                         : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote'}
                     </span>
-                    <span className="text-gray-500"> · Created on </span>
-                    <span className="text-gray-700">{formatDateTime(q.created_at)}</span>
+                    <span className="text-muted-foreground"> · Created on </span>
+                    <span className="text-foreground">{formatDateTime(q.created_at)}</span>
                   </p>
                   {q.customer_name && (
-                    <p className="text-sm text-gray-600 mt-1">
-                      <span className="font-semibold text-gray-700">Customer:</span>{' '}
-                      <span className="text-gray-700">{q.customer_name}</span>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      <span className="font-semibold text-foreground">Customer:</span>{' '}
+                      <span className="text-foreground">{q.customer_name}</span>
                     </p>
                   )}
                   <div className={`mt-3 inline-flex max-w-full items-start gap-2 rounded-md border px-3 py-2 ${warranty.tone}`}>
@@ -381,8 +326,8 @@ const DealerQuotesList = () => {
                 </div>
 
                 {/* Right: price + actions */}
-                <div className="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-3 px-5 py-4 md:py-5 md:min-w-[200px] border-t md:border-t-0 md:border-l border-gray-200 bg-white/60">
-                  <div className="text-2xl md:text-3xl font-extrabold text-gray-900">
+                <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end justify-between md:justify-center gap-3 px-3 py-3 sm:px-4 md:py-4 md:min-w-[200px] border-t md:border-t-0 md:border-l border-crm-line bg-card">
+                  <div className="text-xl md:text-2xl font-extrabold text-foreground">
                     {q.price ? `£${Number(q.price).toFixed(2)}` : '—'}
                   </div>
                   <div className="flex items-center gap-2">
@@ -390,7 +335,7 @@ const DealerQuotesList = () => {
                       size="icon"
                       variant="outline"
                       onClick={() => handleDelete(q.id)}
-                      className="h-9 w-9 border-gray-300 bg-transparent text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-800"
+                      className="h-11 w-11 shrink-0 border-crm-line bg-card text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
                       aria-label="Delete quote"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -398,7 +343,7 @@ const DealerQuotesList = () => {
                     <Button
                       size="sm"
                       onClick={() => handleResume(q)}
-                      className="h-9 bg-orange-500 hover:bg-orange-600 text-white font-bold tracking-wide"
+                      className="h-11 flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
                     >
                       Resume quote <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
@@ -413,10 +358,10 @@ const DealerQuotesList = () => {
 
       {/* Pagination */}
       {filtered.length > PAGE_SIZE && (
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-gray-200 rounded-lg px-4 py-3">
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)}</span> of{' '}
-            <span className="font-semibold text-gray-900">{filtered.length}</span> quotes
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-card border border-crm-line rounded-lg px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Showing <span className="font-semibold text-foreground">{(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)}</span> of{' '}
+            <span className="font-semibold text-foreground">{filtered.length}</span> quotes
           </p>
 
           <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -426,7 +371,7 @@ const DealerQuotesList = () => {
               size="sm"
               disabled={currentPage <= 1}
               onClick={() => setPage(currentPage - 1)}
-              className="h-9 border-gray-300"
+              className="h-9 border-crm-line"
             >
               <ChevronLeft className="h-4 w-4" /> Prev
             </Button>
@@ -441,7 +386,7 @@ const DealerQuotesList = () => {
                 }, [])
                 .map((p, idx) =>
                   p === 'ellipsis' ? (
-                    <span key={`e-${idx}`} className="px-1 text-gray-400">…</span>
+                    <span key={`e-${idx}`} className="px-1 text-muted-foreground">…</span>
                   ) : (
                     <button
                       key={p}
@@ -449,8 +394,8 @@ const DealerQuotesList = () => {
                       onClick={() => setPage(p)}
                       className={`h-9 min-w-9 px-2 rounded-md text-sm font-semibold transition-colors ${
                         p === currentPage
-                          ? 'bg-orange-500 text-white'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-foreground hover:bg-muted'
                       }`}
                     >
                       {p}
@@ -465,7 +410,7 @@ const DealerQuotesList = () => {
               size="sm"
               disabled={currentPage >= totalPages}
               onClick={() => setPage(currentPage + 1)}
-              className="h-9 border-gray-300"
+              className="h-9 border-crm-line"
             >
               Next <ChevronRight className="h-4 w-4" />
             </Button>
@@ -484,7 +429,7 @@ const DealerQuotesList = () => {
               }
             }}
           >
-            <label htmlFor="quote-page-jump" className="text-sm text-gray-600 whitespace-nowrap">Go to page</label>
+            <label htmlFor="quote-page-jump" className="text-sm text-muted-foreground whitespace-nowrap">Go to page</label>
             <Input
               id="quote-page-jump"
               type="number"
@@ -493,14 +438,15 @@ const DealerQuotesList = () => {
               value={pageJump}
               onChange={(e) => setPageJump(e.target.value)}
               placeholder={String(currentPage)}
-              className="h-9 w-20 bg-white border-gray-300 text-gray-900"
+              className="h-9 w-20 bg-card border-crm-line text-foreground"
             />
-            <Button type="submit" size="sm" className="h-9 bg-orange-500 hover:bg-orange-600 text-white font-semibold">
+            <Button type="submit" size="sm" className="h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
               Go
             </Button>
           </form>
         </div>
       )}
+      </div>
     </DealerLayout>
   );
 };
