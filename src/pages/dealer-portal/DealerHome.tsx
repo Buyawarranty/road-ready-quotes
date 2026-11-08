@@ -278,7 +278,7 @@ const DealerHome = () => {
                   Request a callback <ArrowRight aria-hidden="true" />
                 </button>
               </div>
-              <p className="home-contact-note">Speak to our UK team – Lines open 9am to 5:30pm, Monday to Friday.</p>
+              <p className="home-contact-note">Speak to our UK team – Lines open 9am to 6pm, Monday to Saturday.</p>
             </div>
           </div>
 
