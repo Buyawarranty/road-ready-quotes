@@ -86,8 +86,8 @@ const DealerProfileSettings: React.FC = () => {
 
   return (
     <DealerLayout>
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-        <div>
+      <div className="min-w-0 max-w-3xl mx-auto py-3 sm:py-8 space-y-5 sm:space-y-6">
+        <div className="text-center sm:text-left">
           <h1 className="text-2xl font-extrabold text-gray-900">Account settings</h1>
           <p className="text-sm text-gray-600">
             Keep your phone number and billing address up to date. We use them to fill in card payment
@@ -101,7 +101,7 @@ const DealerProfileSettings: React.FC = () => {
           </div>
         ) : (
           <>
-            <section className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+            <section className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <Building2 className="w-5 h-5 text-orange-500" />
                 <h2 className="font-bold text-gray-900">Business</h2>
@@ -152,7 +152,7 @@ const DealerProfileSettings: React.FC = () => {
                   <Input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="e.g. Smith Motors Ltd" className="h-10" />
                   <Label className="text-xs font-semibold text-gray-700">Reason (optional)</Label>
                   <Input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. We have rebranded" className="h-10" />
-                  <div className="flex justify-end gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                     <Button variant="outline" className="rounded-full" onClick={() => setRequestOpen(false)}>Cancel</Button>
                     <Button className="rounded-full bg-orange-500 hover:bg-orange-600 text-white" disabled={requesting || newName.trim().length < 2} onClick={submitRequest}>
                       {requesting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Send for approval
@@ -160,11 +160,11 @@ const DealerProfileSettings: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <Button variant="outline" className="rounded-full" onClick={() => setRequestOpen(true)}>Request company name change</Button>
+                <Button variant="outline" className="h-auto min-h-11 w-full whitespace-normal rounded-full sm:w-auto" onClick={() => setRequestOpen(true)}>Request company name change</Button>
               )}
             </section>
 
-            <section className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+            <section className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-orange-500" />
                 <h2 className="font-bold text-gray-900">Billing address</h2>
@@ -181,7 +181,7 @@ const DealerProfileSettings: React.FC = () => {
               <Button
                 onClick={save}
                 disabled={saving || !dealer}
-                className="rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6"
+                className="w-full sm:w-auto rounded-full bg-orange-500 hover:bg-orange-600 text-white px-6"
               >
                 {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                 Save changes

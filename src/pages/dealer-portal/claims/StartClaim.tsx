@@ -750,9 +750,9 @@ const StartClaim: React.FC = () => {
                 </div>
                 <dl className="divide-y divide-gray-50">
                   {group.rows.map(([label, value]) => (
-                    <div key={label} className="flex gap-4 px-4 py-2">
-                      <dt className="w-40 shrink-0 text-xs text-gray-500">{label}</dt>
-                      <dd className="text-sm text-gray-900 break-words">{value}</dd>
+                    <div key={label} className="flex flex-col gap-1 sm:flex-row sm:gap-4 px-4 py-2">
+                      <dt className="sm:w-40 shrink-0 text-xs text-gray-500">{label}</dt>
+                      <dd className="min-w-0 text-sm text-gray-900 break-words">{value}</dd>
                     </div>
                   ))}
                 </dl>

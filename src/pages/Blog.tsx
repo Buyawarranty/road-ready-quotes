@@ -474,10 +474,10 @@ const Blog = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <Card className="bg-gradient-to-r from-primary to-orange-600 border-0 overflow-hidden">
-                <CardContent className="p-12 md:p-16">
-                  <div className="grid lg:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-6 text-white">
-                      <h2 className="text-4xl md:text-5xl font-bold leading-tight">Grow Your Forecourt with Panda Protect</h2>
+                <CardContent className="p-4 sm:p-8 md:p-16">
+                  <div className="grid lg:grid-cols-2 gap-6 sm:gap-12 items-center">
+                    <div className="min-w-0 space-y-6 text-white">
+                      <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight">Grow Your Forecourt with Panda Protect</h2>
                       <p className="text-xl opacity-90 leading-relaxed">
                         Join UK dealers using Panda Protect to add real value to every sale, reduce comebacks, and protect customer satisfaction.
                       </p>
@@ -489,7 +489,7 @@ const Blog = () => {
                           'UK-based claims team, paid in 90 minutes',
                         ].map((item) => (
                           <div key={item} className="flex items-center gap-3">
-                            <Check className="w-6 h-6" />
+                            <Check className="w-6 h-6 shrink-0" />
                             <span className="text-lg">{item}</span>
                           </div>
                         ))}
@@ -497,15 +497,15 @@ const Blog = () => {
                     </div>
 
                     <div className="space-y-6">
-                      <Card className="bg-white p-8">
-                        <CardContent className="space-y-6">
+                      <Card className="bg-white p-0 sm:p-4">
+                        <CardContent className="p-4 sm:p-6 space-y-6">
                           <h3 className="text-2xl font-bold text-gray-900">Register Your Dealership</h3>
                           <Button size="lg" onClick={goToDealerSignup} className="w-full bg-primary hover:bg-primary/90 text-white py-6 text-lg font-bold">
                             Get Started
                           </Button>
                           <div className="text-center">
                             <p className="text-gray-600 mb-2">Or speak to our trade team</p>
-                            <a href="tel:03302295045" className="text-3xl font-bold text-primary hover:text-primary/90">0330 229 5045</a>
+                            <a href="tel:03302295045" className="text-xl sm:text-3xl font-bold text-primary hover:text-primary/90">0330 229 5045</a>
                             <p className="text-sm text-gray-500 mt-2">Mon-Fri 9am-5:30pm</p>
                           </div>
                         </CardContent>
