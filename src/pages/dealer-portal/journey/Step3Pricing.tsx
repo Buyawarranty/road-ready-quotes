@@ -304,7 +304,7 @@ const Step3Pricing: React.FC = () => {
         <a href="/what-is-covered/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
     </Collapsible>
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col items-start gap-3 lg:flex-row lg:flex-wrap lg:items-center">
       {trade ? <div className="flex shrink-0 items-stretch gap-3 rounded-[10px] border border-crm-line bg-card px-3 py-2">
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0">
@@ -312,11 +312,11 @@ const Step3Pricing: React.FC = () => {
           <strong className="block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
-      <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
-        {trade && <Button variant="outline" className="h-12 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className={`h-12 !border-crm-line !bg-card font-bold !text-crm-navy ${trade ? '' : ''}`} disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+      <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
+        {trade && <Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
-        {trade && <Button className="h-12 px-5 text-base font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+        {trade && <Button className="col-span-2 min-h-12 h-auto min-w-0 whitespace-normal px-3 py-3 text-sm font-extrabold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 lg:px-5 lg:text-base" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
       <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label="Quote view">
         <Button variant="outline" type="button" aria-pressed={trade} onClick={() => setView('trade')} className={`relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !bg-card px-4 py-3 pr-10 text-left !text-foreground transition-colors focus-visible:ring-crm-orange ${trade ? '!border-crm-orange' : '!border-crm-line hover:!border-crm-orange'}`}>
@@ -329,7 +329,7 @@ const Step3Pricing: React.FC = () => {
           <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
         </Button>
       </div>
-      {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
+      {trade && <p className="flex items-start justify-center gap-1.5 text-xs leading-5 font-semibold text-muted-foreground"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-crm-green" /><span>Secure checkout · No payment taken yet · You can edit everything on the next step</span></p>}
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
     {!vehicle?.reg ? <p className="text-xs font-bold text-crm-orange">Enter the vehicle registration above to save or continue.</p> : <p className="text-xs text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>}
