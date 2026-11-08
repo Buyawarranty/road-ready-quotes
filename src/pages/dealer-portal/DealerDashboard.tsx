@@ -65,11 +65,11 @@ export default function DealerDashboard() {
         <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-            <div className={`vehicle-reg-plate vehicle-reg-plate--quote min-w-0 ${regMissing ? 'vehicle-reg-plate--highlight' : ''}`} onAnimationEnd={() => setRegMissing(false)}>
+            <div className={`vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--dashboard min-w-0 ${regMissing ? 'vehicle-reg-plate--highlight' : ''}`} onAnimationEnd={() => setRegMissing(false)}>
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
               <Input value={reg} onChange={event => { setReg(event.target.value.toUpperCase()); setRegMissing(false); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={10} className="vehicle-reg-plate__input" onFocus={(e) => e.currentTarget.select()} onMouseUp={(e) => e.preventDefault()} />
             </div>
-            <Button type="submit" className="h-16 gap-3 px-6 text-xl font-extrabold sm:h-auto sm:min-h-16 sm:self-stretch [&_svg]:h-6 [&_svg]:w-6">Get quote <ArrowRight aria-hidden="true" /></Button>
+            <Button type="submit" className="motion-safe:animate-breathing motion-reduce:animate-none h-16 gap-3 px-6 text-xl font-extrabold sm:h-auto sm:min-h-16 sm:self-stretch [&_svg]:h-6 [&_svg]:w-6">Get quote <ArrowRight aria-hidden="true" /></Button>
           </div>
           <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/pricing')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
