@@ -319,14 +319,15 @@ const Step3Pricing: React.FC = () => {
         {trade && <Button className="h-12 px-5 text-base font-extrabold animate-breathing !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
       <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label="Quote view">
-        <button type="button" aria-pressed={trade} onClick={() => setView('trade')} className={`flex items-center gap-3 rounded-xl border-2 px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-navy ${trade ? 'border-crm-navy bg-crm-blue-soft' : 'border-crm-line bg-card hover:border-crm-navy/40'}`}>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-navy text-primary-foreground"><Store className="h-5 w-5" /></span>
+        <Button variant="outline" type="button" aria-pressed={trade} onClick={() => setView('trade')} className={`relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !bg-card px-4 py-3 pr-10 text-left !text-foreground transition-colors focus-visible:ring-crm-orange ${trade ? '!border-crm-orange' : '!border-crm-line hover:!border-crm-orange'}`}>
+          <span aria-hidden="true" className={`absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full border-2 ${trade ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'border-crm-line bg-card'}`}>{trade && <Check className="h-3 w-3" />}</span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange"><Store className="h-5 w-5" /></span>
           <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Trade view</strong><span className="block text-xs text-muted-foreground">Your cost, selling price and profit — for your eyes only</span></span>
-        </button>
-        <button type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="flex items-center gap-3 rounded-xl border-2 border-crm-green bg-crm-green-soft px-4 py-3 text-left transition-colors hover:bg-crm-green-soft/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-green disabled:opacity-60">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
-          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-green-deep">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
-        </button>
+        </Button>
+        <Button variant="outline" type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !border-crm-line !bg-card px-4 py-3 text-left !text-foreground transition-colors hover:!border-crm-orange focus-visible:ring-crm-orange disabled:opacity-60">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
+          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
+        </Button>
       </div>
       {trade && <p className="flex items-center justify-center gap-1.5 text-xs font-semibold text-muted-foreground"><ShieldCheck className="h-4 w-4 text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
