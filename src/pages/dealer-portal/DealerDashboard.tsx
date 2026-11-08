@@ -25,6 +25,7 @@ const money = (value: number) => new Intl.NumberFormat('en-GB', { style: 'curren
 
 export default function DealerDashboard() {
   const { dealer } = useDealerAuth();
+  const contactName = dealer?.name?.trim() || [dealer?.first_name, dealer?.last_name].filter(Boolean).join(' ').trim();
   const navigate = useNavigate();
   const [reg, setReg] = useState('');
   const [regMissing, setRegMissing] = useState(false);
@@ -58,7 +59,7 @@ export default function DealerDashboard() {
       <section className="grid items-center gap-4 rounded-lg border border-crm-line bg-muted/60 p-4 lg:grid-cols-[minmax(0,.85fr)_minmax(0,1.15fr)]">
         <div className="min-w-0">
           <p className="mb-1 text-[10px] font-bold text-crm-orange">DEALER PORTAL</p>
-          <h1 className="text-xl font-bold leading-tight lg:text-2xl">Welcome back{dealer?.name ? `, ${dealer.name.split(' ')[0]}` : ''}</h1>
+          <h1 className="break-words text-xl font-bold leading-tight lg:text-2xl">Welcome back{contactName ? `, ${contactName}` : ''}</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
         </div>
         <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
