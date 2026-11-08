@@ -247,7 +247,7 @@ const Step3Pricing: React.FC = () => {
 
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
-          return <button type="button" role="radio" aria-checked={selected} key={months} disabled={!available} onClick={() => { setTerm(months); setError(''); }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange disabled:opacity-60 ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+          return <div role="radio" aria-checked={selected} aria-disabled={!available} tabIndex={available ? 0 : -1} key={months} onClick={() => { if (available) { setTerm(months); setError(''); } }} onKeyDown={event => { if (event.target === event.currentTarget && available && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setTerm(months); setError(''); } }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${!available ? 'opacity-60' : 'cursor-pointer'} ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
             <span className="flex h-5 items-center"><span className={`rounded-full bg-crm-navy px-2.5 py-0.5 text-[0.62rem] font-black uppercase tracking-[0.1em] text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span></span>
             <span className="flex items-start justify-between gap-2">
               <strong className="text-xl font-black leading-6">{months / 12} Year Warranty</strong>
@@ -256,9 +256,10 @@ const Step3Pricing: React.FC = () => {
             </span>
             <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
             <span className="text-sm text-muted-foreground">{trade ? `${prices[months] != null ? 'Your selling price' : 'Recommended retail price'} ${cardRetail != null ? gbp(cardRetail) : '—'} inc. VAT` : 'per vehicle, inc. VAT'}</span>
+            {trade && available && cardRetail != null && <Button type="button" variant="link" className="h-auto w-fit justify-start px-0 py-1 text-xs font-semibold text-crm-navy underline" onClick={event => { event.stopPropagation(); setTerm(months); setExactValue(String(cardRetail - (boostOn ? boostForTerm(boostCfg, months)?.retail_price || 0 : 0))); setExact(true); }}>Change price</Button>}
             {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
-          </button>;
+          </div>;
         })}
       </div>
     </section>
@@ -309,7 +310,6 @@ const Step3Pricing: React.FC = () => {
         <div className="min-w-0">
           <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
           <strong className="block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
-          {term && <button type="button" className="mt-0.5 text-xs font-semibold text-crm-navy underline" onClick={() => { setExactValue(String(baseRetail)); setExact(true); }}>Change price</button>}
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="flex flex-1 flex-wrap items-center justify-end gap-2">
