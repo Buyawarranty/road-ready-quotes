@@ -4,6 +4,7 @@ import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyCo
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
+import { canProceedToDealerPayment, isAssistedCustomer } from '@/lib/dealerAssistedCheckout';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -112,6 +113,8 @@ const Step4Checkout: React.FC = () => {
   const labour = options.labour as number | undefined;
 
   const customerComplete = Boolean(customer.name && customer.email && customer.phone && customer.postcode);
+  const assisted = isAssistedCustomer(customer);
+  const paymentReady = canProceedToDealerPayment(customer);
 
   const readFnError = async (error: unknown, data: unknown, fallback: string) => {
     const d = data as { error?: string } | null;
@@ -174,7 +177,7 @@ const Step4Checkout: React.FC = () => {
 
   const handleSubmit = async () => {
     if (submitting) return;
-    if (!customerComplete) {
+    if (!paymentReady) {
       navigate('/dealer-portal/quote/customer');
       return;
     }
@@ -280,7 +283,7 @@ const Step4Checkout: React.FC = () => {
                 <User className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                 <div className="min-w-0">
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</p>
-                  {customerComplete ? (
+                  {assisted ? <p className="mt-1 text-sm font-semibold text-crm-navy">Panda Protect will complete the customer details.</p> : customerComplete ? (
                     <>
                       <p className="mt-1 break-words text-lg font-bold text-crm-navy">{customer.name}</p>
                       <p className="break-all text-sm text-muted-foreground">{customer.email}</p>
@@ -391,7 +394,7 @@ const Step4Checkout: React.FC = () => {
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
             {submitting ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
-            ) : !customerComplete ? (
+            ) : !paymentReady ? (
               <>Complete customer details</>
             ) : (
               <>{!accountSelected && <Lock className="mr-2 h-4 w-4" />}{ctaLabel} <ArrowRight className="ml-2 h-4 w-4" /></>
