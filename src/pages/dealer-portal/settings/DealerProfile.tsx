@@ -23,6 +23,7 @@ const DealerProfileSettings: React.FC = () => {
 
   const [billing, setBilling] = useState<BillingAddress>(() => billingFromDealer(dealer));
   const [phone, setPhone] = useState('');
+  const [contactName, setContactName] = useState('');
   const [touched, setTouched] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -57,6 +58,7 @@ const DealerProfileSettings: React.FC = () => {
     if (dealer && !touched) {
       setBilling(billingFromDealer(dealer));
       setPhone(dealer.phone || '');
+      setContactName(dealer.name || '');
     }
   }, [dealer, touched]);
 
@@ -72,14 +74,13 @@ const DealerProfileSettings: React.FC = () => {
     setSaving(true);
     const { error } = await supabase
       .from('dealers')
-      .update({ ...billingToDealerColumns(billing), phone: phone.trim() || null })
+      .update({ ...billingToDealerColumns(billing), phone: phone.trim() || null, name: contactName.trim() || dealer.name })
       .eq('id', dealer.id);
     setSaving(false);
     if (error) {
       toast({ title: 'Could not save', description: error.message, variant: 'destructive' });
       return;
     }
-    setTouched(false);
     toast({ title: 'Profile updated', description: 'Card payment pages will now be prefilled with these details.' });
   };
 
@@ -111,6 +112,20 @@ const DealerProfileSettings: React.FC = () => {
                   <Input value={dealer?.company_name || ''} readOnly className="h-10 bg-gray-50 border-gray-200" />
                 </div>
                 <div className="space-y-1.5">
+                  <Label htmlFor="main-contact-name" className="text-xs font-semibold text-foreground">Main contact name</Label>
+                  <Input
+                    id="main-contact-name"
+                    value={contactName}
+                    placeholder="Preferred name"
+                    autoComplete="name"
+                    aria-describedby="main-contact-hint"
+                    disabled={saving}
+                    onChange={(e) => { setContactName(e.target.value); setTouched(true); }}
+                    className="h-10 border-input bg-muted"
+                  />
+                  <p id="main-contact-hint" className="text-xs text-muted-foreground">Preferred name</p>
+                </div>
+                <div className="space-y-1.5">
                   <Label className="text-xs font-semibold text-gray-700">Account email</Label>
                   <Input value={dealer?.email || ''} readOnly className="h-10 bg-gray-50 border-gray-200" />
                 </div>
@@ -125,7 +140,7 @@ const DealerProfileSettings: React.FC = () => {
               </div>
               <p className="text-xs text-gray-500">
                 Your company name and account email were approved when you joined, so they are locked. You can
-                change your phone number here. To change your company name, send it to us for approval.
+                change your main contact name and phone number here. To change your company name, send it to us for approval.
               </p>
               {pending ? (
                 <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
