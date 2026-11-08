@@ -369,19 +369,20 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       </aside>
 
       <main className={`min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
-        {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && !location.pathname.startsWith('/dealer-portal/quote/') && (
+        {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (!location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.replace(/\/$/, '') === '/dealer-portal/quote/pricing') && (
           <div className="mb-3">
-            <button
+            <Button
+              variant="ghost"
               type="button"
               onClick={() => {
                 const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
                 if (window.history.length > 1 && idx > 0) navigate(-1);
                 else navigate('/dealer-portal/dashboard');
               }}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-muted px-5 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+              className="h-11 gap-2 px-3 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" /> Back
-            </button>
+            </Button>
           </div>
         )}
         {user?.user_metadata?.must_change_password && !location.pathname.startsWith('/dealer-portal/settings/profile') && (
