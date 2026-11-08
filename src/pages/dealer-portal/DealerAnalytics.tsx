@@ -110,7 +110,7 @@ const DealerAnalytics: React.FC = () => {
   return (
     <DealerLayout>
       <div className="space-y-6">
-        <div>
+        <div className="text-center sm:text-left">
           <h1 className="text-2xl font-bold text-gray-900 tracking-wide">DEALER ANALYTICS</h1>
           <p className="text-gray-500 text-sm mt-1">Performance overview of your dealer plans and quotes</p>
         </div>
@@ -118,7 +118,7 @@ const DealerAnalytics: React.FC = () => {
         {/* Top row: Last activated + plans activated chart */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card className="bg-white border-gray-200">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">LAST DEALER PLAN ACTIVATED</h2>
               {lastActivated ? (
                 <>
@@ -162,16 +162,16 @@ const DealerAnalytics: React.FC = () => {
           </Card>
 
           <Card className="bg-white border-gray-200">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">DEALER PLANS ACTIVATED</h2>
-              <div className="grid grid-cols-3 gap-4 items-center">
-                <div className="col-span-1 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                <div className="sm:col-span-1 text-center">
                   <div className="text-6xl font-bold text-gray-900 leading-none">{thisMonthCount}</div>
                   <div className="text-[11px] font-bold tracking-[0.2em] text-gray-600 uppercase mt-2">
                     This Month
                   </div>
                 </div>
-                <div className="col-span-2 h-44">
+                <div className="min-w-0 sm:col-span-2 h-44">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={monthsTrend} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                       <defs>
@@ -207,9 +207,9 @@ const DealerAnalytics: React.FC = () => {
         {/* Bottom row: Quotes created + manufacturers pie */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card className="bg-white border-gray-200">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">QUOTES CREATED</h2>
-              <div className="flex items-baseline gap-4">
+              <div className="flex flex-wrap items-baseline gap-4">
                 <span className="text-6xl font-bold text-gray-900 leading-none">{quotes.length}</span>
                 <span className="text-xs font-bold tracking-wider text-gray-600 uppercase max-w-[180px]">
                   Number of quotes created
@@ -225,7 +225,7 @@ const DealerAnalytics: React.FC = () => {
           </Card>
 
           <Card className="bg-white border-gray-200">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <h2 className="text-xs font-bold tracking-[0.2em] text-gray-600 mb-4">MANUFACTURERS ON COVER</h2>
               {manufacturerData.length === 0 ? (
                 <p className="text-gray-500 text-sm">No vehicles on cover yet.</p>

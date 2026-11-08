@@ -1,4 +1,5 @@
 # Architecture rules
+- Mobile page gutters belong to the shared portal shell; nested pages avoid duplicate insets, while wide tables and section tabs scroll locally so navigation and form fields stay within the viewport.
 - Staff and dealer password sign-in share tolerantSignIn: trim email, try the original password first and retry trimmed once only on invalid credentials; approval preserves existing dealer passwords except explicit resend, preventing copied whitespace and re-approval lockouts.
 - Dealer checkout matches the global normalized email/plate key before reuse, requires own Panda dealer ownership and unpaid state, and retries duplicate insert races once; paid cover stays untouched.
 - Customer-details field errors derive from dealerCustomerValidation and render through DealerFieldError; submit reveals all missing fields and focuses the first, keeping messages aligned with validation.

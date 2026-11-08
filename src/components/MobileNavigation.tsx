@@ -40,7 +40,7 @@ const MobileNavigation: React.FC = () => {
             <Menu className="h-8 w-8" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
+        <SheetContent side="right" className="w-[min(92vw,400px)] overflow-y-auto">
           <div className="flex flex-col h-full max-h-screen">
             {/* Header with logo */}
             <div className="flex items-center justify-between pb-4 flex-shrink-0">

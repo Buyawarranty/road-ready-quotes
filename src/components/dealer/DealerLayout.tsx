@@ -306,7 +306,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] border-crm-line bg-card p-0">
+                <SheetContent side="left" className="w-[300px] max-w-[calc(100vw-2rem)] border-crm-line bg-card p-0">
                   <div className="flex flex-col h-full">
                     <div className="border-b border-crm-line p-5">
                       <img
@@ -368,7 +368,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       </aside>
 
-      <main className={`min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
+      <main className={`min-w-0 min-h-screen px-3 pb-5 sm:px-5 lg:ml-[240px] lg:px-6 ${isImpersonating ? 'pt-[124px] lg:pt-[128px]' : 'pt-[84px] lg:pt-[88px]'}`}>
         {location.pathname.replace(/\/$/, '') !== '/dealer-portal/dashboard' && (!location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.replace(/\/$/, '') === '/dealer-portal/quote/pricing') && (
           <div className="mb-3">
             <Button

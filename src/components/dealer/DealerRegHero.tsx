@@ -67,7 +67,7 @@ export const DealerRegHero: React.FC = () => {
           placeholder="ENTER REG"
           aria-label="Vehicle registration number"
           maxLength={10}
-          className="bg-yellow-400 flex-1 text-center text-xl sm:text-2xl md:text-3xl text-black font-black uppercase tracking-wider h-[56px] sm:h-[64px] md:h-[68px] placeholder:text-black/40 focus:outline-none focus:ring-4 focus:ring-orange-500/40 px-3"
+          className="min-w-0 w-full bg-yellow-400 flex-1 text-center text-xl sm:text-2xl md:text-3xl text-black font-black uppercase tracking-wider h-[56px] sm:h-[64px] md:h-[68px] placeholder:text-black/40 focus:outline-none focus:ring-4 focus:ring-orange-500/40 px-3"
         />
       </div>
 

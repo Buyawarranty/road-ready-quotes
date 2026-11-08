@@ -101,7 +101,7 @@ export const DealerPublicHeader: React.FC = () => {
               </Link>
             </nav>
 
-            <div className="flex items-center gap-2 lg:hidden">
+            <div className="public-mobile-header-actions flex shrink-0 items-center gap-2 lg:hidden">
               <Link to="/dealer-portal/login" className="home-header-login-link !px-3 !py-2 text-sm"><LogIn aria-hidden="true" /> Login</Link>
               <Link to="/dealer-portal/signup" className="home-header-quote-link !px-3 !py-2 text-sm">Sign Up</Link>
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -149,14 +149,14 @@ export const DealerPublicHeader: React.FC = () => {
 
       {/* Mobile sticky trade CTA bar */}
       {showMobileBar && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.08)] px-3 pt-2.5 pb-[max(env(safe-area-inset-bottom,10px),10px)] lg:hidden animate-in slide-in-from-bottom-4 duration-300">
+        <div className="mobile-trade-cta fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.08)] px-3 pt-2.5 pb-[max(env(safe-area-inset-bottom,10px),10px)] lg:hidden animate-in slide-in-from-bottom-4 duration-300">
           <p className="text-center text-brand-orange font-bold text-sm mb-2">
             Trade Warranties for Your Customers
           </p>
           <div className="flex gap-2">
             <a
               href="tel:03309122535"
-              className="flex-1 bg-white border-2 border-crm-green-deep text-crm-green-deep font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm transition-colors"
+              className="min-w-0 flex-1 whitespace-nowrap bg-white border-2 border-crm-green-deep text-crm-green-deep font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 shadow-sm transition-colors"
               aria-label="Call us"
             >
               <Phone className="w-4 h-4" aria-hidden="true" />
@@ -164,7 +164,7 @@ export const DealerPublicHeader: React.FC = () => {
             </a>
             <Link
               to="/dealer-portal/signup"
-              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-colors"
+              className="min-w-0 flex-1 whitespace-nowrap bg-brand-orange hover:bg-brand-orange/90 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 shadow-md transition-colors"
               aria-label="Become a dealer"
             >
               Become a Dealer

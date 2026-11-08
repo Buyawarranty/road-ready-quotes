@@ -728,7 +728,7 @@ const DealerCustomersList = () => {
           </div>
         </div>
 
-        <div className="mb-3 grid gap-3 lg:grid-cols-[minmax(280px,1fr)_180px_180px_180px_150px]">
+        <div className="mb-3 grid min-w-0 gap-3 md:grid-cols-2 2xl:grid-cols-[minmax(280px,1fr)_180px_180px_180px_150px]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input

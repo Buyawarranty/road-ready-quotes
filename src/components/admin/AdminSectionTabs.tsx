@@ -19,14 +19,16 @@ export const AdminSectionTabs: React.FC<{ tabs: AdminSectionTab[] }> = ({ tabs }
     setParams(next, { replace: true });
   };
   return (
-    <Tabs value={value} onValueChange={onChange} className="w-full">
-      <TabsList className="mb-4 flex h-auto flex-wrap justify-start gap-1">
+    <Tabs value={value} onValueChange={onChange} className="w-full min-w-0">
+      <div className="mb-4 max-w-full overflow-x-auto overscroll-x-contain">
+      <TabsList className="flex h-auto w-max min-w-full justify-start gap-1 sm:w-full sm:flex-wrap">
         {tabs.map((t) => (
-          <TabsTrigger key={t.id} value={t.id} className="font-semibold">
+          <TabsTrigger key={t.id} value={t.id} className="min-h-11 shrink-0 font-semibold">
             {t.label}
           </TabsTrigger>
         ))}
       </TabsList>
+      </div>
       {tabs.map((t) => (
         <TabsContent key={t.id} value={t.id}>
           {t.render()}

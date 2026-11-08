@@ -210,9 +210,9 @@ const DealerWarrantiesList = () => {
   return (
     <DealerLayout>
       {/* Dark header band */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 lg:-mt-8 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-8 mb-6">
+      <div className="bg-white border-b border-gray-200 px-3 sm:px-5 lg:px-6 py-5 sm:py-8 mb-5 sm:mb-6 text-center sm:text-left">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-wider text-orange-500">DEALER PLANS</h1>
             <span className="text-orange-500 text-2xl">◆</span>
           </div>
@@ -247,23 +247,25 @@ const DealerWarrantiesList = () => {
           return next;
         });
       }} className="space-y-6">
-        <TabsList className="bg-white border border-gray-200">
+        <div className="max-w-full overflow-x-auto overscroll-x-contain">
+        <TabsList className="min-w-full w-max h-auto bg-white border border-gray-200">
           <TabsTrigger
             value="plans"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
+            className="min-h-11 shrink-0 data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
           >
             All plans ({rows.length})
           </TabsTrigger>
           <TabsTrigger
             value="payments"
-            className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
+            className="min-h-11 shrink-0 data-[state=active]:bg-orange-500 data-[state=active]:text-white text-gray-700 font-bold tracking-wide"
           >
             Payments ({unpaidIds.length} unpaid)
           </TabsTrigger>
-          <TabsTrigger value="cancellations" className="font-bold text-foreground data-[state=active]:bg-crm-orange data-[state=active]:text-primary-foreground">
+          <TabsTrigger value="cancellations" className="min-h-11 shrink-0 font-bold text-foreground data-[state=active]:bg-crm-orange data-[state=active]:text-primary-foreground">
             Cancellations ({cancellationRows.length})
           </TabsTrigger>
         </TabsList>
+        </div>
 
         {/* PLANS TAB */}
         <TabsContent value={activeTab === 'cancellations' ? 'cancellations' : 'plans'}>
