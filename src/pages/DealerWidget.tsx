@@ -89,10 +89,10 @@ const DealerWidget: React.FC = () => {
         <meta name="robots" content="noindex" />
       </Helmet>
 
-      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
+      <div className="min-w-0 max-w-6xl mx-auto grid lg:grid-cols-2 gap-6 sm:gap-10 items-center">
         {!compact && (
-          <div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-[1.05] tracking-tight">
+          <div className="min-w-0 text-center lg:text-left">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-[1.05] tracking-tight">
               Sell more warranties.
               <br />
               <span className="text-orange-500">Grow your business.</span>
@@ -104,7 +104,7 @@ const DealerWidget: React.FC = () => {
           </div>
         )}
 
-        <div className={compact ? 'lg:col-span-2' : ''}>
+        <div className={compact ? 'min-w-0 lg:col-span-2' : 'min-w-0'}>
           <form onSubmit={handleSubmit} className="space-y-3 w-full max-w-md" noValidate>
             <p className="text-sm font-bold text-gray-900">Get an instant trade quote</p>
 
@@ -125,7 +125,7 @@ const DealerWidget: React.FC = () => {
                 placeholder="ENTER REG"
                 aria-label="Vehicle registration number"
                 maxLength={10}
-                className="bg-yellow-400 flex-1 text-center text-2xl text-black font-black uppercase tracking-wider h-[64px] placeholder:text-black/40 focus:outline-none focus:ring-4 focus:ring-orange-500/40 px-3"
+                className="min-w-0 w-full bg-yellow-400 flex-1 text-center text-2xl text-black font-black uppercase tracking-wider h-[64px] placeholder:text-black/40 focus:outline-none focus:ring-4 focus:ring-orange-500/40 px-3"
               />
             </div>
 
@@ -150,11 +150,11 @@ const DealerWidget: React.FC = () => {
 
       {!compact && (
         <div className="max-w-6xl mx-auto mt-10 bg-slate-900 rounded-2xl p-6 sm:p-8 grid sm:grid-cols-2 gap-6 text-white">
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
               <UserCircle2 className="h-6 w-6 text-white" />
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <p className="font-bold text-lg">Already a dealer?</p>
               <p className="text-sm text-slate-300 mb-3">
                 Log in to manage quotes, policies and customers.
@@ -167,11 +167,11 @@ const DealerWidget: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="flex items-start gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
               <UserCircle2 className="h-6 w-6 text-white" />
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <p className="font-bold text-lg">Not signed up yet?</p>
               <p className="text-sm text-slate-300 mb-3">
                 Join our dealer network and start selling warranties today.
