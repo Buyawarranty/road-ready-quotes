@@ -1,6 +1,6 @@
 # Roadmap
-- [ ] Set boost net profit to £100/£200/£300/£400 for one–four years, verify configured prices and calculation tests.
-- [ ] Remove the price marked in the latest pricing screenshot.
+- [ ] Set boost net profit to £100/£200/£300/£400 for one–four years; blocked because the pricing update was declined. Existing boost pricing stays unchanged.
+- [x] Remove the term and price between ENTER REG and Get prices; retain pricing after vehicle lookup.
 - [x] Diagnose checkout duplicate-key failure, normalize email/plate matching, preserve owned unpaid records and protect paid/other-dealer records; targeted regression tests added.
 - [x] Restore inline errors for blank and invalid customer fields, reveal address fields and focus the first error; six tests pass and isolated mobile/desktop form checks confirm errors clear after correction.
 - [x] Keep assisted customer details selected when proceeding to checkout, allow card payment, and leave unknown customer details blank; targeted rule tests added. Live authenticated payment remains unavailable with external authentication.
