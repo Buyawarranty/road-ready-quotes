@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Loader2, Plus, Copy, Trash2, Percent, PoundSterling, Pencil, RefreshCw } from 'lucide-react';
@@ -145,19 +146,14 @@ const DealerAdminDiscountCodes: React.FC = () => {
               </div>
               <div><Label>Description</Label><Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
               <div><Label>Campaign source</Label><Select value={form.campaign_source || 'GENERAL'} onValueChange={value => setForm({ ...form, campaign_source: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{['GENERAL', 'SALESTEAM', 'WELCOME', 'EMAIL', 'INSTA', 'AFFILIATE', 'RETARGETING'].map(value => <SelectItem key={value} value={value}>{({ GENERAL: 'General campaign', SALESTEAM: 'Sales team', WELCOME: 'New dealers', EMAIL: 'Email campaign', INSTA: 'Instagram', AFFILIATE: 'Affiliate', RETARGETING: 'Retargeting' } as Record<string, string>)[value]}</SelectItem>)}</SelectContent></Select></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Type</Label>
-                  <Select value={form.discount_type} onValueChange={(v) => setForm({ ...form, discount_type: v, min_order_amount: v === 'fixed' ? Math.max(350, form.min_order_amount) : form.min_order_amount })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="percent">Percent (%)</SelectItem>
-                      <SelectItem value="fixed">Fixed (£)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div><Label>Value</Label><Input type="number" min={0} step={0.01} value={form.discount_value} onChange={(e) => setForm({ ...form, discount_value: Number(e.target.value) })} /></div>
+              <div>
+                <Label id="dealer-discount-type">Discount type</Label>
+                <ToggleGroup type="single" variant="outline" value={form.discount_type} aria-labelledby="dealer-discount-type" className="mt-1 grid grid-cols-2 gap-2" onValueChange={value => { if (value) setForm({ ...form, discount_type: value, min_order_amount: value === 'fixed' ? Math.max(350, form.min_order_amount) : form.min_order_amount }); }}>
+                  <ToggleGroupItem value="percent" className="h-11 gap-2 data-[state=on]:border-primary"><Percent className="h-4 w-4" />Percentage off</ToggleGroupItem>
+                  <ToggleGroupItem value="fixed" className="h-11 gap-2 data-[state=on]:border-primary"><PoundSterling className="h-4 w-4" />Amount off</ToggleGroupItem>
+                </ToggleGroup>
               </div>
+              <div><Label htmlFor="dealer-discount-value">{form.discount_type === 'fixed' ? 'Amount off (£)' : 'Percentage off (%)'}</Label><Input id="dealer-discount-value" type="number" inputMode="decimal" min={0.01} max={form.discount_type === 'percent' ? 100 : undefined} step={0.01} value={form.discount_value} onChange={(e) => setForm({ ...form, discount_value: Number(e.target.value) })} /></div>
               <div><Label>Minimum spend (£)</Label><Input type="number" min={form.discount_type === 'fixed' ? 350 : 0} step={1} value={form.min_order_amount} onChange={event => setForm({ ...form, min_order_amount: Number(event.target.value) })} />{form.discount_type === 'fixed' && <p className="mt-1 text-xs text-muted-foreground">Fixed discounts require at least £350 spend.</p>}</div>
               <div><Label>Usage limit (blank = unlimited)</Label><Input type="number" min={1} value={form.usage_limit} onChange={(e) => setForm({ ...form, usage_limit: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
