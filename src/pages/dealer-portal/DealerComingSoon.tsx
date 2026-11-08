@@ -14,6 +14,7 @@ import dealerSupportDeskLocal from '@/assets/panda-dealer-support-portal.webp';
 import whyDealersPanda from '@/assets/panda-trusted-warranties.webp';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 import { supabase } from '@/integrations/supabase/client';
+import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
@@ -293,10 +294,7 @@ const DealerComingSoon = () => {
     setLoggingIn(true);
     setUnconfirmedEmail(null);
     try {
-      const { data: signInData, error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
+      const { data: signInData, error } = await signInWithPasswordTolerant(loginEmail, loginPassword);
       if (error) {
         if (error.message?.toLowerCase().includes('email not confirmed')) {
           setUnconfirmedEmail(loginEmail);
@@ -309,10 +307,15 @@ const DealerComingSoon = () => {
       const userId = signInData.session?.user?.id;
       // Accounts that own a dealer profile go to the dealer portal, even if
       // they also hold a staff role; staff-only accounts are turned away.
-      const [{ data: dealer }, { data: roles }] = await Promise.all([
+      const [{ data: dealer, error: dealerError }, { data: roles }] = await Promise.all([
         supabase.from('dealers').select('id').eq('user_id', userId as string).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id', userId as string),
       ]);
+      if (dealerError) {
+        await supabase.auth.signOut();
+        toast.error('We could not load your dealer account just now. Please sign in again.');
+        return;
+      }
       if (!dealer) {
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         await supabase.auth.signOut();

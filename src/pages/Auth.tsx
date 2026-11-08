@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { currentBrandKey } from '@/lib/brand';
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
@@ -245,7 +246,7 @@ const Auth = () => {
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           const result = await withTimeout(
-            supabase.auth.signInWithPassword({ email, password }),
+            signInWithPasswordTolerant(email, password),
             10000,
             'Sign in took too long. Please try again.'
           );

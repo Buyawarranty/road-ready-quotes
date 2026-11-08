@@ -15,7 +15,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
-  const [result, setResult] = useState<{ email: string; password: string; emailed: boolean; error?: string | null } | null>(null);
+  const [result, setResult] = useState<{ email: string; password: string | null; emailed: boolean; error?: string | null } | null>(null);
 
   const set = (k: keyof typeof empty) => (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [k]: e.target.value });
 
@@ -46,7 +46,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
   const loginUrl = `${window.location.origin}/dealer-portal/login`;
   const copy = () => {
     if (!result) return;
-    navigator.clipboard.writeText(`Login: ${loginUrl}\nEmail: ${result.email}\nPassword: ${result.password}`);
+    navigator.clipboard.writeText(`Login: ${loginUrl}\nEmail: ${result.email}\nPassword: ${result.password ?? 'their existing dealer password'}`);
     toast({ title: 'Login details copied' });
   };
 
@@ -68,7 +68,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
             <div className="rounded-md border p-3 space-y-1 font-mono text-xs break-all">
               <div>Login: {loginUrl}</div>
               <div>Email: {result.email}</div>
-              <div>Password: {result.password}</div>
+              <div>Password: {result.password ?? 'unchanged — this dealer already has a login and keeps their existing password'}</div>
             </div>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" onClick={copy}><Copy className="h-4 w-4 mr-1" />Copy details</Button>
