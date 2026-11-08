@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -1406,9 +1407,8 @@ export const UserPermissionsTab = () => {
               <div>
                 <Label htmlFor="password">Password</Label>
                 <div className="flex gap-2">
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="text"
                     autoComplete="new-password"
                     value={inviteData.password}
                     onChange={(e) => setInviteData(prev => ({ ...prev, password: e.target.value }))}
@@ -1637,9 +1637,8 @@ export const UserPermissionsTab = () => {
                 <div className="space-y-1">
                   <Label htmlFor="newPassword" className="text-xs text-muted-foreground">Password</Label>
                   <div className="flex gap-1.5">
-                    <Input
+                    <PasswordInput
                       id="newPassword"
-                      type="text"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Enter new password"

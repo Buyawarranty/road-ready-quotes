@@ -1,4 +1,5 @@
 # Architecture rules
+- Use the shared PasswordInput for new password entry fields, with independent show/hide controls; preserve existing eye-enabled fields to avoid duplicate controls.
 - Derive all staff section checkbox options from the Panda dashboard section catalog via buildGrantableTabs; never maintain a duplicate permission list, so each new section is automatically assignable without changing existing role or data restrictions.
 - Dealer card checkout creates only Pending/unverified Panda dealer rows; the customer status constraint permits that scoped state and signed payment confirmation activates cover, so opening checkout cannot issue unpaid warranties.
 - Auth persistence is document-scoped by portal with separate staff/dealer keys and isolated recovery storage; crossing scopes reloads subscribers/caches, view-as keeps staff authorization, and ordinary logout defaults to local scope so simultaneous dashboards cannot replace or revoke one another's sessions.

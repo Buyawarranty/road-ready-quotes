@@ -5,6 +5,8 @@ import { isAdminRole } from '@/lib/adminRoles';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -319,26 +321,28 @@ const PasswordReset = () => {
                 Suggest a strong password
               </button>
             </div>
+            <div className="relative">
             <Input
               id="password"
               type={showPassword ? 'text' : 'password'}
+              className="pr-12"
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your new password"
             />
-            <button type="button" className="mt-1 text-sm text-muted-foreground underline" onClick={() => setShowPassword((s) => !s)}>
-              {showPassword ? 'Hide password' : 'Show password'}
-            </button>
+            <Button type="button" variant="ghost" size="icon" className="absolute right-0 top-0 h-full w-11 text-muted-foreground" aria-label={showPassword ? 'Hide password' : 'Show password'} title={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword} onClick={() => setShowPassword((s) => !s)}>
+              {showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+            </Button>
+            </div>
             {showPassword && password && (
               <p className="mt-1 text-sm text-muted-foreground">Save this password somewhere safe before you continue.</p>
             )}
           </div>
           <div>
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

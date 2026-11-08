@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
@@ -1595,9 +1596,8 @@ export const ManualOrderEntry = ({ customerToEdit, policyToEdit, onClose }: Manu
               </div>
               <div>
                 <Label htmlFor="dashboardPassword">Temporary Password</Label>
-                <Input
+                <PasswordInput
                   id="dashboardPassword"
-                  type="text"
                   value={orderData.dashboardPassword}
                   onChange={(e) => updateOrderData('dashboardPassword', e.target.value)}
                   placeholder="temp-password-123"

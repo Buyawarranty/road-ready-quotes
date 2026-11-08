@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { User, Lock, LogOut, Loader2 } from 'lucide-react';
@@ -78,11 +79,11 @@ const DealerAdminAccount: React.FC = () => {
         <CardContent className="space-y-3">
           <div>
             <Label>New password</Label>
-            <Input type="password" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Min 8 characters" />
+            <PasswordInput value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Min 8 characters" />
           </div>
           <div>
             <Label>Confirm new password</Label>
-            <Input type="password" value={pwd2} onChange={(e) => setPwd2(e.target.value)} />
+            <PasswordInput value={pwd2} onChange={(e) => setPwd2(e.target.value)} />
           </div>
           <Button onClick={updatePassword} disabled={saving}>
             {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Lock className="h-4 w-4 mr-2" />}

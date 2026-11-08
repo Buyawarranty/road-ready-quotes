@@ -7,6 +7,7 @@ import FreeMonthsOptions, { bonusMonthsForOption, type FreeCoverOption } from '.
 import { useCurrentAdminId } from '@/hooks/useCurrentAdminId';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -5858,9 +5859,8 @@ Please log in and change your password after first login.`;
                                       </div>
                                       <div>
                                         <Label htmlFor="edit-temp-password">Temporary Password</Label>
-                                        <Input
+                                        <PasswordInput
                                           id="edit-temp-password"
-                                          type="text"
                                           value={editingCustomer.temporary_password || ''}
                                           onChange={(e) => setEditingCustomer({ ...editingCustomer, temporary_password: e.target.value })}
                                           placeholder="temp-password-123"
