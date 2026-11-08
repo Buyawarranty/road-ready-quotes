@@ -245,7 +245,7 @@ const DealerHome = () => {
             </h1>
             <ul className="home-hero-bullets" aria-label="Dealer benefits">
               <li><Check aria-hidden="true" /><span>Instant quotes <span className="home-bullet-sep">•</span> We do the admin <span className="home-bullet-sep">•</span> Fast payouts</span></li>
-              <li><Check aria-hidden="true" /><span>Protect your customers <span className="home-bullet-sep">•</span> Boost your bottom line</span></li>
+              <li><Check aria-hidden="true" /><span>Customer Protection <span className="home-bullet-sep">•</span> More Sales <span className="home-bullet-sep">•</span> Higher Profits</span></li>
             </ul>
             <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
               <div className="home-reg-input">
