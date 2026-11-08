@@ -305,11 +305,12 @@ const Step3Pricing: React.FC = () => {
     </Collapsible>
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
       <div className="flex flex-col items-start gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-      {trade ? <div className="flex w-full shrink-0 items-stretch justify-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-3 sm:w-auto sm:justify-start sm:py-2">
+      {trade ? <div className="flex w-full shrink-0 items-stretch justify-center gap-4 rounded-lg border border-crm-line bg-card px-5 py-4 sm:w-auto sm:justify-start">
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0 text-center sm:text-left">
-          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
-          <strong className="block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <p className="text-sm font-extrabold text-crm-navy">Profit</p>
+          <strong className="mt-1 block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <p className="mt-2 max-w-52 text-xs leading-5 text-muted-foreground">{term && prices[term] != null ? 'Based on your selling price' : 'Based on recommended retail price'}</p>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
