@@ -4,7 +4,7 @@ import { Menu, Phone, Clock, PhoneCall, LogIn } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Link, useNavigate } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 
 const MobileNavigation: React.FC = () => {

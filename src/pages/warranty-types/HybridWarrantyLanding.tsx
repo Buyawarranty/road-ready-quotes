@@ -24,7 +24,7 @@ const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));
 const WarrantyBenefitsSection = lazy(() => import('@/components/homepage/WarrantyBenefitsSection'));
 
 // Assets
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 import trustpilotExcellent from '@/assets/trustpilot-excellent-box.webp';
 import pandaMascot from '@/assets/warranty-panda-mascot.png';
@@ -525,7 +525,7 @@ const HybridWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
@@ -603,7 +603,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "legalName": "BUY A WARRANTY LIMITED",
     "description": "UK's trusted extended vehicle warranty provider since 2016. Specialist in hybrid, electric, car, van, and motorbike warranty cover. Rated Excellent on Trustpilot.",
     "areaServed": { "@type": "Country", "name": "United Kingdom" },
@@ -660,7 +660,7 @@ const HybridWarrantyLanding: React.FC = () => {
     "@type": "HowTo",
     "name": "How to get a hybrid car warranty quote in the UK",
     "description": "Get an instant hybrid vehicle warranty quote in 60 seconds — covers Toyota, BMW, Kia, Volvo, Mercedes, Honda & 100+ hybrid models",
-    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "totalTime": "PT1M",
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter registration", "text": "Enter your hybrid vehicle registration number to look up your vehicle details automatically" },
@@ -710,7 +710,7 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="UK's specialist hybrid warranty. Covers electric motors, inverters, battery management & 1,000+ parts on any HEV, PHEV or mild hybrid. Unlimited claims, any garage, no excess options. Instant quote in 60 seconds." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/hybrid-warranty/" />
         <meta property="og:type" content="product" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Panda Protect hybrid vehicle warranty — covers Toyota, BMW, Kia, Volvo and 100+ UK hybrid models from £19 per month" />
@@ -725,7 +725,7 @@ const HybridWarrantyLanding: React.FC = () => {
         <meta name="twitter:creator" content="@pandaprotect" />
         <meta name="twitter:title" content="Hybrid Car Warranty UK — From £19/mo | 100+ Models Covered" />
         <meta name="twitter:description" content="Specialist hybrid warranty for Toyota, BMW, Kia, Volvo & more. Electric motors, inverters, battery systems covered. Unlimited claims, any UK garage. Quote in 60 seconds." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta name="twitter:image:alt" content="Hybrid Vehicle Warranty UK — Panda Protect — From £19 per month" />
 
         {/* Facebook/Meta domain verification compatibility */}

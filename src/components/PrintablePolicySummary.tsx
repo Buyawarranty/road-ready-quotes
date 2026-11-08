@@ -187,7 +187,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
           <div ref={printRef} className="page">
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '16px', borderBottom: '3px solid #eb4b00', marginBottom: '20px' }}>
-              <img src="https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png" alt="Panda Protect" style={{ height: '42px' }} />
+              <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" style={{ height: '42px' }} />
               <div style={{ textAlign: 'right', fontSize: '10px', color: '#666', lineHeight: '1.6' }}>
                 <div style={{ fontWeight: '600' }}>Panda Protect Ltd</div>
                 <div>Warranty House, 62 Berkhamsted Ave</div>

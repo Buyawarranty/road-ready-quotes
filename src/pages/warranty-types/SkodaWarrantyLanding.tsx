@@ -388,7 +388,7 @@ const SkodaWarrantyLanding: React.FC = () => {
       "@type": "Organization",
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+44-800-917-9270",
@@ -484,7 +484,7 @@ const SkodaWarrantyLanding: React.FC = () => {
     "@type": "Organization",
     "name": "Panda Protect",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -502,8 +502,8 @@ const SkodaWarrantyLanding: React.FC = () => {
     "name": "Panda Protect",
     "description": "UK's leading Škoda extended warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
     "url": "https://pandaprotect.co.uk",
-    "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
+    "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "telephone": "+443302295045",
     "email": "support@pandaprotect.co.uk",
     "address": {
@@ -567,7 +567,7 @@ const SkodaWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="Protect your Škoda with the UK's top-rated extended warranty. Cover Octavia, Superb, Kodiaq, Karoq, Fabia, Enyaq iV & all models. DSG gearbox included. 8,000+ components. Any UK garage." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/skoda-warranty/" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Škoda Extended Warranty UK - Panda Protect" />
@@ -578,7 +578,7 @@ const SkodaWarrantyLanding: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Škoda Extended Warranty UK | From £22/month" />
         <meta name="twitter:description" content="UK's #1 rated Škoda warranty. Cover all models from 2012-2026 including DSG gearbox. 8,000+ components. Any garage. Instant quote." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
 
         {/* AI & Bot directives */}
         <meta name="ai-content-declaration" content="This page provides genuine Škoda extended warranty information for UK vehicle owners" />

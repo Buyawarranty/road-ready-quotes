@@ -7,7 +7,7 @@ import MileageQuickSelect from '@/components/MileageQuickSelect';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { trackButtonClick, trackQuoteRequest } from '@/utils/analytics';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 
 // Lazy load heavy sections
 const VideoSection = lazy(() => import('@/components/homepage/VideoSection'));

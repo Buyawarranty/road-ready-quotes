@@ -472,7 +472,7 @@ const PHEVWarrantyLanding: React.FC = () => {
     "name": "Plug-in Hybrid (PHEV) Warranty UK — Extended Cover for All PHEV Models",
     "description": "UK's specialist PHEV extended warranty from £19/month. Covers BMW 330e, X5 xDrive45e, Mercedes C 300 e, GLC 300 e, Volvo XC60 Recharge, Audi Q5 TFSI e, Kia Niro PHEV, Hyundai Tucson PHEV, Ford Kuga PHEV, VW Golf GTE, Land Rover Range Rover PHEV, and 100+ plug-in hybrid models. Protects electric motors, inverters, on-board chargers, battery management systems, DC-DC converters, and 1,000+ components.",
     "brand": { "@type": "Brand", "name": "Panda Protect" },
-    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
+    "manufacturer": { "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png", "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" } },
     "offers": { "@type": "Offer", "priceCurrency": "GBP", "price": "19", "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], "availability": "https://schema.org/InStock", "url": "https://pandaprotect.co.uk/warranty-types/phev-warranty/", "seller": { "@type": "Organization", "name": "Panda Protect" }, "itemCondition": "https://schema.org/NewCondition", "priceSpecification": { "@type": "UnitPriceSpecification", "price": "19", "priceCurrency": "GBP", "unitText": "month", "billingIncrement": 1 } },
     "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "2847", "bestRating": "5", "worstRating": "1" },
     "review": testimonials.map((t, i) => ({ "@type": "Review", "author": { "@type": "Person", "name": t.name }, "reviewRating": { "@type": "Rating", "ratingValue": t.rating, "bestRating": "5" }, "reviewBody": t.text, "datePublished": new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] })),
@@ -503,7 +503,7 @@ const PHEVWarrantyLanding: React.FC = () => {
     { "@type": "ListItem", "position": 3, "name": "PHEV plug-in hybrid warranty", "item": "https://pandaprotect.co.uk/warranty-types/phev-warranty/" }
   ] };
 
-  const organizationSchema = { "@context": "https://schema.org", "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png", "legalName": "BUY A WARRANTY LIMITED", "description": "UK's trusted extended vehicle warranty provider since 2016. Specialist in PHEV, hybrid, electric, car, and van warranty cover.", "foundingDate": "2016", "areaServed": { "@type": "Country", "name": "United Kingdom" }, "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"], "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" } };
+  const organizationSchema = { "@context": "https://schema.org", "@type": "Organization", "name": "Panda Protect", "url": "https://pandaprotect.co.uk", "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png", "legalName": "BUY A WARRANTY LIMITED", "description": "UK's trusted extended vehicle warranty provider since 2016. Specialist in PHEV, hybrid, electric, car, and van warranty cover.", "foundingDate": "2016", "areaServed": { "@type": "Country", "name": "United Kingdom" }, "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"], "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" } };
 
   const webPageSchema = { "@context": "https://schema.org", "@type": "WebPage",
     "name": "PHEV Plug-in Hybrid Warranty UK From £19/mo — BMW, Mercedes, Volvo, Audi & 100+ Models",
@@ -525,7 +525,7 @@ const PHEVWarrantyLanding: React.FC = () => {
   const howToSchema = { "@context": "https://schema.org", "@type": "HowTo",
     "name": "How to get a plug-in hybrid warranty quote in the UK",
     "description": "Get an instant PHEV warranty quote in 60 seconds — covers BMW, Mercedes, Volvo, Audi, Kia & 100+ PHEV models",
-    "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+    "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "totalTime": "PT1M",
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter registration", "text": "Enter your PHEV registration number to look up your vehicle details automatically" },
@@ -563,7 +563,7 @@ const PHEVWarrantyLanding: React.FC = () => {
         <meta property="og:description" content="UK's No.1 specialist PHEV warranty. Covers electric motors, inverters, on-board chargers, battery management & 1,000+ parts across 100+ plug-in hybrid models. Unlimited claims at any garage. 60-second quote — 14-day money-back guarantee. 0330 229 5045." />
         <meta property="og:url" content="https://pandaprotect.co.uk/warranty-types/phev/" />
         <meta property="og:type" content="product" />
-        <meta property="og:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta property="og:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Panda Protect PHEV plug-in hybrid warranty — covers BMW, Mercedes, Volvo, Audi and 100+ UK PHEV models from £19 per month" />
@@ -576,7 +576,7 @@ const PHEVWarrantyLanding: React.FC = () => {
         <meta name="twitter:creator" content="@pandaprotect" />
         <meta name="twitter:title" content="PHEV Warranty UK From £19/mo — Plug-in Hybrid Cover for BMW, Mercedes, Volvo & 100+ Models" />
         <meta name="twitter:description" content="UK's specialist PHEV warranty covering electric motors, inverters, on-board chargers & 1,000+ parts. Unlimited claims, any UK garage. 60-second quote — 14-day money-back guarantee." />
-        <meta name="twitter:image" content="https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" />
+        <meta name="twitter:image" content="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" />
         <meta name="twitter:image:alt" content="PHEV plug-in hybrid warranty UK from £19 per month — Panda Protect covers BMW, Mercedes, Volvo, Audi, Kia and 100+ models" />
         <meta name="twitter:label1" content="Price" />
         <meta name="twitter:data1" content="From £19/month" />

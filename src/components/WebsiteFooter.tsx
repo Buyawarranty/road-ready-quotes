@@ -2,7 +2,7 @@ import React from 'react';
 import { Star, Phone, Mail, MessageCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 
 // Pages that have their own final CTA section
 const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/', '/faq/traders', '/faq/traders/', '/contact-us', '/contact-us/'];

@@ -49,8 +49,8 @@ export const LocalBusinessSchema = ({
       "name": name,
       "description": "UK's leading car warranty provider offering flexible, affordable vehicle protection with instant quotes and no hidden fees.",
       "url": url,
-      "logo": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
-      "image": "https://pandaprotect.co.uk/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png",
+      "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
+      "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
       "telephone": telephone,
       "email": email,
       "address": {

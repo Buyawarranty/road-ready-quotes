@@ -64,7 +64,7 @@ export const BRANDS: Record<BrandKey, Brand> = {
     legalName: "Panda Protect is a trading name of Panda Protect Limited.",
     domain: "pandaprotect.co.uk",
     siteUrl: "https://www.pandaprotect.co.uk",
-    logoUrl: "https://www.pandaprotect.co.uk/__l5e/assets-v1/6f0b8029-8529-44ff-bdd2-f0e7eea6ebb2/panda-protect-official-logo.png",
+    logoUrl: "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     trustpilotUrl: "https://uk.trustpilot.com/review/pandaprotect.co.uk",
     accentColor: "#EC6F33",
     supportEmail: "support@pandaprotect.co.uk",

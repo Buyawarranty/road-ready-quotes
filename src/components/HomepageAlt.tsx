@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import pandaMechanicImage from '@/assets/panda-mechanic-car.png';
 
 interface VehicleData {

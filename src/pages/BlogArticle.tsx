@@ -167,7 +167,7 @@ const BlogArticle = () => {
       "name": "Panda Protect",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://pandaprotect.co.uk/lovable-uploads/baw-logo-new-2025.png"
+        "url": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png"
       }
     },
     "wordCount": post.content?.raw?.split(/\s+/).length || 0,

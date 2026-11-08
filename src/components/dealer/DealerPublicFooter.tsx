@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, MessageCircle, Phone } from 'lucide-react';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import pandaProtectLogo from '@/assets/panda-protect-v2.webp';
+import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 
 const CLAIMS_PHONE = '0330 229 5045';
 const SUPPORT_EMAIL = 'support@pandaprotect.co.uk';

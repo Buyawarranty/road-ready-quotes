@@ -16,7 +16,7 @@ import { trackButtonClick } from '@/utils/analytics';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import bmwLogo from '@/assets/logos/bmw.webp';
 import bmwHeroImage from '@/assets/Bmw-extended-used-car-warranty.png';
-import buyawarrantyLogo from '@/assets/buyawarranty-logo.webp';
+import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';

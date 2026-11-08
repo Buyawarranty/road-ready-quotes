@@ -47,7 +47,7 @@ const COMPANY_INFO = {
   email: 'support@pandaprotect.co.uk',
   phone: '0330 229 5040',
   address: ['Buy A Warranty', 'Online', 'United Kingdom'],
-  logoUrl: 'https://pandaprotect.co.uk/panda-protect-logo.png'
+  logoUrl: 'https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png'
 };
 
 const formatCurrency = (amount: number): string => {

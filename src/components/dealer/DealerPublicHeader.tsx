@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
-import pandaProtectLogo from '@/assets/panda-protect-v2.webp';
+import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 
 const NAV_ITEMS = [
   { label: "What's covered", to: '/what-is-covered/' },

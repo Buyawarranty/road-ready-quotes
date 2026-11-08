@@ -63,7 +63,7 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
         "@type": "Organization",
         "name": "Buy A Warranty",
         "url": "https://pandaprotect.co.uk",
-        "logo": "https://pandaprotect.co.uk/panda-protect-logo.png",
+        "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
         "telephone": page.local_business_phone,
         "email": page.local_business_email
       });
