@@ -211,7 +211,7 @@ const ContactUs = () => {
             </div>
 
             <div className="contact-hours-strip">
-              <span><Clock3 />Customer support: Monday – Saturday · 9am to 6pm</span>
+              <span><Clock3 />Speak to our UK team – Lines open 9am to 6pm, Monday to Saturday.</span>
               <span><Clock3 />Claims &amp; repairs: Monday – Friday · 9am to 5pm</span>
               <span className="contact-rating">Excellent <strong>★★★★★</strong></span>
             </div>
@@ -301,7 +301,7 @@ const ContactUs = () => {
 
         <section className="contact-location-section">
           <div className="contact-shell contact-location-grid">
-            <article><Clock3 /><div><h2>Opening hours</h2><p>Customer support: Monday – Saturday, 9am to 6pm</p><p>Claims &amp; repairs: Monday – Friday, 9am to 5pm</p></div></article>
+            <article><Clock3 /><div><h2>Opening hours</h2><p>Speak to our UK team – Lines open 9am to 6pm, Monday to Saturday.</p><p>Claims &amp; repairs: Monday – Friday, 9am to 5pm</p></div></article>
             <article><MapPin /><div><h2>Postal address</h2><p>Buy A Warranty Limited, Warranty House, 62 Berkhamsted Avenue, Wembley, London, HA9 6DT, United Kingdom</p></div></article>
           </div>
         </section>
