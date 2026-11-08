@@ -18,8 +18,8 @@ export function Toaster() {
         const Icon = variant === "destructive" ? AlertTriangle : CheckCircle2
         return (
           <Toast key={id} variant={variant} {...props}>
-            <Icon className="h-6 w-6 shrink-0 text-white" aria-hidden="true" />
-            <div className="grid gap-1">
+            <Icon className="mt-0.5 h-5 w-5 shrink-0 text-primary-foreground" aria-hidden="true" />
+            <div className="grid min-w-0 flex-1 gap-1 text-left">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (
                 <ToastDescription>{description}</ToastDescription>
