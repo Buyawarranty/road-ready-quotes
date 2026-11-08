@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Audit mobile public, dealer and admin pages; correct shared gutters, overflowing layouts and touch controls, and verify representative routes at 320px and 393px. Live protected screens require external authentication.
 - [x] Apply the exact requested login fixes A–G and deploy dealer-signup-decision; focused regression tests cover copied whitespace and existing password preservation. Live authenticated login verification is unavailable with external authentication.
 - [x] Set boost net profit to £100/£200/£300/£400 for one–four years using customer add-ons £120/£240/£360/£480 and unchanged dealer costs; only the Panda annual plan was updated, with 41 pricing/checkout tests passing. Live signed-in checkout remains unavailable with external authentication.
 - [x] Remove the term and price between ENTER REG and Get prices; retain pricing after vehicle lookup.
