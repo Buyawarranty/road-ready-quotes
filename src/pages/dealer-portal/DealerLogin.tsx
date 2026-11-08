@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
@@ -69,7 +70,7 @@ const DealerLogin = () => {
     setLoading(true);
     setUnconfirmedEmail(null);
     try {
-      const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data: signInData, error } = await signInWithPasswordTolerant(email, password);
       if (error) {
         if (error.message?.toLowerCase().includes('email not confirmed')) {
           setUnconfirmedEmail(email);
@@ -89,10 +90,16 @@ const DealerLogin = () => {
       // dealers also hold a staff role (e.g. accounts copied from Buy A
       // Warranty); they still land in the dealer portal from here, and in the
       // admin dashboard from /auth. Staff-only accounts are turned away.
-      const [{ data: dealer }, { data: roles }] = await Promise.all([
+      const [{ data: dealer, error: dealerError }, { data: roles }] = await Promise.all([
         supabase.from('dealers').select('id').eq('user_id', userId as string).maybeSingle(),
         supabase.from('user_roles').select('role').eq('user_id', userId as string),
       ]);
+      if (dealerError) {
+        // A failed lookup is not "no dealer account" — ask them to retry.
+        await supabase.auth.signOut();
+        toast({ title: 'Please try again', description: 'We could not load your dealer account just now. Please sign in again.', variant: 'destructive' });
+        return;
+      }
       if (!dealer) {
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
         await supabase.auth.signOut();

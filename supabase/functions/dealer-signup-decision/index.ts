@@ -251,7 +251,18 @@ serve(async (req) => {
         });
       }
       userId = existing.id;
-      await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { ...(existing.user_metadata ?? {}), must_change_password: true } });
+      // Only "Resend login" (or the first approval of an account that has no
+      // dealer profile yet) may replace a password. Re-approving, a double
+      // click on Approve, or adding a dealer who already has a login used to
+      // overwrite it silently, so the password the dealer knew - or the one in
+      // the first email - stopped working ("Invalid login credentials").
+      const { data: priorDealer } = await admin
+        .from("dealers").select("id").eq("user_id", existing.id).maybeSingle();
+      if (!isResend && priorDealer) {
+        password = null;
+      } else {
+        await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { ...(existing.user_metadata ?? {}), must_change_password: true } });
+      }
     } else {
       userId = created.user?.id ?? null;
     }
@@ -346,17 +357,19 @@ serve(async (req) => {
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
         <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:20px;margin:22px 0;">
           <div style="padding:6px 0;"><strong>Email:</strong> <span style="font-family:monospace;color:#1e3a5f;">${esc(email)}</span></div>
-          <div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password)}</span></div>
+          ${password
+            ? `<div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password)}</span></div>`
+            : `<div style="padding:6px 0;"><strong>Password:</strong> use your existing ${brand.name} dealer password. Forgotten it? <a href="${brand.siteUrl}/forgot-password/" style="color:${brand.accentColor};">Reset it here</a>.</div>`}
         </div>
         <div style="text-align:center;margin:28px 0;">
           <a href="${PORTAL_URL}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
         </div>
-        <p style="line-height:1.6;font-size:14px;color:#6b7280;">After signing in, you can choose your own password in Settings → Change password.</p>
+        ${password ? `<p style="line-height:1.6;font-size:14px;color:#6b7280;">After signing in, you can choose your own password in Settings → Change password.</p>` : ""}
         <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${brand.name} Trade Team</p>`
       )
     );
 
-    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error, ...(manualCreate ? { login_email: email, temp_password: password } : {}) }), {
+    return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error, password_unchanged: password === null, ...(manualCreate ? { login_email: email, temp_password: password } : {}) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
