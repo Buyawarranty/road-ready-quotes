@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Loader2, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -41,8 +41,8 @@ const DealerChangePassword: React.FC = () => {
         <h2 className="text-lg font-semibold text-foreground">Change password</h2>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div><Label htmlFor="new-pw">New password</Label><Input id="new-pw" type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} /></div>
-        <div><Label htmlFor="confirm-pw">Confirm new password</Label><Input id="confirm-pw" type="password" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} /></div>
+        <div><Label htmlFor="new-pw">New password</Label><PasswordInput id="new-pw" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} /></div>
+        <div><Label htmlFor="confirm-pw">Confirm new password</Label><PasswordInput id="confirm-pw" autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} /></div>
       </div>
       {error && <DealerFieldError>{error}</DealerFieldError>}
       <Button type="submit" disabled={saving || !pw} className="rounded-full">
