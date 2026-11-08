@@ -1,4 +1,5 @@
 # Architecture rules
+- Assisted dealer checkout uses the explicit pending-details marker with blank unknown customer fields; both journey pages permit payment without bypassing signed payment confirmation.
 - Resolve Panda frontend logos through src/lib/pandaLogo.ts and email logos through shared brand configuration; this keeps replacements consistent without changing Buy A Warranty branding.
 - Shared dialog and alert-dialog content enforce viewport centring, desktop width caps, edge gutters, internal scrolling and consistent padding so page overrides cannot stretch pop-ups across the screen.
 - Use the shared PasswordInput for new password entry fields, with independent show/hide controls; preserve existing eye-enabled fields to avoid duplicate controls.

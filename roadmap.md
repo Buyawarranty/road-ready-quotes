@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Keep assisted customer details selected when proceeding to checkout, allow card payment, and leave unknown customer details blank; targeted rule tests added. Live authenticated payment remains unavailable with external authentication.
 - [x] Refresh Quotes page spacing, orange registration search, compact heading/filters and touch-friendly quote actions; isolated search/clear/sort/empty states verified at 320/393/1280px, no overflow or runtime errors, build OK. Live dealer records remain unverified with external authentication.
 - [x] Tidy mobile quote, customer-view and dealer-login spacing; centre key headings and notices, align journey gutters. Isolated pricing/mileage controls checked at 320/393/768/1280px with no overflow or runtime errors; 20 pricing tests pass and build OK. Live signed-in verification remains unavailable with external authentication.
 - [x] Replace Panda logo across visible branding, email headers and search identity; optimise web asset and refresh favicon.

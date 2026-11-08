@@ -11,6 +11,7 @@ import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
+import { createAssistedCustomer, isAssistedCustomer } from '@/lib/dealerAssistedCheckout';
 import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight, User, Phone, MapPin } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
@@ -35,7 +36,7 @@ const Step2Customer: React.FC = () => {
   const { save, saving } = useDealerQuoteSave(2);
 
   const hasDetails = Boolean(customer?.name && !customer.address_line2?.startsWith('[Pending:'));
-  const [mode, setMode] = useState<Mode>('self');
+  const [mode, setMode] = useState<Mode>(customer && isAssistedCustomer(customer) ? 'panda' : 'self');
   const [channel, setChannel] = useState<Channel>('whatsapp');
   const [note, setNote] = useState('');
   const [manualAddress, setManualAddress] = useState(hasDetails);
@@ -66,11 +67,7 @@ const Step2Customer: React.FC = () => {
     // Open the WhatsApp tab straight away so the browser doesn't block it after saving.
     const tab = channel === 'whatsapp' ? window.open('', '_blank') : null;
     const dealerName = dealer?.company_name || dealer?.name || 'Dealer';
-    const pending = {
-      name: 'Pending customer details', email: dealer?.email || '', phone: '',
-      address_line1: 'To be confirmed', address_line2: `[Pending: Panda Protect to complete via ${channel === 'whatsapp' ? 'WhatsApp' : 'Email'}]${note ? ` ${note}` : ''}`,
-      town: 'To be confirmed', postcode: 'TBC',
-    };
+    const pending = createAssistedCustomer(channel, note);
     setCustomer(pending);
     const id = await save({ silent: true, markStatus: 'awaiting_panda', overrideCustomer: pending });
     if (!id) { tab?.close(); setError('Your quote could not be saved. Please try again.'); return; }
@@ -90,7 +87,16 @@ const Step2Customer: React.FC = () => {
     } else {
       window.location.href = `mailto:${PANDA_EMAIL}?subject=${encodeURIComponent(`Warranty request ${ref} · ${vehicle?.reg || ''}`)}&body=${encodeURIComponent(message)}`;
     }
-    navigate(`/dealer-portal/quotes?search=${encodeURIComponent(vehicle?.reg || '')}`);
+    navigate('/dealer-portal/quote/checkout');
+  };
+
+  const submitAssisted = async () => {
+    setError(null);
+    const pending = createAssistedCustomer(channel, note);
+    const id = await save({ silent: true, markStatus: 'awaiting_panda', overrideCustomer: pending });
+    if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
+    setCustomer(pending);
+    navigate('/dealer-portal/quote/checkout');
   };
 
   const submitSelf = () => {
@@ -234,8 +240,7 @@ const Step2Customer: React.FC = () => {
         <div className="grid gap-3 sm:flex sm:justify-end" aria-label="Customer details actions">
           <Button type="button" disabled={saving} onClick={() => {
             if (mode === 'panda') {
-              setMode('self');
-              window.setTimeout(() => { const name = document.getElementById('c-name'); name?.scrollIntoView({ behavior: 'smooth', block: 'center' }); name?.focus({ preventScroll: true }); }, 0);
+              void submitAssisted();
               return;
             }
             submitSelf();

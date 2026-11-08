@@ -88,9 +88,10 @@ Deno.serve(async (req: Request) => {
 
     const body: RequestBody = await req.json();
     const { dealer_id, payment_method, vehicle, customer, plan, discount_pct } = body;
+    const assisted = Boolean(customer?.address_line2?.startsWith('[Pending: Panda Protect to complete via '));
 
     // Basic validation
-    if (!dealer_id || !payment_method || !vehicle?.reg || !customer?.email || !plan?.plan_type) {
+    if (!dealer_id || !payment_method || !vehicle?.reg || !customer || (!customer.email && !assisted) || !plan?.plan_type) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -327,7 +328,7 @@ Deno.serve(async (req: Request) => {
             currency: 'gbp',
             product_data: {
               name: `Dealer Warranty · ${plan.plan_type.toUpperCase()} · ${plan.duration_months}mo`,
-              description: `${vehicle.reg} for ${customer.name}`,
+              description: assisted ? `${vehicle.reg} · Panda Protect to complete customer details` : `${vehicle.reg} for ${customer.name}`,
             },
             unit_amount: Math.round(payable * 100),
           },
