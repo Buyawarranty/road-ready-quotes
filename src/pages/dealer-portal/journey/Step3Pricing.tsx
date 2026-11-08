@@ -192,19 +192,19 @@ const Step3Pricing: React.FC = () => {
   if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
-    <header className="flex flex-wrap items-start justify-between gap-3">
+    <header className="text-center sm:text-left">
       <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p></div>
     </header>
-    <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-card px-4 py-3" aria-label="Vehicle">
+    <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card px-3 py-3 sm:flex sm:flex-wrap sm:gap-3 sm:px-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
-        <form className="flex w-full flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
+        <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
           <div className="flex min-w-0 flex-nowrap items-center gap-2 sm:gap-3">
-            <div className="w-32 shrink-0 sm:w-44"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim">
+            <div className="w-28 shrink-0 sm:w-44"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim">
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
               <input value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
             {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
-            <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-10 shrink-0 gap-1.5 px-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base">{lookup === 'loading' ? <><Loader2 className="h-4 w-4 animate-spin" />Looking up…</> : <>Get prices<ArrowRight className="h-4 w-4" /></>}</Button>
+            <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base">{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>Get prices<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>}
@@ -213,27 +213,27 @@ const Step3Pricing: React.FC = () => {
       ) : (
         <>
           <div className="w-32 shrink-0 sm:w-40"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
-          <div className="min-w-[10rem] flex-1"><p className="text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="text-xs text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
+          <div className="order-last col-span-3 min-w-0 flex-1 text-center sm:order-none sm:text-left"><p className="break-words text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
           {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
-          <Button variant="outline" className="h-10 shrink-0 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil />Change vehicle</Button>
+          <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy sm:w-auto sm:px-4" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /><span className="hidden sm:inline">Change vehicle</span></Button>
 
         </>
       )}
     </section>
     {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
-    <section className="flex flex-wrap items-center gap-3 rounded-xl border border-crm-line bg-muted/60 px-4 py-3" aria-label="Current mileage">
+    <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-line bg-muted/60 px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
       <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1 basis-full sm:basis-auto"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="text-xs text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
+      <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
       <div className="flex items-center gap-1.5">
-        <button type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">&minus;</button>
+        <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-11 w-11 shrink-0 border-crm-line bg-card p-0 text-lg font-bold hover:border-crm-orange">&minus;</Button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
           onChange={(e) => { setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7)); setMileageConfirmed(false); }} onBlur={(e) => commitMileage(e.target.value)}
-          className="h-10 w-32 rounded-md border border-crm-line bg-card px-3 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
-        <button type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="flex h-10 w-10 items-center justify-center rounded-md border border-crm-line bg-card text-lg font-bold hover:border-crm-orange">+</button>
+          className="h-11 w-28 min-w-0 rounded-md border border-crm-line bg-card px-2 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none sm:w-32" />
+        <Button variant="outline" type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="h-11 w-11 shrink-0 border-crm-line bg-card p-0 text-lg font-bold hover:border-crm-orange">+</Button>
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
       {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button className="h-10 w-full shrink-0 justify-center !bg-crm-grey font-bold !text-crm-navy hover:!bg-crm-grey/80 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-grey font-bold !text-crm-navy hover:!bg-crm-grey/80 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
 
     </section>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
@@ -264,7 +264,7 @@ const Step3Pricing: React.FC = () => {
       </div>
     </section>
     {cover && <section className="grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
-      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
+      {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex min-w-0 flex-col items-center gap-2 py-2 text-center sm:flex-row sm:gap-3 sm:text-left"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
     <div className={`flex flex-wrap items-center gap-3 rounded-xl border-2 p-4 transition-colors ${boostOn ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-orange/40 bg-crm-orange-soft/60'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-orange" /></span>
@@ -273,7 +273,7 @@ const Step3Pricing: React.FC = () => {
         <span className="block text-sm leading-5 text-muted-foreground">{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
       </span>
       {boostCfg && (() => { const boostPrice = term ? (boostForTerm(boostCfg, term)?.[trade ? 'dealer_price' : 'retail_price'] ?? 0) : (boostLead?.[trade ? 'dealer_price' : 'retail_price'] ?? 0); return (
-      <span className="flex shrink-0 flex-wrap items-center gap-3">
+      <span className="flex w-full shrink-0 flex-wrap items-center justify-center gap-3 sm:w-auto">
         <span className="whitespace-nowrap text-sm font-bold">{term ? `Only ${gbp(boostPrice)}` : `From only ${gbp(boostPrice)}`}</span>
         <button type="button" onClick={() => { setBoost(!boostOn); setError(''); }} aria-pressed={boostOn} aria-label="Add £5,000 claim limit boost"
           className={`inline-flex h-12 items-center gap-1.5 rounded-lg px-5 text-base font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${boostOn ? 'border-2 border-crm-green bg-card text-crm-green-deep' : 'bg-crm-orange text-primary-foreground hover:bg-crm-orange/90'}`}>
@@ -305,9 +305,9 @@ const Step3Pricing: React.FC = () => {
     </Collapsible>
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
       <div className="flex flex-col items-start gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-      {trade ? <div className="flex shrink-0 items-stretch gap-3 rounded-[10px] border border-crm-line bg-card px-3 py-2">
+      {trade ? <div className="flex w-full shrink-0 items-stretch justify-center gap-3 rounded-lg border border-crm-line bg-card px-3 py-3 sm:w-auto sm:justify-start sm:py-2">
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
-        <div className="min-w-0">
+        <div className="min-w-0 text-center sm:text-left">
           <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-crm-navy">Profit</p>
           <strong className="block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
         </div>

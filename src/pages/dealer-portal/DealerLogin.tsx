@@ -146,11 +146,11 @@ const DealerLogin = () => {
       <SEOHead title="Dealer Login | Panda Protect" description="Sign in to your dealer portal — or create a free dealer account in 60 seconds." />
       <DealerPublicHeader />
 
-      <main className="flex-1 px-4 py-10 sm:py-14">
+      <main className="flex-1 px-3 py-5 sm:px-4 sm:py-14">
         <div className="max-w-2xl mx-auto space-y-8">
           {/* Top — Login Card */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-7 sm:p-9">
-            <div className="mb-6">
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-4 sm:p-9">
+            <div className="mb-6 text-center sm:text-left">
               <span className="inline-block text-[11px] font-bold tracking-[0.18em] text-orange-600 bg-orange-100 px-2.5 py-1 rounded uppercase mb-3">
                 Dealer Portal
               </span>
@@ -238,10 +238,10 @@ const DealerLogin = () => {
 
             <Link
               to="/dealer-portal/signup"
-              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-md border-2 border-[#eb4b00] text-[#eb4b00] font-semibold hover:bg-orange-50 transition-colors"
+              className="w-full inline-flex min-h-12 items-center justify-center gap-2 rounded-md border-2 border-primary px-2 py-3 text-center text-sm text-primary font-semibold hover:bg-accent transition-colors sm:text-base"
             >
               Create your free dealer account
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 shrink-0" />
             </Link>
             <p className="text-center text-xs text-gray-500 mt-2">Takes less than 60 seconds. No card required.</p>
 

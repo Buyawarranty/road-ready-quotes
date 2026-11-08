@@ -74,7 +74,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   return (
     <div className="customer-quote-view dealer-crm fixed inset-0 z-[100] overflow-y-auto bg-crm-blue-soft text-foreground">
       <header className="border-b border-crm-line bg-card">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
           <img src={logoAssetUrl} alt="Panda Protect" className="h-12 w-auto" />
           <div className="customer-quote-tools flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.print()}><Printer /> Print</Button>
@@ -82,15 +82,15 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-        <h1 className="mb-1 text-2xl font-bold text-foreground">Customer Quote</h1>
-        <p className="mb-6 text-sm text-muted-foreground">{coverTitle}{coverSubtitle ? ` · ${coverSubtitle}` : ''}</p>
+      <main className="mx-auto max-w-5xl px-3 py-5 sm:px-6 sm:py-8">
+        <h1 className="mb-1 text-center text-2xl font-bold text-foreground sm:text-left">Customer Quote</h1>
+        <p className="mb-5 text-center text-sm leading-5 text-muted-foreground sm:mb-6 sm:text-left">{coverTitle}{coverSubtitle ? ` · ${coverSubtitle}` : ''}</p>
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_310px]">
           <div className="min-w-0 space-y-5">
-            {vehicle?.reg && <section className="rounded-lg border border-crm-line bg-card p-5">
-              <div className="flex flex-wrap items-center gap-4">
+            {vehicle?.reg && <section className="rounded-lg border border-crm-line bg-card p-4 sm:p-5">
+              <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:flex-wrap sm:gap-4 sm:text-left">
                 <div className="w-44 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--quote"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle.reg}</span></div></div>
-                <div className="min-w-0"><h2 className="text-base font-bold uppercase">{vehicle.make} {vehicle.model}</h2><p className="mt-1 text-sm text-muted-foreground">{[vehicle.year, vehicle.mileage ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : ''].filter(Boolean).join(' · ')}</p></div>
+                <div className="min-w-0"><h2 className="break-words text-base font-bold uppercase">{vehicle.make} {vehicle.model}</h2><p className="mt-1 text-sm text-muted-foreground">{[vehicle.year, vehicle.mileage ? `${Number(vehicle.mileage).toLocaleString('en-GB')} miles` : ''].filter(Boolean).join(' · ')}</p></div>
               </div>
             </section>}
             {quoteControls && <section className="rounded-lg border border-crm-line bg-card p-5">{quoteControls}</section>}

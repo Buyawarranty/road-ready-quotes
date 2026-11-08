@@ -125,9 +125,9 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
 
   return (
     <DealerLayout>
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 -my-6 lg:-my-8 bg-gray-50 text-gray-900 min-h-[calc(100vh-5rem)]">
+      <div className="-mx-3 sm:-mx-5 lg:-mx-6 bg-background text-foreground min-h-[calc(100vh-5rem)]">
         <div className="border-b border-gray-200 bg-gray-100/50 backdrop-blur">
-          <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between">
+          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               {showBack && (
                 <Button
@@ -165,9 +165,9 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
           </div>
         </div>
 
-        <main className="max-w-4xl mx-auto px-4 py-6 sm:py-10">
+        <main className="max-w-4xl mx-auto px-3 py-5 sm:px-4 sm:py-10">
           {(title || subtitle) && (
-            <div className="mb-6">
+            <div className="mb-5 text-center sm:mb-6 sm:text-left">
               {title && <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{title}</h1>}
               {subtitle && <p className="text-gray-600 mt-1 text-sm sm:text-base">{subtitle}</p>}
             </div>
