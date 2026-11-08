@@ -12,13 +12,13 @@ import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { createAssistedCustomer, isAssistedCustomer } from '@/lib/dealerAssistedCheckout';
+import { dealerCustomerErrors, isUkPhone } from '@/lib/dealerCustomerValidation';
 import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight, User, Phone, MapPin } from 'lucide-react';
 
 type Mode = 'panda' | 'self';
 type Channel = 'whatsapp' | 'email';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
-// UK mobile: 07xxx xxxxxx or +44 7xxx xxxxxx
-export const isUkPhone = (v: string) => /^(?:07\d{9}|447\d{9})$/.test(v.replace(/[\s()+-]/g, ''));
+export { isUkPhone } from '@/lib/dealerCustomerValidation';
 
 const PANDA_WHATSAPP = '443302295045';
 const PANDA_EMAIL = 'support@pandaprotect.co.uk';
@@ -101,12 +101,17 @@ const Step2Customer: React.FC = () => {
 
   const submitSelf = () => {
     setError(null);
-    setTouched({ email: true, phone: true, name: true });
-    if (!EMAIL_RE.test(form.email.trim())) { setError('Enter a valid email address'); return; }
-    if (!isUkPhone(form.phone)) { setError('Enter a valid UK mobile number'); return; }
-    if (form.name.trim().length < 2) { setError('Enter the customer\'s full name'); return; }
-    if (!form.address_line1.trim() || !form.town.trim() || !form.postcode.trim()) {
-      setManualAddress(true); setError('Search for the address, or enter it manually'); return;
+    setTouched({ email: true, phone: true, name: true, address_line1: true, town: true, postcode: true });
+    const errors = dealerCustomerErrors(form);
+    const first = (['name', 'phone', 'email', 'address_line1', 'town', 'postcode'] as const).find(key => errors[key]);
+    if (first) {
+      if (errors.address_line1 || errors.town || errors.postcode) setManualAddress(true);
+      window.setTimeout(() => {
+        const input = document.getElementById(`c-${first}`);
+        input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input?.focus({ preventScroll: true });
+      }, 0);
+      return;
     }
     setCustomer(form);
     navigate('/dealer-portal/quote/checkout');
@@ -137,11 +142,7 @@ const Step2Customer: React.FC = () => {
   };
 
   const fieldError = (k: keyof typeof form): string | null => {
-    const v = form[k].trim();
-    if (!v || !touched[k]) return null;
-    if (k === 'email' && !EMAIL_RE.test(v)) return 'Enter a valid email, like name@example.com';
-    if (k === 'phone' && !isUkPhone(v)) return 'Enter a valid UK mobile, like 07123 456789';
-    return null;
+    return touched[k] ? dealerCustomerErrors(form)[k] ?? null : null;
   };
 
   const field = (k: keyof typeof form, label: string, type = 'text', autoComplete?: string, Icon?: React.ElementType, placeholder?: string) => {
