@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, Store, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download } from 'lucide-react';
+import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -89,7 +89,6 @@ const Step3Pricing: React.FC = () => {
   const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
   const { save, saving } = useDealerQuoteSave(3);
   const { toast } = useToast();
-  const [view, setView] = useState<'trade' | 'customer'>('trade');
   const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || DEFAULT_TERM);
   // Saved quotes store totals including any boost; the page works with base warranty prices.
   const savedOpts = (savedPlan?.selected_options || {}) as Record<string, any>;
@@ -127,7 +126,7 @@ const Step3Pricing: React.FC = () => {
   } : config?.cover;
   const cover = baseCover ? { ...baseCover, claim: boostOn && boostCfg ? boostCfg.claim_limit : baseCover.claim } : baseCover;
   const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg);
-  const trade = view === 'trade';
+  const trade = true;
   /** Dealer and customer figures for one term, boost included — shared by the reg row and the cards. */
   const termPrices = (months: number) => {
     const p = config?.terms.find(item => item.months === months);
@@ -318,12 +317,7 @@ const Step3Pricing: React.FC = () => {
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
         {trade && <Button className="col-span-2 min-h-12 h-auto min-w-0 whitespace-normal px-3 py-3 text-sm font-extrabold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 lg:px-5 lg:text-base" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
-      <div className="grid gap-2 sm:grid-cols-2" role="group" aria-label="Quote view">
-        <Button variant="outline" type="button" aria-pressed={trade} onClick={() => setView('trade')} className={`relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !bg-card px-4 py-3 pr-10 text-left !text-foreground transition-colors focus-visible:ring-crm-orange ${trade ? '!border-crm-orange' : '!border-crm-line hover:!border-crm-orange'}`}>
-          <span aria-hidden="true" className={`absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full border-2 ${trade ? 'border-crm-orange bg-crm-orange text-primary-foreground' : 'border-crm-line bg-card'}`}>{trade && <Check className="h-3 w-3" />}</span>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange"><Store className="h-5 w-5" /></span>
-          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Trade view</strong><span className="block text-xs text-muted-foreground">Your cost, selling price and profit — for your eyes only</span></span>
-        </Button>
+      <div className="grid gap-2 sm:max-w-md" role="group" aria-label="Quote view">
         <Button variant="outline" type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !border-crm-line !bg-card px-4 py-3 text-left !text-foreground transition-colors hover:!border-crm-orange focus-visible:ring-crm-orange disabled:opacity-60">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
           <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
