@@ -45,7 +45,9 @@ Deno.serve(async (req: Request) => {
       { url: '/faq/', priority: '0.9' },
       { url: '/contact-us/', priority: '0.9' },
       { url: '/?step=1', priority: '1.0' },
-      { url: '/customer-dashboard/', priority: '0.9' },
+      { url: '/why-choose-us/', priority: '0.9' },
+      { url: '/faq/traders/', priority: '0.9' },
+      { url: '/dealer-portal/signup', priority: '0.9' },
       { url: '/buy-a-used-car-warranty-reliable-warranties/', priority: '0.9' },
       { url: '/van-warranty/', priority: '0.9' },
       { url: '/ev-warranty/', priority: '0.9' },
@@ -105,7 +107,6 @@ Deno.serve(async (req: Request) => {
     ];
 
     const baseUrl = brand.siteUrl;
-    const lastmod = '2026-03-17';
 
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -114,7 +115,6 @@ Deno.serve(async (req: Request) => {
     staticPages.forEach(page => {
       xml += '  <url>\n';
       xml += `    <loc>${baseUrl}${page.url}</loc>\n`;
-      xml += `    <lastmod>${lastmod}</lastmod>\n`;
       xml += `    <priority>${page.priority}</priority>\n`;
       xml += '  </url>\n';
     });
@@ -124,7 +124,7 @@ Deno.serve(async (req: Request) => {
       posts.forEach((post: BlogPost) => {
         xml += '  <url>\n';
         xml += `    <loc>${baseUrl}/blog/${post.slug}/</loc>\n`;
-        xml += `    <lastmod>${post.updated_at ? post.updated_at.split('T')[0] : lastmod}</lastmod>\n`;
+        if (post.updated_at) xml += `    <lastmod>${post.updated_at.split('T')[0]}</lastmod>\n`;
         xml += '    <priority>0.7</priority>\n';
         xml += '  </url>\n';
       });
