@@ -20,6 +20,18 @@ export const DealerPublicHeader: React.FC = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [callbackOpen, setCallbackOpen] = React.useState(false);
+  const [barVisible, setBarVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const onScroll = () => setBarVisible(window.scrollY > 300);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Mobile trade CTA bar shows on public pages only — never inside the dealer
+  // portal, admin dashboard, auth or checkout.
+  const hiddenBarPaths = ['/dealer-portal', '/admin', '/auth', '/checkout', '/customer-quote'];
+  const showMobileBar = barVisible && !hiddenBarPaths.some((p) => location.pathname.startsWith(p));
 
   const openCallback = () => {
     setMobileOpen(false);
