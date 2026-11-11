@@ -230,7 +230,7 @@ const DealerAdminInvoices: React.FC = () => {
         money(Number(r.final_amount ?? 0)),
       ]),
       theme: 'grid',
-      headStyles: { fillColor: [255, 122, 0], textColor: [17, 24, 39], fontStyle: 'bold' },
+      headStyles: { fillColor: [255, 122, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
       styles: { font: 'helvetica', fontSize: 10, cellPadding: 3 },
       columnStyles: { 4: { halign: 'right' } },
     });

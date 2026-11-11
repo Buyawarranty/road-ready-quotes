@@ -65,7 +65,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
       `£${Number(row.final_amount || 0).toFixed(2)}`,
     ]],
     theme: 'grid',
-    headStyles: { fillColor: ORANGE, textColor: DARK, fontStyle: 'bold' },
+    headStyles: { fillColor: ORANGE, textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { font: 'helvetica', fontSize: 10, cellPadding: 4 },
     columnStyles: { 4: { halign: 'right' } },
   });
@@ -115,7 +115,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
   autoTable(doc, {
     startY: 60,
     theme: 'grid',
-    headStyles: { fillColor: ORANGE, textColor: DARK, fontStyle: 'bold' },
+    headStyles: { fillColor: ORANGE, textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { font: 'helvetica', fontSize: 10, cellPadding: 4 },
     head: [['Field', 'Detail']],
     body: [
