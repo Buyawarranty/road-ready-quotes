@@ -366,7 +366,7 @@ const CustomerDetailDrawer = ({
           <SheetDescription>Dealer-facing customer details.</SheetDescription>
         </SheetHeader>
         <ScrollArea className="h-full">
-          <div className="flex min-h-screen flex-col bg-gray-50 sm:min-h-full">
+          <div className="flex min-h-screen flex-col bg-white sm:min-h-full">
             <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
               <div className="flex items-start justify-between gap-4 pr-8">
                 <div className="min-w-0">

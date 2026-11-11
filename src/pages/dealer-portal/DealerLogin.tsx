@@ -149,7 +149,7 @@ const DealerLogin = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <SEOHead title="Dealer Login | Panda Protect" description="Sign in to your dealer portal — or create a free dealer account in 60 seconds." />
       <DealerPublicHeader />
 

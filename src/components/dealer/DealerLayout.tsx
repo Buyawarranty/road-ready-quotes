@@ -117,7 +117,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><h1 className="text-xl font-semibold text-foreground">Your dealer account needs to reload</h1><p className="text-sm text-muted-foreground">{loadError}</p><Button onClick={retry} className="w-full">Try again</Button><Button variant="outline" onClick={() => window.location.reload()} className="w-full">Reload page</Button></div></div>;
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-white">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
       </div>
     );
