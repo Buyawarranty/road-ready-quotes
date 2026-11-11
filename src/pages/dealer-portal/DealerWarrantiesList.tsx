@@ -390,18 +390,18 @@ const DealerWarrantiesList = () => {
                         <Checkbox
                           checked={allSelected}
                           onCheckedChange={toggleAll}
-                          className="border-gray-900 data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
+                          className="border-white data-[state=checked]:bg-white data-[state=checked]:text-orange-500"
                         />
                       </TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">REF</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">STATUS</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">ACTIVATION</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">EXPIRY</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">VEHICLE</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">CUSTOMER</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider">PRODUCT</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider text-right">PRICE</TableHead>
-                      <TableHead className="text-gray-900 font-extrabold tracking-wider text-right">DOCS</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">REF</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">STATUS</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">ACTIVATION</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">EXPIRY</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">VEHICLE</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">CUSTOMER</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider">PRODUCT</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider text-right">PRICE</TableHead>
+                      <TableHead className="!text-white font-extrabold tracking-wider text-right">DOCS</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

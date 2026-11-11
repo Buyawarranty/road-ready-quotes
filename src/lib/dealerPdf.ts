@@ -37,7 +37,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
   doc.text('INVOICE', 14, 18);
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
+  doc.text('Panda Protect', 196, 14, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.text('support@pandaprotect.co.uk', 196, 20, { align: 'right' });
 
@@ -65,7 +65,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
       `£${Number(row.final_amount || 0).toFixed(2)}`,
     ]],
     theme: 'grid',
-    headStyles: { fillColor: ORANGE, textColor: DARK, fontStyle: 'bold' },
+    headStyles: { fillColor: ORANGE, textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { font: 'helvetica', fontSize: 10, cellPadding: 4 },
     columnStyles: { 4: { halign: 'right' } },
   });
@@ -103,7 +103,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
   doc.text('WARRANTY SCHEDULE', 14, 18);
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(10);
-  doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
+  doc.text('Panda Protect', 196, 14, { align: 'right' });
 
   doc.setTextColor(40, 40, 40);
   doc.setFontSize(11);
@@ -115,7 +115,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
   autoTable(doc, {
     startY: 60,
     theme: 'grid',
-    headStyles: { fillColor: ORANGE, textColor: DARK, fontStyle: 'bold' },
+    headStyles: { fillColor: ORANGE, textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { font: 'helvetica', fontSize: 10, cellPadding: 4 },
     head: [['Field', 'Detail']],
     body: [
