@@ -1264,10 +1264,10 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-white text-gray-900">
       
       {/* Heading-only header (Back lives in DealerJourneyLayout) */}
-      <div className="bg-gray-50">
+      <div className="bg-white">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
             One complete warranty. Tailored to you.

@@ -693,7 +693,7 @@ const AdminDashboard = () => {
   // instead of an endless spinner.
   if (!hasAdminAccess && accessCheckStalled) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-white flex items-center justify-center p-6">
         <div className="text-center max-w-sm">
           <p className="text-gray-900 font-semibold mb-2">Couldn't load the dashboard</p>
           <p className="text-gray-600 text-sm mb-4">
@@ -722,7 +722,7 @@ const AdminDashboard = () => {
   // Show loading only during essential checks - removed activeTab check since we now have default
   if (authLoading || isCheckingRole || !hasAdminAccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading...</p>
@@ -1084,7 +1084,7 @@ const AdminDashboardInner: React.FC<{
   }, [activeTab, displayRole, displayPermissions, handleTabChange]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <SEOHead 
         title="Admin Dashboard | BuyAWarranty Management"
         description="Administrative dashboard for managing warranties, customers, and business operations."
