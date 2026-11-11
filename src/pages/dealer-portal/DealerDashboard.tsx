@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, startOfMonth, subMonths } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { FilePlus, FileText, Shield, ArrowRight, Users, ChevronRight, TrendingUp, TrendingDown, AlertCircle, BookOpen, BarChart3, Headphones, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { FilePlus, FileText, Shield, ArrowRight, Users, ChevronRight, TrendingUp, TrendingDown, AlertCircle, BookOpen, BarChart3, Headphones, RefreshCw, CheckCircle2, Phone, MessageCircle } from 'lucide-react';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { DealerDateFilter } from '@/components/dealer/DealerDateFilter';
 import { Button } from '@/components/ui/button';
@@ -118,7 +118,7 @@ export default function DealerDashboard() {
         </div>
       </section>
       <section className="grid gap-3 sm:grid-cols-2">
-        <div className="flex items-center gap-3 rounded-lg bg-crm-navy-soft p-4 text-primary-foreground"><Headphones className="h-7 w-7 shrink-0" /><div className="min-w-0 flex-1"><h2 className="text-sm font-bold !text-primary-foreground">Need support?</h2><p className="mt-0.5 text-xs !text-primary-foreground">Our UK team is here to help.</p></div><Button variant="outline" size="sm" className="shrink-0 border-crm-orange bg-transparent text-primary-foreground hover:bg-crm-orange hover:text-primary-foreground" asChild><a href="mailto:support@pandaprotect.co.uk">Contact support <ArrowRight className="ml-1 h-3 w-3" /></a></Button></div>
+        <div className="flex items-center gap-3 rounded-lg bg-crm-navy-soft p-4 text-primary-foreground"><Headphones className="h-7 w-7 shrink-0" /><div className="min-w-0 flex-1"><h2 className="text-sm font-bold !text-primary-foreground">Need support?</h2><p className="mt-0.5 text-xs !text-primary-foreground">Our UK team is here to help.</p></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Button variant="outline" size="sm" className="border-crm-orange bg-transparent text-primary-foreground hover:bg-crm-orange hover:text-primary-foreground" asChild><a href="tel:03302295045"><Phone className="mr-1 h-3.5 w-3.5" />0330 229 5045</a></Button><Button variant="outline" size="sm" className="border-crm-orange bg-transparent text-primary-foreground hover:bg-crm-orange hover:text-primary-foreground" asChild><a href="https://wa.me/443302295045?text=Hi%20Panda%20Protect%2C%20I%20need%20some%20help." target="_blank" rel="noopener noreferrer"><MessageCircle className="mr-1 h-3.5 w-3.5" />WhatsApp</a></Button></div></div>
         <div className={`${panel} flex items-center gap-3 p-4`}><BookOpen className="h-7 w-7 shrink-0" /><div className="min-w-0 flex-1"><h2 className="text-sm font-bold">Helpful resources</h2><p className="mt-0.5 text-xs text-muted-foreground">Guides, FAQs and sales material.</p></div><Button variant="link" className="h-auto shrink-0 gap-1 p-0 text-xs text-crm-orange" onClick={() => navigate('/faq/traders/')}>View resources <ArrowRight className="h-3 w-3" /></Button></div>
       </section>
     </div>

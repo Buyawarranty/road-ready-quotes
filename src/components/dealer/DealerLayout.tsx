@@ -260,9 +260,6 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   <DropdownMenuItem onClick={() => navigate('/dealer-portal/warranties')}>Review warranties and outstanding invoices</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="sm" className="gap-2 text-foreground" asChild>
-                <a href="mailto:hello@pandaprotect.co.uk"><CircleHelp className="h-4 w-4" /> Help</a>
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button className="h-11 min-w-[205px] justify-start gap-2 px-3">
