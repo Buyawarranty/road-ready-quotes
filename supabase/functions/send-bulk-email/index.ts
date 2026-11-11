@@ -19,7 +19,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { customerIds, templateId, customSubject, customContent, customEmails, brand: brandHint } = await req.json();
+    const { customerIds, templateId, customSubject, customContent, customEmails, brand: brandHint, fromMailbox } = await req.json();
 
     const brand = resolveBrand(req, { brand: brandHint });
 
@@ -108,12 +108,13 @@ serve(async (req) => {
     for (const recipient of allRecipients) {
       try {
         const recipientBrand = resolveBrand(req, { brand: brandHint, record: recipient });
-        const recipientFrom = customSubject && customContent ? brandFrom(recipientBrand, "", "support") : (fromEmail || brandFrom(recipientBrand, "", "support"));
+        const allowedBox = ['info', 'accounts', 'hassan'].includes(String(fromMailbox)) ? String(fromMailbox) : null;
+        const recipientFrom = allowedBox ? brandFrom(recipientBrand, "", allowedBox) : (customSubject && customContent ? brandFrom(recipientBrand, "", "support") : (fromEmail || brandFrom(recipientBrand, "", "support")));
 
         // Replace template variables with recipient data
         const recipientName = recipient.name || 'Recipient';
-        const personalizedSubject = emailSubject.replace(/\{name\}/g, recipientName);
-        const personalizedContent = emailContent.replace(/\{name\}/g, recipientName);
+        const personalizedSubject = emailSubject.replace(/\{\{?\s*(name|customerName|customerFirstName|firstName)\s*\}?\}/g, recipientName);
+        const personalizedContent = emailContent.replace(/\{\{?\s*(name|customerName|customerFirstName|firstName)\s*\}?\}/g, recipientName);
 
         const cleanEmail = recipient.email.trim().toLowerCase();
         const unsubToken = btoa(cleanEmail + '_baw_unsub_2024');

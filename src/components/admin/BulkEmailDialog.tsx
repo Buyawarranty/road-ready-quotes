@@ -27,6 +27,7 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
   const [emailContent, setEmailContent] = useState('');
   const [customEmails, setCustomEmails] = useState('');
   const [sending, setSending] = useState(false);
+  const [fromMailbox, setFromMailbox] = useState<'info' | 'accounts' | 'hassan'>('info');
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
   useEffect(() => {
@@ -49,7 +50,8 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
       .order('name');
 
     if (!error && data) {
-      setTemplates(data);
+      // Ready-written Panda templates first
+      setTemplates([...data].sort((a, b) => Number(b.template_type === 'panda_bulk') - Number(a.template_type === 'panda_bulk')));
     }
   };
 
@@ -60,7 +62,9 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
       
       // Extract content from JSONB or use html directly
       let content = '';
-      if (template.content?.blocks) {
+      if (typeof template.content?.content === 'string' && template.content.content.trim()) {
+        content = template.content.content;
+      } else if (template.content?.blocks) {
         content = template.content.blocks
           .map((block: any) => block.data?.text || '')
           .join('\n\n');
@@ -68,6 +72,8 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
         content = template.content.html;
       }
       
+      const mailbox = String(template.from_email || '').split('@')[0].toLowerCase();
+      if (mailbox === 'accounts' || mailbox === 'hassan' || mailbox === 'info') setFromMailbox(mailbox);
       setEmailContent(content);
     }
   };
@@ -95,6 +101,7 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
           templateId: selectedTemplateId,
           customSubject: emailSubject,
           customContent: emailContent,
+          fromMailbox,
           customEmails: customEmails.trim() ? customEmails.split(',').map(e => e.trim()).filter(e => e) : []
         }
       });
@@ -150,6 +157,18 @@ export const BulkEmailDialog: React.FC<BulkEmailDialogProps> = ({
                     {template.name}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Send from</Label>
+            <Select value={fromMailbox} onValueChange={(v) => setFromMailbox(v as any)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="info">info@pandaprotect.co.uk</SelectItem>
+                <SelectItem value="accounts">accounts@pandaprotect.co.uk</SelectItem>
+                <SelectItem value="hassan">hassan@pandaprotect.co.uk</SelectItem>
               </SelectContent>
             </Select>
           </div>
