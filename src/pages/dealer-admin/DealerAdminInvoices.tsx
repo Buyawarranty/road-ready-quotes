@@ -207,7 +207,7 @@ const DealerAdminInvoices: React.FC = () => {
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('Panda Protect Limited', 196, 14, { align: 'right' });
+    doc.text('Panda Protect', 196, 14, { align: 'right' });
     doc.text('hello@pandaprotect.co.uk', 196, 20, { align: 'right' });
 
     doc.setTextColor(40, 40, 40);
