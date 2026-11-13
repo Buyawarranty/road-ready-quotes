@@ -97,6 +97,7 @@ const BdmTownAccessPanel: React.FC = () => {
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
+        <p className="rounded-md border border-crm-orange/40 bg-crm-orange/5 p-2 text-sm">1. Choose the staff member · 2. Tick their towns · 3. Press <strong>Save towns</strong>.</p>
         <div className="grid gap-3">
           <div>
             <Label>Staff member</Label>
@@ -110,7 +111,8 @@ const BdmTownAccessPanel: React.FC = () => {
           <div>
             <div className="flex items-center justify-between gap-2">
               <Label>Towns ({picked.size} ticked)</Label>
-              <div className="flex gap-2 text-xs">
+              <div className="flex items-center gap-2 text-xs">
+                <Button size="sm" onClick={save} disabled={busy || !who} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : 'Save towns'}</Button>
                 <button type="button" className="underline" disabled={!who} onClick={() => setPicked(new Set([...picked, ...shown]))}>Tick all</button>
                 <button type="button" className="underline" disabled={!who} onClick={() => setPicked(new Set())}>Clear</button>
               </div>
@@ -129,7 +131,7 @@ const BdmTownAccessPanel: React.FC = () => {
             {who && (dirty
               ? <span className="text-sm font-medium text-crm-ink-amber">Unsaved changes</span>
               : savedAt && <span className="flex items-center gap-1 text-sm font-medium text-crm-ink-green"><Check className="h-4 w-4" />Saved at {savedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>)}
-            <Button onClick={save} disabled={busy || !who || !dirty} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : !dirty && who ? 'Saved' : 'Save town access'}</Button>
+            <Button onClick={save} disabled={busy || !who} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">{busy ? 'Saving…' : !who ? 'Choose a staff member first' : 'Save town access'}</Button>
           </div>
         </div>
         {byUser.length === 0 ? (
