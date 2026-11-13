@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.has_admin_tab(uuid, text) FROM PUBLIC, anon;
