@@ -15960,6 +15960,10 @@ export type Database = {
         Args: { permission_key: string; user_id: string }
         Returns: boolean
       }
+      has_admin_tab: {
+        Args: { _tab: string; _user_id: string }
+        Returns: boolean
+      }
       has_all_leads_permission: { Args: { _user_id: string }; Returns: boolean }
       has_claims_data_access: { Args: never; Returns: boolean }
       has_manager_discount_access: {
