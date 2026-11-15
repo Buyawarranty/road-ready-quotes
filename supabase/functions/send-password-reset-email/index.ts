@@ -229,9 +229,9 @@ serve(async (req) => {
     `;
 
     const { data: sent, error: sendError } = await resend.emails.send({
-      from: brandFrom(brand, isStaff ? 'Admin' : 'Customer Care', 'noreply'),
+      from: brandFrom(brand, isStaff ? 'Admin' : isDealer ? 'Dealer Support' : 'Customer Care', 'noreply'),
       to: [email],
-      subject: isStaff ? `Reset your ${brand.name} admin password` : `Reset Your ${brand.name} Portal Password`,
+      subject: isStaff ? `Reset your ${brand.name} admin password` : isDealer ? `Reset your ${brand.name} dealer portal password` : `Reset your ${brand.name} customer portal password`,
       html: emailHtml,
     });
 

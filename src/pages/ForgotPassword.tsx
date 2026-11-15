@@ -115,7 +115,7 @@ const ForgotPassword: React.FC = () => {
                 <CardDescription className="text-gray-600 text-base leading-relaxed max-w-sm mx-auto">
                   {sent 
                     ? 'We\'ve sent your password reset link. Check your inbox and spam folder.'
-                    : 'Enter your email and we\'ll send you a secure link to set a new customer dashboard password.'
+                    : `Enter your email and we'll send you a secure link to set a new ${portalLabel} password.`
                   }
                 </CardDescription>
               </CardHeader>
