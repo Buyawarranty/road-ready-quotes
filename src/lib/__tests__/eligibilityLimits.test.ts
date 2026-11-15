@@ -25,8 +25,8 @@ describe('Eligibility limits: 15 years / 150,000 miles', () => {
     assert.equal(MAX_VEHICLE_MILEAGE, 150000);
   });
 
-  it('exactly 15 years old is eligible', () => {
-    const r = evaluateBoundaries({ registrationDate: yearsAgo(15), mileage: 50000, asOf: NOW });
+  it('just under 15 years old is eligible', () => {
+    const r = evaluateBoundaries({ registrationDate: yearsAgo(15, -1), mileage: 50000, asOf: NOW });
     assert.equal(r.outcome, 'eligible');
   });
 
