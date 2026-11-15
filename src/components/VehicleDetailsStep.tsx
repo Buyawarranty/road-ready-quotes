@@ -719,7 +719,7 @@ const VehicleDetailsStep: React.FC<VehicleDetailsStepProps> = ({ onNext, initial
                  Sorry, We Can't Cover This Vehicle
                </h3>
                <p className="text-sm text-orange-700 mb-2">
-                 We can't provide a warranty for vehicles that are more than 12 years old.
+                 We can't provide a warranty for vehicles that are more than 15 years old.
                </p>
                <p className="text-sm text-orange-700">
                  If your car is newer than that, feel free to try again. We may just need to run a couple of extra checks 🔍 before we can confirm your cover.

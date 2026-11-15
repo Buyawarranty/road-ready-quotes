@@ -317,8 +317,8 @@ const AudiWarrantyLanding: React.FC = () => {
     "audience": { "@type": "Audience", "audienceType": "Used Audi car owners in England, Scotland, Wales and Northern Ireland" },
     "additionalProperty": [
       { "@type": "PropertyValue", "name": "Coverage Area", "value": "United Kingdom — England, Scotland, Wales, Northern Ireland" },
-      { "@type": "PropertyValue", "name": "Max Vehicle Age", "value": "12 years" },
-      { "@type": "PropertyValue", "name": "Max Mileage at Inception", "value": "120,000 miles" },
+      { "@type": "PropertyValue", "name": "Max Vehicle Age", "value": "15 years" },
+      { "@type": "PropertyValue", "name": "Max Mileage at Inception", "value": "150,000 miles" },
       { "@type": "PropertyValue", "name": "Claims Limit", "value": "Unlimited claims value" },
       { "@type": "PropertyValue", "name": "Garage Network", "value": "Any VAT-registered garage in the UK" }
     ]
@@ -434,7 +434,7 @@ const AudiWarrantyLanding: React.FC = () => {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "How to get an Audi extended warranty quote in the UK",
-    "description": "Get an instant Audi extended warranty quote online in 60 seconds. Available for all Audi models up to 15 years old and 120,000 miles.",
+    "description": "Get an instant Audi extended warranty quote online in 60 seconds. Available for all Audi models up to 15 years old and 150,000 miles.",
     "totalTime": "PT1M",
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter your Audi registration", "text": "Type your Audi registration number and we automatically look up your vehicle details via the DVLA database" },
@@ -503,7 +503,7 @@ const AudiWarrantyLanding: React.FC = () => {
         <meta name="subject" content="Audi Extended Warranty UK" />
         <meta name="topic" content="Used Audi car warranty, extended warranty plans, mechanical breakdown cover" />
         <meta name="summary" content="Panda Protect offers used Audi extended warranty plans from £25/month covering all models from A3 to Q8 and e-tron. Includes S tronic gearbox, quattro drivetrain, TFSI/TDI engines and EV components. Available at any VAT-registered garage across England, Scotland, Wales and Northern Ireland." />
-        <meta name="abstract" content="Comprehensive Audi aftermarket warranty provider in the UK. Covers mechanical and electrical failures on used Audi vehicles up to 15 years old and 120,000 miles." />
+        <meta name="abstract" content="Comprehensive Audi aftermarket warranty provider in the UK. Covers mechanical and electrical failures on used Audi vehicles up to 15 years old and 150,000 miles." />
         <meta name="author" content="Panda Protect" />
         <meta name="publisher" content="Panda Protect" />
         <meta name="coverage" content="United Kingdom" />

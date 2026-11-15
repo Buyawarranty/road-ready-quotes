@@ -246,7 +246,7 @@ const FAQ = () => {
         Key Features:
         - Warranty costs from £12/month
         - Plans available for 1, 2, or 3 years
-        - Vehicles up to 15 years old and 120,000 miles eligible
+        - Vehicles up to 15 years old and 150,000 miles eligible
         - Cover begins immediately with no waiting period (pre-existing faults excluded)
         - Fast claim processing (within 90 minutes of approval)
         - Direct payment to garages or reimbursement

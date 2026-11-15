@@ -199,7 +199,7 @@ function checkIfMotorbike(make: string, model: string, vehicleType: string): boo
  * Check if a vehicle is excluded from coverage
  * Blocking criteria:
  * - Vehicles 15 years and 1 day old or older (using precise manufactureDate when available)
- * - Vehicles with mileage over 120,000 miles
+ * - Vehicles with mileage over 150,000 miles
  * - Excluded makes/models
  */
 export function validateVehicleEligibility(vehicleData: VehicleData): { isValid: boolean; errorMessage?: string } {
@@ -209,13 +209,13 @@ export function validateVehicleEligibility(vehicleData: VehicleData): { isValid:
   // Standard error message for age/mileage exclusions
   const AGE_MILEAGE_ERROR = 'Sorry, we only cover vehicles under 150,000 miles and less than 15 years old';
   
-  // Check mileage - block if over 120,000 miles
+  // Check mileage - block if over 150,000 miles
   const mileage = typeof vehicleData.mileage === 'string' 
     ? parseInt(vehicleData.mileage.replace(/[^0-9]/g, '')) 
     : vehicleData.mileage;
   
   if (mileage && mileage > 150000) {
-    console.log('❌ Vehicle blocked: Mileage over 120,000 miles', { mileage });
+    console.log('❌ Vehicle blocked: Mileage over 150,000 miles', { mileage });
     return {
       isValid: false,
       errorMessage: AGE_MILEAGE_ERROR
@@ -244,7 +244,7 @@ export function validateVehicleEligibility(vehicleData: VehicleData): { isValid:
         threshold: '> 15 years'
       });
 
-      // Block if over 12 years (15 years and 1 day or older)
+      // Block if over 15 years (15 years and 1 day or older)
       if (vehicleAgePrecise > 15) {
         console.log('❌ Vehicle blocked: Over 15 years old (precise)', { vehicleAgePrecise });
         return {

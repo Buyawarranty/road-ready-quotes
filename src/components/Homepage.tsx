@@ -283,7 +283,7 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
               threshold: '> 15 years'
             });
             
-            // Block if over 12 years (15 years and 1 day or older)
+            // Block if over 15 years (15 years and 1 day or older)
             if (vehicleAgePrecise > 15) {
               setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
               toast({

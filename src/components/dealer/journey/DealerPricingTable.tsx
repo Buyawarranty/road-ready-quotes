@@ -1424,7 +1424,7 @@ const DealerPricingTable: React.FC<PricingTableProps> = ({
             <Alert className="mb-6 border-orange-200 bg-orange-50">
               <Info className="h-4 w-4 text-orange-600" />
               <AlertDescription className="text-orange-800">
-                Due to your vehicle being 12 years old, only 1-year warranty coverage is available.
+                Due to your vehicle being 15 years old, only 1-year warranty coverage is available.
               </AlertDescription>
             </Alert>
           )}

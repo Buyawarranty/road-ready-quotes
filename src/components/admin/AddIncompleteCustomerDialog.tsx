@@ -64,7 +64,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
     
     // Check eligibility
     if (numericValue > 150000) {
-      setEligibilityError('Vehicle mileage exceeds 120,000 miles limit');
+      setEligibilityError('Vehicle mileage exceeds 150,000 miles limit');
     } else {
       setEligibilityError('');
     }
@@ -76,7 +76,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
     
     // Check eligibility
     if (value > 150000) {
-      setEligibilityError('Vehicle mileage exceeds 120,000 miles limit');
+      setEligibilityError('Vehicle mileage exceeds 150,000 miles limit');
     } else {
       setEligibilityError('');
     }
@@ -105,7 +105,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
           const currentYear = new Date().getFullYear();
           const vehicleAge = currentYear - parseInt(vehicleYear);
           if (vehicleAge >= 15) {
-            setEligibilityError('Vehicle is 12 years or older - not eligible');
+            setEligibilityError('Vehicle is 15 years or older - not eligible');
           }
         }
         

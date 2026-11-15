@@ -840,7 +840,7 @@ const MGWarrantyLanding: React.FC = () => {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 MG Models We Cover
               </h2>
-              <p className="text-gray-600">All models from 2012 to 2026 • Up to 120,000 miles</p>
+              <p className="text-gray-600">All models from 2012 to 2026 • Up to 150,000 miles</p>
             </div>
 
             {/* Category Filters */}

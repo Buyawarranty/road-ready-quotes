@@ -1537,7 +1537,7 @@ export const GetQuoteTab: React.FC<GetQuoteTabProps> = ({ prePopulatedLead, onNa
     if (!isNaN(numericMileage) && numericMileage > 150000) {
       toast({
         title: "Vehicle Not Eligible",
-        description: "We cannot cover vehicles with over 120,000 miles. Please try a different vehicle.",
+        description: "We cannot cover vehicles with over 150,000 miles. Please try a different vehicle.",
         variant: "destructive",
       });
       return;
@@ -3596,7 +3596,7 @@ Questions? Call 0330 229 5040`;
                   <p className="mb-3 text-sm text-muted-foreground">
                     {step1MotMileageResolved
                       ? "We've suggested this using your latest MOT record."
-                      : 'Up to 120,000 miles.'}
+                      : 'Up to 150,000 miles.'}
                   </p>
 
                   {step1MotMileageResolved && (

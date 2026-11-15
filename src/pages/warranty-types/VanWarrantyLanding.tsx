@@ -170,7 +170,7 @@ const vanFAQs = [
   },
   {
     question: "Is my van too old or too many miles?",
-    answer: "We cover vans up to 15 years old and 120,000 miles at the start of your policy. Once covered, there are no mileage restrictions during your warranty period."
+    answer: "We cover vans up to 15 years old and 150,000 miles at the start of your policy. Once covered, there are no mileage restrictions during your warranty period."
   },
   {
     question: "Can I use my own garage for repairs?",

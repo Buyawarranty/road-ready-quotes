@@ -208,7 +208,7 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
                       />
                       <div className="flex justify-between text-xs text-gray-500 mt-2">
                         <span>0</span>
-                        <span>120,000</span>
+                        <span>150,000</span>
                       </div>
                     </div>
                   </div>
