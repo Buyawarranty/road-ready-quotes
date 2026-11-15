@@ -32,7 +32,11 @@ import {
   User,
   ArrowRight,
   ArrowLeft,
+  Gift,
+  ExternalLink,
 } from 'lucide-react';
+
+const INTRO_PAID_TARGET = 3;
 
 type Method = 'pay_now' | 'invoice';
 
@@ -227,6 +231,9 @@ const Step4Checkout: React.FC = () => {
     labour !== undefined ? `£${labour}/hr labour rate` : null,
   ].filter(Boolean).join(' · ');
 
+  const paidCount = eligibility?.paid_count ?? 0;
+  const invoiceRequired = eligibility?.required ?? 10;
+  const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = accountSelected ? 'Issue warranty using dealer account' : `Pay £${total.toFixed(2)} & issue warranty`;
@@ -241,7 +248,6 @@ const Step4Checkout: React.FC = () => {
   const optionClass = (on: boolean) =>
     `w-full rounded-xl border p-4 text-left transition-colors ${on ? 'border-crm-orange bg-crm-orange-soft' : 'border-border bg-card hover:border-crm-orange/50'}`;
 
-  const blockedTitle = 'Dealer account billing unavailable';
   const blockedText =
     eligibility?.reason === 'new'
       ? `Account billing unlocks once your account is established. Pay by card for ${Math.max(1, (eligibility.required ?? 0) - (eligibility.paid_count ?? 0))} more warranty${(eligibility.required - eligibility.paid_count) === 1 ? '' : 's'} to unlock it (${eligibility.paid_count} of ${eligibility.required} so far).`
@@ -254,7 +260,7 @@ const Step4Checkout: React.FC = () => {
   return (
     <DealerJourneyLayout
       step={4}
-      title="Review & issue warranty"
+      title="Trade checkout"
       subtitle="Confirm the customer, vehicle and warranty details before issuing."
       backTo="/dealer-portal/quote/customer"
     >
@@ -313,23 +319,37 @@ const Step4Checkout: React.FC = () => {
             </div>
           </div>
           <div className="mt-5 rounded-xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
-            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep">What happens next?</p>
+            <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep"><Gift className="h-5 w-5" /> Your trade benefits</p>
             <ul className="mt-3 space-y-3">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span className="text-sm font-medium text-crm-navy">Your dealership sees the warranty confirmed in the dealer portal.</span>
+                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET}, get {INTRO_PAID_TARGET} warranties free</span><span className="text-sm text-muted-foreground">Any warranty up to 3 years' duration.</span></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span className="text-sm font-medium text-crm-navy">The customer receives their warranty documents and a login for their own dashboard.</span>
+                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">After {invoiceRequired} paid warranties, you can pay by invoice (with payment due in {termDays} days).</span></span>
               </li>
             </ul>
+            <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
           </div>
         </section>
 
         {/* Payment */}
         <section className="self-start rounded-xl border border-border bg-card p-5 sm:p-6">
-          <h2 className="mb-4 text-xl font-bold text-crm-navy">Payment to Panda Protect</h2>
+          {introLeft > 0 && (
+            <div className="mb-6 rounded-xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+              <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
+              <div className="mt-2 flex items-center justify-between gap-2 text-sm">
+                <span className="text-crm-navy">{Math.min(paidCount, INTRO_PAID_TARGET)} of {INTRO_PAID_TARGET} paid warranties completed</span>
+                <span className="font-bold text-crm-green-deep">{introLeft} to go</span>
+              </div>
+              <div className="mt-2 grid grid-cols-3 gap-1.5">
+                {Array.from({ length: INTRO_PAID_TARGET }).map((_, i) => <span key={i} className={`h-2 rounded-full ${i < paidCount ? 'bg-crm-green' : 'bg-border'}`} />)}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">Purchase {introLeft} more warrant{introLeft === 1 ? 'y' : 'ies'} to unlock {INTRO_PAID_TARGET} free warranties, each up to 3 years' cover.</p>
+            </div>
+          )}
+          <h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>
           <div className="space-y-3">
             <button type="button" onClick={() => setMethod('pay_now')} aria-pressed={method === 'pay_now'} className={optionClass(method === 'pay_now')}>
               <div className="flex gap-3">
@@ -338,7 +358,7 @@ const Step4Checkout: React.FC = () => {
                 <div>
                   <p className="font-bold text-crm-navy">Pay now by card</p>
                   <p className="text-sm text-muted-foreground">Pay securely by card (powered by Stripe).</p>
-                  <p className="text-sm text-muted-foreground">Warranty issued after successful payment.</p>
+                  <p className="text-sm text-muted-foreground">Your warranty is issued after payment.</p>
                 </div>
               </div>
             </button>
@@ -349,7 +369,7 @@ const Step4Checkout: React.FC = () => {
                   <Radio on={accountSelected} />
                   <FileText className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                   <div>
-                    <p className="font-bold text-crm-navy">Dealer account billing</p>
+                    <p className="font-bold text-crm-navy">{termDays}-day invoice</p>
                     <p className="text-sm text-muted-foreground">Pay through your Panda Protect dealer account on your agreed terms.</p>
                     <p className="text-sm text-muted-foreground">{termDays}-day terms · due {formatDate(dueDate)}</p>
                   </div>
@@ -357,10 +377,18 @@ const Step4Checkout: React.FC = () => {
               </button>
             ) : (
               <div className="flex gap-3 rounded-xl border border-border bg-muted p-4">
-                <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="font-bold text-crm-navy">{eligibility ? blockedTitle : 'Dealer account billing'}</p>
-                  <p className="text-sm text-muted-foreground">{blockedText}</p>
+                <FileText className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-bold text-crm-navy">{termDays}-day invoice</p>
+                    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2 py-0.5 text-xs font-semibold text-crm-navy"><Lock className="h-3 w-3" /> Locked</span>
+                  </div>
+                  {eligibility?.reason === 'new' ? (
+                    <>
+                      <p className="text-sm text-muted-foreground">Available after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
+                      <div className="mt-2 h-2 overflow-hidden rounded-full bg-border"><div className="h-full rounded-full bg-crm-blue" style={{ width: `${Math.min(100, (paidCount / Math.max(1, invoiceRequired)) * 100)}%` }} /></div>
+                    </>
+                  ) : <p className="text-sm text-muted-foreground">{blockedText}</p>}
                   {eligibility?.reason === 'overdue' && (
                     <button type="button" onClick={() => navigate('/dealer-portal/warranties')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
                       View outstanding invoices <ChevronRight className="h-3.5 w-3.5" />
