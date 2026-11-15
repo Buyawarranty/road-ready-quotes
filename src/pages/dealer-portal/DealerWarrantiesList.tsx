@@ -464,7 +464,7 @@ const DealerWarrantiesList = () => {
 
   const renderPaymentTable = (data: WarrantyRow[]) => (
     <>
-      <div className="space-y-3 p-3 md:hidden">
+      <div className="space-y-3 p-3 2xl:hidden">
         {data.map((row) => (
           <article key={row.id} className="rounded-2xl border-2 border-crm-line/70 bg-card p-4">
             <div className="flex items-start gap-3">
@@ -490,7 +490,7 @@ const DealerWarrantiesList = () => {
           </article>
         ))}
       </div>
-      <div className="hidden overflow-x-auto md:block">
+      <div className="hidden overflow-x-auto 2xl:block">
         <Table className="min-w-[1050px]">
           <TableHeader>
             <TableRow className="border-crm-line bg-muted/50 hover:bg-muted/50">
