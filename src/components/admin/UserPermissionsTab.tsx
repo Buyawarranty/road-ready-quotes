@@ -219,6 +219,15 @@ export const UserPermissionsTab = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [sendInviteEmail, setSendInviteEmail] = useState(true);
+  // BDM contact towns for the new account: none yet, or chosen towns.
+  const [inviteTownMode, setInviteTownMode] = useState<'none' | 'select'>('none');
+  const [inviteTowns, setInviteTowns] = useState<string[]>([]);
+  const [allTowns, setAllTowns] = useState<string[]>([]);
+  const [townFilter, setTownFilter] = useState('');
+  useEffect(() => {
+    if (!showInviteDialog || allTowns.length) return;
+    (supabase as any).rpc('bdm_town_list').then(({ data }: any) => setAllTowns(((data || []) as any[]).map(x => x.town).filter(Boolean)));
+  }, [showInviteDialog, allTowns.length]);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [currentAdminUser, setCurrentAdminUser] = useState<AdminUser | null>(null);
@@ -623,6 +632,20 @@ export const UserPermissionsTab = () => {
       else if (data?.emailSent) toast.success(`User login created and invitation emailed to ${inviteData.email}`);
       else toast.error(`Login created, but the invitation email could not be sent${data?.emailError ? `: ${data.emailError}` : ''}. Copy the details below instead.`);
       setRevealedCreds({ email: inviteData.email, password: data.tempPassword, loginUrl: loginUrlForRole(inviteData.role) });
+
+      if (inviteTownMode === 'select' && inviteTowns.length) {
+        try {
+          const { data: au } = await supabase.from('admin_users').select('user_id').eq('email', inviteData.email).maybeSingle();
+          const { data: me } = await supabase.auth.getUser();
+          if (!au?.user_id) throw new Error('account not found');
+          const { error: tErr } = await (supabase as any).from('bdm_town_access').insert(inviteTowns.map(town => ({ user_id: au.user_id, town, granted_by: me.user?.id })));
+          if (tErr) throw tErr;
+          toast.success(`BDM contact towns saved: ${inviteTowns.join(', ')}`);
+        } catch (tErr: any) {
+          toast.error(`Login created, but towns were not saved (${tErr?.message || 'error'}) — set them in BDM allocation.`);
+        }
+      }
+      setInviteTownMode('none'); setInviteTowns([]); setTownFilter('');
 
       // Persist team assignment for the new admin user (if a team was chosen)
       if (teamId && teamId !== '__all__') {
@@ -1438,6 +1461,28 @@ export const UserPermissionsTab = () => {
                   <span className="block text-xs text-muted-foreground">Sends their email, password and the staff sign-in link (/auth). Untick to just copy and send the details yourself.</span>
                 </span>
               </label>
+
+              <div className="rounded-md border border-border p-3">
+                <Label>BDM contact towns</Label>
+                <div className="mt-2 flex flex-wrap gap-4 text-sm">
+                  <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="invite-towns" checked={inviteTownMode === 'none'} onChange={() => setInviteTownMode('none')} /> No city yet</label>
+                  <label className="flex items-center gap-2 cursor-pointer"><input type="radio" name="invite-towns" checked={inviteTownMode === 'select'} onChange={() => setInviteTownMode('select')} /> Select cities</label>
+                </div>
+                {inviteTownMode === 'none'
+                  ? <p className="mt-1 text-xs text-muted-foreground">You can add towns later in BDM allocation.</p>
+                  : <div className="mt-2">
+                      <Input placeholder="Search towns" value={townFilter} onChange={e => setTownFilter(e.target.value)} />
+                      <div className="mt-2 max-h-44 overflow-y-auto rounded border border-border p-2 grid grid-cols-2 gap-1">
+                        {allTowns.filter(t => t.toLowerCase().includes(townFilter.toLowerCase())).map(t => (
+                          <label key={t} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input type="checkbox" checked={inviteTowns.includes(t)} onChange={e => setInviteTowns(v => e.target.checked ? [...v, t] : v.filter(x => x !== t))} /> {t}
+                          </label>
+                        ))}
+                        {allTowns.length === 0 && <p className="col-span-2 text-xs text-muted-foreground">Loading towns…</p>}
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">{inviteTowns.length} selected — saved when you create the login.</p>
+                    </div>}
+              </div>
 
               <div>
                 <Label htmlFor="role">Role</Label>
