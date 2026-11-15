@@ -6,7 +6,7 @@ import WarrantyOptionRow from '@/components/dealer/journey/WarrantyOptionRow';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { CreditCard, Settings, Link2, MessageCircle, Mail } from 'lucide-react';
+import { CreditCard, Settings, Link2, MessageCircle, Mail, FileDown } from 'lucide-react';
 import { decodeCustomerQuote, adjustableQuotePrice, customerQuoteMessage } from '@/lib/customerQuoteSharing';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
@@ -46,14 +46,15 @@ const CustomerQuotePage: React.FC = () => {
   const mailto = `mailto:?subject=${encodeURIComponent(`Your warranty quote${data.dealerName ? ` from ${data.dealerName}` : ''}`)}&body=${encodeURIComponent(shareMessage)}`;
   const shareSection = <section className="customer-quote-tools rounded-lg border border-crm-line bg-card p-5 sm:p-6" aria-label="Share this quote">
     <h2 className="mb-1 flex items-center gap-2 text-base font-bold"><Link2 className="h-5 w-5 text-crm-orange" />Share this quote</h2>
-    <p className="mb-4 text-xs text-muted-foreground">Copy the link and paste it anywhere, or send it on WhatsApp or email. Anyone opening it sees the customer price only.</p>
+    <p className="mb-4 text-xs text-muted-foreground">{hidePrices ? 'Copy the link, send it on WhatsApp or email, or save it as a PDF. It shows the cover only, with no prices.' : 'Copy the link, send it on WhatsApp or email, or save it as a PDF. Anyone opening it sees the customer price only.'}</p>
     <div className="flex flex-wrap items-stretch gap-2">
       <input readOnly value={shareUrl} aria-label="Quote link" onFocus={event => event.currentTarget.select()} className="h-11 min-w-0 flex-1 rounded-md border border-crm-line bg-muted/60 px-3 text-xs text-muted-foreground" />
       <Button variant="outline" className="h-11 shrink-0 font-bold" onClick={async () => { try { await navigator.clipboard.writeText(shareUrl); setCopied(true); window.setTimeout(() => setCopied(false), 2500); } catch { setCopied(false); } }}><Link2 />{copied ? 'Copied' : 'Copy link'}</Button>
     </div>
-    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+    <div className="mt-3 grid gap-2 sm:grid-cols-3">
       <Button variant="outline" className="h-11 font-bold" onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, '_blank', 'noopener,noreferrer')}><MessageCircle />WhatsApp</Button>
       <Button variant="outline" className="h-11 font-bold" asChild><a href={mailto}><Mail />Email</a></Button>
+      <Button variant="outline" className="h-11 font-bold" onClick={() => window.print()}><FileDown />Save as PDF</Button>
     </div>
     {copied && <p className="mt-3 text-xs font-bold text-crm-green">Link copied — paste it anywhere.</p>}
   </section>;
@@ -63,7 +64,7 @@ const CustomerQuotePage: React.FC = () => {
         <title>Customer Quote</title>
         <meta name="robots" content="noindex,nofollow" />
       </Helmet>
-      <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} shareSection={hidePrices ? undefined : shareSection} hidePrices={hidePrices} open onClose={() => window.close()} paymentSection={!hidePrices && (payQuoteId || paid) ? <div>
+      <CustomerQuoteView {...data} price={price} specs={specs} included={included} quoteControls={controls} shareSection={shareSection} hidePrices={hidePrices} open onClose={() => window.close()} paymentSection={!hidePrices && (payQuoteId || paid) ? <div>
         {paid ? <div className="rounded-lg border border-crm-green bg-crm-green/10 p-4 text-center">
           <p className="text-sm font-bold text-crm-green">Payment received — thank you.</p>
           <p className="mt-1 text-xs text-muted-foreground">Your dealer will confirm your warranty documents shortly.</p>

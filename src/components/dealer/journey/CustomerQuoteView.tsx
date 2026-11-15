@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { X, Check, ShieldCheck, Printer, Lock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { pandaLogoUrl as logoAssetUrl } from '@/lib/pandaLogo';
+import WhatsCoveredPanel from '@/components/dealer/journey/WhatsCoveredPanel';
 import pandaAssetUrl from '@/assets/customer-quote-panda.webp';
 
 export interface CustomerQuoteViewProps {
@@ -77,7 +78,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
           <img src={logoAssetUrl} alt="Panda Protect" className="h-12 w-auto" />
           <div className="customer-quote-tools flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => window.print()}><Printer /> Print</Button>
+            <Button variant="outline" size="sm" onClick={() => window.print()}><Printer /> Save as PDF</Button>
             <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Close" onClick={onClose}><X /></Button>
           </div>
         </div>
@@ -99,6 +100,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               <dl>{specs.map(s => <div key={s.label} className="flex items-start justify-between gap-4 border-b border-crm-line py-3 text-sm"><dt className="text-muted-foreground">{s.label}</dt><dd className="max-w-[55%] text-right font-semibold">{s.value}</dd></div>)}</dl>
               {included.length > 0 && <><h3 className="mb-3 mt-6 text-sm font-bold">What's included</h3><ul className="space-y-3">{included.map(i => <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-crm-green" />{i}</li>)}</ul></>}
             </section>
+            <WhatsCoveredPanel audience="customer" />
             {hidePrices ? <section className="rounded-lg border border-crm-line bg-card p-5 sm:p-6">
               <h2 className="mb-2 text-base font-bold">Your price</h2>
               <p className="text-sm text-muted-foreground">Your dealer will talk you through the price for this cover. Ask them about the cover length and the £5,000 claim limit boost.</p>
