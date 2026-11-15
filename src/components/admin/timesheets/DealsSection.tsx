@@ -380,7 +380,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                           {customer.registration_plate || 'No Reg'}
                         </span>
                         <Badge variant="outline" className="text-[10px] capitalize px-1.5 py-0">
-                          {customer.plan_type}
+                          {displayWarrantyPlanName(customer.plan_type)}
                         </Badge>
                         {logged && (
                           <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-[10px] px-1.5 py-0 gap-0.5">

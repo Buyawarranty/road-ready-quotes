@@ -856,7 +856,7 @@ export const PolicyDocumentsTab: React.FC = () => {
                   size="sm"
                   onClick={() => setSelectedPolicy(pol)}
                 >
-                  {pol.policy_number} — {pol.plan_type}
+                  {pol.policy_number} — {displayWarrantyPlanName(pol.plan_type)}
                 </Button>
               ))}
             </div>

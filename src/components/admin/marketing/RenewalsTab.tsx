@@ -510,7 +510,7 @@ export const RenewalsTab: React.FC = () => {
                       {r.mileage && <p className="text-xs text-muted-foreground">{r.mileage} miles</p>}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs">{r.plan_type}</Badge>
+                      <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(r.plan_type)}</Badge>
                     </TableCell>
                     <TableCell className="text-sm">{r.payment_type}</TableCell>
                     <TableCell className="text-sm">
