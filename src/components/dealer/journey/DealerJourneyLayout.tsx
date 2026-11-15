@@ -35,30 +35,60 @@ const CarIcon = () => (
   </svg>
 );
 
-const JourneyProgress: React.FC<{ current: number }> = ({ current }) => (
-  <nav aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
-    <div className="mb-2 flex items-center justify-between text-xs font-semibold">
-      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">Step {current + 1} of {STEPS.length}</span>
-      <span className="text-muted-foreground sm:hidden">{STEPS[current]}</span>
-    </div>
-    <ol className="grid grid-cols-4 gap-1.5 sm:gap-2">
-      {STEPS.map((label, i) => {
-        const done = i < current;
-        const active = i === current;
-        return (
-          <li key={label} aria-current={active ? 'step' : undefined} className="min-w-0">
-            <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div className={`h-full rounded-full transition-all duration-700 ease-out ${done ? 'w-full bg-success' : active ? 'w-1/2 bg-primary' : 'w-0'}`} />
-            </div>
-            <span className={`mt-2 hidden items-center gap-1 text-xs font-semibold sm:flex ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}>
-              {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}{label}
+const JourneyProgress: React.FC<{ current: number }> = ({ current }) => {
+  const progress = (current / (STEPS.length - 1)) * 100;
+
+  return (
+    <nav aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
+      <div className="mb-2 flex items-center justify-between text-xs font-semibold">
+        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">Step {current + 1} of {STEPS.length}</span>
+        <span className="text-muted-foreground sm:hidden">{STEPS[current]}</span>
+      </div>
+      <div className="relative mx-5 h-11">
+        <div className="absolute inset-x-0 top-9 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full rounded-full bg-success transition-[width] duration-700 ease-out motion-reduce:transition-none"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        {STEPS.map((label, i) => {
+          const done = i < current;
+          const active = i === current;
+          return (
+            <span
+              key={label}
+              className={`absolute top-9 flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 bg-card transition-colors duration-500 ${done ? 'border-success bg-success text-primary-foreground' : active ? 'border-primary' : 'border-border'}`}
+              style={{ left: `${(i / (STEPS.length - 1)) * 100}%` }}
+              aria-hidden="true"
+            >
+              {done && <Check className="h-2.5 w-2.5" strokeWidth={3.5} />}
             </span>
-          </li>
-        );
-      })}
-    </ol>
-  </nav>
-);
+          );
+        })}
+        <div
+          className="absolute top-0 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-primary/20 bg-card shadow-md transition-[left] duration-700 ease-out motion-reduce:transition-none"
+          style={{ left: `${progress}%` }}
+          aria-hidden="true"
+        >
+          <CarIcon />
+        </div>
+      </div>
+      <ol className="mt-1 grid grid-cols-4 gap-1.5 sm:gap-2">
+        {STEPS.map((label, i) => {
+          const done = i < current;
+          const active = i === current;
+          return (
+            <li key={label} aria-current={active ? 'step' : undefined} className="min-w-0 text-center">
+              <span className={`hidden text-xs font-semibold sm:block ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {label}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+};
 
 export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, children, showBack = true, backTo }) => {
   const { dealer, loading, loadError, retry } = useDealerAuth();
