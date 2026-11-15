@@ -355,7 +355,7 @@ export const ReviewsTab = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{customer.plan_type}</Badge>
+                        <Badge variant="outline">{displayWarrantyPlanName(customer.plan_type)}</Badge>
                       </TableCell>
                       <TableCell>
                         {format(new Date(customer.signup_date), 'dd MMM yyyy')}

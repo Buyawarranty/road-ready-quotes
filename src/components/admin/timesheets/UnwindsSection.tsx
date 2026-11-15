@@ -107,7 +107,7 @@ export function UnwindsSection({ currentMonth, viewingUserId }: UnwindsSectionPr
                     <span className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">{record.registration_plate.toUpperCase()}</span>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">{record.plan_type}</p>
+                <p className="text-xs text-muted-foreground">{displayWarrantyPlanName(record.plan_type)}</p>
                 {record.final_amount != null && record.final_amount > 0 && (
                   <p className="text-xs font-medium text-destructive">£{record.final_amount.toFixed(2)}</p>
                 )}

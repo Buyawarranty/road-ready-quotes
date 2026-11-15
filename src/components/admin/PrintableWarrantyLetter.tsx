@@ -302,7 +302,7 @@ export const PrintableWarrantyLetter: React.FC<PrintableWarrantyLetterProps> = (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 20px', background: c.glanceBg, border: `1px solid ${c.glanceBorder}`, borderRadius: '6px', padding: '12px 14px' }}>
                 {[
                   ['Vehicle', policy.vehicleReg || '-'],
-                  ['Plan Type', policy.planType || 'N/A'],
+                  ['Plan Type', displayWarrantyPlanName(policy.planType, 'N/A')],
                   ['Duration', getDuration()],
                   ['Mileage', policy.mileage ? `${parseInt(policy.mileage).toLocaleString()} miles` : 'N/A'],
                   ['Start Date', policy.policyStartDate ? format(new Date(policy.policyStartDate), 'd MMM yyyy') : 'N/A'],

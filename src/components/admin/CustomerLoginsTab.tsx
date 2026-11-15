@@ -668,7 +668,7 @@ const CustomerLoginsTab = () => {
                 </div>
               </div>
               <CardDescription>
-                {customer.email} • {customer.registration_plate} • {customer.plan_type}
+                {customer.email} • {customer.registration_plate} • {displayWarrantyPlanName(customer.plan_type)}
                 {policies.length > 0 && ` • ${policies.length} polic${policies.length === 1 ? 'y' : 'ies'}`}
               </CardDescription>
             </CardHeader>

@@ -1083,7 +1083,7 @@ export const DiscountsGivenTab: React.FC = () => {
                           </TableCell>
                           <TableCell className="text-xs whitespace-nowrap">{[c.vehicle_make, c.vehicle_model].filter(Boolean).join(' ') || '-'}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-xs">{c.plan_type}</Badge>
+                            <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(c.plan_type)}</Badge>
                           </TableCell>
                           <TableCell className="text-xs">{durationLabel}</TableCell>
                           <TableCell className="text-xs">£{c.voluntary_excess ?? 100}</TableCell>

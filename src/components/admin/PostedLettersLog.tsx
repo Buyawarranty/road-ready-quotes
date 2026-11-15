@@ -743,7 +743,7 @@ export const PostedLettersLog: React.FC = () => {
                             {c.registration_plate}
                           </span>
                         )}
-                        <p className="text-xs text-muted-foreground mt-0.5">{c.plan_type}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{displayWarrantyPlanName(c.plan_type)}</p>
                       </div>
                     </button>
                   ))

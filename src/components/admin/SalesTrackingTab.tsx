@@ -364,7 +364,7 @@ const CustomerAssignmentsTable: React.FC<{
             <TableCell>{customer.name}</TableCell>
             <TableCell>{customer.email}</TableCell>
             <TableCell>
-              <Badge variant="secondary">{customer.plan_type}</Badge>
+              <Badge variant="secondary">{displayWarrantyPlanName(customer.plan_type)}</Badge>
             </TableCell>
             <TableCell>£{customer.final_amount?.toLocaleString() || '0'}</TableCell>
             <TableCell>{getUserName(customer.assigned_to || '')}</TableCell>
