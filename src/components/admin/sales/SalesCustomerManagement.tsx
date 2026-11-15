@@ -845,7 +845,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
                     {/* WarType (Plan Type) */}
                     <TableCell>
                       <Badge variant="outline" className="capitalize">
-                        {customer.plan_type}
+                        {displayWarrantyPlanName(customer.plan_type)}
                       </Badge>
                     </TableCell>
                     

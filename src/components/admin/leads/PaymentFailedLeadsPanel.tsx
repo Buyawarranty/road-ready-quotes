@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, Phone, Mail, Hand, X, Copy, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface StruggleAlert {
   id: string;

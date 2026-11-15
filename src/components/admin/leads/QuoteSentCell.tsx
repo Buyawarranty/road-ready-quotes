@@ -8,6 +8,7 @@ import { SentQuote } from '@/hooks/useLeadQuotes';
 import { FileText, ExternalLink, Check, Clock, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface QuoteSentCellProps {
   quotes: SentQuote[];

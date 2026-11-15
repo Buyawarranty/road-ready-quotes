@@ -10,6 +10,7 @@ import {
   ChevronDown, ChevronUp, 
   CreditCard, Printer, Award
 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { CommissionClaimDialog } from './CommissionClaimDialog';
 import { CommissionClaimReviewPanel } from './CommissionClaimReviewPanel';
 import { toast } from 'sonner';
