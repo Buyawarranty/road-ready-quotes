@@ -548,7 +548,7 @@ const MGWarrantyLanding: React.FC = () => {
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter Registration", "text": "Enter your MG's registration number" },
       { "@type": "HowToStep", "position": 2, "name": "Select Mileage", "text": "Choose your current mileage band" },
-      { "@type": "HowToStep", "position": 3, "name": "Choose Plan", "text": "Select from Basic, Gold, or Platinum cover" },
+      { "@type": "HowToStep", "position": 3, "name": "Choose Plan", "text": "Select from Basic or Platinum cover" },
       { "@type": "HowToStep", "position": 4, "name": "Get Protected", "text": "Complete your purchase and get instant cover" }
     ]
   };

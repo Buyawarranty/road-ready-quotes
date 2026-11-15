@@ -94,6 +94,7 @@ export const EmbeddedCheckoutModal: React.FC<EmbeddedCheckoutModalProps> = ({
       .replace(/vehicle/gi, '')
       .replace(/car/gi, '')
       .replace(/plan/gi, '')
+      .replace(/gold/gi, 'Platinum')
       .replace(/premium/gi, 'Platinum')
       .trim() || 'Platinum';
   };
