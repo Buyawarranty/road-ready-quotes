@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { DEALER_PAYMENT_OPTIONS, DEALER_PAYMENT_STYLES, getDealerPaymentState } from '@/lib/dealerPaymentStatus';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface UnpaidRow {
   id: string;

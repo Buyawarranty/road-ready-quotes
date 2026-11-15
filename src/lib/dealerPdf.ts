@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { displayWarrantyPlanName } from './warrantyPlanDisplay';
 
 export interface DealerPdfRow {
   id: string;

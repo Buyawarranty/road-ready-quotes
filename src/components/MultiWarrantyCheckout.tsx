@@ -11,6 +11,7 @@ import { CartItem } from '@/contexts/CartContext';
 import { trackFormSubmission, trackConversion, trackEvent } from '@/utils/analytics';
 import { getAddOnInfo, isAddOnAutoIncluded, normalizePaymentType } from '@/lib/addOnsUtils';
 import { getTrackingData } from '@/utils/gclidCapture';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface MultiWarrantyCheckoutProps {
   items: CartItem[];

@@ -8,6 +8,7 @@ import { StripeProvider } from '@/components/stripe/StripeProvider';
 import { StripePaymentForm } from '@/components/stripe/StripePaymentForm';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface PaymentData {
   clientSecret: string;

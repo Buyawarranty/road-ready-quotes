@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { StartDatePicker } from '@/components/checkout/StartDatePicker';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { 
   Shield, Car, Clock, CheckCircle, CreditCard, Calendar, 

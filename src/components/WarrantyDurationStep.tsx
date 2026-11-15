@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { calculateAddOnPrice, getAutoIncludedAddOns } from '@/lib/addOnsUtils';
 import { calculateVehiclePriceAdjustment, applyPriceAdjustment } from '@/lib/vehicleValidation';
 import { supabase } from '@/integrations/supabase/client';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface WarrantyDurationStepProps {
   vehicleData: any;
