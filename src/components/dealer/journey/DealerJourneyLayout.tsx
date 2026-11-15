@@ -73,15 +73,19 @@ const JourneyProgress: React.FC<{ current: number }> = ({ current }) => {
           <CarIcon />
         </div>
       </div>
-      <ol className="mt-1 grid grid-cols-4 gap-1.5 sm:gap-2">
+      <ol className="relative mx-5 mt-1 hidden h-5 sm:block">
         {STEPS.map((label, i) => {
           const done = i < current;
           const active = i === current;
+          const alignment = i === 0 ? '' : i === STEPS.length - 1 ? '-translate-x-full' : '-translate-x-1/2';
           return (
-            <li key={label} aria-current={active ? 'step' : undefined} className="min-w-0 text-center">
-              <span className={`hidden text-xs font-semibold sm:block ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {label}
-              </span>
+            <li
+              key={label}
+              aria-current={active ? 'step' : undefined}
+              className={`absolute whitespace-nowrap text-xs font-semibold ${alignment} ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}
+              style={{ left: `${(i / (STEPS.length - 1)) * 100}%` }}
+            >
+              {label}
             </li>
           );
         })}
