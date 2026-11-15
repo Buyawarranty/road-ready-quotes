@@ -295,7 +295,7 @@ const Step3Pricing: React.FC = () => {
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
         {trade && <Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
         <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
-          <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('whatsapp')}><MessageCircle />WhatsApp</DropdownMenuItem><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem>{trade && <DropdownMenuItem onClick={() => share('pay')}><Link2 />Customer payment link</DropdownMenuItem>}</DropdownMenuContent></DropdownMenu>
+          <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
         {trade && <Button className="col-span-2 min-h-12 h-auto min-w-0 whitespace-normal px-3 py-3 text-sm font-extrabold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 lg:px-5 lg:text-base" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
       </div></div>
       <div className="grid gap-2 sm:max-w-md" role="group" aria-label="Quote view">
