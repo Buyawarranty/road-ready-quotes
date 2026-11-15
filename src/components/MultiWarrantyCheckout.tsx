@@ -859,7 +859,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
               {items.length > 0 && (
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">{items[0].planName} Plan</h3>
+                    <h3 className="text-xl font-bold text-gray-900">{displayWarrantyPlanName(items[0].planName)} Plan</h3>
                     <p className="text-gray-600">
                       {items[0].paymentType === 'yearly' ? '12 months' : 
                        items[0].paymentType === 'two_yearly' ? '24 months' : '36 months'}

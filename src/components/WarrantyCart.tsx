@@ -225,7 +225,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Plan:</span>
-                          <span className="font-semibold">{item.planName}</span>
+                          <span className="font-semibold">{displayWarrantyPlanName(item.planName)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Cover period:</span>

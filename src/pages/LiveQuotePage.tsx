@@ -1036,7 +1036,7 @@ export default function LiveQuotePage() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Plan</span>
-                      <span className="font-semibold">{quote.cover.planType}</span>
+                      <span className="font-semibold">{displayWarrantyPlanName(quote.cover.planType)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Mileage</span>
@@ -1437,7 +1437,7 @@ export default function LiveQuotePage() {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Plan</span>
-                      <span className="font-semibold">{quote.cover.planType}</span>
+                      <span className="font-semibold">{displayWarrantyPlanName(quote.cover.planType)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Mileage</span>

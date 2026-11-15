@@ -62,7 +62,7 @@ export function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
       ref(row.id),
       `${row.registration_plate || '—'}\n${[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}`,
       row.name || '—',
-      `${(row.plan_type || '').toUpperCase()} · ${row.payment_type || ''}mo`,
+      `${displayWarrantyPlanName(row.plan_type).toUpperCase()} · ${row.payment_type || ''}mo`,
       `£${Number(row.final_amount || 0).toFixed(2)}`,
     ]],
     theme: 'grid',

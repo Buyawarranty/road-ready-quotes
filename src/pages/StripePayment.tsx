@@ -144,7 +144,7 @@ const StripePayment: React.FC = () => {
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-3">Payment Successful!</h1>
           <p className="text-lg text-muted-foreground mb-6">
-            Your {paymentData.planName} warranty is now active for your {paymentData.vehicleMake} {paymentData.vehicleModel}.
+            Your {displayWarrantyPlanName(paymentData.planName)} warranty is now active for your {paymentData.vehicleMake} {paymentData.vehicleModel}.
           </p>
           <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-8">
             <Shield className="w-4 h-4" />

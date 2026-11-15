@@ -165,7 +165,7 @@ const DealerAdminSales: React.FC = () => {
                           <p className="text-xs text-muted-foreground">{r.email}</p>
                         </td>
                         <td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td>
-                        <td className="px-3 py-2 capitalize">{r.plan_type} · {r.payment_type}m</td>
+                        <td className="px-3 py-2 capitalize">{displayWarrantyPlanName(r.plan_type)} · {r.payment_type}m</td>
                         <td className="px-3 py-2 text-foreground">{r.dealer_company || r.dealer_name || '—'}</td>
                         <td className="px-3 py-2">
                           <Badge variant={paid ? 'default' : 'secondary'} className={paid ? 'bg-green-600' : 'bg-amber-500'}>

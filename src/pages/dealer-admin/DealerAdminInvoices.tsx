@@ -55,7 +55,7 @@ const buildInvoiceHtml = (g: Group, r: UnpaidRow, invoiceNumber: string) => `
     <p style="font-size:14px"><strong>Billed to:</strong> ${g.dealer_company}</p>
     <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:14px">
       <tr style="background:#f97316;color:#fff"><th style="padding:10px;text-align:left">Customer</th><th style="padding:10px;text-align:left">Vehicle</th><th style="padding:10px;text-align:left">Plan</th><th style="padding:10px;text-align:right">Amount</th></tr>
-      <tr><td style="padding:10px;border-bottom:1px solid #eee">${r.name || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${r.registration_plate || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${r.plan_type || 'Warranty'}</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${money(Number(r.final_amount ?? 0))}</td></tr>
+      <tr><td style="padding:10px;border-bottom:1px solid #eee">${r.name || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${r.registration_plate || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${displayWarrantyPlanName(r.plan_type)}</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${money(Number(r.final_amount ?? 0))}</td></tr>
     </table>
     <p style="margin-top:20px;font-size:13px;color:#666">Please settle this invoice using the payment link provided, or contact hello@pandaprotect.co.uk.</p>
   </body></html>`;

@@ -397,7 +397,7 @@ const WarrantyDurationStep: React.FC<WarrantyDurationStepProps> = ({
               <span>{vehicleData.year}</span>
             </div>
             <div className="flex-1 text-center">
-              <span>{planName}</span>
+              <span>{displayWarrantyPlanName(planName, 'Platinum')}</span>
             </div>
           </div>
         </div>
