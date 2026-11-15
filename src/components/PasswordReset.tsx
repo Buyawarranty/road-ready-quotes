@@ -108,7 +108,7 @@ const PasswordReset = () => {
               variant: "destructive",
             });
             // Redirect after 3 seconds to give user time to read the message
-            setTimeout(() => navigate('/auth'), 3000);
+            setTimeout(() => navigate(loginPath), 3000);
           } else if (data.session) {
             console.log('Session set successfully for password reset');
             setIsValidSession(true);
@@ -129,7 +129,7 @@ const PasswordReset = () => {
             description: "Failed to initialize password reset. Please try clicking the link from your email again.",
             variant: "destructive",
           });
-          setTimeout(() => navigate('/auth'), 3000);
+          setTimeout(() => navigate(loginPath), 3000);
         }
       } else {
         console.log('No valid recovery tokens found, checking for existing session...');
@@ -147,7 +147,7 @@ const PasswordReset = () => {
             variant: "destructive",
           });
           // Redirect after 5 seconds to give user time to read the message
-          setTimeout(() => navigate('/auth'), 5000);
+          setTimeout(() => navigate(loginPath), 5000);
         }
       }
     };
@@ -162,7 +162,7 @@ const PasswordReset = () => {
         description: "Please request a new password reset link.",
         variant: "destructive",
       });
-      navigate('/auth');
+      navigate(loginPath);
       return;
     }
 
