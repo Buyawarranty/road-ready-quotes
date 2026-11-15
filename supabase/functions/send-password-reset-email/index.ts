@@ -37,6 +37,7 @@ serve(async (req) => {
     // Staff (admin dashboard) and customers get the same recovery link, but staff
     // copy points at /auth instead of the customer portal wording.
     let isStaff = body.audience === 'staff';
+    const isDealer = body.audience === 'dealer';
     const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     // Send people back to the site they asked from (Panda Protect runs on
     // more than one domain). Supabase only honours redirect URLs on its

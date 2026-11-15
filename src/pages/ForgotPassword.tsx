@@ -16,6 +16,10 @@ const ForgotPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dealerAudience = searchParams.get('audience') === 'dealer';
+  const loginPath = dealerAudience ? '/dealer-portal/login' : '/customer-dashboard';
+  const portalLabel = dealerAudience ? 'dealer portal' : 'customer dashboard';
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
