@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { trackFormSubmission, trackEvent, trackStripeCheckoutClick, trackStripeCheckoutPageLoad, trackStep4EmailEntry } from '@/utils/analytics';
 import { getWarrantyDurationInMonths } from '@/lib/warrantyDurationUtils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { getAddOnInfo, isAddOnAutoIncluded, normalizePaymentType, calculateAddOnPrice } from '@/lib/addOnsUtils';
 import { EmailCapturePopup } from '@/components/EmailCapturePopup';
 import MobileNavigation from '@/components/MobileNavigation';

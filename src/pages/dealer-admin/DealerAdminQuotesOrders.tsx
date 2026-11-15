@@ -505,7 +505,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
               <Label>Plan</Label>
               <Select value={quoteForm.plan_type || 'basic'} onValueChange={(v) => setQuoteForm({ ...quoteForm, plan_type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}</SelectContent>
+                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{displayWarrantyPlanName(p)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
@@ -559,7 +559,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
               <Label>Plan</Label>
               <Select value={orderForm.plan_type || 'basic'} onValueChange={(v) => setOrderForm({ ...orderForm, plan_type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}</SelectContent>
+                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{displayWarrantyPlanName(p)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>

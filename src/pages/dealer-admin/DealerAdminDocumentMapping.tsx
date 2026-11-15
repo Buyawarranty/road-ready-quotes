@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { FileText, Plus, Edit, Trash2 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 type Mapping = {
   id: string;
