@@ -244,7 +244,7 @@ serve(async (req) => {
       price_data: {
         currency: "gbp",
         product_data: { 
-          name: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Warranty Plan - ${paymentType.replace(/([A-Z])/g, ' $1').trim()}`,
+          name: `${displayWarrantyPlanName(planType.charAt(0).toUpperCase() + planType.slice(1))} Warranty Plan - ${paymentType.replace(/([A-Z])/g, ' $1').trim()}`,
           description: `Vehicle Registration: ${vehicleData?.regNumber || customerData?.vehicle_reg || 'N/A'}`
         },
         unit_amount: Math.round(totalAmount * 100), // Convert to pence

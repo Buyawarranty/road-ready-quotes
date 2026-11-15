@@ -242,7 +242,7 @@ serve(async (req) => {
             price_data: {
               currency: 'gbp',
               product_data: {
-                name: `${quote.plan_type} Vehicle Warranty - ${totalMonths} Months`,
+                name: `${displayWarrantyPlanName(quote.plan_type)} Vehicle Warranty - ${totalMonths} Months`,
                 description: `${quote.vehicle_make} ${quote.vehicle_model} (${quote.vehicle_reg})`,
               },
               unit_amount: amountInPence,

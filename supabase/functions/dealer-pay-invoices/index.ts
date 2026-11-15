@@ -85,7 +85,7 @@ Deno.serve(async (req: Request) => {
       price_data: {
         currency: 'gbp',
         product_data: {
-          name: `Plan ${String(r.plan_type || '').toUpperCase()} · ${r.payment_type || ''}mo`,
+          name: `Plan ${displayWarrantyPlanName(r.plan_type).toUpperCase()} · ${r.payment_type || ''}mo`,
           description: `${r.registration_plate || ''} · ${r.name || ''}`,
         },
         unit_amount: Math.round(Number(r.final_amount || 0) * 100),

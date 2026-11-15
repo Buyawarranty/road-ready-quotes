@@ -115,7 +115,7 @@ serve(async (req) => {
     
     // Create product description for all warranties
     const productDescription = items.map((item: any, index: number) => ({
-      item: `${item.planName} Vehicle Warranty - Vehicle ${index + 1} (${item.vehicleData.regNumber})`,
+      item: `${displayWarrantyPlanName(item.planName)} Vehicle Warranty - Vehicle ${index + 1} (${item.vehicleData.regNumber})`,
       quantity: "1",
       price: item.totalPrice.toString()
     }));

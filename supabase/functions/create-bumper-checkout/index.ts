@@ -354,7 +354,7 @@ serve(async (req) => {
       send_email: false, // Required by Bumper API
       // product_description should be an array of objects as per Bumper documentation
       product_description: [{
-        item: `${planType} Vehicle Warranty`,
+        item: `${displayWarrantyPlanName(planType)} Vehicle Warranty`,
         quantity: "1",
         price: totalAmount.toString()
       }]

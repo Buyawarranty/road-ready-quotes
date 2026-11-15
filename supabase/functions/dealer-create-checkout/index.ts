@@ -153,7 +153,7 @@ Deno.serve(async (req: Request) => {
     }
     const payable = promo?.total ?? plan.dealer_price;
     // The legacy `gold` code is retained for pricing and metadata, but the product is Platinum everywhere customers see it.
-    const planDisplayName = plan.plan_type === 'gold' ? 'PLATINUM' : plan.plan_type.toUpperCase();
+    const planDisplayName = displayWarrantyPlanName(plan.plan_type).toUpperCase();
 
     // Build the customer row payload (shared by both paths)
     const now = new Date();

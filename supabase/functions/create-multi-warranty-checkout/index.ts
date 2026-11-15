@@ -89,7 +89,7 @@ serve(async (req) => {
       price_data: {
         currency: "gbp",
         product_data: {
-          name: `${item.planName} Warranty - ${item.vehicleData.regNumber}`,
+          name: `${displayWarrantyPlanName(item.planName)} Warranty - ${item.vehicleData.regNumber}`,
           description: `${item.vehicleData.regNumber} - ${item.paymentType} coverage`,
           metadata: {
             vehicle_reg: item.vehicleData.regNumber,

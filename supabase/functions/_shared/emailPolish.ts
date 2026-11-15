@@ -37,6 +37,15 @@ export function polishEmailPayload<T extends Record<string, any>>(payload: T): T
   const brand = brandFromSender(payload.from);
   // deno-lint-ignore no-explicit-any
   const out: any = { ...payload };
+  // Display-only rule: legacy Gold plan codes are always called Platinum in new emails.
+  if (typeof out.subject === "string") out.subject = displayWarrantyPlanName(out.subject, "");
+  if (typeof out.html === "string") out.html = displayWarrantyPlanName(out.html, "");
+  if (typeof out.text === "string") out.text = displayWarrantyPlanName(out.text, "");
+  if (Array.isArray(out.attachments)) {
+    out.attachments = out.attachments.map((attachment: any) => attachment && typeof attachment.filename === "string"
+      ? { ...attachment, filename: displayWarrantyPlanName(attachment.filename, "") }
+      : attachment);
+  }
   if (brand && typeof out.html === "string") out.html = withLogo(out.html, brand);
   if (typeof out.html === "string" && !out.text) out.text = htmlToText(out.html);
   if (brand && !out.reply_to && !out.replyTo) out.reply_to = brand.helloEmail;

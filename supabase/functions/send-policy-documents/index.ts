@@ -357,10 +357,11 @@ serve(async (req) => {
     const getDisplayPlanType = (planType: string): string => {
       const planLower = planType.toLowerCase();
       
+      // Gold is a legacy internal code; its public warranty name is Platinum.
+      if (planLower.includes('gold')) return displayWarrantyPlanName(planType);
       // Map various plan type formats to standardized display names
       if (planLower.includes('basic') || planLower.includes('blue') || 
-          planLower.includes('gold') || planLower.includes('platinum') || 
-          planLower.includes('premium')) {
+          planLower.includes('platinum') || planLower.includes('premium')) {
         return 'Premium';
       } else if (planLower.includes('phev') || planLower.includes('hybrid')) {
         return 'PHEV';

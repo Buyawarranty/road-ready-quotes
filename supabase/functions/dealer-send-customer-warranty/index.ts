@@ -87,7 +87,7 @@ Deno.serve(async (req: Request) => {
     const rows = `
       <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.warranty_number || ref)}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.registration_plate || '—')}${vehicle ? ` · ${esc(vehicle)}` : ''}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(String(c.plan_type || '').toUpperCase())} · ${esc(c.payment_type || '')} months</td></tr>
+      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(displayWarrantyPlanName(c.plan_type).toUpperCase())} · ${esc(c.payment_type || '')} months</td></tr>
       <tr><td style="padding:8px 0;color:#666">Start date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(start)}</td></tr>
       ${endDate ? `<tr><td style="padding:8px 0;color:#666">End date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(endDate)}</td></tr>` : ''}
       <tr><td style="padding:8px 0;color:#666">Cover value</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${money(Number(c.final_amount ?? 0))}</td></tr>

@@ -211,7 +211,7 @@ serve(async (req) => {
         // Flag to identify embedded checkout
         is_embedded_checkout: 'true'
       },
-      description: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Warranty Plan - ${vehicleData?.regNumber || 'Vehicle'}`
+      description: `${displayWarrantyPlanName(planType.charAt(0).toUpperCase() + planType.slice(1))} Warranty Plan - ${vehicleData?.regNumber || 'Vehicle'}`
     });
 
     logStep("PaymentIntent created", { 
