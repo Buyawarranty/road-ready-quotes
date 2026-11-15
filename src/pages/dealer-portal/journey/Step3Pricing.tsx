@@ -320,7 +320,7 @@ const Step3Pricing: React.FC = () => {
       <div className="grid gap-2 sm:max-w-md" role="group" aria-label="Quote view">
         <Button variant="outline" type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !border-crm-line !bg-card px-4 py-3 text-left !text-foreground transition-colors hover:!border-crm-orange focus-visible:ring-crm-orange disabled:opacity-60">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
-          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Show the customer</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
+          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Customer view</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
         </Button>
       </div>
       {trade && <p className="text-center text-xs leading-5 font-semibold text-muted-foreground"><ShieldCheck className="mr-1.5 inline-block h-4 w-4 align-text-bottom text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
