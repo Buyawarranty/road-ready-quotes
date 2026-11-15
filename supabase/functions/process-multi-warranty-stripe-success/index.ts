@@ -184,7 +184,7 @@ serve(async (req) => {
         processedWarranties.push({
           warrantyNumber: paymentData?.policyNumber || `Policy_${i + 1}`,
           vehicleReg: vehicleReg,
-          planName: planName,
+          planName: displayWarrantyPlanName(planName),
           totalPrice: totalPrice,
           customerId: paymentData?.customerId,
           policyId: paymentData?.policyId
