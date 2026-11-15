@@ -346,7 +346,7 @@ Deno.serve(async (req: Request) => {
           price_data: {
             currency: 'gbp',
             product_data: {
-              name: `Dealer Warranty · ${plan.plan_type.toUpperCase()} · ${plan.duration_months}mo`,
+              name: `Dealer Warranty · ${planDisplayName} · ${plan.duration_months}mo`,
               description: assisted ? `${vehicle.reg} · Panda Protect to complete customer details` : `${vehicle.reg} for ${customer.name}`,
             },
             unit_amount: Math.round(payable * 100),

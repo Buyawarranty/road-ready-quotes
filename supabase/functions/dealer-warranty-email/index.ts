@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
       <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${ref}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Customer</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.name || '—'}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${(c.registration_plate || '—')}${vehicle ? ` · ${vehicle}` : ''}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${String(c.plan_type || '').toUpperCase()} · ${c.payment_type || ''} months</td></tr>
+      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${planDisplayName} · ${c.payment_type || ''} months</td></tr>
       <tr><td style="padding:8px 0;color:#666">Amount</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${money(amount)}</td></tr>
       ${c.warranty_number ? `<tr><td style="padding:8px 0;color:#666">Warranty number</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.warranty_number}</td></tr>` : ''}
     `;
