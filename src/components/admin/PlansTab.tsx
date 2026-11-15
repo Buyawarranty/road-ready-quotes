@@ -210,7 +210,7 @@ export const PlansTab = () => {
       
       setEditingPlan(updatedPlan);
       fetchPlans(); // Refresh the plans list
-      toast.success(`Reset ${planName} to default features and saved to database`);
+      toast.success(`Reset ${displayWarrantyPlanName(planName)} to default features and saved to database`);
     } catch (error) {
       console.error('Error resetting plan features:', error);
       toast.error('Failed to reset plan features');

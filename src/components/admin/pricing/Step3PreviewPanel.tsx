@@ -134,7 +134,7 @@ export default function Step3PreviewPanel() {
               previousLabourRate={70}
               onPlanSelected={(_planId, paymentType, planName) => {
                 toast.info(
-                  `Preview only — “${planName ?? 'plan'}” (${paymentType}) was not added to a cart.`
+                  `Preview only — “${displayWarrantyPlanName(planName, 'plan')}” (${paymentType}) was not added to a cart.`
                 );
               }}
             />
