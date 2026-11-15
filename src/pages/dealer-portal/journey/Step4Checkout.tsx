@@ -268,7 +268,7 @@ const Step4Checkout: React.FC = () => {
         <h2 className="text-2xl font-extrabold text-crm-navy sm:text-3xl">Trade checkout</h2>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-crm-green-soft px-3 py-1.5 text-sm font-bold text-crm-green-deep"><ShieldCheck className="h-4 w-4" /> Trade account</span>
       </div>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[52fr_48fr]">
+      <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-6">
         {/* Warranty details */}
         <section className="min-w-0">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
