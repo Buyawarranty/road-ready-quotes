@@ -63,7 +63,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
     }
     
     // Check eligibility
-    if (numericValue > 120000) {
+    if (numericValue > 150000) {
       setEligibilityError('Vehicle mileage exceeds 120,000 miles limit');
     } else {
       setEligibilityError('');
@@ -75,7 +75,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
     setFormData(prev => ({ ...prev, mileage: value.toLocaleString() }));
     
     // Check eligibility
-    if (value > 120000) {
+    if (value > 150000) {
       setEligibilityError('Vehicle mileage exceeds 120,000 miles limit');
     } else {
       setEligibilityError('');
@@ -231,7 +231,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
                 value={sliderMileage}
                 onChange={handleSliderChange}
                 min={0}
-                max={120000}
+                max={150000}
               />
             </div>
 

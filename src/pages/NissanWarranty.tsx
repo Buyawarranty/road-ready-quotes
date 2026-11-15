@@ -133,7 +133,7 @@ const NissanWarranty = () => {
                 Protect your Nissan from rising repair costs with cover that works across the UK. Modern Nissans use advanced engines, sensors, electric modules and CVT gearboxes that can be expensive to repair. Our Nissan extended warranty gives you reliable protection whether you drive a Juke, Qashqai, Micra, X Trail or Leaf.
               </p>
               <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto mt-4 leading-relaxed">
-                We are also one of the only warranty providers offering high mileage cover up to 120,000 miles. This makes our plans ideal for older and used Nissan vehicles.
+                We are also one of the only warranty providers offering high mileage cover up to 150,000 miles. This makes our plans ideal for older and used Nissan vehicles.
               </p>
             </div>
 
@@ -253,13 +253,13 @@ const NissanWarranty = () => {
                 </thead>
                 <tbody>
                   {[
-                    { model: 'Nissan Qashqai', fuel: 'Petrol, Diesel, Hybrid', age: '3 to 12 years' },
-                    { model: 'Nissan Juke', fuel: 'Petrol, Diesel', age: '3 to 12 years' },
+                    { model: 'Nissan Qashqai', fuel: 'Petrol, Diesel, Hybrid', age: '3 to 15 years' },
+                    { model: 'Nissan Juke', fuel: 'Petrol, Diesel', age: '3 to 15 years' },
                     { model: 'Nissan Leaf', fuel: 'Electric', age: '3 to 10 years' },
-                    { model: 'Nissan Micra', fuel: 'Petrol', age: '3 to 12 years' },
-                    { model: 'Nissan X Trail', fuel: 'Petrol, Diesel, Hybrid', age: '3 to 12 years' },
-                    { model: 'Nissan Navara', fuel: 'Diesel', age: '3 to 12 years' },
-                    { model: 'Nissan Note', fuel: 'Petrol, Diesel', age: '3 to 12 years' }
+                    { model: 'Nissan Micra', fuel: 'Petrol', age: '3 to 15 years' },
+                    { model: 'Nissan X Trail', fuel: 'Petrol, Diesel, Hybrid', age: '3 to 15 years' },
+                    { model: 'Nissan Navara', fuel: 'Diesel', age: '3 to 15 years' },
+                    { model: 'Nissan Note', fuel: 'Petrol, Diesel', age: '3 to 15 years' }
                   ].map((item, index) => (
                     <tr key={index} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                       <td className="py-4 px-6 border-t border-gray-200">{item.model}</td>

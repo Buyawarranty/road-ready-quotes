@@ -157,7 +157,7 @@ const mgFAQs = [
   },
   {
     question: "Can I buy an MG extended warranty after my manufacturer warranty has expired?",
-    answer: "Yes, you can buy cover even if your MG's original manufacturer warranty has expired, or if you purchased it used. We cover vehicles up to 120,000 miles and 12 years old, giving MG owners peace of mind beyond the factory warranty."
+    answer: "Yes, you can buy cover even if your MG's original manufacturer warranty has expired, or if you purchased it used. We cover vehicles up to 150,000 miles and 15 years old, giving MG owners peace of mind beyond the factory warranty."
   },
   {
     question: "Can I use my own garage for MG warranty repairs?",
@@ -312,11 +312,11 @@ const MGWarrantyLanding: React.FC = () => {
           const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
           const vehicleAgePrecise = ageInMs / msPerYear;
           
-          if (vehicleAgePrecise > 12) {
-            setVehicleAgeError('Sorry, we only cover vehicles under 120,000 miles and less than 12 years old');
+          if (vehicleAgePrecise > 15) {
+            setVehicleAgeError('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old');
             toast({
               title: "Vehicle Not Eligible",
-              description: "Sorry, we only cover vehicles under 120,000 miles and less than 12 years old.",
+              description: "Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.",
               variant: "destructive",
             });
             setIsLookingUp(false);
