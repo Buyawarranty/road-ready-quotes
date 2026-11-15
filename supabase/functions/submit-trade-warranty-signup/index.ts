@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
@@ -168,7 +169,7 @@ serve(async (req) => {
         </div>
       `;
 
-      const resendResponse = await fetch("https://api.resend.com/emails", {
+      const resendResponse = await resendFetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${resendApiKey}`,
@@ -215,7 +216,7 @@ serve(async (req) => {
         </div>
       `;
 
-      const applicantResponse = await fetch("https://api.resend.com/emails", {
+      const applicantResponse = await resendFetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${resendApiKey}`,

@@ -1,3 +1,4 @@
+import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
 import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
@@ -5,7 +6,7 @@ import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 // Utility functions for retrying fetch requests
 const timedFetch = (url: string, options: RequestInit, timeout = 30000): Promise<Response> => {
   return Promise.race([
-    fetch(url, options),
+    resendFetch(url, options),
     new Promise<Response>((_, reject) =>
       setTimeout(() => reject(new Error('Request timeout')), timeout)
     ),

@@ -1,3 +1,4 @@
+import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
 import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
@@ -33,7 +34,7 @@ async function timedFetch(url: string, options: RequestInit, timeoutMs = 15000):
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
   try {
-    const response = await fetch(url, {
+    const response = await resendFetch(url, {
       ...options,
       signal: controller.signal
     });

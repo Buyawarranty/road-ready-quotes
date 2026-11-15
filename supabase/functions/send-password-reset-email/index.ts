@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
 import { Resend } from "https://esm.sh/resend@4.0.0";
@@ -13,7 +14,7 @@ interface ResetPasswordRequest {
   audience?: 'staff' | 'customer';
 }
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY') as string);
+const resend = polishResend(new Resend(Deno.env.get('RESEND_API_KEY') as string));
 
 const logStep = (step: string, details?: any) => {
   console.log(`[PASSWORD RESET EMAIL] ${step}`, details ? JSON.stringify(details, null, 2) : '');

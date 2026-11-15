@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 // Sends dealer-facing emails to the dealer's REGISTERED account email
 // (never the end-customer email entered during the journey).
 // Body: { customer_id: string, kind?: 'invoice' | 'paid' }
@@ -97,7 +98,7 @@ Deno.serve(async (req: Request) => {
       return json({ success: false, skipped: true, reason: 'email_not_configured' }, 200);
     }
 
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

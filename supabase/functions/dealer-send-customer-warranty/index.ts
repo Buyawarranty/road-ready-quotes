@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 // Lets a dealer email the warranty details to their end customer.
 // Body: { customer_id: string, to_email?: string, message?: string }
 
@@ -107,7 +108,7 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.helloEmail}</p>
       </div>`;
 
-    const res = await fetch('https://api.resend.com/emails', {
+    const res = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({

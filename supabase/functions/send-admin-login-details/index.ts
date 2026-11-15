@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 // Resets a staff member's password and emails them their admin login details.
 // Panda Protect branded; includes the first-screen gateway password.
 // Only signed-in Admins / Super Admins may call it (checked in code).
@@ -89,7 +90,7 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get("RESEND_API_KEY");
     if (!apiKey) throw new Error("Email service is not configured");
-    const send = await fetch("https://api.resend.com/emails", {
+    const send = await resendFetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -112,7 +113,7 @@ Deno.serve(async (req) => {
     let lastEvent: string | null = null;
     for (let i = 0; i < 3; i++) {
       await new Promise((r) => setTimeout(r, 1500));
-      const st = await fetch(`https://api.resend.com/emails/${emailId}`, { headers: { Authorization: `Bearer ${apiKey}` } });
+      const st = await resendFetch(`https://api.resend.com/emails/${emailId}`, { headers: { Authorization: `Bearer ${apiKey}` } });
       const sb = await st.json().catch(() => ({}));
       lastEvent = sb?.last_event ?? null;
       if (lastEvent && lastEvent !== "queued" && lastEvent !== "sent") break;

@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
@@ -35,7 +36,7 @@ serve(async (req) => {
       throw new Error("RESEND_API_KEY not configured");
     }
 
-    const resend = new Resend(resendApiKey);
+    const resend = polishResend(new Resend(resendApiKey));
     const { customerEmail, customerName, registrationPlate, changes, brand: brandHint }: UpgradeRequest = await req.json();
 
     const brand: Brand = resolveBrand(req, { brand: brandHint });

@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { resolveBrand, brandFrom } from "../_shared/brand.ts";
@@ -37,7 +38,7 @@ const handler = async (req: Request): Promise<Response> => {
     
     logStep('Sending discount email', { email, discountCode, discountAmount });
 
-    const resend = new Resend(resendApiKey);
+    const resend = polishResend(new Resend(resendApiKey));
 
     const emailResponse = await resend.emails.send({
       from: brandFrom(brand, "Customer Care", "noreply"),

@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { resolveBrand, brandFrom } from "../_shared/brand.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -240,7 +241,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     // Send email to support team
-    const emailResponse = await fetch("https://api.resend.com/emails", {
+    const emailResponse = await resendFetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
