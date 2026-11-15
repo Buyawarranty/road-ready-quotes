@@ -441,7 +441,7 @@ const CustomerPolicyUpdateTab = () => {
                   Update Policy Details
                 </CardTitle>
                 <CardDescription>
-                  Policy: {selectedPolicy.policy_number} • {selectedPolicy.plan_type}
+                  Policy: {selectedPolicy.policy_number} • {displayWarrantyPlanName(selectedPolicy.plan_type)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

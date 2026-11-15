@@ -7239,7 +7239,7 @@ Please log in and change your password after first login.`;
                           <NumberPlate plateNumber={customer.registration_plate} />
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{customer.plan_type}</Badge>
+                          <Badge variant="secondary">{displayWarrantyPlanName(customer.plan_type)}</Badge>
                         </TableCell>
                         <TableCell>
                           {customer.deleted_at ? format(new Date(customer.deleted_at), 'dd/MM/yyyy HH:mm') : 'N/A'}
