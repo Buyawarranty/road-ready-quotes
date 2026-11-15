@@ -43,7 +43,7 @@ const PasswordReset = () => {
           description: "This password reset link has expired or was already used. Please request a new one.",
           variant: "destructive",
         });
-        setTimeout(() => navigate('/forgot-password/'), 3000);
+        setTimeout(() => navigate(forgotPasswordPath), 3000);
         return;
       }
       
@@ -82,7 +82,7 @@ const PasswordReset = () => {
             description: "Only the newest reset email works — each new request cancels the earlier links. Please request one more and open only that email.",
             variant: "destructive",
           });
-          setTimeout(() => navigate('/forgot-password/'), 3000);
+          setTimeout(() => navigate(forgotPasswordPath), 3000);
         } else {
           setIsValidSession(true);
           window.history.replaceState({}, document.title, window.location.pathname);
