@@ -2945,8 +2945,7 @@ body {
   .public-dealer-home .home-hero-copy { max-width: 680px; margin-inline: auto; text-align: center; }
   .public-dealer-home .home-hero-bullets { margin-inline: auto; text-align: center; }
   .public-dealer-home .home-hero-bullets li { display: inline-flex; text-align: left; }
-  .public-dealer-home .home-hero-eligibility { margin-inline: auto; }
-  .public-dealer-home .home-reg-form,
+  .public-dealer-home .home-signup-panel,
   .public-dealer-home .home-support-card { margin-inline: auto; }
   .public-dealer-home .home-hero-visual img { max-height: 370px; }
   .public-dealer-home .home-benefit-row { display: grid; grid-template-columns: repeat(3, 1fr); justify-items: start; gap: 0.9rem; }
@@ -2984,8 +2983,7 @@ body {
   .public-dealer-home .home-support-card { align-items: center; flex-direction: column; }
   .public-dealer-home .home-benefit-row { grid-template-columns: 1fr; }
   .public-dealer-home .home-stats-grid { grid-template-columns: 1fr; }
-  .public-dealer-home .home-reg-input { min-height: 54px; }
-  .public-dealer-home .home-reg-input input { font-size: 1.3rem; }
+  .public-dealer-home .home-signup-button { font-size: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -34,7 +34,6 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { Button } from '@/components/ui/button';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import { supabase } from '@/integrations/supabase/client';
 import twoWaysImage from '@/assets/two-ways-cover-optimized.webp';
 import dealerGrowthImage from '@/assets/panda-dealer-growth-optimized.webp';
 import programmeBannerAsset from '@/assets/panda-programme-banner.png.asset.json';
@@ -158,29 +157,10 @@ const COVERAGE_ROWS = [
 ] as const;
 
 const DealerHome = () => {
-  const navigate = useNavigate();
-  const [reg, setReg] = useState('');
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [openService, setOpenService] = useState<number | null>(0);
   const [openCoverage, setOpenCoverage] = useState<number | null>(null);
-
-  const handleRegSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const cleaned = reg.trim().toUpperCase().replace(/\s+/g, ' ');
-    if (cleaned) {
-      localStorage.setItem('dealerPendingReg', cleaned.replace(/\s+/g, ''));
-    }
-    const regParam = cleaned ? `?reg=${encodeURIComponent(cleaned)}` : '';
-    // If the visitor is already signed in, take them straight into the dealer
-    // portal quote flow; otherwise send them to dealer registration.
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      navigate(`/dealer-portal/quote/pricing${regParam}`);
-    } else {
-      navigate(`/dealer-portal/signup${regParam}`);
-    }
-  };
 
   const pageTitle = 'Dealer Extended Warranties UK | Motor Trade Warranty Programme';
   const pageDescription =
@@ -247,25 +227,15 @@ const DealerHome = () => {
               <li><Check aria-hidden="true" /><span>Instant quotes <span className="home-bullet-sep">•</span> We do the admin <span className="home-bullet-sep">•</span> Fast payouts</span></li>
               <li><Check aria-hidden="true" /><span>Customer Protection <span className="home-bullet-sep">•</span> More Sales <span className="home-bullet-sep">•</span> Higher Profits</span></li>
             </ul>
-            <form className="home-reg-form" onSubmit={handleRegSubmit} aria-label="Vehicle registration lookup">
-              <div className="home-reg-input">
-                <span className="home-reg-country" aria-hidden="true">GB<br /><small>UK</small></span>
-                <input
-                  id="hero-reg"
-                  type="text"
-                  autoComplete="off"
-                  maxLength={10}
-                  value={reg}
-                  onChange={(event) => setReg(event.target.value.toUpperCase())}
-                  placeholder="ENTER REG"
-                  aria-label="Vehicle registration"
-                />
-              </div>
-              <Button type="submit" className="home-primary-button">
-                Get my quote
+            <div className="home-signup-panel">
+              <p className="home-signup-intro">Ready to earn more from every vehicle sale?</p>
+              <Button asChild className="home-primary-button home-signup-button animate-cta-enhanced">
+                <Link to="/dealer-portal/signup">
+                  Start selling warranties <ArrowRight aria-hidden="true" />
+                </Link>
               </Button>
-            </form>
-            <p className="home-hero-eligibility">Protection for vehicles up to <strong>100,000 miles</strong> and <strong>12 years old</strong>.</p>
+              <p className="home-signup-note"><strong>Quick online application</strong> · No setup fees · We’ll be in touch within 3–5 working days</p>
+            </div>
 
             <div className="home-contact-card">
               <div className="home-contact-row">
