@@ -1,3 +1,4 @@
+import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
@@ -393,12 +394,7 @@ serve(async (req) => {
           ? `As requested, here are your ${brand.name} dealer portal login details. Your password has been reset to the temporary one below.`
           : `Great news — your ${brand.name} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
-        <div style="background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:20px;margin:22px 0;">
-          <div style="padding:6px 0;"><strong>Email:</strong> <span style="font-family:monospace;color:#1e3a5f;">${esc(email)}</span></div>
-          ${password
-            ? `<div style="padding:6px 0;"><strong>Temporary password:</strong> <span style="font-family:monospace;font-size:17px;background:#e8f4f8;padding:4px 10px;border-radius:4px;color:#1e3a5f;">${esc(password)}</span></div>`
-            : `<div style="padding:6px 0;"><strong>Password:</strong> use your existing ${brand.name} dealer password. Forgotten it? <a href="${brand.siteUrl}/forgot-password/" style="color:${brand.accentColor};">Reset it here</a>.</div>`}
-        </div>
+        ${password ? credentialsBlockHtml([{ label: "Email", value: email }, { label: "Temporary password", value: password }, { label: "Login page", value: PORTAL_URL }]) : `${credentialsBlockHtml([{ label: "Email", value: email }])}<div style="padding:6px 0;"><strong>Password:</strong> use your existing ${brand.name} dealer password. Forgotten it? <a href="${brand.siteUrl}/forgot-password/" style="color:${brand.accentColor};">Reset it here</a>.</div>`}
         <div style="text-align:center;margin:28px 0;">
           <a href="${PORTAL_URL}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
         </div>

@@ -1,3 +1,4 @@
+import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
@@ -137,8 +138,7 @@ serve(async (req) => {
                 <div class="credentials">
                     <h3>Login Information:</h3>
                     <p><strong>Website:</strong> <a href="${loginUrl}">${loginUrl}</a></p>
-                    <p><strong>Email:</strong> ${originalEmail}</p>
-                    <p><strong>Password:</strong> <code style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 14px;">${welcomeEmail.temporary_password}</code></p>
+                    ${credentialsBlockHtml([{ label: "Email", value: originalEmail }, { label: "Password", value: welcomeEmail.temporary_password }])}
                 </div>
                 
                 <p style="text-align: center;">
