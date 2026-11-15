@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { resolveBrand, brandFrom, type Brand } from "../_shared/brand.ts";
 
@@ -162,7 +163,7 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     // Send email using Resend API directly
-    const response = await fetch("https://api.resend.com/emails", {
+    const response = await resendFetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

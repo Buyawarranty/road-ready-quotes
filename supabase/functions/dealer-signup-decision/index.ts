@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
@@ -41,7 +42,7 @@ async function sendEmail(brand: Brand, to: string, subject: string, html: string
     return { ok: false, error: "Email service key is missing" };
   }
   const from = `${brand.name} <${brand.helloEmail}>`;
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await resendFetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ from, to: [to], subject, html }),

@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { resolveBrand, brandFrom } from '../_shared/brand.ts'
 
@@ -111,7 +112,7 @@ serve(async (req) => {
 </html>
     `;
 
-    const response = await fetch('https://api.resend.com/emails', {
+    const response = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${RESEND_API_KEY}`,

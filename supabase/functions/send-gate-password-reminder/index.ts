@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@4.0.0";
 import { BRANDS, brandFrom } from "../_shared/brand.ts";
@@ -15,7 +16,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   try {
     const brand = BRANDS.pandaprotect;
-    const resend = new Resend(Deno.env.get("RESEND_API_KEY") as string);
+    const resend = polishResend(new Resend(Deno.env.get("RESEND_API_KEY") as string));
     const { error } = await resend.emails.send({
       from: brandFrom(brand, "Panda Protect", "noreply"),
       to: [REMINDER_TO],

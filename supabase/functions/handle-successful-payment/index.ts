@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -983,7 +984,7 @@ serve(async (req) => {
         logStep("Sending sales notification to sales manager");
         
         const Resend = (await import('https://esm.sh/resend@2.0.0')).Resend;
-        const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
+        const resend = polishResend(new Resend(Deno.env.get('RESEND_API_KEY')));
         
         const paymentTypeDisplay = getPaymentTypeDisplay(paymentType);
         const addOnsList = Object.entries(finalAddOnsForCustomer)

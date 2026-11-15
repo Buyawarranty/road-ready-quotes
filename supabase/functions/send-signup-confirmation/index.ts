@@ -1,3 +1,4 @@
+import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { Resend } from "https://esm.sh/resend@4.0.0";
@@ -73,7 +74,7 @@ serve(async (req) => {
       });
     }
 
-    const resend = new Resend(resendApiKey);
+    const resend = polishResend(new Resend(resendApiKey));
 
     const button = confirmLink
       ? `<a href="${confirmLink}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 28px;border-radius:8px;font-size:15px;">Confirm my email</a>`
