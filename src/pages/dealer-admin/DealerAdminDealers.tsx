@@ -3,7 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save } from 'lucide-react';
+import { Loader2, Search, Save, KeyRound } from 'lucide-react';
+import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 
@@ -26,6 +27,23 @@ const DealerAdminDealers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
+
+  const resendLogin = async (r: DealerRow) => {
+    if (!window.confirm(`Send new login details to ${r.email}? Their current password will be replaced.`)) return;
+    setResendingId(r.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { dealer_id: r.id, decision: 'resend' } });
+      if (error) throw new Error(await functionErrorMessage(error));
+      if ((data as any)?.error) throw new Error((data as any).error);
+      if ((data as any)?.email_sent === false) throw new Error(`Password reset, but the email was NOT sent: ${(data as any)?.email_error}`);
+      toast({ title: 'Login details sent', description: `New password emailed to ${(data as any)?.sent_to || r.email}` });
+    } catch (e: any) {
+      toast({ title: 'Could not resend password', description: e?.message, variant: 'destructive' });
+    } finally {
+      setResendingId(null);
+    }
+  };
 
   const load = async () => {
     setLoading(true);
@@ -121,6 +139,7 @@ const DealerAdminDealers: React.FC = () => {
                     <th className="px-3 py-2 font-medium text-right">Sales</th>
                     <th className="px-3 py-2 font-medium text-right">Revenue</th>
                     <th className="px-3 py-2 font-medium">Discount %</th>
+                    <th className="px-3 py-2 font-medium">Login</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -168,6 +187,12 @@ const DealerAdminDealers: React.FC = () => {
                               )}
                             </Button>
                           </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" disabled={resendingId === r.id} onClick={() => resendLogin(r)}>
+                            {resendingId === r.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
+                            <span className="ml-1">Resend password</span>
+                          </Button>
                         </td>
                       </tr>
                     );
