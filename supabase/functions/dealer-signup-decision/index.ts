@@ -108,6 +108,14 @@ serve(async (req) => {
       const mPhone = (m.phone ?? "").toString().trim();
       const mCompany = (m.company_name ?? "").toString().trim();
       const mName = (m.contact_name ?? "").toString().trim();
+      let ukPhone = mPhone.replace(/[\s\-().]/g, "");
+      if (ukPhone.startsWith("+44")) ukPhone = "0" + ukPhone.slice(3); else if (ukPhone.startsWith("0044")) ukPhone = "0" + ukPhone.slice(4);
+      const phoneOk = /^07\d{9}$/.test(ukPhone) || /^0[1238]\d{8,9}$/.test(ukPhone);
+      if (!phoneOk) {
+        return new Response(JSON.stringify({ error: "Enter a valid UK phone number, e.g. 07700 900123" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       if (!mCompany || !mEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mEmail) || !mPhone) {
         return new Response(JSON.stringify({ error: "Dealership name, a valid email and phone number are required" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
