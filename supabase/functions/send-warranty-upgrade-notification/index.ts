@@ -172,7 +172,7 @@ serve(async (req) => {
     `;
 
     const { data, error } = await resend.emails.send({
-      from: brandFrom(brand, "Customer Care", "noreply"),
+      ...transactionalEmailIdentity(brand, "warranty_purchase"),
       to: [customerEmail],
       subject: `✨ Your Warranty for ${registrationPlate} Has Been Upgraded`,
       html: htmlContent,

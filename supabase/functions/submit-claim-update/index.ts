@@ -122,7 +122,7 @@ serve(async (req: Request) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: brandFrom(brand, "Claims", "claims"),
+          ...transactionalEmailIdentity(brand, "claim"),
           to: [brand.claimsEmail],
           subject: `Claim Update Received: ${regPlate} — ${statusUpdate || "Update submitted"}`,
           html: notificationHtml,

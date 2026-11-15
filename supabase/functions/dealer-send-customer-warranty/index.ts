@@ -105,17 +105,16 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:14px;line-height:1.6">${esc(dealerName)} has arranged a ${esc(brand.name)} warranty for your vehicle. Here are the details:</p>
         ${note}
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
-        <p style="font-size:13px;color:#666;margin-top:22px">To make a claim, contact us at ${brand.helloEmail} quoting your reference above.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.helloEmail}</p>
+        <p style="font-size:13px;color:#666;margin-top:22px">To make a claim, contact us at ${brand.claimsEmail} quoting your reference above.</p>
+        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
       </div>`;
 
     const res = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
       body: JSON.stringify({
-        from: brandFrom(brand, '', 'hello'),
+        ...transactionalEmailIdentity(brand, 'warranty_purchase'),
         to: [to],
-        reply_to: dealer.email || brand.helloEmail,
         subject: `Your vehicle warranty — ${c.registration_plate || ref}`,
         html,
       }),

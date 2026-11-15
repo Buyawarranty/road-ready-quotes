@@ -41,7 +41,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: brandFrom(brand, "Team", "claims"),
+        ...transactionalEmailIdentity(brand, "claim"),
         to: [to],
         subject: subject,
         text: body,

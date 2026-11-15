@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
     const policy = policies[0];
     const customer = policy.customers;
     const brand: Brand = resolveBrand(req, { brand: body?.brand, record: customer });
-    const resendFrom = brandFrom(brand, "Customer Care", "info");
+    const resendFrom = transactionalEmailIdentity(brand, "warranty_purchase").from;
 
     if (!customer) {
       return new Response(JSON.stringify({ 
@@ -588,6 +588,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailPayload = {
       from: resendFrom,
+      reply_to: brand.supportEmail,
       to: [customer.email],
       // Trustpilot review invitations are Buy A Warranty only — never Panda Protect.
       ...(brand.key === 'buyawarranty'

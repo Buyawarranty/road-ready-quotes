@@ -326,8 +326,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Prepare email with attachment
     const emailPayload: any = {
-      from: brandFrom(brand, "Customer Care", "noreply"),
-      to: [brand.supportEmail, "support@warranties2000.co.uk"],
+      ...transactionalEmailIdentity(brand, "claim"),
+      to: [brand.claimsEmail, "support@warranties2000.co.uk"],
       subject: emailSubject,
       html: emailHtml,
     };
@@ -380,7 +380,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     await resend.emails.send({
-      from: brandFrom(brand, "Claims Team", "claims"),
+      ...transactionalEmailIdentity(brand, "claim"),
       to: [email],
       subject: "Claim Submission Received",
       html: customerEmailHtml,

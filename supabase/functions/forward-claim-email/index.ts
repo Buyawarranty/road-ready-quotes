@@ -91,8 +91,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: brandFrom(brand, 'Team', 'support'),
-        to: [brand.claimsEmail, brand.infoEmail],
+        ...transactionalEmailIdentity(brand, 'claim'),
+        to: [brand.claimsEmail],
         subject: `[FORWARDED] Claim: ${regPlateDisplay}`,
         html: emailHtml,
       }),

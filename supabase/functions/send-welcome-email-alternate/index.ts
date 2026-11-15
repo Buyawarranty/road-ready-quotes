@@ -225,7 +225,7 @@ serve(async (req) => {
 
     // Send email via Resend
     const emailPayload: any = {
-      from: brandFrom(brand, 'Customer Care', 'info'),
+      ...transactionalEmailIdentity(brand, 'warranty_purchase'),
       to: [alternateEmail],
       subject: `Your Warranty Confirmation - ${policy.policy_number}`,
       html: emailHtml,

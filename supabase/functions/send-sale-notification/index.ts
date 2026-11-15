@@ -155,8 +155,8 @@ serve(async (req: Request) => {
       : `New Sale ${saleType}`;
 
     await resend.emails.send({
-      from: brandFrom(brand, "Team", "notifications"),
-      to: [brand.infoEmail, `accounts@${brand.domain}`],
+      ...transactionalEmailIdentity(brand, "warranty_purchase"),
+      to: [brand.supportEmail, brand.infoEmail, `accounts@${brand.domain}`],
       subject: `${subjectPrefix}: ${reg} - ${plan} - ${saleValueDisplay} via ${payment}${isAgentSale ? ` - Converted by ${resolvedAgentName}` : ''}`,
       html: salesEmailHtml,
     });

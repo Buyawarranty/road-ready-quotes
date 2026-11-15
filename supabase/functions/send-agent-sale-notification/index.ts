@@ -159,8 +159,8 @@ serve(async (req: Request) => {
 
     const resend = polishResend(new Resend(resendApiKey));
     await resend.emails.send({
-      from: brandFrom(brand, "Team", "notifications"),
-      to: [brand.infoEmail, `accounts@${brand.domain}`],
+      ...transactionalEmailIdentity(brand, "warranty_purchase"),
+      to: [brand.supportEmail, brand.infoEmail, `accounts@${brand.domain}`],
       subject: `New Sale ${sourcePrefix}: ${regPlate} - ${planName} - ${saleValueDisplay} - Converted by ${agentName}`,
       html: emailHtml,
     });

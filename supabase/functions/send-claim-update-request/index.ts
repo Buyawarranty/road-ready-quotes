@@ -156,7 +156,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: brandFrom(brand, "Claims", "claims"),
+        ...transactionalEmailIdentity(brand, "claim"),
         to: [recipientEmail],
         subject: `Urgent claims update: ${firstRegPlate}${claims.length > 1 ? ` (+${claims.length - 1} more)` : ""}`,
         html: emailHtml,

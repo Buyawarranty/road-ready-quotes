@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:14px;line-height:1.6">${intro}</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
         <p style="font-size:13px;color:#666;margin-top:22px">You can view and manage this warranty in your dealer portal.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${brand.name} · ${brand.helloEmail}</p>
+        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${brand.name} · ${brand.supportEmail}</p>
       </div>`;
 
     if (!RESEND_API_KEY) {
@@ -109,7 +109,7 @@ Deno.serve(async (req: Request) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: brandFrom(brand, '', 'hello'),
+        ...transactionalEmailIdentity(brand, 'warranty_purchase'),
         to: [dealerEmail],
         subject,
         html,
