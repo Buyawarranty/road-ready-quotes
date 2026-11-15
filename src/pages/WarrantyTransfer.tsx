@@ -103,7 +103,7 @@ const WarrantyTransfer = () => {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <DealerPublicHeader />
         <Helmet>
           <title>Transfer Confirmed - Panda Protect</title>
@@ -123,7 +123,7 @@ const WarrantyTransfer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Warranty Transfer - Panda Protect</title>
         <meta name="description" content="Transfer your Panda Protect vehicle warranty to a new owner for just £19.95. Quick and easy online process." />

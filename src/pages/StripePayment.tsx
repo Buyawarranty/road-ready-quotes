@@ -165,7 +165,7 @@ const StripePayment: React.FC = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="public-checkout-page min-h-screen bg-slate-50">
+      <div className="public-checkout-page min-h-screen bg-background">
         {/* Header */}
         <header className="bg-white border-b border-border sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">

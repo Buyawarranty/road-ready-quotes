@@ -654,7 +654,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
   };
 
   return (
-    <div className="public-checkout-page bg-gray-50 min-h-screen">
+    <div className="public-checkout-page bg-background min-h-screen">
       {/* Main content starts directly - no duplicate back button row */}
       <div className="max-w-6xl mx-auto p-6">
         <div className="grid lg:grid-cols-2 gap-8">
