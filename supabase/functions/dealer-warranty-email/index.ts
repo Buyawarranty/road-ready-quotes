@@ -64,6 +64,9 @@ Deno.serve(async (req: Request) => {
     const amount = Number(c.final_amount ?? 0);
     const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
     const ref = String(c.id).slice(0, 8).toUpperCase();
+    const planDisplayName = String(c.plan_type || '').toLowerCase() === 'gold'
+      ? 'Platinum'
+      : String(c.plan_type || 'Platinum').replace(/[-_]/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
 
     const rows = `
       <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${ref}</td></tr>

@@ -110,7 +110,7 @@ export const DEALER_BASE_PRICES: Record<DealerJourneyPlan['plan_type'], Record<n
 
 export const DEALER_PLAN_LABELS: Record<DealerJourneyPlan['plan_type'], string> = {
   basic: 'Basic',
-  gold: 'Gold',
+  gold: 'Platinum',
   platinum: 'Platinum',
 };
 
