@@ -136,6 +136,34 @@ serve(async (req) => {
       decision = "approve";
       manualCreate = true;
     }
+    // Resend from the Dealers list: find (or record) the dealer's signup.
+    if (decision === "resend" && !signupId && typeof body?.dealer_id === "string") {
+      const { data: d } = await admin.from("dealers").select("id, email, name, company_name, phone").eq("id", body.dealer_id).maybeSingle();
+      if (!d?.email) {
+        return new Response(JSON.stringify({ error: "Dealer not found or has no email" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const dEmail = d.email.trim().toLowerCase();
+      const { data: byDealer } = await admin.from("trade_warranty_signups").select("id").eq("dealer_id", d.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+      const { data: byEmail } = byDealer ? { data: null } : await admin.from("trade_warranty_signups").select("id").ilike("email_address", dEmail).eq("status", "approved").order("created_at", { ascending: false }).limit(1).maybeSingle();
+      signupId = byDealer?.id ?? byEmail?.id;
+      if (!signupId) {
+        const { data: ins, error: insErr } = await admin.from("trade_warranty_signups").insert({
+          dealership_name: (d.company_name || d.name || dEmail).slice(0, 200),
+          contact_name: d.name || null,
+          email_address: dEmail,
+          phone_number: (d.phone || "").slice(0, 40),
+          additional_information: "Recorded when staff resent login details",
+          heard_about_us: "Added manually",
+          status: "approved",
+          approved_at: new Date().toISOString(),
+          dealer_id: d.id,
+        }).select("id").single();
+        if (insErr || !ins) throw new Error(insErr?.message || "Could not prepare dealer login");
+        signupId = ins.id;
+      }
+    }
     const notes: string | null = body?.notes?.toString().trim() || null;
     const alternateEmail: string | null =
       body?.alternate_email?.toString().trim().toLowerCase() || null;
@@ -261,7 +289,8 @@ serve(async (req) => {
       if (!isResend && priorDealer) {
         password = null;
       } else {
-        await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { ...(existing.user_metadata ?? {}), must_change_password: true } });
+        const { error: pwErr } = await admin.auth.admin.updateUserById(existing.id, { password, user_metadata: { ...(existing.user_metadata ?? {}), must_change_password: true } });
+        if (pwErr) throw new Error(`Could not set the new password: ${pwErr.message}`);
       }
     } else {
       userId = created.user?.id ?? null;
