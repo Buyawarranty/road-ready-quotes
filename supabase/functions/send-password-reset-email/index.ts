@@ -95,7 +95,7 @@ serve(async (req) => {
         supabaseClient.from('admin_users').select('id').eq('user_id', uid).eq('is_active', true).maybeSingle(),
         supabaseClient.from('dealers').select('id').eq('user_id', uid).maybeSingle(),
       ]);
-      if (staffRow) isStaff = true;
+      if (staffRow && !isDealer) isStaff = true;
       if (!staffRow && !dealerRow) {
         logStep('Account is not Panda Protect staff or dealer; no reset sent', { email });
         user = undefined;

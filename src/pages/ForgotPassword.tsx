@@ -33,7 +33,7 @@ const ForgotPassword: React.FC = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email, brand: currentBrandKey() }
+        body: { email, brand: currentBrandKey(), audience: dealerAudience ? 'dealer' : 'customer' }
       });
 
       if (error || data?.success === false) {

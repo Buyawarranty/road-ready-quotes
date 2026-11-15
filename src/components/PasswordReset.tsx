@@ -236,7 +236,7 @@ const PasswordReset = () => {
 
         // Staff go to the admin dashboard, dealers to the dealer portal.
         const hasAdminRole = (roleData || []).some(r => isAdminRole(r.role as string));
-        if (hasAdminRole) {
+        if (hasAdminRole && requestedAudience.current !== 'dealer') {
           // Recovery has its own temporary session; never replace an already
           // open staff dashboard with the account from a reset email.
           await supabase.auth.signOut();
