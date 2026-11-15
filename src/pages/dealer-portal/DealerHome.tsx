@@ -192,13 +192,6 @@ const DealerHome = () => {
       items: ['All parts, labour & VAT included', 'Nationwide UK repair network', '24/7 claims for your customers'],
       to: '/dealer-portal/full-warranty',
     },
-    {
-      title: 'Manage My Claim',
-      subtitle: 'Manage My Claim only — we handle the claim, you pay the repair bill',
-      body: 'Run your own Manage My Claim. You keep full control of pricing and terms — we look after every customer call.',
-      items: ['You set excess, labour & claim limits', '24/7 UK claims team', 'From just £1/month per policy'],
-      to: '/dealer-portal/claims-handling',
-    },
   ];
 
   return (
@@ -365,23 +358,19 @@ const DealerHome = () => {
         <div className="home-shell home-cover-split">
           <div className="home-cover-content">
             <header className="home-section-heading home-section-heading-left">
-              <p>Two ways to work with us</p>
-              <h2>Pick the service that fits your business</h2>
-              <span>Whether you want a fully insured warranty or just expert claims handling — we've got you covered.</span>
+              <p>Fully insured warranty cover</p>
+              <h2>Warranty cover your customers can rely on</h2>
+              <span>A fully insured extended warranty for your customers — zero risk to your dealership.</span>
             </header>
             <div className="home-cover-grid">
-              <article>
-                <Shield aria-hidden="true" />
-                <h3>Full Warranty Cover</h3>
-                <p>A comprehensive warranty — we handle claims and pay for repairs</p>
-                <ul>{serviceRows[0].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
-              </article>
-              <article>
-                <Headphones aria-hidden="true" />
-                <h3>Manage My Claim</h3>
-                <p>Manage My Claim only — we handle the claim, you pay the repair bill</p>
-                <ul>{serviceRows[1].items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
-              </article>
+              {serviceRows.map((service) => (
+                <article key={service.title}>
+                  <Shield aria-hidden="true" />
+                  <h3>{service.title}</h3>
+                  <p>{service.subtitle}</p>
+                  <ul>{service.items.map((item) => <li key={item}><Check aria-hidden="true" />{item}</li>)}</ul>
+                </article>
+              ))}
             </div>
             <Button asChild className="home-primary-button home-cover-cta"><Link to="/dealer-portal/signup">Start today <ArrowRight aria-hidden="true" /></Link></Button>
           </div>
@@ -400,14 +389,14 @@ const DealerHome = () => {
       <section id="how-it-works" className="home-service-accordion scroll-mt-24">
         <div className="home-shell home-narrow">
           <header className="home-section-heading">
-            <p>Two ways to work with us</p>
+            <p>How our warranty programme works</p>
             <h2><span>Every dealer supported.</span> Your way.</h2>
-            <small>Choose the service model that works for your dealership.</small>
+            <small>One fully insured warranty product, backed by our UK claims team.</small>
           </header>
           <div className="home-service-rows">
             {serviceRows.map((service, index) => {
               const open = openService === index;
-              const RowIcon = index === 0 ? Shield : Headphones;
+              const RowIcon = Shield;
               return (
                 <article key={service.title} className={`home-service-row home-service-row-${index + 1}${open ? ' is-open' : ''}`}>
                   <button type="button" onClick={() => setOpenService(open ? null : index)} aria-expanded={open}>
