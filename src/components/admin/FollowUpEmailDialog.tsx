@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, Copy, Send, Loader2 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface FollowUpEmailDialogProps {
   cartId: string;

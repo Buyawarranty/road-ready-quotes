@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Printer, Tag } from 'lucide-react';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface PolicyDetails {
   customerName: string;

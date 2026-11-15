@@ -10,6 +10,7 @@ import { Facebook, Eye, Users, ShoppingCart, TrendingUp, MousePointerClick, Refr
 import { Button } from '@/components/ui/button';
 import { DateRange } from 'react-day-picker';
 import { DateRangeFilter } from './DateRangeFilter';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
 

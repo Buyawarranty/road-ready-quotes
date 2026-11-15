@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Search, Star, CheckCircle2, XCircle, Clock, Filter, RefreshCw, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface CustomerReviewData {
   id: string;

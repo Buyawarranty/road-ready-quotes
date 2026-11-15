@@ -4,6 +4,7 @@ import { Ban, TrendingDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface UnwindRecord {
   id: string;

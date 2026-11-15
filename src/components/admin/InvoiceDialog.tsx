@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { FileText, Send, Download, Mail, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Customer {
   id: string;
