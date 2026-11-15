@@ -87,6 +87,7 @@ import { WEBSITE_SALES_ACCOUNT_ID } from '@/constants/salesDefaults';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { CustomersMobileCards } from './customers/CustomersMobileCards';
 import { isNorthernIrelandPlate } from '@/lib/niPlate';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 // Helper function to map plan types to Warranties 2000 warranty types
 function getWarrantyType(planType: string): string {

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, RefreshCw, LogIn, UserCheck, Search } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const CustomerLoginDebugTool = () => {
   const { toast } = useToast();

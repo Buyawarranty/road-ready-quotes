@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Search, CalendarIcon, RefreshCw, Download, Ban, Pencil, Check, X, FileWarning, FileSpreadsheet } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';

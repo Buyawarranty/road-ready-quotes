@@ -10,6 +10,7 @@ import {
   Search, Save, User, CheckCircle, AlertCircle, Loader2, 
   FileText, Settings, Shield, Car, Pencil
 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';

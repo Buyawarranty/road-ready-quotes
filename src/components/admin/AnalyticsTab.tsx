@@ -10,6 +10,7 @@ import { ApiConnectivityTest } from './ApiConnectivityTest';
 import { SalesAgeMileageAnalytics } from './SalesAgeMileageAnalytics';
 import { DateRangeFilter } from './DateRangeFilter';
 import { CostEfficiencyPanel } from './scoreboard/CostEfficiencyPanel';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { CoverOptionsMixPanel } from './analytics/CoverOptionsMixPanel';
 import { DailyRevenueTrendPanel } from './analytics/DailyRevenueTrendPanel';
 import { CustomerDemographicsPanel } from './analytics/CustomerDemographicsPanel';

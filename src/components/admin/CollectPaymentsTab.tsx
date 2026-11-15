@@ -9,6 +9,7 @@ import { PaymentDueDatePicker } from './PaymentDueDatePicker';
 import { PoundSterling, Phone, Mail, Search, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { format, isPast, isToday, differenceInCalendarDays, parseISO } from 'date-fns';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Row {
   id: string;

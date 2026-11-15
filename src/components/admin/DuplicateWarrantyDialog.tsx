@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { PurchaseSourceBadge } from '@/components/admin/PurchaseSourceBadge';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DuplicateWarrantyDialogProps {
   isOpen: boolean;

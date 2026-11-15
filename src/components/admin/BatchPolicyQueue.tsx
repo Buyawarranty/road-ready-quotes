@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Search, Printer, Tag, X, Users, Plus, Mail, Car, Trash2, AlertTriangle, FileDown, CheckCircle2, Save, Pencil, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface QueuedCustomer {
   id: string;
