@@ -171,7 +171,6 @@ const DealerWarrantiesList = () => {
     () => rows.filter((row) => ['cancelled', 'refunded'].includes(String(row.status || '').trim().toLowerCase())),
     [rows],
   );
-  const paidRows = useMemo(() => rows.filter(isPaid), [rows]);
   const unpaidRows = useMemo(() => rows.filter((row) => !isPaid(row)), [rows]);
   const activeCoverCount = useMemo(() => rows.filter((row) => getCoverKey(row) === 'active').length, [rows]);
   const overdueCount = useMemo(() => rows.filter((row) => getDealerPaymentState(row).key === 'overdue').length, [rows]);
