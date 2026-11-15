@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
@@ -248,19 +247,6 @@ const Step2Customer: React.FC = () => {
           }} className="order-first h-auto min-h-12 min-w-0 gap-2 whitespace-normal px-4 py-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:order-last sm:text-base">
             Continue to checkout<ArrowRight className="h-5 w-5 shrink-0" />
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" disabled={saving} className="h-auto min-h-12 gap-2 whitespace-normal border-2 !border-crm-orange !bg-card px-4 py-3 text-sm font-bold !text-crm-orange hover:!bg-crm-orange-soft sm:text-base"><Headset className="h-5 w-5 shrink-0" />Need help or advice?</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild><a href="tel:03302295045"><Phone className="h-4 w-4" />Call us</a></DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                if (mode === 'panda' && channel === 'whatsapp') { void handoff(); return; }
-                window.open(`https://wa.me/${PANDA_WHATSAPP}?text=${encodeURIComponent(`Hi Panda Protect, I'd like help with my warranty quote${vehicle?.reg ? ` for ${vehicle.reg}` : ''}.`)}`, '_blank', 'noopener,noreferrer');
-              }}><MessageCircle className="h-4 w-4" />WhatsApp us</DropdownMenuItem>
-              {mode === 'panda' && channel === 'email' && <DropdownMenuItem onClick={() => { void handoff(); }}><Mail className="h-4 w-4" />Email customer details</DropdownMenuItem>}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </div>
     </DealerJourneyLayout>
