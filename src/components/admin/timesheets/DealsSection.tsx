@@ -418,7 +418,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                       </span>
                       {deal.plan_type && (
                         <Badge variant="outline" className="text-[10px] capitalize px-1.5 py-0">
-                          {deal.plan_type}
+                          {displayWarrantyPlanName(deal.plan_type)}
                         </Badge>
                       )}
                       <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 py-0">
