@@ -640,7 +640,7 @@ export const PlansTab = () => {
                         {coverageArray.slice(0, 5).map((item: any, index: number) => (
                           <li key={index} className="flex items-start">
                             <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="line-clamp-1">{item}</span>
+                            <span className="line-clamp-1">{displayWarrantyPlanName(item)}</span>
                           </li>
                         ))}
                         {coverageArray.length > 5 && (

@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { calculateVehiclePriceAdjustment, applyPriceAdjustment } from '@/lib/vehicleValidation';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 
 interface SpecialPlan {
