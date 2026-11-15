@@ -157,3 +157,8 @@ export function transactionalEmailIdentity(brand: Brand, kind: TransactionalEmai
     reply_to: email,
   };
 }
+
+/** Public claims form linked from customer-facing warranty emails. */
+export function makeClaimUrl(brand: Brand): string {
+  return `${brand.siteUrl}/make-a-claim/`;
+}

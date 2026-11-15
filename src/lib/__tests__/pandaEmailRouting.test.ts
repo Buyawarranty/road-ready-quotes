@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BRANDS, transactionalEmailIdentity } from '../../../supabase/functions/_shared/brand';
+import { BRANDS, makeClaimUrl, transactionalEmailIdentity } from '../../../supabase/functions/_shared/brand';
 
 describe('Panda transactional email routing', () => {
   it('uses SUPPORT@ for warranty purchase and receipt emails', () => {
@@ -14,5 +14,9 @@ describe('Panda transactional email routing', () => {
       from: 'Panda Protect Claims Team <claims@pandaprotect.co.uk>',
       reply_to: 'claims@pandaprotect.co.uk',
     });
+  });
+
+  it('links customers to the Make a claim page', () => {
+    expect(makeClaimUrl(BRANDS.pandaprotect)).toBe('https://www.pandaprotect.co.uk/make-a-claim/');
   });
 });

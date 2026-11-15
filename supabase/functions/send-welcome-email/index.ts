@@ -2,7 +2,7 @@ import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
+import { makeClaimUrl, resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -471,6 +471,7 @@ serve(async (req) => {
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Claims and Repairs</strong></p>
+              <p style="color: #333333; font-size: 15px; margin: 0 0 10px 0;">To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #1a73e8; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.</p>
               <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:${brand.claimsEmail}" style="color: #1a73e8; text-decoration: none;">${brand.claimsEmail}</a></p>
               <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #1a73e8; text-decoration: none;">${brand.claimsPhone}</a></p>
               <p style="color: #555555; font-size: 14px; margin: 5px 0 0 0;">Hours: Monday to Friday, 9am – 5:30pm</p>

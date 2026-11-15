@@ -1,7 +1,7 @@
 import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
-import { resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
+import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -736,6 +736,9 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Claims and Repairs</strong></p>
+              <p style="color: #333; margin-bottom: 8px;">
+                To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #ff6b35; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.
+              </p>
               <p style="color: #333; margin-bottom: 3px;">
                 Email: <a href="mailto:${brand.claimsEmail}" style="color: #ff6b35; text-decoration: none;">${brand.claimsEmail}</a>
               </p>

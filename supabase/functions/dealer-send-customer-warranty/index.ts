@@ -3,7 +3,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 // Body: { customer_id: string, to_email?: string, message?: string }
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import { resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
+import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
@@ -105,7 +105,7 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:14px;line-height:1.6">${esc(dealerName)} has arranged a ${esc(brand.name)} warranty for your vehicle. Here are the details:</p>
         ${note}
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
-        <p style="font-size:13px;color:#666;margin-top:22px">To make a claim, contact us at ${brand.claimsEmail} quoting your reference above.</p>
+        <p style="font-size:13px;color:#666;margin-top:22px"><strong>Need to make a claim?</strong><br>Visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>. Please quote your warranty reference.</p>
         <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
       </div>`;
 
