@@ -375,7 +375,7 @@ const Auth = () => {
 
       // Use our custom branded password reset email
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email: resetEmail, brand: currentBrandKey() }
+        body: { email: resetEmail, brand: currentBrandKey(), audience: 'staff' }
       });
 
       if (error || data?.success === false) {

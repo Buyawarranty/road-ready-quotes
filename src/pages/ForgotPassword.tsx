@@ -7,14 +7,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { currentBrandKey } from '@/lib/brand';
 import { toast } from 'sonner';
 import { ArrowLeft, Mail, Send, Lock, CheckCircle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
+import { pandaLogoUrl } from '@/lib/pandaLogo';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const dealerAudience = searchParams.get('audience') === 'dealer';
+  const loginPath = dealerAudience ? '/dealer-portal/login' : '/customer-dashboard';
+  const portalLabel = dealerAudience ? 'dealer portal' : 'customer dashboard';
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +33,7 @@ const ForgotPassword: React.FC = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('send-password-reset-email', {
-        body: { email, brand: currentBrandKey() }
+        body: { email, brand: currentBrandKey(), audience: dealerAudience ? 'dealer' : 'customer' }
       });
 
       if (error || data?.success === false) {
@@ -73,8 +78,8 @@ const ForgotPassword: React.FC = () => {
             <div className="flex justify-between items-center py-4">
               <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
                 <img 
-                  src="/lovable-uploads/baw_logo_new_2025_copy_2-2.png" 
-                  alt="BuyAWarranty" 
+                  src={pandaLogoUrl} 
+                  alt="Panda Protect" 
                   className="h-7 sm:h-9 w-auto"
                 />
               </Link>
@@ -88,7 +93,7 @@ const ForgotPassword: React.FC = () => {
             {/* Back Link */}
             <Button
               variant="ghost"
-              onClick={() => navigate('/customer-dashboard')}
+              onClick={() => navigate(loginPath)}
               className="mb-6 text-gray-500 hover:text-gray-700 hover:bg-gray-50 px-0 -ml-1"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -110,7 +115,7 @@ const ForgotPassword: React.FC = () => {
                 <CardDescription className="text-gray-600 text-base leading-relaxed max-w-sm mx-auto">
                   {sent 
                     ? 'We\'ve sent your password reset link. Check your inbox and spam folder.'
-                    : 'Enter your email and we\'ll send you a secure link to set a new customer dashboard password.'
+                    : `Enter your email and we'll send you a secure link to set a new ${portalLabel} password.`
                   }
                 </CardDescription>
               </CardHeader>
@@ -127,7 +132,7 @@ const ForgotPassword: React.FC = () => {
                     </Alert>
                     
                     <Button 
-                      onClick={() => navigate('/customer-dashboard')}
+                      onClick={() => navigate(loginPath)}
                       className="w-full h-12 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-base shadow-lg shadow-orange-200/50"
                     >
                       Go to Login

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isAdminRole } from '@/lib/adminRoles';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,9 @@ const PasswordReset = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const requestedAudience = useRef(searchParams.get('audience'));
+  const loginPath = requestedAudience.current === 'dealer' ? '/dealer-portal/login' : '/auth';
+  const forgotPasswordPath = requestedAudience.current === 'dealer' ? '/forgot-password/?audience=dealer' : '/forgot-password/';
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,7 +43,7 @@ const PasswordReset = () => {
           description: "This password reset link has expired or was already used. Please request a new one.",
           variant: "destructive",
         });
-        setTimeout(() => navigate('/forgot-password/'), 3000);
+        setTimeout(() => navigate(forgotPasswordPath), 3000);
         return;
       }
       
@@ -79,7 +82,7 @@ const PasswordReset = () => {
             description: "Only the newest reset email works — each new request cancels the earlier links. Please request one more and open only that email.",
             variant: "destructive",
           });
-          setTimeout(() => navigate('/forgot-password/'), 3000);
+          setTimeout(() => navigate(forgotPasswordPath), 3000);
         } else {
           setIsValidSession(true);
           window.history.replaceState({}, document.title, window.location.pathname);
@@ -105,7 +108,7 @@ const PasswordReset = () => {
               variant: "destructive",
             });
             // Redirect after 3 seconds to give user time to read the message
-            setTimeout(() => navigate('/auth'), 3000);
+            setTimeout(() => navigate(loginPath), 3000);
           } else if (data.session) {
             console.log('Session set successfully for password reset');
             setIsValidSession(true);
@@ -126,7 +129,7 @@ const PasswordReset = () => {
             description: "Failed to initialize password reset. Please try clicking the link from your email again.",
             variant: "destructive",
           });
-          setTimeout(() => navigate('/auth'), 3000);
+          setTimeout(() => navigate(loginPath), 3000);
         }
       } else {
         console.log('No valid recovery tokens found, checking for existing session...');
@@ -144,7 +147,7 @@ const PasswordReset = () => {
             variant: "destructive",
           });
           // Redirect after 5 seconds to give user time to read the message
-          setTimeout(() => navigate('/auth'), 5000);
+          setTimeout(() => navigate(loginPath), 5000);
         }
       }
     };
@@ -159,7 +162,7 @@ const PasswordReset = () => {
         description: "Please request a new password reset link.",
         variant: "destructive",
       });
-      navigate('/auth');
+      navigate(loginPath);
       return;
     }
 
@@ -235,7 +238,7 @@ const PasswordReset = () => {
 
         // Staff go to the admin dashboard, dealers to the dealer portal.
         const hasAdminRole = (roleData || []).some(r => isAdminRole(r.role as string));
-        if (hasAdminRole) {
+        if (hasAdminRole && requestedAudience.current !== 'dealer') {
           // Recovery has its own temporary session; never replace an already
           // open staff dashboard with the account from a reset email.
           await supabase.auth.signOut();
@@ -250,7 +253,7 @@ const PasswordReset = () => {
           navigate('/dealer-portal/login', { replace: true });
         }
       } else {
-        navigate('/auth', { replace: true });
+        navigate(loginPath, { replace: true });
       }
     } catch (error) {
       console.error('Error updating password:', error);

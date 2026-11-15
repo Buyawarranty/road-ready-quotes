@@ -11,7 +11,7 @@ const corsHeaders = {
 
 interface ResetPasswordRequest {
   email: string;
-  audience?: 'staff' | 'customer';
+  audience?: 'staff' | 'dealer' | 'customer';
 }
 
 const resend = polishResend(new Resend(Deno.env.get('RESEND_API_KEY') as string));
@@ -37,6 +37,7 @@ serve(async (req) => {
     // Staff (admin dashboard) and customers get the same recovery link, but staff
     // copy points at /auth instead of the customer portal wording.
     let isStaff = body.audience === 'staff';
+    const isDealer = body.audience === 'dealer';
     const brand = resolveBrand(req, { brand: body?.brand, fallback: 'pandaprotect' });
     // Send people back to the site they asked from (Panda Protect runs on
     // more than one domain). Supabase only honours redirect URLs on its
@@ -94,7 +95,7 @@ serve(async (req) => {
         supabaseClient.from('admin_users').select('id').eq('user_id', uid).eq('is_active', true).maybeSingle(),
         supabaseClient.from('dealers').select('id').eq('user_id', uid).maybeSingle(),
       ]);
-      if (staffRow) isStaff = true;
+      if (staffRow && !isDealer) isStaff = true;
       if (!staffRow && !dealerRow) {
         logStep('Account is not Panda Protect staff or dealer; no reset sent', { email });
         user = undefined;
@@ -139,7 +140,10 @@ serve(async (req) => {
     // avoids the redirect allow list, and stops mail scanners using the link up.
     const hashedToken = resetData?.properties?.hashed_token;
     if (!hashedToken) throw new Error('Could not create a reset link');
-    const resetLink = `${resetRedirect}?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`;
+    const audience = isStaff ? 'staff' : isDealer ? 'dealer' : 'customer';
+    const accountLabel = isStaff ? 'admin dashboard' : isDealer ? 'dealer portal' : 'customer portal';
+    const loginPath = isStaff ? '/auth' : isDealer ? '/dealer-portal/login' : '/customer-dashboard';
+    const resetLink = `${resetRedirect}?token_hash=${encodeURIComponent(hashedToken)}&type=recovery&audience=${audience}`;
     
     // Send branded email
     const emailHtml = `
@@ -173,7 +177,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-                      We received a request to reset the password for your ${brand.name} ${isStaff ? 'admin dashboard' : 'customer portal'} account associated with <strong>${email}</strong>.
+                      We received a request to reset the password for your ${brand.name} ${accountLabel} account associated with <strong>${email}</strong>.
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
@@ -195,9 +199,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 20px 0 0 0;">
-                      ${isStaff
-                        ? `Once your new password is saved, sign in at ${brand.siteUrl}/auth.`
-                        : 'If you need assistance, please contact our customer support team.'}
+                      Once your new password is saved, sign in at ${brand.siteUrl}${loginPath}.
                     </p>
                   </td>
                 </tr>
@@ -227,9 +229,9 @@ serve(async (req) => {
     `;
 
     const { data: sent, error: sendError } = await resend.emails.send({
-      from: brandFrom(brand, isStaff ? 'Admin' : 'Customer Care', 'noreply'),
+      from: brandFrom(brand, isStaff ? 'Admin' : isDealer ? 'Dealer Support' : 'Customer Care', 'noreply'),
       to: [email],
-      subject: isStaff ? `Reset your ${brand.name} admin password` : `Reset Your ${brand.name} Portal Password`,
+      subject: isStaff ? `Reset your ${brand.name} admin password` : isDealer ? `Reset your ${brand.name} dealer portal password` : `Reset your ${brand.name} customer portal password`,
       html: emailHtml,
     });
 

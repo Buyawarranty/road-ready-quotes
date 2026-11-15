@@ -187,7 +187,7 @@ const DealerLogin = () => {
                   <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
                     Password
                   </label>
-                  <Link to="/forgot-password/" className="text-xs font-medium text-orange-600 hover:underline">
+                  <Link to="/forgot-password/?audience=dealer" className="text-xs font-medium text-orange-600 hover:underline">
                     Forgot password?
                   </Link>
                 </div>
