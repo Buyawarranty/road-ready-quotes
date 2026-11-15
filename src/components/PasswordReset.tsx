@@ -253,7 +253,7 @@ const PasswordReset = () => {
           navigate('/dealer-portal/login', { replace: true });
         }
       } else {
-        navigate('/auth', { replace: true });
+        navigate(loginPath, { replace: true });
       }
     } catch (error) {
       console.error('Error updating password:', error);
