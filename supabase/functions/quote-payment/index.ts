@@ -375,7 +375,7 @@ serve(async (req) => {
         api_key: bumperApiKey,
         signature: signature,
         product_description: [{
-          item: `${quote.plan_type} Vehicle Warranty - ${quote.duration_months + quote.bonus_months} Months`,
+          item: `${displayWarrantyPlanName(quote.plan_type)} Vehicle Warranty - ${quote.duration_months + quote.bonus_months} Months`,
           quantity: "1",
           price: totalAmount.toFixed(2)
         }]

@@ -216,7 +216,7 @@ serve(async (req) => {
         selectedPlan: {
           id: planType,
           paymentType: paymentType,
-          name: planName,
+          name: displayWarrantyPlanName(planName),
           pricingData: {
             totalPrice: finalAmount,
             monthlyPrice: paymentType === 'monthly' ? finalAmount : 0,
