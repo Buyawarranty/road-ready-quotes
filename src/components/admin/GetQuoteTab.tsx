@@ -7496,7 +7496,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                             <div><span className="font-medium">Registration:</span> {preview.vehicle.registration}</div>
                             <div><span className="font-medium">Vehicle:</span> {preview.vehicle.make} {preview.vehicle.model} ({preview.vehicle.year})</div>
                             <div><span className="font-medium">Mileage:</span> {preview.vehicle.mileage} miles</div>
-                            <div><span className="font-medium">Plan:</span> {preview.policy.planType}</div>
+                            <div><span className="font-medium">Plan:</span> {displayWarrantyPlanName(preview.policy.planType)}</div>
                             <div><span className="font-medium">Duration:</span> {preview.policy.duration}</div>
                             <div><span className="font-medium">Start Date:</span> {preview.policy.startDate}</div>
                             <div><span className="font-medium">End Date:</span> {preview.policy.endDate}</div>

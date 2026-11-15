@@ -592,7 +592,7 @@ export const RefundsPaidTab: React.FC<{
                           {[record.vehicle_make, record.vehicle_model].filter(Boolean).join(' ') || 'N/A'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">{record.plan_type}</Badge>
+                          <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(record.plan_type)}</Badge>
                         </TableCell>
                         {isFinancialRole && (
                           <TableCell className="text-sm font-medium text-destructive">

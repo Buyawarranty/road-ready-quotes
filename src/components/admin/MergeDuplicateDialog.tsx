@@ -211,7 +211,7 @@ export const MergeDuplicateDialog: React.FC<MergeDuplicateDialogProps> = ({
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-muted-foreground">
                   <span><strong>Name:</strong> {dup.name}</span>
                   <span><strong>Email:</strong> {dup.email}</span>
-                  <span><strong>Plan:</strong> {dup.plan_type}</span>
+                  <span><strong>Plan:</strong> {displayWarrantyPlanName(dup.plan_type)}</span>
                   <span><strong>Amount:</strong> £{dup.final_amount?.toFixed(2)}</span>
                   <span><strong>Date:</strong> {format(new Date(dup.signup_date), 'dd/MM/yyyy HH:mm')}</span>
                   <span><strong>Payment:</strong> {dup.payment_type || 'N/A'}</span>

@@ -293,7 +293,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                           <div><span className="text-gray-500">Reg:</span> <strong>{foundCustomer.registration_plate}</strong></div>
                           <div><span className="text-gray-500">Vehicle:</span> <strong>{foundCustomer.vehicle_make} {foundCustomer.vehicle_model}</strong></div>
                           <div><span className="text-gray-500">Customer:</span> <strong>{foundCustomer.name}</strong></div>
-                          <div><span className="text-gray-500">Plan:</span> <strong className="capitalize">{foundCustomer.plan_type}</strong></div>
+                          <div><span className="text-gray-500">Plan:</span> <strong className="capitalize">{displayWarrantyPlanName(foundCustomer.plan_type)}</strong></div>
                         </div>
                       </div>
 

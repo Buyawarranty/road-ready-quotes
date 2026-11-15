@@ -149,7 +149,7 @@ export const RenewalsTab: React.FC = () => {
       'Phone': r.phone || '',
       'Registration Plate': r.registration_plate || '',
       'Mileage': r.mileage || '',
-      'Plan Type': r.plan_type || '',
+      'Plan Type': displayWarrantyPlanName(r.plan_type, ''),
       'Payment Type': r.payment_type || '',
       'Claim Limit': r.claim_limit ?? '',
       'Policy Start Date': r.policy_start_date ? format(new Date(r.policy_start_date), 'dd/MM/yyyy') : '',

@@ -497,7 +497,7 @@ export const PolicyDocumentsTab: React.FC = () => {
   const claimLimit = selectedPolicy?.claim_limit || selectedCustomer?.claim_limit;
   const excess = selectedPolicy?.voluntary_excess ?? selectedCustomer?.voluntary_excess;
   const labourRate = selectedCustomer?.labour_rate;
-  const planType = selectedPolicy?.plan_type || selectedCustomer?.plan_type || 'N/A';
+  const planType = displayWarrantyPlanName(selectedPolicy?.plan_type || selectedCustomer?.plan_type, 'N/A');
   const todayDate = format(new Date(), 'd MMMM yyyy');
   const addons = getAddonsList();
   const address = formatAddress();

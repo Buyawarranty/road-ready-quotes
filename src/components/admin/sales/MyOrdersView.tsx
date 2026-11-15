@@ -237,7 +237,7 @@ export const MyOrdersView: React.FC<MyOrdersViewProps> = ({ currentUserId }) => 
                             <CardDescription className="flex items-center gap-2">
                               <span>{order.policy_number}</span>
                               <span>•</span>
-                              <span>{order.plan_type}</span>
+                              <span>{displayWarrantyPlanName(order.plan_type)}</span>
                             </CardDescription>
                           </div>
                         </div>
