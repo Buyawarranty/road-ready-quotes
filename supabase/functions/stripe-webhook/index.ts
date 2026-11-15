@@ -50,7 +50,7 @@ async function fireServerSideConversion(
           currency: 'GBP',
           gclid: gclid,
           items: [{
-            item_name: session.metadata?.plan_type || 'Warranty',
+            item_name: displayWarrantyPlanName(session.metadata?.plan_type),
             price: transactionValue,
             quantity: 1
           }]
