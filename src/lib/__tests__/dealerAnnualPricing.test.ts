@@ -1,17 +1,17 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '../dealerAnnualPricing';
-const product = { months: 24, dealer_price: 200, retail_price: 700, min_price: 200, max_price: 1400, active: true };
-const oneYear = { months: 12, dealer_price: 100, retail_price: 400, min_price: 100, max_price: null, active: true };
+const product = { months: 24, dealer_price: 199, retail_price: 900, min_price: 199, max_price: 1400, active: true };
+const oneYear = { months: 12, dealer_price: 99, retail_price: 600, min_price: 99, max_price: null, active: true };
 const boostCfg = { active: true, claim_limit: 5000, dealer_price: 60, retail_price: 360, terms: [{ months: 12, dealer_price: 20, retail_price: 120 }, { months: 24, dealer_price: 40, retail_price: 240 }, { months: 36, dealer_price: 60, retail_price: 360 }] };
 describe('Annual selling prices', () => {
-  it('uses £100 dealer and £400 retail for one year rather than a legacy £141.60 snapshot', () => {
-    const annual = { ...product, months: 12, dealer_price: 100, retail_price: 400 };
+  it('uses £99 dealer and £600 retail for one year rather than a legacy £141.60 snapshot', () => {
+    const annual = { ...product, months: 12, dealer_price: 99, retail_price: 600 };
     const legacy = { dealer_price: 141.6, selected_options: { warranty_type: 'fully-covered' } };
     assert.equal(isAnnualQuoteSnapshot(legacy.selected_options), false);
-    assert.equal(isAnnualQuoteSnapshot(legacy.selected_options) ? legacy.dealer_price : annual.dealer_price, 100);
-    assert.equal(annual.retail_price, 400);
-    assert.equal(potentialProfit(annual.retail_price, annual.dealer_price), 300);
+    assert.equal(isAnnualQuoteSnapshot(legacy.selected_options) ? legacy.dealer_price : annual.dealer_price, 99);
+    assert.equal(annual.retail_price, 600);
+    assert.equal(potentialProfit(annual.retail_price, annual.dealer_price), 501);
   });
   it('preserves explicitly identified annual quotes only', () => {
     assert.equal(isAnnualQuoteSnapshot({ price_basis: 'annual-product', product_id: 'annual', pricing_version: 'annual-v1' }), true);
@@ -19,7 +19,7 @@ describe('Annual selling prices', () => {
   });
   it('increases by exactly £100 per tap', () => { assert.equal(stepSellingPrice(700, 1, product), 800); assert.equal(stepSellingPrice(800, 1, product), 900); });
   it('decreases by exactly £100 per tap', () => assert.equal(stepSellingPrice(900, -1, product), 800));
-  it('shows retail minus wholesale as potential profit', () => { assert.equal(potentialProfit(700, 200), 500); assert.equal(potentialProfit(800, 200), 600); });
+  it('shows retail minus wholesale as potential profit', () => { assert.equal(potentialProfit(900, 199), 701); assert.equal(potentialProfit(1000, 199), 801); });
   it('respects configured minimum and maximum', () => { assert.equal(stepSellingPrice(200, -1, product), 200); assert.equal(stepSellingPrice(1400, 1, product), 1400); assert.equal(validSellingPrice(1400.01, product), false); });
   it('keeps currency accurate to the penny', () => assert.equal(stepSellingPrice(700.01, 1, product), 800.01));
   it('gates four years on completed approvals', () => { assert.equal(annualProductActive({ ...product, months: 48 }), false); assert.equal(annualProductActive({ ...product, months: 48, approvals_complete: true, active: false }), false); });
@@ -53,21 +53,21 @@ describe('Claim limit boost prices', () => {
   it('offers nothing when the boost is not configured', () => { assert.equal(boostForTerm(undefined, 12), undefined); assert.equal(boostForTerm(null, 12), undefined); });
 });
 describe('Four-year warranty pricing', () => {
-  const fourYear = { months: 48, dealer_price: 400, retail_price: 1400, min_price: 400, max_price: null, active: true, approvals_complete: true };
+  const fourYear = { months: 48, dealer_price: 399, retail_price: 1600, min_price: 399, max_price: null, active: true, approvals_complete: true };
   const annualBoost = { active: true, claim_limit: 5000, dealer_price: 60, retail_price: 360, terms: [{ months: 12, dealer_price: 20, retail_price: 120 }, { months: 24, dealer_price: 40, retail_price: 240 }, { months: 36, dealer_price: 60, retail_price: 360 }, { months: 48, dealer_price: 80, retail_price: 480 }] };
   it('is available to sell now the user has approved it', () => { assert.equal(annualProductActive(fourYear), true); });
-  it('keeps the same profit step-up: £1,000 on four years', () => { assert.equal(potentialProfit(fourYear.retail_price, fourYear.dealer_price), 1000); });
+  it('earns £1,201 profit at the four-year recommended retail price', () => { assert.equal(potentialProfit(fourYear.retail_price, fourYear.dealer_price), 1201); });
   it('charges the four-year boost at £80 for the dealer and £480 for the customer', () => {
     assert.equal(boostForTerm(annualBoost, 48)?.dealer_price, 80);
     assert.equal(boostForTerm(annualBoost, 48)?.retail_price, 480);
     assert.equal(boostForTerm(annualBoost, 48)?.claim_limit, 5000);
   });
-  it('prices four years with the boost at £480 cost and £1,880 for the customer', () => {
+  it('prices four years with the boost at £479 cost and £2,080 for the customer', () => {
     const cost = fourYear.dealer_price + (boostForTerm(annualBoost, 48)?.dealer_price || 0);
     const retail = fourYear.retail_price + (boostForTerm(annualBoost, 48)?.retail_price || 0);
-    assert.equal(cost, 480);
-    assert.equal(retail, 1880);
-    assert.equal(potentialProfit(retail, cost), 1400);
+    assert.equal(cost, 479);
+    assert.equal(retail, 2080);
+    assert.equal(potentialProfit(retail, cost), 1601);
   });
 });
 
@@ -84,7 +84,7 @@ describe('Approved boost net profit', () => {
       const boost = boostForTerm(config, months);
       assert.ok(boost);
       assert.equal(potentialProfit(boost.retail_price, boost.dealer_price), expected);
-      assert.equal(potentialProfit(1200 + boost.retail_price, 300 + boost.dealer_price), 900 + expected);
+      assert.equal(potentialProfit(1200 + boost.retail_price, 299 + boost.dealer_price), 901 + expected);
     });
   }
 });
