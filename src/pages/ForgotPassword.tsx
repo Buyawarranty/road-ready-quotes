@@ -7,8 +7,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { currentBrandKey } from '@/lib/brand';
 import { toast } from 'sonner';
 import { ArrowLeft, Mail, Send, Lock, CheckCircle } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
+import { pandaLogoUrl } from '@/lib/pandaLogo';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');

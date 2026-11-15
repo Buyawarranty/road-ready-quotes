@@ -11,7 +11,7 @@ const corsHeaders = {
 
 interface ResetPasswordRequest {
   email: string;
-  audience?: 'staff' | 'customer';
+  audience?: 'staff' | 'dealer' | 'customer';
 }
 
 const resend = polishResend(new Resend(Deno.env.get('RESEND_API_KEY') as string));
