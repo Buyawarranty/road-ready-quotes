@@ -93,13 +93,13 @@ const getCoverLabel = (row: WarrantyRow) => {
 
 function StatCard({ icon: Icon, label, value, green = false }: { icon: LucideIcon; label: string; value: string | number; green?: boolean }) {
   return (
-    <div className="crm-panel-shadow flex min-h-28 items-center gap-4 rounded-2xl border-2 border-crm-line/70 bg-card p-5">
-      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${green ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy-soft'}`}>
-        <Icon className="h-7 w-7" />
+    <div className="crm-panel-shadow flex min-h-32 flex-col items-start gap-3 rounded-2xl border-2 border-crm-line/70 bg-card p-4 sm:min-h-28 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl ${green ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy-soft'}`}>
+        <Icon className="h-5 w-5 sm:h-7 sm:w-7" />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-muted-foreground sm:text-base">{label}</p>
-        <p className={`mt-1 whitespace-nowrap text-2xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
+        <p className="text-xs font-medium text-muted-foreground sm:text-base">{label}</p>
+        <p className={`mt-1 whitespace-nowrap text-xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
       </div>
     </div>
   );
@@ -429,12 +429,12 @@ const DealerWarrantiesList = () => {
             <TableHead className="font-bold text-crm-navy">Amount</TableHead>
             <TableHead className="font-bold text-crm-navy">Payment</TableHead>
             <TableHead className="font-bold text-crm-navy">Cover status</TableHead>
-            <TableHead className="pr-5 text-right font-bold text-crm-navy">Actions</TableHead>
+            <TableHead className="sticky right-0 z-20 min-w-[190px] bg-muted pr-5 text-right font-bold text-crm-navy">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((row) => (
-            <TableRow key={row.id} className="border-crm-line bg-card hover:bg-crm-orange-soft/30">
+            <TableRow key={row.id} className="group border-crm-line bg-card hover:bg-crm-orange-soft/30">
               <TableCell className="px-5 py-5 align-top">
                 <p className="font-bold text-crm-navy">{row.name || '—'}</p>
                 <p className="mt-1 max-w-[190px] break-all text-sm text-muted-foreground">{row.email || '—'}</p>
@@ -454,7 +454,7 @@ const DealerWarrantiesList = () => {
               <TableCell className="align-top font-extrabold text-crm-navy">{money(row.final_amount)}</TableCell>
               <TableCell className="align-top">{renderPaymentStatus(row)}</TableCell>
               <TableCell className="align-top">{renderCoverStatus(row)}</TableCell>
-              <TableCell className="pr-5 align-top">{renderActions(row)}</TableCell>
+              <TableCell className="sticky right-0 z-10 bg-card pr-5 align-top group-hover:bg-crm-orange-soft">{renderActions(row)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -501,12 +501,12 @@ const DealerWarrantiesList = () => {
               <TableHead className="font-bold text-crm-navy">Cover period</TableHead>
               <TableHead className="font-bold text-crm-navy">Amount</TableHead>
               <TableHead className="font-bold text-crm-navy">Payment</TableHead>
-              <TableHead className="pr-5 text-right font-bold text-crm-navy">Documents</TableHead>
+              <TableHead className="sticky right-0 z-20 bg-muted pr-5 text-right font-bold text-crm-navy">Documents</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((row) => (
-              <TableRow key={row.id} className="border-crm-line hover:bg-crm-orange-soft/30">
+              <TableRow key={row.id} className="group border-crm-line hover:bg-crm-orange-soft/30">
                 <TableCell className="px-5"><Checkbox checked={!!selected[row.id]} onCheckedChange={(value) => setSelected((current) => ({ ...current, [row.id]: !!value }))} className="border-crm-line data-[state=checked]:bg-crm-orange data-[state=checked]:text-primary-foreground" aria-label={`Select invoice ${ref(row.id)}`} /></TableCell>
                 <TableCell className="font-mono font-bold text-crm-orange">{ref(row.id)}</TableCell>
                 <TableCell><p className="font-bold text-crm-navy">{row.name || '—'}</p><p className="text-sm text-muted-foreground">{row.email || '—'}</p></TableCell>
@@ -514,7 +514,7 @@ const DealerWarrantiesList = () => {
                 <TableCell className="text-sm text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}<br />{fmt(computeEnd(row))}</TableCell>
                 <TableCell className="font-extrabold text-crm-navy">{money(row.final_amount)}</TableCell>
                 <TableCell>{renderPaymentStatus(row)}</TableCell>
-                <TableCell className="pr-5"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" title="Download invoice" onClick={() => downloadInvoicePdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><Download className="h-4 w-4" /></Button><Button size="icon" variant="ghost" title="Download warranty" onClick={() => downloadWarrantyPdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><FileText className="h-4 w-4" /></Button></div></TableCell>
+                <TableCell className="sticky right-0 z-10 bg-card pr-5 group-hover:bg-crm-orange-soft"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" title="Download invoice" onClick={() => downloadInvoicePdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><Download className="h-4 w-4" /></Button><Button size="icon" variant="ghost" title="Download warranty" onClick={() => downloadWarrantyPdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><FileText className="h-4 w-4" /></Button></div></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -566,7 +566,7 @@ const DealerWarrantiesList = () => {
           </Button>
         </header>
 
-        <section aria-label="Warranty summary" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <section aria-label="Warranty summary" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
           <StatCard icon={FileText} label="Total plans" value={rows.length} />
           <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} green />
           <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} />
