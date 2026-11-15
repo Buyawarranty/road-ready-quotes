@@ -78,8 +78,8 @@ const ForgotPassword: React.FC = () => {
             <div className="flex justify-between items-center py-4">
               <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
                 <img 
-                  src="/lovable-uploads/baw_logo_new_2025_copy_2-2.png" 
-                  alt="BuyAWarranty" 
+                  src={pandaLogoUrl} 
+                  alt="Panda Protect" 
                   className="h-7 sm:h-9 w-auto"
                 />
               </Link>

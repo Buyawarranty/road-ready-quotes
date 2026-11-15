@@ -199,9 +199,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 20px 0 0 0;">
-                      ${isStaff
-                        ? `Once your new password is saved, sign in at ${brand.siteUrl}/auth.`
-                        : 'If you need assistance, please contact our customer support team.'}
+                      Once your new password is saved, sign in at ${brand.siteUrl}${loginPath}.
                     </p>
                   </td>
                 </tr>
