@@ -345,7 +345,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
                 <div className="space-y-4 mb-6">
                   {items.map((item, index) => (
                     <div key={item.id} className="flex justify-between">
-                      <span className="text-gray-600">Warranty {index + 1} ({item.planName}):</span>
+                      <span className="text-gray-600">Warranty {index + 1} ({displayWarrantyPlanName(item.planName)}):</span>
                       <span className="font-semibold">£{item.pricingData.totalPrice}</span>
                     </div>
                   ))}

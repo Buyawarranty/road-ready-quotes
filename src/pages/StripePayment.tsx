@@ -216,7 +216,7 @@ const StripePayment: React.FC = () => {
                   <div className="space-y-3 mb-5">
                     <div className="flex justify-between items-center py-1">
                       <span className="text-muted-foreground">Plan:</span>
-                      <span className="font-semibold text-foreground">{paymentData.planName}</span>
+                      <span className="font-semibold text-foreground">{displayWarrantyPlanName(paymentData.planName)}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
                       <span className="text-muted-foreground">Duration:</span>

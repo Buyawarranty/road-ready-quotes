@@ -123,7 +123,7 @@ export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
       ['Customer', row.name || '—'],
       ['Email', row.email || '—'],
       ['Vehicle', `${row.registration_plate || '—'} ${[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}`],
-      ['Plan', `${(row.plan_type || '').toUpperCase()} · ${row.payment_type || ''} months`],
+      ['Plan', `${displayWarrantyPlanName(row.plan_type).toUpperCase()} · ${row.payment_type || ''} months`],
       ['Activation date', fmt(row.warranty_start_date || row.signup_date)],
       ['Expiry date', fmt(row.policy_end_date)],
       ['Premium', `£${Number(row.final_amount || 0).toFixed(2)}`],

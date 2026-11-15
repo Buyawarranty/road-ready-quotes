@@ -925,7 +925,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-bold text-gray-900">Warranty {index + 1}</h2>
                       <Badge variant="outline" className="text-sm font-medium px-3 py-1">
-                        {item.planName}
+                        {displayWarrantyPlanName(item.planName)}
                       </Badge>
                     </div>
 
