@@ -71,6 +71,8 @@ export default {
 					'navy-soft': 'hsl(var(--crm-navy-soft))',
 					orange: 'hsl(var(--crm-orange))',
 					'orange-soft': 'hsl(var(--crm-orange-soft))',
+					pink: 'hsl(var(--crm-pink))',
+					'pink-soft': 'hsl(var(--crm-pink-soft))',
 				green: 'hsl(var(--crm-green))',
 				pink: 'hsl(var(--crm-pink))',
 					'green-soft': 'hsl(var(--crm-green-soft))',

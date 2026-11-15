@@ -64,7 +64,7 @@ const Step3Pricing: React.FC = () => {
       }
       if (data.manufactureDate) {
         const ageYears = (Date.now() - new Date(data.manufactureDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000);
-        if (ageYears > 15) { setLookup('error'); setLookupMsg('Sorry, we only cover vehicles under 150,000 miles and less than 15 years old.'); return; }
+        if (ageYears > 15) { setLookup('error'); setLookupMsg('This vehicle is over 15 years old. Protection is for vehicles up to 150,000 miles and 15 years old.'); return; }
       }
       setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
       if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));
@@ -205,7 +205,7 @@ const Step3Pricing: React.FC = () => {
             <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base">{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>Get prices<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
-          {lookupMsg && <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>}
+          {lookupMsg && (/15 years/.test(lookupMsg) ? <p role="alert" className="w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ {lookupMsg}</p> : <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>)}
         </form>
 
       ) : (
@@ -219,6 +219,7 @@ const Step3Pricing: React.FC = () => {
       )}
     </section>
     {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
+    <>{n > 150000 && <p role="alert" className="rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
     <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-line bg-muted/60 px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
       <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
       <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
