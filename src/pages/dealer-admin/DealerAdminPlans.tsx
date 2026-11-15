@@ -235,7 +235,7 @@ export default function DealerAdminPlans() {
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                placeholder="e.g. Basic, Gold, Platinum"
+                placeholder="e.g. Basic, Platinum"
               />
             </div>
             <div>

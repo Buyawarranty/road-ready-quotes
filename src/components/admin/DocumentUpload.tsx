@@ -217,7 +217,7 @@ const DocumentUpload = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="basic">Basic</SelectItem>
-                  <SelectItem value="gold">Gold</SelectItem>
+                  <SelectItem value="gold">Platinum</SelectItem>
                   <SelectItem value="platinum">Platinum</SelectItem>
                   <SelectItem value="electric">Electric Vehicle EV Extended Warranty</SelectItem>
                   <SelectItem value="motorbike">Motorbike Extended Warranty</SelectItem>

@@ -571,7 +571,7 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Platinum">Platinum</SelectItem>
-                        <SelectItem value="Gold">Gold</SelectItem>
+                        <SelectItem value="Gold">Platinum</SelectItem>
                         <SelectItem value="Basic">Basic</SelectItem>
                         <SelectItem value="EV">EV</SelectItem>
                         <SelectItem value="PHEV">PHEV</SelectItem>

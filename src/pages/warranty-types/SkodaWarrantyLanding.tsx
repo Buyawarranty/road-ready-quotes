@@ -453,7 +453,6 @@ const SkodaWarrantyLanding: React.FC = () => {
       "name": "Škoda Warranty Plans",
       "itemListElement": [
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Basic Škoda Warranty" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gold Škoda Warranty" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Platinum Škoda Warranty" } }
       ]
     }

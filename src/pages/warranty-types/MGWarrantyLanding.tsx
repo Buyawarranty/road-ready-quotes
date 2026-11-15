@@ -453,7 +453,6 @@ const MGWarrantyLanding: React.FC = () => {
       "name": "MG Warranty Plans",
       "itemListElement": [
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Basic MG Warranty" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gold MG Warranty" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Platinum MG Warranty" } }
       ]
     }

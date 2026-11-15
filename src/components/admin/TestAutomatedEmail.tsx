@@ -89,7 +89,7 @@ export const TestAutomatedEmail = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="basic">Basic</SelectItem>
-                <SelectItem value="gold">Gold</SelectItem>
+                <SelectItem value="gold">Platinum</SelectItem>
                 <SelectItem value="platinum">Platinum</SelectItem>
                 <SelectItem value="electric">Electric Vehicle</SelectItem>
                 <SelectItem value="phev">PHEV Hybrid</SelectItem>

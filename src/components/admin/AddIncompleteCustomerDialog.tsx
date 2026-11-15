@@ -287,7 +287,7 @@ export const AddIncompleteCustomerDialog: React.FC<AddIncompleteCustomerDialogPr
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Platinum">Platinum</SelectItem>
-                  <SelectItem value="Gold">Gold</SelectItem>
+                  <SelectItem value="Gold">Platinum</SelectItem>
                   <SelectItem value="Basic">Basic</SelectItem>
                 </SelectContent>
               </Select>

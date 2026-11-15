@@ -1308,7 +1308,7 @@ const Index = () => {
         description={
           currentStep === 1 ? "Compare our car warranty prices and choose the perfect plan for your vehicle. Flexible, affordable UK coverage with no hidden fees. Instant online quotes available." :
           currentStep === 2 ? "Get an instant quote for your car warranty. Enter your vehicle details and receive competitive pricing for comprehensive coverage in the UK." :
-          currentStep === 3 ? "Compare car warranty plans and choose the best coverage for your vehicle. Basic, Gold, and Platinum options available with flexible payment terms." :
+          currentStep === 3 ? "Compare car warranty plans and choose the best coverage for your vehicle. Basic and Platinum options available with flexible payment terms." :
           "Complete your car warranty purchase with our secure checkout. Review your selected plan and enter your details for instant approval."
         }
         keywords="car warranty, vehicle warranty, UK warranty, car insurance, breakdown cover, warranty prices, vehicle protection, extended warranty"
