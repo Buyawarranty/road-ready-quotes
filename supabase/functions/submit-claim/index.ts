@@ -2,7 +2,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
-import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const resend = polishResend(new Resend(Deno.env.get("RESEND_API_KEY")));
 
@@ -326,8 +326,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Prepare email with attachment
     const emailPayload: any = {
-      from: brandFrom(brand, "Customer Care", "noreply"),
-      to: [brand.supportEmail, "support@warranties2000.co.uk"],
+      ...transactionalEmailIdentity(brand, "claim"),
+      to: [brand.claimsEmail, "support@warranties2000.co.uk"],
       subject: emailSubject,
       html: emailHtml,
     };
@@ -380,7 +380,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     await resend.emails.send({
-      from: brandFrom(brand, "Claims Team", "claims"),
+      ...transactionalEmailIdentity(brand, "claim"),
       to: [email],
       subject: "Claim Submission Received",
       html: customerEmailHtml,

@@ -1,7 +1,7 @@
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
-import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -225,7 +225,7 @@ serve(async (req) => {
 
     // Send email via Resend
     const emailPayload: any = {
-      from: brandFrom(brand, 'Customer Care', 'info'),
+      ...transactionalEmailIdentity(brand, 'warranty_purchase'),
       to: [alternateEmail],
       subject: `Your Warranty Confirmation - ${policy.policy_number}`,
       html: emailHtml,

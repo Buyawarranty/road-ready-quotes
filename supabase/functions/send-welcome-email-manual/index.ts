@@ -1,7 +1,7 @@
 import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
-import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
+import { resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
     const policy = policies[0];
     const customer = policy.customers;
     const brand: Brand = resolveBrand(req, { brand: body?.brand, record: customer });
-    const resendFrom = brandFrom(brand, "Customer Care", "info");
+    const resendFrom = transactionalEmailIdentity(brand, "warranty_purchase").from;
 
     if (!customer) {
       return new Response(JSON.stringify({ 
@@ -588,6 +588,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailPayload = {
       from: resendFrom,
+      reply_to: brand.supportEmail,
       to: [customer.email],
       // Trustpilot review invitations are Buy A Warranty only — never Panda Protect.
       ...(brand.key === 'buyawarranty'

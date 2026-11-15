@@ -2,7 +2,7 @@ import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -233,7 +233,7 @@ serve(async (req) => {
 
     // Get environment variables for email
     const resendApiKey = Deno.env.get('RESEND_API_KEY');
-    const resendFrom = brandFrom(brand, 'Customer Care', 'noreply');
+    const resendFrom = transactionalEmailIdentity(brand, 'warranty_purchase').from;
     
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY not configured');

@@ -1,7 +1,7 @@
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -156,7 +156,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: brandFrom(brand, "Claims", "claims"),
+        ...transactionalEmailIdentity(brand, "claim"),
         to: [recipientEmail],
         subject: `Urgent claims update: ${firstRegPlate}${claims.length > 1 ? ` (+${claims.length - 1} more)` : ""}`,
         html: emailHtml,

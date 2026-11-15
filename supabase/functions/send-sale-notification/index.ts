@@ -2,7 +2,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { resolveBrand, brandFrom } from "../_shared/brand.ts";
+import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -155,8 +155,8 @@ serve(async (req: Request) => {
       : `New Sale ${saleType}`;
 
     await resend.emails.send({
-      from: brandFrom(brand, "Team", "notifications"),
-      to: [brand.infoEmail, `accounts@${brand.domain}`],
+      ...transactionalEmailIdentity(brand, "warranty_purchase"),
+      to: [brand.supportEmail, brand.infoEmail, `accounts@${brand.domain}`],
       subject: `${subjectPrefix}: ${reg} - ${plan} - ${saleValueDisplay} via ${payment}${isAgentSale ? ` - Converted by ${resolvedAgentName}` : ''}`,
       html: salesEmailHtml,
     });
