@@ -2,5 +2,5 @@
 export function displayWarrantyPlanName(value: unknown, fallback = 'Warranty'): string {
   const raw = String(value ?? '').trim();
   if (!raw) return fallback;
-  return raw.replace(/\bgold\b/gi, 'Platinum');
+  return raw.replace(/\bgold\b(?!\s+wing\b)/gi, 'Platinum');
 }
