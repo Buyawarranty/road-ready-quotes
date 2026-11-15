@@ -264,7 +264,7 @@ export const PaymentFailedLeadsPanel: React.FC<Props> = ({ userRole }) => {
                 )}
                 {isSuperAdmin && a.plan_name && (
                   <span className="inline-flex items-center bg-red-800/60 text-white text-[10px] px-2 py-0.5 rounded">
-                    {a.plan_name}{a.amount ? ` · £${a.amount}` : ''}
+                    {displayWarrantyPlanName(a.plan_name)}{a.amount ? ` · £${a.amount}` : ''}
                   </span>
                 )}
               </div>

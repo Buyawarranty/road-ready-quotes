@@ -243,7 +243,7 @@ export const DocumentMappingTab = () => {
             ) : (
               mappings.map((mapping) => (
                 <TableRow key={mapping.id}>
-                  <TableCell className="font-medium">{mapping.plan_name}</TableCell>
+                  <TableCell className="font-medium">{displayWarrantyPlanName(mapping.plan_name)}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       mapping.vehicle_type === 'standard' 

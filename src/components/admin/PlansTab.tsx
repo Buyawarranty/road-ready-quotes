@@ -11,6 +11,7 @@ import { Edit, Save, Plus, Trash2 } from 'lucide-react';
 import { Json } from '@/integrations/supabase/types';
 import DocumentUpload from './DocumentUpload';
 import TermsConditionsUpload from './TermsConditionsUpload';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Plan {
   id: string;

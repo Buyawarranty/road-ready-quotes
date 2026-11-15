@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import {
   Select,
   SelectContent,

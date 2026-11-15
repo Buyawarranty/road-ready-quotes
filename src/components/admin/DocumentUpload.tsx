@@ -293,7 +293,7 @@ const DocumentUpload = () => {
                     <div>
                       <p className="font-medium">{doc.document_name}</p>
                       <p className="text-sm text-gray-500">
-                        {doc.plan_type.charAt(0).toUpperCase() + doc.plan_type.slice(1)} Plan
+                        {displayWarrantyPlanName(doc.plan_type.charAt(0).toUpperCase() + doc.plan_type.slice(1))} Plan
                         {doc.file_size && ` • ${Math.round(doc.file_size / 1024)} KB`}
                       </p>
                     </div>
