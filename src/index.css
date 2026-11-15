@@ -63,7 +63,7 @@
   --crm-line: 214 24% 89%;
   --crm-grey: 214 18% 84%;
 
-  --background: 210 25% 97%;
+  --background: 0 0% 100%;
   --foreground: 215 61% 16%;
   --card: 0 0% 100%;
   --card-foreground: 215 61% 16%;
@@ -1191,7 +1191,7 @@ body {
 @layer base {
   :root {
     /* Neutral Color (backgrounds/containers) */
-    --background: 0 0% 99%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;

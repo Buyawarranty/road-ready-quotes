@@ -652,7 +652,7 @@ export const ConfirmExternalPaymentTab: React.FC<ConfirmExternalPaymentTabProps>
         record={duplicateWarning.record}
       />
 
-      <div className="min-h-screen bg-slate-50/60 -m-4 md:-m-6 lg:-m-8 p-4 md:p-8 lg:p-10">
+      <div className="min-h-screen bg-background/60 -m-4 md:-m-6 lg:-m-8 p-4 md:p-8 lg:p-10">
         <div className="max-w-6xl mx-auto">
           {/* Page header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">

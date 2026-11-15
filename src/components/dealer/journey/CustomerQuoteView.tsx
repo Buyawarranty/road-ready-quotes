@@ -73,7 +73,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   if (!open) return null;
 
   return (
-    <div className="customer-quote-view dealer-crm fixed inset-0 z-[100] overflow-y-auto bg-crm-blue-soft text-foreground">
+    <div className="customer-quote-view dealer-crm fixed inset-0 z-[100] overflow-y-auto bg-background text-foreground">
       <header className="border-b border-crm-line bg-card">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
           <img src={logoAssetUrl} alt="Panda Protect" className="h-12 w-auto" />

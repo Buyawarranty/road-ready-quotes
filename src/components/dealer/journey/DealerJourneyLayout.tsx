@@ -35,48 +35,30 @@ const CarIcon = () => (
   </svg>
 );
 
-const JourneyProgress: React.FC<{ current: number }> = ({ current }) => {
-  const last = STEPS.length - 1;
-  const pct = (current / last) * 100;
-  return (
-    <div className="relative pt-5" aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
-      <div className="relative mx-[12.5%] h-1.5 rounded-full bg-muted">
-        <div className="absolute inset-y-0 left-0 rounded-full bg-success transition-all duration-700 ease-out" style={{ width: `${pct}%` }} />
-        <div className="absolute -top-5 -translate-x-1/2 transition-all duration-700 ease-out" style={{ left: `${pct}%` }}>
-          <CarIcon />
-        </div>
-      </div>
-      <ol className="grid grid-cols-4 mt-1.5">
-        {STEPS.map((label, i) => {
-          const done = i < current;
-          const active = i === current;
-          return (
-            <li key={label} className="flex flex-col items-center text-center gap-1">
-              <span
-                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                  done
-                    ? 'bg-success text-success-foreground'
-                    : active
-                      ? 'bg-primary text-primary-foreground ring-2 ring-primary/25'
-                      : 'bg-muted text-muted-foreground border border-border'
-                }`}
-              >
-                {done ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : i + 1}
-              </span>
-              <span
-                className={`text-[10px] sm:text-xs font-semibold leading-tight ${
-                  done ? 'text-success' : active ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                {label}
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+const JourneyProgress: React.FC<{ current: number }> = ({ current }) => (
+  <nav aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
+    <div className="mb-2 flex items-center justify-between text-xs font-semibold">
+      <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">Step {current + 1} of {STEPS.length}</span>
+      <span className="text-muted-foreground sm:hidden">{STEPS[current]}</span>
     </div>
-  );
-};
+    <ol className="grid grid-cols-4 gap-1.5 sm:gap-2">
+      {STEPS.map((label, i) => {
+        const done = i < current;
+        const active = i === current;
+        return (
+          <li key={label} aria-current={active ? 'step' : undefined} className="min-w-0">
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div className={`h-full rounded-full transition-all duration-700 ease-out ${done ? 'w-full bg-success' : active ? 'w-1/2 bg-primary' : 'w-0'}`} />
+            </div>
+            <span className={`mt-2 hidden items-center gap-1 text-xs font-semibold sm:flex ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}>
+              {done && <Check className="h-3.5 w-3.5" strokeWidth={3} />}{label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  </nav>
+);
 
 export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, children, showBack = true, backTo }) => {
   const { dealer, loading, loadError, retry } = useDealerAuth();

@@ -1034,7 +1034,7 @@ const CustomerDashboard = () => {
 
   if (loading || policyLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading your dashboard...</p>
@@ -1046,7 +1046,7 @@ const CustomerDashboard = () => {
   // Show login form if user is not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <SEOHead 
           title="Customer Dashboard | Panda Protect Account Portal"
           description="Access your warranty policies, download documents, manage your account details, and get support for your vehicle warranty coverage."
@@ -1254,7 +1254,7 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <SEOHead 
         title="Customer Dashboard | Panda Protect Account Portal"
         description="Manage your warranty policies, download documents, and access your account details."
