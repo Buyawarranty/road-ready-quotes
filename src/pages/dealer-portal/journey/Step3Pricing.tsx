@@ -234,7 +234,7 @@ const Step3Pricing: React.FC = () => {
       {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
         : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-grey font-bold !text-crm-navy hover:!bg-crm-grey/80 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
 
-    </section>); })()}
+    </section></>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
     <section aria-label="Warranty length">
