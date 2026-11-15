@@ -783,7 +783,7 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
   ].filter(Boolean);
 
   const warrantyRef = policy?.warranty_number || c.warranty_number || c.warranty_reference_number || 'N/A';
-  const planType = policy?.plan_type || c.plan_type || 'N/A';
+  const planType = displayWarrantyPlanName(policy?.plan_type || c.plan_type, 'N/A');
   const claimLimit = policy?.claim_limit || c.claim_limit;
   const excess = policy?.voluntary_excess ?? c.voluntary_excess;
   const labourRate = c.labour_rate;

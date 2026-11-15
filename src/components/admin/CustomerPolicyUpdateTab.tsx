@@ -423,7 +423,7 @@ const CustomerPolicyUpdateTab = () => {
                   <SelectContent>
                     {policies.map((policy) => (
                       <SelectItem key={policy.id} value={policy.id}>
-                        {policy.policy_number} - {policy.plan_type} ({policy.status})
+                        {policy.policy_number} - {displayWarrantyPlanName(policy.plan_type)} ({policy.status})
                       </SelectItem>
                     ))}
                   </SelectContent>

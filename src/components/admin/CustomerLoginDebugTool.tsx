@@ -542,7 +542,7 @@ const CustomerLoginDebugTool = () => {
                   {customerInfo.policies.map((policy: any) => (
                     <div key={policy.id} className="text-xs bg-white p-2 rounded">
                       <div><strong>Policy:</strong> {policy.policy_number}</div>
-                      <div><strong>Plan:</strong> {policy.plan_type}</div>
+                      <div><strong>Plan:</strong> {displayWarrantyPlanName(policy.plan_type)}</div>
                       <div><strong>Status:</strong> {policy.status}</div>
                     </div>
                   ))}

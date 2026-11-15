@@ -6707,7 +6707,7 @@ Please log in and change your password after first login.`;
                     </span>
                   </TableCell>
                    <TableCell>
-                     <Badge variant="secondary">{getWarrantyType(customer.plan_type)}</Badge>
+                     <Badge variant="secondary">{displayWarrantyPlanName(getWarrantyType(customer.plan_type))}</Badge>
                    </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline" className="font-mono">
