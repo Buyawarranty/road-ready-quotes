@@ -140,7 +140,10 @@ serve(async (req) => {
     // avoids the redirect allow list, and stops mail scanners using the link up.
     const hashedToken = resetData?.properties?.hashed_token;
     if (!hashedToken) throw new Error('Could not create a reset link');
-    const resetLink = `${resetRedirect}?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`;
+    const audience = isStaff ? 'staff' : isDealer ? 'dealer' : 'customer';
+    const accountLabel = isStaff ? 'admin dashboard' : isDealer ? 'dealer portal' : 'customer portal';
+    const loginPath = isStaff ? '/auth' : isDealer ? '/dealer-portal/login' : '/customer-dashboard';
+    const resetLink = `${resetRedirect}?token_hash=${encodeURIComponent(hashedToken)}&type=recovery&audience=${audience}`;
     
     // Send branded email
     const emailHtml = `
