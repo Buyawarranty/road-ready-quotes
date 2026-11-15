@@ -145,3 +145,15 @@ export function brandFrom(brand: Brand, label: string, mailbox: string): string 
   const name = label ? `${brand.name} ${label}` : brand.name;
   return `${name} <${mailbox}@${brand.domain}>`;
 }
+
+export type TransactionalEmailKind = "warranty_purchase" | "claim";
+
+/** Sender and reply address for completed warranty purchases and claims. */
+export function transactionalEmailIdentity(brand: Brand, kind: TransactionalEmailKind) {
+  const isClaim = kind === "claim";
+  const email = isClaim ? brand.claimsEmail : brand.supportEmail;
+  return {
+    from: `${brand.name} ${isClaim ? "Claims Team" : "Customer Care"} <${email}>`,
+    reply_to: email,
+  };
+}

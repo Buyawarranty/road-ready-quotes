@@ -1,7 +1,7 @@
 import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
-import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
+import { resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",

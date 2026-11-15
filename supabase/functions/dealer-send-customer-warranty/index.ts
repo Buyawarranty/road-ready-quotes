@@ -3,7 +3,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 // Body: { customer_id: string, to_email?: string, message?: string }
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
+import { resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
