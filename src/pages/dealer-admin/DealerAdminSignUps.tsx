@@ -305,7 +305,8 @@ const DealerAdminSignUps: React.FC = () => {
     setStatusSaving(true);
     try {
       const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { signup_id: statusEdit.signup.id, decision: 'status', status: statusEdit.status, notes: statusMessage.trim() || null, notify: true } });
-      if (error || data?.error) throw new Error(data?.error || error?.message || 'Status update failed');
+      if (error) throw new Error(await functionErrorMessage(error));
+      if (data?.error) throw new Error(data.error);
       const patch = { status: statusEdit.status, approved_at: statusEdit.status === 'approved' ? new Date().toISOString() : null, rejected_at: statusEdit.status === 'rejected' ? new Date().toISOString() : null };
       setRows(value => value.map(row => row.id === statusEdit.signup.id ? { ...row, ...patch } : row));
       if (selected?.id === statusEdit.signup.id) setSelected({ ...selected, ...patch });
@@ -323,7 +324,7 @@ const DealerAdminSignUps: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
         body: { signup_id: selected.id, decision, notes: decisionNotes.trim() || null },
       });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await functionErrorMessage(error));
       if ((data as any)?.error) throw new Error((data as any).error);
       const newStatus: Status = decision === 'approve' ? 'approved' : 'rejected';
       const stamp = new Date().toISOString();
