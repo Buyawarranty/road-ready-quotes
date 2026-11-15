@@ -61,6 +61,7 @@ export default function DealerDashboard() {
           <p className="mb-1 text-[10px] font-bold text-crm-orange">DEALER PORTAL</p>
           <h1 className="break-words text-xl font-bold leading-tight lg:text-2xl">Welcome back{contactName ? `, ${contactName}` : ''}</h1>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
+          <p className="mt-2 inline-flex rounded-md border border-crm-pink bg-crm-pink-soft px-2.5 py-1.5 text-xs font-semibold text-crm-pink">Protection for vehicles up to 150,000 miles and 15 years old.</p>
         </div>
         <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
