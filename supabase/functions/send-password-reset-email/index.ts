@@ -177,7 +177,7 @@ serve(async (req) => {
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-                      We received a request to reset the password for your ${brand.name} ${isStaff ? 'admin dashboard' : 'customer portal'} account associated with <strong>${email}</strong>.
+                      We received a request to reset the password for your ${brand.name} ${accountLabel} account associated with <strong>${email}</strong>.
                     </p>
                     
                     <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">

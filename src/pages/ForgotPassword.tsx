@@ -93,7 +93,7 @@ const ForgotPassword: React.FC = () => {
             {/* Back Link */}
             <Button
               variant="ghost"
-              onClick={() => navigate('/customer-dashboard')}
+              onClick={() => navigate(loginPath)}
               className="mb-6 text-gray-500 hover:text-gray-700 hover:bg-gray-50 px-0 -ml-1"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -132,7 +132,7 @@ const ForgotPassword: React.FC = () => {
                     </Alert>
                     
                     <Button 
-                      onClick={() => navigate('/customer-dashboard')}
+                      onClick={() => navigate(loginPath)}
                       className="w-full h-12 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-semibold text-base shadow-lg shadow-orange-200/50"
                     >
                       Go to Login
