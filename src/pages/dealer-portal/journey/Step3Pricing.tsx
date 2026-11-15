@@ -255,7 +255,7 @@ const Step3Pricing: React.FC = () => {
             <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
             <span className="text-sm text-muted-foreground">{trade ? `${prices[months] != null ? 'Your selling price' : 'Recommended retail price'} ${cardRetail != null ? gbp(cardRetail) : '—'} inc. VAT` : 'per vehicle, inc. VAT'}</span>
             {trade && available && cardRetail != null && <Button type="button" variant="link" className="h-auto w-fit justify-start px-0 py-1 text-xs font-semibold text-crm-navy underline" onClick={event => { event.stopPropagation(); setTerm(months); setExactValue(String(cardRetail - (boostOn ? boostForTerm(boostCfg, months)?.retail_price || 0 : 0))); setExact(true); }}>Change price</Button>}
-            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
+            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn approx. {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </div>;
         })}
@@ -306,9 +306,9 @@ const Step3Pricing: React.FC = () => {
       {trade ? <div className="flex w-full shrink-0 items-stretch justify-center gap-4 rounded-lg border border-crm-line bg-card px-5 py-4 sm:w-auto sm:justify-start">
         <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
         <div className="min-w-0 text-center sm:text-left">
-          <p className="text-sm font-extrabold text-crm-navy">Profit</p>
+          <p className="text-sm font-extrabold text-crm-navy">Approx. profit</p>
           <strong className="mt-1 block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
-          <p className="mt-2 max-w-52 text-xs leading-5 text-muted-foreground">{term && prices[term] != null ? 'Based on your selling price' : 'Based on recommended retail price'}</p>
+          <p className="mt-2 max-w-52 text-xs leading-5 text-muted-foreground">{term && prices[term] != null ? 'Based on your selling price' : 'Based on recommended retail price'} · rounded to a whole number</p>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
