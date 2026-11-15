@@ -25,6 +25,7 @@ interface Code {
   is_active: boolean;
   created_at: string;
   min_order_amount: number;
+  allow_any_discount?: boolean;
   campaign_source: string | null;
 }
 
@@ -38,6 +39,7 @@ const empty = {
   valid_until: '',
   is_active: true,
   min_order_amount: 0,
+  allow_any_discount: false,
   campaign_source: '',
 };
 
@@ -85,7 +87,8 @@ const DealerAdminDiscountCodes: React.FC = () => {
       valid_from: dateUtc(form.valid_from),
       valid_until: dateUtc(form.valid_until, true),
       is_active: form.is_active,
-      min_order_amount: form.discount_type === 'fixed' ? Math.max(350, form.min_order_amount) : form.min_order_amount,
+      min_order_amount: form.discount_type === 'fixed' && !form.allow_any_discount ? Math.max(350, form.min_order_amount) : form.min_order_amount,
+      allow_any_discount: form.allow_any_discount,
       campaign_source: form.campaign_source || null,
     };
     const { error } = editingId ? await supabase.from('dealer_admin_discount_codes').update(payload).eq('id', editingId) : await supabase.from('dealer_admin_discount_codes').insert(payload);
@@ -154,7 +157,8 @@ const DealerAdminDiscountCodes: React.FC = () => {
                 </ToggleGroup>
               </div>
               <div><Label htmlFor="dealer-discount-value">{form.discount_type === 'fixed' ? 'Amount off (£)' : 'Percentage off (%)'}</Label><Input id="dealer-discount-value" type="number" inputMode="decimal" min={0.01} max={form.discount_type === 'percent' ? 100 : undefined} step={0.01} value={form.discount_value} onChange={(e) => setForm({ ...form, discount_value: Number(e.target.value) })} /></div>
-              <div><Label>Minimum spend (£)</Label><Input type="number" min={form.discount_type === 'fixed' ? 350 : 0} step={1} value={form.min_order_amount} onChange={event => setForm({ ...form, min_order_amount: Number(event.target.value) })} />{form.discount_type === 'fixed' && <p className="mt-1 text-xs text-muted-foreground">Fixed discounts require at least £350 spend.</p>}</div>
+              <div><Label>Minimum spend (£)</Label><Input type="number" min={form.discount_type === 'fixed' && !form.allow_any_discount ? 350 : 0} step={1} value={form.min_order_amount} onChange={event => setForm({ ...form, min_order_amount: Number(event.target.value) })} />{form.discount_type === 'fixed' && !form.allow_any_discount && <p className="mt-1 text-xs text-muted-foreground">Fixed discounts require at least £350 spend.</p>}</div>
+              <div className="flex items-start justify-between gap-3 rounded-md border p-3"><div><Label>Admin price override</Label><p className="text-xs text-muted-foreground">Allow any discount, ignoring the half-price and £350 limits.</p></div><Switch checked={form.allow_any_discount} onCheckedChange={v => setForm({ ...form, allow_any_discount: v })} /></div>
               <div><Label>Usage limit (blank = unlimited)</Label><Input type="number" min={1} value={form.usage_limit} onChange={(e) => setForm({ ...form, usage_limit: e.target.value })} /></div>
               <div className="grid grid-cols-2 gap-3">
                 <div><Label>Valid from</Label><Input type="date" value={form.valid_from} onChange={(e) => setForm({ ...form, valid_from: e.target.value })} /></div>
@@ -206,7 +210,7 @@ const DealerAdminDiscountCodes: React.FC = () => {
                       <span>Used {c.times_used}{c.usage_limit ? `/${c.usage_limit}` : ''}</span>
                       {c.valid_until && <span>Until {new Date(c.valid_until).toLocaleDateString('en-GB')}</span>}
                       <Switch checked={c.is_active} onCheckedChange={(v) => toggleActive(c.id, v)} />
-                      <Button size="sm" variant="ghost" title="Edit code" onClick={() => { setEditingId(c.id); setForm({ code: c.code, description: c.description || '', discount_type: c.discount_type, discount_value: c.discount_value, usage_limit: c.usage_limit ?? '', valid_from: c.valid_from?.slice(0, 10) || '', valid_until: c.valid_until ? new Date(Date.parse(c.valid_until) - 86400000).toISOString().slice(0, 10) : '', is_active: c.is_active, min_order_amount: c.min_order_amount, campaign_source: c.campaign_source || '' }); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
+                      <Button size="sm" variant="ghost" title="Edit code" onClick={() => { setEditingId(c.id); setForm({ code: c.code, description: c.description || '', discount_type: c.discount_type, discount_value: c.discount_value, usage_limit: c.usage_limit ?? '', valid_from: c.valid_from?.slice(0, 10) || '', valid_until: c.valid_until ? new Date(Date.parse(c.valid_until) - 86400000).toISOString().slice(0, 10) : '', is_active: c.is_active, min_order_amount: c.min_order_amount, campaign_source: c.campaign_source || '', allow_any_discount: !!c.allow_any_discount }); setOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
                       <Button size="sm" variant="ghost" title="Delete unused code" disabled={c.times_used > 0} onClick={() => remove(c.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
                     </div>
                   </div>
