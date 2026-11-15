@@ -1,3 +1,4 @@
+import { functionErrorMessage } from '@/lib/functionError';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -364,7 +365,7 @@ const DealerAdminSignUps: React.FC = () => {
           alternate_email: alt || null,
         },
       });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await functionErrorMessage(error));
       if ((data as any)?.error) throw new Error((data as any).error);
       if ((data as any)?.email_sent === false) throw new Error(`Login email NOT sent: ${(data as any)?.email_error}`);
       toast.success(`Login details sent to ${(data as any)?.sent_to || alt || selected.email_address}`);
@@ -382,7 +383,7 @@ const DealerAdminSignUps: React.FC = () => {
       const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
         body: { signup_id: row.id, decision: 'resend' },
       });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(await functionErrorMessage(error));
       if ((data as any)?.error) throw new Error((data as any).error);
       if ((data as any)?.email_sent === false) throw new Error(`Login email NOT sent: ${(data as any)?.email_error}`);
       toast.success(`Login details sent to ${(data as any)?.sent_to || row.email_address}`);
