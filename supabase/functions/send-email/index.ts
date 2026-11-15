@@ -263,7 +263,7 @@ serve(async (req) => {
                 <h3 style="margin-top: 0; color: #1a365d;">📞 Need a hand?</h3>
                 <p>If you've got any questions or need help, feel free to reach out:</p>
                 <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> ${brand.supportEmail}</div><div><strong>Phone:</strong> ${brand.quotePhone}</div></div>
-                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><div><strong>Email:</strong> ${brand.claimsEmail}</div><div><strong>Phone:</strong> ${brand.claimsPhone}</div></div>
+                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><p style="margin: 0 0 10px;">To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #1a365d; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.</p><div><strong>Email:</strong> ${brand.claimsEmail}</div><div><strong>Phone:</strong> ${brand.claimsPhone}</div></div>
                 <div style="margin-top: 10px; color: #666;"><strong>Hours:</strong> Monday to Friday, 9am – 5:30pm</div>
               </div>
               <p>Thanks again for choosing ${brand.name} — we're here to keep you covered and give you peace of mind on the road.</p>
@@ -358,7 +358,9 @@ serve(async (req) => {
     // Add Trustpilot BCC for welcome/policy emails only
     const isWelcomeEmail = templateId === 'policy_documents' || templateId === 'welcome_email';
     const emailPayload: any = {
-      from: brandFrom(brand, "Team", "support"),
+      ...(isWelcomeEmail
+        ? transactionalEmailIdentity(brand, "warranty_purchase")
+        : { from: brandFrom(brand, "Team", "support") }),
       to: [recipientEmail],
       // Trustpilot review invitations are Buy A Warranty only — never Panda Protect.
       ...(isWelcomeEmail && brand.key === 'buyawarranty'

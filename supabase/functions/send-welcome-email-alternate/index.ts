@@ -208,6 +208,11 @@ serve(async (req) => {
                 <p style="text-align: center;">
                     <a href="${brand.siteUrl}/customer-dashboard" class="button">Access Your Dashboard</a>
                 </p>
+
+                <div class="note">
+                    <strong>Need to make a claim?</strong><br>
+                    Visit our <a href="${makeClaimUrl(brand)}" style="color: ${brand.accentColor}; font-weight: 600;">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color: ${brand.accentColor};">${brand.claimsEmail}</a>. Please quote your warranty number.
+                </div>
                 
                 <p>If you have any questions about your coverage, please don't hesitate to contact our support team.</p>
                 

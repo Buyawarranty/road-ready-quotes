@@ -145,6 +145,11 @@ serve(async (req) => {
                       View My Warranty
                     </a>
                   </div>
+
+                  <p style="font-size: 15px; color: #374151; margin: 24px 0;">
+                    <strong>Need to make a claim?</strong><br>
+                    Visit our <a href="${makeClaimUrl(brand)}" style="color: ${brand.accentColor}; font-weight: 600;">Make a claim page</a> to start your claim online, or email <a href="mailto:${brand.claimsEmail}" style="color: ${brand.accentColor};">${brand.claimsEmail}</a>. Please quote your warranty number.
+                  </p>
                   
                   <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
                     If you have any questions about these changes, please don't hesitate to contact us.

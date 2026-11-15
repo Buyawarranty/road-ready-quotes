@@ -94,6 +94,7 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:14px;line-height:1.6">${intro}</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
         <p style="font-size:13px;color:#666;margin-top:22px">You can view and manage this warranty in your dealer portal.</p>
+        <p style="font-size:13px;color:#666;margin-top:16px"><strong>Need to make a claim?</strong> Your customer can visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> or email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>, quoting the warranty reference.</p>
         <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${brand.name} · ${brand.supportEmail}</p>
       </div>`;
 

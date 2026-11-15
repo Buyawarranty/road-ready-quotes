@@ -736,6 +736,9 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div style="margin-bottom: 15px;">
               <p style="color: #333; margin-bottom: 5px;"><strong>Claims and Repairs</strong></p>
+              <p style="color: #333; margin-bottom: 8px;">
+                To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #ff6b35; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.
+              </p>
               <p style="color: #333; margin-bottom: 3px;">
                 Email: <a href="mailto:${brand.claimsEmail}" style="color: #ff6b35; text-decoration: none;">${brand.claimsEmail}</a>
               </p>
