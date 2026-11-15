@@ -4,6 +4,7 @@
 // - Sets a reply-to on the sending brand so replies reach a real inbox.
 // The brand is taken from the sender address, so Panda and Buy A Warranty never mix.
 import { BRANDS, type Brand } from "./brand.ts";
+import { displayWarrantyPlanName } from "./warrantyPlanDisplay.ts";
 
 function brandFromSender(from: unknown): Brand | null {
   const s = String(from ?? "").toLowerCase();

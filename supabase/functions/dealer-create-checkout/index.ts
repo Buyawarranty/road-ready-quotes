@@ -7,6 +7,7 @@ import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
+import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
