@@ -16,6 +16,8 @@ const PasswordReset = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const requestedAudience = useRef(searchParams.get('audience'));
+  const loginPath = requestedAudience.current === 'dealer' ? '/dealer-portal/login' : '/auth';
+  const forgotPasswordPath = requestedAudience.current === 'dealer' ? '/forgot-password/?audience=dealer' : '/forgot-password/';
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);

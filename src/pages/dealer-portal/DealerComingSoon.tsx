@@ -521,7 +521,7 @@ const DealerComingSoon = () => {
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-semibold text-crm-navy">Password</span>
                     <Link
-                      to="/forgot-password/"
+                      to="/forgot-password/?audience=dealer"
                       className="text-xs font-semibold text-primary hover:underline"
                     >
                       Forgot password?
