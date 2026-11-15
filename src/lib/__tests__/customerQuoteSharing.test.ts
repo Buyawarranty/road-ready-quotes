@@ -61,3 +61,13 @@ describe('Adjustable customer quotes', () => {
     assert.equal(decodeCustomerQuote(buildCustomerQuoteUrl(bad).split('#')[1]), null);
   });
 });
+
+import { customerQuoteMessage as msgNoPrice } from '@/lib/customerQuoteSharing';
+import { describe as d2, it as i2, expect as e2 } from 'vitest';
+d2('no-price customer view sharing', () => {
+  i2('omits the price when shared from the no-price view', () => {
+    const m = msgNoPrice({ coverTitle: 'Comprehensive Warranty', price: 899, specs: [], included: [] } as any, 'https://x', { hidePrice: true });
+    e2(m).not.toContain('£899');
+    e2(m).toContain('Price on request');
+  });
+});
