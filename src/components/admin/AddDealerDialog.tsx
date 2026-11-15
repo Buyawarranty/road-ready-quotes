@@ -1,3 +1,4 @@
+import { Building2, User, Mail, Phone } from 'lucide-react';
 import React, { useState } from 'react';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -93,10 +94,10 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
           </div>
         ) : (
           <form onSubmit={submit} noValidate className="space-y-3">
-            <ValidatedField id="add-dealer-company_name" label="Dealership name *" placeholder="e.g. Smith Motors Ltd" value={form.company_name} onChange={set('company_name')} onBlur={blur('company_name')} error={errors.company_name} show={shown('company_name')} hasValue={!!form.company_name.trim()} maxLength={200} />
-            <ValidatedField id="add-dealer-contact_name" label="Contact name" placeholder="e.g. John Smith" autoComplete="name" value={form.contact_name} onChange={set('contact_name')} onBlur={blur('contact_name')} error={errors.contact_name} show={shown('contact_name')} hasValue={!!form.contact_name.trim()} maxLength={100} />
-            <ValidatedField id="add-dealer-email" label="Email *" type="email" placeholder="e.g. john@smithmotors.co.uk" autoComplete="email" value={form.email} onChange={set('email')} onBlur={blur('email')} error={errors.email} show={shown('email')} hasValue={!!form.email.trim()} maxLength={255} />
-            <ValidatedField id="add-dealer-phone" label="Phone *" type="tel" inputMode="tel" placeholder="e.g. 07700 900123" autoComplete="tel" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} error={errors.phone} show={shown('phone')} hasValue={!!form.phone.trim()} maxLength={20} />
+            <ValidatedField icon={Building2} id="add-dealer-company_name" label="Dealership name *" placeholder="e.g. Smith Motors Ltd" value={form.company_name} onChange={set('company_name')} onBlur={blur('company_name')} error={errors.company_name} show={shown('company_name')} hasValue={!!form.company_name.trim()} maxLength={200} />
+            <ValidatedField icon={User} id="add-dealer-contact_name" label="Contact name" placeholder="e.g. John Smith" autoComplete="name" value={form.contact_name} onChange={set('contact_name')} onBlur={blur('contact_name')} error={errors.contact_name} show={shown('contact_name')} hasValue={!!form.contact_name.trim()} maxLength={100} />
+            <ValidatedField icon={Mail} id="add-dealer-email" label="Email *" type="email" placeholder="e.g. john@smithmotors.co.uk" autoComplete="email" value={form.email} onChange={set('email')} onBlur={blur('email')} error={errors.email} show={shown('email')} hasValue={!!form.email.trim()} maxLength={255} />
+            <ValidatedField icon={Phone} id="add-dealer-phone" label="Phone *" type="tel" inputMode="tel" placeholder="e.g. 07700 900123" autoComplete="tel" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} error={errors.phone} show={shown('phone')} hasValue={!!form.phone.trim()} maxLength={20} />
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" onClick={() => close(false)}>Cancel</Button>
               <Button type="submit" disabled={saving}>{saving && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}Add dealer</Button>
