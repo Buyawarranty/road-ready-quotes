@@ -42,7 +42,7 @@ const CustomerQuotePage: React.FC = () => {
     <div className="mt-3 space-y-2">{adjustable.extras.map(extra => <label key={extra.key} className="flex items-center gap-2 text-sm"><Checkbox checked={extras.includes(extra.key)} onCheckedChange={checked => setExtras(current => checked ? [...current, extra.key] : current.filter(k => k !== extra.key))} /><span className="min-w-0 flex-1">{extra.label}</span>{!hidePrices && <span>+£{extra.price.toFixed(2)}</span>}</label>)}</div>
   </div> : undefined;
   const shareUrl = window.location.href;
-  const shareMessage = customerQuoteMessage({ ...data, price, specs, included }, shareUrl);
+  const shareMessage = customerQuoteMessage({ ...data, price, specs, included }, shareUrl, { hidePrice: hidePrices });
   const mailto = `mailto:?subject=${encodeURIComponent(`Your warranty quote${data.dealerName ? ` from ${data.dealerName}` : ''}`)}&body=${encodeURIComponent(shareMessage)}`;
   const shareSection = <section className="customer-quote-tools rounded-lg border border-crm-line bg-card p-5 sm:p-6" aria-label="Share this quote">
     <h2 className="mb-1 flex items-center gap-2 text-base font-bold"><Link2 className="h-5 w-5 text-crm-orange" />Share this quote</h2>
