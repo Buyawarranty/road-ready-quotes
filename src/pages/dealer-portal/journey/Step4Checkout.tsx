@@ -248,7 +248,6 @@ const Step4Checkout: React.FC = () => {
   const optionClass = (on: boolean) =>
     `w-full rounded-xl border p-4 text-left transition-colors ${on ? 'border-crm-orange bg-crm-orange-soft' : 'border-border bg-card hover:border-crm-orange/50'}`;
 
-  const blockedTitle = 'Dealer account billing unavailable';
   const blockedText =
     eligibility?.reason === 'new'
       ? `Account billing unlocks once your account is established. Pay by card for ${Math.max(1, (eligibility.required ?? 0) - (eligibility.paid_count ?? 0))} more warranty${(eligibility.required - eligibility.paid_count) === 1 ? '' : 's'} to unlock it (${eligibility.paid_count} of ${eligibility.required} so far).`
