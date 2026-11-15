@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Search, Printer, FileText, User, Car, Mail, Phone, Tag, Pencil, Save, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface CustomerData {
   id: string;

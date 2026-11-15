@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DealRecord } from '@/hooks/useTimesheets';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';

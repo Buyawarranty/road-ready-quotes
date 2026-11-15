@@ -8,6 +8,7 @@ import { OrderCommunicationTimeline } from './OrderCommunicationTimeline';
 import { SendToAlternateEmailDialog } from '../SendToAlternateEmailDialog';
 import { PrintableWarrantyLetter } from '../PrintableWarrantyLetter';
 import { EditCustomerDetailsDialog } from '../EditCustomerDetailsDialog';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { 
   Search, ChevronDown, ChevronUp, Phone, Mail, 
   FileText, RotateCcw, Upload, MessageSquare,

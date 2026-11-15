@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { GitMerge, AlertTriangle, Check } from 'lucide-react';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DuplicateCustomer {
   id: string;

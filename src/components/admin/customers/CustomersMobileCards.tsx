@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Phone, Mail, Car, Calendar, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface AnyCustomer {
   id: string;

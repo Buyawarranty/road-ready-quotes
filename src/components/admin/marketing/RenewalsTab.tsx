@@ -9,6 +9,7 @@ import { Search, Phone, Mail, Car, AlertTriangle, Clock, CheckCircle, Download, 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import {
   DropdownMenu,
   DropdownMenuContent,
