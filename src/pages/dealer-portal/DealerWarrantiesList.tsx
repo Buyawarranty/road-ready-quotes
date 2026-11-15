@@ -99,7 +99,7 @@ function StatCard({ icon: Icon, label, value, green = false }: { icon: LucideIco
       </div>
       <div className="min-w-0">
         <p className="text-sm font-medium text-muted-foreground sm:text-base">{label}</p>
-        <p className={`mt-1 truncate text-2xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
+        <p className={`mt-1 whitespace-nowrap text-2xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
       </div>
     </div>
   );
@@ -527,10 +527,11 @@ const DealerWarrantiesList = () => {
     if (currentRows.length === 0) return null;
     const start = (page - 1) * PAGE_SIZE + 1;
     const end = Math.min(page * PAGE_SIZE, currentRows.length);
-    const noun = activeTab === 'payments' ? 'invoice' : activeTab === 'cancellations' ? 'cancellation' : 'warranty';
+    const singular = activeTab === 'payments' ? 'invoice' : activeTab === 'cancellations' ? 'cancellation' : 'warranty';
+    const plural = activeTab === 'payments' ? 'invoices' : activeTab === 'cancellations' ? 'cancellations' : 'warranties';
     return (
       <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-        <p className="text-sm text-muted-foreground">Showing {start}–{end} of {currentRows.length} {noun}{currentRows.length === 1 ? '' : 's'}</p>
+        <p className="text-sm text-muted-foreground">Showing {start}–{end} of {currentRows.length} {currentRows.length === 1 ? singular : plural}</p>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl" disabled={page <= 1} onClick={() => setPage((current) => Math.max(1, current - 1))} aria-label="Previous page"><ChevronLeft className="h-4 w-4" /></Button>
           <span className="flex h-10 min-w-10 items-center justify-center rounded-xl bg-crm-orange px-3 text-sm font-bold text-primary-foreground" aria-label={`Page ${page} of ${pageCount}`}>{page}</span>
