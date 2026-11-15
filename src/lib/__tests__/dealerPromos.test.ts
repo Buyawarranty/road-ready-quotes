@@ -21,8 +21,8 @@ it('rejects at expiry', () => assert.throws(() => calculateDealerPromo(300, { ..
 it('enforces £50 minimum payable', () => assert.throws(() => calculateDealerPromo(50, promo)));
 it('enforces 50% floor', () => assert.throws(() => calculateDealerPromo(300, { ...promo, discount_value: 51 })));
 it('rounds in pence', () => assert.equal(calculateDealerPromo(120.99, promo).total, 108.89));
-test('admin override code allows £99 off a £199 warranty', () => {
+it('admin override code allows £99 off a £199 warranty', () => {
   const promo = { code: '99OFFDEALER', discount_type: 'fixed', discount_value: 99, min_order_amount: 0, is_active: true, times_used: 0 };
-  expect(() => calculateDealerPromo(199, promo)).toThrow();
-  expect(calculateDealerPromo(199, { ...promo, allow_any_discount: true }).total).toBe(100);
+  assert.throws(() => calculateDealerPromo(199, promo));
+  assert.equal(calculateDealerPromo(199, { ...promo, allow_any_discount: true }).total, 100);
 });
