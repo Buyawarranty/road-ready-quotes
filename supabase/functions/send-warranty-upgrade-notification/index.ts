@@ -1,7 +1,7 @@
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { resolveBrand, transactionalEmailIdentity, type Brand } from "../_shared/brand.ts";
+import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from "../_shared/brand.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
