@@ -19,9 +19,6 @@ type Channel = 'whatsapp' | 'email';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 export { isUkPhone } from '@/lib/dealerCustomerValidation';
 
-const PANDA_WHATSAPP = '443302295045';
-const PANDA_EMAIL = 'support@pandaprotect.co.uk';
-
 const Step2Customer: React.FC = () => {
   useEffect(() => {
     if (sessionStorage.getItem('dealer_confetti_light') === '1') {
@@ -56,38 +53,6 @@ const Step2Customer: React.FC = () => {
   }, [vehicle, navigate]);
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
-
-  const termMonths = plan?.term_months ?? plan?.duration_months;
-  const warrantyLabel = termMonths ? `Comprehensive Warranty, ${termMonths / 12} ${termMonths === 12 ? 'year' : 'years'}` : 'Comprehensive Warranty';
-  const vehicleLabel = [vehicle?.reg, [vehicle?.make, vehicle?.model].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
-
-  const handoff = async () => {
-    setError(null);
-    // Open the WhatsApp tab straight away so the browser doesn't block it after saving.
-    const tab = channel === 'whatsapp' ? window.open('', '_blank') : null;
-    const dealerName = dealer?.company_name || dealer?.name || 'Dealer';
-    const pending = createAssistedCustomer(channel, note);
-    setCustomer(pending);
-    const id = await save({ silent: true, markStatus: 'awaiting_panda', overrideCustomer: pending });
-    if (!id) { tab?.close(); setError('Your quote could not be saved. Please try again.'); return; }
-    const ref = id.slice(0, 8).toUpperCase();
-    const message = [
-      `Hi Panda Protect, please complete this warranty for us.`,
-      `Quote ref: ${ref}`,
-      `Dealer: ${dealerName}`,
-      `Vehicle: ${vehicleLabel}`,
-      `Warranty: ${warrantyLabel}`,
-      note ? `Note: ${note}` : '',
-      `Customer details to follow in this message.`,
-    ].filter(Boolean).join('\n');
-    if (channel === 'whatsapp') {
-      const url = `https://wa.me/${PANDA_WHATSAPP}?text=${encodeURIComponent(message)}`;
-      if (tab) tab.location.href = url; else window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      window.location.href = `mailto:${PANDA_EMAIL}?subject=${encodeURIComponent(`Warranty request ${ref} · ${vehicle?.reg || ''}`)}&body=${encodeURIComponent(message)}`;
-    }
-    navigate('/dealer-portal/quote/checkout');
-  };
 
   const submitAssisted = async () => {
     setError(null);
