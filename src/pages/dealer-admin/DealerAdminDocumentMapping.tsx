@@ -102,7 +102,7 @@ export default function DealerAdminDocumentMapping() {
               <TableBody>
                 {rows.map(r => (
                   <TableRow key={r.id}>
-                    <TableCell className="font-medium">{r.plan_name}</TableCell>
+                    <TableCell className="font-medium">{displayWarrantyPlanName(r.plan_name)}</TableCell>
                     <TableCell><Badge variant="outline">{r.vehicle_type}</Badge></TableCell>
                     <TableCell className="font-mono text-xs break-all">{r.document_path}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{new Date(r.updated_at).toLocaleDateString()}</TableCell>

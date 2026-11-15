@@ -662,7 +662,7 @@ const CustomerDetailsStepTest: React.FC<CustomerDetailsStepTestProps> = ({
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Plan:</span>
-                      <span className="font-semibold">{planName}</span>
+                      <span className="font-semibold">{displayWarrantyPlanName(planName)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Duration:</span>
