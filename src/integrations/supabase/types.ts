@@ -6134,6 +6134,7 @@ export type Database = {
       }
       dealer_admin_discount_codes: {
         Row: {
+          allow_any_discount: boolean
           campaign_source: string | null
           code: string
           created_at: string
@@ -6150,6 +6151,7 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          allow_any_discount?: boolean
           campaign_source?: string | null
           code: string
           created_at?: string
@@ -6166,6 +6168,7 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          allow_any_discount?: boolean
           campaign_source?: string | null
           code?: string
           created_at?: string
