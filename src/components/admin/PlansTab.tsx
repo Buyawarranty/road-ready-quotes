@@ -335,7 +335,7 @@ export const PlansTab = () => {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-xl">{displayWarrantyPlanName(plan.name)}</CardTitle>
                     <div className="mt-2 space-y-1">
                       <p className="text-lg font-bold text-orange-600">
                         £{plan.monthly_price}/month
@@ -374,7 +374,7 @@ export const PlansTab = () => {
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Edit {plan.name} Plan</DialogTitle>
+                          <DialogTitle>Edit {displayWarrantyPlanName(plan.name)} Plan</DialogTitle>
                         </DialogHeader>
                         
                         {editingPlan && (
