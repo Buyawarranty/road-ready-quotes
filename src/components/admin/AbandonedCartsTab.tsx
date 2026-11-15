@@ -519,7 +519,7 @@ export const AbandonedCartsTab: React.FC = () => {
                     <div className="bg-gray-50 p-3 rounded space-y-2">
                       <p className="text-sm font-medium">Selected Plan</p>
                       <p className="text-sm text-gray-600">
-                        {cart.plan_name} - {cart.payment_type} 
+                        {displayWarrantyPlanName(cart.plan_name)} - {cart.payment_type} 
                         {cart.mileage && ` | ${parseInt(cart.mileage).toLocaleString()} miles`}
                       </p>
                       {cart.cart_metadata?.total_price && (

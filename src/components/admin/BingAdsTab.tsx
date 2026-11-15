@@ -431,7 +431,7 @@ export const BingAdsTab: React.FC = () => {
                       {[c.vehicle_make, c.vehicle_model].filter(Boolean).join(' ') || '—'}
                       <div className="text-xs text-muted-foreground">{c.registration_plate || ''}</div>
                     </TableCell>
-                    <TableCell className="text-sm">{c.plan_type || '—'}</TableCell>
+                    <TableCell className="text-sm">{displayWarrantyPlanName(c.plan_type, '—')}</TableCell>
                     <TableCell className="text-sm">
                       {c.signup_date ? format(new Date(c.signup_date), 'dd MMM yyyy') : '—'}
                     </TableCell>

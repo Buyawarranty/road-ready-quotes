@@ -298,7 +298,7 @@ export const CollectPaymentsTab: React.FC<Props> = ({ userRole, onNavigateToTab 
                         )}
                       </td>
                       <td className="px-3 py-2 align-middle">
-                        <div className="text-xs text-muted-foreground">{r.plan_type || '—'}</div>
+                        <div className="text-xs text-muted-foreground">{displayWarrantyPlanName(r.plan_type, '—')}</div>
                         <div className="font-semibold">
                           {r.final_amount ? `£${Number(r.final_amount).toFixed(2)}` : '—'}
                         </div>

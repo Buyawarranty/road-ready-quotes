@@ -2359,7 +2359,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-2 justify-end">
-                      <p className="text-sm font-medium">{customer.plan_type}</p>
+                      <p className="text-sm font-medium">{displayWarrantyPlanName(customer.plan_type)}</p>
                       {getCustomerSource(customer) === 'website' && (
                         <Globe className="h-3 w-3 text-blue-500" />
                       )}

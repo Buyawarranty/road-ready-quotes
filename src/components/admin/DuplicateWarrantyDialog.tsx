@@ -69,7 +69,7 @@ export const DuplicateWarrantyDialog: React.FC<DuplicateWarrantyDialogProps> = (
             </div>
             <div>
               <span className="text-muted-foreground">Plan:</span>
-              <p className="font-medium">{record.plan_type}</p>
+              <p className="font-medium">{displayWarrantyPlanName(record.plan_type)}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Amount:</span>

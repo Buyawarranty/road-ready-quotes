@@ -452,7 +452,7 @@ const CustomerLoginDebugTool = () => {
                   <>
                     <div><strong>Name:</strong> {searchResults.customer.name}</div>
                     <div><strong>Registration:</strong> {searchResults.customer.registration_plate || 'N/A'}</div>
-                    <div><strong>Plan:</strong> {searchResults.customer.plan_type}</div>
+                    <div><strong>Plan:</strong> {displayWarrantyPlanName(searchResults.customer.plan_type)}</div>
                   </>
                 )}
                 <div><strong>Policies:</strong> {searchResults.policies?.length || 0}</div>

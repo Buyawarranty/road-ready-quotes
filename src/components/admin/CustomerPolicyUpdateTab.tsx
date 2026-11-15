@@ -403,7 +403,7 @@ const CustomerPolicyUpdateTab = () => {
                 </Badge>
               </div>
               <CardDescription>
-                {customer.email} • {customer.plan_type}
+                {customer.email} • {displayWarrantyPlanName(customer.plan_type)}
                 {policies.length > 0 && ` • ${policies.length} polic${policies.length === 1 ? 'y' : 'ies'}`}
               </CardDescription>
             </CardHeader>

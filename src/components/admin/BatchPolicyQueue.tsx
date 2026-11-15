@@ -629,7 +629,7 @@ ${rows}
                       <td className="py-2 px-3 align-top">
                         <span className="font-mono font-semibold bg-muted px-1.5 py-0.5 rounded text-xs">{c.registration_plate || '—'}</span>
                       </td>
-                      <td className="py-2 px-3 text-xs align-top">{c.policy?.plan_type || c.plan_type || '—'}</td>
+                      <td className="py-2 px-3 text-xs align-top">{displayWarrantyPlanName(c.policy?.plan_type || c.plan_type, '—')}</td>
                       <td className="py-2 px-3 text-xs font-mono align-top">{c.policy?.warranty_number || c.warranty_number || c.warranty_reference_number || '—'}</td>
                       <td className="py-2 px-3 text-xs align-top max-w-[240px]">
                         <div className="text-muted-foreground truncate">{formatAddress(c).join(', ') || 'No address'}</div>

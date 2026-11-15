@@ -3005,7 +3005,7 @@ export const CustomersTab = ({
         'Address': `${customer.street || ''} ${customer.town || ''} ${customer.county || ''} ${customer.postcode || ''}`.trim(),
         'Registration Plate': customer.registration_plate || '',
         'Vehicle': `${customer.vehicle_make || ''} ${customer.vehicle_model || ''} ${customer.vehicle_year || ''}`.trim(),
-        'Plan Type': customer.plan_type,
+        'Plan Type': displayWarrantyPlanName(customer.plan_type, ''),
         'Payment Type': customer.payment_type || '',
         'Signup Date': customer.signup_date ? new Date(customer.signup_date).toLocaleDateString('en-GB') : '',
         'Time to Lead': formatTimeToLead((customer as any).lead_date, customer.signup_date) || '',
