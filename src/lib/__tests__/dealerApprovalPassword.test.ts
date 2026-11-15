@@ -18,7 +18,7 @@ for (const scenario of [
     const updates: any[] = [];
     const admin = {
       from: () => ({ select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: scenario.prior }) }) }) }),
-      auth: { admin: { updateUserById: async (...args: any[]) => { updates.push(args); } } },
+      auth: { admin: { updateUserById: async (...args: any[]) => { updates.push(args); return { error: null }; } } },
     };
     assert.equal(await runBranch(admin, { id: 'account', user_metadata: { retained: true } }, scenario.resend, 'Temporary!7'), scenario.password);
     assert.equal(updates.length, scenario.updates);
