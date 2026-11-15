@@ -272,7 +272,7 @@ const Step4Checkout: React.FC = () => {
         {/* Warranty details */}
         <section className="min-w-0">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
-            <div className="grid gap-5 sm:grid-cols-2 sm:divide-x sm:divide-border">
+            <div className="grid gap-5">
               <div className="flex gap-3">
                 <Car className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                 <div className="min-w-0">
@@ -283,7 +283,7 @@ const Step4Checkout: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-3 sm:pl-5">
+              <div className="flex gap-3 border-t border-border pt-5">
                 <User className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                 <div className="min-w-0">
                   <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</p><button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-blue"><Pencil className="h-3.5 w-3.5" /> Edit</button></div>
@@ -333,7 +333,7 @@ const Step4Checkout: React.FC = () => {
         </section>
 
         {/* Payment */}
-        <section className="min-w-0 self-start">
+        <section className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
           {introLeft > 0 && (
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
