@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { createAssistedCustomer, isAssistedCustomer } from '@/lib/dealerAssistedCheckout';
 import { dealerCustomerErrors, isUkPhone } from '@/lib/dealerCustomerValidation';
@@ -27,8 +26,7 @@ const Step2Customer: React.FC = () => {
     }
   }, []);
   const navigate = useNavigate();
-  const { vehicle, customer, plan, setCustomer } = useDealerJourney();
-  const { dealer } = useDealerAuth();
+  const { vehicle, customer, setCustomer } = useDealerJourney();
   const { save, saving } = useDealerQuoteSave(2);
 
   const hasDetails = Boolean(customer?.name && !customer.address_line2?.startsWith('[Pending:'));
