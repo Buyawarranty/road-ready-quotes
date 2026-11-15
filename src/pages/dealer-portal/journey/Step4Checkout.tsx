@@ -246,7 +246,7 @@ const Step4Checkout: React.FC = () => {
   );
 
   const optionClass = (on: boolean) =>
-    `w-full rounded-xl border p-4 text-left transition-colors ${on ? 'border-crm-orange bg-crm-orange-soft' : 'border-border bg-card hover:border-crm-orange/50'}`;
+    `w-full rounded-2xl border p-4 text-left transition-colors ${on ? 'border-crm-orange bg-crm-orange-soft' : 'border-border bg-card hover:border-crm-orange/50'}`;
 
   const blockedText =
     eligibility?.reason === 'new'
@@ -264,16 +264,14 @@ const Step4Checkout: React.FC = () => {
       subtitle="Confirm the customer, vehicle and warranty details before issuing."
       backTo="/dealer-portal/quote/customer"
     >
+      <div className="mb-5 flex items-center justify-between gap-3 border-b border-border pb-4">
+        <h2 className="text-2xl font-extrabold text-crm-navy sm:text-3xl">Trade checkout</h2>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-crm-green-soft px-3 py-1.5 text-sm font-bold text-crm-green-deep"><ShieldCheck className="h-4 w-4" /> Trade account</span>
+      </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[52fr_48fr]">
         {/* Warranty details */}
-        <section className="rounded-xl border border-border bg-card p-5 sm:p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-crm-navy">Warranty details</h2>
-            <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">
-              <Pencil className="h-4 w-4" /> Edit
-            </button>
-          </div>
-          <div className="rounded-xl border border-border p-4 sm:p-5">
+        <section className="min-w-0">
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
             <div className="grid gap-5 sm:grid-cols-2 sm:divide-x sm:divide-border">
               <div className="flex gap-3">
                 <Car className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
@@ -288,7 +286,7 @@ const Step4Checkout: React.FC = () => {
               <div className="flex gap-3 sm:pl-5">
                 <User className="mt-0.5 h-5 w-5 shrink-0 text-crm-navy" />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</p>
+                  <div className="flex items-center justify-between gap-2"><p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Customer</p><button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} className="inline-flex items-center gap-1 text-sm font-semibold text-crm-blue"><Pencil className="h-3.5 w-3.5" /> Edit</button></div>
                   {assisted ? <p className="mt-1 text-sm font-semibold text-crm-navy">Panda Protect will complete the customer details.</p> : customerComplete ? (
                     <>
                       <p className="mt-1 break-words text-lg font-bold text-crm-navy">{customer.name}</p>
@@ -318,7 +316,7 @@ const Step4Checkout: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="mt-5 rounded-xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+          <div className="mt-5 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep"><Gift className="h-5 w-5" /> Your trade benefits</p>
             <ul className="mt-3 space-y-3">
               <li className="flex items-start gap-3">
@@ -335,9 +333,9 @@ const Step4Checkout: React.FC = () => {
         </section>
 
         {/* Payment */}
-        <section className="self-start rounded-xl border border-border bg-card p-5 sm:p-6">
+        <section className="min-w-0 self-start">
           {introLeft > 0 && (
-            <div className="mb-6 rounded-xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+            <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
               <div className="mt-2 flex items-center justify-between gap-2 text-sm">
                 <span className="text-crm-navy">{Math.min(paidCount, INTRO_PAID_TARGET)} of {INTRO_PAID_TARGET} paid warranties completed</span>
