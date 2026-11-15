@@ -77,9 +77,7 @@ Deno.serve(async (req) => {
 <tr><td style="padding:24px;font-size:15px;line-height:1.6;">
 <p style="margin:0 0 16px;">${greeting}</p>
 <p style="margin:0 0 16px;">Here are your login details for the ${brand.name} admin dashboard. There are two steps.</p>
-<p style="margin:0 0 6px;font-weight:bold;">Step 1 — first screen (Protected Area)</p>
-<p style="margin:0 0 16px;font-family:monospace;background:#f3f4f6;padding:10px;border-radius:6px;">Gateway password: <strong>${GATEWAY_PASSWORD}</strong></p>
-<p style="margin:0 0 6px;font-weight:bold;">Step 2 — your own login</p>
+<p style="margin:0 0 6px;">Step 1: enter the gateway password on the first screen (Protected Area). Step 2: sign in with your email and password.</p>
 ${credentialsBlockHtml([{ label: "Gateway password", value: GATEWAY_PASSWORD }, { label: "Email", value: email }, { label: "Password", value: password }, { label: "Login page", value: loginUrl }])}
 <p style="text-align:center;margin:24px 0;"><a href="${loginUrl}" style="background:${brand.accentColor};color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:6px;font-weight:bold;">Open the login page</a></p>
 <p style="margin:0;font-size:13px;color:#6b7280;">Please keep these details private and change your password after you sign in.</p>

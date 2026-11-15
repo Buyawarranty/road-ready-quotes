@@ -1,3 +1,4 @@
+import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -131,17 +132,7 @@ serve(async (req) => {
             <!-- Login Details -->
             <div style="background-color: #f8fafc; border-left: 4px solid #1e40af; padding: 20px; margin: 20px 0; border-radius: 6px;">
                 <h3 style="color: #1e40af; margin: 0 0 15px 0; font-size: 18px;">Login Details</h3>
-                <div style="font-family: monospace; background-color: white; padding: 15px; border-radius: 4px; border: 1px solid #e2e8f0;">
-                    <div style="margin-bottom: 10px;">
-                        <strong>Email:</strong> ${email}
-                    </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>Temporary Password:</strong> <span style="color: #dc2626; font-weight: bold;">${tempPassword}</span>
-                    </div>
-                    <div>
-                        <strong>Dashboard URL:</strong> <a href="${brand.siteUrl}/admin" style="color: #1e40af;">${brand.siteUrl}/admin</a>
-                    </div>
-                </div>
+                ${credentialsBlockHtml([{ label: "Email", value: email }, { label: "Temporary password", value: tempPassword }, { label: "Dashboard", value: `${brand.siteUrl}/admin` }])}
             </div>
 
             <!-- Security Notice -->

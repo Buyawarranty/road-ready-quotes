@@ -442,7 +442,7 @@ serve(async (req) => {
             ${tempPassword ? "" : `<p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Email:</strong> ${email}</p>`}
             ${userHasResetPassword
               ? `<p style="margin: 8px 0; color: #555555; font-size: 13px; font-style: italic;">You have already set your dashboard password. Use your existing password to log in, or reset it from the login page if needed.</p>`
-              : `<p style="margin: 8px 0; color: #333333; font-size: 15px;"><strong>Temporary Password:</strong> <code style="background-color: #ffffff; padding: 4px 8px; border-radius: 4px; font-family: 'Courier New', monospace; color: #333333; border: 1px solid #dee2e6;">${tempPassword}</code></p>
+              : `${credentialsBlockHtml([{ label: "Email", value: email }, { label: "Temporary password", value: tempPassword }])}
                  <p style="margin: 8px 0; color: #555555; font-size: 13px; font-style: italic;">Use your previous password if you have one or you may reset it.</p>`
             }
           </div>
