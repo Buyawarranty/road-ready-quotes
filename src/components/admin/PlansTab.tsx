@@ -656,7 +656,7 @@ export const PlansTab = () => {
                       {addOnsArray.slice(0, 3).map((item: any, index: number) => (
                         <li key={index} className="flex items-center">
                           <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                          {item}
+                          {displayWarrantyPlanName(item)}
                         </li>
                       ))}
                       {addOnsArray.length > 3 && (

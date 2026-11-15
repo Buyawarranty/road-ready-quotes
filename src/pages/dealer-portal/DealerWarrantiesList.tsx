@@ -439,7 +439,7 @@ const DealerWarrantiesList = () => {
                           </TableCell>
                           <TableCell className="text-gray-700">{r.name || '—'}</TableCell>
                           <TableCell className="text-gray-700 capitalize">
-                            {String(r.plan_type).toLowerCase() === 'gold' ? 'Platinum' : r.plan_type || '—'}
+                            {displayWarrantyPlanName(r.plan_type, '—')}
                           </TableCell>
                           <TableCell className="text-right text-gray-900 font-bold">
                             £{Number(r.final_amount || 0).toFixed(2)}

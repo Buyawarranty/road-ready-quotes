@@ -677,7 +677,7 @@ const SpecialVehiclePricing: React.FC<SpecialVehiclePricingProps> = ({ vehicleDa
                       <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
                         <Check className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-base text-gray-700">{feature}</span>
+                      <span className="text-base text-gray-700">{displayWarrantyPlanName(feature)}</span>
                     </div>
                   ))}
                 </div>
