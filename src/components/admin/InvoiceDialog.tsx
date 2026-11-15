@@ -384,7 +384,7 @@ export const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
                         <p className="font-medium text-sm">{customer.name}</p>
                         <p className="text-xs text-gray-500">{customer.email}</p>
                         <p className="text-xs text-gray-400">
-                          {customer.registration_plate || 'No reg'} • {customer.plan_type || 'Platinum'} • {formatCurrency(customer.final_amount)}
+                          {customer.registration_plate || 'No reg'} • {displayWarrantyPlanName(customer.plan_type, 'Platinum')} • {formatCurrency(customer.final_amount)}
                         </p>
                       </div>
                     </div>

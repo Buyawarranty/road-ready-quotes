@@ -884,7 +884,7 @@ export const PostedLettersLog: React.FC = () => {
                       <td className="py-2 px-2 font-medium">{entry.customer_name}</td>
                       <td className="py-2 px-2 text-muted-foreground text-xs">{entry.customer_email || '—'}</td>
                       <td className="py-2 px-2 text-xs font-mono">{entry.warranty_number || '—'}</td>
-                      <td className="py-2 px-2 text-xs">{entry.plan_type || '—'}</td>
+                      <td className="py-2 px-2 text-xs">{displayWarrantyPlanName(entry.plan_type, '—')}</td>
                       <td className="py-2 px-2">
                         <div className="flex items-center gap-1">
                           <DropdownMenu>
