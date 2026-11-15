@@ -10,6 +10,7 @@ import { DateRangeFilter } from './DateRangeFilter';
 import { DateRange } from 'react-day-picker';
 import { calculateAdminQuoteWarrantyPrice, DURATION_MONTHS, type PaymentPeriod } from '@/lib/pricingMatrix';
 import { calculateAddOnPrice, normalizePaymentType } from '@/lib/addOnsUtils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { loadPricingVersionHistory, withPricingAsOf, type PricingVersionSnapshot } from '@/lib/pricing/historicalPricing';
 import { format, startOfDay, endOfDay, startOfMonth, endOfMonth, subDays, subMonths, addMonths, startOfWeek, endOfWeek } from 'date-fns';
 import { TrendingDown, TrendingUp, PoundSterling, Users, AlertTriangle, Search, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ChevronDown as ChevronDownIcon, Settings } from 'lucide-react';
@@ -1082,7 +1083,7 @@ export const DiscountsGivenTab: React.FC = () => {
                           </TableCell>
                           <TableCell className="text-xs whitespace-nowrap">{[c.vehicle_make, c.vehicle_model].filter(Boolean).join(' ') || '-'}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-xs">{c.plan_type}</Badge>
+                            <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(c.plan_type)}</Badge>
                           </TableCell>
                           <TableCell className="text-xs">{durationLabel}</TableCell>
                           <TableCell className="text-xs">£{c.voluntary_excess ?? 100}</TableCell>

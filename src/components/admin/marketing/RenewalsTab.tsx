@@ -9,6 +9,7 @@ import { Search, Phone, Mail, Car, AlertTriangle, Clock, CheckCircle, Download, 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -148,7 +149,7 @@ export const RenewalsTab: React.FC = () => {
       'Phone': r.phone || '',
       'Registration Plate': r.registration_plate || '',
       'Mileage': r.mileage || '',
-      'Plan Type': r.plan_type || '',
+      'Plan Type': displayWarrantyPlanName(r.plan_type, ''),
       'Payment Type': r.payment_type || '',
       'Claim Limit': r.claim_limit ?? '',
       'Policy Start Date': r.policy_start_date ? format(new Date(r.policy_start_date), 'dd/MM/yyyy') : '',
@@ -509,7 +510,7 @@ export const RenewalsTab: React.FC = () => {
                       {r.mileage && <p className="text-xs text-muted-foreground">{r.mileage} miles</p>}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-xs">{r.plan_type}</Badge>
+                      <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(r.plan_type)}</Badge>
                     </TableCell>
                     <TableCell className="text-sm">{r.payment_type}</TableCell>
                     <TableCell className="text-sm">

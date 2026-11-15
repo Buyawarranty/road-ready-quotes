@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, FileText, Trash2, ExternalLink } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Document {
   id: string;
@@ -217,7 +218,7 @@ const DocumentUpload = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="basic">Basic</SelectItem>
-                  <SelectItem value="gold">Gold</SelectItem>
+                  <SelectItem value="gold">Platinum</SelectItem>
                   <SelectItem value="platinum">Platinum</SelectItem>
                   <SelectItem value="electric">Electric Vehicle EV Extended Warranty</SelectItem>
                   <SelectItem value="motorbike">Motorbike Extended Warranty</SelectItem>
@@ -292,7 +293,7 @@ const DocumentUpload = () => {
                     <div>
                       <p className="font-medium">{doc.document_name}</p>
                       <p className="text-sm text-gray-500">
-                        {doc.plan_type.charAt(0).toUpperCase() + doc.plan_type.slice(1)} Plan
+                        {displayWarrantyPlanName(doc.plan_type.charAt(0).toUpperCase() + doc.plan_type.slice(1))} Plan
                         {doc.file_size && ` • ${Math.round(doc.file_size / 1024)} KB`}
                       </p>
                     </div>

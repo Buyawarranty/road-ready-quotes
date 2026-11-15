@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { 
   Eye, EyeOff, RefreshCw, LogIn, UserCheck, Search, 
   Send, Save, User, Mail, Phone, MapPin, Accessibility, 
@@ -667,7 +668,7 @@ const CustomerLoginsTab = () => {
                 </div>
               </div>
               <CardDescription>
-                {customer.email} • {customer.registration_plate} • {customer.plan_type}
+                {customer.email} • {customer.registration_plate} • {displayWarrantyPlanName(customer.plan_type)}
                 {policies.length > 0 && ` • ${policies.length} polic${policies.length === 1 ? 'y' : 'ies'}`}
               </CardDescription>
             </CardHeader>
@@ -806,7 +807,7 @@ const CustomerLoginsTab = () => {
                       <SelectContent>
                         {policies.map((policy) => (
                           <SelectItem key={policy.id} value={policy.id}>
-                            {policy.policy_number} - {policy.plan_type} ({policy.status})
+                            {policy.policy_number} - {displayWarrantyPlanName(policy.plan_type)} ({policy.status})
                           </SelectItem>
                         ))}
                       </SelectContent>

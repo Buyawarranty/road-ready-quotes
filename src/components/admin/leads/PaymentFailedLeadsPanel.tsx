@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, Phone, Mail, Hand, X, Copy, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface StruggleAlert {
   id: string;
@@ -263,7 +264,7 @@ export const PaymentFailedLeadsPanel: React.FC<Props> = ({ userRole }) => {
                 )}
                 {isSuperAdmin && a.plan_name && (
                   <span className="inline-flex items-center bg-red-800/60 text-white text-[10px] px-2 py-0.5 rounded">
-                    {a.plan_name}{a.amount ? ` · £${a.amount}` : ''}
+                    {displayWarrantyPlanName(a.plan_name)}{a.amount ? ` · £${a.amount}` : ''}
                   </span>
                 )}
               </div>

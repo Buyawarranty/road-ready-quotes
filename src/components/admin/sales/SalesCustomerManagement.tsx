@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import {
   Select,
   SelectContent,
@@ -573,7 +574,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Plans</SelectItem>
-                <SelectItem value="gold">Gold</SelectItem>
+                <SelectItem value="gold">Platinum</SelectItem>
                 <SelectItem value="electric">Electric</SelectItem>
                 <SelectItem value="phev">PHEV</SelectItem>
                 <SelectItem value="motorbike">Motorbike</SelectItem>
@@ -845,7 +846,7 @@ const SalesCustomerManagement: React.FC<SalesCustomerManagementProps> = ({ curre
                     {/* WarType (Plan Type) */}
                     <TableCell>
                       <Badge variant="outline" className="capitalize">
-                        {customer.plan_type}
+                        {displayWarrantyPlanName(customer.plan_type)}
                       </Badge>
                     </TableCell>
                     

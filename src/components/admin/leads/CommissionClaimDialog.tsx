@@ -112,7 +112,7 @@ export const CommissionClaimDialog: React.FC<CommissionClaimDialogProps> = ({
             <Textarea
               value={claimNotes}
               onChange={(e) => setClaimNotes(e.target.value)}
-              placeholder="e.g. Called the customer on 28 Feb, discussed the Gold plan, they said they'd buy online..."
+              placeholder="e.g. Called the customer on 28 Feb, discussed the Platinum plan, they said they'd buy online..."
               rows={3}
               required
             />

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Phone, Mail, Car, Calendar, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface AnyCustomer {
   id: string;
@@ -91,7 +92,7 @@ export const CustomersMobileCards: React.FC<CustomersMobileCardsProps> = ({
                   {(c.warranty_type || c.plan_type) && (
                     <Badge variant="outline" className="text-[10px] uppercase font-semibold border bg-blue-50 text-blue-800 border-blue-200">
                       <Shield className="h-2.5 w-2.5 mr-1" />
-                      {c.warranty_type || c.plan_type}
+                      {displayWarrantyPlanName(c.warranty_type || c.plan_type)}
                     </Badge>
                   )}
                 </div>

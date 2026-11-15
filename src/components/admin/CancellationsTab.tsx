@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Search, CalendarIcon, RefreshCw, Download, Ban, Pencil, Check, X, FileWarning, FileSpreadsheet } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
@@ -768,7 +769,7 @@ export const CancellationsTab: React.FC<{
                         {[record.vehicle_make, record.vehicle_model].filter(Boolean).join(' ') || 'N/A'}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">{record.plan_type}</Badge>
+                        <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(record.plan_type)}</Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1 items-start">

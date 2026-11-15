@@ -9,6 +9,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Search, Printer, Tag, X, Users, Plus, Mail, Car, Trash2, AlertTriangle, FileDown, CheckCircle2, Save, Pencil, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface QueuedCustomer {
   id: string;
@@ -628,7 +629,7 @@ ${rows}
                       <td className="py-2 px-3 align-top">
                         <span className="font-mono font-semibold bg-muted px-1.5 py-0.5 rounded text-xs">{c.registration_plate || '—'}</span>
                       </td>
-                      <td className="py-2 px-3 text-xs align-top">{c.policy?.plan_type || c.plan_type || '—'}</td>
+                      <td className="py-2 px-3 text-xs align-top">{displayWarrantyPlanName(c.policy?.plan_type || c.plan_type, '—')}</td>
                       <td className="py-2 px-3 text-xs font-mono align-top">{c.policy?.warranty_number || c.warranty_number || c.warranty_reference_number || '—'}</td>
                       <td className="py-2 px-3 text-xs align-top max-w-[240px]">
                         <div className="text-muted-foreground truncate">{formatAddress(c).join(', ') || 'No address'}</div>
@@ -782,7 +783,7 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
   ].filter(Boolean);
 
   const warrantyRef = policy?.warranty_number || c.warranty_number || c.warranty_reference_number || 'N/A';
-  const planType = policy?.plan_type || c.plan_type || 'N/A';
+  const planType = displayWarrantyPlanName(policy?.plan_type || c.plan_type, 'N/A');
   const claimLimit = policy?.claim_limit || c.claim_limit;
   const excess = policy?.voluntary_excess ?? c.voluntary_excess;
   const labourRate = c.labour_rate;

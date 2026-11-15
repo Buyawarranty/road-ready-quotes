@@ -10,6 +10,7 @@ import { Facebook, Eye, Users, ShoppingCart, TrendingUp, MousePointerClick, Refr
 import { Button } from '@/components/ui/button';
 import { DateRange } from 'react-day-picker';
 import { DateRangeFilter } from './DateRangeFilter';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
 
@@ -677,7 +678,7 @@ export const FacebookAdsTab: React.FC = () => {
                       <TableCell className="text-xs">{format(new Date(customer.signup_date), 'dd/MM/yy')}</TableCell>
                       <TableCell className="text-sm font-medium">{customer.name || customer.email}</TableCell>
                       <TableCell className="text-sm">{customer.registration_plate || `${customer.vehicle_make || ''} ${customer.vehicle_model || ''}`.trim() || '-'}</TableCell>
-                      <TableCell className="text-sm">{customer.plan_type || '-'}</TableCell>
+                      <TableCell className="text-sm">{displayWarrantyPlanName(customer.plan_type, '-')}</TableCell>
                       <TableCell className="text-right font-semibold text-green-700">
                         £{(customer.final_amount || 0).toFixed(2)}
                       </TableCell>

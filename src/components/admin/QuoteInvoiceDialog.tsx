@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import {
   Dialog,
   DialogContent,
@@ -341,7 +342,7 @@ function buildInvoiceHtml(f: ReturnType<QuoteInvoiceDialogHydrate>): string {
   <table>
     <thead><tr><th>Description</th><th>Cover details</th><th style="text-align:right">Amount (GBP)</th></tr></thead>
     <tbody><tr>
-      <td><strong>Vehicle warranty — ${f.planName || ''}</strong><br>${f.vehicle || ''}<br>Reg: ${f.regNumber || 'N/A'}</td>
+      <td><strong>Vehicle warranty — ${displayWarrantyPlanName(f.planName, '')}</strong><br>${f.vehicle || ''}<br>Reg: ${f.regNumber || 'N/A'}</td>
       <td>Duration: ${f.durationLabel || ''}<br>Claim limit: ${gbp(Number(f.claimLimit))}<br>Voluntary excess: ${gbp(Number(f.excessAmount))}<br>Labour rate: ${gbp(Number(f.labourRate))}/hr</td>
       <td style="text-align:right">${amount}</td>
     </tr></tbody>

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, RefreshCw, LogIn, UserCheck, Search } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const CustomerLoginDebugTool = () => {
   const { toast } = useToast();
@@ -451,7 +452,7 @@ const CustomerLoginDebugTool = () => {
                   <>
                     <div><strong>Name:</strong> {searchResults.customer.name}</div>
                     <div><strong>Registration:</strong> {searchResults.customer.registration_plate || 'N/A'}</div>
-                    <div><strong>Plan:</strong> {searchResults.customer.plan_type}</div>
+                    <div><strong>Plan:</strong> {displayWarrantyPlanName(searchResults.customer.plan_type)}</div>
                   </>
                 )}
                 <div><strong>Policies:</strong> {searchResults.policies?.length || 0}</div>
@@ -541,7 +542,7 @@ const CustomerLoginDebugTool = () => {
                   {customerInfo.policies.map((policy: any) => (
                     <div key={policy.id} className="text-xs bg-white p-2 rounded">
                       <div><strong>Policy:</strong> {policy.policy_number}</div>
-                      <div><strong>Plan:</strong> {policy.plan_type}</div>
+                      <div><strong>Plan:</strong> {displayWarrantyPlanName(policy.plan_type)}</div>
                       <div><strong>Status:</strong> {policy.status}</div>
                     </div>
                   ))}

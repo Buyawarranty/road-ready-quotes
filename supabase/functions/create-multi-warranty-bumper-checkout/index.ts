@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { resolveBrand } from "../_shared/brand.ts";
+import { displayWarrantyPlanName } from "../_shared/warrantyPlanDisplay.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -114,7 +115,7 @@ serve(async (req) => {
     
     // Create product description for all warranties
     const productDescription = items.map((item: any, index: number) => ({
-      item: `${item.planName} Vehicle Warranty - Vehicle ${index + 1} (${item.vehicleData.regNumber})`,
+      item: `${displayWarrantyPlanName(item.planName)} Vehicle Warranty - Vehicle ${index + 1} (${item.vehicleData.regNumber})`,
       quantity: "1",
       price: item.totalPrice.toString()
     }));

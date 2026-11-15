@@ -7,6 +7,7 @@ import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
+import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -151,6 +152,8 @@ Deno.serve(async (req: Request) => {
       if (error || !eligible?.eligible) throw new Error('Dealer account billing is unavailable. Please pay by card.');
     }
     const payable = promo?.total ?? plan.dealer_price;
+    // The legacy `gold` code is retained for pricing and metadata, but the product is Platinum everywhere customers see it.
+    const planDisplayName = displayWarrantyPlanName(plan.plan_type).toUpperCase();
 
     // Build the customer row payload (shared by both paths)
     const now = new Date();
@@ -344,7 +347,7 @@ Deno.serve(async (req: Request) => {
           price_data: {
             currency: 'gbp',
             product_data: {
-              name: `Dealer Warranty · ${plan.plan_type.toUpperCase()} · ${plan.duration_months}mo`,
+              name: `Dealer Warranty · ${planDisplayName} · ${plan.duration_months}mo`,
               description: assisted ? `${vehicle.reg} · Panda Protect to complete customer details` : `${vehicle.reg} for ${customer.name}`,
             },
             unit_amount: Math.round(payable * 100),

@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Search, Star, CheckCircle2, XCircle, Clock, Filter, RefreshCw, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface CustomerReviewData {
   id: string;
@@ -354,7 +355,7 @@ export const ReviewsTab = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{customer.plan_type}</Badge>
+                        <Badge variant="outline">{displayWarrantyPlanName(customer.plan_type)}</Badge>
                       </TableCell>
                       <TableCell>
                         {format(new Date(customer.signup_date), 'dd MMM yyyy')}

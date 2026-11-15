@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, Upload, Download } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DocumentMapping {
   id: string;
@@ -242,7 +243,7 @@ export const DocumentMappingTab = () => {
             ) : (
               mappings.map((mapping) => (
                 <TableRow key={mapping.id}>
-                  <TableCell className="font-medium">{mapping.plan_name}</TableCell>
+                  <TableCell className="font-medium">{displayWarrantyPlanName(mapping.plan_name)}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       mapping.vehicle_type === 'standard' 

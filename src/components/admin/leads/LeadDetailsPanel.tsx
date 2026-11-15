@@ -10,6 +10,7 @@ import {
   ChevronDown, ChevronUp, 
   CreditCard, Printer, Award
 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { CommissionClaimDialog } from './CommissionClaimDialog';
 import { CommissionClaimReviewPanel } from './CommissionClaimReviewPanel';
 import { toast } from 'sonner';
@@ -283,7 +284,7 @@ export const LeadDetailsPanel: React.FC<LeadDetailsPanelProps> = ({
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {lead.plan_name && (
-                      <Badge className="bg-primary text-primary-foreground">{lead.plan_name}</Badge>
+                      <Badge className="bg-primary text-primary-foreground">{displayWarrantyPlanName(lead.plan_name)}</Badge>
                     )}
                     {lead.payment_type && (
                       <Badge variant="secondary">{lead.payment_type === '12months' ? '12 Month' : lead.payment_type === '24months' ? '24 Month' : lead.payment_type}</Badge>

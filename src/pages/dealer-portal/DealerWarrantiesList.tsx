@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Download, FileText, CreditCard, Loader2, Mail, XCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -438,7 +439,7 @@ const DealerWarrantiesList = () => {
                           </TableCell>
                           <TableCell className="text-gray-700">{r.name || '—'}</TableCell>
                           <TableCell className="text-gray-700 capitalize">
-                            {r.plan_type || '—'}
+                            {displayWarrantyPlanName(r.plan_type, '—')}
                           </TableCell>
                           <TableCell className="text-right text-gray-900 font-bold">
                             £{Number(r.final_amount || 0).toFixed(2)}

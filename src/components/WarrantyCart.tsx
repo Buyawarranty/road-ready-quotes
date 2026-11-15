@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface WarrantyCartProps {
   onAddMore: () => void;
@@ -224,7 +225,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
                       <div className="space-y-2">
                         <div className="flex justify-between">
                           <span className="text-gray-600">Plan:</span>
-                          <span className="font-semibold">{item.planName}</span>
+                          <span className="font-semibold">{displayWarrantyPlanName(item.planName)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-600">Cover period:</span>
@@ -344,7 +345,7 @@ const WarrantyCart: React.FC<WarrantyCartProps> = ({ onAddMore, onProceedToCheck
                 <div className="space-y-4 mb-6">
                   {items.map((item, index) => (
                     <div key={item.id} className="flex justify-between">
-                      <span className="text-gray-600">Warranty {index + 1} ({item.planName}):</span>
+                      <span className="text-gray-600">Warranty {index + 1} ({displayWarrantyPlanName(item.planName)}):</span>
                       <span className="font-semibold">£{item.pricingData.totalPrice}</span>
                     </div>
                   ))}

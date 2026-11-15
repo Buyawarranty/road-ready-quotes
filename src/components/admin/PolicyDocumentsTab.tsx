@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/use-toast';
 import { Search, Printer, FileText, User, Car, Mail, Phone, Tag, Pencil, Save, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface CustomerData {
   id: string;
@@ -496,7 +497,7 @@ export const PolicyDocumentsTab: React.FC = () => {
   const claimLimit = selectedPolicy?.claim_limit || selectedCustomer?.claim_limit;
   const excess = selectedPolicy?.voluntary_excess ?? selectedCustomer?.voluntary_excess;
   const labourRate = selectedCustomer?.labour_rate;
-  const planType = selectedPolicy?.plan_type || selectedCustomer?.plan_type || 'N/A';
+  const planType = displayWarrantyPlanName(selectedPolicy?.plan_type || selectedCustomer?.plan_type, 'N/A');
   const todayDate = format(new Date(), 'd MMMM yyyy');
   const addons = getAddonsList();
   const address = formatAddress();
@@ -855,7 +856,7 @@ export const PolicyDocumentsTab: React.FC = () => {
                   size="sm"
                   onClick={() => setSelectedPolicy(pol)}
                 >
-                  {pol.policy_number} — {pol.plan_type}
+                  {pol.policy_number} — {displayWarrantyPlanName(pol.plan_type)}
                 </Button>
               ))}
             </div>

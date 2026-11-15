@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { TrendingUp, Users, DollarSign, Award } from 'lucide-react';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface AdminUser {
   id: string;
@@ -363,7 +364,7 @@ const CustomerAssignmentsTable: React.FC<{
             <TableCell>{customer.name}</TableCell>
             <TableCell>{customer.email}</TableCell>
             <TableCell>
-              <Badge variant="secondary">{customer.plan_type}</Badge>
+              <Badge variant="secondary">{displayWarrantyPlanName(customer.plan_type)}</Badge>
             </TableCell>
             <TableCell>£{customer.final_amount?.toLocaleString() || '0'}</TableCell>
             <TableCell>{getUserName(customer.assigned_to || '')}</TableCell>

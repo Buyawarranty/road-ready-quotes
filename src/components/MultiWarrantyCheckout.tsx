@@ -11,6 +11,7 @@ import { CartItem } from '@/contexts/CartContext';
 import { trackFormSubmission, trackConversion, trackEvent } from '@/utils/analytics';
 import { getAddOnInfo, isAddOnAutoIncluded, normalizePaymentType } from '@/lib/addOnsUtils';
 import { getTrackingData } from '@/utils/gclidCapture';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface MultiWarrantyCheckoutProps {
   items: CartItem[];
@@ -858,7 +859,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
               {items.length > 0 && (
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">{items[0].planName} Plan</h3>
+                    <h3 className="text-xl font-bold text-gray-900">{displayWarrantyPlanName(items[0].planName)} Plan</h3>
                     <p className="text-gray-600">
                       {items[0].paymentType === 'yearly' ? '12 months' : 
                        items[0].paymentType === 'two_yearly' ? '24 months' : '36 months'}
@@ -924,7 +925,7 @@ const MultiWarrantyCheckout: React.FC<MultiWarrantyCheckoutProps> = ({ items, on
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-bold text-gray-900">Warranty {index + 1}</h2>
                       <Badge variant="outline" className="text-sm font-medium px-3 py-1">
-                        {item.planName}
+                        {displayWarrantyPlanName(item.planName)}
                       </Badge>
                     </div>
 

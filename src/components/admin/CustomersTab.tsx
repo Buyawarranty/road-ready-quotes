@@ -87,6 +87,7 @@ import { WEBSITE_SALES_ACCOUNT_ID } from '@/constants/salesDefaults';
 import { useViewAs } from '@/contexts/ViewAsContext';
 import { CustomersMobileCards } from './customers/CustomersMobileCards';
 import { isNorthernIrelandPlate } from '@/lib/niPlate';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 // Helper function to map plan types to Warranties 2000 warranty types
 function getWarrantyType(planType: string): string {
@@ -3004,7 +3005,7 @@ export const CustomersTab = ({
         'Address': `${customer.street || ''} ${customer.town || ''} ${customer.county || ''} ${customer.postcode || ''}`.trim(),
         'Registration Plate': customer.registration_plate || '',
         'Vehicle': `${customer.vehicle_make || ''} ${customer.vehicle_model || ''} ${customer.vehicle_year || ''}`.trim(),
-        'Plan Type': customer.plan_type,
+        'Plan Type': displayWarrantyPlanName(customer.plan_type, ''),
         'Payment Type': customer.payment_type || '',
         'Signup Date': customer.signup_date ? new Date(customer.signup_date).toLocaleDateString('en-GB') : '',
         'Time to Lead': formatTimeToLead((customer as any).lead_date, customer.signup_date) || '',
@@ -5516,7 +5517,7 @@ Please log in and change your password after first login.`;
                                           className="justify-start flex-wrap gap-2"
                                         >
                                           <ToggleGroupItem value="Basic" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Basic</ToggleGroupItem>
-                                          <ToggleGroupItem value="Gold" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Gold</ToggleGroupItem>
+                                          <ToggleGroupItem value="Gold" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Platinum</ToggleGroupItem>
                                           <ToggleGroupItem value="Platinum" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Platinum</ToggleGroupItem>
                                           <ToggleGroupItem value="Electric" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">Electric</ToggleGroupItem>
                                           <ToggleGroupItem value="PHEV" className="px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">PHEV</ToggleGroupItem>
@@ -6706,7 +6707,7 @@ Please log in and change your password after first login.`;
                     </span>
                   </TableCell>
                    <TableCell>
-                     <Badge variant="secondary">{getWarrantyType(customer.plan_type)}</Badge>
+                     <Badge variant="secondary">{displayWarrantyPlanName(getWarrantyType(customer.plan_type))}</Badge>
                    </TableCell>
                     <TableCell className="text-center">
                       <Badge variant="outline" className="font-mono">
@@ -7238,7 +7239,7 @@ Please log in and change your password after first login.`;
                           <NumberPlate plateNumber={customer.registration_plate} />
                         </TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{customer.plan_type}</Badge>
+                          <Badge variant="secondary">{displayWarrantyPlanName(customer.plan_type)}</Badge>
                         </TableCell>
                         <TableCell>
                           {customer.deleted_at ? format(new Date(customer.deleted_at), 'dd/MM/yyyy HH:mm') : 'N/A'}

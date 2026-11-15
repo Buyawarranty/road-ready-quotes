@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { calculateAddOnPrice, getAutoIncludedAddOns } from '@/lib/addOnsUtils';
 import { calculateVehiclePriceAdjustment, applyPriceAdjustment } from '@/lib/vehicleValidation';
 import { supabase } from '@/integrations/supabase/client';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface WarrantyDurationStepProps {
   vehicleData: any;
@@ -396,7 +397,7 @@ const WarrantyDurationStep: React.FC<WarrantyDurationStepProps> = ({
               <span>{vehicleData.year}</span>
             </div>
             <div className="flex-1 text-center">
-              <span>{planName}</span>
+              <span>{displayWarrantyPlanName(planName, 'Platinum')}</span>
             </div>
           </div>
         </div>

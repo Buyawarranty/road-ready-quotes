@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface CommissionClaim {
   id: string;
@@ -561,7 +562,7 @@ export function TimesheetApprovals() {
                                 <tr key={deal.id} className="border-b border-gray-100">
                                   <td className="py-2 pr-4">{format(new Date(deal.deal_date), 'dd/MM')}</td>
                                   <td className="py-2 pr-4 font-mono text-xs">{deal.vehicle_reg || '-'}</td>
-                                  <td className="py-2 pr-4">{deal.plan_type || '-'}</td>
+                                  <td className="py-2 pr-4">{displayWarrantyPlanName(deal.plan_type, '-')}</td>
                                   <td className="py-2 pr-4 text-gray-500 truncate max-w-[200px]">{deal.notes || '-'}</td>
                                 </tr>
                               ))}

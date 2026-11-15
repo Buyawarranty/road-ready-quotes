@@ -8,6 +8,7 @@ import { SentQuote } from '@/hooks/useLeadQuotes';
 import { FileText, ExternalLink, Check, Clock, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface QuoteSentCellProps {
   quotes: SentQuote[];
@@ -76,7 +77,7 @@ export const QuoteSentCell = memo<QuoteSentCellProps>(({ quotes, leadEmail }) =>
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {quote.vehicle_reg} • {quote.plan_name}
+                      {quote.vehicle_reg} • {displayWarrantyPlanName(quote.plan_name)}
                     </p>
                   </div>
                   <div className="text-right">

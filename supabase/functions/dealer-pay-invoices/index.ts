@@ -4,6 +4,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { resolveBrand } from '../_shared/brand.ts';
+import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -84,7 +85,7 @@ Deno.serve(async (req: Request) => {
       price_data: {
         currency: 'gbp',
         product_data: {
-          name: `Plan ${String(r.plan_type || '').toUpperCase()} · ${r.payment_type || ''}mo`,
+          name: `Plan ${displayWarrantyPlanName(r.plan_type).toUpperCase()} · ${r.payment_type || ''}mo`,
           description: `${r.registration_plate || ''} · ${r.name || ''}`,
         },
         unit_amount: Math.round(Number(r.final_amount || 0) * 100),

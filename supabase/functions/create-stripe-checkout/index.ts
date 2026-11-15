@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { resolveBrand } from "../_shared/brand.ts";
+import { displayWarrantyPlanName } from "../_shared/warrantyPlanDisplay.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -243,7 +244,7 @@ serve(async (req) => {
       price_data: {
         currency: "gbp",
         product_data: { 
-          name: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Warranty Plan - ${paymentType.replace(/([A-Z])/g, ' $1').trim()}`,
+          name: `${displayWarrantyPlanName(planType.charAt(0).toUpperCase() + planType.slice(1))} Warranty Plan - ${paymentType.replace(/([A-Z])/g, ' $1').trim()}`,
           description: `Vehicle Registration: ${vehicleData?.regNumber || customerData?.vehicle_reg || 'N/A'}`
         },
         unit_amount: Math.round(totalAmount * 100), // Convert to pence
@@ -324,7 +325,7 @@ serve(async (req) => {
         selectedPlan: {
           id: planType,
           paymentType: paymentType,
-          name: planName,
+          name: displayWarrantyPlanName(planName),
           pricingData: {
             totalPrice: finalAmount,
             monthlyPrice: paymentType === 'monthly' ? finalAmount : 0,

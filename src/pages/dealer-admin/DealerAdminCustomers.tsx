@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Plus, Search, Archive, ArchiveRestore, Pencil, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DealerCustomer {
   id: string;
@@ -265,7 +266,7 @@ const DealerAdminCustomers: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-4 py-3 text-foreground">{dealerName(r.dealer_id)}</td>
-                      <td className="px-4 py-3 text-foreground">{r.plan_type || '—'}</td>
+                      <td className="px-4 py-3 text-foreground">{displayWarrantyPlanName(r.plan_type, '—')}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {r.archived_at ? (

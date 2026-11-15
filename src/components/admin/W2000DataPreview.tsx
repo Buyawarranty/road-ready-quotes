@@ -2,6 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Customer {
   id: string;
@@ -215,7 +216,7 @@ export const W2000DataPreview: React.FC<W2000DataPreviewProps> = ({ customer }) 
     lost_key: (policy?.lost_key === true || customer?.lost_key === true),
     consequential: (policy?.consequential === true || customer?.consequential === true),
     
-    Notes: `Plan: ${policy?.claim_limit || customer.plan_type || 'N/A'} | Payment: ${paymentType || 'N/A'} | ClaimLimit: ${maxClaimAmount} | VolExcess: ${policy?.voluntary_excess || customer.voluntary_excess || 0} | LabourRate: £${customer.labour_rate || 70}/hr`
+    Notes: `Plan: ${displayWarrantyPlanName(policy?.claim_limit || customer.plan_type, 'N/A')} | Payment: ${paymentType || 'N/A'} | ClaimLimit: ${maxClaimAmount} | VolExcess: ${policy?.voluntary_excess || customer.voluntary_excess || 0} | LabourRate: £${customer.labour_rate || 70}/hr`
   };
 
   const addOns = [

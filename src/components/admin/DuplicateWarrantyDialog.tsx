@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { PurchaseSourceBadge } from '@/components/admin/PurchaseSourceBadge';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DuplicateWarrantyDialogProps {
   isOpen: boolean;
@@ -68,7 +69,7 @@ export const DuplicateWarrantyDialog: React.FC<DuplicateWarrantyDialogProps> = (
             </div>
             <div>
               <span className="text-muted-foreground">Plan:</span>
-              <p className="font-medium">{record.plan_type}</p>
+              <p className="font-medium">{displayWarrantyPlanName(record.plan_type)}</p>
             </div>
             <div>
               <span className="text-muted-foreground">Amount:</span>

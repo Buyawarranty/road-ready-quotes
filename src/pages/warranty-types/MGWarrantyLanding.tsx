@@ -453,7 +453,6 @@ const MGWarrantyLanding: React.FC = () => {
       "name": "MG Warranty Plans",
       "itemListElement": [
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Basic MG Warranty" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Gold MG Warranty" } },
         { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Platinum MG Warranty" } }
       ]
     }
@@ -549,7 +548,7 @@ const MGWarrantyLanding: React.FC = () => {
     "step": [
       { "@type": "HowToStep", "position": 1, "name": "Enter Registration", "text": "Enter your MG's registration number" },
       { "@type": "HowToStep", "position": 2, "name": "Select Mileage", "text": "Choose your current mileage band" },
-      { "@type": "HowToStep", "position": 3, "name": "Choose Plan", "text": "Select from Basic, Gold, or Platinum cover" },
+      { "@type": "HowToStep", "position": 3, "name": "Choose Plan", "text": "Select from Basic or Platinum cover" },
       { "@type": "HowToStep", "position": 4, "name": "Get Protected", "text": "Complete your purchase and get instant cover" }
     ]
   };

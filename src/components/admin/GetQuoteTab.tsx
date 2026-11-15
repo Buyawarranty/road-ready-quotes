@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { isVehicleBlockedByRules, MANUAL_REFERRAL_MESSAGE } from '@/lib/pricing/vehicleRules';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { ArrowRight, Mail, MessageCircle, Loader2, History, RefreshCw, Eye, Zap, CreditCard, Calendar, Link as LinkIcon, UserCheck, CheckCircle2, Send, AlertCircle, Save, Pencil, ChevronDown, Gift, BookOpen, Trash2, CalendarIcon, Info, Users, KeyRound, FileText, Car, Copy, X, Gauge, Shield, PoundSterling, ChevronRight, Check, Lock as LockIcon, Ban, CalendarDays, Sparkles, LifeBuoy, AlertTriangle } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DuplicateWarrantyDialog } from './DuplicateWarrantyDialog';
@@ -7495,7 +7496,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                             <div><span className="font-medium">Registration:</span> {preview.vehicle.registration}</div>
                             <div><span className="font-medium">Vehicle:</span> {preview.vehicle.make} {preview.vehicle.model} ({preview.vehicle.year})</div>
                             <div><span className="font-medium">Mileage:</span> {preview.vehicle.mileage} miles</div>
-                            <div><span className="font-medium">Plan:</span> {preview.policy.planType}</div>
+                            <div><span className="font-medium">Plan:</span> {displayWarrantyPlanName(preview.policy.planType)}</div>
                             <div><span className="font-medium">Duration:</span> {preview.policy.duration}</div>
                             <div><span className="font-medium">Start Date:</span> {preview.policy.startDate}</div>
                             <div><span className="font-medium">End Date:</span> {preview.policy.endDate}</div>

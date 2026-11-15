@@ -10,6 +10,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Search, CalendarIcon, RefreshCw, Download, Banknote, Pencil, Check, X } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { format, startOfMonth, endOfMonth, subMonths, startOfDay, endOfDay, subDays } from 'date-fns';
@@ -591,7 +592,7 @@ export const RefundsPaidTab: React.FC<{
                           {[record.vehicle_make, record.vehicle_model].filter(Boolean).join(' ') || 'N/A'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">{record.plan_type}</Badge>
+                          <Badge variant="outline" className="text-xs">{displayWarrantyPlanName(record.plan_type)}</Badge>
                         </TableCell>
                         {isFinancialRole && (
                           <TableCell className="text-sm font-medium text-destructive">

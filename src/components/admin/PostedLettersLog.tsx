@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface PostedLetterEntry {
   id: string;
@@ -742,7 +743,7 @@ export const PostedLettersLog: React.FC = () => {
                             {c.registration_plate}
                           </span>
                         )}
-                        <p className="text-xs text-muted-foreground mt-0.5">{c.plan_type}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{displayWarrantyPlanName(c.plan_type)}</p>
                       </div>
                     </button>
                   ))
@@ -883,7 +884,7 @@ export const PostedLettersLog: React.FC = () => {
                       <td className="py-2 px-2 font-medium">{entry.customer_name}</td>
                       <td className="py-2 px-2 text-muted-foreground text-xs">{entry.customer_email || '—'}</td>
                       <td className="py-2 px-2 text-xs font-mono">{entry.warranty_number || '—'}</td>
-                      <td className="py-2 px-2 text-xs">{entry.plan_type || '—'}</td>
+                      <td className="py-2 px-2 text-xs">{displayWarrantyPlanName(entry.plan_type, '—')}</td>
                       <td className="py-2 px-2">
                         <div className="flex items-center gap-1">
                           <DropdownMenu>

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
+import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -499,7 +500,7 @@ serve(async (req) => {
       VolEx: String(finalVoluntaryExcess),
       Notes: (() => {
         const labourRate = customer?.labour_rate || 70;
-        let notesStr = `Plan: ${policy?.plan_type || customer.plan_type || 'N/A'} | Payment: ${paymentType || 'N/A'} | ClaimLimit: ${finalClaimLimit} | VolExcess: ${finalVoluntaryExcess} | LabourRate: £${labourRate}/hr`;
+        let notesStr = `Plan: ${displayWarrantyPlanName(policy?.plan_type || customer.plan_type, 'N/A')} | Payment: ${paymentType || 'N/A'} | ClaimLimit: ${finalClaimLimit} | VolExcess: ${finalVoluntaryExcess} | LabourRate: £${labourRate}/hr`;
         
         // Add seasonal bonus information if present
         const bonusMonths = policy?.seasonal_bonus_months || customer?.seasonal_bonus_months || 0;

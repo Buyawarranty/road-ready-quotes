@@ -10,6 +10,7 @@ import { ApiConnectivityTest } from './ApiConnectivityTest';
 import { SalesAgeMileageAnalytics } from './SalesAgeMileageAnalytics';
 import { DateRangeFilter } from './DateRangeFilter';
 import { CostEfficiencyPanel } from './scoreboard/CostEfficiencyPanel';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { CoverOptionsMixPanel } from './analytics/CoverOptionsMixPanel';
 import { DailyRevenueTrendPanel } from './analytics/DailyRevenueTrendPanel';
 import { CustomerDemographicsPanel } from './analytics/CustomerDemographicsPanel';
@@ -2358,7 +2359,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
                   </div>
                   <div className="text-right">
                     <div className="flex items-center gap-2 justify-end">
-                      <p className="text-sm font-medium">{customer.plan_type}</p>
+                      <p className="text-sm font-medium">{displayWarrantyPlanName(customer.plan_type)}</p>
                       {getCustomerSource(customer) === 'website' && (
                         <Globe className="h-3 w-3 text-blue-500" />
                       )}

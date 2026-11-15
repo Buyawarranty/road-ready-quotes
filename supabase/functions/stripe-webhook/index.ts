@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { displayWarrantyPlanName } from "../_shared/warrantyPlanDisplay.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -49,7 +50,7 @@ async function fireServerSideConversion(
           currency: 'GBP',
           gclid: gclid,
           items: [{
-            item_name: session.metadata?.plan_type || 'Warranty',
+            item_name: displayWarrantyPlanName(session.metadata?.plan_type),
             price: transactionValue,
             quantity: 1
           }]

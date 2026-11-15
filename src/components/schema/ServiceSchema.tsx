@@ -61,13 +61,6 @@ export const ServiceSchema = ({
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
-              "name": "Gold Warranty Cover"
-            }
-          },
-          {
-            "@type": "Offer",
-            "itemOffered": {
-              "@type": "Service",
               "name": "Platinum Warranty Cover"
             }
           }

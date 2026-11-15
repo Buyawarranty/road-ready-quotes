@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, Copy, Send, Loader2 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface FollowUpEmailDialogProps {
   cartId: string;
@@ -40,7 +41,7 @@ const generateEmailTemplate = (
 
   return `Hi ${name},
 
-I noticed you were looking at protecting your ${vehicle} with our ${planName || 'warranty'} plan but didn't complete your purchase.
+I noticed you were looking at protecting your ${vehicle} with our ${displayWarrantyPlanName(planName, 'warranty')} plan but didn't complete your purchase.
 
 I wanted to reach out personally to see if you had any questions or if there's anything I can help with?
 

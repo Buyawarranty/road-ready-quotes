@@ -315,7 +315,7 @@ const DealerCreateQuote = () => {
                   <SelectTrigger className={inputClass}><SelectValue placeholder="Select plan" /></SelectTrigger>
                   <SelectContent className="bg-gray-100 border-gray-300">
                     <SelectItem value="basic">Basic</SelectItem>
-                    <SelectItem value="gold">Gold</SelectItem>
+                    <SelectItem value="gold">Platinum</SelectItem>
                     <SelectItem value="platinum">Platinum</SelectItem>
                   </SelectContent>
                 </Select>

@@ -497,7 +497,7 @@ const handler = async (req: Request): Promise<Response> => {
       if (planLower.includes('basic') || planLower.includes('blue')) {
         return 'Basic';
       } else if (planLower.includes('gold')) {
-        return 'Gold';
+        return 'Platinum';
       } else if (planLower.includes('platinum')) {
         return 'Platinum';
       } else if (planLower.includes('premium') && planLower.includes('suv')) {

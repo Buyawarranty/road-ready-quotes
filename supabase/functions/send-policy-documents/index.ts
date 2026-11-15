@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { encode as base64Encode } from "https://deno.land/std@0.190.0/encoding/base64.ts";
 import { resolveBrand } from "../_shared/brand.ts";
+import { displayWarrantyPlanName } from "../_shared/warrantyPlanDisplay.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -356,10 +357,11 @@ serve(async (req) => {
     const getDisplayPlanType = (planType: string): string => {
       const planLower = planType.toLowerCase();
       
+      // Gold is a legacy internal code; its public warranty name is Platinum.
+      if (planLower.includes('gold')) return displayWarrantyPlanName(planType);
       // Map various plan type formats to standardized display names
       if (planLower.includes('basic') || planLower.includes('blue') || 
-          planLower.includes('gold') || planLower.includes('platinum') || 
-          planLower.includes('premium')) {
+          planLower.includes('platinum') || planLower.includes('premium')) {
         return 'Premium';
       } else if (planLower.includes('phev') || planLower.includes('hybrid')) {
         return 'PHEV';

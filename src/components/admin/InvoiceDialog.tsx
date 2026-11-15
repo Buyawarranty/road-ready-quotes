@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { FileText, Send, Download, Mail, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Customer {
   id: string;
@@ -172,7 +173,7 @@ const generateInvoiceHTML = (customer: Customer): string => {
           <tr>
             <td><strong>Vehicle Warranty</strong></td>
             <td>
-              ${customer.plan_type || 'Platinum'} Plan<br>
+              ${displayWarrantyPlanName(customer.plan_type, 'Platinum')} Plan<br>
               ${customer.vehicle_make || ''} ${customer.vehicle_model || ''}<br>
               Reg: ${customer.registration_plate || 'N/A'}<br>
               Duration: ${customer.payment_type === '36months' ? '3 Years' : customer.payment_type === '24months' ? '2 Years' : '1 Year'}
@@ -383,7 +384,7 @@ export const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
                         <p className="font-medium text-sm">{customer.name}</p>
                         <p className="text-xs text-gray-500">{customer.email}</p>
                         <p className="text-xs text-gray-400">
-                          {customer.registration_plate || 'No reg'} • {customer.plan_type || 'Platinum'} • {formatCurrency(customer.final_amount)}
+                          {customer.registration_plate || 'No reg'} • {displayWarrantyPlanName(customer.plan_type, 'Platinum')} • {formatCurrency(customer.final_amount)}
                         </p>
                       </div>
                     </div>

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { readAppliedPromos, setPromoSuppressed } from '@/lib/promoStorage';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const PricingTable = lazy(() => import('@/components/PricingTable'));
 
@@ -133,7 +134,7 @@ export default function Step3PreviewPanel() {
               previousLabourRate={70}
               onPlanSelected={(_planId, paymentType, planName) => {
                 toast.info(
-                  `Preview only — “${planName ?? 'plan'}” (${paymentType}) was not added to a cart.`
+                  `Preview only — “${displayWarrantyPlanName(planName, 'plan')}” (${paymentType}) was not added to a cart.`
                 );
               }}
             />

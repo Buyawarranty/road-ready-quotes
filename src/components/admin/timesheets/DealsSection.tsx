@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DealRecord } from '@/hooks/useTimesheets';
 import { cn } from '@/lib/utils';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
@@ -292,7 +293,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                           <div><span className="text-gray-500">Reg:</span> <strong>{foundCustomer.registration_plate}</strong></div>
                           <div><span className="text-gray-500">Vehicle:</span> <strong>{foundCustomer.vehicle_make} {foundCustomer.vehicle_model}</strong></div>
                           <div><span className="text-gray-500">Customer:</span> <strong>{foundCustomer.name}</strong></div>
-                          <div><span className="text-gray-500">Plan:</span> <strong className="capitalize">{foundCustomer.plan_type}</strong></div>
+                          <div><span className="text-gray-500">Plan:</span> <strong className="capitalize">{displayWarrantyPlanName(foundCustomer.plan_type)}</strong></div>
                         </div>
                       </div>
 
@@ -379,7 +380,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                           {customer.registration_plate || 'No Reg'}
                         </span>
                         <Badge variant="outline" className="text-[10px] capitalize px-1.5 py-0">
-                          {customer.plan_type}
+                          {displayWarrantyPlanName(customer.plan_type)}
                         </Badge>
                         {logged && (
                           <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-[10px] px-1.5 py-0 gap-0.5">
@@ -417,7 +418,7 @@ export function DealsSection({ deals, onAddDeal, onDeleteDeal, currentMonth, vie
                       </span>
                       {deal.plan_type && (
                         <Badge variant="outline" className="text-[10px] capitalize px-1.5 py-0">
-                          {deal.plan_type}
+                          {displayWarrantyPlanName(deal.plan_type)}
                         </Badge>
                       )}
                       <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 text-[10px] px-1.5 py-0">

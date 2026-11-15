@@ -10,6 +10,7 @@ import {
   Search, Save, User, CheckCircle, AlertCircle, Loader2, 
   FileText, Settings, Shield, Car, Pencil
 } from 'lucide-react';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -402,7 +403,7 @@ const CustomerPolicyUpdateTab = () => {
                 </Badge>
               </div>
               <CardDescription>
-                {customer.email} • {customer.plan_type}
+                {customer.email} • {displayWarrantyPlanName(customer.plan_type)}
                 {policies.length > 0 && ` • ${policies.length} polic${policies.length === 1 ? 'y' : 'ies'}`}
               </CardDescription>
             </CardHeader>
@@ -422,7 +423,7 @@ const CustomerPolicyUpdateTab = () => {
                   <SelectContent>
                     {policies.map((policy) => (
                       <SelectItem key={policy.id} value={policy.id}>
-                        {policy.policy_number} - {policy.plan_type} ({policy.status})
+                        {policy.policy_number} - {displayWarrantyPlanName(policy.plan_type)} ({policy.status})
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -440,7 +441,7 @@ const CustomerPolicyUpdateTab = () => {
                   Update Policy Details
                 </CardTitle>
                 <CardDescription>
-                  Policy: {selectedPolicy.policy_number} • {selectedPolicy.plan_type}
+                  Policy: {selectedPolicy.policy_number} • {displayWarrantyPlanName(selectedPolicy.plan_type)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

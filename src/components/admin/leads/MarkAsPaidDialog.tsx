@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -498,7 +499,7 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
                       <div className="flex items-center justify-between">
                         <span>{format(new Date(app.created_at), 'dd MMM yyyy HH:mm')}</span>
                         <div className="flex items-center gap-1">
-                          {app.plan_name && <Badge variant="secondary" className="text-xs">{app.plan_name}</Badge>}
+                          {app.plan_name && <Badge variant="secondary" className="text-xs">{displayWarrantyPlanName(app.plan_name)}</Badge>}
                           {app.step_abandoned && <Badge variant="outline" className="text-xs">Step {app.step_abandoned}</Badge>}
                           {app.vehicle_reg && <span className="text-muted-foreground">{app.vehicle_reg}</span>}
                         </div>
@@ -571,7 +572,7 @@ export const MarkAsPaidDialog: React.FC<MarkAsPaidDialogProps> = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Platinum">Platinum</SelectItem>
-                        <SelectItem value="Gold">Gold</SelectItem>
+                        <SelectItem value="Gold">Platinum</SelectItem>
                         <SelectItem value="Basic">Basic</SelectItem>
                         <SelectItem value="EV">EV</SelectItem>
                         <SelectItem value="PHEV">PHEV</SelectItem>

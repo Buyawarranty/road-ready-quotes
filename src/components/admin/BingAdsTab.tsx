@@ -10,6 +10,7 @@ import { Search, Eye, Users, ShoppingCart, TrendingUp, MousePointerClick, Refres
 import { Button } from '@/components/ui/button';
 import { DateRange } from 'react-day-picker';
 import { DateRangeFilter } from './DateRangeFilter';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
 
@@ -430,7 +431,7 @@ export const BingAdsTab: React.FC = () => {
                       {[c.vehicle_make, c.vehicle_model].filter(Boolean).join(' ') || '—'}
                       <div className="text-xs text-muted-foreground">{c.registration_plate || ''}</div>
                     </TableCell>
-                    <TableCell className="text-sm">{c.plan_type || '—'}</TableCell>
+                    <TableCell className="text-sm">{displayWarrantyPlanName(c.plan_type, '—')}</TableCell>
                     <TableCell className="text-sm">
                       {c.signup_date ? format(new Date(c.signup_date), 'dd MMM yyyy') : '—'}
                     </TableCell>

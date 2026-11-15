@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Mail, Phone, Car, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Cart {
   id: string;
@@ -151,7 +152,7 @@ const DealerAdminAbandonedCarts: React.FC = () => {
                         <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {c.email}</span>
                         {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {c.phone}</span>}
                         {c.vehicle_reg && <span className="flex items-center gap-1"><Car className="h-3 w-3" /> {c.vehicle_reg} {c.vehicle_make} {c.vehicle_model}</span>}
-                        {c.plan_name && <span className="flex items-center gap-1"><ShoppingCart className="h-3 w-3" /> {c.plan_name}{c.total_price ? ` · £${Number(c.total_price).toFixed(0)}` : ''}</span>}
+                        {c.plan_name && <span className="flex items-center gap-1"><ShoppingCart className="h-3 w-3" /> {displayWarrantyPlanName(c.plan_name)}{c.total_price ? ` · £${Number(c.total_price).toFixed(0)}` : ''}</span>}
                       </div>
 
                       <div className="mt-3">

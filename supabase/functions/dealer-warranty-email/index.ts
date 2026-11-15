@@ -5,6 +5,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import { resolveBrand, brandFrom, type Brand } from '../_shared/brand.ts';
+import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -64,12 +65,15 @@ Deno.serve(async (req: Request) => {
     const amount = Number(c.final_amount ?? 0);
     const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
     const ref = String(c.id).slice(0, 8).toUpperCase();
+    const planDisplayName = displayWarrantyPlanName(c.plan_type, 'Platinum')
+      .replace(/[-_]/g, ' ')
+      .replace(/\b\w/g, letter => letter.toUpperCase());
 
     const rows = `
       <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${ref}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Customer</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.name || '—'}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${(c.registration_plate || '—')}${vehicle ? ` · ${vehicle}` : ''}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${String(c.plan_type || '').toUpperCase()} · ${c.payment_type || ''} months</td></tr>
+      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${planDisplayName} · ${c.payment_type || ''} months</td></tr>
       <tr><td style="padding:8px 0;color:#666">Amount</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${money(amount)}</td></tr>
       ${c.warranty_number ? `<tr><td style="padding:8px 0;color:#666">Warranty number</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.warranty_number}</td></tr>` : ''}
     `;

@@ -1609,6 +1609,7 @@ const StreamlinedCheckout: React.FC<StreamlinedCheckoutProps> = ({
       .replace(/car/gi, '')
       .replace(/bike/gi, '')
       .replace(/plan/gi, '')
+      .replace(/gold/gi, 'Platinum')
       .replace(/premium/gi, 'Platinum')
       .trim() || 'Platinum';
   };

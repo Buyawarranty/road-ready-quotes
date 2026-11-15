@@ -11,6 +11,7 @@ import { Edit, Save, Plus, Trash2 } from 'lucide-react';
 import { Json } from '@/integrations/supabase/types';
 import DocumentUpload from './DocumentUpload';
 import TermsConditionsUpload from './TermsConditionsUpload';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface Plan {
   id: string;
@@ -209,7 +210,7 @@ export const PlansTab = () => {
       
       setEditingPlan(updatedPlan);
       fetchPlans(); // Refresh the plans list
-      toast.success(`Reset ${planName} to default features and saved to database`);
+      toast.success(`Reset ${displayWarrantyPlanName(planName)} to default features and saved to database`);
     } catch (error) {
       console.error('Error resetting plan features:', error);
       toast.error('Failed to reset plan features');
@@ -334,7 +335,7 @@ export const PlansTab = () => {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-xl">{displayWarrantyPlanName(plan.name)}</CardTitle>
                     <div className="mt-2 space-y-1">
                       <p className="text-lg font-bold text-orange-600">
                         £{plan.monthly_price}/month
@@ -373,7 +374,7 @@ export const PlansTab = () => {
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle>Edit {plan.name} Plan</DialogTitle>
+                          <DialogTitle>Edit {displayWarrantyPlanName(plan.name)} Plan</DialogTitle>
                         </DialogHeader>
                         
                         {editingPlan && (
@@ -639,7 +640,7 @@ export const PlansTab = () => {
                         {coverageArray.slice(0, 5).map((item: any, index: number) => (
                           <li key={index} className="flex items-start">
                             <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 mt-1.5 flex-shrink-0"></span>
-                            <span className="line-clamp-1">{item}</span>
+                            <span className="line-clamp-1">{displayWarrantyPlanName(item)}</span>
                           </li>
                         ))}
                         {coverageArray.length > 5 && (
@@ -655,7 +656,7 @@ export const PlansTab = () => {
                       {addOnsArray.slice(0, 3).map((item: any, index: number) => (
                         <li key={index} className="flex items-center">
                           <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                          {item}
+                          {displayWarrantyPlanName(item)}
                         </li>
                       ))}
                       {addOnsArray.length > 3 && (

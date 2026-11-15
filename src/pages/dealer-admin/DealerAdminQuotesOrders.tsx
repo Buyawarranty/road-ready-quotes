@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Search, Pencil, Trash2, FileText, ShoppingCart, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 
 interface DealerOption { id: string; name: string }
 
@@ -372,7 +373,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
                             <div className="text-xs text-muted-foreground">{[r.vehicle_make, r.vehicle_model].filter(Boolean).join(' ')}</div>
                           </td>
                           <td className="p-2">{r.dealer_name || '—'}</td>
-                          <td className="p-2 capitalize">{r.plan_type || '—'} {r.duration_months ? `· ${r.duration_months}mo` : ''}</td>
+                          <td className="p-2 capitalize">{displayWarrantyPlanName(r.plan_type, '—')} {r.duration_months ? `· ${r.duration_months}mo` : ''}</td>
                           <td className="p-2">{r.dealer_price != null ? `£${Number(r.dealer_price).toFixed(2)}` : '—'}</td>
                           <td className="p-2">
                             <Select value={r.status} onValueChange={(v) => updateQuoteStatus(r.id, v)}>
@@ -452,7 +453,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
                             <div className="text-xs text-muted-foreground">{[r.vehicle_make, r.vehicle_model].filter(Boolean).join(' ')}</div>
                           </td>
                           <td className="p-2">{r.dealer_name || '—'}</td>
-                          <td className="p-2 capitalize">{r.plan_type || '—'} {r.duration_months ? `· ${r.duration_months}mo` : ''}</td>
+                          <td className="p-2 capitalize">{displayWarrantyPlanName(r.plan_type, '—')} {r.duration_months ? `· ${r.duration_months}mo` : ''}</td>
                           <td className="p-2">{r.amount_paid != null ? `£${Number(r.amount_paid).toFixed(2)}` : '—'}</td>
                           <td className="p-2"><Badge variant="outline">{r.payment_status}</Badge></td>
                           <td className="p-2">
@@ -504,7 +505,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
               <Label>Plan</Label>
               <Select value={quoteForm.plan_type || 'basic'} onValueChange={(v) => setQuoteForm({ ...quoteForm, plan_type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}</SelectContent>
+                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{displayWarrantyPlanName(p)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
@@ -558,7 +559,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
               <Label>Plan</Label>
               <Select value={orderForm.plan_type || 'basic'} onValueChange={(v) => setOrderForm({ ...orderForm, plan_type: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>)}</SelectContent>
+                <SelectContent>{PLAN_TYPES.map((p) => <SelectItem key={p} value={p} className="capitalize">{displayWarrantyPlanName(p)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
