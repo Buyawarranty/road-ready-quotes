@@ -1060,8 +1060,8 @@ const StreamlinedCheckout: React.FC<StreamlinedCheckoutProps> = ({
             error = 'Minimum 1,000 miles';
           }
           isValid = false;
-        } else if (mileage > 120000) {
-          error = 'Maximum 120,000 miles';
+        } else if (mileage > 150000) {
+          error = 'Maximum 150,000 miles';
           isValid = false;
         }
         break;
@@ -2100,7 +2100,7 @@ const StreamlinedCheckout: React.FC<StreamlinedCheckoutProps> = ({
                         required
                         className={`h-11 sm:h-12 text-base pr-10 ${mileagePreFilled ? 'border-[#0BA360] border-2 bg-[#F0FDF4]' : ''} ${getInputValidationClass('mileage')}`}
                       />
-                      {customerData.mileage && Number(customerData.mileage) > 0 && Number(customerData.mileage) <= 120000 && !fieldErrors.mileage && (
+                      {customerData.mileage && Number(customerData.mileage) > 0 && Number(customerData.mileage) <= 150000 && !fieldErrors.mileage && (
                         <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#0BA360] pointer-events-none" />
                       )}
                     </div>
@@ -2131,10 +2131,10 @@ const StreamlinedCheckout: React.FC<StreamlinedCheckoutProps> = ({
                 <span>Your mileage is used for policy records only — it doesn't affect your price.</span>
               </div>
               
-              {customerData.mileage && Number(customerData.mileage) > 120000 && (
+              {customerData.mileage && Number(customerData.mileage) > 150000 && (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 mt-2">
                   <p className="text-destructive text-sm font-medium">
-                    Sorry, we only cover vehicles under 120,000 miles.
+                    Sorry, we only cover vehicles under 150,000 miles.
                   </p>
                 </div>
               )}

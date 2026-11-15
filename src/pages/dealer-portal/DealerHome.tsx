@@ -61,7 +61,7 @@ const HOME_FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'What vehicles can I cover?',
-    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 12 years old and 100,000 miles. Enter a registration in the quote tool for instant pricing.',
+    a: 'Cars, vans and motorbikes — petrol, diesel, hybrid and electric — up to 15 years old and 150,000 miles. Enter a registration in the quote tool for instant pricing.',
   },
   {
     q: 'Can I set my own margins and pricing?',
