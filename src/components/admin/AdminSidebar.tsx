@@ -2,6 +2,7 @@ import { PendingSignupBadge } from '@/components/admin/PendingSignups';
 import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import { SidebarAlertSlotTarget } from '@/components/admin/SidebarAlertSlot';
 import { PANDA_SECTION_ORDER, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
+import { canAccessSalesAnalytics } from '@/lib/salesAnalyticsAccess';
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2 } from 'lucide-react';
 import { useAdminSidebarCollapsed } from '@/hooks/useAdminSidebarCollapsed';
@@ -282,9 +283,9 @@ export const defaultTabs: Tab[] = [
   },
   {
     id: 'analytics',
-    label: 'Analytics',
+    label: 'Sales analytics',
     icon: BarChart3,
-    description: 'View reports and analytics'
+    description: 'Customers, dealer signups, sales and revenue'
   },
   {
     id: 'page-analytics',
@@ -792,7 +793,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
   // Staff Hub is available to all staff
   const filterRestricted = (tabs: Tab[]) => pandaize(filterRestrictedRaw(tabs));
   const filterRestrictedRaw = (tabs: Tab[]) => {
-    const withPerms = applyExplicitPermissionOverrides(tabs).filter(tab => tab.id !== 'discount-codes' || canManageDealerPromos(userRole));
+    const withPerms = applyExplicitPermissionOverrides(tabs)
+      .filter(tab => tab.id !== 'discount-codes' || canManageDealerPromos(userRole))
+      .filter(tab => tab.id !== 'analytics' || canAccessSalesAnalytics(userRole, userPermissions));
     // Price Updates is hard-restricted to management + Accounts, regardless of
     // any per-user tab permission grant.
     const PRICE_UPDATES_ROLES = new Set([
