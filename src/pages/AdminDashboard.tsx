@@ -3,6 +3,7 @@ import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
 import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS, PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
+import { canAccessSalesAnalytics } from '@/lib/salesAnalyticsAccess';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
 import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
@@ -63,7 +64,7 @@ const TermsAndConditionsTab = lazy(() => import('@/components/admin/TermsAndCond
 const SpecialVehiclePlansTab = lazy(() => import('@/components/admin/SpecialVehiclePlansTab'));
 const DiscountCodesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminDiscountCodes'));
 const ReferralsTab = lazy(() => import('@/components/admin/ReferralsTab').then(m => ({ default: m.ReferralsTab })));
-const AnalyticsTab = lazy(() => import('@/components/admin/AnalyticsTab').then(m => ({ default: m.AnalyticsTab })));
+const DealerAdminAnalyticsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminAnalytics'));
 const UnifiedEmailHub = lazy(() => import('@/components/admin/UnifiedEmailHub'));
 const AccountSettings = lazy(() => import('@/components/admin/AccountSettings'));
 const AttributionSettingsTab = lazy(() => import('@/components/admin/AttributionSettingsTab'));
@@ -161,7 +162,7 @@ const getFirstPermittedTab = (role: string | null, permissions?: Record<string, 
   if (permissions) {
     const firstPreferred = preferredOrder.find(tab => permissions[`tab_${tab}`] === true);
     if (firstPreferred) return firstPreferred;
-    const firstAllowed = Object.keys(permissions).find(key => key.startsWith('tab_') && permissions[key]);
+    const firstAllowed = Object.keys(permissions).find(key => key.startsWith('tab_') && permissions[key] && (key !== 'tab_analytics' || canAccessSalesAnalytics(role, permissions)));
     if (firstAllowed) return firstAllowed.replace('tab_', '');
   }
 
@@ -184,6 +185,7 @@ const LIVE_CALLS_ALWAYS_ALLOWED_ROLES = new Set(['sales', 'sales_lead', 'sales_m
 
 const isTabAllowedForRole = (rawTab: string, role: string | null, permissions?: Record<string, boolean> | null) => {
   const tab = canonicalTabId(rawTab);
+  if (tab === 'analytics') return canAccessSalesAnalytics(role, permissions);
   if (tab === 'discount-codes') return canManageDealerPromos(role);
   const permKey = `tab_${tab}`;
   if (tab === 'account') return true;
@@ -841,7 +843,10 @@ const AdminDashboard = () => {
         }
         return <UnifiedEmailHub />;
       case 'analytics':
-        return <AnalyticsTab userRole={effectiveUserRole} />;
+        if (!canAccessSalesAnalytics(effectiveUserRole, effectiveUserPermissions)) {
+          return <div className="p-6"><h2 className="text-xl font-semibold">Access denied</h2><p className="mt-1 text-sm text-muted-foreground">Sales analytics is currently restricted to Admin and Super Admin.</p></div>;
+        }
+        return <DealerAdminAnalyticsTab />;
       case 'page-analytics':
         return <PageAnalyticsTab />;
       case 'google-ads':

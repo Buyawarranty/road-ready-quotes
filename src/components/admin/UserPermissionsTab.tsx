@@ -24,6 +24,7 @@ import { TeamActivityPanel } from './TeamActivityPanel';
 import { AdminAccessLogPanel } from './AdminAccessLogPanel';
 import { useAuth } from '@/hooks/useAuth';
 import { PANDA_GRANTABLE_TABS as ADMIN_TABS } from '@/lib/permissions/pandaAdminTabs';
+import { canEditSalesAnalyticsPermission } from '@/lib/salesAnalyticsAccess';
 
 interface AdminUser {
   id: string;
@@ -1151,6 +1152,7 @@ export const UserPermissionsTab = () => {
             ? !(permKey in perms && perms[permKey] === false)
             : (perms[permKey] || false);
           const granularPerms = GRANULAR_PERMISSIONS[tab.id as keyof typeof GRANULAR_PERMISSIONS];
+          const analyticsRestricted = tab.id === 'analytics' && !canEditSalesAnalyticsPermission(role);
           
           return (
             <div 
@@ -1162,7 +1164,8 @@ export const UserPermissionsTab = () => {
               <div className="flex items-start space-x-3">
                 <Checkbox
                   id={`${isEditing ? 'edit' : 'invite'}-${permKey}`}
-                  checked={isChecked}
+                  checked={analyticsRestricted ? false : isChecked}
+                  disabled={analyticsRestricted}
                   onCheckedChange={() => toggleTabPermission(tab.id, isEditing)}
                   className="mt-0.5"
                 />
@@ -1174,7 +1177,7 @@ export const UserPermissionsTab = () => {
                     {tab.label}
                   </Label>
                   <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                    {tab.description}
+                    {analyticsRestricted ? 'Admin and Super Admin only for now' : tab.description}
                   </p>
                 </div>
               </div>

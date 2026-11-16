@@ -34,7 +34,11 @@ describe('Panda Protect admin menu with the claims section retired', () => {
 
   it('still hides retired Buy A Warranty sections behind Overview', () => {
     assert.equal(resolvePandaSection('new-leads'), 'dealer-overview');
-    assert.equal(resolvePandaSection('analytics'), 'dealer-overview');
+  });
+
+  it('resolves Analytics to the new Panda sales analytics section', () => {
+    assert.equal(resolvePandaSection('analytics'), 'analytics');
+    assert.ok(PANDA_SECTION_ORDER.some((section) => section.id === 'analytics' && section.label === 'Sales analytics'));
   });
 });
 
@@ -49,5 +53,6 @@ describe('BDM and Manager jobs', () => {
     assert.ok(MANAGER_ROLE_TABS.includes('dealer-dealers'));
     assert.ok(!MANAGER_ROLE_TABS.includes('user-permissions'));
     assert.ok(!MANAGER_ROLE_TABS.includes('trader-pricing'));
+    assert.ok(!MANAGER_ROLE_TABS.includes('analytics'));
   });
 });

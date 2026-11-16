@@ -1,5 +1,5 @@
 export interface DealerSaleAmountRow {
-  final_amount: number | string | null;
+  final_amount?: number | string | null;
 }
 
 export interface DealerSaleStatusRow {
