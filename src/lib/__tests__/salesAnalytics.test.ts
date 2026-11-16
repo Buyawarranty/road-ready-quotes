@@ -17,7 +17,7 @@ const signups = [
 describe('Panda sales analytics', () => {
   it('counts real customers, signups, sales and the £1.19 paid revenue separately from invoices', () => {
     const result = buildSalesAnalytics(sales, signups);
-    expect(result.customers).toBe(2);
+    expect(result.customers).toBe(3);
     expect(result.signups).toBe(2);
     expect(result.approvedSignups).toBe(1);
     expect(result.signupConversion).toBe(50);

@@ -57,6 +57,7 @@ export function buildSalesAnalytics(
   range?: AnalyticsDateRange,
 ) {
   const counted = sales.filter(isCountedDealerSale);
+  const customerRows = counted.filter((sale) => isAnalyticsDateInRange(sale.signup_date || sale.created_at, range));
   const issued = counted.filter((sale) => isIssuedAnalyticsSale(sale) && isAnalyticsDateInRange(sale.signup_date || sale.created_at, range));
   const paid = issued.filter((sale) => (sale.payment_status || '').toLowerCase() === 'paid' && dealerSaleAmount(sale) > 0);
   const free = issued.filter((sale) => (sale.payment_status || '').toLowerCase() === 'paid' && dealerSaleAmount(sale) === 0);
@@ -67,7 +68,7 @@ export function buildSalesAnalytics(
   return {
     issued,
     filteredSignups,
-    customers: new Set(issued.map(analyticsCustomerKey)).size,
+    customers: new Set(customerRows.map(analyticsCustomerKey)).size,
     signups: filteredSignups.length,
     approvedSignups: approvedSignups.length,
     signupConversion: filteredSignups.length ? Math.round((approvedSignups.length / filteredSignups.length) * 1000) / 10 : 0,

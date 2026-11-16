@@ -85,7 +85,7 @@ const DealerAdminAnalytics: React.FC = () => {
   }), [metrics]);
 
   const cards = [
-    { label: 'Customers', value: metrics.customers.toLocaleString(), detail: 'Unique customers with issued cover', icon: Users },
+    { label: 'Customers', value: metrics.customers.toLocaleString(), detail: 'Unique customers in the selected period', icon: Users },
     { label: 'Dealer signups', value: metrics.signups.toLocaleString(), detail: `${metrics.approvedSignups} approved · ${metrics.signupConversion}% conversion`, icon: UserPlus },
     { label: 'Warranty sales', value: metrics.sales.toLocaleString(), detail: `${metrics.paidSales} paid · ${metrics.freeSales} introductory offer`, icon: ShoppingBag },
     { label: 'Paid revenue', value: money(metrics.paidRevenue), detail: `${money(metrics.averagePaidSale)} average paid sale`, icon: PoundSterling },
