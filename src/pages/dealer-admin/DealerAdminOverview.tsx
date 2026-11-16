@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { Users, ShoppingBag, PoundSterling, AlertCircle, Loader2 } from 'lucide-react';
+import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface Stats {
   totalDealers: number;
@@ -29,14 +30,12 @@ const DealerAdminOverview: React.FC = () => {
 
       const { data: sales } = await supabase
         .from('customers')
-        .select('id, payment_status, final_amount, total_amount_paid, signup_date')
+        .select('id, payment_status, final_amount, status, signup_date')
+        .eq('brand', 'pandaprotect')
         .not('dealer_id', 'is', null);
 
-      const rows = sales || [];
-      const totalRevenue = rows.reduce(
-        (sum, r: any) => sum + Number(r.total_amount_paid ?? r.final_amount ?? 0),
-        0
-      );
+      const rows = (sales || []).filter(isCountedDealerSale);
+      const totalRevenue = rows.reduce((sum, r) => sum + dealerSaleAmount(r), 0);
       const unpaid = rows.filter(
         (r: any) => (r.payment_status || '').toLowerCase() !== 'paid'
       );

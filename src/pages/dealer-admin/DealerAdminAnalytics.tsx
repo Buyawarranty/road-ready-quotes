@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   LineChart, Line, PieChart, Pie, Cell, Legend,
@@ -10,7 +11,6 @@ import {
 interface Sale {
   signup_date: string;
   final_amount: number | null;
-  total_amount_paid: number | null;
   plan_type: string;
   payment_status: string | null;
   dealer_id: string;
@@ -28,13 +28,14 @@ const DealerAdminAnalytics: React.FC = () => {
       const [{ data: customers }, { data: dealers }] = await Promise.all([
         supabase
           .from('customers')
-          .select('signup_date, final_amount, total_amount_paid, plan_type, payment_status, dealer_id, status')
+          .select('signup_date, final_amount, plan_type, payment_status, dealer_id, status')
+          .eq('brand', 'pandaprotect')
           .not('dealer_id', 'is', null),
         supabase.from('dealers').select('id, company_name'),
       ]);
       const dealerMap = new Map((dealers || []).map((d: any) => [d.id, d.company_name]));
       const filtered = (customers || [])
-        .filter((c: any) => !['cancelled', 'refunded'].includes((c.status || '').toLowerCase()))
+        .filter(isCountedDealerSale)
         .map((c: any) => ({ ...c, dealer_company: dealerMap.get(c.dealer_id) || 'Unknown' }));
       setSales(filtered);
       setLoading(false);
@@ -59,7 +60,7 @@ const DealerAdminAnalytics: React.FC = () => {
       const d = new Date(s.signup_date);
       const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
       if (buckets[key]) {
-        buckets[key].revenue += Number(s.total_amount_paid ?? s.final_amount ?? 0);
+        buckets[key].revenue += dealerSaleAmount(s);
         buckets[key].count += 1;
       }
     });
@@ -71,7 +72,7 @@ const DealerAdminAnalytics: React.FC = () => {
     const m = new Map<string, { name: string; revenue: number; count: number }>();
     sales.forEach((s) => {
       const e = m.get(s.dealer_id) || { name: s.dealer_company || '—', revenue: 0, count: 0 };
-      e.revenue += Number(s.total_amount_paid ?? s.final_amount ?? 0);
+      e.revenue += dealerSaleAmount(s);
       e.count += 1;
       m.set(s.dealer_id, e);
     });
