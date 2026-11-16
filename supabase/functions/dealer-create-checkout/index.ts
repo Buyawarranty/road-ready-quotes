@@ -139,7 +139,7 @@ Deno.serve(async (req: Request) => {
       adminClient.from('customers').select('id', { count: 'exact', head: true })
         .eq('dealer_id', dealer.id).eq('payment_status', 'paid').gt('final_amount', 0),
       adminClient.from('dealer_intro_free_redemptions').select('id', { count: 'exact', head: true })
-        .eq('dealer_id', dealer.id),
+        .eq('dealer_id', dealer.id).neq('status', 'rejected'),
     ]);
     if (paidOfferError || introUsedError) throw new Error('Unable to verify the introductory offer. Please try again.');
     const introFreeAvailable = qualifiesForIntroFree(paidForOffer || 0, introUsed || 0, plan.duration_months);

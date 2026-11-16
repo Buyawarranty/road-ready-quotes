@@ -60,7 +60,7 @@ const Step5Confirmation: React.FC = () => {
               : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
               : isFree
-                ? 'Your 3+3 introductory free warranty is active. Your customer is now covered and a confirmation email has been sent.'
+                ? 'Your 3+3 introductory free warranty has been requested. Our team will check and approve it shortly, then the cover goes live and confirmation emails are sent.'
                 : 'Your customer is now covered. A confirmation email has been sent.'}
           </p>
 
