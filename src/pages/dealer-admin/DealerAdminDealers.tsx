@@ -7,6 +7,7 @@ import { Loader2, Search, Save, KeyRound } from 'lucide-react';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
+import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface DealerRow {
   id: string;
@@ -49,13 +50,13 @@ const DealerAdminDealers: React.FC = () => {
     setLoading(true);
     const [{ data: dealers }, { data: customers }] = await Promise.all([
       supabase.from('dealers').select('*').order('created_at', { ascending: false }),
-      supabase.from('customers').select('dealer_id, final_amount, total_amount_paid').not('dealer_id', 'is', null),
+      supabase.from('customers').select('dealer_id, final_amount, status').eq('brand', 'pandaprotect').not('dealer_id', 'is', null),
     ]);
     const stats = new Map<string, { count: number; revenue: number }>();
-    (customers || []).forEach((c: any) => {
+    (customers || []).filter(isCountedDealerSale).forEach((c: any) => {
       const existing = stats.get(c.dealer_id) || { count: 0, revenue: 0 };
       existing.count += 1;
-      existing.revenue += Number(c.total_amount_paid ?? c.final_amount ?? 0);
+      existing.revenue += dealerSaleAmount(c);
       stats.set(c.dealer_id, existing);
     });
     setRows(

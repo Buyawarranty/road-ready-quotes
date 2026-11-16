@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Search } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface SaleRow {
   id: string;
@@ -18,7 +19,6 @@ interface SaleRow {
   status: string;
   signup_date: string;
   final_amount: number | null;
-  total_amount_paid: number | null;
   dealer_id: string;
   dealer_name?: string;
   dealer_company?: string;
@@ -27,30 +27,41 @@ interface SaleRow {
 const DealerAdminSales: React.FC = () => {
   const [rows, setRows] = useState<SaleRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [search, setSearch] = useState('');
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
   const [dealerFilter, setDealerFilter] = useState<string>('all');
 
   useEffect(() => {
     const load = async () => {
-      const [{ data: customers }, { data: dealers }] = await Promise.all([
+      const [{ data: customers, error: customersError }, { data: dealers, error: dealersError }] = await Promise.all([
         supabase
           .from('customers')
-          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, total_amount_paid, dealer_id')
+          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, dealer_id')
+          .eq('brand', 'pandaprotect')
           .not('dealer_id', 'is', null)
           .order('signup_date', { ascending: false })
           .limit(1000),
         supabase.from('dealers').select('id, name, company_name'),
       ]);
 
+      if (customersError || dealersError) {
+        console.error('Dealer sales failed to load:', customersError || dealersError);
+        setRows([]);
+        setLoadError(true);
+        setLoading(false);
+        return;
+      }
+
       const dealerMap = new Map((dealers || []).map((d: any) => [d.id, d]));
-      const merged = (customers || []).map((c: any) => ({
+      const merged = (customers || []).filter(isCountedDealerSale).map((c: any) => ({
         ...c,
         dealer_name: dealerMap.get(c.dealer_id)?.name,
         dealer_company: dealerMap.get(c.dealer_id)?.company_name,
       })) as SaleRow[];
 
       setRows(merged);
+      setLoadError(false);
       setLoading(false);
     };
     load();
@@ -80,10 +91,7 @@ const DealerAdminSales: React.FC = () => {
     });
   }, [rows, search, paymentFilter, dealerFilter]);
 
-  const totalRevenue = filtered.reduce(
-    (sum, r) => sum + Number(r.total_amount_paid ?? r.final_amount ?? 0),
-    0
-  );
+  const totalRevenue = filtered.reduce((sum, r) => sum + dealerSaleAmount(r), 0);
 
   return (
     <div className="space-y-6">
@@ -134,6 +142,8 @@ const DealerAdminSales: React.FC = () => {
             <div className="py-12 flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
+          ) : loadError ? (
+            <p role="alert" className="text-center py-12 text-destructive text-sm">Dealer sales could not be loaded. Please refresh to try again.</p>
           ) : filtered.length === 0 ? (
             <p className="text-center py-12 text-muted-foreground text-sm">No sales found.</p>
           ) : (
@@ -178,7 +188,7 @@ const DealerAdminSales: React.FC = () => {
                           </Badge>
                         </td>
                         <td className="px-3 py-2 text-right font-semibold">
-                          £{Number(r.total_amount_paid ?? r.final_amount ?? 0).toFixed(2)}
+                          £{dealerSaleAmount(r).toFixed(2)}
                         </td>
                       </tr>
                     );
