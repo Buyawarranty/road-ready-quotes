@@ -65,7 +65,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
-  const db = supabase.rpc as any;
+  const db = supabase.rpc.bind(supabase) as any;
   const firstTouch = r.last_spoken_at || r.last_attempt_at;
   const [editOpen, setEditOpen] = useState(false);
   const toDay = (d?: string | null) => (d ? new Date(d).toISOString().slice(0, 10) : '');

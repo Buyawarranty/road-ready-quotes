@@ -27,7 +27,7 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
-  const db = supabase.rpc as any;
+  const db = supabase.rpc.bind(supabase) as any;
 
   const log = async (type: 'note' | 'call', outcome: string | null, text: string | null) => {
     setBusy(true);
