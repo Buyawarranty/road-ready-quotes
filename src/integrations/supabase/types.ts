@@ -7678,6 +7678,7 @@ export type Database = {
       dealer_warranties: {
         Row: {
           created_at: string
+          customer_id: string | null
           customer_name: string
           dealer_id: string
           end_date: string
@@ -7691,6 +7692,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_id?: string | null
           customer_name: string
           dealer_id: string
           end_date: string
@@ -7704,6 +7706,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_id?: string | null
           customer_name?: string
           dealer_id?: string
           end_date?: string
@@ -7716,6 +7719,13 @@ export type Database = {
           vehicle_reg?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "dealer_warranties_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "dealer_warranties_dealer_id_fkey"
             columns: ["dealer_id"]
@@ -15801,6 +15811,15 @@ export type Database = {
           p_session_id: string
         }
         Returns: undefined
+      }
+      complete_dealer_sale: {
+        Args: {
+          p_customer_id: string
+          p_dealer_quote_id?: string
+          p_quote_status?: string
+          p_stripe_session_id?: string
+        }
+        Returns: Json
       }
       count_recontact_leads_available: {
         Args: never

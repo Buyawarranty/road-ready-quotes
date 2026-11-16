@@ -17,6 +17,7 @@ const Step5Confirmation: React.FC = () => {
   const sessionId = searchParams.get('session_id');
   const [confirmed, setConfirmed] = useState(method === 'invoice' || method === 'free');
   const [confirmError, setConfirmError] = useState('');
+  const [emailWarning, setEmailWarning] = useState(false);
   const [checking, setChecking] = useState(false);
 
   const confirmPayment = async () => {
@@ -26,6 +27,7 @@ const Step5Confirmation: React.FC = () => {
     const { data, error } = await supabase.functions.invoke('dealer-confirm-payment', { body: { customer_id: id, session_id: sessionId } });
     setChecking(false);
     if (error || !data?.confirmed) { setConfirmError(data?.error || 'Payment confirmation is pending. Please check again shortly.'); return; }
+    setEmailWarning(Boolean(data.email && !data.email.sent));
     setConfirmed(true);
     reset();
     fireDealerConfetti(1);
@@ -53,7 +55,9 @@ const Step5Confirmation: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">{confirmed ? 'Warranty issued' : 'Payment confirmation'}</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            {!confirmed ? (confirmError || 'Checking your payment…') : isInvoice
+            {!confirmed ? (confirmError || 'Checking your payment…') : emailWarning
+              ? 'Your warranty is active, but the confirmation email could not be sent. You can resend it from Dealer warranties.'
+              : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
               : isFree
                 ? 'Your 3+3 introductory free warranty is active. Your customer is now covered and a confirmation email has been sent.'
