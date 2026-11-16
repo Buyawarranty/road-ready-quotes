@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
@@ -11,6 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
+import { DEALER_TRADE_TERMS_VERSION } from '@/lib/dealerTradeTerms';
+import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
@@ -36,7 +39,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-const INTRO_PAID_TARGET = 3;
+const INTRO_PAID_TARGET = DEALER_INTRO_PAID_TARGET;
 
 type Method = 'pay_now' | 'invoice';
 
@@ -44,10 +47,16 @@ const PAYMENT_TERM_DAYS = 30;
 
 interface PayLaterEligibility {
   eligible: boolean;
-  reason: 'new' | 'overdue' | 'blocked' | null;
+  reason: 'new' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
   paid_count: number;
   required: number;
   term_days: number;
+  overdue_count: number;
+  mode: 'auto' | 'allow' | 'block';
+  request_status: 'pending' | 'approved' | 'rejected' | null;
+  can_request: boolean;
+  intro_free_remaining: number;
+  intro_free_used: number;
 }
 
 const formatDate = (d: Date) =>
@@ -70,31 +79,44 @@ const Step4Checkout: React.FC = () => {
   const [promo, setPromo] = useState<{ code: string; discount_amount: number; total: number } | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
   const [checkingPromo, setCheckingPromo] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState<boolean | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [requestingCredit, setRequestingCredit] = useState(false);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
-  // Invoice eligibility comes from the admin-controlled pay later rules
+  // Invoice eligibility and introductory offer use come from server-enforced dealer rules.
+  const refreshEligibility = useCallback(async () => {
+    if (!dealer?.id) return;
+    const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
+      p_dealer_id: dealer.id,
+    });
+    if (error || !data) return;
+    const e = data as PayLaterEligibility;
+    setEligibility(e);
+    if (e.term_days) setTermDays(e.term_days);
+    const blocked = !e.eligible;
+    setCreditBlocked(blocked);
+    if (blocked) setMethod('pay_now');
+  }, [dealer?.id]);
+
+  useEffect(() => { void refreshEligibility(); }, [refreshEligibility]);
+
   useEffect(() => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
-      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
-        p_dealer_id: dealer.id,
-      });
-      if (cancelled || error || !data) return;
-      const e = data as PayLaterEligibility;
-      setEligibility(e);
-      if (e.term_days) setTermDays(e.term_days);
-      const blocked = !e.eligible;
-      setCreditBlocked(blocked);
-      if (blocked) setMethod('pay_now');
+      const { data } = await (supabase as any).from('dealer_trade_terms_acceptances')
+        .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', DEALER_TRADE_TERMS_VERSION).maybeSingle();
+      if (cancelled) return;
+      const accepted = !!data;
+      setTermsAccepted(accepted);
+      if (!accepted) setTermsOpen(true);
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [dealer?.id]);
 
   const dueDate = useMemo(() => {
@@ -105,7 +127,8 @@ const Step4Checkout: React.FC = () => {
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
-  const total = promo?.total ?? plan.dealer_price;
+  const introFreeApplied = (eligibility?.intro_free_remaining ?? 0) > 0 && plan.duration_months <= DEALER_INTRO_MAX_MONTHS;
+  const total = introFreeApplied ? 0 : promo?.total ?? plan.dealer_price;
   const options = (plan.selected_options || {}) as Record<string, unknown>;
   const fullPriceBasis = options.price_basis === 'full-warranty';
   const netPrice = fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
@@ -181,6 +204,10 @@ const Step4Checkout: React.FC = () => {
 
   const handleSubmit = async () => {
     if (submitting) return;
+    if (termsAccepted !== true) {
+      setTermsOpen(true);
+      return;
+    }
     if (!paymentReady) {
       navigate('/dealer-portal/quote/customer');
       return;
@@ -191,6 +218,11 @@ const Step4Checkout: React.FC = () => {
     setSubmitting(true);
     try {
       const data = await createRecord();
+
+      if (data?.method === 'intro_free') {
+        navigate(`/dealer-portal/quote/confirmation?method=free${data.customer_id ? `&id=${data.customer_id}` : ''}`);
+        return;
+      }
 
       if (method === 'pay_now') {
         if (data?.client_secret && stripePromise) {
@@ -211,6 +243,7 @@ const Step4Checkout: React.FC = () => {
     } catch (err: unknown) {
       console.error('Dealer checkout error', err);
       const message = err instanceof Error ? err.message : 'Please try again or contact support.';
+      if (message.includes('Trade Terms')) setTermsOpen(true);
       setSubmitError(message);
       toast({
         title: 'Checkout failed',
@@ -235,8 +268,14 @@ const Step4Checkout: React.FC = () => {
   const invoiceRequired = eligibility?.required ?? 10;
   const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
   const accountAvailable = !creditBlocked && !!eligibility;
-  const accountSelected = method === 'invoice' && accountAvailable;
-  const ctaLabel = accountSelected ? 'Issue warranty using dealer account' : `Pay £${total.toFixed(2)} & issue warranty`;
+  const accountSelected = method === 'invoice' && accountAvailable && !introFreeApplied;
+  const ctaLabel = termsAccepted !== true
+    ? 'Review trade terms to continue'
+    : introFreeApplied
+      ? 'Activate now with your free 3+3 warranty'
+      : accountSelected
+        ? 'Activate now and pay later'
+        : `Pay £${total.toFixed(2)} & issue warranty`;
   const ctaDisabled = submitting || checkingPromo || (method === 'invoice' && creditBlocked);
 
   const Radio = ({ on }: { on: boolean }) => (
@@ -255,7 +294,11 @@ const Step4Checkout: React.FC = () => {
         ? 'Account billing is not switched on for your dealership. Call 0330 229 5045 to talk about account terms.'
         : eligibility?.reason === 'overdue'
           ? 'Your dealer account has an overdue balance. Clear outstanding invoices to use account billing.'
-          : 'Checking whether account billing is available for your dealership.';
+          : eligibility?.reason === 'pending'
+            ? 'Your 30-day invoicing request is waiting for Admin or Super Admin authorisation.'
+            : eligibility?.reason === 'approval_required'
+              ? 'You meet the paid-warranty criteria. Request authorisation to activate 30-day invoicing.'
+              : 'Checking whether account billing is available for your dealership.';
 
   return (
     <DealerJourneyLayout
