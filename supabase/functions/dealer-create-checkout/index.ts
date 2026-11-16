@@ -9,6 +9,7 @@ import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { qualifiesForIntroFree } from '../_shared/dealerIntroOffer.ts';
+import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -90,7 +91,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const body: RequestBody = await req.json();
-    const { dealer_id, payment_method, vehicle, customer, plan, discount_pct } = body;
+    const { quote_id, dealer_id, payment_method, vehicle, customer, plan, discount_pct } = body;
     const assisted = Boolean(customer?.address_line2?.startsWith('[Pending: Panda Protect to complete via '));
 
     // Basic validation
@@ -264,17 +265,9 @@ Deno.serve(async (req: Request) => {
       return { id: inserted.id } as const;
     };
 
-    // Fire-and-await a dealer-facing email to the dealer's REGISTERED email.
     const notifyDealer = async (customerId: string, kind: 'invoice' | 'paid') => {
       try {
-        await fetch(`${SUPABASE_URL}/functions/v1/dealer-warranty-email`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${SERVICE_KEY}`,
-          },
-          body: JSON.stringify({ customer_id: customerId, kind }),
-        });
+        await notifyDealerSale(adminClient, customerId, kind);
       } catch (e) {
         console.error('dealer-warranty-email notify failed', e);
       }
@@ -311,6 +304,7 @@ Deno.serve(async (req: Request) => {
         await adminClient.from('dealer_intro_free_redemptions').delete().eq('customer_id', freeCustomerId);
         throw new Error(freeInsertError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review it.' : freeInsertError.message);
       }
+      await syncDealerSale(adminClient, { customerId: freeCustomerId, quoteId: quote_id, quoteStatus: dealerQuoteStatusForMethod('intro_free') });
       await notifyDealer(freeCustomerId, 'paid');
       return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_free_slot: claim.slot, total: 0 }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -339,6 +333,7 @@ Deno.serve(async (req: Request) => {
         const { error } = await adminClient.rpc('complete_dealer_promo', { p_redemption_id: redemptionId, p_session_id: invoiceKey, p_amount: payable });
         if (error) throw new Error(error.message);
       }
+      await syncDealerSale(adminClient, { customerId: invoiceCustomerId, quoteId: quote_id, stripeSessionId: `invoice:${invoiceCustomerId}`, quoteStatus: dealerQuoteStatusForMethod('invoice') });
       await notifyDealer(invoiceCustomerId, 'invoice');
       return new Response(JSON.stringify({ customer_id: invoiceCustomerId, method: 'invoice' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
@@ -406,6 +401,8 @@ Deno.serve(async (req: Request) => {
         },
       ],
       metadata: {
+        source: 'dealer_journey',
+        dealer_quote_id: quote_id || '',
         dealer_id: dealer.id,
         customer_id: pendingCustomerId,
         plan_type: plan.plan_type,
