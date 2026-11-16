@@ -45,7 +45,7 @@ Deno.serve(async (req: Request) => {
 
     const { data: c, error: cErr } = await supabase
       .from('customers')
-      .select('id, name, email, phone, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number')
+      .select('id, name, email, phone, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number, discount_code')
       .eq('id', customerId)
       .maybeSingle();
 
@@ -63,6 +63,7 @@ Deno.serve(async (req: Request) => {
 
     const kind = body.kind === 'invoice' || (c.payment_status || '') === 'invoice_pending' ? 'invoice' : 'paid';
     const amount = Number(c.final_amount ?? 0);
+    const isIntroFree = kind === 'paid' && (c.discount_code === '3+3 INTRO' || amount === 0);
     const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
     const ref = String(c.id).slice(0, 8).toUpperCase();
     const planDisplayName = displayWarrantyPlanName(c.plan_type, 'Platinum')
@@ -74,22 +75,26 @@ Deno.serve(async (req: Request) => {
       <tr><td style="padding:8px 0;color:#666">Customer</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.name || '—'}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${(c.registration_plate || '—')}${vehicle ? ` · ${vehicle}` : ''}</td></tr>
       <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${planDisplayName} · ${c.payment_type || ''} months</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Amount</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${money(amount)}</td></tr>
+      <tr><td style="padding:8px 0;color:#666">Amount</td><td style="padding:8px 0;text-align:right;font-weight:700;color:#f97316">${isIntroFree ? 'Free with 3+3 offer' : money(amount)}</td></tr>
       ${c.warranty_number ? `<tr><td style="padding:8px 0;color:#666">Warranty number</td><td style="padding:8px 0;text-align:right;font-weight:600">${c.warranty_number}</td></tr>` : ''}
     `;
 
     const subject = kind === 'invoice'
       ? `Invoice — warranty for ${c.registration_plate || 'your customer'} (${money(amount)})`
-      : `Payment received — warranty for ${c.registration_plate || 'your customer'}`;
+      : isIntroFree
+        ? `3+3 free warranty activated — ${c.registration_plate || 'your customer'}`
+        : `Payment received — warranty for ${c.registration_plate || 'your customer'}`;
 
     const intro = kind === 'invoice'
       ? `This warranty has been added to your ${brand.name} dealer account and will appear on your next invoice. Amount outstanding: <strong>${money(amount)}</strong>.`
-      : `Thanks — your payment of <strong>${money(amount)}</strong> has been received and the warranty is now active.`;
+      : isIntroFree
+        ? 'Your 3+3 introductory warranty is now active at no charge.'
+        : `Thanks — your payment of <strong>${money(amount)}</strong> has been received and the warranty is now active.`;
 
     const html = `
       <div style="font-family:Arial,sans-serif;color:#333;max-width:620px;margin:0 auto;padding:24px">
         <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0;" />
-        <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">${kind === 'invoice' ? 'Warranty invoiced' : 'Warranty confirmed'}</h1>
+        <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">${kind === 'invoice' ? 'Warranty invoiced' : isIntroFree ? '3+3 free warranty activated' : 'Warranty confirmed'}</h1>
         <p style="font-size:13px;color:#666;margin:0 0 18px">${dealer?.company_name || dealer?.name || 'Dealer account'} · ${new Date().toLocaleDateString('en-GB')}</p>
         <p style="font-size:14px;line-height:1.6">${intro}</p>
         <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
