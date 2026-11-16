@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Fix missing pending/card sale entries in Invoices and make invoicing eligibility, admin approval controls and dealer-facing status/next steps clear and functional.
 - [x] Fix Dealer sales and related dealer totals requesting nonexistent total_amount_paid, which produced an empty screen; the corrected query returns Hassan’s £1.19 paid sale, errors now display honestly, 16 focused tests and typecheck/build pass. Live signed-in admin refresh remains for the user.
 - [x] Repair the £1.19 dealer sale and future completion flow: quote now paid, customer paid/verified/active, exactly one claim-ready warranty, and dealer/customer emails accepted by Resend. Shared card/webhook/invoice/free fulfilment deployed; 45 targeted tests pass and build OK. Inbox delivery not independently confirmed.
 - [x] Add warranty reference, product, activation, inception and expiry to dealer Warranties on desktop, mobile and details; populated visual checks passed with no overflow and build OK. Live dealer-account verification remains unavailable with external authentication.
