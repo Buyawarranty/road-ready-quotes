@@ -8,6 +8,7 @@ import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
+import { qualifiesForIntroFree } from '../_shared/dealerIntroOffer.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -133,9 +134,18 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    const [{ count: paidForOffer, error: paidOfferError }, { count: introUsed, error: introUsedError }] = await Promise.all([
+      adminClient.from('customers').select('id', { count: 'exact', head: true })
+        .eq('dealer_id', dealer.id).eq('payment_status', 'paid').gt('final_amount', 0),
+      adminClient.from('dealer_intro_free_redemptions').select('id', { count: 'exact', head: true })
+        .eq('dealer_id', dealer.id),
+    ]);
+    if (paidOfferError || introUsedError) throw new Error('Unable to verify the introductory offer. Please try again.');
+    const introFreeAvailable = qualifiesForIntroFree(paidForOffer || 0, introUsed || 0, plan.duration_months);
+
     const promoCode = String(body.promo_code || '').trim().toUpperCase();
     let promo: { code: string; discount_amount: number; total: number; redemption_id?: string } | null = null;
-    if (promoCode) {
+    if (promoCode && !introFreeAvailable) {
       // Discounts can only use a server-validated product price; legacy caller totals are not eligible.
       if (plan.pricing_version !== 'annual-v1') throw new Error('Refresh your quote to apply a promo code to the current warranty pricing.');
       if (payment_method === 'worldpay') throw new Error('Promo codes are available for card or dealer account checkout.');
@@ -146,12 +156,25 @@ Deno.serve(async (req: Request) => {
       if (error) throw new Error(error.message);
       promo = data;
     }
-    if (body.preview_only) return new Response(JSON.stringify(promo || { total: plan.dealer_price, discount_amount: 0 }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-    if (payment_method === 'invoice') {
+    if (body.preview_only) return new Response(JSON.stringify(introFreeAvailable
+      ? { code: '3+3 INTRO', discount_amount: plan.dealer_price, total: 0, intro_free: true }
+      : promo || { total: plan.dealer_price, discount_amount: 0, intro_free: false }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+
+    const { data: termsAcceptance, error: termsError } = await adminClient.from('dealer_trade_terms_acceptances')
+      .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', '2026-11-15-v1').maybeSingle();
+    if (termsError) throw new Error('Unable to verify trade terms acceptance. Please try again.');
+    if (!termsAcceptance) {
+      return new Response(JSON.stringify({ error: 'Please review and accept the Trade Terms & Conditions before issuing this warranty.', code: 'TRADE_TERMS_REQUIRED' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (payment_method === 'invoice' && !introFreeAvailable) {
       const { data: eligible, error } = await userClient.rpc('get_dealer_paylater_eligibility', { p_dealer_id: dealer.id });
       if (error || !eligible?.eligible) throw new Error('Dealer account billing is unavailable. Please pay by card.');
     }
-    const payable = promo?.total ?? plan.dealer_price;
+    const payable = introFreeAvailable ? 0 : promo?.total ?? plan.dealer_price;
     // The legacy `gold` code is retained for pricing and metadata, but the product is Platinum everywhere customers see it.
     const planDisplayName = displayWarrantyPlanName(plan.plan_type).toUpperCase();
 
@@ -181,10 +204,11 @@ Deno.serve(async (req: Request) => {
       voluntary_excess: Number.isFinite(Number(plan.excess)) && plan.excess != null ? Number(plan.excess) : null,
       labour_rate: Number.isFinite(Number(plan.labour_rate)) && plan.labour_rate ? Number(plan.labour_rate) : null,
       final_amount: payable,
-      original_amount: plan.retail_price,
-      discount_amount: +(plan.retail_price - payable).toFixed(2),
-      discount_code: promo?.code || null,
+      original_amount: introFreeAvailable ? plan.dealer_price : plan.retail_price,
+      discount_amount: introFreeAvailable ? plan.dealer_price : +(plan.retail_price - payable).toFixed(2),
+      discount_code: introFreeAvailable ? '3+3 INTRO' : promo?.code || null,
       ...dealerCheckoutState(payment_method),
+      ...(introFreeAvailable ? { status: 'Active', payment_status: 'paid', payment_verified: true } : {}),
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
@@ -266,6 +290,32 @@ Deno.serve(async (req: Request) => {
       }
       return data.redemption_id as string;
     };
+
+    // === AUTOMATIC 3+3 INTRODUCTORY OFFER ===
+    if (introFreeAvailable) {
+      const existing = await findExistingCustomer();
+      if (existing) {
+        const reuseError = dealerCheckoutReuseError(existing, dealer.id);
+        throw new Error(reuseError || 'An unpaid checkout already exists for this quote. Complete it or contact Panda Protect before using the introductory offer.');
+      }
+      const freeCustomerId = crypto.randomUUID();
+      const { data: claim, error: claimError } = await adminClient.rpc('claim_dealer_intro_free', {
+        p_dealer_id: dealer.id,
+        p_customer_id: freeCustomerId,
+        p_duration_months: plan.duration_months,
+        p_original_amount: plan.dealer_price,
+      });
+      if (claimError || !claim) throw new Error('Your introductory offer status changed. Refresh checkout before continuing.');
+      const { error: freeInsertError } = await adminClient.from('customers').insert({ ...customerRow, id: freeCustomerId });
+      if (freeInsertError) {
+        await adminClient.from('dealer_intro_free_redemptions').delete().eq('customer_id', freeCustomerId);
+        throw new Error(freeInsertError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review it.' : freeInsertError.message);
+      }
+      await notifyDealer(freeCustomerId, 'paid');
+      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_free_slot: claim.slot, total: 0 }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // === INVOICE PATH ===
     if (payment_method === 'invoice') {
