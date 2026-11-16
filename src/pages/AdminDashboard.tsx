@@ -119,6 +119,7 @@ const DealerAdminTradersTab = lazy(() => import('@/pages/dealer-admin/DealerAdmi
 const DealerAdminSalesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSales'));
 const DealerAdminInvoicesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminInvoices'));
 const DealerAdminPayLaterTab = lazy(() => import('@/pages/dealer-admin/DealerAdminPayLater'));
+const DealerAdminCreditAuthorisationsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminCreditAuthorisations'));
 const DealerAdminProfileChangesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminProfileChanges'));
 const DealerAdminCancellationsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminCancellations'));
 const DealerAdminTraderPricingTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraderPricing'));
@@ -753,6 +754,7 @@ const AdminDashboard = () => {
     if (section === 'dealer-invoices') {
       return <AdminSectionTabs tabs={[
         { id: 'invoices', label: 'Invoices', render: () => <DealerAdminInvoicesTab /> },
+        { id: 'authorisations', label: 'Credit authorisations', render: () => <DealerAdminCreditAuthorisationsTab /> },
         { id: 'paylater', label: 'Pay later rules', render: () => <DealerAdminPayLaterTab /> },
         { id: 'finance', label: 'Dealer finance', render: () => <DealerFinanceTab /> },
       ]} />;
