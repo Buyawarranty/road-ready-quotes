@@ -162,7 +162,7 @@ const getFirstPermittedTab = (role: string | null, permissions?: Record<string, 
   if (permissions) {
     const firstPreferred = preferredOrder.find(tab => permissions[`tab_${tab}`] === true);
     if (firstPreferred) return firstPreferred;
-    const firstAllowed = Object.keys(permissions).find(key => key.startsWith('tab_') && permissions[key]);
+    const firstAllowed = Object.keys(permissions).find(key => key.startsWith('tab_') && permissions[key] && (key !== 'tab_analytics' || canAccessSalesAnalytics(role, permissions)));
     if (firstAllowed) return firstAllowed.replace('tab_', '');
   }
 
