@@ -38,7 +38,7 @@ export const TradeTermsDialog: React.FC<Props> = ({ dealerId, open, onOpenChange
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] max-w-xl overflow-y-auto p-5 sm:p-7">
+      <DialogContent className="dealer-crm max-h-[92vh] max-w-xl overflow-y-auto p-5 sm:p-7">
         <DialogTitle className="text-2xl font-extrabold text-crm-navy sm:text-3xl">Trade Terms & Conditions</DialogTitle>
         <DialogDescription className="text-base">Please review and accept before issuing this warranty.</DialogDescription>
         <div className="mt-3 divide-y divide-border">
