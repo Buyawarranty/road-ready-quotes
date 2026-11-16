@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { BillingAddress, billingFromDealer } from '@/lib/dealerBilling';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, CheckCircle, Download, Mail, Link2, Copy, FileText } from 'lucide-react';
+import { Loader2, CheckCircle, Download, Mail, Link2, Copy, FileText, Info } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import {
@@ -20,6 +21,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { DEALER_PAYMENT_OPTIONS, DEALER_PAYMENT_STYLES, getDealerPaymentState } from '@/lib/dealerPaymentStatus';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice } from '@/lib/dealerSales';
+import { functionErrorMessage } from '@/lib/functionError';
 
 interface UnpaidRow {
   id: string;
@@ -29,6 +32,7 @@ interface UnpaidRow {
   signup_date: string;
   final_amount: number | null;
   payment_status: string | null;
+  stripe_session_id?: string | null;
   plan_type?: string | null;
   payment_type?: string | null;
   dealer_id: string;
@@ -63,33 +67,42 @@ const buildInvoiceHtml = (g: Group, r: UnpaidRow, invoiceNumber: string) => `
 const DealerAdminInvoices: React.FC = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<UnpaidRow[]>([]);
+  const [paidRows, setPaidRows] = useState<UnpaidRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [confirmRow, setConfirmRow] = useState<UnpaidRow | null>(null);
   const [links, setLinks] = useState<Record<string, string>>({});
 
   const load = async () => {
     setLoading(true);
-    const [{ data: customers }, { data: dealers }] = await Promise.all([
+    const [{ data: customers, error: customersError }, { data: dealers, error: dealersError }] = await Promise.all([
       supabase
         .from('customers')
-        .select('id, name, email, registration_plate, signup_date, final_amount, payment_status, plan_type, payment_type, dealer_id')
+        .select('id, name, email, registration_plate, signup_date, final_amount, payment_status, stripe_session_id, plan_type, payment_type, dealer_id, status')
+        .eq('brand', 'pandaprotect')
         .not('dealer_id', 'is', null)
         .order('signup_date', { ascending: false }),
       supabase
         .from('dealers')
         .select('id, company_name, email, first_name, last_name, address_line1, address_line2, city, county, postcode, country_code'),
     ]);
+    if (customersError || dealersError) {
+      console.error('Dealer invoices failed to load:', customersError || dealersError);
+      setLoadError(true);
+      setLoading(false);
+      return;
+    }
     const dealerMap = new Map((dealers || []).map((d: any) => [d.id, d]));
-    const unpaid = (customers || [])
-      .filter((c: any) => (c.payment_status || '').toLowerCase() !== 'paid')
-      .map((c: any) => ({
-        ...c,
-        dealer_company: dealerMap.get(c.dealer_id)?.company_name || '—',
-        dealer_email: dealerMap.get(c.dealer_id)?.email || null,
-        dealer_billing: dealerMap.get(c.dealer_id) ? billingFromDealer(dealerMap.get(c.dealer_id)) : null,
-      }));
-    setRows(unpaid);
+    const sales = (customers || []).filter(isCountedDealerSale).map((c: any) => ({
+      ...c,
+      dealer_company: dealerMap.get(c.dealer_id)?.company_name || '—',
+      dealer_email: dealerMap.get(c.dealer_id)?.email || null,
+      dealer_billing: dealerMap.get(c.dealer_id) ? billingFromDealer(dealerMap.get(c.dealer_id)) : null,
+    })) as UnpaidRow[];
+    setRows(sales.filter(isOutstandingDealerInvoice));
+    setPaidRows(sales.filter(isCompletedDealerSale));
+    setLoadError(false);
     setLoading(false);
   };
 
@@ -117,22 +130,30 @@ const DealerAdminInvoices: React.FC = () => {
 
   const confirmPayment = async (row: UnpaidRow) => {
     setBusy(`pay-${row.id}`);
-    const { error } = await supabase
-      .from('customers')
-      .update({ payment_status: 'paid', status: 'Active' })
-      .eq('id', row.id);
+    const { data, error } = await supabase.functions.invoke('dealer-confirm-invoice-payment', { body: { customer_id: row.id } });
     setBusy(null);
     setConfirmRow(null);
-    if (error) {
-      toast({ title: 'Failed', description: error.message, variant: 'destructive' });
+    if (error || (data as any)?.error) {
+      const description = (data as any)?.error || (error ? await functionErrorMessage(error) : 'Please try again.');
+      toast({ title: 'Payment could not be confirmed', description, variant: 'destructive' });
       return;
     }
-    toast({ title: 'Payment confirmed', description: `${money(Number(row.final_amount ?? 0))} collected — warranty moved to active plans.` });
+    const completed = { ...row, payment_status: 'paid' };
     setRows((prev) => prev.filter((r) => r.id !== row.id));
+    setPaidRows((prev) => [completed, ...prev.filter((r) => r.id !== row.id)]);
+    const emailFailed = (data as any)?.email && !(data as any).email.success;
+    toast({
+      title: 'Payment confirmed',
+      description: emailFailed
+        ? `${money(dealerSaleAmount(row))} collected and the sale moved to completed sales. Receipt emails need attention.`
+        : `${money(dealerSaleAmount(row))} collected — the quote, warranty and completed-sale history are updated.`,
+      variant: emailFailed ? 'destructive' : 'default',
+    });
   };
 
   const setStatus = async (row: UnpaidRow, value: string) => {
     if (value === 'paid') { setConfirmRow(row); return; }
+    if (!['invoice_pending', 'overdue'].includes(value)) return;
     setBusy(`status-${row.id}`);
     const { error } = await supabase.from('customers').update({ payment_status: value }).eq('id', row.id);
     setBusy(null);
@@ -320,7 +341,7 @@ const DealerAdminInvoices: React.FC = () => {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Invoices</h1>
-          <p className="text-muted-foreground text-sm mt-1">Outstanding "Add to monthly invoice" balances per dealer.</p>
+          <p className="text-muted-foreground text-sm mt-1">Approved 30-day account sales awaiting payment, grouped by dealer.</p>
         </div>
         <div className="text-right">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Total outstanding</p>
@@ -329,14 +350,37 @@ const DealerAdminInvoices: React.FC = () => {
         </div>
       </div>
 
+      <Card className="border-crm-orange/30 bg-crm-orange-soft">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-crm-orange" />
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-crm-navy">How dealer invoicing works</h2>
+              <div className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+                <p><strong>1. Build history</strong><br /><span className="text-muted-foreground">The dealer reaches 10 genuine paid Panda warranties. Free, cancelled and refunded sales do not count.</span></p>
+                <p><strong>2. Request and approve</strong><br /><span className="text-muted-foreground">The dealer requests invoicing from their dashboard or checkout. Admin or Super Admin approves it under Credit authorisations.</span></p>
+                <p><strong>3. Issue and collect</strong><br /><span className="text-muted-foreground">The dealer chooses 30-day invoice at checkout. It appears here as outstanding; overdue balances pause further invoicing.</span></p>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" asChild><Link to="/admin-dashboard/?tab=dealer-invoices&sub=authorisations">Review credit requests</Link></Button>
+                <Button size="sm" variant="outline" asChild><Link to="/admin-dashboard/?tab=dealer-invoices&sub=paylater">Control pay later rules</Link></Button>
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">Paid card sales appear in completed sales below. Unfinished card checkouts stay in Quotes & orders and are not invoices.</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {loading ? (
         <div className="py-12 flex justify-center">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
+      ) : loadError ? (
+        <Card className="border-2"><CardContent className="py-12 text-center text-destructive" role="alert">Invoices could not be loaded. Please refresh to try again.</CardContent></Card>
       ) : groups.length === 0 ? (
         <Card className="border-2">
           <CardContent className="py-12 text-center text-muted-foreground">
-            All caught up — no unpaid invoices.
+            No approved 30-day invoices are awaiting payment.
           </CardContent>
         </Card>
       ) : (
@@ -448,7 +492,7 @@ const DealerAdminInvoices: React.FC = () => {
                                         disabled={busy === `status-${r.id}`}
                                         onChange={(e) => setStatus(r, e.target.value)}
                                       >
-                                        {DEALER_PAYMENT_OPTIONS.map((o) => (
+                                        {DEALER_PAYMENT_OPTIONS.filter((o) => o.value !== 'pending').map((o) => (
                                           <option key={o.value} value={o.value}>{o.label}</option>
                                         ))}
                                       </select>
@@ -516,6 +560,26 @@ const DealerAdminInvoices: React.FC = () => {
             );
           })}
         </div>
+      )}
+
+      {!loading && !loadError && (
+        <Card className="border-2">
+          <CardContent className="pt-6">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+              <div><h2 className="text-lg font-bold text-foreground">Completed sales</h2><p className="text-sm text-muted-foreground">Paid card sales, settled invoices and introductory-offer warranties.</p></div>
+              <Badge variant="secondary">{paidRows.length} completed</Badge>
+            </div>
+            {paidRows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">Completed dealer sales will appear here.</p> : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="border-y border-border bg-muted/50"><tr className="text-left text-xs uppercase tracking-wide text-muted-foreground"><th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Customer</th><th className="px-3 py-2 font-medium">Vehicle</th><th className="px-3 py-2 font-medium">Dealer</th><th className="px-3 py-2 font-medium">Payment</th><th className="px-3 py-2 text-right font-medium">Amount</th></tr></thead>
+                  <tbody>{paidRows.slice(0, 25).map((r) => <tr key={r.id} className="border-b border-border"><td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(r.signup_date).toLocaleDateString('en-GB')}</td><td className="px-3 py-2"><p className="font-medium">{r.name}</p><p className="break-all text-xs text-muted-foreground">{r.email}</p></td><td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td><td className="px-3 py-2">{r.dealer_company}</td><td className="px-3 py-2"><Badge className="bg-crm-green-soft text-crm-green-deep">{dealerSalePaymentLabel(r)}</Badge></td><td className="px-3 py-2 text-right font-semibold">{money(dealerSaleAmount(r))}</td></tr>)}</tbody>
+                </table>
+                {paidRows.length > 25 && <p className="pt-3 text-xs text-muted-foreground">Showing the 25 most recent completed sales.</p>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       )}
 
       <AlertDialog open={!!confirmRow} onOpenChange={(o) => !o && setConfirmRow(null)}>
