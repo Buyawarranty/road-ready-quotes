@@ -15565,7 +15565,11 @@ export type Database = {
     }
     Functions: {
       accept_dealer_trade_terms: {
-        Args: { p_dealer_id: string; p_terms_version: string }
+        Args: {
+          p_accepted_by: string
+          p_dealer_id: string
+          p_terms_version: string
+        }
         Returns: Json
       }
       add_working_days: {
@@ -15715,10 +15719,6 @@ export type Database = {
       calculate_policy_end_date: {
         Args: { payment_type: string; start_date: string }
         Returns: string
-      }
-      can_authorize_dealer_credit: {
-        Args: { _user_id: string }
-        Returns: boolean
       }
       can_manage_claim_reminders: { Args: never; Returns: boolean }
       can_manage_lead_routing: { Args: { _user_id: string }; Returns: boolean }
@@ -16699,7 +16699,10 @@ export type Database = {
         Args: { _agent: string; _policy: string }
         Returns: undefined
       }
-      request_dealer_paylater: { Args: { p_dealer_id: string }; Returns: Json }
+      request_dealer_paylater: {
+        Args: { p_dealer_id: string; p_requested_by: string }
+        Returns: Json
+      }
       reset_agent_caps_daily: { Args: never; Returns: undefined }
       reset_daily_caps: { Args: never; Returns: undefined }
       resolve_sale_credit: {
@@ -16746,7 +16749,12 @@ export type Database = {
         Returns: undefined
       }
       review_dealer_paylater_request: {
-        Args: { p_decision: string; p_note?: string; p_request_id: string }
+        Args: {
+          p_decision: string
+          p_note: string
+          p_request_id: string
+          p_reviewed_by: string
+        }
         Returns: Json
       }
       review_dealer_profile_change: {
