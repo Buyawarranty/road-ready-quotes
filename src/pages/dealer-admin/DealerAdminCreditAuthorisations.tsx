@@ -24,7 +24,7 @@ interface CreditRequest {
 }
 
 const statusStyle: Record<Status, string> = {
-  pending: 'bg-amber-100 text-amber-900',
+  pending: 'bg-crm-orange-soft text-crm-navy',
   approved: 'bg-crm-green-soft text-crm-green-deep',
   rejected: 'bg-destructive/10 text-destructive',
 };
@@ -75,7 +75,7 @@ const DealerAdminCreditAuthorisations: React.FC = () => {
     });
     setSaving(false);
     if (error || data?.error) {
-      toast({ title: 'Could not save decision', description: data?.error || error.message, variant: 'destructive' });
+      toast({ title: 'Could not save decision', description: data?.error || error?.message || 'Please try again.', variant: 'destructive' });
       return;
     }
     toast({ title: decision === 'approved' ? '30-day invoicing authorised' : 'Credit request rejected' });

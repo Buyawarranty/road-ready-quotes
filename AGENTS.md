@@ -13,6 +13,7 @@
 - Signup approval corrections use a service-only atomic status RPC that updates dealer access and signup history together; withdrawal never alters warranty/payment rows, and all Panda email headers resolve the official logo from shared brand configuration.
 - Dealer session/profile loading is bounded and retryable, keeps queries outside auth callbacks, and discards stale results; temporary read failures must not sign out approved dealers or leave endless spinners.
 - Dealer promo management uses the isolated dealer_admin_discount_codes table with Admin/Super Admin RLS; checkout revalidates approved annual pricing before an atomic promo reservation, and signed payment completion records usage idempotently. This prevents copied consumer discounts or client-supplied totals from changing dealer charges.
+- Dealer credit authorisation, trade-terms acceptance and introductory-offer redemptions are enforced by protected Postgres records and service-only functions, with dealer-create-checkout repeating the checks; UI eligibility and £0 previews are advisory, and free cover must not create paid-purchase credit.
 - Admin quick links are per-auth-user Panda section IDs saved in browser storage, permission-filtered real dashboard links; view-as cannot edit them, and delayed access initialization must not replace an explicitly selected section. This preserves personal navigation without changing CRM data.
 
 - Dealer cancellation navigation reuses the dealer-scoped warranties list via its cancellations tab; status changes remain in the existing admin workflow.
