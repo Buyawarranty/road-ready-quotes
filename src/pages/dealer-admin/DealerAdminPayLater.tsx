@@ -38,10 +38,10 @@ const DealerAdminPayLater: React.FC = () => {
         db.from('dealer_paylater_settings').select('*').eq('id', 1).maybeSingle(),
         db.from('dealers').select('id, company_name, email').order('company_name'),
         db.from('dealer_paylater_overrides').select('dealer_id, mode'),
-        db.from('customers').select('dealer_id').eq('payment_status', 'paid').not('dealer_id', 'is', null).limit(5000),
+        db.from('customers').select('dealer_id').eq('payment_status', 'paid').gt('final_amount', 0).not('dealer_id', 'is', null).limit(5000),
       ]);
       setSettings(
-        s.data || { unlock_rule: 'paid_warranties', required_paid_warranties: 1, payment_term_days: 30, block_on_overdue: true },
+        s.data || { unlock_rule: 'paid_warranties', required_paid_warranties: 10, payment_term_days: 30, block_on_overdue: true },
       );
       setDealers(d.data || []);
       setOverrides(Object.fromEntries((o.data || []).map((r: any) => [r.dealer_id, r.mode])));
@@ -80,10 +80,8 @@ const DealerAdminPayLater: React.FC = () => {
     const mode = overrides[id] || 'auto';
     if (mode === 'allow') return 'Allowed (override)';
     if (mode === 'block') return 'Blocked (override)';
-    if (settings.unlock_rule === 'disabled') return 'Off for everyone';
-    if (settings.unlock_rule === 'immediate') return 'Unlocked';
     const paid = paidCounts[id] || 0;
-    return paid >= settings.required_paid_warranties ? 'Unlocked' : `New: ${paid} of ${settings.required_paid_warranties} paid`;
+    return paid >= settings.required_paid_warranties ? 'Eligible to request authorisation' : `New: ${paid} of ${settings.required_paid_warranties} paid`;
   };
 
   return (
@@ -91,7 +89,7 @@ const DealerAdminPayLater: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold">Pay later rules</h1>
         <p className="text-sm text-muted-foreground">
-          Decide when dealers can choose "Invoice me" at checkout. Overdue balances are checked automatically.
+          Dealers can request 30-day invoicing after 10 paid warranties. Credit starts only after Admin or Super Admin authorisation; overdue balances are checked automatically.
         </p>
       </div>
 
@@ -101,18 +99,11 @@ const DealerAdminPayLater: React.FC = () => {
         </CardHeader>
         <CardContent className="grid gap-5 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>When does Invoice me unlock?</Label>
-            <Select value={settings.unlock_rule} onValueChange={(v) => setSettings({ ...settings, unlock_rule: v as Settings['unlock_rule'] })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="paid_warranties">After a number of paid warranties</SelectItem>
-                <SelectItem value="immediate">Straight away for approved dealers</SelectItem>
-                <SelectItem value="disabled">Off for everyone (overrides still apply)</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label>Credit request criteria</Label>
+            <div className="rounded-lg border p-3 text-sm text-muted-foreground">After the required paid warranties, dealers must request authorisation. There is no automatic credit activation.</div>
           </div>
           <div className="space-y-2">
-            <Label>Paid warranties needed (1 = first payment)</Label>
+            <Label>Paid warranties needed</Label>
             <Input
               type="number"
               min={1}
@@ -160,8 +151,8 @@ const DealerAdminPayLater: React.FC = () => {
               <Select value={overrides[d.id] || 'auto'} onValueChange={(v) => setOverride(d.id, v)}>
                 <SelectTrigger className="sm:w-52"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="auto">Follow the rules</SelectItem>
-                  <SelectItem value="allow">Always allow</SelectItem>
+                  <SelectItem value="auto">Authorisation request required</SelectItem>
+                  <SelectItem value="allow">Authorised</SelectItem>
                   <SelectItem value="block">Block pay later</SelectItem>
                 </SelectContent>
               </Select>

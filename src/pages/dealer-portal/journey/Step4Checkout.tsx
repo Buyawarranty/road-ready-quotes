@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
@@ -11,6 +11,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
+import { DEALER_TRADE_TERMS_VERSION } from '@/lib/dealerTradeTerms';
+import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
@@ -36,7 +39,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-const INTRO_PAID_TARGET = 3;
+const INTRO_PAID_TARGET = DEALER_INTRO_PAID_TARGET;
 
 type Method = 'pay_now' | 'invoice';
 
@@ -44,10 +47,16 @@ const PAYMENT_TERM_DAYS = 30;
 
 interface PayLaterEligibility {
   eligible: boolean;
-  reason: 'new' | 'overdue' | 'blocked' | null;
+  reason: 'new' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
   paid_count: number;
   required: number;
   term_days: number;
+  overdue_count: number;
+  mode: 'auto' | 'allow' | 'block';
+  request_status: 'pending' | 'approved' | 'rejected' | null;
+  can_request: boolean;
+  intro_free_remaining: number;
+  intro_free_used: number;
 }
 
 const formatDate = (d: Date) =>
@@ -70,31 +79,44 @@ const Step4Checkout: React.FC = () => {
   const [promo, setPromo] = useState<{ code: string; discount_amount: number; total: number } | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
   const [checkingPromo, setCheckingPromo] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState<boolean | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [requestingCredit, setRequestingCredit] = useState(false);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
     else if (!customer) navigate('/dealer-portal/quote/customer', { replace: true });
   }, [vehicle, customer, plan, navigate]);
 
-  // Invoice eligibility comes from the admin-controlled pay later rules
+  // Invoice eligibility and introductory offer use come from server-enforced dealer rules.
+  const refreshEligibility = useCallback(async () => {
+    if (!dealer?.id) return;
+    const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
+      p_dealer_id: dealer.id,
+    });
+    if (error || !data) return;
+    const e = data as PayLaterEligibility;
+    setEligibility(e);
+    if (e.term_days) setTermDays(e.term_days);
+    const blocked = !e.eligible;
+    setCreditBlocked(blocked);
+    if (blocked) setMethod('pay_now');
+  }, [dealer?.id]);
+
+  useEffect(() => { void refreshEligibility(); }, [refreshEligibility]);
+
   useEffect(() => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
-      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
-        p_dealer_id: dealer.id,
-      });
-      if (cancelled || error || !data) return;
-      const e = data as PayLaterEligibility;
-      setEligibility(e);
-      if (e.term_days) setTermDays(e.term_days);
-      const blocked = !e.eligible;
-      setCreditBlocked(blocked);
-      if (blocked) setMethod('pay_now');
+      const { data } = await (supabase as any).from('dealer_trade_terms_acceptances')
+        .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', DEALER_TRADE_TERMS_VERSION).maybeSingle();
+      if (cancelled) return;
+      const accepted = !!data;
+      setTermsAccepted(accepted);
+      if (!accepted) setTermsOpen(true);
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [dealer?.id]);
 
   const dueDate = useMemo(() => {
@@ -105,7 +127,8 @@ const Step4Checkout: React.FC = () => {
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
-  const total = promo?.total ?? plan.dealer_price;
+  const introFreeApplied = (eligibility?.intro_free_remaining ?? 0) > 0 && plan.duration_months <= DEALER_INTRO_MAX_MONTHS;
+  const total = introFreeApplied ? 0 : promo?.total ?? plan.dealer_price;
   const options = (plan.selected_options || {}) as Record<string, unknown>;
   const fullPriceBasis = options.price_basis === 'full-warranty';
   const netPrice = fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
@@ -168,7 +191,7 @@ const Step4Checkout: React.FC = () => {
       },
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; code: string; discount_amount: number; total: number };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; method?: string; code: string; discount_amount: number; total: number };
   };
 
   const applyPromo = async () => {
@@ -181,6 +204,10 @@ const Step4Checkout: React.FC = () => {
 
   const handleSubmit = async () => {
     if (submitting) return;
+    if (termsAccepted !== true) {
+      setTermsOpen(true);
+      return;
+    }
     if (!paymentReady) {
       navigate('/dealer-portal/quote/customer');
       return;
@@ -191,6 +218,11 @@ const Step4Checkout: React.FC = () => {
     setSubmitting(true);
     try {
       const data = await createRecord();
+
+      if (data?.method === 'intro_free') {
+        navigate(`/dealer-portal/quote/confirmation?method=free${data.customer_id ? `&id=${data.customer_id}` : ''}`);
+        return;
+      }
 
       if (method === 'pay_now') {
         if (data?.client_secret && stripePromise) {
@@ -211,6 +243,7 @@ const Step4Checkout: React.FC = () => {
     } catch (err: unknown) {
       console.error('Dealer checkout error', err);
       const message = err instanceof Error ? err.message : 'Please try again or contact support.';
+      if (message.includes('Trade Terms')) setTermsOpen(true);
       setSubmitError(message);
       toast({
         title: 'Checkout failed',
@@ -219,6 +252,24 @@ const Step4Checkout: React.FC = () => {
       });
       setSubmitting(false);
     }
+  };
+
+  const requestCredit = async () => {
+    if (requestingCredit) return;
+    setRequestingCredit(true);
+    setSubmitError(null);
+    const { data, error } = await supabase.functions.invoke('dealer-credit-authorisation', {
+      body: { action: 'request_credit', dealer_id: dealer.id },
+    });
+    setRequestingCredit(false);
+    if (error || data?.error) {
+      const message = data?.error || 'We could not send your request. Please try again.';
+      setSubmitError(message);
+      toast({ title: 'Credit request not sent', description: message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Request sent', description: 'An Admin or Super Admin can now authorise 30-day invoicing from Dealer billing.' });
+    await refreshEligibility();
   };
 
   const boostOn = options.boost === true;
@@ -236,7 +287,13 @@ const Step4Checkout: React.FC = () => {
   const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
-  const ctaLabel = accountSelected ? 'Issue warranty using dealer account' : `Pay £${total.toFixed(2)} & issue warranty`;
+  const ctaLabel = termsAccepted !== true
+    ? 'Review trade terms to continue'
+    : introFreeApplied
+      ? 'Activate now with your free 3+3 warranty'
+      : accountSelected
+        ? 'Activate now and pay later'
+        : `Pay £${total.toFixed(2)} & issue warranty`;
   const ctaDisabled = submitting || checkingPromo || (method === 'invoice' && creditBlocked);
 
   const Radio = ({ on }: { on: boolean }) => (
@@ -255,7 +312,11 @@ const Step4Checkout: React.FC = () => {
         ? 'Account billing is not switched on for your dealership. Call 0330 229 5045 to talk about account terms.'
         : eligibility?.reason === 'overdue'
           ? 'Your dealer account has an overdue balance. Clear outstanding invoices to use account billing.'
-          : 'Checking whether account billing is available for your dealership.';
+          : eligibility?.reason === 'pending'
+            ? 'Your 30-day invoicing request is waiting for Admin or Super Admin authorisation.'
+            : eligibility?.reason === 'approval_required'
+              ? 'You meet the paid-warranty criteria. Request authorisation to activate 30-day invoicing.'
+              : 'Checking whether account billing is available for your dealership.';
 
   return (
     <DealerJourneyLayout
@@ -321,20 +382,26 @@ const Step4Checkout: React.FC = () => {
             <ul className="mt-3 space-y-3">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET}, get {INTRO_PAID_TARGET} warranties free</span><span className="text-sm text-muted-foreground">Any warranty up to 3 years' duration.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET} paid warranties, your next {INTRO_PAID_TARGET} are free</span><span className="text-sm text-muted-foreground">Applied automatically to qualifying warranties up to 3 years' duration.</span></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">After {invoiceRequired} paid warranties, you can pay by invoice (with payment due in {termDays} days).</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Request after {invoiceRequired} paid warranties. Activation requires Admin or Super Admin approval and a healthy account status.</span></span>
               </li>
             </ul>
-            <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
+            <a href="/dealer-portal/trade-terms" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
           </div>
         </section>
 
         {/* Payment */}
         <section className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
-          {introLeft > 0 && (
+          {introFreeApplied && (
+            <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+              <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your free warranty is ready</p>
+              <p className="mt-2 text-sm text-muted-foreground">Your 3+3 offer applies automatically. This qualifying warranty costs £0, and you have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
+            </div>
+          )}
+          {!introFreeApplied && introLeft > 0 && (
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
               <div className="mt-2 flex items-center justify-between gap-2 text-sm">
@@ -383,10 +450,15 @@ const Step4Checkout: React.FC = () => {
                   </div>
                   {eligibility?.reason === 'new' ? (
                     <>
-                      <p className="text-sm text-muted-foreground">Available after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
+                      <p className="text-sm text-muted-foreground">Available to request after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
                       <div className="mt-2 h-2 overflow-hidden rounded-full bg-border"><div className="h-full rounded-full bg-crm-blue" style={{ width: `${Math.min(100, (paidCount / Math.max(1, invoiceRequired)) * 100)}%` }} /></div>
                     </>
                   ) : <p className="text-sm text-muted-foreground">{blockedText}</p>}
+                  {eligibility?.can_request && (
+                    <Button type="button" variant="outline" disabled={requestingCredit} onClick={requestCredit} className="mt-3 w-full">
+                      {requestingCredit ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />} Request 30-day invoicing
+                    </Button>
+                  )}
                   {eligibility?.reason === 'overdue' && (
                     <button type="button" onClick={() => navigate('/dealer-portal/warranties')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
                       View outstanding invoices <ChevronRight className="h-3.5 w-3.5" />
@@ -398,10 +470,11 @@ const Step4Checkout: React.FC = () => {
           </div>
 
           <div className="mt-6 border-t border-border pt-5">
+            {introFreeApplied && <p className="mb-3 rounded-xl bg-crm-green-soft p-3 text-sm font-semibold text-crm-green-deep">3+3 introductory offer applied automatically · £{plan.dealer_price.toFixed(2)} off</p>}
             <label htmlFor="dealer-promo" className="mb-2 block text-sm font-bold text-crm-navy">Promo code</label>
             <div className="flex gap-2">
-              <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder="Enter promo code" className="min-w-0 flex-1" />
-              <Button variant="outline" disabled={!promoCode.trim() || checkingPromo || submitting} onClick={applyPromo}>{checkingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}</Button>
+              <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo || introFreeApplied} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder={introFreeApplied ? 'Free offer already applied' : 'Enter promo code'} className="min-w-0 flex-1" />
+              <Button variant="outline" disabled={!promoCode.trim() || checkingPromo || submitting || introFreeApplied} onClick={applyPromo}>{checkingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}</Button>
             </div>
             {promoError && <div className="mt-2"><DealerFieldError>{promoError}</DealerFieldError></div>}
             {promo && <div className="mt-3 flex items-center justify-between gap-2 text-sm text-crm-green-deep"><span className="flex items-center gap-1"><Check className="h-4 w-4" />{promo.code} · £{promo.discount_amount.toFixed(2)} off</span><Button variant="ghost" size="sm" onClick={() => { setPromo(null); setPromoCode(''); }}>Remove</Button></div>}
@@ -419,7 +492,7 @@ const Step4Checkout: React.FC = () => {
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
             {submitting ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{introFreeApplied ? 'Issuing free warranty…' : accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
             ) : !paymentReady ? (
               <>Complete customer details</>
             ) : (
@@ -427,7 +500,7 @@ const Step4Checkout: React.FC = () => {
             )}
           </Button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-            {accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
+            {introFreeApplied ? <>3+3 introductory offer · no payment due</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
           </p>
         </section>
       </div>
@@ -435,6 +508,10 @@ const Step4Checkout: React.FC = () => {
       <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} disabled={submitting} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-crm-blue">
         <ArrowLeft className="h-4 w-4" /> Back to customer details
       </button>
+      <TradeTermsDialog dealerId={dealer.id} open={termsOpen} onOpenChange={setTermsOpen} onAccepted={() => {
+        setTermsAccepted(true);
+        toast({ title: 'Trade terms accepted', description: 'Your acceptance has been recorded for this dealership.' });
+      }} />
       <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>
         <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-6">
           <DialogTitle>Pay securely by card</DialogTitle>

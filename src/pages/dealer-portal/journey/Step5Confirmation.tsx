@@ -15,7 +15,7 @@ const Step5Confirmation: React.FC = () => {
   const method = searchParams.get('method') || 'pay_now';
   const id = searchParams.get('id');
   const sessionId = searchParams.get('session_id');
-  const [confirmed, setConfirmed] = useState(method === 'invoice');
+  const [confirmed, setConfirmed] = useState(method === 'invoice' || method === 'free');
   const [confirmError, setConfirmError] = useState('');
   const [checking, setChecking] = useState(false);
 
@@ -32,12 +32,13 @@ const Step5Confirmation: React.FC = () => {
   };
 
   useEffect(() => {
-    if (method === 'invoice') reset();
+    if (method === 'invoice' || method === 'free') reset();
     else void confirmPayment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isInvoice = method === 'invoice';
+  const isFree = method === 'free';
   const dueRaw = searchParams.get('due');
   const dueDate = dueRaw
     ? new Date(dueRaw).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -54,7 +55,9 @@ const Step5Confirmation: React.FC = () => {
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
             {!confirmed ? (confirmError || 'Checking your payment…') : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
-              : 'Your customer is now covered. A confirmation email has been sent.'}
+              : isFree
+                ? 'Your 3+3 introductory free warranty is active. Your customer is now covered and a confirmation email has been sent.'
+                : 'Your customer is now covered. A confirmation email has been sent.'}
           </p>
 
           <div className="max-w-sm mx-auto text-left text-sm border border-gray-200 rounded-xl divide-y divide-gray-200 mb-6">
@@ -66,12 +69,12 @@ const Step5Confirmation: React.FC = () => {
             )}
             <div className="flex justify-between px-4 py-2">
               <span className="text-gray-600">Payment method</span>
-              <span className="font-semibold text-gray-900">{isInvoice ? 'Dealer account' : 'Card'}</span>
+              <span className="font-semibold text-gray-900">{isInvoice ? 'Dealer account' : isFree ? '3+3 introductory offer' : 'Card'}</span>
             </div>
             <div className="flex justify-between px-4 py-2">
               <span className="text-gray-600">Payment</span>
               <span className={`font-semibold ${isInvoice ? 'text-amber-700' : 'text-green-600'}`}>
-                {isInvoice ? 'Invoice pending' : confirmed ? 'Paid' : 'Awaiting confirmation'}
+                {isInvoice ? 'Invoice pending' : isFree ? 'Free · active' : confirmed ? 'Paid' : 'Awaiting confirmation'}
               </span>
             </div>
             {isInvoice && dueDate && (

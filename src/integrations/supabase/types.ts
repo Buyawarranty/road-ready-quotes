@@ -7133,6 +7133,54 @@ export type Database = {
           },
         ]
       }
+      dealer_intro_free_redemptions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          dealer_id: string
+          duration_months: number
+          id: string
+          original_amount: number
+          slot: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          dealer_id: string
+          duration_months: number
+          id?: string
+          original_amount: number
+          slot: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          dealer_id?: string
+          duration_months?: number
+          id?: string
+          original_amount?: number
+          slot?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_intro_free_redemptions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: true
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dealer_intro_free_redemptions_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_leads: {
         Row: {
           archived_at: string | null
@@ -7246,6 +7294,53 @@ export type Database = {
             foreignKeyName: "dealer_paylater_overrides_dealer_id_fkey"
             columns: ["dealer_id"]
             isOneToOne: true
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_paylater_requests: {
+        Row: {
+          created_at: string
+          dealer_id: string
+          id: string
+          paid_warranty_count: number
+          requested_by: string
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dealer_id: string
+          id?: string
+          paid_warranty_count: number
+          requested_by: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dealer_id?: string
+          id?: string
+          paid_warranty_count?: number
+          requested_by?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_paylater_requests_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
             referencedRelation: "dealers"
             referencedColumns: ["id"]
           },
@@ -7538,6 +7633,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "dealer_quotes_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_trade_terms_acceptances: {
+        Row: {
+          accepted_at: string
+          accepted_by: string
+          created_at: string
+          dealer_id: string
+          terms_version: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string
+          accepted_by: string
+          created_at?: string
+          dealer_id: string
+          terms_version: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string
+          accepted_by?: string
+          created_at?: string
+          dealer_id?: string
+          terms_version?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_trade_terms_acceptances_dealer_id_fkey"
             columns: ["dealer_id"]
             isOneToOne: false
             referencedRelation: "dealers"
@@ -15434,6 +15564,14 @@ export type Database = {
       }
     }
     Functions: {
+      accept_dealer_trade_terms: {
+        Args: {
+          p_accepted_by: string
+          p_dealer_id: string
+          p_terms_version: string
+        }
+        Returns: Json
+      }
       add_working_days: {
         Args: { _days: number; _from: string }
         Returns: string
@@ -15588,6 +15726,15 @@ export type Database = {
       can_view_staff_hub_doc: {
         Args: { _allowed_roles: string[]; _allowed_team_ids: string[] }
         Returns: boolean
+      }
+      claim_dealer_intro_free: {
+        Args: {
+          p_customer_id: string
+          p_dealer_id: string
+          p_duration_months: number
+          p_original_amount: number
+        }
+        Returns: Json
       }
       claim_lead_for_agent: {
         Args: { p_agent_id: string; p_lead_id: string }
@@ -16552,6 +16699,10 @@ export type Database = {
         Args: { _agent: string; _policy: string }
         Returns: undefined
       }
+      request_dealer_paylater: {
+        Args: { p_dealer_id: string; p_requested_by: string }
+        Returns: Json
+      }
       reset_agent_caps_daily: { Args: never; Returns: undefined }
       reset_daily_caps: { Args: never; Returns: undefined }
       resolve_sale_credit: {
@@ -16596,6 +16747,15 @@ export type Database = {
           p_request_id: string
         }
         Returns: undefined
+      }
+      review_dealer_paylater_request: {
+        Args: {
+          p_decision: string
+          p_note: string
+          p_request_id: string
+          p_reviewed_by: string
+        }
+        Returns: Json
       }
       review_dealer_profile_change: {
         Args: { p_approve: boolean; p_note?: string; p_request_id: string }

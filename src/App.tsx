@@ -143,6 +143,7 @@ const WhatsCovered = lazy(() => import("./pages/WhatsCovered"));
 const MakeAClaim = lazy(() => import("./pages/MakeAClaim"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
 const WhyChooseUs = lazy(() => import("./pages/dealer-portal/WhyChooseUs"));
+const DealerTradeTerms = lazy(() => import("./pages/dealer-portal/DealerTradeTerms"));
 const CustomerQuotePage = lazy(() => import("./pages/dealer-portal/CustomerQuotePage"));
 const LiveQuotePage = lazy(() => import("./pages/LiveQuotePage"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
@@ -390,6 +391,7 @@ const App = () => {
                     <Route path="/dealer-portal/coming-soon" element={<DealerComingSoon />} />
                     <Route path="/dealer-portal/full-warranty" element={<FullWarrantyService />} />
                     <Route path="/dealer-portal/claims-handling" element={<ClaimsHandlingService />} />
+                    <Route path="/dealer-portal/trade-terms" element={<DealerTradeTerms />} />
                     <Route path="/dealer-portal/signup" element={<DealerComingSoon />} />
                     <Route path="/dealer-portal/login" element={<DealerLogin />} />
                     {/* Dealer portal app routes */}
