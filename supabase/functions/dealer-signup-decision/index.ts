@@ -210,7 +210,16 @@ serve(async (req) => {
       const targetStatus = validateSignupStatus(decision === 'reject' ? 'rejected' : body.status);
       const { data: changed, error } = await admin.rpc('set_dealer_signup_status', { p_signup_id: signupId, p_status: targetStatus, p_actor: userData.user.id, p_notes: notes });
       if (error) throw new Error(error.message);
-      const mail = changed.withdrawn || body.notify === true ? await sendEmail(brand, email, `${brand.name} trade account update`, shell(brand, 'An update to your trade account', `
+      const isDeactivation = targetStatus === 'rejected';
+      const mail = changed.withdrawn || body.notify === true || isDeactivation ? await sendEmail(brand, email,
+        isDeactivation ? `Your ${brand.name} trade account has been deactivated` : `${brand.name} trade account update`,
+        shell(brand, isDeactivation ? 'Your trade account has been deactivated' : 'An update to your trade account', isDeactivation ? `
+        <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
+        <p style="line-height:1.6;">We're writing to let you know that your ${brand.name} trade account has been deactivated following a review, and you'll no longer be able to sign in to the dealer portal or purchase new warranties.</p>
+        ${notes ? `<p style="line-height:1.6;">${esc(notes)}</p>` : ''}
+        <p style="line-height:1.6;">Any warranties already purchased and paid for remain active for your customers.</p>
+        <p style="line-height:1.6;">If you have any questions about this decision, please reply to this email or contact ${brand.helloEmail}.</p>
+        <p style="line-height:1.6;">Kind regards,<br/>The ${brand.name} Trade Team</p>` : `
         <p style="line-height:1.6;">Hi ${esc(contactName)},</p>
         <p style="line-height:1.6;">${targetStatus === 'approved' ? 'Your trade account approval has been restored. You can sign in with your existing password.' : changed.withdrawn ? 'We’re reviewing a few details on your trade account. Your approval has been temporarily withdrawn while we complete this update.' : 'We have updated your application status.'}</p>
         ${notes ? `<p style="line-height:1.6;">${esc(notes)}</p>` : ''}
