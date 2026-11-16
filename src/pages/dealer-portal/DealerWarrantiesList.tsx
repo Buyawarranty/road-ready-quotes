@@ -62,6 +62,10 @@ const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') 
 const ref = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();
 const money = (value?: number | string | null) => `£${Number(value || 0).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const wholeMoney = (value?: number | string | null) => value == null || value === '' ? '—' : `£${Number(value).toLocaleString('en-GB')}`;
+const warrantyRef = (row: WarrantyRow) => row.warranty_number || row.policy_number || ref(row.id);
+const activationDate = (row: WarrantyRow) => row.warranty_start_date || row.signup_date;
+const coverName = (row: WarrantyRow) => String(row.plan_type).toLowerCase() === 'basic' ? 'Manage My Claim' : 'Comprehensive Warranty';
+const productName = (row: WarrantyRow) => displayWarrantyPlanName(row.plan_type, '—');
 
 const paymentBadgeClasses: Record<DealerPaymentKey, string> = {
   paid: 'border-crm-green/20 bg-crm-green-soft text-crm-green-deep',
@@ -398,6 +402,7 @@ const DealerWarrantiesList = () => {
             <div className="min-w-0">
               <p className="font-mono text-base font-extrabold uppercase text-crm-navy">{row.registration_plate || '—'}</p>
               <p className="mt-0.5 text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ') || 'Vehicle details unavailable'}</p>
+              <p className="mt-1 font-mono text-xs font-semibold text-muted-foreground">Ref {warrantyRef(row)}</p>
             </div>
             <p className="shrink-0 text-lg font-extrabold text-crm-navy">{money(row.final_amount)}</p>
           </div>
@@ -406,9 +411,13 @@ const DealerWarrantiesList = () => {
             <p className="break-all text-sm text-muted-foreground">{row.email || '—'}</p>
           </div>
           <div className="mt-4 border-t border-crm-line pt-4">
-            <p className="font-bold text-crm-navy">{String(row.plan_type).toLowerCase() === 'basic' ? 'Manage My Claim' : 'Comprehensive Warranty'}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{row.payment_type ? `${row.payment_type} months` : '—'} · Claim limit {wholeMoney(row.claim_limit)}</p>
-            <p className="mt-1 text-sm text-muted-foreground">{fmt(row.warranty_start_date || row.signup_date)} – {fmt(computeEnd(row))}</p>
+            <p className="font-bold text-crm-navy">{coverName(row)}</p>
+            <p className="mt-1 text-sm text-muted-foreground">Product {productName(row)} · {row.payment_type ? `${row.payment_type} months` : '—'} · Claim limit {wholeMoney(row.claim_limit)}</p>
+            <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
+              <div><dt className="text-muted-foreground">Activation</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(activationDate(row))}</dd></div>
+              <div><dt className="text-muted-foreground">Inception</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}</dd></div>
+              <div><dt className="text-muted-foreground">Expiry</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(computeEnd(row))}</dd></div>
+            </dl>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">{renderPaymentStatus(row)}{renderCoverStatus(row)}</div>
           <div className="mt-4">{renderActions(row, true)}</div>
@@ -419,14 +428,18 @@ const DealerWarrantiesList = () => {
 
   const renderWarrantyTable = (data: WarrantyRow[]) => (
     <div className="hidden overflow-x-auto 2xl:block">
-      <Table className="min-w-[1180px]">
+      <Table className="min-w-[1740px]">
         <TableHeader>
           <TableRow className="border-crm-line bg-muted/50 hover:bg-muted/50">
-            <TableHead className="px-5 py-4 font-bold text-crm-navy">Customer</TableHead>
-            <TableHead className="font-bold text-crm-navy">Vehicle</TableHead>
-            <TableHead className="min-w-[230px] font-bold text-crm-navy">Warranty</TableHead>
-            <TableHead className="min-w-[150px] font-bold text-crm-navy">Cover period</TableHead>
-            <TableHead className="font-bold text-crm-navy">Amount</TableHead>
+            <TableHead className="px-5 py-4 font-bold text-crm-navy">Reference</TableHead>
+            <TableHead className="font-bold text-crm-navy">Customer</TableHead>
+            <TableHead className="font-bold text-crm-navy">Vehicle / reg no.</TableHead>
+            <TableHead className="min-w-[140px] font-bold text-crm-navy">Product</TableHead>
+            <TableHead className="min-w-[230px] font-bold text-crm-navy">Cover</TableHead>
+            <TableHead className="whitespace-nowrap font-bold text-crm-navy">Activation</TableHead>
+            <TableHead className="whitespace-nowrap font-bold text-crm-navy">Inception</TableHead>
+            <TableHead className="whitespace-nowrap font-bold text-crm-navy">Expiry</TableHead>
+            <TableHead className="font-bold text-crm-navy">Price</TableHead>
             <TableHead className="font-bold text-crm-navy">Payment</TableHead>
             <TableHead className="font-bold text-crm-navy">Cover status</TableHead>
             <TableHead className="sticky right-0 z-20 min-w-[190px] bg-muted pr-5 text-right font-bold text-crm-navy">Actions</TableHead>
@@ -435,22 +448,27 @@ const DealerWarrantiesList = () => {
         <TableBody>
           {data.map((row) => (
             <TableRow key={row.id} className="group border-crm-line bg-card hover:bg-crm-orange-soft/30">
-              <TableCell className="px-5 py-5 align-top">
+              <TableCell className="px-5 py-5 align-top font-mono text-sm font-bold text-crm-orange">{warrantyRef(row)}</TableCell>
+              <TableCell className="align-top">
                 <p className="font-bold text-crm-navy">{row.name || '—'}</p>
                 <p className="mt-1 max-w-[190px] break-all text-sm text-muted-foreground">{row.email || '—'}</p>
               </TableCell>
               <TableCell className="align-top">
                 <p className="font-mono font-bold uppercase text-crm-navy">{row.registration_plate || '—'}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}</p>
+                <p className="mt-1 max-w-[210px] text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}</p>
               </TableCell>
               <TableCell className="align-top">
-                <p className="font-bold text-crm-navy">{String(row.plan_type).toLowerCase() === 'basic' ? 'Manage My Claim' : 'Comprehensive Warranty'}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{row.payment_type ? `${row.payment_type} months` : '—'} · Claim limit {wholeMoney(row.claim_limit)}</p>
+                <p className="font-bold text-crm-navy">{productName(row)}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{row.payment_type ? `${row.payment_type} months` : '—'}</p>
+              </TableCell>
+              <TableCell className="align-top">
+                <p className="font-bold text-crm-navy">{coverName(row)}</p>
+                <p className="mt-1 text-sm text-muted-foreground">Claim limit {wholeMoney(row.claim_limit)}</p>
                 <p className="mt-1 text-sm text-muted-foreground">Excess {wholeMoney(row.voluntary_excess)} · Labour rate {row.labour_rate ? `${wholeMoney(row.labour_rate)}/hr` : '—'}</p>
               </TableCell>
-              <TableCell className="align-top text-sm font-medium text-crm-navy">
-                {fmt(row.warranty_start_date || row.signup_date)}<br />{fmt(computeEnd(row))}
-              </TableCell>
+              <TableCell className="whitespace-nowrap align-top text-sm font-medium text-crm-navy">{fmt(activationDate(row))}</TableCell>
+              <TableCell className="whitespace-nowrap align-top text-sm font-medium text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}</TableCell>
+              <TableCell className="whitespace-nowrap align-top text-sm font-medium text-crm-navy">{fmt(computeEnd(row))}</TableCell>
               <TableCell className="align-top font-extrabold text-crm-navy">{money(row.final_amount)}</TableCell>
               <TableCell className="align-top">{renderPaymentStatus(row)}</TableCell>
               <TableCell className="align-top">{renderCoverStatus(row)}</TableCell>
@@ -665,11 +683,13 @@ const DealerWarrantiesList = () => {
                   ['Customer', detailRow.name || '—'],
                   ['Email', detailRow.email || '—'],
                   ['Vehicle', [detailRow.vehicle_make, detailRow.vehicle_model].filter(Boolean).join(' ') || '—'],
-                  ['Warranty number', detailRow.warranty_number || detailRow.policy_number || ref(detailRow.id)],
-                  ['Cover', String(detailRow.plan_type).toLowerCase() === 'basic' ? 'Manage My Claim' : 'Comprehensive Warranty'],
-                  ['Plan', displayWarrantyPlanName(detailRow.plan_type, '—')],
+                  ['Reference', warrantyRef(detailRow)],
+                  ['Cover', coverName(detailRow)],
+                  ['Product', productName(detailRow)],
                   ['Duration', detailRow.payment_type ? `${detailRow.payment_type} months` : '—'],
-                  ['Cover period', `${fmt(detailRow.warranty_start_date || detailRow.signup_date)} – ${fmt(computeEnd(detailRow))}`],
+                  ['Activation', fmt(activationDate(detailRow))],
+                  ['Inception', fmt(detailRow.warranty_start_date || detailRow.signup_date)],
+                  ['Expiry', fmt(computeEnd(detailRow))],
                   ['Claim limit', wholeMoney(detailRow.claim_limit)],
                   ['Voluntary excess', wholeMoney(detailRow.voluntary_excess)],
                   ['Labour rate', detailRow.labour_rate ? `${wholeMoney(detailRow.labour_rate)}/hr` : '—'],
