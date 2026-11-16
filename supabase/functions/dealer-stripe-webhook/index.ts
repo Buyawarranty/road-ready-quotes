@@ -30,12 +30,13 @@ Deno.serve(async req => {
   if (event.type !== 'checkout.session.completed') {
     return new Response(JSON.stringify({ received: true, ignored: event.type }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   }
-  const session = event.data.object as Stripe.Checkout.Session;
-  if (session.metadata?.source !== 'dealer_journey') {
-    return new Response(JSON.stringify({ received: true, skipped: 'not_dealer' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-  }
-
+  const eventSession = event.data.object as Stripe.Checkout.Session;
   try {
+    // Never trust forwarded event fields alone: Stripe is authoritative for status, amount and metadata.
+    const session = await stripe.checkout.sessions.retrieve(eventSession.id);
+    if (session.metadata?.source !== 'dealer_journey') {
+      return new Response(JSON.stringify({ received: true, skipped: 'not_dealer' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
     const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const result = await finaliseDealerCardPayment(admin, session);
     return new Response(JSON.stringify({ received: true, ...result }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
