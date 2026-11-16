@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { isCountedDealerSale } from '@/lib/dealerSales';
 
 const db = supabase as any;
 
@@ -38,7 +39,7 @@ const DealerAdminPayLater: React.FC = () => {
         db.from('dealer_paylater_settings').select('*').eq('id', 1).maybeSingle(),
         db.from('dealers').select('id, company_name, email').order('company_name'),
         db.from('dealer_paylater_overrides').select('dealer_id, mode'),
-        db.from('customers').select('dealer_id').eq('payment_status', 'paid').gt('final_amount', 0).not('dealer_id', 'is', null).limit(5000),
+        db.from('customers').select('dealer_id, status').eq('brand', 'pandaprotect').eq('payment_status', 'paid').gt('final_amount', 0).not('dealer_id', 'is', null).limit(5000),
       ]);
       setSettings(
         s.data || { unlock_rule: 'paid_warranties', required_paid_warranties: 10, payment_term_days: 30, block_on_overdue: true },
@@ -46,7 +47,7 @@ const DealerAdminPayLater: React.FC = () => {
       setDealers(d.data || []);
       setOverrides(Object.fromEntries((o.data || []).map((r: any) => [r.dealer_id, r.mode])));
       const counts: Record<string, number> = {};
-      (c.data || []).forEach((r: any) => (counts[r.dealer_id] = (counts[r.dealer_id] || 0) + 1));
+      (c.data || []).filter(isCountedDealerSale).forEach((r: any) => (counts[r.dealer_id] = (counts[r.dealer_id] || 0) + 1));
       setPaidCounts(counts);
     })();
   }, []);
