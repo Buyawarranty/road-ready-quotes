@@ -17,3 +17,20 @@ export function qualifiesForIntroFree(paidCount: number, redemptionCount: number
 export function countsAsPaidWarranty(paymentStatus: string | null | undefined, finalAmount: number | null | undefined): boolean {
   return paymentStatus === 'paid' && Number(finalAmount ?? 0) > 0;
 }
+
+export function canAuthorizeDealerCreditRole(role: string): boolean {
+  return role === 'admin' || role === 'super_admin';
+}
+
+export function canRequestDealerCredit(input: {
+  paidCount: number;
+  required?: number;
+  mode?: 'auto' | 'allow' | 'block';
+  overdueCount?: number;
+  requestStatus?: 'pending' | 'approved' | 'rejected' | null;
+}): boolean {
+  return (input.mode ?? 'auto') === 'auto'
+    && input.paidCount >= (input.required ?? DEALER_CREDIT_PAID_TARGET)
+    && (input.overdueCount ?? 0) === 0
+    && input.requestStatus !== 'pending';
+}

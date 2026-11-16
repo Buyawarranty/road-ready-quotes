@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { countsAsPaidWarranty, introFreeRemaining, qualifiesForIntroFree } from '../../../supabase/functions/_shared/dealerIntroOffer';
+import { canAuthorizeDealerCreditRole, canRequestDealerCredit, countsAsPaidWarranty, introFreeRemaining, qualifiesForIntroFree } from '../../../supabase/functions/_shared/dealerIntroOffer';
 
 describe('dealer 3+3 introductory offer', () => {
   it('starts after three paid warranties and tracks exactly three free redemptions', () => {
@@ -20,5 +20,22 @@ describe('dealer 3+3 introductory offer', () => {
     expect(countsAsPaidWarranty('paid', 99)).toBe(true);
     expect(countsAsPaidWarranty('paid', 0)).toBe(false);
     expect(countsAsPaidWarranty('invoice_pending', 99)).toBe(false);
+  });
+});
+
+describe('dealer credit authorisation', () => {
+  it('allows a request only after 10 paid warranties with a clear account and no pending request', () => {
+    expect(canRequestDealerCredit({ paidCount: 9 })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 10 })).toBe(true);
+    expect(canRequestDealerCredit({ paidCount: 10, requestStatus: 'pending' })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 10, overdueCount: 1 })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 10, mode: 'allow' })).toBe(false);
+  });
+
+  it('allows only Admin and Super Admin to review requests', () => {
+    expect(canAuthorizeDealerCreditRole('admin')).toBe(true);
+    expect(canAuthorizeDealerCreditRole('super_admin')).toBe(true);
+    expect(canAuthorizeDealerCreditRole('manager')).toBe(false);
+    expect(canAuthorizeDealerCreditRole('dealer')).toBe(false);
   });
 });
