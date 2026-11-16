@@ -191,7 +191,7 @@ const Step4Checkout: React.FC = () => {
       },
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; code: string; discount_amount: number; total: number };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; method?: string; code: string; discount_amount: number; total: number };
   };
 
   const applyPromo = async () => {
@@ -254,6 +254,24 @@ const Step4Checkout: React.FC = () => {
     }
   };
 
+  const requestCredit = async () => {
+    if (requestingCredit) return;
+    setRequestingCredit(true);
+    setSubmitError(null);
+    const { data, error } = await supabase.functions.invoke('dealer-credit-authorisation', {
+      body: { action: 'request_credit', dealer_id: dealer.id },
+    });
+    setRequestingCredit(false);
+    if (error || data?.error) {
+      const message = data?.error || 'We could not send your request. Please try again.';
+      setSubmitError(message);
+      toast({ title: 'Credit request not sent', description: message, variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Request sent', description: 'An Admin or Super Admin can now authorise 30-day invoicing from Dealer billing.' });
+    await refreshEligibility();
+  };
+
   const boostOn = options.boost === true;
   const shownClaim = boostOn ? Math.max(claimLimit ?? 0, 5000) : claimLimit;
   const productName = planName === 'Comprehensive Warranty' ? 'Platinum Plan' : planName;
@@ -268,7 +286,7 @@ const Step4Checkout: React.FC = () => {
   const invoiceRequired = eligibility?.required ?? 10;
   const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
   const accountAvailable = !creditBlocked && !!eligibility;
-  const accountSelected = method === 'invoice' && accountAvailable && !introFreeApplied;
+  const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = termsAccepted !== true
     ? 'Review trade terms to continue'
     : introFreeApplied
@@ -364,20 +382,26 @@ const Step4Checkout: React.FC = () => {
             <ul className="mt-3 space-y-3">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET}, get {INTRO_PAID_TARGET} warranties free</span><span className="text-sm text-muted-foreground">Any warranty up to 3 years' duration.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET} paid warranties, your next {INTRO_PAID_TARGET} are free</span><span className="text-sm text-muted-foreground">Applied automatically to qualifying warranties up to 3 years' duration.</span></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">After {invoiceRequired} paid warranties, you can pay by invoice (with payment due in {termDays} days).</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Request after {invoiceRequired} paid warranties. Activation requires Admin or Super Admin approval and a healthy account status.</span></span>
               </li>
             </ul>
-            <a href="/terms/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
+            <a href="/dealer-portal/trade-terms" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
           </div>
         </section>
 
         {/* Payment */}
         <section className="min-w-0 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
-          {introLeft > 0 && (
+          {introFreeApplied && (
+            <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
+              <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your free warranty is ready</p>
+              <p className="mt-2 text-sm text-muted-foreground">Your 3+3 offer applies automatically. This qualifying warranty costs £0, and you have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
+            </div>
+          )}
+          {!introFreeApplied && introLeft > 0 && (
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
               <div className="mt-2 flex items-center justify-between gap-2 text-sm">
@@ -426,10 +450,15 @@ const Step4Checkout: React.FC = () => {
                   </div>
                   {eligibility?.reason === 'new' ? (
                     <>
-                      <p className="text-sm text-muted-foreground">Available after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
+                      <p className="text-sm text-muted-foreground">Available to request after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
                       <div className="mt-2 h-2 overflow-hidden rounded-full bg-border"><div className="h-full rounded-full bg-crm-blue" style={{ width: `${Math.min(100, (paidCount / Math.max(1, invoiceRequired)) * 100)}%` }} /></div>
                     </>
                   ) : <p className="text-sm text-muted-foreground">{blockedText}</p>}
+                  {eligibility?.can_request && (
+                    <Button type="button" variant="outline" disabled={requestingCredit} onClick={requestCredit} className="mt-3 w-full">
+                      {requestingCredit ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />} Request 30-day invoicing
+                    </Button>
+                  )}
                   {eligibility?.reason === 'overdue' && (
                     <button type="button" onClick={() => navigate('/dealer-portal/warranties')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
                       View outstanding invoices <ChevronRight className="h-3.5 w-3.5" />
@@ -441,10 +470,11 @@ const Step4Checkout: React.FC = () => {
           </div>
 
           <div className="mt-6 border-t border-border pt-5">
+            {introFreeApplied && <p className="mb-3 rounded-xl bg-crm-green-soft p-3 text-sm font-semibold text-crm-green-deep">3+3 introductory offer applied automatically · £{plan.dealer_price.toFixed(2)} off</p>}
             <label htmlFor="dealer-promo" className="mb-2 block text-sm font-bold text-crm-navy">Promo code</label>
             <div className="flex gap-2">
-              <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder="Enter promo code" className="min-w-0 flex-1" />
-              <Button variant="outline" disabled={!promoCode.trim() || checkingPromo || submitting} onClick={applyPromo}>{checkingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}</Button>
+              <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo || introFreeApplied} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder={introFreeApplied ? 'Free offer already applied' : 'Enter promo code'} className="min-w-0 flex-1" />
+              <Button variant="outline" disabled={!promoCode.trim() || checkingPromo || submitting || introFreeApplied} onClick={applyPromo}>{checkingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}</Button>
             </div>
             {promoError && <div className="mt-2"><DealerFieldError>{promoError}</DealerFieldError></div>}
             {promo && <div className="mt-3 flex items-center justify-between gap-2 text-sm text-crm-green-deep"><span className="flex items-center gap-1"><Check className="h-4 w-4" />{promo.code} · £{promo.discount_amount.toFixed(2)} off</span><Button variant="ghost" size="sm" onClick={() => { setPromo(null); setPromoCode(''); }}>Remove</Button></div>}
@@ -462,7 +492,7 @@ const Step4Checkout: React.FC = () => {
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
             {submitting ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{introFreeApplied ? 'Issuing free warranty…' : accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
             ) : !paymentReady ? (
               <>Complete customer details</>
             ) : (
@@ -470,7 +500,7 @@ const Step4Checkout: React.FC = () => {
             )}
           </Button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-            {accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
+            {introFreeApplied ? <>3+3 introductory offer · no payment due</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
           </p>
         </section>
       </div>
@@ -478,6 +508,10 @@ const Step4Checkout: React.FC = () => {
       <button type="button" onClick={() => navigate('/dealer-portal/quote/customer')} disabled={submitting} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-crm-blue">
         <ArrowLeft className="h-4 w-4" /> Back to customer details
       </button>
+      <TradeTermsDialog dealerId={dealer.id} open={termsOpen} onOpenChange={setTermsOpen} onAccepted={() => {
+        setTermsAccepted(true);
+        toast({ title: 'Trade terms accepted', description: 'Your acceptance has been recorded for this dealership.' });
+      }} />
       <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>
         <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto p-4 sm:p-6">
           <DialogTitle>Pay securely by card</DialogTitle>
