@@ -7138,30 +7138,45 @@ export type Database = {
           created_at: string
           customer_id: string
           dealer_id: string
+          dealer_quote_id: string | null
           duration_months: number
           id: string
           original_amount: number
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           slot: number
+          status: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           customer_id: string
           dealer_id: string
+          dealer_quote_id?: string | null
           duration_months: number
           id?: string
           original_amount: number
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slot: number
+          status?: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           customer_id?: string
           dealer_id?: string
+          dealer_quote_id?: string | null
           duration_months?: number
           id?: string
           original_amount?: number
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           slot?: number
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -16766,6 +16781,15 @@ export type Database = {
           p_request_id: string
         }
         Returns: undefined
+      }
+      review_dealer_intro_free: {
+        Args: {
+          p_decision: string
+          p_note: string
+          p_redemption_id: string
+          p_reviewer: string
+        }
+        Returns: Json
       }
       review_dealer_paylater_request: {
         Args: {
