@@ -218,6 +218,12 @@ const CancelWarranty = () => {
 
         <main className="max-w-[720px] mx-auto px-6 py-12 space-y-12">
 
+          {/* ── Page title ── */}
+          <section className="text-center space-y-3" aria-labelledby="page-title-heading">
+            <h1 id="page-title-heading" className="text-3xl sm:text-4xl font-bold text-[#000]">Cancellation Rights</h1>
+            <p className="text-[#333] text-lg">We understand plans change. Here's everything you need to know.</p>
+          </section>
+
           {/* ── 14 Day Cooling Off ── */}
           <section className="space-y-4" aria-labelledby="cooling-off-heading">
             <div className="flex items-center gap-3">
@@ -248,7 +254,7 @@ const CancelWarranty = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-[#000] mb-1">If your cover has started</p>
-                  <p className="text-[#333] text-sm">You will receive a refund minus the value of the days already covered.</p>
+                  <p className="text-[#333] text-sm">You will receive a <strong>full refund</strong> – no administration fees, no pro-rata deductions and no cancellation charges.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 bg-[#fef2f2] rounded-lg p-4 border border-red-200">
@@ -256,12 +262,12 @@ const CancelWarranty = () => {
                   <AlertCircle className="w-4 h-4 text-red-500" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#000] mb-1">If a claim has been started</p>
+                  <p className="font-semibold text-[#000] mb-1">If a claim has been made or is in progress</p>
                   <p className="text-[#333] text-sm">
-                    We deduct the value of any service already provided, such as a claim review or assessment.
+                    A refund isn't available once a claim has been made or is in progress.
                   </p>
                   <p className="text-[#333] text-sm mt-1">
-                    If the value of work already completed is higher than the remaining amount on your plan, no refund will be due.
+                    Your cover continues for the full agreed term.
                   </p>
                 </div>
               </div>
@@ -293,8 +299,8 @@ const CancelWarranty = () => {
                     </div>
                     <div>
                       <p className="font-semibold text-[#000] mb-1">If no claim work has been carried out</p>
-                      <p className="text-[#333] text-sm">We refund any unused full months on a pro rata basis.</p>
-                      <p className="text-[#333] text-sm mt-1">A reasonable administration charge may apply to cover our actual costs.</p>
+                      <p className="text-[#333] text-sm">We refund the unused part of your cover on a pro-rata basis.</p>
+                      <p className="text-[#333] text-sm mt-1">From this we deduct a £60 administration fee and a 14% early termination charge on the remaining unused value.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 bg-white rounded-lg p-3 border border-[#E6E6E6]">
@@ -302,9 +308,9 @@ const CancelWarranty = () => {
                       <Wrench className="w-4 h-4 text-red-500" />
                     </div>
                     <div>
-                      <p className="font-semibold text-[#000] mb-1">If claim work has been completed</p>
-                      <p className="text-[#333] text-sm">We deduct the value of the work already provided.</p>
-                      <p className="text-[#333] text-sm mt-1">If the claim work costs more than the remaining balance, no refund will be due.</p>
+                      <p className="font-semibold text-[#000] mb-1">If a claim has been made</p>
+                      <p className="text-[#333] text-sm">No refund is due once a claim has been made.</p>
+                      <p className="text-[#333] text-sm mt-1">Your cover continues for the full agreed term.</p>
                     </div>
                   </div>
                 </div>
@@ -327,7 +333,7 @@ const CancelWarranty = () => {
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 text-[#009A44] flex-shrink-0 mt-0.5" />
-                    <p className="text-[#333] text-sm">Any refund due will be handled directly by the finance provider.</p>
+                    <p className="text-[#333] text-sm">Any refund due, less a £60 administration fee and a 14% early termination charge, will be handled directly by the finance provider.</p>
                   </div>
                   <div className="flex items-start gap-2 mt-2 bg-[#009A44]/10 rounded-lg p-2">
                     <CheckCircle className="w-4 h-4 text-[#009A44] flex-shrink-0 mt-0.5" />
@@ -654,6 +660,22 @@ const CancelWarranty = () => {
                 className="flex items-center gap-2 text-[#009A44] hover:underline font-medium"
               >
                 <MessageCircle className="w-4 h-4" /> WhatsApp Us
+              </a>
+            </div>
+          </section>
+
+          <hr className="border-[#E6E6E6]" />
+
+          {/* ── Ready to protect ── */}
+          <section className="bg-[#fff7ed] border-2 border-[#FF7A00]/30 rounded-xl p-6 sm:p-8 text-center" aria-labelledby="ready-heading">
+            <h2 id="ready-heading" className="text-2xl font-bold text-[#000] mb-2">Ready to protect your vehicle?</h2>
+            <p className="text-[#333] mb-5">Get an instant quote and find the perfect warranty for your vehicle today from 60p a day.</p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link to="/">
+                <Button className="h-12 bg-[#FF7A00] hover:bg-[#e56e00] text-white font-bold rounded-lg text-base">Get your free quote</Button>
+              </Link>
+              <a href="tel:03302295045" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
+                <Phone className="w-4 h-4" /> 0330 229 5045
               </a>
             </div>
           </section>
