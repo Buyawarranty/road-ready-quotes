@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Investigate why the repaired hassan.deen1@hotmail.com sale is not visible in Dealer sales; reproduce the filter/access issue and verify the entry appears.
 - [x] Repair the £1.19 dealer sale and future completion flow: quote now paid, customer paid/verified/active, exactly one claim-ready warranty, and dealer/customer emails accepted by Resend. Shared card/webhook/invoice/free fulfilment deployed; 45 targeted tests pass and build OK. Inbox delivery not independently confirmed.
 - [x] Add warranty reference, product, activation, inception and expiry to dealer Warranties on desktop, mobile and details; populated visual checks passed with no overflow and build OK. Live dealer-account verification remains unavailable with external authentication.
 - [x] Add automatic 3+3 warranties, dealer 30-day credit requests after 10 paid warranties, Admin/Super Admin authorisation, server-enforced Activate now and pay later, and recorded first-purchase Trade Terms acceptance. 56 targeted tests pass; build OK; full terms and pop-up verified on desktop/mobile. Live dealer/admin approval flow not run with external authentication.
