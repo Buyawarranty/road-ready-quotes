@@ -1164,7 +1164,7 @@ export const UserPermissionsTab = () => {
               <div className="flex items-start space-x-3">
                 <Checkbox
                   id={`${isEditing ? 'edit' : 'invite'}-${permKey}`}
-                  checked={isChecked}
+                  checked={analyticsRestricted ? false : isChecked}
                   disabled={analyticsRestricted}
                   onCheckedChange={() => toggleTabPermission(tab.id, isEditing)}
                   className="mt-0.5"

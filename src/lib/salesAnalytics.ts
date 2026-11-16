@@ -2,6 +2,8 @@ import { dealerSaleAmount, isCountedDealerSale, isOutstandingDealerInvoice } fro
 
 export interface AnalyticsSale {
   id: string;
+  name?: string | null;
+  dealer_company?: string;
   email?: string | null;
   registration_plate?: string | null;
   signup_date?: string | null;
