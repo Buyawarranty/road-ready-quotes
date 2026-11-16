@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerDashboard } from '@/hooks/useDealerDashboard';
 import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
+import { DealerCreditStatus } from '@/components/dealer/DealerCreditStatus';
+import { isOutstandingDealerInvoice } from '@/lib/dealerSales';
 
 const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers' };
 const series = [
@@ -43,7 +45,7 @@ export default function DealerDashboard() {
   }, [data, range]);
   const attention = [
     { title: 'Quotes awaiting action', detail: 'Saved drafts and pending quotes', count: quotes.filter(row => ['draft', 'pending'].includes(row.status.toLowerCase())).length, icon: FileText, tone: 'bg-crm-orange-soft text-crm-orange', to: routes.Quotes },
-    { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(row => row.payment_status !== 'paid').length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Warranties },
+    { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(isOutstandingDealerInvoice).length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Warranties },
   ];
   const actions = [
     { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/pricing', primary: true },
@@ -94,6 +96,8 @@ export default function DealerDashboard() {
           <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${action.primary ? 'bg-primary-foreground/10' : 'bg-crm-orange-soft text-crm-orange'}`}><action.icon className="h-5 w-5" /></span><span className="min-w-0 flex-1"><span className="block text-xs font-bold">{action.title}</span><span className={`mt-1 block text-[11px] font-normal leading-snug ${action.primary ? 'text-primary-foreground' : 'text-muted-foreground'}`}>{action.detail}</span></span><ChevronRight className="h-4 w-4 shrink-0" />
         </Button>)}
       </div></section>
+
+      <DealerCreditStatus />
 
       <section className="grid items-stretch gap-3 xl:grid-cols-[.95fr_1.35fr_1fr]">
         <div className={panel}><div className="flex items-center justify-between p-3"><h2 className="text-sm font-bold">Needs attention</h2>{viewAll(routes.Warranties)}</div>
