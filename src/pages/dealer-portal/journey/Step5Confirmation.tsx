@@ -53,9 +53,9 @@ const Step5Confirmation: React.FC = () => {
           <div className="inline-flex p-4 rounded-full bg-green-500/10 mb-4">
             <CheckCircle2 className="h-10 w-10 text-green-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">{confirmed ? 'Warranty issued' : 'Payment confirmation'}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{confirmed ? (isFree ? 'Free warranty requested' : 'Warranty issued') : 'Payment confirmation'}</h2>
           <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            {!confirmed ? (confirmError || 'Checking your payment…') : emailWarning
+            {!confirmed ? (confirmError || 'Checking your payment…') : emailWarning && !isFree
               ? 'Your warranty is active, but the confirmation email could not be sent. You can resend it from Dealer warranties.'
               : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
