@@ -1,3 +1,5 @@
+import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
+import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -19,8 +21,8 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 
-const PLATINUM_PDF = '/Platinum-Warranty-Plan-v2.4.pdf';
-const TANDC_PDF = '/Terms-and-Conditions-v2.3.pdf';
+const PLATINUM_PDF = platinumPlanDoc.url;
+const TANDC_PDF = termsDoc.url;
 const CLAIMS_EMAIL = 'hello@pandaprotect.co.uk';
 const CLAIMS_PHONE = '0330 229 5045';
 const WHATSAPP_URL = 'https://wa.me/message/SPQPJ6O3UBF5B1';
