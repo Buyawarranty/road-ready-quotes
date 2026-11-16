@@ -398,7 +398,7 @@ const Step4Checkout: React.FC = () => {
           {introFreeApplied && (
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your free warranty is ready</p>
-              <p className="mt-2 text-sm text-muted-foreground">Your 3+3 offer applies automatically. This qualifying warranty costs £0, and you have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Your 3+3 offer applies to this warranty at £0. Our team will approve it before cover goes live, and you have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
             </div>
           )}
           {!introFreeApplied && introLeft > 0 && (
@@ -492,7 +492,7 @@ const Step4Checkout: React.FC = () => {
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
             {submitting ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{introFreeApplied ? 'Issuing free warranty…' : accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{introFreeApplied ? 'Requesting free warranty…' : accountSelected ? 'Issuing warranty…' : 'Processing payment…'}</>
             ) : !paymentReady ? (
               <>Complete customer details</>
             ) : (
@@ -500,7 +500,7 @@ const Step4Checkout: React.FC = () => {
             )}
           </Button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-            {introFreeApplied ? <>3+3 introductory offer · no payment due</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
+            {introFreeApplied ? <>3+3 introductory offer · no payment due · approved by our team</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
           </p>
         </section>
       </div>

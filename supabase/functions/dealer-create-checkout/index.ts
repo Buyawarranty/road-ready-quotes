@@ -139,7 +139,7 @@ Deno.serve(async (req: Request) => {
       adminClient.from('customers').select('id', { count: 'exact', head: true })
         .eq('dealer_id', dealer.id).eq('payment_status', 'paid').gt('final_amount', 0),
       adminClient.from('dealer_intro_free_redemptions').select('id', { count: 'exact', head: true })
-        .eq('dealer_id', dealer.id),
+        .eq('dealer_id', dealer.id).neq('status', 'rejected'),
     ]);
     if (paidOfferError || introUsedError) throw new Error('Unable to verify the introductory offer. Please try again.');
     const introFreeAvailable = qualifiesForIntroFree(paidForOffer || 0, introUsed || 0, plan.duration_months);
@@ -209,7 +209,7 @@ Deno.serve(async (req: Request) => {
       discount_amount: introFreeAvailable ? plan.dealer_price : +(plan.retail_price - payable).toFixed(2),
       discount_code: introFreeAvailable ? '3+3 INTRO' : promo?.code || null,
       ...dealerCheckoutState(payment_method),
-      ...(introFreeAvailable ? { status: 'Active', payment_status: 'paid', payment_verified: true } : {}),
+      ...(introFreeAvailable ? { status: 'Pending', payment_status: 'intro_pending', payment_verified: false } : {}),
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
@@ -304,9 +304,9 @@ Deno.serve(async (req: Request) => {
         await adminClient.from('dealer_intro_free_redemptions').delete().eq('customer_id', freeCustomerId);
         throw new Error(freeInsertError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review it.' : freeInsertError.message);
       }
-      await syncDealerSale(adminClient, { customerId: freeCustomerId, quoteId: quote_id, quoteStatus: dealerQuoteStatusForMethod('intro_free') });
-      await notifyDealer(freeCustomerId, 'paid');
-      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_free_slot: claim.slot, total: 0 }), {
+      // Free cover waits for Admin/Super Admin review (could follow a cancellation or refund).
+      await adminClient.from('dealer_intro_free_redemptions').update({ dealer_quote_id: quote_id || null }).eq('customer_id', freeCustomerId);
+      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_pending_approval: true, intro_free_slot: claim.slot, total: 0 }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
