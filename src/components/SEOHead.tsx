@@ -20,15 +20,15 @@ interface SEOHeadProps {
 }
 
 export const SEOHead = ({
-  title = "Car Warranty UK | Instant Quotes | Panda Protect",
-  description = "Get instant car warranty quotes in 60 seconds. UK's trusted warranty provider with 5-star reviews. Flexible plans from £20/month. 14-day money back guarantee. Use code SAVE10NOW for 10% off.",
-  keywords = "car warranty UK, vehicle warranty, used car warranty, extended car warranty, warranty prices UK, cheap car warranty, best car warranty, van warranty, EV warranty, motorbike warranty",
+  title = "Panda Protect | Trade Warranties for UK Motor Dealers",
+  description = "Panda Protect is a UK trade warranty programme for motor dealers. Quote, sell and manage comprehensive used vehicle warranties through one dealer portal.",
+  keywords = "trade warranty UK, dealer warranty, motor trade warranty, used car warranty for dealers, dealer warranty programme, forecourt warranty",
   ogTitle,
   ogDescription,
   ogImage = "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
   ogImageWidth = "1200",
   ogImageHeight = "630",
-  ogImageAlt = "Panda Protect - UK Car Warranty Provider",
+  ogImageAlt = "Panda Protect trade warranties for UK motor dealers",
   canonical,
   geoRegion = 'GB',
   geoPlacename = 'United Kingdom',

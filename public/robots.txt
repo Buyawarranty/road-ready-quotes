@@ -43,6 +43,22 @@ Allow: /
 # All Other Bots
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin-dashboard/
+Disallow: /auth/
+Disallow: /sales-login/
+Disallow: /customer-dashboard/
+Disallow: /dealer-portal/dashboard/
+Disallow: /dealer-portal/quote/
+Disallow: /dealer-portal/quotes/
+Disallow: /dealer-portal/warranties/
+Disallow: /dealer-portal/settings/
+Disallow: /quote/
+Disallow: /claim-update/
+Disallow: /thank-you/
+Disallow: /cart/
+Disallow: /reset-password/
+Disallow: /forgot-password/
 
 # Sitemap
 Sitemap: https://pandaprotect.co.uk/sitemap.xml

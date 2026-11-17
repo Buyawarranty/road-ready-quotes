@@ -189,7 +189,7 @@ const BlogArticle = () => {
         title={post.seo_title || `${post.title} | The Warranty Hub`}
         description={post.seo_description || post.excerpt || ''}
         keywords={(post.seo_keywords || []).join(', ')}
-        canonical={post.canonical_url || `https://pandaprotect.co.uk/thewarrantyhub/${post.slug}`}
+        canonical={post.canonical_url || `https://pandaprotect.co.uk/thewarrantyhub/${post.slug}/`}
         ogImage={post.featured_image_url || undefined}
       />
       
@@ -311,6 +311,8 @@ const BlogArticle = () => {
                       <img 
                         src={relatedPost.featured_image_url} 
                         alt={relatedPost.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     )}

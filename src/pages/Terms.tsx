@@ -121,7 +121,7 @@ const Terms = () => {
       <DealerPublicHeader />
       <SEOHead 
         title="Terms & Conditions | Panda Protect - Vehicle Warranty Terms"
-        description="Read our comprehensive terms and conditions for vehicle warranty coverage."
+        description="Read the Panda Protect terms and conditions for comprehensive vehicle warranty cover sold through approved UK motor dealers, including claims, cancellation and refund rules."
         keywords="terms and conditions, warranty terms, vehicle warranty"
         canonical={`${window.location.origin}/terms`}
       />
