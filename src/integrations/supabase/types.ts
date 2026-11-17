@@ -15806,6 +15806,13 @@ export type Database = {
         }
         Returns: string
       }
+      bdm_pending_credit_dealers: {
+        Args: { p_dealer_ids: string[] }
+        Returns: {
+          dealer_id: string
+          requested_at: string
+        }[]
+      }
       bdm_portfolio_owners: {
         Args: { p_ids: string[] }
         Returns: {

@@ -22,6 +22,11 @@ export function canAuthorizeDealerCreditRole(role: string): boolean {
   return role === 'admin' || role === 'super_admin';
 }
 
+/** 30-day invoice (finance) requests are also approved by the accounts team. */
+export function canReviewDealerCreditRequestRole(role: string): boolean {
+  return canAuthorizeDealerCreditRole(role) || role === 'accounts' || role === 'accounts_manager';
+}
+
 export function canRequestDealerCredit(input: {
   paidCount: number;
   required?: number;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canAuthorizeDealerCreditRole, canRequestDealerCredit, countsAsPaidWarranty, introFreeRemaining, qualifiesForIntroFree } from '../../../supabase/functions/_shared/dealerIntroOffer';
+import { canAuthorizeDealerCreditRole, canReviewDealerCreditRequestRole, canRequestDealerCredit, countsAsPaidWarranty, introFreeRemaining, qualifiesForIntroFree } from '../../../supabase/functions/_shared/dealerIntroOffer';
 
 describe('dealer 3+3 introductory offer', () => {
   it('starts after three paid warranties and tracks exactly three free redemptions', () => {
@@ -37,5 +37,14 @@ describe('dealer credit authorisation', () => {
     expect(canAuthorizeDealerCreditRole('super_admin')).toBe(true);
     expect(canAuthorizeDealerCreditRole('manager')).toBe(false);
     expect(canAuthorizeDealerCreditRole('dealer')).toBe(false);
+  });
+});
+
+describe('30-day invoice request approvers', () => {
+  it('lets accounts staff approve but not BDMs', () => {
+    expect(canReviewDealerCreditRequestRole('accounts')).toBe(true);
+    expect(canReviewDealerCreditRequestRole('accounts_manager')).toBe(true);
+    expect(canReviewDealerCreditRequestRole('admin')).toBe(true);
+    expect(canReviewDealerCreditRequestRole('bdm')).toBe(false);
   });
 });

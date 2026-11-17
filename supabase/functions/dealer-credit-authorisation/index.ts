@@ -1,7 +1,7 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2.45.0';
 import { z } from 'npm:zod@3.23.8';
-import { canAuthorizeDealerCreditRole } from '../_shared/dealerIntroOffer.ts';
+import { canAuthorizeDealerCreditRole, canReviewDealerCreditRequestRole } from '../_shared/dealerIntroOffer.ts';
 
 const BodySchema = z.discriminatedUnion('action', [
   z.object({
@@ -50,8 +50,8 @@ Deno.serve(async (req) => {
 
     if (body.action === 'review_request') {
       const { data: roles, error: roleError } = await admin.from('user_roles')
-        .select('role').eq('user_id', user.id).in('role', ['admin', 'super_admin']).limit(1);
-      if (roleError || !roles?.some((row) => canAuthorizeDealerCreditRole(row.role))) return json({ error: 'Only Admin and Super Admin can review credit requests' }, 403);
+        .select('role').eq('user_id', user.id).in('role', ['admin', 'super_admin', 'accounts', 'accounts_manager']);
+      if (roleError || !roles?.some((row) => canReviewDealerCreditRequestRole(row.role))) return json({ error: 'Only Accounts, Admin and Super Admin can review credit requests' }, 403);
       const { data, error } = await admin.rpc('review_dealer_paylater_request', {
         p_request_id: body.request_id,
         p_decision: body.decision,

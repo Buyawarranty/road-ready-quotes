@@ -29,11 +29,18 @@ const BdmPortfolioPanel: React.FC = () => {
   const [q, setQ] = useState('');
   const [edit, setEdit] = useState<(PortfolioInput & { id?: string; bdm_user_id?: string }) | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pendingCredit, setPendingCredit] = useState<Set<string>>(new Set());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     const { data, error } = await db.from('bdm_portfolio').select('*').order('onboarded_at', { ascending: false }).limit(1000);
-    if (error) toast.error(error.message); else setRows(data || []);
+    if (error) { toast.error(error.message); return; }
+    setRows(data || []);
+    const ids = [...new Set((data || []).map((r: any) => r.dealer_id).filter(Boolean))];
+    if (ids.length) {
+      const { data: pend } = await db.rpc('bdm_pending_credit_dealers', { p_dealer_ids: ids });
+      setPendingCredit(new Set((pend || []).map((p: any) => p.dealer_id)));
+    } else setPendingCredit(new Set());
   }, []);
 
   useEffect(() => {
@@ -132,7 +139,7 @@ const BdmPortfolioPanel: React.FC = () => {
                     <td className="p-2"><p className="font-semibold">{r.dealership_name}</p><p className="text-xs text-muted-foreground">{[r.town, r.postcode].filter(Boolean).join(' · ')}</p></td>
                     <td className="p-2"><p>{r.contact_name || '—'}</p><p className="text-xs text-muted-foreground">{[r.phone, r.email].filter(Boolean).join(' · ')}</p></td>
                     <td className="p-2 whitespace-nowrap">{ukDate(r.onboarded_at)}</td>
-                    <td className="p-2"><Badge variant="secondary">{statusLabel(r.status)}</Badge></td>
+                    <td className="p-2 space-y-1"><Badge variant="secondary">{statusLabel(r.status)}</Badge>{r.dealer_id && pendingCredit.has(r.dealer_id) && <Badge className="block w-fit border-accent bg-accent text-accent-foreground" title="30-day invoice request waiting for accounts@ to approve">Accounts@ needs to approve</Badge>}</td>
                     <td className="p-2"><p className={due ? 'font-semibold text-destructive' : ''}>{ukDate(r.next_follow_up_at)}</p>{r.follow_up_action && <p className="text-xs text-muted-foreground">{r.follow_up_action}</p>}</td>
                     <td className="p-2 space-y-1">
                       {r.dealership_id ? <a className="flex items-center gap-1 text-xs text-primary hover:underline" href={`/admin-dashboard/?tab=bdm-contacts&q=${encodeURIComponent(r.dealership_name)}`}><Link2 className="h-3 w-3" />BDM contact</a> : <span className="block text-xs text-muted-foreground">No contact match</span>}
