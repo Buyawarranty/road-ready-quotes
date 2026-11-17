@@ -3,10 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save, KeyRound } from 'lucide-react';
+import { Loader2, Search, Save, KeyRound, Eye } from 'lucide-react';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
+import { useNavigate } from 'react-router-dom';
+import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface DealerRow {
@@ -29,6 +31,15 @@ const DealerAdminDealers: React.FC = () => {
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { startImpersonation } = useDealerImpersonation();
+
+  const viewAsDealer = (r: DealerRow) => {
+    const label = r.company_name || r.name || 'this dealer';
+    startImpersonation(r.id, label, r.email);
+    toast({ title: `Now viewing the dealer portal as ${label}`, description: 'Your admin session stays active. Use the banner to exit.' });
+    navigate('/dealer-portal/dashboard');
+  };
 
   const resendLogin = async (r: DealerRow) => {
     if (!window.confirm(`Send new login details to ${r.email}? Their current password will be replaced.`)) return;
@@ -190,10 +201,16 @@ const DealerAdminDealers: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-3 py-2">
+                          <div className="flex gap-2">
+                          <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => viewAsDealer(r)}>
+                            <Eye className="h-3 w-3" />
+                            <span className="ml-1">View as dealer</span>
+                          </Button>
                           <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" disabled={resendingId === r.id} onClick={() => resendLogin(r)}>
                             {resendingId === r.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
                             <span className="ml-1">Resend password</span>
                           </Button>
+                          </div>
                         </td>
                       </tr>
                     );
