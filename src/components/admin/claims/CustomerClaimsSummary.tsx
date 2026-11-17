@@ -117,7 +117,7 @@ export const CustomerClaimsSummary: React.FC<CustomerClaimsSummaryProps> = ({
         <Badge
           variant="outline"
           className="font-mono"
-          title="Claims are worked by the Buy A Warranty claims desk"
+          title="Claims are worked by our claims desk"
         >
           <FileText className="w-3 h-3 mr-1" />
           {totalClaims} claim{totalClaims !== 1 ? 's' : ''}

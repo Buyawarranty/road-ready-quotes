@@ -235,7 +235,7 @@ const FAQ = () => {
     try {
       // Create a comprehensive knowledge base from all FAQ data
       const siteKnowledge = `
-        Company: Buy-a-Warranty - Car, Van, and Motorcycle Extended Warranty Provider
+        Company: Panda Protect - Car, Van, and Motorcycle Extended Warranty Provider
         
         Core Services:
         - Extended warranties for cars, vans, and motorcycles
@@ -526,7 +526,7 @@ const FAQ = () => {
                       <div>
                         <h4 className="font-medium text-sm text-brand-dark-text mb-1">Affordable Monthly Payments</h4>
                         <p className="text-muted-foreground text-sm">
-                          Spread the cost with small, manageable payments from Buy-A-Warranty that give you peace of mind.
+                          Spread the cost with small, manageable payments from Panda Protect that give you peace of mind.
                         </p>
                       </div>
                       
