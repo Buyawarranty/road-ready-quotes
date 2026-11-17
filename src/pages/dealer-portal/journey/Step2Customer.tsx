@@ -5,16 +5,12 @@ import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLa
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { AddressAutocomplete } from '@/components/ui/address-autocomplete';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
-import { createAssistedCustomer, isAssistedCustomer } from '@/lib/dealerAssistedCheckout';
 import { dealerCustomerErrors, isUkPhone } from '@/lib/dealerCustomerValidation';
-import { Headset, Pencil, MessageCircle, Mail, ArrowRight, Info, Loader2, Check, Search, Home, ChevronRight, User, Phone, MapPin } from 'lucide-react';
+import { Mail, ArrowRight, Check, Search, Home, ChevronRight, User, Phone, MapPin } from 'lucide-react';
 
-type Mode = 'panda' | 'self';
-type Channel = 'whatsapp' | 'email';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 export { isUkPhone } from '@/lib/dealerCustomerValidation';
 
@@ -27,12 +23,9 @@ const Step2Customer: React.FC = () => {
   }, []);
   const navigate = useNavigate();
   const { vehicle, customer, setCustomer } = useDealerJourney();
-  const { save, saving } = useDealerQuoteSave(2);
+  const { saving } = useDealerQuoteSave(2);
 
   const hasDetails = Boolean(customer?.name && !customer.address_line2?.startsWith('[Pending:'));
-  const [mode, setMode] = useState<Mode>(customer && isAssistedCustomer(customer) ? 'panda' : 'self');
-  const [channel, setChannel] = useState<Channel>('whatsapp');
-  const [note, setNote] = useState('');
   const [manualAddress, setManualAddress] = useState(hasDetails);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
@@ -52,15 +45,6 @@ const Step2Customer: React.FC = () => {
 
   const update = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
-  const submitAssisted = async () => {
-    setError(null);
-    const pending = createAssistedCustomer(channel, note);
-    const id = await save({ silent: true, markStatus: 'awaiting_panda', overrideCustomer: pending });
-    if (!id) { setError('Your quote could not be saved. Please try again.'); return; }
-    setCustomer(pending);
-    navigate('/dealer-portal/quote/checkout');
-  };
-
   const submitSelf = () => {
     setError(null);
     setTouched({ email: true, phone: true, name: true, address_line1: true, town: true, postcode: true });
@@ -77,22 +61,6 @@ const Step2Customer: React.FC = () => {
     }
     setCustomer(form);
     navigate('/dealer-portal/quote/checkout');
-  };
-
-  const RadioDot: React.FC<{ active: boolean }> = ({ active }) => (
-    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${active ? 'border-crm-orange bg-crm-orange' : 'border-muted-foreground/40 bg-card'}`}>{active && <span className="h-2 w-2 rounded-full bg-primary-foreground" />}</span>
-  );
-
-  const OptionCard: React.FC<{ value: Mode; icon: React.ElementType; title: string; sub: string }> = ({ value, icon: Icon, title, sub }) => {
-    const active = mode === value;
-    return (
-      <Button variant="outline" type="button" role="radio" aria-checked={active} onClick={() => setMode(value)}
-        className={`flex h-auto min-w-0 flex-1 items-start gap-3 whitespace-normal rounded-lg border-2 p-3 text-left text-crm-navy transition sm:p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-crm-orange/15 text-crm-orange' : 'bg-muted text-crm-navy'}`}><Icon className="h-5 w-5" /></span>
-        <span className="min-w-0 flex-1"><span className="block text-base font-bold leading-6">{title}</span><span className="mt-1 block text-sm font-normal leading-5 text-muted-foreground">{sub}</span></span>
-        <RadioDot active={active} />
-      </Button>
-    );
   };
 
   const filled = (k: keyof typeof form) => {
@@ -126,88 +94,49 @@ const Step2Customer: React.FC = () => {
   };
 
   return (
-    <DealerJourneyLayout step={2} title="Customer details" subtitle="How would you like to complete this warranty?" backTo="/dealer-portal/quote/pricing">
+    <DealerJourneyLayout step={2} title="Customer details" subtitle="Enter the customer's details so we can arrange their cover." backTo="/dealer-portal/quote/pricing">
       <div className="min-w-0 space-y-4 text-crm-navy sm:space-y-5">
-        <section aria-label="How to complete this warranty">
-          <h2 className="text-center text-lg font-extrabold text-crm-navy sm:text-left sm:text-2xl">Who completes the details?</h2>
-          <p className="mt-1 text-center text-sm leading-5 text-muted-foreground sm:text-left">Send them to us, or enter them yourself now.</p>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row" role="radiogroup" aria-label="How to complete this warranty">
-            <OptionCard value="panda" icon={Headset} title="Panda Protect does it for you" sub="Send us the customer details and we'll process the warranty for you." />
-            <OptionCard value="self" icon={Pencil} title="I'll enter the details" sub="Complete the customer information now." />
+        <section className="min-w-0 space-y-4">
+          <h2 className="text-lg font-bold text-crm-navy">Customer details</h2>
+          {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
+          {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
+          {field('email', 'Email *', 'email', 'email', Mail, 'e.g. john@example.com')}
+
+          <div className="pt-2">
+            <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Type at least 3 letters of the postcode or street, then pick the address.</p>
+            <div className="mt-3 h-px bg-crm-line" />
           </div>
-        </section>
 
-        {mode === 'panda' ? (
-          <section className="min-w-0 space-y-4 border-t border-crm-line pt-4 sm:pt-5">
-            <h2 className="text-lg font-bold">Send us the details</h2>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Send by">
-              {([{ key: 'whatsapp', icon: MessageCircle, label: 'WhatsApp' }, { key: 'email', icon: Mail, label: 'Email' }] as const).map(({ key, icon: Icon, label }) => {
-                const active = channel === key;
-                return (
-                  <Button variant="outline" key={key} type="button" role="radio" aria-checked={active} onClick={() => setChannel(key)}
-                    className={`flex h-auto items-center gap-3 rounded-lg border-2 p-3 text-left transition ${active ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-                    <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${key === 'whatsapp' ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy'}`}><Icon className="h-5 w-5" /></span>
-                    <span className="flex-1 text-lg font-bold">{label}</span>
-                    <RadioDot active={active} />
-                  </Button>
-                );
-              })}
+          <div>
+            <label htmlFor="customer-address-search" className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <AddressAutocomplete id="customer-address-search" placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
+                onLookupError={(failed) => { if (failed) setManualAddress(true); }}
+                onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
             </div>
-            <div>
-              <label htmlFor="handoff-note" className="mb-1 block text-sm font-medium">Quick note (optional)</label>
-              <Textarea id="handoff-note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Customer details coming this afternoon." />
-            </div>
-            <p className="flex items-start gap-2 text-sm leading-5 text-muted-foreground"><Info className="mt-0.5 h-4 w-4 shrink-0" /><span className="min-w-0">Your quote reference, vehicle and selected warranty are included automatically. The quote is saved as <strong className="text-crm-navy">Awaiting Panda Protect</strong> until we've activated it.</span></p>
-          </section>
-        ) : (
-          <section className="min-w-0 space-y-4 border-t border-crm-line pt-4 sm:pt-5">
-            <h2 className="text-lg font-bold text-crm-navy">Customer details</h2>
-            {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
-            {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
-            {field('email', 'Email *', 'email', 'email', Mail, 'e.g. john@example.com')}
-
-            <div className="pt-2">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Home className="h-5 w-5 text-crm-green" /> Customer address</h3>
-              <p className="mt-1 text-sm text-muted-foreground">Type at least 3 letters of the postcode or street, then pick the address.</p>
-              <div className="mt-3 h-px bg-crm-line" />
-            </div>
-
-            <div>
-              <label htmlFor="customer-address-search" className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <AddressAutocomplete id="customer-address-search" placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
-                  onLookupError={(failed) => { if (failed) setManualAddress(true); }}
-                  onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
-              </div>
-              {!manualAddress && (
-                <button type="button" onClick={() => setManualAddress(true)} className="mt-3 flex items-center gap-1 text-sm font-bold text-crm-navy underline">
-                  Can't find the address? Enter it manually <ChevronRight className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
-            {manualAddress && (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {field('address_line1', 'Address line 1 *', 'text', 'address-line1', Home, 'e.g. 12 High Street')}
-                {field('address_line2', 'Address line 2', 'text', 'address-line2', Home)}
-                {field('town', 'Town *', 'text', 'address-level2', MapPin, 'e.g. Manchester')}
-                {field('postcode', 'Postcode *', 'text', 'postal-code', MapPin, 'e.g. SW1A 1AA')}
-              </div>
+            {!manualAddress && (
+              <button type="button" onClick={() => setManualAddress(true)} className="mt-3 flex items-center gap-1 text-sm font-bold text-crm-navy underline">
+                Can't find the address? Enter it manually <ChevronRight className="h-4 w-4" />
+              </button>
             )}
-          </section>
-        )}
+          </div>
+
+          {manualAddress && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {field('address_line1', 'Address line 1 *', 'text', 'address-line1', Home, 'e.g. 12 High Street')}
+              {field('address_line2', 'Address line 2', 'text', 'address-line2', Home)}
+              {field('town', 'Town *', 'text', 'address-level2', MapPin, 'e.g. Manchester')}
+              {field('postcode', 'Postcode *', 'text', 'postal-code', MapPin, 'e.g. SW1A 1AA')}
+            </div>
+          )}
+        </section>
 
         {error && <DealerFieldError>{error}</DealerFieldError>}
 
         <div className="grid gap-3 sm:flex sm:justify-end" aria-label="Customer details actions">
-          <Button type="button" disabled={saving} onClick={() => {
-            if (mode === 'panda') {
-              void submitAssisted();
-              return;
-            }
-            submitSelf();
-          }} className="order-first h-auto min-h-12 min-w-0 gap-2 whitespace-normal px-4 py-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:order-last sm:text-base">
+          <Button type="button" disabled={saving} onClick={submitSelf} className="order-first h-auto min-h-12 min-w-0 gap-2 whitespace-normal px-4 py-3 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:order-last sm:text-base">
             Continue to checkout<ArrowRight className="h-5 w-5 shrink-0" />
           </Button>
         </div>
