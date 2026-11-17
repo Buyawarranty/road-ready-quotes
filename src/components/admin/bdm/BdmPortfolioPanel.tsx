@@ -30,6 +30,7 @@ const BdmPortfolioPanel: React.FC = () => {
   const [edit, setEdit] = useState<(PortfolioInput & { id?: string; bdm_user_id?: string }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [pendingCredit, setPendingCredit] = useState<Set<string>>(new Set());
+  const [counts, setCounts] = useState<Record<string, { claims: number; refunds: number }>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -40,7 +41,9 @@ const BdmPortfolioPanel: React.FC = () => {
     if (ids.length) {
       const { data: pend } = await db.rpc('bdm_pending_credit_dealers', { p_dealer_ids: ids });
       setPendingCredit(new Set((pend || []).map((p: any) => p.dealer_id)));
-    } else setPendingCredit(new Set());
+      const { data: cr } = await db.rpc('bdm_dealer_claim_refund_counts', { p_dealer_ids: ids });
+      setCounts(Object.fromEntries((cr || []).map((c: any) => [c.dealer_id, { claims: c.claims, refunds: c.refunds }])));
+    } else { setPendingCredit(new Set()); setCounts({}); }
   }, []);
 
   useEffect(() => {
@@ -143,7 +146,7 @@ const BdmPortfolioPanel: React.FC = () => {
                     <td className="p-2"><p className={due ? 'font-semibold text-destructive' : ''}>{ukDate(r.next_follow_up_at)}</p>{r.follow_up_action && <p className="text-xs text-muted-foreground">{r.follow_up_action}</p>}</td>
                     <td className="p-2 space-y-1">
                       {r.dealership_id ? <a className="flex items-center gap-1 text-xs text-primary hover:underline" href={`/admin-dashboard/?tab=bdm-contacts&q=${encodeURIComponent(r.dealership_name)}`}><Link2 className="h-3 w-3" />BDM contact</a> : <span className="block text-xs text-muted-foreground">No contact match</span>}
-                      {r.dealer_id ? <span className="flex items-center gap-1 text-xs text-primary"><BadgeCheck className="h-3 w-3" />Dealer account</span> : <span className="block text-xs text-muted-foreground">No account yet</span>}
+                      {r.dealer_id ? <><span className="flex items-center gap-1 text-xs text-primary"><BadgeCheck className="h-3 w-3" />Dealer account</span><span className="flex flex-wrap gap-1"><Badge variant={counts[r.dealer_id]?.claims ? 'destructive' : 'outline'} className="text-[11px]">{counts[r.dealer_id]?.claims ?? 0} claims</Badge><Badge variant={counts[r.dealer_id]?.refunds ? 'destructive' : 'outline'} className="text-[11px]">{counts[r.dealer_id]?.refunds ?? 0} refunds</Badge></span></> : <span className="block text-xs text-muted-foreground">No account yet</span>}
                     </td>
                     {seeAll && <td className="p-2 text-xs">{nameOf(r.bdm_user_id)}</td>}
                     <td className="p-2"><Button size="icon" variant="ghost" aria-label={`Edit ${r.dealership_name}`} onClick={() => setEdit({ ...r })}><Pencil className="h-4 w-4" /></Button></td>

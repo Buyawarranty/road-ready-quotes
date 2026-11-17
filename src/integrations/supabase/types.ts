@@ -15771,6 +15771,14 @@ export type Database = {
         Args: { _days?: number; _town?: string }
         Returns: Json
       }
+      bdm_dealer_claim_refund_counts: {
+        Args: { p_dealer_ids: string[] }
+        Returns: {
+          claims: number
+          dealer_id: string
+          refunds: number
+        }[]
+      }
       bdm_export_full: {
         Args: { p_format: string; p_scope: string }
         Returns: Json
