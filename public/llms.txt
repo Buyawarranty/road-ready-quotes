@@ -1,0 +1,24 @@
+# Panda Protect
+
+> Panda Protect is a UK trade warranty programme for motor dealers. Approved dealerships quote, sell and manage comprehensive used-vehicle warranties for their customers through the Panda Protect dealer portal.
+
+Key facts:
+- Business-to-business only: cover is sold through approved UK motor dealers, not directly to private buyers.
+- Cover: Comprehensive Warranty (Platinum plan) for cars, vans, EVs, hybrids and motorcycles up to 15 years old and 150,000 miles.
+- Terms of 1 to 4 years; dealers set their own retail price and keep the margin.
+- UK team open 9am to 6pm, Monday to Saturday. Purchases: support@pandaprotect.co.uk. Claims: claims@pandaprotect.co.uk.
+
+## Main pages
+- [Home](https://pandaprotect.co.uk/): trade warranty programme overview
+- [Why choose us](https://pandaprotect.co.uk/why-choose-us/): benefits for dealers
+- [Become a dealer](https://pandaprotect.co.uk/dealer-portal/signup/): apply for a trade account
+- [What's covered](https://pandaprotect.co.uk/what-is-covered/): parts and systems included
+- [Dealer FAQs](https://pandaprotect.co.uk/faq/traders/): account, pricing and claims questions
+- [Make a claim](https://pandaprotect.co.uk/make-a-claim/): how customers start a claim
+- [Contact us](https://pandaprotect.co.uk/contact-us/)
+- [The Warranty Hub](https://pandaprotect.co.uk/thewarrantyhub/): guides on warranties, repair costs and used cars
+
+## Policies
+- [Terms & conditions](https://pandaprotect.co.uk/terms/)
+- [Cancellation rights](https://pandaprotect.co.uk/cancel-warranty/)
+- [Privacy policy](https://pandaprotect.co.uk/privacy/)
