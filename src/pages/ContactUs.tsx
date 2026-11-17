@@ -151,7 +151,7 @@ const ContactUs = () => {
       setCallbackData({ phone: '', preferredTime: 'Anytime' });
     } catch (error) {
       console.error('Callback request error:', error);
-      toast({ title: 'Request not sent', description: 'Please call us on 0330 912 2402.', variant: 'destructive' });
+      toast({ title: 'Request not sent', description: 'Please call us on 0330 229 6547.', variant: 'destructive' });
     } finally {
       setIsCallbackSubmitting(false);
     }
@@ -182,7 +182,7 @@ const ContactUs = () => {
                   <span className="contact-icon contact-icon-orange"><Phone /></span>
                   <div><h2>Customer support</h2><p>Quotes, cover questions and anything about your policy.</p></div>
                 </div>
-                <a className="contact-detail-link" href="tel:03309122402"><Phone />0330 912 2402</a>
+                <a className="contact-detail-link" href="tel:03302296547"><Phone />0330 229 6547</a>
                 <a className="contact-detail-link" href="mailto:support@pandaprotect.co.uk"><Mail />support@pandaprotect.co.uk</a>
                 <Button asChild className="contact-action contact-action-orange"><a href="mailto:support@pandaprotect.co.uk">Email us <ArrowRight /></a></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>
@@ -193,7 +193,6 @@ const ContactUs = () => {
                   <span className="contact-icon contact-icon-orange"><FileText /></span>
                   <div><h2>Claims &amp; repairs</h2><p>Start a claim or check progress with our claims team.</p></div>
                 </div>
-                <a className="contact-detail-link" href="tel:03302295045"><Phone />0330 229 5045</a>
                 <a className="contact-detail-link" href="mailto:claims@pandaprotect.co.uk"><Mail />claims@pandaprotect.co.uk</a>
                 <Button asChild className="contact-action contact-action-navy"><a href="mailto:claims@pandaprotect.co.uk">Email us <ArrowRight /></a></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>
