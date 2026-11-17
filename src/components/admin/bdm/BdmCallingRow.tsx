@@ -154,6 +154,9 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
       {/* Actions */}
       <td className="bg-muted/50 p-2">
         <div className="flex items-center gap-1">
+          <Button size="icon" variant="ghost" className="h-10 w-10 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:scale-95 cursor-pointer hover:bg-primary/10 hover:text-primary" title="Edit dealer details" aria-label={`Edit ${r.name}`} onClick={() => onOpen(r.id, 'overview')}>
+            <Pencil className="h-4 w-4" />
+          </Button>
           {phone && !dnc && (
             <Button asChild size="icon" variant="ghost" className="h-10 w-10 text-primary transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-primary/10" aria-label={`Call ${r.name}`}>
               <a href={`tel:${tel}`} onClick={() => adjust(1)}><Phone className="h-4 w-4" /></a>
