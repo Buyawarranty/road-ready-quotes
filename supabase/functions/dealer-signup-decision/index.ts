@@ -373,7 +373,7 @@ serve(async (req) => {
 
     // 3. mark signup approved (skipped when just resending credentials)
     if (!isResend) {
-      await admin
+      const { error: markErr } = await admin
         .from("trade_warranty_signups")
         .update({
           status: "approved",
@@ -384,6 +384,12 @@ serve(async (req) => {
           dealer_id: dealerId,
         })
         .eq("id", signupId);
+      if (markErr) {
+        console.error("mark signup approved failed:", markErr);
+        return new Response(JSON.stringify({ error: `Login created but approval could not be saved: ${markErr.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // 4. welcome / credentials email
