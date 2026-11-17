@@ -882,7 +882,7 @@ export const PolicyDocumentsTab: React.FC = () => {
             <div ref={printRef} className="policy-letter">
               {/* Header */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
-                <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Buy A Warranty" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
+                <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
                 <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
                   <p style={{ fontWeight: '600' }}>Buy A Warranty Ltd</p>
                   <p>Warranty House, 62 Berkhamsted Ave</p>
@@ -917,7 +917,7 @@ export const PolicyDocumentsTab: React.FC = () => {
 
               <p style={{ marginBottom: '8px', fontSize: '11px' }}>Dear {selectedCustomer.name.split(' ')[0]},</p>
               <p style={{ marginBottom: '12px', color: '#333', fontSize: '11px' }}>
-                Thank you for choosing Buyawarranty to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
+                Thank you for choosing Panda Protect to protect your vehicle. Please find below a summary of your warranty cover. Your policy provides protection against the cost of unexpected mechanical or electrical breakdowns, helping you stay on the road with peace of mind.
               </p>
 
               {/* Cover at a Glance */}
@@ -1030,7 +1030,7 @@ export const PolicyDocumentsTab: React.FC = () => {
 
               <div style={{ marginTop: '16px', fontSize: '11px' }}>
                 <p style={{ margin: '1px 0' }}>Warm regards,</p>
-                <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Buyawarranty Team</p>
+                <p style={{ margin: '10px 0 1px', fontWeight: '600' }}>The Panda Protect Team</p>
               </div>
 
               {/* Contact Footer */}

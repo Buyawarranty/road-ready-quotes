@@ -5966,7 +5966,7 @@ Questions? Call 0330 229 5040`;
                     </div>
                     <div className="p-5 bg-background">
                       <div className="text-center mb-5">
-                        <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Buy A Warranty" className="h-10 mx-auto mb-3" />
+                        <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" className="h-10 mx-auto mb-3" />
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Warranty quote ready</p>
                         <h2 className="text-xl font-bold text-foreground mt-1">
                           {vehicleData?.make || 'Vehicle'} {vehicleData?.model || ''} · Platinum cover
@@ -6165,13 +6165,13 @@ ${quoteLink || '(quote link is still generating)'}
 
 
 Kind regards,
-Buy A Warranty`;
+Panda Protect`;
 
                       const htmlBody = `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2937;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:24px 0;"><tr><td align="center">
 <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
 <tr><td style="padding:28px 32px 8px 32px;text-align:center;">
-<img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Buy A Warranty" style="height:40px;display:inline-block;" />
+<img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" style="height:40px;display:inline-block;" />
 </td></tr>
 <tr><td style="padding:8px 32px 0 32px;text-align:center;">
 <p style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;">Warranty quote ready</p>
@@ -6198,10 +6198,10 @@ Buy A Warranty`;
 ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c;font-weight:700;text-decoration:underline;">${quoteLink}</a>` : '(quote link is still generating)'}
 </td></tr>
 <tr><td style="padding:20px 32px 28px 32px;font-size:14px;color:#374151;">
-<p style="margin:0;">Kind regards,<br/><strong>Buy A Warranty</strong></p>
+<p style="margin:0;">Kind regards,<br/><strong>Panda Protect</strong></p>
 </td></tr>
 </table>
-<p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;">Buy A Warranty · pandaprotect.co.uk</p>
+<p style="margin:16px 0 0 0;font-size:11px;color:#9ca3af;">Panda Protect · pandaprotect.co.uk</p>
 </td></tr></table></body></html>`;
 
                       const copy = async (text: string, label: string) => {
@@ -6445,7 +6445,7 @@ ${quoteLink ? `Or open this link:<br/><a href="${linkHref}" style="color:#0b1e4c
                     <div className="p-4 bg-white">
                       {/* Email Header Preview */}
                       <div className="text-center mb-6">
-                        <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Buy A Warranty" className="h-12 mx-auto mb-4" />
+                        <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" className="h-12 mx-auto mb-4" />
                         <h2 className="text-xl font-bold text-gray-900">
                           Here's your {vehicleData?.make} {vehicleData?.model} warranty quote
                         </h2>

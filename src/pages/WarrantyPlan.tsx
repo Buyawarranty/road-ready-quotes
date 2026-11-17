@@ -101,7 +101,7 @@ const WarrantyPlan = () => {
                     We've got you covered!
                   </p>
                   <p className="text-lg lg:text-xl leading-relaxed opacity-80">
-                    When you join Buy-a-Warranty, you get our Platinum Plan as standard - giving you top-level protection
+                    When you join Panda Protect, you get our Platinum Plan as standard - giving you top-level protection
                   </p>
                 </div>
                 

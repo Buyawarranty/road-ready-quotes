@@ -33,7 +33,7 @@ import logoAsset from '@/assets/panda-protect-logo-current.png.asset.json';
 const VAT_RATE = 0.2;
 
 const COMPANY = {
-  name: 'Buy A Warranty',
+  name: 'Panda Protect',
   website: 'www.pandaprotect.co.uk',
   email: 'support@pandaprotect.co.uk',
   phone: '0330 229 5040',
@@ -41,7 +41,7 @@ const COMPANY = {
   /** Absolute URL so the logo also renders inside emailed invoices. */
   logoAbsoluteUrl: `https://pandaprotect.co.uk${logoAsset.url}`,
   legalLine1:
-    'Buyawarranty.co.uk is a trading name of Buy A Warranty Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863.',
+    'PandaProtect.co.uk is a trading name of Buy A Warranty Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863.',
   legalLine2:
     'Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England. VAT registration number 519 1099 85.',
 };
@@ -192,7 +192,7 @@ export const QuoteInvoiceDialog: React.FC<Props> = ({ open, onOpenChange, source
           <ScrollArea className="max-h-[60vh] pr-3">
             <div className="space-y-5">
               <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/40 p-3">
-                <img src={COMPANY.logoUrl} alt="Buy A Warranty" className="h-8 w-auto" />
+                <img src={COMPANY.logoUrl} alt="Panda Protect" className="h-8 w-auto" />
                 <Button variant="outline" size="sm" onClick={() => setForm(hydrate(source))} className="gap-1">
                   <RefreshCw className="h-3.5 w-3.5" />
                   Reload from quote

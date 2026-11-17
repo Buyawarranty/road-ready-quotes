@@ -113,7 +113,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
             {/* Question 1 */}
             <div className="space-y-3">
               <Label className="text-base font-semibold">
-                1. What made you choose Buy-A-Warranty today?
+                1. What made you choose Panda Protect today?
               </Label>
               <div className="space-y-2">
                 {['The price was right', 'The cover looked solid', 'I trusted the reviews', 'A friend recommended it'].map((reason) => (

@@ -43,11 +43,11 @@ interface InvoiceDialogProps {
 }
 
 const COMPANY_INFO = {
-  name: 'Buy A Warranty',
+  name: 'Panda Protect',
   website: 'www.pandaprotect.co.uk',
   email: 'support@pandaprotect.co.uk',
   phone: '0330 229 5040',
-  address: ['Buy A Warranty', 'Online', 'United Kingdom'],
+  address: ['Panda Protect', 'Online', 'United Kingdom'],
   logoUrl: 'https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png'
 };
 
@@ -125,7 +125,7 @@ const generateInvoiceHTML = (customer: Customer): string => {
     <body>
       <div class="header">
         <div class="logo-section">
-          <img src="${COMPANY_INFO.logoUrl}" alt="Buy A Warranty" />
+          <img src="${COMPANY_INFO.logoUrl}" alt="Panda Protect" />
         </div>
         <div class="company-details">
           <h3>${COMPANY_INFO.name}</h3>
@@ -304,7 +304,7 @@ export const InvoiceDialog: React.FC<InvoiceDialogProps> = ({
         body: {
           recipientEmail: emailAddress.trim(),
           invoices: invoiceData,
-          subject: `Invoice${selectedCustomers.length > 1 ? 's' : ''} from Buy A Warranty - ${formatUKDate(new Date())}`
+          subject: `Invoice${selectedCustomers.length > 1 ? 's' : ''} from Panda Protect - ${formatUKDate(new Date())}`
         }
       });
 

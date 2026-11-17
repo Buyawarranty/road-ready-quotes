@@ -256,7 +256,7 @@ const hybridFAQs = [
   },
   {
     question: "What's covered in my hybrid warranty?",
-    answer: "At Buy-a-Warranty, we like to keep things simple. One solid plan that covers hybrid-specific components including the electric motor, inverter, hybrid battery management system, regenerative braking, and all standard mechanical parts. No confusing packages."
+    answer: "At Panda Protect, we like to keep things simple. One solid plan that covers hybrid-specific components including the electric motor, inverter, hybrid battery management system, regenerative braking, and all standard mechanical parts. No confusing packages."
   },
   {
     question: "How do I make a claim?",

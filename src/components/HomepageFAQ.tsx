@@ -47,7 +47,7 @@ const HomepageFAQ = () => {
     {
       id: 'whats-covered-warranty',
       question: 'What\'s covered in my warranty?',
-      answer: 'At Buy-a-Warranty, we like to keep things simple. One solid plan that works for cars, vans, and motorbikes, whether you\'re driving electric, hybrid, petrol, or diesel. We keep things simple with no confusing packages, you won\'t encounter any unexpected rejections, and we offer straightforward cover without the hassle.'
+      answer: 'At Panda Protect, we like to keep things simple. One solid plan that works for cars, vans, and motorbikes, whether you\'re driving electric, hybrid, petrol, or diesel. We keep things simple with no confusing packages, you won\'t encounter any unexpected rejections, and we offer straightforward cover without the hassle.'
     },
     {
       id: 'car-issue',

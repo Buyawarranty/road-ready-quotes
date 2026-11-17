@@ -331,7 +331,7 @@ Additional Information: ${formData.additionalInfo}
             <div className="max-w-3xl mx-auto">
               <p className="text-lg lg:text-xl text-gray-600 mb-8 leading-relaxed">
                 We know that vehicle issues can be stressful, but making a claim shouldn't be. At 
-                <span className="font-semibold text-orange-600"> Buy-A-Warranty</span>, we've made the process clear, quick and customer focused.
+                <span className="font-semibold text-orange-600"> Panda Protect</span>, we've made the process clear, quick and customer focused.
               </p>
               <p className="text-green-600 font-medium">
                 Get the help you need without the hassle
@@ -862,7 +862,7 @@ Additional Information: ${formData.additionalInfo}
                 At Panda Protect, your maximum repair limit is clearly outlined in your warranty email and visible in your online account. If a repair exceeds your limit, you can simply top it up.
               </p>
               <p className="leading-relaxed">
-                In our experience at Buy-A-Warranty, this situation is very rare - especially if you've selected a claim limit that suits your vehicle and driving habits.
+                In our experience at Panda Protect, this situation is very rare - especially if you've selected a claim limit that suits your vehicle and driving habits.
               </p>
               <div className="bg-white p-8 rounded-xl shadow-lg border border-orange-100 mt-8 hover:shadow-xl transition-all duration-300">
                 <p className="font-semibold text-xl text-gray-900">

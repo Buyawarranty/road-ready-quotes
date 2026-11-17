@@ -32,7 +32,7 @@ const SECTIONS: ScriptSection[] = [
     title: 'Intro',
     lines: [
       { kind: 'say', text: <>Hello, is that <b>(name)</b>?</> },
-      { kind: 'say', text: <>It's <b>Greg from Buyawarranty</b>, how are you doing today?</> },
+      { kind: 'say', text: <>It's <b>Greg from Panda Protect</b>, how are you doing today?</> },
       { kind: 'say', text: <>Just giving you a quick call, you <b>popped some details through</b> about warranty cover for your <b>(Ford etc)</b>. We've got <b>offers available</b> at the moment, and I can find you a <b>better quote</b> than you'd get on the website.</> },
       { kind: 'say', text: <><b>Have you got the vehicle already?</b></> },
       { kind: 'say', text: <>Does it have a <b>warranty on it at the moment</b>?</> },
@@ -48,7 +48,7 @@ const SECTIONS: ScriptSection[] = [
     id: 'quote-intro',
     title: 'The quote',
     lines: [
-      { kind: 'say', text: <>One of the <b>big differences with Buyawarranty</b>: every customer gets <b>one fully comprehensive plan</b> with <b>all important components included as standard</b>. Instead of bronze, silver or gold packages, we simply <b>tailor the labour rate, excess and claim limit</b> around your budget and vehicle.</> },
+      { kind: 'say', text: <>One of the <b>big differences with Panda Protect</b>: every customer gets <b>one fully comprehensive plan</b> with <b>all important components included as standard</b>. Instead of bronze, silver or gold packages, we simply <b>tailor the labour rate, excess and claim limit</b> around your budget and vehicle.</> },
     ],
   },
   {
@@ -196,7 +196,7 @@ const renderLineHtml = (line: Line): string => {
 
 const generatePrintHtml = () => `
 <!DOCTYPE html>
-<html><head><title>Buyawarranty — Sales Call Script</title>
+<html><head><title>Panda Protect — Sales Call Script</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; padding: 24px; color: #111; font-size: 12.5px; line-height: 1.55; }
@@ -214,7 +214,7 @@ const generatePrintHtml = () => `
   .note { color: #6b7280; margin: 4px 0; }
   @media print { body { padding: 12px; } .section { page-break-inside: avoid; } }
 </style></head><body>
-<h1>Buyawarranty — Sales call script</h1>
+<h1>Panda Protect — Sales call script</h1>
 <div class="sub-h">Print-ready quick reference guide</div>
 <div class="legend">
   <b>Bold</b> = key words to hit &nbsp;•&nbsp; • = say it out loud &nbsp;•&nbsp;
@@ -242,7 +242,7 @@ const nodeToText = (node: React.ReactNode): string => {
 };
 
 const generateTextContent = () => {
-  let text = 'BUYAWARRANTY — SALES CALL SCRIPT\n';
+  let text = 'PANDA PROTECT — SALES CALL SCRIPT\n';
   text += '='.repeat(50) + '\n';
   text += 'Bold = key words  •  bullet = say out loud  •  → = agent action (do not read)\n\n';
   SECTIONS.forEach(s => {
@@ -284,7 +284,7 @@ export const SalesScriptCard: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'Buyawarranty_Sales_Call_Script.txt';
+    a.download = 'PandaProtect_Sales_Call_Script.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -297,7 +297,7 @@ export const SalesScriptCard: React.FC = () => {
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <CardTitle className="text-xl">Buyawarranty sales call script</CardTitle>
+            <CardTitle className="text-xl">Panda Protect sales call script</CardTitle>
             <p className="text-sm font-semibold text-foreground mt-0.5">Easy-to-follow desk guide</p>
             <p className="text-xs text-muted-foreground mt-0.5">
               <b>Bold</b> = key words to hit  •  • = say it out loud  •  <span className="italic text-red-600 dark:text-red-400">→ red italics = agent action, DO NOT read out</span>

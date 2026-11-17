@@ -61,7 +61,7 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
       schemas.push({
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Buy A Warranty",
+        "name": "Panda Protect",
         "url": "https://pandaprotect.co.uk",
         "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
         "telephone": page.local_business_phone,
@@ -112,7 +112,7 @@ export const LandingPagePreview = ({ pageId }: LandingPagePreviewProps) => {
         "@type": "Product",
         "name": `${page.brand_name} Extended Warranty`,
         "description": page.meta_description,
-        "brand": { "@type": "Brand", "name": "Buy A Warranty" },
+        "brand": { "@type": "Brand", "name": "Panda Protect" },
         "offers": {
           "@type": "Offer",
           "priceCurrency": "GBP",

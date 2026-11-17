@@ -583,7 +583,7 @@ const ThankYou = () => {
     <div className="public-checkout-page public-confirmation-page bg-gradient-to-br from-background via-background to-muted/20 min-h-screen">
       <DealerPublicHeader />
       <SEOHead 
-        title="Thank You! Your Warranty is Active | Buy-A-Warranty"
+        title="Thank You! Your Warranty is Active | Panda Protect"
         description="Your car warranty purchase is complete. Your policy is now active and documents are on their way to your inbox."
         keywords="warranty purchase complete, policy confirmation, car warranty active, thank you"
       />
@@ -715,7 +715,7 @@ const ThankYou = () => {
                     size="lg"
                     className="bg-primary text-primary-foreground hover:bg-primary/90"
                   >
-                    Return to Buy-A-Warranty.co.uk
+                    Return to PandaProtect.co.uk
                   </Button>
                 </div>
               </div>

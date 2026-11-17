@@ -842,7 +842,7 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
       <div style="font-size:15px;font-weight:700;margin-top:2px">${warrantyRef}</div>
     </div>
     <p style="margin-bottom:8px;font-size:11px">Dear ${c.name.split(' ')[0]},</p>
-    <p style="margin-bottom:12px;color:#333;font-size:11px">Thank you for choosing Buyawarranty to protect your vehicle. Please find below a summary of your warranty cover.</p>
+    <p style="margin-bottom:12px;color:#333;font-size:11px">Thank you for choosing Panda Protect to protect your vehicle. Please find below a summary of your warranty cover.</p>
     ${policy ? `<div style="margin-bottom:14px">
       <div style="font-size:13px;font-weight:700;color:${col.heading};margin-bottom:8px;border-bottom:2px solid ${col.border};padding-bottom:4px">Your Cover at a Glance</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;background:${col.glanceBg};border:1px solid ${col.glanceBorder};border-radius:6px;padding:12px 14px">
@@ -896,7 +896,7 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
       <p style="font-size:11px;color:${col.contactValue};margin:6px 0;font-weight:700">https://pandaprotect.co.uk/customer-dashboard/</p>
       <p style="font-size:10.5px;color:#333;margin:4px 0"><strong>Email:</strong> ${c.email}</p>
     </div>
-    <div style="margin-top:16px;font-size:11px"><p style="margin:1px 0">Warm regards,</p><p style="margin:10px 0 1px;font-weight:600">The Buyawarranty Team</p></div>
+    <div style="margin-top:16px;font-size:11px"><p style="margin:1px 0">Warm regards,</p><p style="margin:10px 0 1px;font-weight:600">The Panda Protect Team</p></div>
     <div style="margin-top:18px;padding-top:10px;border-top:2px solid ${col.border};display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:10px">
       <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Sales</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 5040</div></div>
       <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Claims</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 5045</div></div>

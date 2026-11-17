@@ -3370,7 +3370,7 @@ If there's anything else I can help with, please just reply to this email or cal
 
 Kind regards,
 Mike Swan
-Buyawarranty.co.uk`,
+PandaProtect.co.uk`,
       };
     }
 
@@ -3392,7 +3392,7 @@ If you experience any further issues or have any questions, please do not hesita
 
 Kind regards,
 Mike Swan
-Buyawarranty.co.uk`,
+PandaProtect.co.uk`,
     };
   };
 
@@ -5214,7 +5214,7 @@ Please log in and change your password after first login.`;
                                               <div>
                                                 <Label className="text-sm font-medium">From</Label>
                                                 <div className="text-sm text-gray-600 mt-1">
-                                                  Buyawarranty Customer Care &lt;noreply@pandaprotect.co.uk&gt;
+                                                  Panda Protect Customer Care &lt;noreply@pandaprotect.co.uk&gt;
                                                 </div>
                                               </div>
                                               <div>

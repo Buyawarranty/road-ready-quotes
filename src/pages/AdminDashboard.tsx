@@ -1112,7 +1112,7 @@ const AdminDashboardInner: React.FC<{
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <Link to="/" className="hover:opacity-80 transition-opacity">
-                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-6 sm:h-8 w-auto" />
+                <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-6 sm:h-8 w-auto" />
               </Link>
             </div>
             
@@ -1161,7 +1161,7 @@ const AdminDashboardInner: React.FC<{
                   <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between pb-6">
                       <Link to="/" className="hover:opacity-80 transition-opacity">
-                        <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Buy a Warranty" className="h-8 w-auto" />
+                        <img src="/lovable-uploads/53652a24-3961-4346-bf9d-6588ef727aeb.png" alt="Panda Protect" className="h-8 w-auto" />
                       </Link>
                     </div>
                     <nav className="flex flex-col space-y-6 flex-1">
