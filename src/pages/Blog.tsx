@@ -105,9 +105,9 @@ const Blog = () => {
       <DealerPublicHeader />
       <SEOHead
         title="The Warranty Hub | Trade Warranties for UK Dealers"
-        description="Trade warranty advice for UK motor dealers — Manage My Claim and customer-paid plans, forecourt protection strategy, and claims insight from Panda Protect."
-        keywords="trade warranty UK, dealer warranty, motor trade warranty, forecourt warranty, used car dealer warranty, manage my claims, trade cover, dealer protection plans"
-        canonical="https://pandaprotect.co.uk/thewarrantyhub"
+        description="Warranty guides for UK motor dealers and drivers: repair costs, what's covered, used car buying advice and forecourt protection insight from Panda Protect."
+        keywords="trade warranty UK, dealer warranty, motor trade warranty, forecourt warranty, used car dealer warranty, trade cover, dealer protection plans"
+        canonical="https://pandaprotect.co.uk/thewarrantyhub/"
         ogImage={pandaHeroImage}
       />
 
@@ -323,7 +323,7 @@ const Blog = () => {
                       {recentPosts.map((post) => (
                         <Card key={post.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-gray-200 hover:border-primary bg-white group">
                           <div className="relative h-48 overflow-hidden bg-white">
-                            <img src={post.image} alt={post.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" />
+                            <img src={post.image} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300" />
                             <Badge className="absolute top-3 left-3 bg-primary text-white px-3 py-1 text-xs font-semibold shadow-lg">{post.category}</Badge>
                           </div>
                           <CardContent className="p-6">
@@ -354,7 +354,7 @@ const Blog = () => {
                           <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary bg-white group">
                             <div className="flex gap-4 p-4">
                               <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden bg-white rounded">
-                                <img src={post.image} alt={post.title} className="w-full h-full object-contain" />
+                                <img src={post.image} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-contain" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <Badge className="bg-primary/10 text-primary px-2 py-1 text-xs font-semibold mb-2">{post.category}</Badge>
