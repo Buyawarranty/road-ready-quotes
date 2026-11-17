@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { Loader2, ArrowLeft, Save, Check } from 'lucide-react';
+import { Loader2, ArrowLeft, Save, Check, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -17,74 +17,49 @@ interface Props {
   backTo?: string;
 }
 
-const STEPS = ['Choose Warranty', 'Customer Details', 'Review & Pay', 'Done'];
+const STEPS = ['Choose cover', 'Customer details', 'Payment', 'Done'];
 // Journey step number -> visible position (pricing comes before customer details)
 const STEP_POSITION: Record<number, number> = { 1: 0, 3: 0, 2: 1, 4: 2, 5: 3 };
 
-const CarIcon = () => (
-  <svg viewBox="0 0 64 36" className="w-8 h-5 drop-shadow-sm animate-car-bounce" aria-hidden="true">
-    <rect x="4" y="10" width="54" height="18" rx="6" className="fill-primary" />
-    <rect x="14" y="4" width="32" height="12" rx="4" className="fill-primary" />
-    <rect x="18" y="7" width="10" height="7" rx="1.5" className="fill-primary-foreground/80" />
-    <rect x="31" y="7" width="10" height="7" rx="1.5" className="fill-primary-foreground/80" />
-    <circle cx="58" cy="15" r="2" className="fill-primary-foreground" />
-    <circle cx="16" cy="28" r="5" className="fill-foreground" />
-    <circle cx="46" cy="28" r="5" className="fill-foreground" />
-    <circle cx="16" cy="28" r="2" className="fill-muted" />
-    <circle cx="46" cy="28" r="2" className="fill-muted" />
-  </svg>
-);
-
 const JourneyProgress: React.FC<{ current: number }> = ({ current }) => {
   const progress = (current / (STEPS.length - 1)) * 100;
-
   return (
-    <nav aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`}>
-      <div className="mb-2 flex items-center justify-between text-xs font-semibold">
-        <span className="rounded-full bg-primary/10 px-2.5 py-1 text-primary">Step {current + 1} of {STEPS.length}</span>
-        <span className="text-muted-foreground sm:hidden">{STEPS[current]}</span>
-      </div>
-      <div className="relative mx-5 h-11">
-        <div className="absolute inset-x-0 top-9 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-muted">
-          <div
-            className="h-full rounded-full bg-success transition-[width] duration-700 ease-out motion-reduce:transition-none"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+    <nav aria-label={`Step ${current + 1} of ${STEPS.length}: ${STEPS[current]}`} className="rounded-2xl bg-muted/40 px-4 py-3 sm:px-6">
+      <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary">Step {current + 1} of {STEPS.length}</span>
+      <div className="relative mx-4 mt-3 h-9 sm:mx-10">
+        <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-border" />
+        <div
+          className="absolute left-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-success transition-[width] duration-700 ease-out motion-reduce:transition-none"
+          style={{ width: `${progress}%` }}
+        />
         {STEPS.map((label, i) => {
           const done = i < current;
           const active = i === current;
           return (
             <span
               key={label}
-              className={`absolute top-9 flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 bg-card transition-colors duration-500 ${done ? 'border-success bg-success text-primary-foreground' : active ? 'border-primary' : 'border-border'}`}
-              style={{ left: `${(i / (STEPS.length - 1)) * 100}%` }}
               aria-hidden="true"
+              className={`absolute top-1/2 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors duration-500 ${done ? 'border-success bg-success text-primary-foreground' : active ? 'border-primary bg-primary text-primary-foreground ring-4 ring-primary/20' : 'border-border bg-card text-muted-foreground'}`}
+              style={{ left: `${(i / (STEPS.length - 1)) * 100}%` }}
             >
-              {done && <Check className="h-2.5 w-2.5" strokeWidth={3.5} />}
+              {done ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
             </span>
           );
         })}
-        <div
-          className="absolute top-0 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-primary/20 bg-card shadow-md transition-[left] duration-700 ease-out motion-reduce:transition-none"
-          style={{ left: `${progress}%` }}
-          aria-hidden="true"
-        >
-          <CarIcon />
-        </div>
       </div>
-      <ol className="relative mx-5 mt-1 hidden h-5 sm:block">
+      <ol className="relative mx-4 mt-2 h-6 sm:mx-10">
         {STEPS.map((label, i) => {
           const done = i < current;
           const active = i === current;
-          const alignment = i === 0 ? '' : i === STEPS.length - 1 ? '-translate-x-full' : '-translate-x-1/2';
+          const isPay = label === 'Payment';
           return (
             <li
               key={label}
               aria-current={active ? 'step' : undefined}
-              className={`absolute whitespace-nowrap text-xs font-semibold ${alignment} ${done ? 'text-success' : active ? 'text-foreground' : 'text-muted-foreground'}`}
+              className={`absolute -translate-x-1/2 items-center gap-1 whitespace-nowrap text-xs font-semibold sm:text-base ${active ? 'flex text-foreground' : 'hidden sm:flex'} ${done ? 'text-success' : active ? '' : 'text-muted-foreground'}`}
               style={{ left: `${(i / (STEPS.length - 1)) * 100}%` }}
             >
+              {isPay && !done && <Lock className="h-3.5 w-3.5" />}
               {label}
             </li>
           );
