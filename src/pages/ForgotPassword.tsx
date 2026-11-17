@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { EmailClearInput } from '@/components/auth/EmailClearInput';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
@@ -157,12 +157,12 @@ const ForgotPassword: React.FC = () => {
                       </label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
+                        <EmailClearInput
                           id="email"
                           type="email"
                           placeholder="you@example.com"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onValueChange={setEmail}
                           className="pl-11 h-12 rounded-xl border-gray-200 focus:border-orange-300 focus:ring-orange-200 transition-colors"
                           required
                           disabled={loading}

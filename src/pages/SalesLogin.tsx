@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { EmailClearInput } from '@/components/auth/EmailClearInput';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { LogIn, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -143,11 +144,11 @@ const SalesLogin = () => {
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input
+              <EmailClearInput
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onValueChange={setEmail}
                 placeholder="your.email@company.com"
                 required
                 autoFocus

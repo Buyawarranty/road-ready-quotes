@@ -8,6 +8,7 @@ import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { EmailClearInput } from '@/components/auth/EmailClearInput';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '@/hooks/use-toast';
@@ -561,11 +562,11 @@ const Auth = () => {
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div>
                     <Label htmlFor="signin-email">Email</Label>
-                    <Input
+                    <EmailClearInput
                       id="signin-email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onValueChange={setEmail}
                       placeholder="Enter your email"
                       required
                     />
@@ -641,11 +642,11 @@ const Auth = () => {
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div>
                     <Label htmlFor="signup-email">Email</Label>
-                    <Input
+                    <EmailClearInput
                       id="signup-email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onValueChange={setEmail}
                       placeholder="Enter your email"
                       required
                     />

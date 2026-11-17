@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { EmailClearInput } from '@/components/auth/EmailClearInput';
 import { useToast } from '@/hooks/use-toast';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
@@ -170,15 +171,15 @@ const DealerLogin = () => {
                 <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-1.5">
                   Email address
                 </label>
-                <Input
+                <EmailClearInput
                   id="email"
                   type="email"
                   autoComplete="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onValueChange={setEmail}
                   placeholder="you@yourdealership.co.uk"
                   required
-                  className="h-11 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
+                  className="h-11 border-gray-300 text-gray-900 placeholder:text-gray-400"
                 />
               </div>
 

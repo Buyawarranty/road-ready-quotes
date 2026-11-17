@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { EmailClearInput } from '@/components/auth/EmailClearInput';
 
 // UK phone — accepts 07xxxxxxxxx, 01/02/03 landlines, +44, spaces/dashes
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
@@ -506,14 +507,14 @@ const DealerComingSoon = () => {
               <form onSubmit={handleLogin} className="mt-5 space-y-4" noValidate>
                 <label className="block">
                   <span className="block text-sm font-semibold text-crm-navy mb-1.5">Email address</span>
-                  <input
+                  <EmailClearInput
                     type="email"
                     autoComplete="email"
                     autoCapitalize="none"
                     value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
+                    onValueChange={setLoginEmail}
                     placeholder="you@dealership.co.uk"
-                    className={inputCls}
+                    className={`${inputCls} h-auto`}
                   />
                 </label>
 
