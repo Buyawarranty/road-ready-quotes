@@ -44,6 +44,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [userId, setUserId] = useState<string | null>(null);
   const [staff, setStaff] = useState<BdmStaff[]>([]);
   const [rows, setRows] = useState<BdmDealership[]>([]);
+  const [onboardedBy, setOnboardedBy] = useState<Record<string, string>>({});
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -129,6 +130,9 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     const list: BdmDealership[] = data || [];
     setRows(list); setCount(c ?? 0); setLoading(false);
     if (list.length) {
+      (supabase.rpc as any).call(supabase, 'bdm_portfolio_owners', { p_ids: list.map(d => d.id) }).then(({ data: ow }: any) => {
+        setOnboardedBy(Object.fromEntries((ow || []).map((o: any) => [o.dealership_id, o.owner_name])));
+      });
       const { data: cs } = await db.from('bdm_contacts').select('dealership_id, full_name, phone, mobile, email, is_primary')
         .in('dealership_id', list.map(r => r.id)).order('is_primary', { ascending: false });
       const m: Record<string, any> = {};
@@ -404,6 +408,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
                 c={contactsBy[r.id]}
                 overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
                 assignedName={staffName(r.assigned_bdm)}
+                onboardedBy={onboardedBy[r.id]}
                 showAssigned={isManager}
                 onOpen={open}
                 onChanged={refresh}

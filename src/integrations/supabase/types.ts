@@ -2374,6 +2374,84 @@ export type Database = {
           },
         ]
       }
+      bdm_portfolio: {
+        Row: {
+          bdm_user_id: string
+          contact_name: string | null
+          created_at: string
+          created_by: string | null
+          dealer_id: string | null
+          dealership_id: string | null
+          dealership_name: string
+          email: string | null
+          follow_up_action: string | null
+          id: string
+          next_follow_up_at: string | null
+          notes: string | null
+          onboarded_at: string | null
+          phone: string | null
+          postcode: string | null
+          status: string
+          town: string | null
+          updated_at: string
+        }
+        Insert: {
+          bdm_user_id: string
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          dealer_id?: string | null
+          dealership_id?: string | null
+          dealership_name: string
+          email?: string | null
+          follow_up_action?: string | null
+          id?: string
+          next_follow_up_at?: string | null
+          notes?: string | null
+          onboarded_at?: string | null
+          phone?: string | null
+          postcode?: string | null
+          status?: string
+          town?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bdm_user_id?: string
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          dealer_id?: string | null
+          dealership_id?: string | null
+          dealership_name?: string
+          email?: string | null
+          follow_up_action?: string | null
+          id?: string
+          next_follow_up_at?: string | null
+          notes?: string | null
+          onboarded_at?: string | null
+          phone?: string | null
+          postcode?: string | null
+          status?: string
+          town?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_portfolio_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bdm_portfolio_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bdm_stage_history: {
         Row: {
           changed_by: string | null
@@ -15700,6 +15778,14 @@ export type Database = {
           p_type: string
         }
         Returns: string
+      }
+      bdm_portfolio_owners: {
+        Args: { p_ids: string[] }
+        Returns: {
+          dealership_id: string
+          onboarded_at: string
+          owner_name: string
+        }[]
       }
       bdm_set_stage: {
         Args: { p_dealership: string; p_stage: string }

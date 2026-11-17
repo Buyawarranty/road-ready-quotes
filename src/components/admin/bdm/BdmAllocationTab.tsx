@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Ban, X } from 'lucide-react';
 import BdmTownAccessPanel from './BdmTownAccessPanel';
+import BdmPortfolioPanel from './BdmPortfolioPanel';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type Staff = { user_id: string; name: string; role: string };
 type Block = { id: string; user_id: string; town: string | null; dealership_id: string | null; reason: string | null; bdm_dealerships?: { name: string; town: string | null } | null };
@@ -65,7 +67,12 @@ const BdmAllocationTab: React.FC = () => {
   }, [q, kind, picked]);
 
   if (allowed === null) return null;
-  if (!allowed) return <p className="p-6 text-sm text-muted-foreground">Only Super Admin and Admin can manage BDM allocation.</p>;
+  if (!allowed) return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">BDM allocation</h1>
+      <BdmPortfolioPanel />
+    </div>
+  );
 
   const nameOf = (id: string) => staff.find(s => s.user_id === id)?.name || 'Unknown';
 
@@ -97,6 +104,10 @@ const BdmAllocationTab: React.FC = () => {
         <p className="text-sm text-muted-foreground">Open towns to people, and block towns or single dealerships from anyone — including Managers and Admins. Super Admins are never blocked.</p>
       </div>
 
+      <Tabs defaultValue="portfolio">
+        <TabsList><TabsTrigger value="portfolio">Dealer portfolio</TabsTrigger><TabsTrigger value="access">Town access & blocks</TabsTrigger></TabsList>
+        <TabsContent value="portfolio"><BdmPortfolioPanel /></TabsContent>
+        <TabsContent value="access" className="space-y-6">
       <BdmTownAccessPanel />
 
       <Card>
@@ -175,6 +186,8 @@ const BdmAllocationTab: React.FC = () => {
           ))}
         </CardContent>
       </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

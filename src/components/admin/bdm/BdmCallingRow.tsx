@@ -51,6 +51,8 @@ interface Props {
   c?: BdmRowContact;
   overdue: boolean;
   assignedName?: string;
+  /** Name of the BDM whose portfolio already holds this dealership. */
+  onboardedBy?: string;
   showAssigned: boolean;
   onOpen: (id: string, tab?: string) => void;
   onChanged: () => void;
@@ -58,7 +60,7 @@ interface Props {
   striped?: boolean;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssigned, onOpen, onChanged, rowNumber, striped }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, onOpen, onChanged, rowNumber, striped }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -185,6 +187,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, showAssig
       {/* Dealership + contact */}
       <td className="p-2">
         <button type="button" onClick={() => onOpen(r.id)} className="text-left font-bold hover:underline">{r.name}</button>
+        {onboardedBy && <span className="ml-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">Onboarded by {onboardedBy}</span>}
         <p className="text-xs text-muted-foreground">{c?.full_name ? `${c.full_name} · ` : ''}{[r.town, r.postcode].filter(Boolean).join(' · ')}</p>
         {(r.star_rating != null || r.vehicle_stock != null || r.website || r.autotrader_url) && (
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
