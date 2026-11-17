@@ -161,8 +161,11 @@ Deno.serve(async (req: Request) => {
       ? { code: '3+3 INTRO', discount_amount: plan.dealer_price, total: 0, intro_free: true }
       : promo || { total: plan.dealer_price, discount_amount: 0, intro_free: false }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
+    const { data: latestTerms } = await adminClient.from('dealer_trade_terms_versions')
+      .select('version').order('created_at', { ascending: false }).limit(1).maybeSingle();
+    const currentTermsVersion = latestTerms?.version || '2026-11-15-v1';
     const { data: termsAcceptance, error: termsError } = await adminClient.from('dealer_trade_terms_acceptances')
-      .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', '2026-11-15-v1').maybeSingle();
+      .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', currentTermsVersion).maybeSingle();
     if (termsError) throw new Error('Unable to verify trade terms acceptance. Please try again.');
     if (!termsAcceptance) {
       return new Response(JSON.stringify({ error: 'Please review and accept the Trade Terms & Conditions before issuing this warranty.', code: 'TRADE_TERMS_REQUIRED' }), {

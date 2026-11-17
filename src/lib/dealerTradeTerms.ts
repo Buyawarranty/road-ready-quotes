@@ -45,3 +45,21 @@ export const DEALER_FULL_TRADE_TERMS = [
     ],
   },
 ];
+
+export type TradeTermsSummaryItem = { title: string; description: string };
+export type TradeTermsSection = { title: string; paragraphs: string[] };
+export type TradeTerms = { version: string; summary: TradeTermsSummaryItem[]; sections: TradeTermsSection[] };
+
+export const DEFAULT_TRADE_TERMS: TradeTerms = {
+  version: DEALER_TRADE_TERMS_VERSION,
+  summary: DEALER_TRADE_TERMS_SUMMARY,
+  sections: DEALER_FULL_TRADE_TERMS,
+};
+
+/** Latest published version from admin, falling back to the built-in first version. */
+export async function fetchCurrentTradeTerms(client: any): Promise<TradeTerms> {
+  const { data } = await client.from('dealer_trade_terms_versions')
+    .select('version, summary, sections').order('created_at', { ascending: false }).limit(1).maybeSingle();
+  if (!data || !Array.isArray(data.summary) || !Array.isArray(data.sections)) return DEFAULT_TRADE_TERMS;
+  return data as TradeTerms;
+}

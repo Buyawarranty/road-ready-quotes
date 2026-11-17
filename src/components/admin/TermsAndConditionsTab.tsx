@@ -17,6 +17,7 @@ import {
   Loader2,
   Download,
 } from 'lucide-react';
+import TradeTermsEditor from '@/components/admin/TradeTermsEditor';
 
 async function downloadDoc(url: string, filename: string) {
   try {
@@ -724,6 +725,7 @@ const TermsAndConditionsTab: React.FC = () => {
           signup date, so we always know which document applied to which sale.
         </p>
       </div>
+      <TradeTermsEditor />
 
       {loading ? (
         <div className="flex items-center justify-center py-16">

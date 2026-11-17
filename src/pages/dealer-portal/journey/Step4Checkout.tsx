@@ -12,7 +12,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
-import { DEALER_TRADE_TERMS_VERSION } from '@/lib/dealerTradeTerms';
+import { fetchCurrentTradeTerms } from '@/lib/dealerTradeTerms';
 import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
@@ -109,8 +109,9 @@ const Step4Checkout: React.FC = () => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
+      const current = await fetchCurrentTradeTerms(supabase);
       const { data } = await (supabase as any).from('dealer_trade_terms_acceptances')
-        .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', DEALER_TRADE_TERMS_VERSION).maybeSingle();
+        .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', current.version).maybeSingle();
       if (cancelled) return;
       const accepted = !!data;
       setTermsAccepted(accepted);

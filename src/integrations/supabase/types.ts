@@ -7768,6 +7768,33 @@ export type Database = {
           },
         ]
       }
+      dealer_trade_terms_versions: {
+        Row: {
+          change_note: string | null
+          created_at: string
+          created_by: string | null
+          sections: Json
+          summary: Json
+          version: string
+        }
+        Insert: {
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          sections?: Json
+          summary?: Json
+          version: string
+        }
+        Update: {
+          change_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          sections?: Json
+          summary?: Json
+          version?: string
+        }
+        Relationships: []
+      }
       dealer_warranties: {
         Row: {
           created_at: string
