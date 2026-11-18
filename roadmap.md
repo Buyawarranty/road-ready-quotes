@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Make every inbound dealer signup field editable with validation and clear login-email behaviour; show verified dealer account creation, last sign-in, quote/warranty usage and last activity in the signup panel. Ten tests pass, desktop/mobile edit-save checks pass without page errors or overflow, the activity service is deployed and signed-out access returns 401. Live staff-account verification remains unavailable with external authentication.
 - [x] Attach the official v11 Platinum Warranty Plan and Terms & Conditions to automatic and dealer-sent customer warranty emails, show both documents in the preview, and verify the live services. Four tests pass, both live PDFs load as attachments, services are deployed and a sample email was visually checked; real customer inbox delivery was not tested.
 - [x] Clarify dealer warranty cover versus payment status; improve detail-popup spacing, light Panda colours and professional icons.
 - [x] Show stored API vehicle details and a yellow UK registration plate throughout dealer warranty views; older blank records retrieve details when opened and new checkouts preserve fuel/transmission data.

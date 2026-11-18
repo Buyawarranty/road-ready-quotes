@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import {
   Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
-  StickyNote, Pin, Trash2, Plus, Eye,
+  StickyNote, Pin, Trash2, Plus, Eye, Pencil, Save,
 } from 'lucide-react';
 import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,9 @@ import { fireDealerConfetti } from '@/lib/dealerConfetti';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { DealerSignupActivityCard } from '@/components/admin/DealerSignupActivityCard';
+import type { DealerSignupActivity } from '@/lib/dealerSignupActivity';
+import { dealerSignupDetailsDraft, validateDealerSignupDetails, type DealerSignupDetailsDraft } from '@/lib/dealerSignupDetails';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -91,6 +94,13 @@ const DealerAdminSignUps: React.FC = () => {
   const [resendEmail, setResendEmail] = useState('');
   const [resending, setResending] = useState(false);
   const [rowResending, setRowResending] = useState<string | null>(null);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [detailsDraft, setDetailsDraft] = useState<DealerSignupDetailsDraft | null>(null);
+  const [savingDetails, setSavingDetails] = useState(false);
+  const [activity, setActivity] = useState<DealerSignupActivity | null>(null);
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState<string | null>(null);
+  const [activityRetry, setActivityRetry] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [noteIndex, setNoteIndex] = useState<NoteIndexRow[]>([]);
   const [notes, setNotes] = useState<SignupNote[]>([]);
@@ -214,6 +224,64 @@ const DealerAdminSignUps: React.FC = () => {
     if (selected?.id) fetchNotes(selected.id);
   }, [selected?.id]);
 
+  useEffect(() => {
+    setDetailsDraft(selected ? dealerSignupDetailsDraft(selected) : null);
+    setEditingDetails(false);
+  }, [selected?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setActivity(null);
+    setActivityError(null);
+    if (!selected?.id) return;
+    setActivityLoading(true);
+    const fetchActivity = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('dealer-signup-activity', { body: { signup_id: selected.id } });
+        if (error) throw new Error(await functionErrorMessage(error));
+        if (data?.error) throw new Error(data.error);
+        if (!cancelled) setActivity(data.activity as DealerSignupActivity);
+      } catch (error) {
+        if (!cancelled) setActivityError(error instanceof Error ? error.message : 'Activity could not be loaded.');
+      } finally {
+        if (!cancelled) setActivityLoading(false);
+      }
+    };
+    void fetchActivity();
+    return () => { cancelled = true; };
+  }, [selected?.id, selected?.dealer_id, activityRetry]);
+
+  const updateDraft = (field: keyof DealerSignupDetailsDraft, value: string) => {
+    setDetailsDraft(draft => draft ? { ...draft, [field]: value } : draft);
+  };
+
+  const saveDetails = async () => {
+    if (!selected || !detailsDraft || savingDetails) return;
+    const result = validateDealerSignupDetails(detailsDraft);
+    if ('error' in result) {
+      toast.error(result.error);
+      return;
+    }
+    setSavingDetails(true);
+    const { data, error } = await supabase
+      .from('trade_warranty_signups')
+      .update(result.payload)
+      .eq('id', selected.id)
+      .select('*')
+      .single();
+    setSavingDetails(false);
+    if (error) {
+      toast.error(`Details were not saved: ${error.message}`);
+      return;
+    }
+    const saved = data as Signup;
+    setRows(current => current.map(row => row.id === saved.id ? saved : row));
+    setSelected(saved);
+    setDetailsDraft(dealerSignupDetailsDraft(saved));
+    setEditingDetails(false);
+    toast.success('Dealer details updated');
+  };
+
   const addNote = async () => {
     if (!selected || !noteDraft.trim()) return;
     const { data: { user } } = await supabase.auth.getUser();
@@ -329,7 +397,7 @@ const DealerAdminSignUps: React.FC = () => {
       const newStatus: Status = decision === 'approve' ? 'approved' : 'rejected';
       const stamp = new Date().toISOString();
       const patch: any = decision === 'approve'
-        ? { status: newStatus, approved_at: stamp, rejected_at: null }
+        ? { status: newStatus, approved_at: stamp, rejected_at: null, dealer_id: (data as any)?.dealer_id || selected.dealer_id }
         : { status: newStatus, rejected_at: stamp, approved_at: null };
       setRows((r) => r.map((row) => (row.id === selected.id ? { ...row, ...patch } : row)));
       setSelected({ ...selected, ...patch });
@@ -428,6 +496,9 @@ const DealerAdminSignUps: React.FC = () => {
     setSelected(null);
     setNotes([]);
     setNoteDraft('');
+    setEditingDetails(false);
+    setActivity(null);
+    setActivityError(null);
     setSearchParams((p) => { p.delete('id'); return p; });
   };
 
@@ -442,7 +513,7 @@ const DealerAdminSignUps: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Signups</h1>
           <p className="text-sm text-gray-600 mt-1">Trade Warranty interest registrations from the dealer portal.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <AddDealerDialog label="Add trader" size="sm" onCreated={load} />
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
@@ -597,7 +668,7 @@ const DealerAdminSignUps: React.FC = () => {
 
       {/* Detail Sheet */}
       <Sheet open={!!selected} onOpenChange={(o) => !o && closeDetail()}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetContent className="w-full max-w-full overflow-x-hidden overflow-y-auto border-l-0 sm:max-w-xl sm:border-l">
           {selected && (
             <>
               <SheetHeader>
@@ -679,6 +750,13 @@ const DealerAdminSignUps: React.FC = () => {
                     </div>
                   )}
                 </div>
+
+                <DealerSignupActivityCard
+                  activity={activity}
+                  loading={activityLoading}
+                  error={activityError}
+                  onRetry={() => setActivityRetry(value => value + 1)}
+                />
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
                   <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">Town or city</div>
@@ -771,35 +849,66 @@ const DealerAdminSignUps: React.FC = () => {
                   </Select>
                 </div>
 
-                <DetailGrid>
-                  <DetailRow label="Submission Date" value={format(new Date(selected.created_at), 'd MMM yyyy, HH:mm')} />
-                  <DetailRow label="Dealership Name" value={selected.dealership_name} />
-                  <DetailRow label="Town or city" value={selected.town} />
-                  <DetailRow label="Contact Name" value={selected.contact_name} />
-                  <DetailRow label="Email Address" value={selected.email_address}
-                    href={`mailto:${selected.email_address}`} icon={Mail} />
-                  <DetailRow label="Phone Number" value={selected.phone_number}
-                    href={`tel:${selected.phone_number}`} icon={Phone} />
-                  <DetailRow label="Monthly Vehicle Sales" value={selected.monthly_vehicle_sales} icon={CarIcon} />
-                  <DetailRow label="Current Warranty Provider" value={selected.current_warranty_provider} />
-                  <DetailRow label="Interested In" value={selected.interested_in?.replace('-', ' ')} />
-                  <DetailRow
-                    label="Where They Sell Vehicles"
-                    value={selected.heard_about_us}
-                    href={selected.heard_about_us && /^https?:\/\//i.test(selected.heard_about_us) ? selected.heard_about_us : undefined}
-                  />
-
-
-                </DetailGrid>
-
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5" /> Additional Information
+                <section aria-label="Editable signup details" className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Signup details</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">Submitted {format(new Date(selected.created_at), 'd MMM yyyy, HH:mm')}</p>
+                    </div>
+                    {!editingDetails && (
+                      <Button type="button" size="sm" variant="outline" onClick={() => { setDetailsDraft(dealerSignupDetailsDraft(selected)); setEditingDetails(true); }}>
+                        <Pencil className="mr-2 h-3.5 w-3.5" /> Edit details
+                      </Button>
+                    )}
                   </div>
-                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-800 whitespace-pre-wrap min-h-[60px]">
-                    {selected.additional_information || <span className="text-gray-400">No additional information provided.</span>}
-                  </div>
-                </div>
+
+                  {editingDetails && detailsDraft ? (
+                    <div className="rounded-xl border border-crm-orange/30 bg-crm-orange-soft/40 p-4">
+                      <DetailGrid>
+                        <EditField label="Dealership name" value={detailsDraft.dealership_name || ''} onChange={value => updateDraft('dealership_name', value)} />
+                        <EditField label="Contact name" value={detailsDraft.contact_name || ''} onChange={value => updateDraft('contact_name', value)} />
+                        <EditField label="Email address" type="email" value={detailsDraft.email_address} onChange={value => updateDraft('email_address', value)} icon={Mail} />
+                        <EditField label="Phone number" type="tel" value={detailsDraft.phone_number} onChange={value => updateDraft('phone_number', value)} icon={Phone} />
+                        <EditField label="Monthly vehicle sales" value={detailsDraft.monthly_vehicle_sales || ''} onChange={value => updateDraft('monthly_vehicle_sales', value)} icon={CarIcon} />
+                        <EditField label="Current warranty provider" value={detailsDraft.current_warranty_provider || ''} onChange={value => updateDraft('current_warranty_provider', value)} />
+                        <EditField label="Interested in" value={detailsDraft.interested_in || ''} onChange={value => updateDraft('interested_in', value)} />
+                        <EditField label="Where they sell vehicles" value={detailsDraft.heard_about_us || ''} onChange={value => updateDraft('heard_about_us', value)} />
+                      </DetailGrid>
+                      <label className="mt-3 block text-xs font-semibold uppercase tracking-wider text-muted-foreground" htmlFor="edit-additional-information">
+                        <span className="mb-1.5 flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" /> Additional information</span>
+                        <Textarea id="edit-additional-information" value={detailsDraft.additional_information || ''} onChange={event => updateDraft('additional_information', event.target.value)} className="min-h-24 bg-card text-sm normal-case tracking-normal" disabled={savingDetails} />
+                      </label>
+                      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">Changes update this signup application. An approved dealer’s existing login email and password stay unchanged.</p>
+                      <div className="mt-4 flex flex-wrap justify-end gap-2">
+                        <Button type="button" variant="outline" disabled={savingDetails} onClick={() => { setDetailsDraft(dealerSignupDetailsDraft(selected)); setEditingDetails(false); }}>Cancel</Button>
+                        <Button type="button" disabled={savingDetails} onClick={saveDetails}>
+                          {savingDetails ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                          {savingDetails ? 'Saving…' : 'Save changes'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <DetailGrid>
+                        <DetailRow label="Dealership Name" value={selected.dealership_name} />
+                        <DetailRow label="Town or city" value={selected.town} />
+                        <DetailRow label="Contact Name" value={selected.contact_name} />
+                        <DetailRow label="Email Address" value={selected.email_address} href={`mailto:${selected.email_address}`} icon={Mail} />
+                        <DetailRow label="Phone Number" value={selected.phone_number} href={`tel:${selected.phone_number}`} icon={Phone} />
+                        <DetailRow label="Monthly Vehicle Sales" value={selected.monthly_vehicle_sales} icon={CarIcon} />
+                        <DetailRow label="Current Warranty Provider" value={selected.current_warranty_provider} />
+                        <DetailRow label="Interested In" value={selected.interested_in?.replace('-', ' ')} />
+                        <DetailRow label="Where They Sell Vehicles" value={selected.heard_about_us} href={selected.heard_about_us && /^https?:\/\//i.test(selected.heard_about_us) ? selected.heard_about_us : undefined} />
+                      </DetailGrid>
+                      <div>
+                        <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground"><FileText className="h-3.5 w-3.5" /> Additional Information</div>
+                        <div className="min-h-16 whitespace-pre-wrap rounded-lg border border-border bg-muted/40 p-4 text-sm text-foreground">
+                          {selected.additional_information || <span className="text-muted-foreground">No additional information provided.</span>}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </section>
 
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
@@ -857,6 +966,15 @@ const StatCard: React.FC<{ label: string; value: number }> = ({ label, value }) 
     <div className="text-3xl font-black text-gray-900 mt-1">{value}</div>
   </div>
 );
+const EditField: React.FC<{ label: string; value: string; onChange: (value: string) => void; type?: string; icon?: React.ComponentType<any> }> = ({ label, value, onChange, type = 'text', icon: Icon }) => {
+  const id = React.useId();
+  return (
+    <label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+      <span className="mb-1.5 flex items-center gap-1.5">{Icon && <Icon className="h-3.5 w-3.5" />}{label}</span>
+      <Input id={id} type={type} value={value} onChange={event => onChange(event.target.value)} className="h-10 bg-card text-sm normal-case tracking-normal" />
+    </label>
+  );
+};
 const DetailGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>
 );
