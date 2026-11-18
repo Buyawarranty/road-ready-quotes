@@ -75,7 +75,7 @@ const DealerAdminDealers: React.FC = () => {
     patch.company_name = String(editing.company_name).trim();
     const full = [patch.first_name, patch.last_name].filter(Boolean).join(' ');
     if (full) patch.name = full;
-    const { error } = await supabase.from('dealers').update(patch).eq('id', editing.id);
+    const { error } = await supabase.from('dealers').update(patch as any).eq('id', editing.id);
     setSavingEdit(false);
     if (error) { toast({ title: 'Could not save', description: error.message, variant: 'destructive' }); return; }
     setRows((prev) => prev.map((r) => (r.id === editing.id ? { ...r, ...patch } : r)));
