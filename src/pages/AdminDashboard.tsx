@@ -1103,7 +1103,7 @@ const AdminDashboardInner: React.FC<{
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <SEOHead 
-        title="Admin Dashboard | BuyAWarranty Management"
+        title="Admin Dashboard | Panda Protect"
         description="Administrative dashboard for managing warranties, customers, and business operations."
         keywords="admin, dashboard, warranty management"
       />

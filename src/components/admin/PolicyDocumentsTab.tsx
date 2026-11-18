@@ -884,7 +884,7 @@ export const PolicyDocumentsTab: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '12px', borderBottom: `3px solid ${c.borderAccent}`, marginBottom: '14px' }}>
                 <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" style={{ height: '40px', filter: isBW ? 'grayscale(100%)' : 'none' }} />
                 <div style={{ textAlign: 'right', fontSize: '9px', color: '#666', lineHeight: '1.4' }}>
-                  <p style={{ fontWeight: '600' }}>Buy A Warranty Ltd</p>
+                  <p style={{ fontWeight: '600' }}>Panda Protect</p>
                   <p>Warranty House, 62 Berkhamsted Ave</p>
                   <p>Wembley, HA9 6DT</p>
                   <p>Company No: 10314863</p>

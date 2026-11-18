@@ -825,9 +825,9 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
 
   return `<div class="letter-page">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:3px solid ${col.borderAccent};margin-bottom:14px">
-      <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="BAW" style="height:40px;${isBW ? 'filter:grayscale(100%)' : ''}" />
+      <img src="https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png" alt="Panda Protect" style="height:40px;${isBW ? 'filter:grayscale(100%)' : ''}" />
       <div style="text-align:right;font-size:9px;color:#666;line-height:1.4">
-        <p style="font-weight:600">Buy A Warranty Ltd</p><p>Warranty House, 62 Berkhamsted Ave</p><p>Wembley, HA9 6DT</p><p>Company No: 10314863</p>
+        <p style="font-weight:600">Panda Protect</p><p>Warranty House, 62 Berkhamsted Ave</p><p>Wembley, HA9 6DT</p><p>Company No: 10314863</p>
       </div>
     </div>
     <div style="text-align:right;font-size:10px;color:#666;margin-bottom:12px">${todayDate}</div>
