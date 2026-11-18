@@ -98,6 +98,9 @@ const DealerAdminSignUps: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | Status>('all');
   const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved'>('smart');
+  const [dateFilter, setDateFilter] = useState<'all' | 'today' | '7' | '30' | '90'>('all');
+  const [extraFilter, setExtraFilter] = useState<'all' | 'duplicates' | 'no_login' | 'has_login'>('all');
   const [selected, setSelected] = useState<Signup | null>(null);
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [canBulkDelete, setCanBulkDelete] = useState(false);
@@ -213,6 +216,14 @@ const DealerAdminSignUps: React.FC = () => {
     const matches = rows.filter((r) => {
       if (statusFilter === 'ready') { if (!r.dealer_id || !isReadyForFollowUp(portalUsage[r.dealer_id])) return false; }
       else if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+      if (dateFilter !== 'all') {
+        const t = new Date(r.created_at);
+        if (dateFilter === 'today') { if (t.toDateString() !== new Date().toDateString()) return false; }
+        else if (Date.now() - t.getTime() > Number(dateFilter) * 86400000) return false;
+      }
+      if (extraFilter === 'duplicates' && !duplicateIds.has(r.id)) return false;
+      if (extraFilter === 'no_login' && r.dealer_id) return false;
+      if (extraFilter === 'has_login' && !r.dealer_id) return false;
       if (!q) return true;
       return [
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
@@ -221,8 +232,15 @@ const DealerAdminSignUps: React.FC = () => {
       ].some((v) => v?.toLowerCase().includes(q));
 
     });
-    return organiseDealerSignups(matches, duplicateIds);
-  }, [rows, search, statusFilter, duplicateIds, portalUsage]);
+    if (sortBy === 'smart') return organiseDealerSignups(matches, duplicateIds);
+    const ts = (v?: string | null) => (v ? new Date(v).getTime() : 0);
+    return [...matches].sort((a, b) => {
+      if (sortBy === 'oldest') return ts(a.created_at) - ts(b.created_at);
+      if (sortBy === 'name') return (a.dealership_name || '').localeCompare(b.dealership_name || '');
+      if (sortBy === 'approved') return ts(b.approved_at) - ts(a.approved_at) || ts(b.created_at) - ts(a.created_at);
+      return ts(b.created_at) - ts(a.created_at);
+    });
+  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -230,7 +248,7 @@ const DealerAdminSignUps: React.FC = () => {
   const allPageSelected = deletablePageRows.length > 0 && deletablePageRows.every(row => checkedIds.has(row.id));
   const somePageSelected = deletablePageRows.some(row => checkedIds.has(row.id));
 
-  useEffect(() => { setPage(1); }, [search, statusFilter]);
+  useEffect(() => { setPage(1); }, [search, statusFilter, dateFilter, extraFilter, sortBy]);
   useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
   useEffect(() => {
     setCheckedIds(current => {
@@ -666,6 +684,49 @@ const DealerAdminSignUps: React.FC = () => {
             ))}
           </SelectContent>
         </Select>
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
+          <SelectTrigger className="w-[190px]"><SelectValue placeholder="Sort" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="smart">Fresh first (grouped)</SelectItem>
+            <SelectItem value="newest">Newest first</SelectItem>
+            <SelectItem value="oldest">Oldest first</SelectItem>
+            <SelectItem value="approved">Recently approved</SelectItem>
+            <SelectItem value="name">Dealership A–Z</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={dateFilter} onValueChange={(v) => setDateFilter(v as any)}>
+          <SelectTrigger className="w-[160px]"><SelectValue placeholder="Signed up" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Any date</SelectItem>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="7">Last 7 days</SelectItem>
+            <SelectItem value="30">Last 30 days</SelectItem>
+            <SelectItem value="90">Last 90 days</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={extraFilter} onValueChange={(v) => setExtraFilter(v as any)}>
+          <SelectTrigger className="w-[180px]"><SelectValue placeholder="More" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All signups</SelectItem>
+            <SelectItem value="has_login">Has dealer login</SelectItem>
+            <SelectItem value="no_login">No login yet</SelectItem>
+            <SelectItem value="duplicates">Possible duplicates</SelectItem>
+          </SelectContent>
+        </Select>
+        {(statusFilter !== 'all' || sortBy !== 'smart' || dateFilter !== 'all' || extraFilter !== 'all' || search) && (
+          <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setSortBy('smart'); setDateFilter('all'); setExtraFilter('all'); setSearch(''); }}>Reset filters</Button>
+        )}
+        <div className="w-full flex flex-wrap gap-2">
+          {(['all', 'new', 'pending', 'approved', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
+            const count = s === 'all' ? rows.length : rows.filter(r => r.status === s).length;
+            const label = s === 'all' ? 'All' : (STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1));
+            return (
+              <Button key={s} type="button" size="sm" variant={statusFilter === s ? 'default' : 'outline'} className="rounded-full h-8" onClick={() => setStatusFilter(s)}>
+                {label} <span className="ml-1.5 opacity-70">{count}</span>
+              </Button>
+            );
+          })}
+        </div>
         <div className="text-sm text-gray-500 ml-auto">{filtered.length} result{filtered.length === 1 ? '' : 's'}</div>
       </div>
 
