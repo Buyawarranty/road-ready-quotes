@@ -91,7 +91,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
     if (error) { toast({ title: 'Could not save changes', description: error.message, variant: 'destructive' }); return; }
     toast({ title: 'Changes saved' }); setEditOpen(false); onChanged();
   };
-  const editBtn = <button type="button" onClick={e => { e.preventDefault(); e.stopPropagation(); openEdit(); }} title="Edit phone, email and dates" className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="pointer-events-none h-4 w-4" /></button>;
+  const editBtn = <button type="button" onClick={e => { e.preventDefault(); e.stopPropagation(); openEdit(); }} title="Quick edit: phone, email, last spoken and follow-up date" className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="pointer-events-none h-4 w-4" /></button>;
 
   const phone = r.phone || c?.mobile || c?.phone || null;
   const email = r.email || c?.email || null;
@@ -174,7 +174,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
       {/* Actions */}
       <td className="bg-muted/50 p-2">
         <div className="flex items-center gap-1">
-          <Button size="icon" variant="ghost" className="h-10 w-10 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:scale-95 cursor-pointer hover:bg-primary/10 hover:text-primary" title="Edit dealer details" aria-label={`Edit ${r.name}`} onClick={() => onOpen(r.id, 'overview')}>
+          <Button size="icon" variant="ghost" className="h-10 w-10 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:scale-95 cursor-pointer hover:bg-primary/10 hover:text-primary" title="Open full dealer record (company, contacts, status, priority, notes)" aria-label={`Open full record for ${r.name}`} onClick={() => onOpen(r.id, 'overview')}>
             <Pencil className="h-4 w-4" />
           </Button>
           {phone && !dnc && (
