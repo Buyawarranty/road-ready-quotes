@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.guard_dealer_delete_flag() FROM PUBLIC, anon, authenticated;

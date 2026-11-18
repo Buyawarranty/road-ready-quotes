@@ -8068,6 +8068,7 @@ export type Database = {
           country_code: string | null
           county: string | null
           created_at: string
+          deleted_at: string | null
           discount_pct: number
           email: string
           fca_number: string | null
@@ -8095,6 +8096,7 @@ export type Database = {
           country_code?: string | null
           county?: string | null
           created_at?: string
+          deleted_at?: string | null
           discount_pct?: number
           email: string
           fca_number?: string | null
@@ -8122,6 +8124,7 @@ export type Database = {
           country_code?: string | null
           county?: string | null
           created_at?: string
+          deleted_at?: string | null
           discount_pct?: number
           email?: string
           fca_number?: string | null

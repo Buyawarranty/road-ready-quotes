@@ -19,7 +19,7 @@ import BdmReminderPopover from '@/components/admin/bdm/BdmReminderPopover';
 import BdmOwnerTag from '@/components/admin/bdm/BdmOwnerTag';
 import BdmOwnerPicker from '@/components/admin/bdm/BdmOwnerPicker';
 import BdmEmailDialog from '@/components/admin/bdm/BdmEmailDialog';
-import { Bell, Mail, X } from 'lucide-react';
+import { Bell, Mail, X, FlaskConical, Trash2 } from 'lucide-react';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
@@ -146,10 +146,30 @@ const DealerAdminDealers: React.FC = () => {
     }
   };
 
+  const [isSuper, setIsSuper] = useState(false);
+  useEffect(() => { (async () => {
+    const { data: { user } } = await supabase.auth.getUser(); if (!user) return;
+    const { data } = await supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'super_admin');
+    setIsSuper(!!data?.length);
+  })(); }, []);
+  const setTest = async (ids: string[], value: boolean) => {
+    if (!ids.length) return;
+    const { error } = await supabase.from('dealers').update({ is_test: value } as any).in('id', ids);
+    if (error) return toast({ title: 'Could not update', description: error.message, variant: 'destructive' });
+    toast({ title: value ? 'Marked as test account' : 'Test tag removed' }); setChecked(new Set()); load();
+  };
+  const deleteDealers = async (ids: string[]) => {
+    if (!isSuper || !ids.length) return;
+    if (!window.confirm(`Delete ${ids.length} dealer${ids.length > 1 ? 's' : ''}? They will be hidden from this list; their warranties are kept.`)) return;
+    const { error } = await supabase.from('dealers').update({ deleted_at: new Date().toISOString() } as any).in('id', ids);
+    if (error) return toast({ title: 'Could not delete', description: error.message, variant: 'destructive' });
+    toast({ title: 'Dealer deleted' }); setChecked(new Set()); load();
+  };
+
   const load = async () => {
     setLoading(true);
     const [{ data: dealers }, { data: customers }] = await Promise.all([
-      supabase.from('dealers').select('*').order('created_at', { ascending: false }),
+      supabase.from('dealers').select('*').is('deleted_at' as any, null).order('created_at', { ascending: false }),
       supabase.from('customers').select('dealer_id, final_amount, status').eq('brand', 'pandaprotect').not('dealer_id', 'is', null),
     ]);
     const { data: pendingReqs } = await supabase.from('dealer_paylater_requests').select('dealer_id').eq('status', 'pending');
@@ -315,6 +335,9 @@ const DealerAdminDealers: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
               <span className="font-semibold">{checked.size} selected</span>
               {canExport && <Button size="sm" variant="outline" onClick={exportChecked}><Download className="h-4 w-4 mr-1" />Download spreadsheet</Button>}
+              <Button size="sm" variant="outline" onClick={() => setTest([...checked], true)}><FlaskConical className="h-4 w-4 mr-1" />Mark as test</Button>
+              <Button size="sm" variant="outline" onClick={() => setTest([...checked], false)}>Remove test tag</Button>
+              {isSuper && <Button size="sm" variant="destructive" onClick={() => deleteDealers([...checked])}><Trash2 className="h-4 w-4 mr-1" />Delete</Button>}
               <Button size="sm" variant="ghost" onClick={() => setChecked(new Set())}>Clear</Button>
             </div>
           )}
@@ -432,6 +455,14 @@ const DealerAdminDealers: React.FC = () => {
                             {resendingId === r.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
                             <span className="ml-1">Resend password</span>
                           </Button>
+                          <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => setTest([r.id], !r.is_test)}>
+                            <FlaskConical className="h-3 w-3" />
+                            <span className="ml-1">{r.is_test ? 'Remove test' : 'Mark as test'}</span>
+                          </Button>
+                          {isSuper && <Button size="sm" variant="outline" className="h-8 whitespace-nowrap text-destructive" onClick={() => deleteDealers([r.id])}>
+                            <Trash2 className="h-3 w-3" />
+                            <span className="ml-1">Delete</span>
+                          </Button>}
                           </div>
                         </td>
                       </tr>
