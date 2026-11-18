@@ -287,17 +287,18 @@ const Step3Pricing: React.FC = () => {
     {cover && <section className="grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex min-w-0 flex-col items-center gap-2 py-2 text-center sm:flex-row sm:gap-3 sm:text-left"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
-    <div className={`flex flex-wrap items-center gap-3 rounded-xl border-2 p-4 transition-all ${boostOn ? 'border-crm-gold-pure bg-crm-gold-soft text-crm-navy ring-4 ring-crm-gold-soft' : 'border-crm-green/35 bg-crm-green-soft text-crm-navy'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
-      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${boostOn ? 'bg-crm-gold-pure' : 'bg-card'}`}><Zap className={`h-5 w-5 ${boostOn ? 'text-crm-navy' : 'text-crm-gold-deep'}`} /></span>
+    <div className={`flex flex-wrap items-center gap-3 rounded-xl border-2 bg-crm-green-soft p-4 text-crm-navy transition-all ${boostOn ? 'border-crm-green-deep' : 'border-crm-green/35'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
+      <span aria-hidden className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${boostOn ? 'border-crm-green-deep bg-crm-green-deep' : 'border-crm-green/50 bg-card'}`}>{boostOn && <Check className="h-4 w-4 text-primary-foreground" />}</span>
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-gold-deep" /></span>
       <span className="min-w-0 flex-1">
         <span className="block text-base font-extrabold leading-5">£5,000 Claim Limit Boost</span>
-        <span className={`block text-sm leading-5 ${boostOn ? 'text-crm-ink-amber' : 'text-muted-foreground'}`}>{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
+        <span className={`block text-sm leading-5 ${boostOn ? 'text-crm-green-deep' : 'text-muted-foreground'}`}>{boostOn ? 'Added. Each eligible claim is now covered up to £5,000.' : `Increase the per-claim limit from ${gbp(baseClaim)} to £5,000.`}</span>
       </span>
       {boostCfg && (() => { const boostPrice = term ? (boostForTerm(boostCfg, term)?.[trade ? 'dealer_price' : 'retail_price'] ?? 0) : (boostLead?.[trade ? 'dealer_price' : 'retail_price'] ?? 0); return (
       <span className="flex w-full shrink-0 flex-wrap items-center justify-center gap-3 sm:w-auto">
-        <span className={`whitespace-nowrap text-sm font-bold ${boostOn ? 'text-crm-ink-amber' : 'text-crm-green-deep'}`}>{term ? `Only ${gbp(boostPrice)}` : `From only ${gbp(boostPrice)}`}</span>
+        <span className="whitespace-nowrap text-sm font-bold text-crm-green-deep">{term ? `Only ${gbp(boostPrice)}` : `From only ${gbp(boostPrice)}`}</span>
         <button type="button" onClick={() => { setBoost(!boostOn); setError(''); }} aria-pressed={boostOn} aria-label="Add £5,000 claim limit boost"
-          className={`inline-flex h-12 items-center gap-1.5 rounded-lg px-5 text-base font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 ${boostOn ? 'bg-crm-gold-pure text-crm-navy hover:bg-crm-gold focus-visible:ring-crm-gold' : 'bg-crm-green text-primary-foreground hover:bg-crm-green/90 focus-visible:ring-crm-green'}`}>
+          className={`inline-flex h-12 items-center gap-1.5 rounded-lg px-5 text-base font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 ${boostOn ? 'bg-crm-green-deep text-primary-foreground hover:bg-crm-green-deep/90 focus-visible:ring-crm-green-deep' : 'bg-crm-green text-primary-foreground hover:bg-crm-green/90 focus-visible:ring-crm-green'}`}>
           {boostOn ? <><Check className="h-4 w-4" />Added</> : 'Add boost'}
         </button>
       </span>); })()}
