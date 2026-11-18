@@ -7921,6 +7921,7 @@ export type Database = {
           finance_limit: number | null
           first_name: string | null
           id: string
+          is_test: boolean
           last_name: string | null
           name: string
           phone: string | null
@@ -7945,6 +7946,7 @@ export type Database = {
           finance_limit?: number | null
           first_name?: string | null
           id?: string
+          is_test?: boolean
           last_name?: string | null
           name: string
           phone?: string | null
@@ -7969,6 +7971,7 @@ export type Database = {
           finance_limit?: number | null
           first_name?: string | null
           id?: string
+          is_test?: boolean
           last_name?: string | null
           name?: string
           phone?: string | null
@@ -16060,6 +16063,7 @@ export type Database = {
         Args: { _user_id: string }
         Returns: boolean
       }
+      can_see_test_dealers: { Args: never; Returns: boolean }
       can_view_chatbot_data: { Args: { _user_id: string }; Returns: boolean }
       can_view_staff_hub_doc: {
         Args: { _allowed_roles: string[]; _allowed_team_ids: string[] }
@@ -17207,6 +17211,10 @@ export type Database = {
           p_status: string
         }
         Returns: Json
+      }
+      set_dealer_test_flag: {
+        Args: { p_dealer_id: string; p_is_test: boolean }
+        Returns: undefined
       }
       set_sale_credit_agent:
         | {

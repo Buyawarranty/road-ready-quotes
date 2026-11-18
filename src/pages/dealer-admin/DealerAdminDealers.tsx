@@ -17,6 +17,7 @@ interface DealerRow {
   email: string;
   phone: string | null;
   company_name: string;
+  is_test?: boolean;
   discount_pct: number;
   created_at: string;
   sales_count?: number;
@@ -161,7 +162,7 @@ const DealerAdminDealers: React.FC = () => {
                     return (
                       <tr key={r.id} className="border-b border-border hover:bg-muted/30">
                         <td className="px-3 py-2">
-                          <p className="font-semibold text-foreground">{r.company_name}</p>
+                          <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}</p>
                           <p className="text-xs text-muted-foreground">{r.name}</p>
                         </td>
                         <td className="px-3 py-2">

@@ -18,6 +18,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
+  const [isTest, setIsTest] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [tried, setTried] = useState(false);
   const errors = {
@@ -51,13 +52,17 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
       toast({ title: 'Could not add dealer', description: msg, variant: 'destructive' });
       return;
     }
+    if (isTest && data?.dealer_id) {
+      const { error: tErr } = await (supabase.rpc as any)('set_dealer_test_flag', { p_dealer_id: data.dealer_id, p_is_test: true });
+      if (tErr) toast({ title: 'Dealer created but not tagged as test', description: tErr.message, variant: 'destructive' });
+    }
     setResult({ email: data.login_email, password: data.temp_password, emailed: !!data.email_sent, error: data.email_error });
     onCreated();
   };
 
   const close = (o: boolean) => {
     setOpen(o);
-    if (!o) { setForm(empty); setResult(null); setTouched({}); setTried(false); }
+    if (!o) { setForm(empty); setIsTest(false); setResult(null); setTouched({}); setTried(false); }
   };
 
   const loginUrl = `${window.location.origin}/dealer-portal/login`;
@@ -98,6 +103,10 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
             <ValidatedField icon={User} id="add-dealer-contact_name" label="Contact name" placeholder="e.g. John Smith" autoComplete="name" value={form.contact_name} onChange={set('contact_name')} onBlur={blur('contact_name')} error={errors.contact_name} show={shown('contact_name')} hasValue={!!form.contact_name.trim()} maxLength={100} />
             <ValidatedField icon={Mail} id="add-dealer-email" label="Email *" type="email" placeholder="e.g. john@smithmotors.co.uk" autoComplete="email" value={form.email} onChange={set('email')} onBlur={blur('email')} error={errors.email} show={shown('email')} hasValue={!!form.email.trim()} maxLength={255} />
             <ValidatedField icon={Phone} id="add-dealer-phone" label="Phone *" type="tel" inputMode="tel" placeholder="e.g. 07700 900123" autoComplete="tel" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} error={errors.phone} show={shown('phone')} hasValue={!!form.phone.trim()} maxLength={20} />
+            <label className="flex items-start gap-2 rounded-md border border-dashed p-3 text-sm cursor-pointer">
+              <input type="checkbox" className="mt-1" checked={isTest} onChange={e => setIsTest(e.target.checked)} />
+              <span><span className="font-semibold">TEST account</span><br /><span className="text-muted-foreground">Only Admins, Super Admins and testers can see it. Use it to try the full dealer dashboard.</span></span>
+            </label>
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" onClick={() => close(false)}>Cancel</Button>
               <Button type="submit" disabled={saving}>{saving && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}Add dealer</Button>
