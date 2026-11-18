@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import BdmReminderPopover from './BdmReminderPopover';
 import BdmQuickNotePopover from './BdmQuickNotePopover';
 import BdmEditNotes from './BdmEditNotes';
+import BdmEmailDialog from './BdmEmailDialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -128,6 +129,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
     toast({ title: 'Note saved' }); setNote(''); setNoteOpen(false); onChanged();
   };
 
+  const [mailOpen, setMailOpen] = useState(false);
   const logContact = (type: 'whatsapp' | 'email') =>
     db('bdm_log_activity', { p_dealership: r.id, p_type: type, p_outcome: null, p_contact: c?.full_name ?? null, p_notes: null, p_next_action: null, p_follow_up: null });
 
@@ -170,7 +172,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
           <BdmQuickNotePopover dealershipId={r.id} dealershipName={r.name} contactName={c?.full_name} onSaved={onChanged} onOpenFull={() => onOpen(r.id, 'activity')} />
           {email && !dnc && (
             <Button asChild size="icon" variant="ghost" className="h-10 w-10 transition-all duration-150 hover:-translate-y-px hover:shadow-md hover:ring-2 hover:ring-primary/30 active:translate-y-0 active:scale-95 cursor-pointer hover:bg-primary/10 hover:text-primary" aria-label={`Email ${r.name}`}>
-              <a href={`mailto:${email}`} onClick={() => logContact('email')}><Mail className="h-4 w-4" /></a>
+              <button type="button" onClick={() => setMailOpen(true)}><Mail className="h-4 w-4" /></button>
             </Button>
           )}
           {!email && (
@@ -247,7 +249,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
         {email ? (
           <div className="flex items-center gap-1">
             <span className="max-w-[170px] truncate text-xs" title={email}>{email}</span>
-            {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send email"><a href={`mailto:${email}`} onClick={() => logContact('email')}><Send className="h-3.5 w-3.5" /></a></Button>}
+            {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send email"><button type="button" onClick={() => setMailOpen(true)}><Send className="h-3.5 w-3.5" /></button></Button>}
             {editBtn}
           </div>
         ) : <button type="button" onClick={openEdit} className="text-xs text-muted-foreground underline-offset-2 hover:underline">No email · add</button>}
@@ -307,6 +309,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
             <div className="grid gap-1"><Label htmlFor={`na-${r.id}`}>Next action</Label><Input id={`na-${r.id}`} maxLength={200} value={form.action} onChange={e => setForm(f => ({ ...f, action: e.target.value }))} placeholder="e.g. Call back about pricing" /></div>
           </div>
           <BdmEditNotes dealershipId={r.id} dealershipName={r.name} onSaved={onChanged} />
+          {email && <BdmEmailDialog open={mailOpen} onOpenChange={setMailOpen} to={email} dealershipId={r.id} dealershipName={r.name} contactName={c?.full_name ?? null} onSent={onChanged} />}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
             <Button onClick={saveEdit} disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</Button>

@@ -10,3 +10,6 @@ verify_jwt = false
 
 [functions.partner-api-v1]
 verify_jwt = false
+
+[functions.bdm-send-email]
+verify_jwt = false
