@@ -161,7 +161,7 @@ function EmptyState({ filtered, cancellations = false, onReset }: { filtered: bo
       </div>
       <h3 className="text-lg font-bold text-crm-navy">{filtered ? 'No matching warranties' : cancellations ? 'No cancellations yet' : 'No warranties yet'}</h3>
       <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-        {filtered ? 'Try a different search or reset the filters.' : cancellations ? 'Cancelled and refunded warranties will appear here.' : 'Create your first warranty to see its cover, payment and documents here.'}
+        {filtered ? 'Try a different search or reset the filters.' : cancellations ? 'Cancellation requests and cancelled or refunded warranties will appear here. To request one, open a warranty in All warranties and tap Request cancellation.' : 'Create your first warranty to see its cover, payment and documents here.'}
       </p>
       {filtered && <Button variant="outline" className="mt-5 rounded-xl" onClick={onReset}>Reset filters</Button>}
     </div>
@@ -220,8 +220,8 @@ const DealerWarrantiesList = () => {
 
   const isPaid = (row: WarrantyRow) => row.payment_status === 'paid';
   const cancellationRows = useMemo(
-    () => rows.filter((row) => ['cancelled', 'refunded'].includes(String(row.status || '').trim().toLowerCase())),
-    [rows],
+    () => rows.filter((row) => pendingCancel.has(row.id) || ['cancelled', 'refunded'].includes(String(row.status || '').trim().toLowerCase())),
+    [rows, pendingCancel],
   );
   const unpaidRows = useMemo(
     () => rows.filter((row) => isCountedDealerSale(row) && isOutstandingDealerInvoice(row)).sort(compareDealerInvoiceDueDates),
@@ -716,8 +716,8 @@ const DealerWarrantiesList = () => {
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
         <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-center sm:text-left">
-            <h1 className="text-3xl font-extrabold tracking-tight text-crm-navy sm:text-4xl">{activeTab === 'payments' ? 'Invoicing' : 'Dealer warranties'}</h1>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">{activeTab === 'payments' ? 'See what is due, when it is due and pay your outstanding account invoices.' : 'Manage customer cover, payments and documents.'}</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-crm-navy sm:text-4xl">{activeTab === 'payments' ? 'Invoicing' : activeTab === 'cancellations' ? 'Cancellations' : 'Dealer warranties'}</h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">{activeTab === 'payments' ? 'See what is due, when it is due and pay your outstanding account invoices.' : activeTab === 'cancellations' ? 'Track cancellation requests you have sent and warranties that have been cancelled or refunded. To cancel a warranty, open it in All warranties and tap Request cancellation.' : 'Manage customer cover, payments and documents.'}</p>
           </div>
           <Button asChild className="h-12 w-full rounded-xl bg-crm-orange px-5 text-base font-bold text-primary-foreground shadow-sm hover:bg-crm-orange/90 sm:w-auto">
             <Link to="/dealer-portal/quote/pricing"><Plus className="mr-2 h-5 w-5" />New warranty</Link>
