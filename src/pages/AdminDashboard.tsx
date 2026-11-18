@@ -48,7 +48,6 @@ import { initPhoneClickTracker } from '@/utils/phoneEventLogger';
 import { WorkingWeekReminderBanner } from '@/components/admin/timesheets/WorkingWeekReminderBanner';
 import { DiscountAuthBanner } from '@/components/admin/DiscountAuthBanner';
 import { GlobalAutoDistributeBar } from '@/components/admin/leads/GlobalAutoDistributeBar';
-import { QuickGrantAccessBar } from '@/components/admin/QuickGrantAccessBar';
 
 const ManagerOverviewTab = lazy(() => import('@/components/admin/ManagerOverviewTab'));
 const PriceUpdatesTab = lazy(() => import('@/components/admin/PriceUpdatesTab'));
@@ -1215,9 +1214,6 @@ const AdminDashboardInner: React.FC<{
         userRole={displayRole}
         onGoToPool={() => handleTabChange('new-leads')}
       />
-
-      {/* Quick-grant access bar for admins — hand out newly-added sections without opening User Permissions */}
-      <QuickGrantAccessBar userRole={displayRole} />
 
       {/* Checkout struggle alert bar — admin & super_admin only */}
       <CheckoutStruggleAlertBar userRole={userRole} />
