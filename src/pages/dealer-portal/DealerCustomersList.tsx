@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
-import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
+import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { cn } from '@/lib/utils';
+import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
+import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -397,7 +399,7 @@ const CustomerDetailDrawer = ({
                   </Button>
                 )}
                 {status !== 'Active' && !canPay && (
-                  <Button variant="outline" onClick={() => downloadWarrantyPdf(pdfRow, dealerName || undefined)}>
+                  <Button variant="outline" onClick={() => window.open(platinumPlanDoc.url, '_blank', 'noopener')}>
                     <FileText className="mr-2 h-4 w-4" /> View warranty
                   </Button>
                 )}
@@ -408,7 +410,7 @@ const CustomerDetailDrawer = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-white">
-                    <DropdownMenuItem onClick={() => downloadWarrantyPdf(pdfRow, dealerName || undefined)}>
+                    <DropdownMenuItem onClick={() => window.open(platinumPlanDoc.url, '_blank', 'noopener')}>
                       <FileText className="mr-2 h-4 w-4" /> View warranty
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => downloadInvoicePdf(pdfRow, dealerName || undefined)}>
@@ -565,17 +567,14 @@ const CustomerDetailDrawer = ({
 
               <DetailSection title="Documents">
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <Button variant="outline" className="justify-between" onClick={() => downloadWarrantyPdf(pdfRow, dealerName || undefined)}>
-                    Warranty schedule <Eye className="h-4 w-4" />
+                  <Button asChild variant="outline" className="justify-between">
+                    <a href={termsDoc.url} target="_blank" rel="noopener noreferrer">Terms & Conditions <Eye className="h-4 w-4" /></a>
                   </Button>
-                  <Button variant="outline" className="justify-between" onClick={() => downloadWarrantyPdf(pdfRow, dealerName || undefined)}>
-                    Warranty terms <Eye className="h-4 w-4" />
+                  <Button asChild variant="outline" className="justify-between">
+                    <a href={platinumPlanDoc.url} target="_blank" rel="noopener noreferrer">Platinum warranty plan <Eye className="h-4 w-4" /></a>
                   </Button>
                   <Button variant="outline" className="justify-between" onClick={() => downloadInvoicePdf(pdfRow, dealerName || undefined)}>
                     Invoice <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" className="justify-between" onClick={() => downloadWarrantyPdf(pdfRow, dealerName || undefined)}>
-                    Certificate <Eye className="h-4 w-4" />
                   </Button>
                 </div>
               </DetailSection>
