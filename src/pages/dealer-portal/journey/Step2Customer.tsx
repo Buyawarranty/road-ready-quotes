@@ -79,13 +79,13 @@ const Step2Customer: React.FC = () => {
     const err = fieldError(k);
     return (
     <div>
-      <label htmlFor={`c-${k}`} className="mb-1 block text-sm font-medium text-crm-navy">{label}</label>
+      <label htmlFor={`c-${k}`} className="mb-1.5 block text-sm font-semibold text-crm-navy">{label}</label>
       <div className="relative">
         {Icon && <Icon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />}
         <Input id={`c-${k}`} placeholder={placeholder} type={type} inputMode={k === 'phone' ? 'tel' : k === 'email' ? 'email' : undefined} autoComplete={autoComplete} value={form[k]}
           aria-invalid={!!err} aria-describedby={err ? `c-${k}-err` : undefined}
           onChange={(e) => update(k, e.target.value)} onBlur={() => setTouched((t) => ({ ...t, [k]: true }))}
-          className={`h-12 pr-10 text-base ${Icon ? 'pl-11' : ''} ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
+          className={`h-12 pr-10 text-base ${Icon ? "!pl-10" : ""} ${err ? 'border-destructive' : filled(k) ? 'border-crm-green' : ''}`} />
         {filled(k) && <Check className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-crm-green" />}
       </div>
       {err && <DealerFieldError id={`c-${k}-err`}>{err}</DealerFieldError>}
@@ -95,8 +95,8 @@ const Step2Customer: React.FC = () => {
 
   return (
     <DealerJourneyLayout step={2} title="Customer details" subtitle="Enter the customer's details so we can arrange their cover." backTo="/dealer-portal/quote/pricing">
-      <div className="min-w-0 space-y-4 text-crm-navy sm:space-y-5">
-        <section className="min-w-0 space-y-4">
+      <div className="mx-auto w-full min-w-0 max-w-2xl space-y-5 text-crm-navy">
+        <section className="min-w-0 space-y-4 sm:rounded-xl sm:border sm:border-crm-line sm:bg-card sm:p-6">
           <h2 className="text-lg font-bold text-crm-navy">Customer details</h2>
           {field('name', 'Full name *', 'text', 'name', User, 'e.g. John Smith')}
           {field('phone', 'Mobile *', 'tel', 'tel', Phone, 'e.g. 07960 123 456')}
@@ -109,10 +109,10 @@ const Step2Customer: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="customer-address-search" className="mb-1 block text-sm font-medium text-crm-navy">Postcode, street or town *</label>
+            <label htmlFor="customer-address-search" className="mb-1.5 block text-sm font-semibold text-crm-navy">Postcode, street or town *</label>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <AddressAutocomplete id="customer-address-search" placeholder="Start typing the address" initialValue={form.postcode} className="h-12 pl-10 text-base" provider="postcoder" displaySelectedPostcode
+              <AddressAutocomplete id="customer-address-search" placeholder="Start typing the address" initialValue={form.postcode} className="h-12 !pl-10 text-base" provider="postcoder" displaySelectedPostcode
                 onLookupError={(failed) => { if (failed) setManualAddress(true); }}
                 onAddressSelect={(addr) => { setForm((p) => ({ ...p, address_line1: addr.line_1, address_line2: addr.line_2, town: addr.town, postcode: addr.postcode.toUpperCase() })); setManualAddress(true); }} />
             </div>
@@ -124,7 +124,7 @@ const Step2Customer: React.FC = () => {
           </div>
 
           {manualAddress && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4">
               {field('address_line1', 'Address line 1 *', 'text', 'address-line1', Home, 'e.g. 12 High Street')}
               {field('address_line2', 'Address line 2', 'text', 'address-line2', Home)}
               {field('town', 'Town *', 'text', 'address-level2', MapPin, 'e.g. Manchester')}
