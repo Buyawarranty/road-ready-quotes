@@ -8021,6 +8021,7 @@ export type Database = {
           trading_name: string | null
           updated_at: string
           user_id: string
+          website: string | null
         }
         Insert: {
           address_line1?: string | null
@@ -8046,6 +8047,7 @@ export type Database = {
           trading_name?: string | null
           updated_at?: string
           user_id: string
+          website?: string | null
         }
         Update: {
           address_line1?: string | null
@@ -8071,6 +8073,7 @@ export type Database = {
           trading_name?: string | null
           updated_at?: string
           user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
