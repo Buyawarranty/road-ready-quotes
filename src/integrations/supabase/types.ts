@@ -2330,6 +2330,35 @@ export type Database = {
         }
         Relationships: []
       }
+      bdm_my_contacts: {
+        Row: {
+          created_at: string
+          dealership_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dealership_id: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          dealership_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bdm_my_contacts_dealership_id_fkey"
+            columns: ["dealership_id"]
+            isOneToOne: false
+            referencedRelation: "bdm_dealerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bdm_note_assignments: {
         Row: {
           assigned_by: string

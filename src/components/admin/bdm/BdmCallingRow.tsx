@@ -58,9 +58,13 @@ interface Props {
   onChanged: () => void;
   rowNumber?: number;
   striped?: boolean;
+  inMine?: boolean;
+  towns?: string[];
+  onToggleMine?: (id: string) => void;
+  onMoveTown?: (id: string, town: string) => void;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, onOpen, onChanged, rowNumber, striped }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, onOpen, onChanged, rowNumber, striped, inMine, towns = [], onToggleMine, onMoveTown }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -191,6 +195,16 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
       <td className="p-2">
         <button type="button" onClick={() => onOpen(r.id)} className="text-left font-bold hover:underline">{r.name}</button>
         {onboardedBy && <span className="ml-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">Onboarded by {onboardedBy}</span>}
+        {inMine && <span className="ml-2 inline-block rounded-full bg-crm-orange-soft px-2 py-0.5 text-[11px] font-semibold text-crm-orange">★ My contacts</span>}
+        {onToggleMine && (
+          <Select value="" onValueChange={v => { if (v === '__mine') onToggleMine(r.id); else if (v.startsWith('town:')) onMoveTown?.(r.id, v.slice(5)); }}>
+            <SelectTrigger aria-label="File this dealership" className="mt-1 h-7 w-[170px] text-xs"><SelectValue placeholder="Put in…" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__mine">{inMine ? 'Remove from My contacts' : 'Add to My contacts'}</SelectItem>
+              {towns.filter(t => t !== r.town).map(t => <SelectItem key={t} value={`town:${t}`}>Move to town: {t}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        )}
         <p className="text-xs text-muted-foreground">{c?.full_name ? `${c.full_name} · ` : ''}{[r.town, r.postcode].filter(Boolean).join(' · ')}</p>
         {(r.star_rating != null || r.vehicle_stock != null || r.website || r.autotrader_url) && (
           <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">

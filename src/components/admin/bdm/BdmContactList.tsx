@@ -68,6 +68,28 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [contactsBy, setContactsBy] = useState<Record<string, { full_name: string; phone: string | null; mobile: string | null; email?: string | null }>>({});
   const [towns, setTowns] = useState<{ town: string; dealerships: number }[]>([]);
   const [town, setTown] = useState<string>('all');
+  const [myIds, setMyIds] = useState<string[]>([]);
+  const loadMine = useCallback(async () => {
+    const { data } = await (supabase as any).from('bdm_my_contacts').select('dealership_id');
+    setMyIds((data || []).map((d: any) => d.dealership_id));
+  }, []);
+  useEffect(() => { loadMine(); }, [loadMine]);
+  const toggleMine = async (id: string) => {
+    const db = supabase as any;
+    const inMine = myIds.includes(id);
+    const { error } = inMine
+      ? await db.from('bdm_my_contacts').delete().eq('dealership_id', id).eq('user_id', userId)
+      : await db.from('bdm_my_contacts').insert({ dealership_id: id });
+    if (error) { toast({ title: 'Could not update My contacts', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: inMine ? 'Removed from My contacts' : 'Added to My contacts' });
+    await loadMine();
+  };
+  const moveToTown = async (id: string, newTown: string) => {
+    const { error } = await (supabase as any).from('bdm_dealerships').update({ town: newTown }).eq('id', id);
+    if (error) { toast({ title: 'Could not move dealership', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: `Moved to ${newTown}` });
+    refresh();
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
@@ -101,7 +123,8 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       if (ids.length) ors.push(`id.in.(${ids.join(',')})`);
       q = q.or(ors.join(','));
     }
-    if (town !== 'all') q = q.eq('town', town);
+    if (town === '__mine') q = q.in('id', myIds.length ? myIds : ['00000000-0000-0000-0000-000000000000']);
+    else if (town !== 'all') q = q.eq('town', town);
     if (filters.stage.length) q = q.in('stage', filters.stage);
     if (filters.priority.length) q = q.in('priority', filters.priority);
     if (filters.bdm.length) {
@@ -139,7 +162,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
       for (const c2 of cs || []) if (!m[c2.dealership_id]) m[c2.dealership_id] = c2;
       setContactsBy(m);
     }
-  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town, debLocation, days]);
+  }, [debounced, filters, kpiFilter, sort, page, userId, toast, town, debLocation, days, myIds]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { loadKpis(); }, [loadKpis]);
@@ -317,6 +340,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
             <SelectTrigger id="bdm-town" className="h-10 w-full border border-border bg-background font-semibold sm:w-[300px]"><SelectValue placeholder="Choose a town" /></SelectTrigger>
             <SelectContent>
               {isManager && <SelectItem value="all">{isFullAccess ? 'All towns' : 'All my towns'}</SelectItem>}
+              <SelectItem value="__mine">★ My contacts ({myIds.length})</SelectItem>
               {towns.map(t => <SelectItem key={t.town} value={t.town}>{t.town} ({t.dealerships})</SelectItem>)}
             </SelectContent>
           </Select>
@@ -409,6 +433,10 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
                 overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
                 assignedName={staffName(r.assigned_bdm)}
                 onboardedBy={onboardedBy[r.id]}
+                inMine={myIds.includes(r.id)}
+                towns={towns.map(t => t.town)}
+                onToggleMine={toggleMine}
+                onMoveTown={moveToTown}
                 showAssigned={isManager}
                 onOpen={open}
                 onChanged={refresh}
