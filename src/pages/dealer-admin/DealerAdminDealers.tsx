@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save, KeyRound, Eye } from 'lucide-react';
+import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUp } from 'lucide-react';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
@@ -18,17 +18,42 @@ interface DealerRow {
   phone: string | null;
   company_name: string;
   is_test?: boolean;
+  status?: string | null;
   discount_pct: number;
   created_at: string;
   sales_count?: number;
   revenue?: number;
 }
 
+type StatusKey = 'all' | 'approved' | 'pending' | 'cancelled' | 'declined' | 'other';
+const STATUS_TABS: { key: StatusKey; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'approved', label: 'Approved' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'cancelled', label: 'Cancelled' },
+  { key: 'declined', label: 'Declined' },
+  { key: 'other', label: 'Other' },
+];
+export const dealerStatusGroup = (s?: string | null): Exclude<StatusKey, 'all'> => {
+  const v = (s || '').toLowerCase().trim();
+  if (['active', 'approved', 'live'].includes(v)) return 'approved';
+  if (['pending', 'new', 'awaiting', 'awaiting_approval', 'review'].includes(v)) return 'pending';
+  if (['cancelled', 'canceled', 'withdrawn', 'deactivated', 'suspended', 'inactive', 'closed'].includes(v)) return 'cancelled';
+  if (['declined', 'rejected', 'denied'].includes(v)) return 'declined';
+  return 'other';
+};
+const STATUS_BADGE: Record<string, string> = {
+  approved: 'bg-primary/10 text-primary', pending: 'bg-accent text-accent-foreground',
+  cancelled: 'bg-muted text-muted-foreground', declined: 'bg-destructive/10 text-destructive', other: 'bg-muted text-muted-foreground',
+};
+
 const DealerAdminDealers: React.FC = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<DealerRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusTab, setStatusTab] = useState<StatusKey>('all');
+  const [newestFirst, setNewestFirst] = useState(true);
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
@@ -85,14 +110,23 @@ const DealerAdminDealers: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter(
+    const base = rows
+      .filter((r) => statusTab === 'all' || dealerStatusGroup(r.status) === statusTab)
+      .sort((a, b) => (newestFirst ? -1 : 1) * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()));
+    if (!q) return base;
+    return base.filter(
       (r) =>
         r.name?.toLowerCase().includes(q) ||
         r.company_name?.toLowerCase().includes(q) ||
         r.email?.toLowerCase().includes(q)
     );
-  }, [rows, search]);
+  }, [rows, search, statusTab, newestFirst]);
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: rows.length };
+    rows.forEach((r) => { const g = dealerStatusGroup(r.status); c[g] = (c[g] || 0) + 1; });
+    return c;
+  }, [rows]);
 
   const saveDiscount = async (id: string) => {
     const newPct = edits[id];
@@ -125,7 +159,15 @@ const DealerAdminDealers: React.FC = () => {
 
       <Card className="border-2">
         <CardContent className="pt-6 space-y-4">
-          <div className="relative max-w-md">
+          <div className="flex flex-wrap gap-2">
+            {STATUS_TABS.filter((t) => t.key !== 'other' || counts.other).map((t) => (
+              <Button key={t.key} size="sm" variant={statusTab === t.key ? 'default' : 'outline'} onClick={() => setStatusTab(t.key)}>
+                {t.label} <span className="ml-1.5 rounded-full bg-background/30 px-1.5 text-xs">{counts[t.key] || 0}</span>
+              </Button>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+          <div className="relative max-w-md flex-1 min-w-[220px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search dealer, company, email..."
@@ -133,6 +175,11 @@ const DealerAdminDealers: React.FC = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
             />
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setNewestFirst((v) => !v)}>
+            {newestFirst ? <ArrowDown className="h-4 w-4 mr-1" /> : <ArrowUp className="h-4 w-4 mr-1" />}
+            {newestFirst ? 'Newest first' : 'Oldest first'}
+          </Button>
           </div>
 
           {loading ? (
@@ -148,7 +195,12 @@ const DealerAdminDealers: React.FC = () => {
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-3 py-2 font-medium">Company</th>
                     <th className="px-3 py-2 font-medium">Contact</th>
-                    <th className="px-3 py-2 font-medium">Joined</th>
+                    <th className="px-3 py-2 font-medium">Status</th>
+                    <th className="px-3 py-2 font-medium">
+                      <button type="button" className="inline-flex items-center gap-1 uppercase hover:text-foreground" onClick={() => setNewestFirst((v) => !v)}>
+                        Joined {newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                      </button>
+                    </th>
                     <th className="px-3 py-2 font-medium text-right">Sales</th>
                     <th className="px-3 py-2 font-medium text-right">Revenue</th>
                     <th className="px-3 py-2 font-medium">Discount %</th>
@@ -168,6 +220,9 @@ const DealerAdminDealers: React.FC = () => {
                         <td className="px-3 py-2">
                           <p className="text-foreground">{r.email}</p>
                           <p className="text-xs text-muted-foreground">{r.phone || '—'}</p>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span className={`rounded px-2 py-0.5 text-xs font-semibold capitalize ${STATUS_BADGE[dealerStatusGroup(r.status)]}`}>{r.status || '—'}</span>
                         </td>
                         <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">
                           {new Date(r.created_at).toLocaleDateString('en-GB')}
