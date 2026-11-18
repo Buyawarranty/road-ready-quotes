@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, Save, MapPin, Building2 } from 'lucide-react';
+import { Loader2, Save, MapPin, Building2, Lock } from 'lucide-react';
 import DealerChangePassword from '@/components/dealer/DealerChangePassword';
 import BillingAddressFields from '@/components/dealer/BillingAddressFields';
 import {
@@ -108,8 +108,11 @@ const DealerProfileSettings: React.FC = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-700">Company</Label>
-                  <Input value={dealer?.company_name || ''} readOnly className="h-10 bg-gray-50 border-gray-200" />
+                  <Label className="flex items-center gap-1 text-xs font-semibold text-gray-700">Company <Lock className="h-3 w-3 text-gray-500" aria-hidden="true" /><span className="font-normal text-gray-500">(locked)</span></Label>
+                  <div className="relative">
+                    <Input value={dealer?.company_name || ''} readOnly disabled aria-readonly="true" title="Locked — request a change below" className="h-10 cursor-not-allowed border-gray-200 bg-gray-100 pr-9 text-gray-600 disabled:opacity-100" />
+                    <Lock className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="main-contact-name" className="text-xs font-semibold text-foreground">Main contact name</Label>
