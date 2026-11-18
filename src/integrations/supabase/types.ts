@@ -14417,6 +14417,8 @@ export type Database = {
         Row: {
           additional_information: string | null
           approved_at: string | null
+          archived_at: string | null
+          archived_by: string | null
           contact_name: string | null
           created_at: string
           current_warranty_provider: string | null
@@ -14438,6 +14440,8 @@ export type Database = {
         Insert: {
           additional_information?: string | null
           approved_at?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           contact_name?: string | null
           created_at?: string
           current_warranty_provider?: string | null
@@ -14459,6 +14463,8 @@ export type Database = {
         Update: {
           additional_information?: string | null
           approved_at?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           contact_name?: string | null
           created_at?: string
           current_warranty_provider?: string | null
@@ -15868,6 +15874,7 @@ export type Database = {
       }
     }
     Functions: {
+      _tws_admin_guard: { Args: never; Returns: undefined }
       accept_dealer_trade_terms: {
         Args: {
           p_accepted_by: string
@@ -17080,6 +17087,10 @@ export type Database = {
           quote_id: string
           vehicle_data: Json
         }[]
+      }
+      restore_trade_warranty_signups: {
+        Args: { p_signup_ids: string[] }
+        Returns: Json
       }
       revert_pricing_to_code_defaults: { Args: never; Returns: undefined }
       review_dealer_cancellation: {

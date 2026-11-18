@@ -25,6 +25,7 @@ import type { DealerSignupActivity } from '@/lib/dealerSignupActivity';
 import { dealerSignupDetailsDraft, validateDealerSignupDetails, type DealerSignupDetailsDraft } from '@/lib/dealerSignupDetails';
 import { duplicateDealerSignupIds, isDealerSignupSetAside, isProtectedDealerSignup, organiseDealerSignups } from '@/lib/dealerSignupOrganisation';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Archive, ChevronDown, RotateCcw } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -133,6 +134,18 @@ const DealerAdminSignUps: React.FC = () => {
     navigate('/dealer-portal/dashboard');
   };
 
+  const [archivedRows, setArchivedRows] = useState<(Signup & { archived_at?: string | null })[]>([]);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+  const restoreSignup = async (id: string) => {
+    setRestoringId(id);
+    const { error } = await (supabase.rpc as any)('restore_trade_warranty_signups', { p_signup_ids: [id] });
+    setRestoringId(null);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Signup restored');
+    await load();
+  };
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -143,7 +156,9 @@ const DealerAdminSignUps: React.FC = () => {
     if (error) {
       toast.error(error.message);
     } else {
-      setRows((data || []) as Signup[]);
+      const all = (data || []) as (Signup & { archived_at?: string | null })[];
+      setRows(all.filter(r => !r.archived_at));
+      setArchivedRows(all.filter(r => !!r.archived_at));
     }
     setLoading(false);
 
@@ -580,13 +595,13 @@ const DealerAdminSignUps: React.FC = () => {
       const deletedIds = new Set<string>((data?.deleted_ids || []) as string[]);
       const deleted = Number(data?.deleted ?? deletedIds.size);
       const skipped = Number(data?.skipped ?? 0);
+      setArchivedRows(current => [...rows.filter(row => deletedIds.has(row.id)).map(row => ({ ...row, archived_at: new Date().toISOString() })), ...current]);
       setRows(current => current.filter(row => !deletedIds.has(row.id)));
-      setNoteIndex(current => current.filter(note => !deletedIds.has(note.signup_id)));
       setCheckedIds(new Set());
       setDeleteConfirmOpen(false);
       if (selected && deletedIds.has(selected.id)) closeDetail();
       if (deleted === 0) toast.error('No signups were deleted. Approved or recently changed signups stay protected.');
-      else toast.success(`${deleted} signup${deleted === 1 ? '' : 's'} deleted${skipped ? `; ${skipped} protected or changed row${skipped === 1 ? '' : 's'} skipped` : ''}`);
+      else toast.success(`${deleted} signup${deleted === 1 ? '' : 's'} moved to the archive${skipped ? `; ${skipped} protected or changed row${skipped === 1 ? '' : 's'} skipped` : ''}`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not delete the selected signups');
     } finally {
@@ -802,7 +817,7 @@ const DealerAdminSignUps: React.FC = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete {checkedIds.size} selected signup{checkedIds.size === 1 ? '' : 's'}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This permanently removes the selected unapproved applications and their notes. Approved applications, dealer accounts, warranties and sales remain protected.
+                The selected unapproved applications move to the hidden Archive at the bottom of this page, where you can restore them if deleted by mistake. Approved applications, dealer accounts, warranties and sales remain protected.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -812,11 +827,40 @@ const DealerAdminSignUps: React.FC = () => {
                 disabled={deleting || !checkedIds.size}
                 onClick={event => { event.preventDefault(); void deleteCheckedSignups(); }}
               >
-                {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting…</> : 'Delete permanently'}
+                {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting…</> : 'Move to archive'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {canBulkDelete && (
+          <div className="border-t border-gray-200">
+            <button type="button" onClick={() => setArchiveOpen(o => !o)} aria-expanded={archiveOpen}
+              className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold text-gray-700 hover:bg-gray-50">
+              <Archive className="h-4 w-4" /> Archive ({archivedRows.length})
+              <ChevronDown className={`ml-auto h-4 w-4 transition-transform ${archiveOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {archiveOpen && (
+              <div className="px-4 pb-4">
+                {archivedRows.length === 0 ? <p className="text-sm text-gray-500">No archived signups.</p> : (
+                  <ul className="divide-y divide-gray-100 rounded-md border border-gray-200">
+                    {archivedRows.map(r => (
+                      <li key={r.id} className="flex flex-wrap items-center gap-3 px-3 py-2 text-sm">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-medium text-gray-900">{r.dealership_name || r.contact_name || '—'}</div>
+                          <div className="text-xs text-gray-500">{r.email_address} · archived {r.archived_at ? format(new Date(r.archived_at), 'dd MMM yyyy HH:mm') : ''}</div>
+                        </div>
+                        <Button size="sm" variant="outline" disabled={restoringId === r.id} onClick={() => void restoreSignup(r.id)}>
+                          {restoringId === r.id ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <RotateCcw className="mr-1 h-4 w-4" />}Restore
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (
