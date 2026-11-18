@@ -5306,8 +5306,25 @@ Please log in and change your password after first login.`;
                                         )}
                                       </div>
                                     ) : (
-                                      <div className="text-sm text-red-600">
-                                        Unable to load credentials. Please try again.
+                                      <div className="space-y-3">
+                                        <div className="bg-white p-4 rounded border border-green-200 space-y-3">
+                                          <div>
+                                            <Label className="text-sm font-medium text-gray-700">Customer Dashboard URL</Label>
+                                            <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded block mt-1">https://pandaprotect.co.uk/customer-dashboard</code>
+                                          </div>
+                                          <div>
+                                            <Label className="text-sm font-medium text-gray-700">Username (Email)</Label>
+                                            <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded block mt-1">{selectedCustomer.email || '—'}</code>
+                                          </div>
+                                          <p className="text-xs text-gray-600">No temporary password has been issued yet (for example, warranties sold by a dealer). Use Send Update to email the customer their login details.</p>
+                                        </div>
+                                        {selectedCustomer.email && (
+                                          <ViewAsCustomerButton
+                                            customerId={selectedCustomer.id}
+                                            customerEmail={selectedCustomer.email}
+                                            customerName={selectedCustomer.name}
+                                          />
+                                        )}
                                       </div>
                                     )}
                                   </CollapsibleContent>
