@@ -103,6 +103,7 @@ const PartnerCheckout: React.FC = () => {
             <h1 className="text-2xl font-bold">Panda Protect Platinum Warranty</h1>
             <p className="text-sm text-muted-foreground">Offered by {info.dealer.name}. You pay Panda Protect directly.</p>
             {info.partner.mode === 'test' && <p className="mt-2 inline-block rounded-full bg-secondary px-3 py-1 text-xs font-bold">TEST MODE · no payment will be taken</p>}
+            {info.partner.mode === 'live_test' && <p className="mt-2 inline-block rounded-full bg-secondary px-3 py-1 text-xs font-bold">LIVE TEST · no payment will be taken and no warranty is created</p>}
           </div>
 
           <section className="space-y-3 rounded-xl border border-border p-4">

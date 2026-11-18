@@ -83,7 +83,7 @@ const PartnersTab: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           {partners.map((p) => (
             <Button key={p.id} variant={p.id === selected ? 'default' : 'outline'} size="sm" onClick={() => setSelected(p.id)}>
-              {p.name} <Badge variant="secondary" className="ml-2">{p.status === 'paused' ? 'Paused' : p.mode === 'live' ? 'Live' : 'Test'}</Badge>
+              {p.name} <Badge variant="secondary" className="ml-2">{p.status === 'paused' ? 'Paused' : p.mode === 'live' ? 'Live' : p.mode === 'live_test' ? 'Live test' : 'Test'}</Badge>
             </Button>
           ))}
         </div>
@@ -97,7 +97,7 @@ const PartnersTab: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>Mode</Label>
                 <Select value={partner.mode} onValueChange={(v) => update({ mode: v })}><SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="test">Test (no payments)</SelectItem><SelectItem value="live">Live</SelectItem></SelectContent></Select></div>
+                  <SelectContent><SelectItem value="test">Test (no payments)</SelectItem><SelectItem value="live_test">Live test (real page, no payment)</SelectItem><SelectItem value="live">Live</SelectItem></SelectContent></Select></div>
               <div className="space-y-1.5"><Label>Status</Label>
                 <Select value={partner.status} onValueChange={(v) => update({ status: v })}><SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="paused">Paused</SelectItem></SelectContent></Select></div>

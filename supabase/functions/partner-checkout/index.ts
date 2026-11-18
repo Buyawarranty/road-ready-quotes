@@ -79,6 +79,26 @@ Deno.serve(async (req) => {
       return reply({ test: true, amount: price });
     }
 
+    // Live test: the full checkout runs and a test record + webhook are created, but no card payment is taken.
+    if (partner.mode === 'live_test') {
+      const { data: existingTest } = await admin.from('customers').select('id')
+        .eq('email', row.email).eq('registration_plate', row.registration_plate).eq('brand', 'pandaprotect')
+        .eq('partner_id', partner.id).eq('is_test', true).limit(1).maybeSingle();
+      const testRow = { ...row, status: 'Test', payment_status: 'test', is_test: true, final_amount: 0, original_amount: price };
+      let testId: string;
+      if (existingTest) {
+        const { error } = await admin.from('customers').update(testRow).eq('id', existingTest.id);
+        if (error) throw new Error(error.message);
+        testId = existingTest.id;
+      } else {
+        const { data, error } = await admin.from('customers').insert(testRow).select('id').single();
+        if (error) throw new Error(error.message);
+        testId = data.id;
+      }
+      await sendPartnerWebhook(admin, partner.id, 'warranty.test', { customer_id: testId, registration: row.registration_plate, term_months: months, amount: price, currency: 'GBP', reference: parsed.data.reference || null });
+      return reply({ test: true, amount: price, live_test: true });
+    }
+
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) return reply({ error: 'Card payments are unavailable right now.' }, 503);
     const { data: existing } = await admin.from('customers').select('id, payment_status, partner_id')
