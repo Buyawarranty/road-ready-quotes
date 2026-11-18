@@ -1,4 +1,5 @@
 
+import { suggestedRefund, coverMonths, isWithinCoolingOff, isExcludedFromCancellationStats } from '@/lib/cancellationRefund';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchAllRows } from '@/utils/supabaseBatchFetch';
@@ -50,6 +51,9 @@ interface Customer {
   gclid: string | null;
   acquisition_source: string | null;
   payment_type: string | null;
+  refund_amount_paid?: number | null;
+  cancelled_at?: string | null;
+  is_test_cancellation?: boolean | null;
 }
 
 interface AdminUser {
@@ -204,7 +208,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
   const [comparisonPeriod, setComparisonPeriod] = useState<'today' | 'yesterday' | 'week' | 'last_week' | 'month' | 'last_month' | 'last_30' | 'year' | null>('month');
 
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const customerSelect = 'id, name, email, plan_type, signup_date, status, final_amount, warranty_reference_number, purchase_source, is_manual_entry, vehicle_fuel_type, vehicle_year, mileage, assigned_to, sale_credit_admin_user_id, payment_confirmed_by, quote_sent_by, payment_collected_by, updated_at, gclid, acquisition_source, payment_type';
+  const customerSelect = 'id, name, email, plan_type, signup_date, status, final_amount, warranty_reference_number, purchase_source, is_manual_entry, vehicle_fuel_type, vehicle_year, mileage, assigned_to, sale_credit_admin_user_id, payment_confirmed_by, quote_sent_by, payment_collected_by, updated_at, gclid, acquisition_source, payment_type, refund_amount_paid, cancelled_at, is_test_cancellation';
 
   // Refetch data whenever the component mounts or becomes visible
   useEffect(() => {
@@ -608,49 +612,56 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
     };
   }, [filteredCustomers]);
 
-  // Refund/cancellation metrics calculation
+  // Refund/cancellation metrics: real refunds paid, cohort % (sales in the period that later cancelled),
+  // excluding test orders, £0–£10 orders and test cancellations.
+  const refundOf = (c: any) => {
+    const cancelDate = c.cancelled_at || c.updated_at || c.signup_date;
+    const within = isWithinCoolingOff(c.signup_date, cancelDate);
+    if (c.refund_amount_paid != null) return { amount: Number(c.refund_amount_paid) || 0, estimated: false, within };
+    return { amount: suggestedRefund(Number(c.final_amount) || 0, c.signup_date, cancelDate, coverMonths(c.payment_type)), estimated: true, within };
+  };
   const refundMetrics = useMemo(() => {
-    const refundedCustomers = filteredCustomers.filter(c => isRefunded(c.status));
-    const totalRefundAmount = refundedCustomers.reduce((sum, c) => sum + (Number(c.final_amount) || 0), 0);
-    const totalSalesCount = filteredCustomers.length;
-    const totalSalesRevenue = filteredCustomers.reduce((sum, c) => sum + (Number(c.final_amount) || 0), 0);
-    const percentOfSales = totalSalesCount > 0 ? ((refundedCustomers.length / totalSalesCount) * 100) : 0;
-    const percentOfRevenue = totalSalesRevenue > 0 ? ((totalRefundAmount / totalSalesRevenue) * 100) : 0;
+    const base = filteredCustomers.filter(c => !isExcludedFromCancellationStats(c as any));
+    const cancelled = base.filter(c => isRefunded(c.status));
+    let total = 0, estimated = 0, withinCount = 0, withinAmount = 0, afterCount = 0, afterAmount = 0;
+    cancelled.forEach(c => {
+      const r = refundOf(c);
+      total += r.amount; if (r.estimated) estimated++;
+      if (r.within) { withinCount++; withinAmount += r.amount; } else { afterCount++; afterAmount += r.amount; }
+    });
+    const revenue = base.reduce((sum, c) => sum + (Number(c.final_amount) || 0), 0);
     return {
-      count: refundedCustomers.length,
-      totalAmount: totalRefundAmount,
-      percentOfSales: percentOfSales.toFixed(1),
-      percentOfRevenue: percentOfRevenue.toFixed(1),
+      count: cancelled.length,
+      totalAmount: Math.round(total),
+      estimated,
+      withinCount, withinAmount: Math.round(withinAmount),
+      afterCount, afterAmount: Math.round(afterAmount),
+      percentOfSales: (base.length ? (cancelled.length / base.length) * 100 : 0).toFixed(1),
+      percentOfRevenue: (revenue ? (total / revenue) * 100 : 0).toFixed(1),
     };
   }, [filteredCustomers]);
 
-  // Monthly refund data (last 12 months)
+  // Monthly cohort (last 12 months): of each month's sales, how many later cancelled and the refunds paid
   const monthlyRefunds = useMemo(() => {
     const months = Array.from({ length: 12 }, (_, i) => {
       const date = new Date();
+      date.setDate(1);
       date.setMonth(date.getMonth() - i);
       return {
-        month: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+        month: date.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
         monthKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
-        refundAmount: 0,
-        refundCount: 0
+        refundAmount: 0, refundCount: 0, salesCount: 0,
       };
     }).reverse();
-
     customers.forEach(customer => {
-      if (isRefunded(customer.status) && customer.final_amount) {
-        // Use updated_at as cancellation date (when status changed), fall back to signup_date
-        const cancelDate = new Date(customer.updated_at || customer.signup_date);
-        const monthKey = `${cancelDate.getFullYear()}-${String(cancelDate.getMonth() + 1).padStart(2, '0')}`;
-        const monthData = months.find(m => m.monthKey === monthKey);
-        if (monthData) {
-          monthData.refundAmount += Number(customer.final_amount) || 0;
-          monthData.refundCount += 1;
-        }
-      }
+      if (isExcludedFromCancellationStats(customer as any) || !customer.signup_date) return;
+      const d = new Date(customer.signup_date);
+      const m = months.find(x => x.monthKey === `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
+      if (!m) return;
+      m.salesCount++;
+      if (isRefunded(customer.status)) { m.refundCount++; m.refundAmount += refundOf(customer).amount; }
     });
-
-    return months;
+    return months.map(m => ({ ...m, refundAmount: Math.round(m.refundAmount) }));
   }, [customers]);
 
   // Normalize and categorize vehicle fuel types
@@ -2136,36 +2147,41 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">Total Lost</span>
-              <p className="text-2xl font-bold text-red-600">
-                £{refundMetrics.totalAmount.toLocaleString('en-GB')}
-              </p>
+              <span className="text-sm text-muted-foreground">Total refunded</span>
+              <p className="text-2xl font-bold text-red-600">£{refundMetrics.totalAmount.toLocaleString('en-GB')}</p>
+              {refundMetrics.estimated > 0 && <p className="text-xs text-muted-foreground">{refundMetrics.estimated} estimated from the cancellation rules</p>}
             </div>
             <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">Count</span>
+              <span className="text-sm text-muted-foreground">Cancelled</span>
               <p className="text-2xl font-bold">{refundMetrics.count}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">Avg Amount</span>
-              <p className="text-2xl font-bold text-red-600">
-                £{refundMetrics.count > 0 ? Math.round(refundMetrics.totalAmount / refundMetrics.count) : 0}
-              </p>
-            </div>
-            <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">% of Orders</span>
+              <span className="text-sm text-muted-foreground">% of sales that later cancelled</span>
               <p className="text-2xl font-bold text-red-600">{refundMetrics.percentOfSales}%</p>
+              <p className="text-xs text-muted-foreground">Sales made in this period</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm text-muted-foreground">% of Revenue</span>
+              <span className="text-sm text-muted-foreground">% of revenue refunded</span>
               <p className="text-2xl font-bold text-red-600">{refundMetrics.percentOfRevenue}%</p>
             </div>
           </div>
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-lg border p-3">
+              <p className="text-sm font-medium">Within 14 days (full refund)</p>
+              <p className="text-xl font-bold">{refundMetrics.withinCount} · £{refundMetrics.withinAmount.toLocaleString('en-GB')}</p>
+            </div>
+            <div className="rounded-lg border p-3">
+              <p className="text-sm font-medium">After 14 days (pro-rata)</p>
+              <p className="text-xl font-bold">{refundMetrics.afterCount} · £{refundMetrics.afterAmount.toLocaleString('en-GB')}</p>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">Test orders, orders of £10 or less and test cancellations are left out.</p>
           
           {/* Monthly breakdown */}
           <div className="mt-4 pt-4 border-t">
-            <p className="text-sm font-medium text-muted-foreground mb-2">Monthly Refunds &amp; Cancellations (Last 12 Months)</p>
+            <p className="text-sm font-medium text-muted-foreground mb-2">Sales by month that later cancelled (last 12 months)</p>
             <div className="flex gap-2 overflow-x-auto pb-2">
               {monthlyRefunds.map((month) => (
                 <div 
@@ -2176,7 +2192,7 @@ export const AnalyticsTab = ({ userRole }: { userRole?: string | null }) => {
                   <p className="text-sm font-semibold text-red-600">
                     £{month.refundAmount.toLocaleString()}
                   </p>
-                  <p className="text-xs text-muted-foreground">{month.refundCount} cancelled</p>
+                  <p className="text-xs text-muted-foreground">{month.refundCount} of {month.salesCount} cancelled{month.salesCount ? ` (${((month.refundCount / month.salesCount) * 100).toFixed(1)}%)` : ''}</p>
                 </div>
               ))}
             </div>

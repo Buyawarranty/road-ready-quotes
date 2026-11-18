@@ -1,0 +1,1 @@
+ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS refund_amount_paid numeric(10,2), ADD COLUMN IF NOT EXISTS cancelled_at timestamptz;

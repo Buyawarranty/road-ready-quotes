@@ -5401,6 +5401,7 @@ export type Database = {
           cancellation_note: string | null
           cancellation_note_updated_at: string | null
           cancellation_note_updated_by: string | null
+          cancelled_at: string | null
           claim_limit: number | null
           consequential: boolean | null
           contact_notes: string | null
@@ -5489,6 +5490,7 @@ export type Database = {
           price_match_our_price: number | null
           purchase_source: string | null
           quote_sent_by: string | null
+          refund_amount_paid: number | null
           registration_plate: string | null
           review_email_sent_at: string | null
           sale_credit_admin_user_id: string | null
@@ -5549,6 +5551,7 @@ export type Database = {
           cancellation_note?: string | null
           cancellation_note_updated_at?: string | null
           cancellation_note_updated_by?: string | null
+          cancelled_at?: string | null
           claim_limit?: number | null
           consequential?: boolean | null
           contact_notes?: string | null
@@ -5637,6 +5640,7 @@ export type Database = {
           price_match_our_price?: number | null
           purchase_source?: string | null
           quote_sent_by?: string | null
+          refund_amount_paid?: number | null
           registration_plate?: string | null
           review_email_sent_at?: string | null
           sale_credit_admin_user_id?: string | null
@@ -5697,6 +5701,7 @@ export type Database = {
           cancellation_note?: string | null
           cancellation_note_updated_at?: string | null
           cancellation_note_updated_by?: string | null
+          cancelled_at?: string | null
           claim_limit?: number | null
           consequential?: boolean | null
           contact_notes?: string | null
@@ -5785,6 +5790,7 @@ export type Database = {
           price_match_our_price?: number | null
           purchase_source?: string | null
           quote_sent_by?: string | null
+          refund_amount_paid?: number | null
           registration_plate?: string | null
           review_email_sent_at?: string | null
           sale_credit_admin_user_id?: string | null

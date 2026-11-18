@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { suggestedRefund, coverMonths, isWithinCoolingOff } from '@/lib/cancellationRefund';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -63,6 +64,24 @@ export const ArchiveCustomerDialog: React.FC<ArchiveCustomerDialogProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isBulk = customers.length > 1;
+  const [refundHint, setRefundHint] = useState('');
+
+  // Pre-fill "Refund paid" from the cancellation rules for a single customer; staff can edit it.
+  useEffect(() => {
+    if (!isOpen || isBulk || !customers[0] || (action !== 'refund' && action !== 'cancel')) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await (supabase as any).from('customers').select('final_amount, signup_date, payment_type, refund_amount_paid').eq('id', customers[0].id).maybeSingle();
+      if (cancelled || !data?.signup_date) return;
+      const now = new Date();
+      const amount = Number(data.final_amount) || 0;
+      const within = isWithinCoolingOff(data.signup_date, now);
+      const value = data.refund_amount_paid != null ? Number(data.refund_amount_paid) : suggestedRefund(amount, data.signup_date, now, coverMonths(data.payment_type));
+      setRefundAmount(value.toFixed(2));
+      setRefundHint(within ? `Within 14 days of £${amount.toFixed(2)} sale: full refund.` : `After 14 days: unused part of £${amount.toFixed(2)}, less 14% and £60 admin fee.`);
+    })();
+    return () => { cancelled = true; };
+  }, [isOpen, action, isBulk, customers]);
 
   // Auto-select reason when refund, test, or fake is chosen
   const handleActionChange = (newAction: ArchiveAction) => {
@@ -191,8 +210,10 @@ export const ArchiveCustomerDialog: React.FC<ArchiveCustomerDialogProps> = ({
               .from('customers')
               .update({ 
                 status: newStatus,
+                cancelled_at: new Date().toISOString(),
+                ...(refundAmount !== '' && Number.isFinite(Number(refundAmount)) ? { refund_amount_paid: Number(refundAmount) } : {}),
                 updated_at: new Date().toISOString()
-              })
+              } as any)
               .eq('id', customer.id);
 
             if (customerError) throw customerError;
@@ -222,7 +243,7 @@ export const ArchiveCustomerDialog: React.FC<ArchiveCustomerDialogProps> = ({
           const actionLabel = action === 'archive' ? 'ARCHIVED' : action === 'test' ? 'TEST CANCELLATION (excluded from real cancellations)' : action === 'fake' ? 'FAKE LEAD ARCHIVED' : action === 'duplicate' ? 'DUPLICATE ARCHIVED' : action === 'refund' ? 'REFUNDED' : 'CANCELLED';
           const noteText = `WARRANTY ${actionLabel}\n` +
             `Reason: ${effectiveReason}\n` +
-            `${action === 'refund' && refundAmount ? `Refund Amount: £${refundAmount}\n` : ''}` +
+            `${(action === 'refund' || action === 'cancel') && refundAmount ? `Refund paid: £${refundAmount}\n` : ''}` +
             `${additionalNotes ? `Notes: ${additionalNotes}\n` : ''}` +
             `Processed at: ${new Date().toLocaleString()}`;
 
@@ -261,6 +282,7 @@ export const ArchiveCustomerDialog: React.FC<ArchiveCustomerDialogProps> = ({
       setReason('');
       setAdditionalNotes('');
       setRefundAmount('');
+      setRefundHint('');
       setRevokePortalAccess(false);
 
     } catch (error) {
@@ -432,21 +454,18 @@ export const ArchiveCustomerDialog: React.FC<ArchiveCustomerDialogProps> = ({
               <div className="text-sm text-amber-800 flex-1">
                 <p className="font-medium">Customer remains visible</p>
                 <p className="text-xs mt-1">Row will be highlighted in amber. Status will show as "Refunded".</p>
-                <div className="mt-2">
-                  <Label htmlFor="refundAmount" className="text-xs text-amber-700">Refund Amount (optional)</Label>
-                  <div className="relative mt-1">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-amber-600">£</span>
-                    <Input
-                      id="refundAmount"
-                      type="number"
-                      value={refundAmount}
-                      onChange={(e) => setRefundAmount(e.target.value)}
-                      placeholder="0.00"
-                      className="pl-6 h-8 text-sm"
-                    />
-                  </div>
-                </div>
               </div>
+            </div>
+          )}
+
+          {(action === 'refund' || action === 'cancel') && (
+            <div className="space-y-1">
+              <Label htmlFor="refundAmount">Refund paid (£)</Label>
+              <div className="relative">
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">£</span>
+                <Input id="refundAmount" type="number" min="0" step="0.01" value={refundAmount} onChange={(e) => setRefundAmount(e.target.value)} placeholder="0.00" className="pl-6" />
+              </div>
+              <p className="text-xs text-muted-foreground">{isBulk ? 'Applies to each selected customer. Leave blank to use the cancellation rules.' : refundHint || 'Filled in from the cancellation rules. You can change it.'}</p>
             </div>
           )}
 
