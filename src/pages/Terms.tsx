@@ -11,6 +11,8 @@ import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const Terms = () => {
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
   const toggleItem = (id: string) => {
     setOpenItems(prev => ({
       ...prev,
