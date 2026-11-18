@@ -6,6 +6,7 @@ import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerPurchaseRecipients } from '../_shared/dealerSaleFulfilment.ts';
 import { buildDealerWarrantyEmail, DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE } from '../_shared/dealerWarrantyEmail.ts';
 import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
+import { ensureCustomerPortalLogin, logCustomerEmail } from '../_shared/customerPortalLogin.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -96,7 +97,11 @@ Deno.serve(async (req: Request) => {
       .eq('template_key', 'dealer_warranty')
       .maybeSingle();
     if (templateError) throw templateError;
+    let login: { email: string; password: string | null } | null = null;
+    try { login = await ensureCustomerPortalLogin(supabase, recipients.customer, { policy_number: c.warranty_number }); }
+    catch (error) { console.error('customer login setup failed', error); }
     const customerEmail = buildDealerWarrantyEmail({
+      login,
       brand,
       template: storedTemplate || DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE,
       customer: c,
@@ -116,6 +121,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify(customerEmail),
     });
     const customerPayload = await customerResponse.json().catch(() => ({}));
+    await logCustomerEmail(supabase, { to: recipients.customer, subject: customerEmail.subject, customerId: c.id, ok: customerResponse.ok, providerId: (customerPayload as any)?.id, error: customerResponse.ok ? null : (customerPayload as any)?.message, kind: 'warranty_active' });
     if (!customerResponse.ok) {
       console.error('Customer Resend error', customerResponse.status, customerPayload);
       return json({ success: false, dealer_sent: true, customer_sent: false, error: (customerPayload as any)?.message || 'Customer email could not be sent' });

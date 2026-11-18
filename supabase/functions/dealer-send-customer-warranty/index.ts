@@ -5,6 +5,7 @@ import { z } from 'https://esm.sh/zod@3.23.8';
 import { resolveBrand } from '../_shared/brand.ts';
 import { resendFetch } from '../_shared/emailPolish.ts';
 import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
+import { ensureCustomerPortalLogin, logCustomerEmail } from '../_shared/customerPortalLogin.ts';
 import { requireStaffAdmin } from '../_shared/staffAuth.ts';
 import {
   buildDealerWarrantyEmail,
@@ -81,6 +82,7 @@ async function adminPreview(admin: ReturnType<typeof serviceClient>, brand: Retu
       dealer: dealer as DealerWarrantyEmailDealer,
       recipientType: 'customer',
       to,
+      login: { email: to, password: '(created when sent)' },
     }),
   };
 }
@@ -149,7 +151,11 @@ Deno.serve(async (req: Request) => {
     const to = String(body.to_email || (recipientType === 'me' ? dealer.email : customer.email) || '').trim();
     if (!EMAIL_RE.test(to)) return json({ error: 'Enter a valid email address' }, 400);
     const { template } = await loadTemplate(admin);
+    const login = recipientType === 'customer' && action !== 'preview'
+      ? await ensureCustomerPortalLogin(admin, to, { policy_number: (customer as any).warranty_number }).catch(() => null)
+      : recipientType === 'customer' ? { email: to, password: '(created when sent)' } : null;
     const email = buildDealerWarrantyEmail({
+      login,
       brand,
       template,
       customer: customer as DealerWarrantyEmailCustomer,
@@ -175,6 +181,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify(email),
     });
     const provider = await response.json().catch(() => ({}));
+    await logCustomerEmail(admin, { to, subject: email.subject, customerId: (customer as any).id, ok: response.ok, providerId: (provider as any)?.id, error: response.ok ? null : (provider as any)?.message, kind: recipientType === 'customer' ? 'warranty_active' : 'warranty_copy_to_dealer' });
     if (!response.ok) {
       console.error('dealer-send-customer-warranty Resend error', response.status, provider);
       return json({

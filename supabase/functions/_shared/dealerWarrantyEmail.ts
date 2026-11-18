@@ -34,7 +34,7 @@ export interface DealerWarrantyEmailDealer {
 }
 
 export const DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE: DealerWarrantyEmailTemplate = {
-  subject: 'Your vehicle warranty — {{registration}}',
+  subject: 'Your Panda Protect warranty is now active — {{registration}}',
   heading: 'Your warranty is confirmed',
   introduction: '{{dealer_name}} has arranged a Panda Protect warranty for your vehicle. Here are your warranty details:',
   closing_text: 'Thank you for choosing Panda Protect.',
@@ -80,6 +80,7 @@ export function buildDealerWarrantyEmail(options: {
   to: string;
   message?: string;
   now?: Date;
+  login?: { email: string; password?: string | null } | null;
 }) {
   const { brand, customer, dealer, recipientType, to, now = new Date() } = options;
   const template = normaliseDealerWarrantyEmailTemplate(options.template);
@@ -104,31 +105,58 @@ export function buildDealerWarrantyEmail(options: {
   const noteHtml = note
     ? `<div style="background:#fff7ed;border-left:4px solid #f97316;padding:12px 14px;margin:16px 0;font-size:14px;line-height:1.6">${esc(note)}</div>`
     : '';
-  const closing = template.closing_text
-    ? `<p style="font-size:14px;line-height:1.6">${esc(tokens(template.closing_text))}</p>`
-    : '';
-  const endRow = end
-    ? `<tr><td style="padding:8px 0;color:#666">Expiry date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(end)}</td></tr>`
-    : '';
+  const plate = esc(String(customer.registration_plate || '—').toUpperCase());
+  const months = Number.parseInt(String(customer.payment_type || ''), 10);
+  const row = (label: string, value: string) => `<tr><td style="padding:5px 0;font-size:14px;color:#1f2a44"><strong>${label}:</strong> ${value}</td></tr>`;
+  const login = options.login;
+  const loginHtml = recipientType === 'customer' && login ? `
+      <h2 style="font-size:18px;color:#1f2a44;margin:28px 0 8px">&#128274; Your portal login details</h2>
+      <p style="font-size:14px;line-height:1.6;margin:0 0 8px">You can view your policy anytime in your customer portal:</p>
+      <p style="font-size:14px;margin:0 0 8px"><strong>Login:</strong> <a href="${brand.siteUrl}/customer-dashboard" style="color:${brand.accentColor};font-weight:600">Customer Dashboard</a></p>
+      <table style="border-collapse:collapse;margin-left:12px">
+        ${row('Email', esc(login.email))}
+        ${login.password
+          ? row('Password', `<code style="background:#f3f4f6;border-radius:4px;padding:2px 6px;font-size:13px">${esc(login.password)}</code>`)
+          : `<tr><td style="padding:5px 0;font-size:14px;color:#1f2a44">Use your existing password, or choose <a href="${brand.siteUrl}/customer-dashboard" style="color:${brand.accentColor}">Forgot password</a> to set a new one.</td></tr>`}
+      </table>` : '';
   const html = `
-    <div style="font-family:Arial,sans-serif;color:#333;max-width:620px;margin:0 auto;padding:24px">
-      <img src="${brand.logoUrl}" alt="${esc(brand.name)}" width="220" style="display:block;width:220px;max-width:100%;height:auto;margin-bottom:24px;border:0" />
-      <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">${esc(tokens(template.heading))}</h1>
-      <p style="font-size:13px;color:#666;margin:0 0 18px">Provided by ${esc(dealerName)} · ${fmt(now.toISOString())}</p>
-      <p style="font-size:14px;line-height:1.6">Hi ${esc(recipientName)},</p>
+    <div style="font-family:Arial,sans-serif;color:#1f2a44;max-width:620px;margin:0 auto;padding:24px;background:#ffffff">
+      <div style="text-align:center;margin-bottom:28px"><img src="${brand.logoUrl}" alt="${esc(brand.name)}" width="220" style="display:inline-block;width:220px;max-width:100%;height:auto;border:0" /></div>
+      <h1 style="font-size:22px;margin:0 0 16px;color:#1f2a44">Hi ${esc(recipientName)},</h1>
+      <p style="font-size:14px;line-height:1.6;margin:0 0 6px"><strong style="color:${brand.accentColor}">${esc(tokens(template.heading))}</strong></p>
       <p style="font-size:14px;line-height:1.6">${esc(tokens(template.introduction))}</p>
       ${noteHtml}
-      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">
-        <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(reference)}</td></tr>
-        <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(registration)}${vehicle ? ` · ${esc(vehicle)}` : ''}</td></tr>
-        <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(plan)}${customer.payment_type ? ` · ${esc(customer.payment_type)} months` : ''}</td></tr>
-        <tr><td style="padding:8px 0;color:#666">Start date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(start)}</td></tr>
-        ${endRow}
+      <table style="border-collapse:collapse;margin:12px 0 0 12px">
+        ${row('Policy number', esc(reference))}
+        ${row('Plan type', esc(plan))}
+        <tr><td style="padding:8px 0;font-size:14px;color:#1f2a44"><strong>Registration plate:</strong> <span style="display:inline-block;background:#FFD500;border:2px solid #111;border-radius:4px;padding:6px 16px;margin-left:6px;font-family:'Courier New',monospace;font-size:16px;font-weight:700;letter-spacing:2px;color:#111">${plate}</span></td></tr>
+        ${vehicle ? row('Vehicle', esc(vehicle)) : ''}
+        ${Number.isFinite(months) && months > 0 ? row('Coverage period', `${months} months`) : ''}
+        ${row('Start date', fmt(start))}
+        ${end ? row('End date', fmt(end)) : ''}
+        ${row('Provided by', esc(dealerName))}
       </table>
-      ${closing}
+      ${loginHtml}
+      <h2 style="font-size:18px;color:#1f2a44;margin:28px 0 8px">&#128206; Your documents</h2>
+      <p style="font-size:14px;margin:0 0 6px">Attached to this email, you'll find:</p>
+      <ul style="font-size:14px;line-height:1.8;margin:0 0 8px;padding-left:22px"><li>Platinum Warranty Plan</li><li>Terms &amp; Conditions</li></ul>
+      <p style="font-size:14px;margin:0">Please keep these safe — you'll need them if you ever need to make a claim.</p>
       ${pandaWarrantyDocumentsHtml()}
-      <p style="font-size:13px;color:#666;margin-top:22px"><strong>Need to make a claim?</strong><br>Visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>. Please quote your warranty reference.</p>
-      <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
+      <h2 style="font-size:18px;color:#1f2a44;margin:28px 0 8px">&#128222; Need a hand?</h2>
+      <p style="font-size:14px;margin:0 0 10px">If you've got any questions or need help, feel free to reach out:</p>
+      <p style="font-size:14px;margin:0 0 4px"><strong>Customer sales and support</strong></p>
+      <p style="font-size:14px;margin:0 0 4px">Email: <a href="mailto:${brand.supportEmail}" style="color:${brand.accentColor}">${brand.supportEmail}</a></p>
+      <p style="font-size:14px;margin:0 0 12px">Phone: <a href="tel:03302296547" style="color:${brand.accentColor}">0330 229 6547</a></p>
+      <p style="font-size:14px;margin:0 0 4px"><strong>Claims and repairs</strong></p>
+      <p style="font-size:14px;margin:0 0 4px">Email: <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a></p>
+      <p style="font-size:14px;margin:0 0 12px">Online: <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a></p>
+      <p style="font-size:14px;margin:0"><strong>Hours:</strong> Monday to Saturday, 9am – 6pm</p>
+      <div style="background:#fff7f2;border-radius:8px;padding:16px 18px;margin:26px 0;font-size:14px;line-height:1.6">${esc(tokens(template.closing_text || 'Thank you for choosing Panda Protect — we are here to keep you covered and give you peace of mind on the road.'))}</div>
+      <p style="font-size:14px;margin:0">Best regards,<br><strong>The ${esc(brand.name)} Team</strong></p>
+      <div style="border-top:1px solid #eee;margin-top:26px;padding-top:16px;text-align:center;font-size:12px;color:#888">
+        <a href="${brand.siteUrl}" style="color:#1f2a44;font-weight:700">${esc(brand.domain)}</a>
+        <p style="margin:8px 0 0">Pandaprotect.co.uk is a trading name of Buy A Warranty Limited. Registered in the UK under Company number 10314863.<br>Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England.</p>
+      </div>
     </div>`;
 
   return polishEmailPayload({

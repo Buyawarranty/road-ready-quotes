@@ -31,7 +31,7 @@ Deno.test('dealer warranty preview and send payload use the Panda support sender
   assertEquals(email.from, 'Panda Protect Customer Care <support@pandaprotect.co.uk>');
   assertEquals(email.reply_to, 'support@pandaprotect.co.uk');
   assertEquals(email.to, ['alex@example.com']);
-  assertEquals(email.subject, 'Your vehicle warranty — AB12 CDE');
+  assertEquals(email.subject, 'Your Panda Protect warranty is now active — AB12 CDE');
   assertStringIncludes(email.html, 'https://www.pandaprotect.co.uk/make-a-claim/');
   assertStringIncludes(email.html, 'Platinum');
   assertStringIncludes(email.html, 'Both PDF documents are attached to this email.');
@@ -85,4 +85,15 @@ Deno.test('a missing warranty PDF fails instead of sending an incomplete email',
     Error,
     'could not be loaded (404)',
   );
+});
+
+Deno.test('customer warranty email shows portal login and registration plate', () => {
+  const email = buildDealerWarrantyEmail({
+    brand: BRANDS.pandaprotect, template: DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE, customer, dealer,
+    recipientType: 'customer', to: customer.email, login: { email: customer.email, password: 'Temp1234ab' },
+  });
+  assertStringIncludes(email.html, 'Temp1234ab');
+  assertStringIncludes(email.html, 'https://www.pandaprotect.co.uk/customer-dashboard');
+  assertStringIncludes(email.html, 'AB12 CDE');
+  assertFalse(email.html.toLowerCase().includes('buyawarranty.co.uk'));
 });
