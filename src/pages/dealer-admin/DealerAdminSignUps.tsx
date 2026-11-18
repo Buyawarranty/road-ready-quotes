@@ -23,6 +23,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { DealerSignupActivityCard } from '@/components/admin/DealerSignupActivityCard';
 import type { DealerSignupActivity } from '@/lib/dealerSignupActivity';
 import { dealerSignupDetailsDraft, validateDealerSignupDetails, type DealerSignupDetailsDraft } from '@/lib/dealerSignupDetails';
+import { duplicateDealerSignupIds, isDealerSignupSetAside, isProtectedDealerSignup, organiseDealerSignups } from '@/lib/dealerSignupOrganisation';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 type Status = 'new' | 'pending' | 'needs_info' | 'contacted' | 'qualified' | 'closed' | 'approved' | 'rejected';
 
@@ -89,6 +95,10 @@ const DealerAdminSignUps: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Signup | null>(null);
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const [canBulkDelete, setCanBulkDelete] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [decisionNotes, setDecisionNotes] = useState('');
   const [deciding, setDeciding] = useState<'approve' | 'reject' | null>(null);
   const [resendEmail, setResendEmail] = useState('');
@@ -146,6 +156,18 @@ const DealerAdminSignUps: React.FC = () => {
 
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    const loadDeleteAccess = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
+      if (!cancelled) setCanBulkDelete((roles || []).some(row => row.role === 'admin' || row.role === 'super_admin'));
+    };
+    void loadDeleteAccess();
+    return () => { cancelled = true; };
+  }, []);
+
   // Auto-open detail if ?id=... in URL
   useEffect(() => {
     const id = searchParams.get('id');
@@ -169,9 +191,10 @@ const DealerAdminSignUps: React.FC = () => {
     return map;
   }, [noteIndex]);
 
+  const duplicateIds = useMemo(() => duplicateDealerSignupIds(rows), [rows]);
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return rows.filter((r) => {
+    const matches = rows.filter((r) => {
       if (statusFilter !== 'all' && r.status !== statusFilter) return false;
       if (!q) return true;
       return [
@@ -181,12 +204,26 @@ const DealerAdminSignUps: React.FC = () => {
       ].some((v) => v?.toLowerCase().includes(q));
 
     });
-  }, [rows, search, statusFilter]);
+    return organiseDealerSignups(matches, duplicateIds);
+  }, [rows, search, statusFilter, duplicateIds]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const deletablePageRows = pageRows.filter(row => !isProtectedDealerSignup(row));
+  const allPageSelected = deletablePageRows.length > 0 && deletablePageRows.every(row => checkedIds.has(row.id));
+  const somePageSelected = deletablePageRows.some(row => checkedIds.has(row.id));
 
   useEffect(() => { setPage(1); }, [search, statusFilter]);
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+  useEffect(() => {
+    setCheckedIds(current => {
+      const next = new Set([...current].filter(id => {
+        const row = rows.find(signup => signup.id === id);
+        return row && !isProtectedDealerSignup(row);
+      }));
+      return next.size === current.size ? current : next;
+    });
+  }, [rows]);
 
   const fetchNotes = async (signupId: string) => {
     setNotesLoading(true);
@@ -502,6 +539,61 @@ const DealerAdminSignUps: React.FC = () => {
     setSearchParams((p) => { p.delete('id'); return p; });
   };
 
+  const toggleChecked = (id: string) => {
+    setCheckedIds(current => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else {
+        if (next.size >= 200) {
+          toast.error('Select up to 200 signups at a time');
+          return current;
+        }
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleAllOnPage = () => {
+    const newlySelected = deletablePageRows.filter(row => !checkedIds.has(row.id)).length;
+    if (!allPageSelected && checkedIds.size + newlySelected > 200) {
+      toast.error('Select up to 200 signups at a time');
+      return;
+    }
+    setCheckedIds(current => {
+      const next = new Set(current);
+      deletablePageRows.forEach(row => {
+        if (allPageSelected) next.delete(row.id);
+        else next.add(row.id);
+      });
+      return next;
+    });
+  };
+
+  const deleteCheckedSignups = async () => {
+    const ids = [...checkedIds];
+    if (!ids.length || deleting) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await (supabase.rpc as any)('delete_trade_warranty_signups', { p_signup_ids: ids });
+      if (error) throw error;
+      const deletedIds = new Set<string>((data?.deleted_ids || []) as string[]);
+      const deleted = Number(data?.deleted ?? deletedIds.size);
+      const skipped = Number(data?.skipped ?? 0);
+      setRows(current => current.filter(row => !deletedIds.has(row.id)));
+      setNoteIndex(current => current.filter(note => !deletedIds.has(note.signup_id)));
+      setCheckedIds(new Set());
+      setDeleteConfirmOpen(false);
+      if (selected && deletedIds.has(selected.id)) closeDetail();
+      if (deleted === 0) toast.error('No signups were deleted. Approved or recently changed signups stay protected.');
+      else toast.success(`${deleted} signup${deleted === 1 ? '' : 's'} deleted${skipped ? `; ${skipped} protected or changed row${skipped === 1 ? '' : 's'} skipped` : ''}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not delete the selected signups');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const todayCount = rows.filter((r) => new Date(r.created_at).toDateString() === new Date().toDateString()).length;
   const last7 = rows.filter((r) => Date.now() - new Date(r.created_at).getTime() < 7 * 86400000).length;
   const newCount = rows.filter((r) => r.status === 'new').length;
@@ -557,6 +649,17 @@ const DealerAdminSignUps: React.FC = () => {
         <div className="text-sm text-gray-500 ml-auto">{filtered.length} result{filtered.length === 1 ? '' : 's'}</div>
       </div>
 
+      {canBulkDelete && (
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3">
+          <span className="text-sm font-semibold">{checkedIds.size} selected</span>
+          <Button type="button" size="sm" variant="outline" disabled={!checkedIds.size || deleting} onClick={() => setCheckedIds(new Set())}>Clear selection</Button>
+          <Button type="button" size="sm" variant="destructive" disabled={!checkedIds.size || deleting} onClick={() => setDeleteConfirmOpen(true)}>
+            <Trash2 className="mr-2 h-4 w-4" />Delete selected
+          </Button>
+          <span className="text-xs text-muted-foreground">Use the top tick box to select this page. Approved dealer accounts stay protected.</span>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {loading ? (
@@ -570,6 +673,16 @@ const DealerAdminSignUps: React.FC = () => {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
+                  {canBulkDelete && (
+                    <th className="w-12 px-4 py-3">
+                      <Checkbox
+                        aria-label="Select all deletable signups on this page"
+                        checked={allPageSelected ? true : somePageSelected ? 'indeterminate' : false}
+                        onCheckedChange={toggleAllOnPage}
+                        disabled={!deletablePageRows.length || deleting}
+                      />
+                    </th>
+                  )}
                   <Th>Action</Th>
                   <Th>Signed Up</Th>
                   <Th>Approved</Th>
@@ -585,65 +698,97 @@ const DealerAdminSignUps: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((r) => (
-                  <tr key={r.id} onClick={() => openDetail(r)}
-                    className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                    <Td className="whitespace-nowrap">
-                      {(r.approved_at || r.status === 'approved') ? (
-                        <span className="inline-flex items-center gap-2">
-                          <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
-                            className="bg-green-600 hover:bg-green-700 text-white">
-                            <Check className="w-4 h-4 mr-1" />
-                            Approved
-                          </Button>
-                          <Button size="sm" variant="outline"
-                            onClick={(e) => { e.stopPropagation(); resendForRow(r); }}
-                            disabled={rowResending === r.id}>
-                            {rowResending === r.id
-                              ? <Loader2 className="w-4 h-4 animate-spin" />
-                              : <Mail className="w-4 h-4 mr-1" />}
-                            Resend login
-                          </Button>
-                        </span>
-                      ) : (
-                        <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
-                          className="bg-[#eb4b00] hover:bg-[#c93f00] text-white">
-                          Approve
-                        </Button>
+                {pageRows.map((r, index) => {
+                  const setAside = isDealerSignupSetAside(r, duplicateIds);
+                  const showSetAsideHeading = statusFilter === 'all' && setAside && (index === 0 || !isDealerSignupSetAside(pageRows[index - 1], duplicateIds));
+                  const protectedFromDeletion = isProtectedDealerSignup(r);
+                  return (
+                    <React.Fragment key={r.id}>
+                      {showSetAsideHeading && (
+                        <tr className="border-y border-border bg-muted/60">
+                          <td colSpan={canBulkDelete ? 13 : 12} className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Declined and possible duplicates — kept below fresh signups
+                          </td>
+                        </tr>
                       )}
-                    </Td>
-                    <Td className="whitespace-nowrap text-gray-600">
-                      {format(new Date(r.created_at), 'd MMM yyyy')}
-                      <div className="text-xs text-gray-400">{format(new Date(r.created_at), 'HH:mm')}</div>
-                    </Td>
-                    <Td className="whitespace-nowrap text-gray-600">
-                      {r.approved_at ? format(new Date(r.approved_at), 'd MMM yyyy')
-                        : r.rejected_at ? <span className="text-red-600">Declined {format(new Date(r.rejected_at), 'd MMM')}</span>
-                        : <span className="text-gray-400">Not yet</span>}
-                    </Td>
-                    <Td className="font-medium text-gray-900">{r.dealership_name || '—'}</Td>
-                    <Td className="text-gray-700">{r.contact_name || '—'}</Td>
-                    <Td>
-                      <a href={`mailto:${r.email_address}`} onClick={(e) => e.stopPropagation()}
-                        className="text-[#eb4b00] hover:underline">{r.email_address}</a>
-                    </Td>
-                    <Td>
-                      <a href={`tel:${r.phone_number}`} onClick={(e) => e.stopPropagation()}
-                        className="text-gray-700 hover:underline">{r.phone_number}</a>
-                    </Td>
-                    <Td><div onClick={event => event.stopPropagation()}><Select value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
-                    <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
-                    <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
-                    <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
-                    <Td>
-                      {noteCounts[r.id] ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs text-orange-700">
-                          <StickyNote className="w-3 h-3" /> {noteCounts[r.id]}
-                        </span>
-                      ) : <span className="text-gray-300">—</span>}
-                    </Td>
-                  </tr>
-                ))}
+                      <tr onClick={() => openDetail(r)}
+                        className={`border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${setAside ? 'bg-muted/20' : ''}`}>
+                        {canBulkDelete && (
+                          <Td className="w-12" >
+                            <div onClick={event => event.stopPropagation()}>
+                              <Checkbox
+                                aria-label={`Select ${r.dealership_name || 'signup'}`}
+                                checked={checkedIds.has(r.id)}
+                                onCheckedChange={() => toggleChecked(r.id)}
+                                disabled={protectedFromDeletion || deleting}
+                                title={protectedFromDeletion ? 'Approved dealer accounts are protected' : 'Select signup'}
+                              />
+                            </div>
+                          </Td>
+                        )}
+                        <Td className="whitespace-nowrap">
+                          {(r.approved_at || r.status === 'approved') ? (
+                            <span className="inline-flex items-center gap-2">
+                              <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                                className="bg-green-600 hover:bg-green-700 text-white">
+                                <Check className="w-4 h-4 mr-1" />
+                                Approved
+                              </Button>
+                              <Button size="sm" variant="outline"
+                                onClick={(e) => { e.stopPropagation(); resendForRow(r); }}
+                                disabled={rowResending === r.id}>
+                                {rowResending === r.id
+                                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                                  : <Mail className="w-4 h-4 mr-1" />}
+                                Resend login
+                              </Button>
+                            </span>
+                          ) : (
+                            <Button size="sm" onClick={(e) => { e.stopPropagation(); openDetail(r); }}
+                              className="bg-[#eb4b00] hover:bg-[#c93f00] text-white">
+                              Approve
+                            </Button>
+                          )}
+                        </Td>
+                        <Td className="whitespace-nowrap text-gray-600">
+                          {format(new Date(r.created_at), 'd MMM yyyy')}
+                          <div className="text-xs text-gray-400">{format(new Date(r.created_at), 'HH:mm')}</div>
+                        </Td>
+                        <Td className="whitespace-nowrap text-gray-600">
+                          {r.approved_at ? format(new Date(r.approved_at), 'd MMM yyyy')
+                            : r.rejected_at ? <span className="text-red-600">Declined {format(new Date(r.rejected_at), 'd MMM')}</span>
+                            : <span className="text-gray-400">Not yet</span>}
+                        </Td>
+                        <Td className="font-medium text-gray-900">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{r.dealership_name || '—'}</span>
+                            {duplicateIds.has(r.id) && <Badge variant="outline" className="border-crm-orange/30 bg-crm-orange-soft text-crm-orange">Possible duplicate</Badge>}
+                          </div>
+                        </Td>
+                        <Td className="text-gray-700">{r.contact_name || '—'}</Td>
+                        <Td>
+                          <a href={`mailto:${r.email_address}`} onClick={(e) => e.stopPropagation()}
+                            className="text-[#eb4b00] hover:underline">{r.email_address}</a>
+                        </Td>
+                        <Td>
+                          <a href={`tel:${r.phone_number}`} onClick={(e) => e.stopPropagation()}
+                            className="text-gray-700 hover:underline">{r.phone_number}</a>
+                        </Td>
+                        <Td><div onClick={event => event.stopPropagation()}><Select value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
+                        <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
+                        <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
+                        <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
+                        <Td>
+                          {noteCounts[r.id] ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs text-orange-700">
+                              <StickyNote className="w-3 h-3" /> {noteCounts[r.id]}
+                            </span>
+                          ) : <span className="text-gray-300">—</span>}
+                        </Td>
+                      </tr>
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -652,6 +797,27 @@ const DealerAdminSignUps: React.FC = () => {
         <Dialog open={!!statusEdit} onOpenChange={open => { if (!open && !statusSaving) setStatusEdit(null); }}>
           <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Update signup status</DialogTitle></DialogHeader><p className="text-sm text-muted-foreground">{statusEdit?.signup.dealership_name} → {statusEdit?.status.replace('_', ' ')}</p><p className="text-sm text-foreground">An account update email will be sent. Withdrawing approval pauses dealer portal access; existing paid warranties remain active.</p><label htmlFor="status-message" className="text-sm font-semibold">Additional message (optional)</label><Textarea id="status-message" value={statusMessage} onChange={event => setStatusMessage(event.target.value)} placeholder="Add a brief explanation for the trader" /><DialogFooter><Button variant="outline" disabled={statusSaving} onClick={() => setStatusEdit(null)}>Cancel</Button><Button disabled={statusSaving} onClick={saveStatus}>{statusSaving ? 'Saving…' : 'Save and email trader'}</Button></DialogFooter></DialogContent>
         </Dialog>
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={open => { if (!deleting) setDeleteConfirmOpen(open); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {checkedIds.size} selected signup{checkedIds.size === 1 ? '' : 's'}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently removes the selected unapproved applications and their notes. Approved applications, dealer accounts, warranties and sales remain protected.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={deleting || !checkedIds.size}
+                onClick={event => { event.preventDefault(); void deleteCheckedSignups(); }}
+              >
+                {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting…</> : 'Delete permanently'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200">
