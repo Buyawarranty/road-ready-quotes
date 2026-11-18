@@ -595,6 +595,7 @@ const DealerComingSoon = () => {
                   </div>
                   <h3 className="text-2xl font-black text-crm-navy">Thank you — form received.</h3>
                   <p className="text-muted-foreground">Once we go live, a member of our team will be in touch with you shortly.</p>
+                  <button type="button" className="mt-2 text-sm font-bold text-crm-navy underline underline-offset-4" onClick={() => { try { localStorage.removeItem('pp_dealer_signup_done'); } catch { /* ignore */ } setSubmittedState(false); setForm(initialForm); }}>Register another dealership</button>
                 </div>
               ) : (
                 <>
