@@ -4,32 +4,13 @@ import { ChevronDown, Phone, Mail, Shield, FileText, Clock, Users, Menu, ArrowLe
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { supabase } from '@/integrations/supabase/client';
+import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
+import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 const Terms = () => {
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [termsDocUrl, setTermsDocUrl] = useState<string>('');
-  const navigate = useNavigate();
-  useEffect(() => {
-    const fetchTermsDoc = async () => {
-      const { data, error } = await supabase
-        .from('customer_documents')
-        .select('file_url')
-        .eq('plan_type', 'terms-and-conditions')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-      
-      if (data && !error) {
-        setTermsDocUrl(data.file_url);
-      }
-    };
-    
-    fetchTermsDoc();
-  }, []);
-
   const toggleItem = (id: string) => {
     setOpenItems(prev => ({
       ...prev,
@@ -131,7 +112,8 @@ const Terms = () => {
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex items-center mb-4">
             <button 
-              onClick={() => navigate(-1)}
+              onClick={() => { if (window.history.length > 1 && document.referrer.startsWith(window.location.origin)) navigate(-1); else navigate('/'); }}
+              type="button"
               className="flex items-center gap-2 text-sm font-medium py-2 px-3 rounded-lg transition-all duration-200 bg-gray-100 hover:bg-gray-200 text-gray-700"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -140,10 +122,10 @@ const Terms = () => {
           </div>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               Terms & Conditions
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Simple and Clear - Your Extended Warranty Guide. Everything you need to know about your vehicle warranty coverage explained in plain language.
             </p>
           </div>
@@ -151,40 +133,37 @@ const Terms = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="mb-8 text-center">
-          {termsDocUrl ? (
-            <a 
-              href={termsDocUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-brand-orange text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-colors"
-            >
-              <FileText className="w-5 h-5 mr-2" />
-              <div className="text-center">
-                <div>Your Extended Warranty Guide</div>
-                <div className="text-sm opacity-90">See full terms and conditions (PDF)</div>
-              </div>
+      <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[
+            { href: termsDoc.url, title: 'Terms & Conditions', sub: 'Open PDF' },
+            { href: platinumPlanDoc.url, title: 'Platinum Warranty Plan', sub: 'Open PDF' },
+          ].map((d) => (
+            <a key={d.title} href={d.href} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-3 rounded-xl bg-brand-orange text-white px-5 py-4 font-semibold hover:bg-orange-600 transition-colors">
+              <FileText className="w-6 h-6 flex-shrink-0" />
+              <span className="text-left">
+                <span className="block">{d.title}</span>
+                <span className="block text-sm font-normal opacity-90">{d.sub}</span>
+              </span>
             </a>
-          ) : (
-            <div className="inline-flex items-center bg-gray-400 text-white px-6 py-3 rounded-full font-semibold cursor-not-allowed">
-              <FileText className="w-5 h-5 mr-2" />
-              <div className="text-center">
-                <div>Loading document...</div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Terms Accordions */}
-        <div className="space-y-4">
-          {termsContent.map((item) => (
-            <TermsAccordionItem key={item.id} item={item} />
           ))}
         </div>
 
+        <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 text-center">How to make a claim</h2>
+          <ol className="space-y-3 text-gray-700 list-decimal pl-5">
+            <li>Contact us before any repair work starts.</li>
+            <li>Email <a href="mailto:claims@pandaprotect.co.uk" className="font-semibold text-brand-orange break-all">claims@pandaprotect.co.uk</a> with your warranty reference, registration and a description of the fault.</li>
+            <li>Or submit your claim online and our claims team will guide you through the next steps.</li>
+          </ol>
+          <div className="mt-5 text-center">
+            <Link to="/make-a-claim/" className="inline-flex items-center justify-center rounded-lg bg-brand-orange text-white px-5 py-3 font-semibold hover:bg-orange-600 transition-colors">Make a claim</Link>
+          </div>
+        </div>
+
         {/* Contact Section */}
-        <div className="mt-12 bg-white rounded-xl border border-gray-200 p-8">
+        <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Contact Information</h2>
           <div className="grid md:grid-cols-2 gap-8">
             <div className="text-center">
@@ -197,7 +176,7 @@ const Terms = () => {
             <div className="text-center">
               <Mail className="w-8 h-8 text-brand-orange mx-auto mb-4" />
               <h4 className="text-xl font-bold text-gray-900 mb-4">Email Support</h4>
-              <a href="mailto:support@pandaprotect.co.uk" className="text-lg font-semibold text-brand-orange hover:text-orange-600 transition-colors">
+              <a href="mailto:support@pandaprotect.co.uk" className="text-lg font-semibold text-brand-orange break-all hover:text-orange-600 transition-colors">
                 support@pandaprotect.co.uk
               </a>
             </div>
