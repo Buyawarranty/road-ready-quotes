@@ -844,7 +844,7 @@ const AdminDashboard = () => {
             </div>
           );
         }
-        return <UnifiedEmailHub />;
+        return <UnifiedEmailHub userRole={effectiveUserRole} />;
       case 'analytics':
         if (!canAccessSalesAnalytics(effectiveUserRole, effectiveUserPermissions)) {
           return <div className="p-6"><h2 className="text-xl font-semibold">Access denied</h2><p className="mt-1 text-sm text-muted-foreground">Sales analytics is currently restricted to Admin and Super Admin.</p></div>;

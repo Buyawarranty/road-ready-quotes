@@ -26,6 +26,7 @@ import { TestAutomatedEmail } from "./TestAutomatedEmail";
 import { EmailFunctionDiagnostics } from "./EmailFunctionDiagnostics";
 import { ResendWelcomeEmailTool } from "./ResendWelcomeEmailTool";
 import { RecipientSelector } from "./email/RecipientSelector";
+import DealerWarrantyEmailTemplateEditor from './DealerWarrantyEmailTemplateEditor';
 
 interface EmailTemplate {
   id: string;
@@ -69,7 +70,7 @@ interface Campaign {
   sent_at: string | null;
 }
 
-const UnifiedEmailHub = () => {
+const UnifiedEmailHub = ({ userRole }: { userRole?: string | null }) => {
   const [activeView, setActiveView] = useState<'overview' | 'templates' | 'campaigns' | 'audience' | 'analytics' | 'automation' | 'logs' | 'tools'>('overview');
   const [loading, setLoading] = useState(false);
   
@@ -452,6 +453,8 @@ const UnifiedEmailHub = () => {
           Your unified command center for all email communications — templates, campaigns, and analytics in one place.
         </p>
       </div>
+
+      <DealerWarrantyEmailTemplateEditor userRole={userRole} />
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">

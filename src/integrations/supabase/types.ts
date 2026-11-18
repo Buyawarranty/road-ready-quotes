@@ -7872,6 +7872,39 @@ export type Database = {
           },
         ]
       }
+      dealer_warranty_email_templates: {
+        Row: {
+          closing_text: string
+          created_at: string
+          heading: string
+          introduction: string
+          subject: string
+          template_key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          closing_text?: string
+          created_at?: string
+          heading: string
+          introduction: string
+          subject: string
+          template_key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          closing_text?: string
+          created_at?: string
+          heading?: string
+          introduction?: string
+          subject?: string
+          template_key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       dealers: {
         Row: {
           address_line1: string | null

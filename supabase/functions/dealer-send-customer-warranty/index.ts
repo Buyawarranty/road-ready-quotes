@@ -1,133 +1,189 @@
-import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
-// Lets a dealer email the warranty details to their end customer.
-// Body: { customer_id: string, to_email?: string, message?: string }
-
+// Dealer-safe warranty email preview and sending, plus Admin/Super Admin template editing.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
-import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
-import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { z } from 'https://esm.sh/zod@3.23.8';
+import { resolveBrand } from '../_shared/brand.ts';
+import { resendFetch } from '../_shared/emailPolish.ts';
+import { requireStaffAdmin } from '../_shared/staffAuth.ts';
+import {
+  buildDealerWarrantyEmail,
+  normaliseDealerWarrantyEmailTemplate,
+  type DealerWarrantyEmailCustomer,
+  type DealerWarrantyEmailDealer,
+} from '../_shared/dealerWarrantyEmail.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+  status,
+  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+});
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  });
-
-const money = (n: number) => `£${Number(n || 0).toFixed(2)}`;
-const esc = (s: unknown) =>
-  String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c] as string));
+const TemplateSchema = z.object({
+  subject: z.string().trim().min(1, 'Subject is required').max(180),
+  heading: z.string().trim().min(1, 'Heading is required').max(120),
+  introduction: z.string().trim().min(1, 'Introduction is required').max(1000),
+  closing_text: z.string().trim().max(500),
+});
+const BodySchema = z.object({
+  action: z.enum(['preview', 'send', 'get_template', 'save_template', 'admin_preview']).optional(),
+  customer_id: z.string().uuid().optional(),
+  to_email: z.string().max(320).optional(),
+  message: z.string().max(1000).optional(),
+  recipient_type: z.enum(['customer', 'me']).optional(),
+  template: TemplateSchema.optional(),
+});
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const CUSTOMER_FIELDS = 'id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, payment_status, signup_date, warranty_start_date, policy_end_date, dealer_id, warranty_number';
+
+function serviceClient() {
+  return createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+    { auth: { persistSession: false, autoRefreshToken: false } },
+  );
+}
+
+async function loadTemplate(admin: ReturnType<typeof serviceClient>) {
+  const { data, error } = await admin
+    .from('dealer_warranty_email_templates')
+    .select('subject, heading, introduction, closing_text, updated_at')
+    .eq('template_key', 'dealer_warranty')
+    .maybeSingle();
+  if (error) throw error;
+  return { template: normaliseDealerWarrantyEmailTemplate(data), updated_at: data?.updated_at || null };
+}
+
+async function adminPreview(admin: ReturnType<typeof serviceClient>, brand: ReturnType<typeof resolveBrand>) {
+  const { template } = await loadTemplate(admin);
+  const { data: customer, error } = await admin
+    .from('customers')
+    .select(CUSTOMER_FIELDS)
+    .eq('brand', 'pandaprotect')
+    .not('dealer_id', 'is', null)
+    .order('signup_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  if (!customer) return { preview: null, preview_error: 'No dealer warranty is available to preview yet.' };
+  const { data: dealer } = await admin
+    .from('dealers')
+    .select('id, name, company_name, email')
+    .eq('id', customer.dealer_id)
+    .maybeSingle();
+  if (!dealer) return { preview: null, preview_error: 'The warranty dealer could not be found.' };
+  const to = String(customer.email || dealer.email || '').trim();
+  if (!EMAIL_RE.test(to)) return { preview: null, preview_error: 'The latest warranty has no valid email address for this preview.' };
+  return {
+    preview: buildDealerWarrantyEmail({
+      brand,
+      template,
+      customer: customer as DealerWarrantyEmailCustomer,
+      dealer: dealer as DealerWarrantyEmailDealer,
+      recipientType: 'customer',
+      to,
+    }),
+  };
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
-  const brand: Brand = resolveBrand(req, { force: 'pandaprotect' });
-
+  const brand = resolveBrand(req, { force: 'pandaprotect' });
   try {
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-    );
+    let rawBody: unknown;
+    try { rawBody = await req.json(); } catch { return json({ error: 'Invalid JSON body' }, 400); }
+    const parsed = BodySchema.safeParse(rawBody);
+    if (!parsed.success) return json({ error: parsed.error.issues[0]?.message || 'Invalid request' }, 400);
+    const body = parsed.data;
+    const action = body.action || 'send';
+    const admin = serviceClient();
 
-    let body: { customer_id?: string; to_email?: string; message?: string };
-    try {
-      body = await req.json();
-    } catch {
-      return json({ error: 'Invalid JSON body' }, 400);
+    if (action === 'get_template' || action === 'save_template' || action === 'admin_preview') {
+      const caller = await requireStaffAdmin(req, { corsHeaders });
+      if (caller instanceof Response) return caller;
+
+      if (action === 'save_template') {
+        if (!body.template) return json({ error: 'Template wording is required' }, 400);
+        const { error } = await admin
+          .from('dealer_warranty_email_templates')
+          .upsert({
+            template_key: 'dealer_warranty',
+            ...body.template,
+            updated_by: caller.user.id,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'template_key' });
+        if (error) throw error;
+      }
+
+      const stored = await loadTemplate(admin);
+      const preview = await adminPreview(admin, brand);
+      return json({ success: true, ...stored, ...preview });
     }
 
-    const customerId = String(body.customer_id || '').trim();
+    const customerId = body.customer_id;
     if (!customerId) return json({ error: 'customer_id is required' }, 400);
-
-    // Authenticate the calling dealer
-    const authHeader = req.headers.get('Authorization') || '';
-    const token = authHeader.replace('Bearer ', '').trim();
-    if (!token) return json({ error: 'Unauthorized' }, 401);
-    const { data: userData } = await supabase.auth.getUser(token);
+    const token = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '').trim();
+    if (!token) return json({ error: 'Please sign in to the dealer portal first.' }, 401);
+    const { data: userData, error: userError } = await admin.auth.getUser(token);
     const userId = userData?.user?.id;
-    if (!userId) return json({ error: 'Unauthorized' }, 401);
+    if (userError || !userId) return json({ error: 'Please sign in to the dealer portal first.' }, 401);
 
-    const { data: dealer } = await supabase
+    const { data: dealer } = await admin
       .from('dealers')
       .select('id, name, company_name, email')
       .eq('user_id', userId)
       .maybeSingle();
     if (!dealer) return json({ error: 'Dealer account not found' }, 403);
 
-    const { data: c } = await supabase
+    const { data: customer, error: customerError } = await admin
       .from('customers')
-      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number')
+      .select(CUSTOMER_FIELDS)
       .eq('id', customerId)
+      .eq('brand', 'pandaprotect')
       .maybeSingle();
+    if (customerError || !customer) return json({ error: 'Warranty not found' }, 404);
+    if (customer.dealer_id !== dealer.id) return json({ error: 'This warranty does not belong to your dealer account' }, 403);
 
-    if (!c) return json({ error: 'Warranty not found' }, 404);
-    if (c.dealer_id !== dealer.id) return json({ error: 'Not your warranty' }, 403);
-
-    const to = String(body.to_email || c.email || '').trim();
-    if (!EMAIL_RE.test(to)) return json({ error: 'A valid customer email address is required' }, 400);
-
-    if (!RESEND_API_KEY) return json({ error: 'Email is not configured' }, 500);
-
-    const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
-    const ref = String(c.id).replace(/-/g, '').slice(0, 8).toUpperCase();
-    const dealerName = dealer.company_name || dealer.name || 'your dealer';
-    const start = c.signup_date;
-    const months = Number.parseInt(String(c.payment_type || ''), 10);
-    const endDate = start && Number.isFinite(months)
-      ? (() => { const d = new Date(start); d.setMonth(d.getMonth() + months); return d.toISOString(); })()
-      : null;
-    const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
-
-    const rows = `
-      <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.warranty_number || ref)}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.registration_plate || '—')}${vehicle ? ` · ${esc(vehicle)}` : ''}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(displayWarrantyPlanName(c.plan_type).toUpperCase())} · ${esc(c.payment_type || '')} months</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Start date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(start)}</td></tr>
-      ${endDate ? `<tr><td style="padding:8px 0;color:#666">End date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(endDate)}</td></tr>` : ''}
-    `;
-
-    const note = body.message
-      ? `<div style="background:#fff7ed;border-left:4px solid #f97316;padding:12px 14px;margin:16px 0;font-size:14px;line-height:1.6">${esc(body.message)}</div>`
-      : '';
-
-    const html = `
-      <div style="font-family:Arial,sans-serif;color:#333;max-width:620px;margin:0 auto;padding:24px">
-        <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">Your warranty is confirmed</h1>
-        <p style="font-size:13px;color:#666;margin:0 0 18px">Provided by ${esc(dealerName)} · ${new Date().toLocaleDateString('en-GB')}</p>
-        <p style="font-size:14px;line-height:1.6">Hi ${esc(c.name || 'there')},</p>
-        <p style="font-size:14px;line-height:1.6">${esc(dealerName)} has arranged a ${esc(brand.name)} warranty for your vehicle. Here are the details:</p>
-        ${note}
-        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${rows}</table>
-        <p style="font-size:13px;color:#666;margin-top:22px"><strong>Need to make a claim?</strong><br>Visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>. Please quote your warranty reference.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
-      </div>`;
-
-    const res = await resendFetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-      body: JSON.stringify({
-        ...transactionalEmailIdentity(brand, 'warranty_purchase'),
-        to: [to],
-        subject: `Your vehicle warranty — ${c.registration_plate || ref}`,
-        html,
-      }),
+    const recipientType = body.recipient_type === 'me' ? 'me' : 'customer';
+    const to = String(body.to_email || (recipientType === 'me' ? dealer.email : customer.email) || '').trim();
+    if (!EMAIL_RE.test(to)) return json({ error: 'Enter a valid email address' }, 400);
+    const { template } = await loadTemplate(admin);
+    const email = buildDealerWarrantyEmail({
+      brand,
+      template,
+      customer: customer as DealerWarrantyEmailCustomer,
+      dealer: dealer as DealerWarrantyEmailDealer,
+      recipientType,
+      to,
+      message: body.message,
     });
 
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      console.error('Resend error', res.status, payload);
-      return json({ error: (payload as any)?.message || 'Failed to send email', status: res.status }, res.status);
+    if (action === 'preview') return json({ success: true, preview: email });
+
+    const resendKey = Deno.env.get('RESEND_API_KEY');
+    if (!resendKey) return json({ error: 'Email sending is not configured' }, 500);
+    const response = await resendFetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+      body: JSON.stringify(email),
+    });
+    const provider = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      console.error('dealer-send-customer-warranty Resend error', response.status, provider);
+      return json({
+        error: (provider as { message?: string })?.message || 'The email service could not send this email. Please try again.',
+        status: response.status,
+      }, response.status);
     }
 
-    return json({ success: true, sent_to: to });
-  } catch (err: any) {
-    console.error('dealer-send-customer-warranty error', err);
-    return json({ error: err?.message || 'Internal error' }, 500);
+    return json({
+      success: true,
+      sent_to: to,
+      from: email.from,
+      provider_id: (provider as { id?: string })?.id || null,
+    });
+  } catch (error) {
+    console.error('dealer-send-customer-warranty error', error);
+    return json({ error: error instanceof Error ? error.message : 'Internal error' }, 500);
   }
 });

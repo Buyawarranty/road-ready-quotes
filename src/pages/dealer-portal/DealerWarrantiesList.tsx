@@ -46,6 +46,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { functionErrorMessage } from '@/lib/functionError';
 
 type WarrantyRow = DealerPdfRow & {
   status?: string | null;
@@ -53,6 +54,14 @@ type WarrantyRow = DealerPdfRow & {
   voluntary_excess?: number | string | null;
   labour_rate?: number | string | null;
   policy_number?: string | null;
+};
+
+type WarrantyEmailPreview = {
+  from: string;
+  reply_to: string;
+  to: string[];
+  subject: string;
+  html: string;
 };
 
 type CoverFilter = 'all' | 'active' | 'pending' | 'expired' | 'cancelled';
@@ -137,6 +146,9 @@ const DealerWarrantiesList = () => {
   const [emailNote, setEmailNote] = useState('');
   const [sending, setSending] = useState(false);
   const [emailTarget, setEmailTarget] = useState<'customer' | 'me'>('customer');
+  const [emailPreview, setEmailPreview] = useState<WarrantyEmailPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState('');
   const [cancelRow, setCancelRow] = useState<WarrantyRow | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
@@ -233,6 +245,52 @@ const DealerWarrantiesList = () => {
     else if (searchParams.get('paid') === '0') toast.info('Payment cancelled.');
   }, [searchParams]);
 
+  React.useEffect(() => {
+    if (!emailRow) {
+      setEmailPreview(null);
+      setPreviewError('');
+      setPreviewLoading(false);
+      return;
+    }
+    const recipient = emailTo.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(recipient)) {
+      setEmailPreview(null);
+      setPreviewError('Enter a valid email address to see the preview.');
+      setPreviewLoading(false);
+      return;
+    }
+
+    let active = true;
+    setEmailPreview(null);
+    setPreviewError('');
+    setPreviewLoading(true);
+    const timer = window.setTimeout(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('dealer-send-customer-warranty', {
+          body: {
+            action: 'preview',
+            customer_id: emailRow.id,
+            to_email: recipient,
+            recipient_type: emailTarget,
+            message: emailNote.trim() || undefined,
+          },
+        });
+        if (error) throw new Error(await functionErrorMessage(error));
+        if (data?.error) throw new Error(data.error);
+        if (active) setEmailPreview(data.preview as WarrantyEmailPreview);
+      } catch (error) {
+        if (active) setPreviewError(error instanceof Error ? error.message : 'The email preview could not be loaded.');
+      } finally {
+        if (active) setPreviewLoading(false);
+      }
+    }, 450);
+
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [emailRow, emailRow?.id, emailTarget, emailTo, emailNote]);
+
   const selectedIds = useMemo(() => Object.keys(selected).filter((key) => selected[key]), [selected]);
   const selectedTotal = useMemo(
     () => rows.filter((row) => selected[row.id] && !isPaid(row)).reduce((sum, row) => sum + Number(row.final_amount || 0), 0),
@@ -273,6 +331,8 @@ const DealerWarrantiesList = () => {
     setEmailTarget('customer');
     setEmailTo(row.email || '');
     setEmailNote('');
+    setEmailPreview(null);
+    setPreviewError('');
   };
 
   const openCancellationDialog = (row: WarrantyRow) => {
@@ -290,11 +350,17 @@ const DealerWarrantiesList = () => {
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke('dealer-send-customer-warranty', {
-        body: { customer_id: emailRow.id, to_email: emailTo.trim(), message: emailNote.trim() || undefined },
+        body: {
+          action: 'send',
+          customer_id: emailRow.id,
+          to_email: emailTo.trim(),
+          recipient_type: emailTarget,
+          message: emailNote.trim() || undefined,
+        },
       });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
-      toast.success(`Warranty emailed to ${emailTo.trim()}`);
+      if (error) throw new Error(await functionErrorMessage(error));
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Warranty emailed to ${data?.sent_to || emailTo.trim()}`);
       setEmailRow(null);
     } catch (error: any) {
       console.error(error);
@@ -670,7 +736,7 @@ const DealerWarrantiesList = () => {
       </div>
 
       <Dialog open={!!detailRow} onOpenChange={(open) => !open && setDetailRow(null)}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="dealer-crm sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>Warranty details</DialogTitle>
             <DialogDescription>Cover, payment and document details for <span className="font-bold uppercase">{detailRow?.registration_plate}</span>.</DialogDescription>
@@ -712,11 +778,11 @@ const DealerWarrantiesList = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!emailRow} onOpenChange={(open) => !open && setEmailRow(null)}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={!!emailRow} onOpenChange={(open) => !open && !sending && setEmailRow(null)}>
+        <DialogContent className="dealer-crm !w-[min(52rem,calc(100vw-2rem))] max-w-3xl">
           <DialogHeader>
             <DialogTitle>Email warranty</DialogTitle>
-            <DialogDescription>Send the warranty details for <span className="font-semibold uppercase">{emailRow?.registration_plate}</span> to your customer or to yourself.</DialogDescription>
+            <DialogDescription>Preview the exact email for <span className="font-semibold uppercase">{emailRow?.registration_plate}</span>, then send it to your customer or to yourself.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Send to">
@@ -728,26 +794,49 @@ const DealerWarrantiesList = () => {
                 </Button>
               ))}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="customer-email">{emailTarget === 'me' ? 'Your email' : 'Customer email'}</Label>
-              <Input id="customer-email" type="email" value={emailTo} onChange={(event) => setEmailTo(event.target.value)} placeholder="name@example.com" className="bg-muted/50" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="customer-email">{emailTarget === 'me' ? 'Your email' : 'Customer email'}</Label>
+                <Input id="customer-email" type="email" value={emailTo} onChange={(event) => setEmailTo(event.target.value)} placeholder="name@example.com" className="bg-muted/50" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="customer-note">Personal message (optional)</Label>
+                <Textarea id="customer-note" value={emailNote} maxLength={1000} onChange={(event) => setEmailNote(event.target.value)} rows={2} placeholder="Thanks for your purchase — here are your warranty details." className="bg-muted/50" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="customer-note">Personal message (optional)</Label>
-              <Textarea id="customer-note" value={emailNote} onChange={(event) => setEmailNote(event.target.value)} rows={3} placeholder="Thanks for your purchase — here are your warranty details." className="bg-muted/50" />
+
+            <div className="rounded-xl border border-crm-line bg-muted/20 p-3 sm:p-4">
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4 text-crm-orange" />
+                <h3 className="text-base font-bold text-crm-navy">Email preview</h3>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">This is the exact Panda Protect email that will be sent. It updates as you type.</p>
+              {previewLoading && <div className="flex h-72 flex-col items-center justify-center gap-3 text-sm text-muted-foreground"><Loader2 className="h-6 w-6 animate-spin text-crm-orange" />Preparing preview…</div>}
+              {!previewLoading && emailPreview && (
+                <div className="mt-3 space-y-3">
+                  <div className="space-y-1 break-words text-xs text-muted-foreground">
+                    <p><strong className="text-crm-navy">From:</strong> {emailPreview.from}</p>
+                    <p><strong className="text-crm-navy">To:</strong> {emailPreview.to.join(', ')}</p>
+                    <p><strong className="text-crm-navy">Subject:</strong> {emailPreview.subject}</p>
+                  </div>
+                  <iframe title="Warranty email preview" sandbox="" srcDoc={emailPreview.html} className="h-80 w-full rounded-lg border bg-background" />
+                </div>
+              )}
+              {!previewLoading && !emailPreview && previewError && <p role="alert" className="mt-3 rounded-lg border border-crm-red/25 bg-crm-red-soft p-3 text-sm font-medium text-crm-red">{previewError}</p>}
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 z-10 -mx-5 -mb-5 mt-0 flex-row justify-end gap-2 border-t bg-background p-4 sm:-mx-6 sm:-mb-6 sm:px-6">
             <Button variant="outline" onClick={() => setEmailRow(null)} disabled={sending}>Cancel</Button>
-            <Button onClick={sendWarrantyToCustomer} disabled={sending} className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">
-              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}Send warranty
+            <Button onClick={sendWarrantyToCustomer} disabled={sending || previewLoading || !emailPreview} className="min-w-40 bg-crm-orange text-primary-foreground hover:bg-crm-orange/90">
+              {sending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+              {sending ? 'Sending…' : emailTarget === 'me' ? 'Send to myself' : 'Send to customer'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={!!cancelRow} onOpenChange={(open) => !open && setCancelRow(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="dealer-crm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Request cancellation</DialogTitle>
             <DialogDescription>For <span className="font-semibold uppercase">{cancelRow?.registration_plate}</span>. Panda Protect will review it, work out any cancellation fee or refund, and update the warranty.</DialogDescription>
