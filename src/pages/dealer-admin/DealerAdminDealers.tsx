@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUp, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Download } from 'lucide-react';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
@@ -24,6 +26,7 @@ interface DealerRow {
   discount_pct: number;
   created_at: string;
   sales_count?: number;
+  accounts_pending?: boolean;
   revenue?: number;
 }
 
@@ -56,6 +59,13 @@ const DealerAdminDealers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusTab, setStatusTab] = useState<StatusKey>('all');
   const [newestFirst, setNewestFirst] = useState(true);
+  const [testFilter, setTestFilter] = useState<'all' | 'hide' | 'only'>('all');
+  const [salesFilter, setSalesFilter] = useState<'all' | 'sold' | 'none'>('all');
+  const [joined, setJoined] = useState<'all' | 'week' | 'month' | 'custom'>('all');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [accountsOnly, setAccountsOnly] = useState(false);
+  const [checked, setChecked] = useState<Set<string>>(new Set());
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
@@ -114,6 +124,8 @@ const DealerAdminDealers: React.FC = () => {
       supabase.from('dealers').select('*').order('created_at', { ascending: false }),
       supabase.from('customers').select('dealer_id, final_amount, status').eq('brand', 'pandaprotect').not('dealer_id', 'is', null),
     ]);
+    const { data: pendingReqs } = await supabase.from('dealer_paylater_requests').select('dealer_id').eq('status', 'pending');
+    const pendingSet = new Set((pendingReqs || []).map((p: any) => p.dealer_id));
     const stats = new Map<string, { count: number; revenue: number }>();
     (customers || []).filter(isCountedDealerSale).forEach((c: any) => {
       const existing = stats.get(c.dealer_id) || { count: 0, revenue: 0 };
@@ -126,6 +138,7 @@ const DealerAdminDealers: React.FC = () => {
         ...d,
         sales_count: stats.get(d.id)?.count || 0,
         revenue: stats.get(d.id)?.revenue || 0,
+        accounts_pending: pendingSet.has(d.id),
       }))
     );
     setLoading(false);
@@ -137,6 +150,19 @@ const DealerAdminDealers: React.FC = () => {
     const q = search.trim().toLowerCase();
     const base = rows
       .filter((r) => statusTab === 'all' || dealerStatusGroup(r.status) === statusTab)
+      .filter((r) => testFilter === 'all' || (testFilter === 'only' ? !!r.is_test : !r.is_test))
+      .filter((r) => salesFilter === 'all' || (salesFilter === 'sold' ? (r.sales_count || 0) > 0 : !(r.sales_count || 0)))
+      .filter((r) => !accountsOnly || r.accounts_pending)
+      .filter((r) => {
+        const t = new Date(r.created_at).getTime();
+        if (joined === 'week') return Date.now() - t < 7 * 86400000;
+        if (joined === 'month') { const n = new Date(); return new Date(r.created_at).getMonth() === n.getMonth() && new Date(r.created_at).getFullYear() === n.getFullYear(); }
+        if (joined === 'custom') {
+          if (fromDate && t < new Date(fromDate + 'T00:00:00').getTime()) return false;
+          if (toDate && t > new Date(toDate + 'T23:59:59').getTime()) return false;
+        }
+        return true;
+      })
       .sort((a, b) => (newestFirst ? -1 : 1) * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()));
     if (!q) return base;
     return base.filter(
@@ -145,7 +171,19 @@ const DealerAdminDealers: React.FC = () => {
         r.company_name?.toLowerCase().includes(q) ||
         r.email?.toLowerCase().includes(q)
     );
-  }, [rows, search, statusTab, newestFirst]);
+  }, [rows, search, statusTab, newestFirst, testFilter, salesFilter, accountsOnly, joined, fromDate, toDate]);
+
+  const allChecked = filtered.length > 0 && filtered.every((r) => checked.has(r.id));
+  const someChecked = filtered.some((r) => checked.has(r.id));
+  const toggleAll = () => setChecked((c) => { const n = new Set(c); filtered.forEach((r) => (allChecked ? n.delete(r.id) : n.add(r.id))); return n; });
+  const toggleOne = (id: string) => setChecked((c) => { const n = new Set(c); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const exportChecked = () => {
+    const list = rows.filter((r) => checked.has(r.id));
+    const head = ['Company', 'Contact', 'Email', 'Phone', 'Status', 'Joined', 'Sales', 'Revenue', 'Test account'];
+    const esc = (v: any) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const csv = [head, ...list.map((r) => [r.company_name, r.name, r.email, r.phone, r.status, new Date(r.created_at).toLocaleDateString('en-GB'), r.sales_count, (r.revenue || 0).toFixed(2), r.is_test ? 'Yes' : 'No'])].map((row) => row.map(esc).join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = `dealers-${new Date().toISOString().slice(0, 10)}.csv`; a.click();
+  };
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: rows.length };
@@ -206,6 +244,31 @@ const DealerAdminDealers: React.FC = () => {
             {newestFirst ? 'Newest first' : 'Oldest first'}
           </Button>
           </div>
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <select className="h-9 rounded-md border border-input bg-background px-2" value={salesFilter} onChange={(e) => setSalesFilter(e.target.value as any)} aria-label="Sales filter">
+              <option value="all">All sales</option><option value="sold">Has sold</option><option value="none">No sales yet</option>
+            </select>
+            <select className="h-9 rounded-md border border-input bg-background px-2" value={testFilter} onChange={(e) => setTestFilter(e.target.value as any)} aria-label="Test account filter">
+              <option value="all">Incl. test accounts</option><option value="hide">Hide test accounts</option><option value="only">Test accounts only</option>
+            </select>
+            <select className="h-9 rounded-md border border-input bg-background px-2" value={joined} onChange={(e) => setJoined(e.target.value as any)} aria-label="Joined filter">
+              <option value="all">Joined: any time</option><option value="week">Joined: last 7 days</option><option value="month">Joined: this month</option><option value="custom">Joined: pick dates</option>
+            </select>
+            {joined === 'custom' && (<>
+              <Input type="date" className="h-9 w-40" value={fromDate} onChange={(e) => setFromDate(e.target.value)} aria-label="From" />
+              <Input type="date" className="h-9 w-40" value={toDate} onChange={(e) => setToDate(e.target.value)} aria-label="To" />
+            </>)}
+            <Button size="sm" variant={accountsOnly ? 'default' : 'outline'} onClick={() => setAccountsOnly((v) => !v)}>
+              Waiting on Accounts <span className="ml-1.5 rounded-full bg-background/30 px-1.5 text-xs">{rows.filter((r) => r.accounts_pending).length}</span>
+            </Button>
+          </div>
+          {checked.size > 0 && (
+            <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
+              <span className="font-semibold">{checked.size} selected</span>
+              <Button size="sm" variant="outline" onClick={exportChecked}><Download className="h-4 w-4 mr-1" />Download spreadsheet</Button>
+              <Button size="sm" variant="ghost" onClick={() => setChecked(new Set())}>Clear</Button>
+            </div>
+          )}
 
           {loading ? (
             <div className="py-12 flex justify-center">
@@ -218,6 +281,7 @@ const DealerAdminDealers: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 border-y border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    <th className="w-10 px-3 py-2"><Checkbox aria-label="Select all shown dealers" checked={allChecked ? true : someChecked ? 'indeterminate' : false} onCheckedChange={toggleAll} /></th>
                     <th className="px-3 py-2 font-medium">Company</th>
                     <th className="px-3 py-2 font-medium">Contact</th>
                     <th className="px-3 py-2 font-medium">Status</th>
@@ -238,8 +302,9 @@ const DealerAdminDealers: React.FC = () => {
                     const dirty = editVal !== undefined && editVal !== r.discount_pct;
                     return (
                       <tr key={r.id} className="border-b border-border hover:bg-muted/30">
+                        <td className="px-3 py-2"><Checkbox aria-label={`Select ${r.company_name}`} checked={checked.has(r.id)} onCheckedChange={() => toggleOne(r.id)} /></td>
                         <td className="px-3 py-2">
-                          <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}</p>
+                          <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}{r.accounts_pending && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground align-middle">Accounts@ needs to approve</span>}</p>
                           <p className="text-xs text-muted-foreground">{r.name}</p>
                         </td>
                         <td className="px-3 py-2">
