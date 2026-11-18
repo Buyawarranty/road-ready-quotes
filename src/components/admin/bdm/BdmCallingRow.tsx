@@ -91,7 +91,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
     if (error) { toast({ title: 'Could not save changes', description: error.message, variant: 'destructive' }); return; }
     toast({ title: 'Changes saved' }); setEditOpen(false); onChanged();
   };
-  const editBtn = <button type="button" onClick={openEdit} className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="h-3 w-3" /></button>;
+  const editBtn = <button type="button" onClick={e => { e.preventDefault(); e.stopPropagation(); openEdit(); }} title="Edit phone, email and dates" className="ml-1 inline-flex h-8 w-8 items-center justify-center rounded text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Edit details"><Pencil className="pointer-events-none h-4 w-4" /></button>;
 
   const phone = r.phone || c?.mobile || c?.phone || null;
   const email = r.email || c?.email || null;
@@ -133,7 +133,20 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
   const logContact = (type: 'whatsapp' | 'email') =>
     db('bdm_log_activity', { p_dealership: r.id, p_type: type, p_outcome: null, p_contact: c?.full_name ?? null, p_notes: null, p_next_action: null, p_follow_up: null });
 
-  const copyPhone = async () => { if (!phone) return; await navigator.clipboard.writeText(phone); toast({ title: 'Number copied' }); };
+  const copyText = async (text: string) => {
+    try { await navigator.clipboard.writeText(text); return true; } catch {
+      const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select(); const ok = document.execCommand('copy'); t.remove(); return ok;
+    }
+  };
+  const copyPhone = async () => { if (!phone) return; toast({ title: (await copyText(phone)) ? `Copied ${phone}` : 'Could not copy the number' }); };
+  const textPhone = async () => {
+    if (!tel) return;
+    const isPhone = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isPhone) { window.location.href = `sms:${tel}`; return; }
+    await copyText(phone ?? tel);
+    toast({ title: 'Texts open on a mobile phone', description: `Number copied: ${phone}. Use WhatsApp or your phone to send a text.` });
+  };
 
   return (
     <tr className={`border-b last:border-0 ${striped ? 'bg-muted/40' : 'bg-card'} hover:bg-accent/40 ${overdue ? 'border-l-2 border-l-destructive' : ''}`}>
@@ -230,8 +243,8 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
             <a href={`tel:${tel}`} onClick={() => !dnc && adjust(1)} className="inline-flex items-center gap-1 rounded-full border border-primary/40 px-2 py-0.5 text-xs font-semibold text-primary hover:bg-primary/10">
               <Phone className="h-3 w-3" />{phone}
             </a>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={copyPhone} aria-label="Copy number"><Copy className="h-3.5 w-3.5" /></Button>
-            {!dnc && <Button asChild size="icon" variant="ghost" className="h-7 w-7" aria-label="Send text"><a href={`sms:${tel}`}><MessageSquare className="h-3.5 w-3.5" /></a></Button>}
+            <Button size="icon" variant="ghost" type="button" className="h-8 w-8" title="Copy number" onClick={copyPhone} aria-label="Copy number"><Copy className="h-4 w-4" /></Button>
+            {!dnc && <Button type="button" size="icon" variant="ghost" className="h-8 w-8" title="Send a text" aria-label="Send text" onClick={textPhone}><MessageSquare className="h-4 w-4" /></Button>}
             {editBtn}
           </div>
         ) : <button type="button" onClick={openEdit} className="text-xs text-muted-foreground underline-offset-2 hover:underline">No number · add</button>}
