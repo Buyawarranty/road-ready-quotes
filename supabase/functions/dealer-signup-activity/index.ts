@@ -33,7 +33,7 @@ Deno.serve(async req => {
   // This caller-scoped read applies the same signup RLS as the admin page.
   const { data: allowedSignup, error: accessError } = await caller
     .from('trade_warranty_signups')
-    .select('id, dealer_id')
+    .select('id, dealer_id, email_address')
     .eq('id', signupId)
     .maybeSingle();
   if (accessError) return json({ error: 'Dealer access could not be checked.' }, 403);
@@ -50,29 +50,33 @@ Deno.serve(async req => {
     last_quote_at: null,
     last_warranty_at: null,
     last_activity_at: null,
+    login_history: [] as string[],
   };
-  if (!allowedSignup.dealer_id) return json({ success: true, activity: emptyActivity });
-
-  const { data: dealer, error: dealerError } = await admin
-    .from('dealers')
-    .select('id, user_id, created_at, status')
-    .eq('id', allowedSignup.dealer_id)
-    .maybeSingle();
+  // Signups are not always linked to their dealer row, so fall back to the signup email.
+  const email = String(allowedSignup.email_address || '').trim().toLowerCase();
+  let dq = admin.from('dealers').select('id, user_id, created_at, status');
+  if (allowedSignup.dealer_id) dq = dq.eq('id', allowedSignup.dealer_id);
+  else if (email) dq = dq.ilike('email', email);
+  else return json({ success: true, activity: emptyActivity });
+  const { data: dealerRows, error: dealerError } = await dq.order('created_at', { ascending: false }).limit(1);
+  const dealer = dealerRows?.[0];
   if (dealerError) return json({ error: 'Dealer account could not be loaded.' }, 500);
   if (!dealer) return json({ success: true, activity: emptyActivity });
 
-  const [authResult, quotesResult, warrantiesResult] = await Promise.all([
+  const [authResult, quotesResult, warrantiesResult, historyResult] = await Promise.all([
     dealer.user_id ? admin.auth.admin.getUserById(dealer.user_id) : Promise.resolve({ data: { user: null }, error: null }),
     admin.from('dealer_quotes').select('updated_at', { count: 'exact' }).eq('dealer_id', dealer.id).or('is_test.is.null,is_test.eq.false').order('updated_at', { ascending: false }).limit(1),
     admin.from('dealer_warranties').select('updated_at', { count: 'exact' }).eq('dealer_id', dealer.id).or('is_test.is.null,is_test.eq.false').order('updated_at', { ascending: false }).limit(1),
+    dealer.user_id ? admin.rpc('dealer_login_history', { p_user: dealer.user_id, p_limit: 100 }) : Promise.resolve({ data: [], error: null }),
   ]);
+  const loginHistory = ((historyResult as any).data || []).map((h: any) => h.signed_in_at).filter(Boolean);
   if (quotesResult.error || warrantiesResult.error) return json({ error: 'Dealer portal usage could not be loaded.' }, 500);
   if (authResult.error) {
     console.error('dealer-signup-activity auth lookup failed', authResult.error);
     return json({ error: 'Dealer sign-in activity could not be loaded.' }, 500);
   }
 
-  const lastSignIn = authResult.data.user?.last_sign_in_at || null;
+  const lastSignIn = latest([authResult.data.user?.last_sign_in_at, loginHistory[0]]);
   const lastQuote = quotesResult.data?.[0]?.updated_at || null;
   const lastWarranty = warrantiesResult.data?.[0]?.updated_at || null;
   return json({
@@ -87,6 +91,7 @@ Deno.serve(async req => {
       last_quote_at: lastQuote,
       last_warranty_at: lastWarranty,
       last_activity_at: latest([lastSignIn, lastQuote, lastWarranty]),
+      login_history: loginHistory,
     },
   });
 });

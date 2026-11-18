@@ -86,6 +86,7 @@ const DealerLogin = () => {
       }
 
       const userId = signInData.session?.user?.id;
+      if (userId) void (supabase as any).from('dealer_login_events').insert({ user_id: userId, user_agent: navigator.userAgent.slice(0, 300) }).then(() => {});
 
       // The dealer login is for accounts that own a dealer profile. Some
       // dealers also hold a staff role (e.g. accounts copied from Buy A

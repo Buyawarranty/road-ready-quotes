@@ -7408,6 +7408,27 @@ export type Database = {
           },
         ]
       }
+      dealer_login_events: {
+        Row: {
+          id: string
+          signed_in_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          signed_in_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Update: {
+          id?: string
+          signed_in_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       dealer_paylater_overrides: {
         Row: {
           dealer_id: string
@@ -16223,6 +16244,12 @@ export type Database = {
       customer_cover_block_reason: {
         Args: { p_email?: string; p_phone?: string; p_reg?: string }
         Returns: string
+      }
+      dealer_login_history: {
+        Args: { p_limit?: number; p_user: string }
+        Returns: {
+          signed_in_at: string
+        }[]
       }
       dealer_promo_amount: {
         Args: {

@@ -8,7 +8,27 @@ export interface DealerImpersonationData {
 
 const STORAGE_KEY = 'admin_dealer_impersonation';
 
+const URL_PARAM = 'view_as_dealer';
+
+/** Link that opens "view as dealer" in a new tab (sessionStorage is per tab). */
+export const dealerImpersonationUrl = (path: string, data: DealerImpersonationData) =>
+  `${path}?${URL_PARAM}=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(data)))))}`;
+
+const adoptFromUrl = () => {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get(URL_PARAM);
+    if (!v) return;
+    const data = JSON.parse(decodeURIComponent(escape(atob(v))));
+    if (data?.dealerId) sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    params.delete(URL_PARAM);
+    const q = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (q ? `?${q}` : '') + window.location.hash);
+  } catch { /* ignore bad links */ }
+};
+
 export const readDealerImpersonation = (): DealerImpersonationData | null => {
+  adoptFromUrl();
   const raw = sessionStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
   try {

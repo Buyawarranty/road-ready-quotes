@@ -12,7 +12,7 @@ import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 import { useNavigate } from 'react-router-dom';
-import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
+import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface DealerRow {
@@ -97,9 +97,10 @@ const DealerAdminDealers: React.FC = () => {
 
   const viewAsDealer = (r: DealerRow) => {
     const label = r.company_name || r.name || 'this dealer';
-    startImpersonation(r.id, label, r.email);
-    toast({ title: `Now viewing the dealer portal as ${label}`, description: 'Your admin session stays active. Use the banner to exit.' });
-    navigate('/dealer-portal/dashboard');
+    const url = dealerImpersonationUrl('/dealer-portal/dashboard', { dealerId: r.id, dealerName: label, dealerEmail: r.email });
+    const w = window.open(url, '_blank');
+    if (!w) { startImpersonation(r.id, label, r.email); navigate('/dealer-portal/dashboard'); return; }
+    toast({ title: `Opened the dealer portal as ${label} in a new tab` });
   };
 
   const resendLogin = async (r: DealerRow) => {

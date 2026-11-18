@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Activity, Building2, Clock3, FileText, Loader2, LogIn, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,7 @@ export function DealerSignupActivityCard({ activity, loading, error, onRetry }: 
         <div className="mt-4 space-y-3">
           <ActivityRow icon={Building2} label="Dealer account" value={activity.dealer_account_created ? `Created ${date(activity.dealer_created_at) || '—'}` : 'Not created yet'} complete={activity.dealer_account_created} />
           <ActivityRow icon={LogIn} label="Sign-in" value={date(activity.last_sign_in_at) || 'No sign-in recorded'} complete={Boolean(activity.last_sign_in_at)} />
+          <LoginHistory items={activity.login_history || []} />
           <ActivityRow icon={FileText} label="Portal use" value={`${activity.quote_count} quote${activity.quote_count === 1 ? '' : 's'} · ${activity.warranty_count} warrant${activity.warranty_count === 1 ? 'y' : 'ies'}`} complete={activity.quote_count + activity.warranty_count > 0} />
           <div className="flex items-start gap-3 border-t border-border pt-3 text-sm">
             <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -55,6 +57,25 @@ function ActivityRow({ icon: Icon, label, value, complete }: { icon: typeof Buil
     <div className="flex items-start gap-3 text-sm">
       <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${complete ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-muted-foreground'}`}><Icon className="h-3.5 w-3.5" /></span>
       <div><div className="font-medium text-foreground">{label}</div><div className="mt-0.5 text-xs text-muted-foreground">{value}</div></div>
+    </div>
+  );
+}
+
+function LoginHistory({ items }: { items: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  if (!items.length) return null;
+  const shown = expanded ? items : items.slice(0, 6);
+  return (
+    <div className="ml-9 rounded-lg border border-border bg-muted/30 p-2">
+      <div className="mb-1 text-xs font-semibold text-foreground">Sign-in history ({items.length})</div>
+      <ol className="space-y-0.5 text-xs text-muted-foreground">
+        {shown.map((t, i) => <li key={t + i} className="tabular-nums">{i === 0 ? <strong className="text-foreground">{date(t)} · most recent</strong> : date(t)}</li>)}
+      </ol>
+      {items.length > 6 && (
+        <button type="button" onClick={() => setExpanded(e => !e)} className="mt-1 text-xs font-semibold text-crm-orange hover:underline">
+          {expanded ? 'Show fewer' : `Show ${items.length - 6} more`}
+        </button>
+      )}
     </div>
   );
 }

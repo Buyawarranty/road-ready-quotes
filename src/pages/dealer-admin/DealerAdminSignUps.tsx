@@ -7,7 +7,7 @@ import {
   Loader2, Search, Mail, Phone, RefreshCw, Download, X, Building2, Car as CarIcon, FileText, Check, Ban,
   StickyNote, Pin, Trash2, Plus, Eye, Pencil, Save,
 } from 'lucide-react';
-import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
+import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -126,15 +126,10 @@ const DealerAdminSignUps: React.FC = () => {
 
   const viewAsDealer = (signup: Signup) => {
     if (!signup.dealer_id) return;
-    startImpersonation(
-      signup.dealer_id,
-      signup.dealership_name || signup.contact_name || 'Dealer',
-      signup.email_address,
-    );
-    toast.success(`Now viewing the dealer portal as ${signup.dealership_name || signup.contact_name || 'this dealer'}`, {
-      description: 'Your admin session stays active. Use the banner to exit.',
-    });
-    navigate('/dealer-portal/dashboard');
+    const name = signup.dealership_name || signup.contact_name || 'Dealer';
+    const w = window.open(dealerImpersonationUrl('/dealer-portal/dashboard', { dealerId: signup.dealer_id, dealerName: name, dealerEmail: signup.email_address }), '_blank');
+    if (!w) { startImpersonation(signup.dealer_id, name, signup.email_address); navigate('/dealer-portal/dashboard'); return; }
+    toast.success(`Opened the dealer portal as ${name} in a new tab`);
   };
 
   const [archivedRows, setArchivedRows] = useState<(Signup & { archived_at?: string | null })[]>([]);

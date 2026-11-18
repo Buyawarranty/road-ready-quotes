@@ -8,6 +8,7 @@ export interface DealerSignupActivity {
   last_quote_at: string | null;
   last_warranty_at: string | null;
   last_activity_at: string | null;
+  login_history?: string[];
 }
 
 export type DealerActivityStage = 'not_created' | 'login_not_used' | 'signed_up' | 'active';
