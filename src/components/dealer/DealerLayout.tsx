@@ -364,7 +364,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               to="/faq/traders/"
               className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-crm-navy transition-colors hover:bg-muted"
             >
-              <BookOpen className="h-[18px] w-[18px] shrink-0" /> Resources
+              <BookOpen className="h-[18px] w-[18px] shrink-0" /> FAQs
             </Link>
           </div>
           <a
