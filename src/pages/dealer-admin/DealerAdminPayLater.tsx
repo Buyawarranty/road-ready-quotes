@@ -90,7 +90,7 @@ const DealerAdminPayLater: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold">Pay later rules</h1>
         <p className="text-sm text-muted-foreground">
-          Dealers can request 30-day invoicing after 10 paid warranties. Credit starts only after Admin or Super Admin authorisation; overdue balances are checked automatically.
+          Dealers can request 30-day invoicing after 3 paid warranties with no cancellations or refunds. Credit starts only after Admin or Super Admin authorisation; overdue balances are checked automatically.
         </p>
       </div>
 
