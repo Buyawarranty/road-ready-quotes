@@ -1,3 +1,4 @@
+import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { functionErrorMessage } from '@/lib/functionError';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -778,6 +779,7 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Status</Th>
                   <Th>Portal progress</Th>
                   <Th>Monthly Sales</Th>
+                  <Th>Last login</Th>
                   <Th>Current Provider</Th>
                   <Th>Interested In</Th>
                   <Th>Notes</Th>
@@ -792,7 +794,7 @@ const DealerAdminSignUps: React.FC = () => {
                     <React.Fragment key={r.id}>
                       {showSetAsideHeading && (
                         <tr className="border-y border-border bg-muted/60">
-                          <td colSpan={canBulkDelete ? 14 : 13} className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          <td colSpan={canBulkDelete ? 15 : 14} className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             Declined and possible duplicates — kept below fresh signups
                           </td>
                         </tr>
@@ -870,6 +872,10 @@ const DealerAdminSignUps: React.FC = () => {
                           </div>);
                         })()}</Td>
                         <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
+                        <Td className="whitespace-nowrap text-gray-700">{(() => {
+                          const at = r.dealer_id ? portalUsage[r.dealer_id]?.last_sign_in_at : null;
+                          return at ? formatActivityTime(at) : <span className="text-gray-400">Never</span>;
+                        })()}</Td>
                         <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
                         <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
                         <Td>
