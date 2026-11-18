@@ -14,6 +14,10 @@ import { useDealerExportAccess } from '@/hooks/useDealerExportAccess';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 import { useNavigate } from 'react-router-dom';
 import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
+import BdmQuickNotePopover from '@/components/admin/bdm/BdmQuickNotePopover';
+import BdmReminderPopover from '@/components/admin/bdm/BdmReminderPopover';
+import BdmEmailDialog from '@/components/admin/bdm/BdmEmailDialog';
+import { Bell, Mail, X } from 'lucide-react';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
@@ -30,6 +34,7 @@ interface DealerRow {
   sales_count?: number;
   accounts_pending?: boolean;
   revenue?: number;
+  bdm?: { id: string; next_follow_up_at: string | null; next_action: string | null } | null;
   last_activity?: { page_label: string; activity_at: string } | null;
 }
 
@@ -96,6 +101,11 @@ const DealerAdminDealers: React.FC = () => {
     setEditing(null);
     toast({ title: 'Dealer details updated' });
   };
+  const [mailTo, setMailTo] = useState<DealerRow | null>(null);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [tick, setTick] = useState(Date.now());
+  useEffect(() => { const t = setInterval(() => setTick(Date.now()), 60000); return () => clearInterval(t); }, []);
+  const dueReminders = rows.filter((r) => r.bdm?.next_follow_up_at && new Date(r.bdm.next_follow_up_at).getTime() <= tick && !dismissed.has(r.id + r.bdm.next_follow_up_at));
   const navigate = useNavigate();
   const { startImpersonation } = useDealerImpersonation();
 
@@ -132,6 +142,8 @@ const DealerAdminDealers: React.FC = () => {
     const { data: pendingReqs } = await supabase.from('dealer_paylater_requests').select('dealer_id').eq('status', 'pending');
     const { data: acts } = await (supabase as any).from('dealer_last_activity').select('dealer_id, page_label, activity_at');
     const actMap = new Map<string, any>((acts || []).map((a: any) => [a.dealer_id, a]));
+    const { data: bdmRows } = await (supabase as any).from('bdm_dealerships').select('id, dealer_id, next_follow_up_at, next_action').not('dealer_id', 'is', null);
+    const bdmMap = new Map<string, any>((bdmRows || []).map((b: any) => [b.dealer_id, b]));
     const pendingSet = new Set((pendingReqs || []).map((p: any) => p.dealer_id));
     const stats = new Map<string, { count: number; revenue: number }>();
     (customers || []).filter(isCountedDealerSale).forEach((c: any) => {
@@ -147,6 +159,7 @@ const DealerAdminDealers: React.FC = () => {
         revenue: stats.get(d.id)?.revenue || 0,
         accounts_pending: pendingSet.has(d.id),
         last_activity: actMap.get(d.id) || null,
+        bdm: bdmMap.get(d.id) || null,
       }))
     );
     setLoading(false);
@@ -220,6 +233,21 @@ const DealerAdminDealers: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {dueReminders.length > 0 && (
+        <div className="sticky top-0 z-30 space-y-2">
+          {dueReminders.map((r) => (
+            <div key={r.id} role="alert" className="flex items-center gap-3 rounded-lg border border-primary/40 bg-accent px-4 py-3 shadow-md">
+              <Bell className="h-5 w-5 text-primary shrink-0" />
+              <div className="flex-1 text-sm">
+                <span className="font-semibold">Reminder: {r.company_name || r.name}</span>
+                <span className="text-muted-foreground"> · {r.bdm?.next_action || 'Follow up'} · due {formatActivityTime(r.bdm!.next_follow_up_at!)}</span>
+              </div>
+              <BdmReminderPopover dealershipId={r.bdm!.id} name={r.company_name || r.name} onSaved={load} trigger={<Button size="sm" variant="outline">Snooze</Button>} />
+              <Button size="icon" variant="ghost" className="h-8 w-8" aria-label="Dismiss reminder" onClick={() => setDismissed((p) => new Set(p).add(r.id + r.bdm!.next_follow_up_at))}><X className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dealers</h1>
@@ -298,6 +326,7 @@ const DealerAdminDealers: React.FC = () => {
                         Joined {newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
                       </button>
                     </th>
+                    <th className="px-3 py-2 font-medium">Follow up</th>
                     <th className="px-3 py-2 font-medium">Last activity</th>
                     <th className="px-3 py-2 font-medium text-right">Sales</th>
                     <th className="px-3 py-2 font-medium text-right">Revenue</th>
@@ -325,6 +354,16 @@ const DealerAdminDealers: React.FC = () => {
                         </td>
                         <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">
                           {new Date(r.created_at).toLocaleDateString('en-GB')}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {r.bdm ? (
+                            <div className="flex items-center gap-1">
+                              <BdmQuickNotePopover dealershipId={r.bdm.id} dealershipName={r.company_name || r.name} contactName={r.name} onSaved={load} onOpenFull={() => navigate('/admin-dashboard/?tab=bdm-contacts')} />
+                              <Button size="icon" variant="ghost" className="h-9 w-9" title={`Email ${r.email} (preview first)`} aria-label={`Email ${r.company_name}`} onClick={() => setMailTo(r)}><Mail className="h-4 w-4" /></Button>
+                              <BdmReminderPopover dealershipId={r.bdm.id} name={r.company_name || r.name} onSaved={load} />
+                            </div>
+                          ) : <span className="text-xs text-muted-foreground">—</span>}
+                          {r.bdm?.next_follow_up_at && <div className="text-xs text-muted-foreground mt-0.5">Reminder {formatActivityTime(r.bdm.next_follow_up_at)}</div>}
                         </td>
                         <td className="px-3 py-2 whitespace-nowrap">
                           {r.last_activity ? (
@@ -408,6 +447,10 @@ const DealerAdminDealers: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {mailTo?.bdm && (
+        <BdmEmailDialog open={!!mailTo} onOpenChange={(o) => !o && setMailTo(null)} to={mailTo.email} dealershipId={mailTo.bdm.id}
+          dealershipName={mailTo.company_name || mailTo.name} contactName={mailTo.name} onSent={() => { setMailTo(null); load(); }} />
+      )}
     </div>
   );
 };
