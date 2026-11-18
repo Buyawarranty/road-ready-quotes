@@ -7110,6 +7110,8 @@ export type Database = {
           customer_id: string
           dealer_id: string
           id: string
+          notes_log: Json
+          progress: string
           reason: string
           refund_amount: number | null
           reviewed_at: string | null
@@ -7123,6 +7125,8 @@ export type Database = {
           customer_id: string
           dealer_id: string
           id?: string
+          notes_log?: Json
+          progress?: string
           reason: string
           refund_amount?: number | null
           reviewed_at?: string | null
@@ -7136,6 +7140,8 @@ export type Database = {
           customer_id?: string
           dealer_id?: string
           id?: string
+          notes_log?: Json
+          progress?: string
           reason?: string
           refund_amount?: number | null
           reviewed_at?: string | null
@@ -17356,6 +17362,10 @@ export type Database = {
       }
       update_campaign_analytics: {
         Args: { p_campaign_id: string }
+        Returns: undefined
+      }
+      update_dealer_cancellation_progress: {
+        Args: { p_note: string; p_progress: string; p_request_id: string }
         Returns: undefined
       }
       update_lead_status: {

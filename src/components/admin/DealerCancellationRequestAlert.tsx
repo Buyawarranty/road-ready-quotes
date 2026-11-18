@@ -52,7 +52,7 @@ const DealerCancellationRequestAlert: React.FC<{ userRole: string | null }> = ({
   const dismiss = () => setDismissed((current) => [...current, request.id]);
   const process = () => {
     dismiss();
-    navigate(`/admin-dashboard/?tab=dealer-cancellations&request=${encodeURIComponent(request.id)}`);
+    navigate(`/admin-dashboard/?tab=dealer-cancellations&sub=requests&request=${encodeURIComponent(request.id)}`);
   };
 
   return (

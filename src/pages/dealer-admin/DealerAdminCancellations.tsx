@@ -13,10 +13,12 @@ type Req = {
   id: string; dealer_id: string; customer_id: string; reason: string; status: string;
   cancellation_fee: number | null; refund_amount: number | null; admin_note: string | null;
   created_at: string; reviewed_at: string | null;
+  progress?: string | null; notes_log?: { at: string; by: string; note: string | null; progress: string | null }[] | null;
   dealers?: { company_name: string | null; email: string | null; phone: string | null } | null;
   customer?: { name: string | null; registration_plate: string | null; final_amount: number | null; signup_date: string | null; payment_type: string | null } | null;
 };
 
+const PROGRESS: Record<string, string> = { new: 'New', in_progress: 'In progress', waiting_dealer: 'Waiting on dealer', waiting_customer: 'Waiting on customer' };
 const gbp = (n?: number | null) => (n == null ? '—' : `£${Number(n).toFixed(2)}`);
 
 const DealerAdminCancellations: React.FC = () => {
@@ -30,6 +32,8 @@ const DealerAdminCancellations: React.FC = () => {
   const [refund, setRefund] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState('new');
+  const [workNote, setWorkNote] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -62,6 +66,23 @@ const DealerAdminCancellations: React.FC = () => {
     setFee(r.cancellation_fee != null ? String(r.cancellation_fee) : '0');
     setRefund(r.refund_amount != null ? String(r.refund_amount) : '0');
     setNote(r.admin_note || '');
+    setProgress(r.progress || 'new');
+    setWorkNote('');
+  };
+
+  const saveProgress = async () => {
+    if (!open) return;
+    setBusy(true);
+    const { error } = await (supabase as any).rpc('update_dealer_cancellation_progress', {
+      p_request_id: open.id, p_progress: progress, p_note: workNote.trim() || null,
+    });
+    setBusy(false);
+    if (error) { toast({ title: 'Could not save', description: error.message, variant: 'destructive' }); return; }
+    toast({ title: 'Update saved' });
+    const entry = { at: new Date().toISOString(), by: 'You', note: workNote.trim() || null, progress: progress !== open.progress ? progress : null };
+    setOpen({ ...open, progress, notes_log: [...(open.notes_log || []), entry] });
+    setWorkNote('');
+    load();
   };
 
   const process = async (approve: boolean) => {
@@ -111,7 +132,7 @@ const DealerAdminCancellations: React.FC = () => {
                 <td className="p-3 max-w-[240px]">{r.reason}</td>
                 <td className="p-3">{gbp(r.cancellation_fee)}</td>
                 <td className="p-3">{gbp(r.refund_amount)}</td>
-                <td className="p-3 capitalize">{r.status}</td>
+                <td className="p-3">{r.status === 'pending' ? (PROGRESS[r.progress || 'new'] || 'Pending') : <span className="capitalize">{r.status}</span>}</td>
                 <td className="p-3">{r.status === 'pending' && <Button size="sm" onClick={() => openReq(r)}>Process</Button>}</td>
               </tr>
             ))}</tbody>
@@ -120,7 +141,7 @@ const DealerAdminCancellations: React.FC = () => {
       )}
 
       <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Process cancellation</DialogTitle>
             <DialogDescription>
@@ -136,7 +157,28 @@ const DealerAdminCancellations: React.FC = () => {
               <div className="space-y-1"><Label htmlFor="cx-fee">Cancellation fee (£)</Label><Input id="cx-fee" inputMode="decimal" value={fee} onChange={e => setFee(e.target.value)} /></div>
               <div className="space-y-1"><Label htmlFor="cx-refund">Refund to dealer (£)</Label><Input id="cx-refund" inputMode="decimal" value={refund} onChange={e => setRefund(e.target.value)} /></div>
             </div>
-            <div className="space-y-1"><Label htmlFor="cx-note">Note (optional)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
+            <div className="space-y-2 rounded-md border p-3">
+              <p className="font-semibold">Progress and notes</p>
+              <div className="space-y-1"><Label htmlFor="cx-progress">Stage</Label>
+                <select id="cx-progress" className="h-10 w-full rounded-md border bg-background px-3" value={progress} onChange={e => setProgress(e.target.value)}>
+                  {Object.entries(PROGRESS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+                </select>
+              </div>
+              <Textarea rows={2} placeholder="Add a note, e.g. called dealer, waiting for mileage photo" value={workNote} onChange={e => setWorkNote(e.target.value)} />
+              <Button size="sm" variant="outline" disabled={busy} onClick={saveProgress}>Save update</Button>
+              {(open?.notes_log?.length ?? 0) > 0 && (
+                <ul className="max-h-40 space-y-2 overflow-y-auto border-t pt-2">
+                  {[...(open?.notes_log || [])].reverse().map((n, i) => (
+                    <li key={i} className="text-xs">
+                      <span className="text-muted-foreground">{new Date(n.at).toLocaleString('en-GB')} · {n.by}</span>
+                      {n.progress && <span className="ml-1 font-medium">→ {PROGRESS[n.progress] || n.progress}</span>}
+                      {n.note && <p className="whitespace-pre-wrap text-foreground">{n.note}</p>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="space-y-1"><Label htmlFor="cx-note">Decision note (optional)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" disabled={busy} onClick={() => process(false)}>Decline</Button>

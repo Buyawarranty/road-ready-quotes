@@ -49,13 +49,13 @@ const WebsiteCancellationRequests: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-xl font-bold">Website cancellation requests</h2>
-          <p className="text-sm text-muted-foreground">From the "Cancel a warranty" form in the website footer. Requests made by email go to support@pandaprotect.co.uk.</p>
+          <p className="text-sm text-muted-foreground">Requests sent by customers through the "Cancel a warranty" form on the website. Dealer requests are in the <strong>Dealer requests</strong> tab.</p>
         </div>
         <Button variant="outline" onClick={() => setShowAll(v => !v)}>{showAll ? 'Show open only' : 'Show all'}</Button>
       </div>
 
       {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : rows.length === 0 ? (
-        <p className="rounded-lg border p-6 text-center text-muted-foreground">No {showAll ? '' : 'open '}cancellation requests.</p>
+        <p className="rounded-lg border p-6 text-center text-muted-foreground">No {showAll ? '' : 'open '}customer requests from the website right now. Requests from dealers are in the Dealer requests tab.</p>
       ) : rows.map(r => (
         <div key={r.id} className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
