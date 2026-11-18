@@ -3,7 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUp } from 'lucide-react';
+import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUp, Pencil } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
@@ -57,6 +59,29 @@ const DealerAdminDealers: React.FC = () => {
   const [edits, setEdits] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [editing, setEditing] = useState<any | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const EDIT_FIELDS: [string, string][] = [
+    ['company_name', 'Company name'], ['trading_name', 'Trading name'], ['first_name', 'First name'], ['last_name', 'Last name'],
+    ['phone', 'Phone'], ['address_line1', 'Address line 1'], ['address_line2', 'Address line 2'], ['city', 'Town / city'],
+    ['county', 'County'], ['postcode', 'Postcode'], ['fca_number', 'FCA number'],
+  ];
+  const saveEdit = async () => {
+    if (!editing || savingEdit) return;
+    if (!String(editing.company_name || '').trim()) { toast({ title: 'Company name is required', variant: 'destructive' }); return; }
+    setSavingEdit(true);
+    const patch: Record<string, any> = {};
+    EDIT_FIELDS.forEach(([k]) => { const v = String(editing[k] ?? '').trim(); patch[k] = v || null; });
+    patch.company_name = String(editing.company_name).trim();
+    const full = [patch.first_name, patch.last_name].filter(Boolean).join(' ');
+    if (full) patch.name = full;
+    const { error } = await supabase.from('dealers').update(patch).eq('id', editing.id);
+    setSavingEdit(false);
+    if (error) { toast({ title: 'Could not save', description: error.message, variant: 'destructive' }); return; }
+    setRows((prev) => prev.map((r) => (r.id === editing.id ? { ...r, ...patch } : r)));
+    setEditing(null);
+    toast({ title: 'Dealer details updated' });
+  };
   const navigate = useNavigate();
   const { startImpersonation } = useDealerImpersonation();
 
@@ -258,6 +283,10 @@ const DealerAdminDealers: React.FC = () => {
                         </td>
                         <td className="px-3 py-2">
                           <div className="flex gap-2">
+                          <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => setEditing({ ...r })}>
+                            <Pencil className="h-3 w-3" />
+                            <span className="ml-1">Edit</span>
+                          </Button>
                           <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => viewAsDealer(r)}>
                             <Eye className="h-3 w-3" />
                             <span className="ml-1">View as dealer</span>
@@ -277,6 +306,26 @@ const DealerAdminDealers: React.FC = () => {
           )}
         </CardContent>
       </Card>
+      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Edit dealer details</DialogTitle></DialogHeader>
+          {editing && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto">
+              {EDIT_FIELDS.map(([k, label]) => (
+                <div key={k} className="space-y-1">
+                  <Label htmlFor={`edit-${k}`}>{label}</Label>
+                  <Input id={`edit-${k}`} value={editing[k] ?? ''} onChange={(e) => setEditing({ ...editing, [k]: e.target.value })} />
+                </div>
+              ))}
+              <p className="sm:col-span-2 text-xs text-muted-foreground">Login email ({editing.email}) isn't changed here, so the dealer's sign-in stays the same.</p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button onClick={saveEdit} disabled={savingEdit}>{savingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save changes'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
