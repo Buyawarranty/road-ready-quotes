@@ -354,11 +354,13 @@ const DealerWarrantiesList = () => {
       return;
     }
     setCancelling(true);
-    const { error } = await (supabase as any).from('dealer_cancellation_requests')
-      .insert({ dealer_id: dealer.id, customer_id: cancelRow.id, reason: cancelReason.trim() });
+    const { data, error } = await supabase.functions.invoke('dealer-request-cancellation', {
+      body: { customer_id: cancelRow.id, reason: cancelReason.trim() },
+    });
     setCancelling(false);
-    if (error) {
-      toast.error(error.code === '23505' ? 'A cancellation request is already pending for this warranty' : error.message);
+    if (error || !data?.success) {
+      const message = data?.error || (error ? await functionErrorMessage(error) : 'Could not send the cancellation request');
+      toast.error(message);
       return;
     }
     toast.success('Cancellation request sent to Panda Protect');
