@@ -46,6 +46,7 @@ Allow: /
 Disallow: /admin
 Disallow: /admin-dashboard/
 Disallow: /auth/
+Disallow: /partner/
 Disallow: /sales-login/
 Disallow: /customer-dashboard/
 Disallow: /dealer-portal/dashboard/

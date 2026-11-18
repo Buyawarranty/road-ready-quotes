@@ -9,6 +9,7 @@ export const PANDA_SECTION_ORDER: { id: string; label: string; description: stri
   { id: 'dealer-dealers', label: 'Dealers', description: 'Sign-ups, approved dealers and traders in one place' },
   { id: 'dealer-sales', label: 'Dealer sales', description: 'Warranties sold by each dealer' },
   { id: 'analytics', label: 'Sales analytics', description: 'Customers, dealer signups, sales and revenue · Admin and Super Admin only' },
+  { id: 'partners', label: 'Partners', description: 'CRM suppliers selling Panda Protect on their websites · Admin and Super Admin only' },
   { id: 'customers', label: 'Customers', description: "Dealers' end customers" },
   // 'claims' is retired: warranty claims are worked by the Buy A Warranty
   // claims desk, so this dashboard must not offer its own claims queue.
@@ -59,5 +60,5 @@ export const PANDA_BRAND = 'pandaprotect';
 export const BDM_ROLE_TABS = ['bdm-contacts', 'bdm-allocation', 'staff-hub', 'timesheets', 'account'];
 /** Default sections for the Manager job: most CRM views, but no staff access, pricing or system settings. */
 export const MANAGER_ROLE_TABS = PANDA_SECTION_ORDER.map((s) => s.id).filter(
-  (id) => !['user-permissions', 'trader-pricing', 'discount-codes', 'feature-flags', 'plans', 'document-mapping', 'analytics'].includes(id),
+  (id) => !['user-permissions', 'trader-pricing', 'discount-codes', 'feature-flags', 'plans', 'document-mapping', 'analytics', 'partners'].includes(id),
 );

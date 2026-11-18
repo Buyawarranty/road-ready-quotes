@@ -1,6 +1,7 @@
 import { PendingSignupBadge } from '@/components/admin/PendingSignups';
 import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import { SidebarAlertSlotTarget } from '@/components/admin/SidebarAlertSlot';
+import { canManagePartners } from '@/lib/partnerCheckout';
 import { PANDA_SECTION_ORDER, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
 import { canAccessSalesAnalytics } from '@/lib/salesAnalyticsAccess';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -280,6 +281,12 @@ export const defaultTabs: Tab[] = [
     label: 'Email Hub',
     icon: Mail,
     description: 'Unified email management: templates, campaigns, analytics & automation'
+  },
+  {
+    id: 'partners',
+    label: 'Partners',
+    icon: Building2,
+    description: 'CRM suppliers selling Panda Protect on their websites'
   },
   {
     id: 'analytics',
@@ -795,7 +802,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
   const filterRestrictedRaw = (tabs: Tab[]) => {
     const withPerms = applyExplicitPermissionOverrides(tabs)
       .filter(tab => tab.id !== 'discount-codes' || canManageDealerPromos(userRole))
-      .filter(tab => tab.id !== 'analytics' || canAccessSalesAnalytics(userRole, userPermissions));
+      .filter(tab => tab.id !== 'analytics' || canAccessSalesAnalytics(userRole, userPermissions))
+      .filter(tab => tab.id !== 'partners' || canManagePartners(userRole, userPermissions));
     // Price Updates is hard-restricted to management + Accounts, regardless of
     // any per-user tab permission grant.
     const PRICE_UPDATES_ROLES = new Set([

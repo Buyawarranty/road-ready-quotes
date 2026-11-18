@@ -5464,6 +5464,7 @@ export type Database = {
           ni_verified_at: string | null
           ni_verified_by: string | null
           original_amount: number | null
+          partner_id: string | null
           payment_collected_at: string | null
           payment_collected_by: string | null
           payment_collection_note: string | null
@@ -5611,6 +5612,7 @@ export type Database = {
           ni_verified_at?: string | null
           ni_verified_by?: string | null
           original_amount?: number | null
+          partner_id?: string | null
           payment_collected_at?: string | null
           payment_collected_by?: string | null
           payment_collection_note?: string | null
@@ -5758,6 +5760,7 @@ export type Database = {
           ni_verified_at?: string | null
           ni_verified_by?: string | null
           original_amount?: number | null
+          partner_id?: string | null
           payment_collected_at?: string | null
           payment_collected_by?: string | null
           payment_collection_note?: string | null
@@ -5839,6 +5842,13 @@ export type Database = {
             columns: ["dealer_id"]
             isOneToOne: false
             referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customers_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
             referencedColumns: ["id"]
           },
           {
@@ -11066,6 +11076,137 @@ export type Database = {
           utm_source?: string | null
           utm_term?: string | null
           visitor_id?: string | null
+        }
+        Relationships: []
+      }
+      partner_dealers: {
+        Row: {
+          created_at: string
+          dealer_id: string
+          id: string
+          partner_id: string
+        }
+        Insert: {
+          created_at?: string
+          dealer_id: string
+          id?: string
+          partner_id: string
+        }
+        Update: {
+          created_at?: string
+          dealer_id?: string
+          id?: string
+          partner_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_dealers_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partner_dealers_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partner_webhook_deliveries: {
+        Row: {
+          created_at: string
+          error: string | null
+          event: string
+          id: string
+          partner_id: string
+          payload: Json
+          status_code: number | null
+          success: boolean
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event: string
+          id?: string
+          partner_id: string
+          payload?: Json
+          status_code?: number | null
+          success?: boolean
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event?: string
+          id?: string
+          partner_id?: string
+          payload?: Json
+          status_code?: number | null
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_webhook_deliveries_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      partners: {
+        Row: {
+          api_key_hash: string | null
+          api_key_prefix: string | null
+          contact_email: string | null
+          contact_name: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          mode: string
+          name: string
+          notes: string | null
+          platform: string | null
+          slug: string
+          status: string
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          api_key_hash?: string | null
+          api_key_prefix?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mode?: string
+          name: string
+          notes?: string | null
+          platform?: string | null
+          slug: string
+          status?: string
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          api_key_hash?: string | null
+          api_key_prefix?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mode?: string
+          name?: string
+          notes?: string | null
+          platform?: string | null
+          slug?: string
+          status?: string
+          updated_at?: string
+          webhook_url?: string | null
         }
         Relationships: []
       }

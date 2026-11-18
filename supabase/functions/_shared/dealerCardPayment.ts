@@ -1,4 +1,5 @@
 import { notifyDealerSale, syncDealerSale } from './dealerSaleFulfilment.ts';
+import { partnerWarrantySummary, sendPartnerWebhook } from './partnerWebhook.ts';
 
 interface DealerStripeSession {
   id: string;
@@ -64,5 +65,9 @@ export async function finaliseDealerCardPayment(admin: any, session: DealerStrip
     quoteStatus: 'paid',
   });
   const email = confirmed ? await notifyDealerSale(admin, customer.id, 'paid') : null;
+  if (confirmed && metadata.partner_id) {
+    const summary = await partnerWarrantySummary(admin, customer.id);
+    if (summary) await sendPartnerWebhook(admin, metadata.partner_id, 'warranty.paid', { ...summary, reference: metadata.partner_reference || null });
+  }
   return { confirmed: true, alreadyConfirmed: !confirmed, sale, email };
 }

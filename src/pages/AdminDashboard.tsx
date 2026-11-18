@@ -3,6 +3,7 @@ import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
 import { resolvePandaSection, BDM_ROLE_TABS, MANAGER_ROLE_TABS, PANDA_SECTION_ORDER } from '@/lib/pandaAdminSections';
+import { canManagePartners } from '@/lib/partnerCheckout';
 import { canAccessSalesAnalytics } from '@/lib/salesAnalyticsAccess';
 import { ADMIN_ROLES } from '@/lib/adminRoles';
 import { AdminSectionTabs } from '@/components/admin/AdminSectionTabs';
@@ -65,6 +66,7 @@ const SpecialVehiclePlansTab = lazy(() => import('@/components/admin/SpecialVehi
 const DiscountCodesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminDiscountCodes'));
 const ReferralsTab = lazy(() => import('@/components/admin/ReferralsTab').then(m => ({ default: m.ReferralsTab })));
 const DealerAdminAnalyticsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminAnalytics'));
+const PartnersTab = lazy(() => import('@/components/admin/partners/PartnersTab'));
 const UnifiedEmailHub = lazy(() => import('@/components/admin/UnifiedEmailHub'));
 const AccountSettings = lazy(() => import('@/components/admin/AccountSettings'));
 const AttributionSettingsTab = lazy(() => import('@/components/admin/AttributionSettingsTab'));
@@ -186,6 +188,7 @@ const LIVE_CALLS_ALWAYS_ALLOWED_ROLES = new Set(['sales', 'sales_lead', 'sales_m
 const isTabAllowedForRole = (rawTab: string, role: string | null, permissions?: Record<string, boolean> | null) => {
   const tab = canonicalTabId(rawTab);
   if (tab === 'analytics') return canAccessSalesAnalytics(role, permissions);
+  if (tab === 'partners') return canManagePartners(role, permissions);
   if (tab === 'discount-codes') return canManageDealerPromos(role);
   const permKey = `tab_${tab}`;
   if (tab === 'account') return true;
@@ -847,6 +850,11 @@ const AdminDashboard = () => {
           return <div className="p-6"><h2 className="text-xl font-semibold">Access denied</h2><p className="mt-1 text-sm text-muted-foreground">Sales analytics is currently restricted to Admin and Super Admin.</p></div>;
         }
         return <DealerAdminAnalyticsTab />;
+      case 'partners':
+        if (!canManagePartners(effectiveUserRole, effectiveUserPermissions)) {
+          return <div className="p-6"><h2 className="text-xl font-semibold">Access denied</h2><p className="mt-1 text-sm text-muted-foreground">Partners is restricted to Admin and Super Admin.</p></div>;
+        }
+        return <PartnersTab />;
       case 'page-analytics':
         return <PageAnalyticsTab />;
       case 'google-ads':

@@ -1,1 +1,12 @@
 project_id = "gzauvmzsjchjfozahdxj"
+[functions.partner-checkout]
+verify_jwt = false
+
+[functions.partner-confirm-payment]
+verify_jwt = false
+
+[functions.partner-admin]
+verify_jwt = false
+
+[functions.partner-api-v1]
+verify_jwt = false
