@@ -58,7 +58,12 @@ describe('sales analytics access', () => {
     expect(canAccessSalesAnalytics('admin', { tab_analytics: false })).toBe(false);
   });
 
-  it.each(['manager', 'bdm', 'viewer', 'accounts_manager', 'dev_tester'])('does not let a permission grant expose analytics to %s', (role) => {
+  it('lets Accounts staff open analytics', () => {
+    expect(canAccessSalesAnalytics('accounts')).toBe(true);
+    expect(canAccessSalesAnalytics('accounts_manager')).toBe(true);
+  });
+
+  it.each(['manager', 'bdm', 'viewer', 'dev_tester'])('does not let a permission grant expose analytics to %s', (role) => {
     expect(canAccessSalesAnalytics(role, { tab_analytics: true })).toBe(false);
     expect(canEditSalesAnalyticsPermission(role)).toBe(false);
   });

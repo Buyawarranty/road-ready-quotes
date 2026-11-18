@@ -1,3 +1,4 @@
+import { coverMonths, isWithinCoolingOff, suggestedRefund } from '@/lib/cancellationRefund';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -62,6 +63,9 @@ interface RefundRecord {
   warranty_number?: string;
   cancellation_note?: string | null;
   cancellation_note_updated_at?: string | null;
+  signup_date?: string | null;
+  cancelled_at?: string | null;
+  refund_amount_paid?: number | null;
 }
 
 interface AdminUser {
@@ -96,7 +100,8 @@ export const RefundsPaidTab: React.FC<{
   }, [currentAdminUserProp, user?.id, adminUsers]);
 
   const isFinancialRole = userRole === 'super_admin' || userRole === 'admin'
-    || currentAdminUser?.role === 'super_admin' || currentAdminUser?.role === 'admin';
+    || userRole === 'accounts' || userRole === 'accounts_manager'
+    || ['super_admin','admin','accounts','accounts_manager'].includes(currentAdminUser?.role || '');
   const canSeeAll = !!userRole && FULL_VIEW_ROLES.has(userRole);
 
   const [records, setRecords] = useState<RefundRecord[]>([]);
@@ -188,14 +193,14 @@ export const RefundsPaidTab: React.FC<{
       // Only fetch refunded customers (status = 'refunded' / 'Refunded')
       const { data, error } = await supabase
         .from('customers')
-        .select('id, name, email, phone, registration_plate, vehicle_make, vehicle_model, plan_type, payment_type, status, final_amount, created_at, updated_at, assigned_to, warranty_number, cancellation_note, cancellation_note_updated_at')
+        .select('id, name, email, phone, registration_plate, vehicle_make, vehicle_model, plan_type, payment_type, status, final_amount, created_at, updated_at, assigned_to, warranty_number, cancellation_note, cancellation_note_updated_at, signup_date, cancelled_at, refund_amount_paid')
         .eq('brand', 'pandaprotect')
         .ilike('status', 'refunded')
         .order('updated_at', { ascending: false })
         .limit(3000);
 
       if (error) throw error;
-      setRecords(data || []);
+      setRecords((data as any) || []);
       setInitialLoadDone(true);
     } catch (err) {
       console.error('Error fetching refunds:', err);
@@ -299,6 +304,24 @@ export const RefundsPaidTab: React.FC<{
   };
 
   const totalRefunded = filteredRecords.length;
+  const refundInfo = (r: RefundRecord) => {
+    const start = r.signup_date || r.created_at;
+    const end = r.cancelled_at || r.updated_at;
+    const within = isWithinCoolingOff(start, end);
+    const saved = r.refund_amount_paid;
+    const hasSaved = saved !== null && saved !== undefined;
+    const paid = hasSaved ? Number(saved) : suggestedRefund(Number(r.final_amount) || 0, start, end, coverMonths(r.payment_type));
+    return { within, paid, estimated: !hasSaved };
+  };
+  const split = useMemo(() => {
+    const acc = { withinCount: 0, withinPaid: 0, afterCount: 0, afterPaid: 0, totalPaid: 0, estimated: 0 };
+    filteredRecords.forEach(r => {
+      const i = refundInfo(r);
+      if (i.within) { acc.withinCount++; acc.withinPaid += i.paid; } else { acc.afterCount++; acc.afterPaid += i.paid; }
+      acc.totalPaid += i.paid; if (i.estimated) acc.estimated++;
+    });
+    return acc;
+  }, [filteredRecords]);
   const totalValue = isFinancialRole ? filteredRecords.reduce((sum, r) => sum + (r.final_amount || 0), 0) : 0;
   const excludedTestCount = useMemo(
     () => records.filter(r => (r.final_amount || 0) < TEST_PURCHASE_THRESHOLD).length,
@@ -324,7 +347,10 @@ export const RefundsPaidTab: React.FC<{
       Vehicle: [r.vehicle_make, r.vehicle_model].filter(Boolean).join(' '),
       Plan: r.plan_type,
       Status: r.status,
-      'Refund Amount': isFinancialRole ? (r.final_amount || 0) : 'N/A',
+      'Sale Amount': isFinancialRole ? (r.final_amount || 0) : 'N/A',
+      'Refund Paid': isFinancialRole ? refundInfo(r).paid : 'N/A',
+      'Refund Paid Estimated': isFinancialRole ? (refundInfo(r).estimated ? 'Yes' : 'No') : 'N/A',
+      'Cancellation Type': refundInfo(r).within ? 'Within 14 days (full refund)' : 'After 14 days (pro-rata)',
       'Refund Date': format(new Date(r.updated_at), 'dd/MM/yyyy'),
       'Purchase Date': format(new Date(r.created_at), 'dd/MM/yyyy'),
       Agent: getAgentName(r.assigned_to),
@@ -383,17 +409,28 @@ export const RefundsPaidTab: React.FC<{
       </div>
 
       {/* Summary Cards */}
-      <div className={cn('grid gap-3', isFinancialRole ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-2')}>
+      <div className={cn('grid gap-3', isFinancialRole ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4')}>
         <Card className="p-3 border-red-200">
           <p className="text-xs text-muted-foreground">Total Refunds</p>
           <p className="text-2xl font-bold text-destructive">{totalRefunded}</p>
         </Card>
         {isFinancialRole && (
           <Card className="p-3 border-red-200">
-            <p className="text-xs text-muted-foreground">Total Refunded Value</p>
-            <p className="text-2xl font-bold text-destructive">£{totalValue.toFixed(2)}</p>
+            <p className="text-xs text-muted-foreground">Total refund paid</p>
+            <p className="text-2xl font-bold text-destructive">£{split.totalPaid.toFixed(2)}</p>
+            <p className="text-[11px] text-muted-foreground">Sales value £{totalValue.toFixed(2)}{split.estimated > 0 ? ` · ${split.estimated} estimated` : ''}</p>
           </Card>
         )}
+        <Card className="p-3 border-emerald-200">
+          <p className="text-xs text-muted-foreground">Within 14 days (full refund)</p>
+          <p className="text-2xl font-bold">{split.withinCount}</p>
+          {isFinancialRole && <p className="text-xs font-medium">£{split.withinPaid.toFixed(2)} refunded</p>}
+        </Card>
+        <Card className="p-3 border-amber-200">
+          <p className="text-xs text-muted-foreground">After 14 days (pro-rata)</p>
+          <p className="text-2xl font-bold">{split.afterCount}</p>
+          {isFinancialRole && <p className="text-xs font-medium">£{split.afterPaid.toFixed(2)} refunded</p>}
+        </Card>
         <Card className="p-3">
           <p className="text-xs text-muted-foreground">Period</p>
           <p className="text-sm font-medium">{displayDateLabel}</p>
@@ -545,7 +582,9 @@ export const RefundsPaidTab: React.FC<{
                   <TableHead>Reg Plate</TableHead>
                   <TableHead>Vehicle</TableHead>
                   <TableHead>Plan</TableHead>
-                  {isFinancialRole && <TableHead>Refund Amount</TableHead>}
+                  {isFinancialRole && <TableHead>Sale amount</TableHead>}
+                  {isFinancialRole && <TableHead>Refund paid</TableHead>}
+                  <TableHead>Cancellation type</TableHead>
                   <TableHead>Refund Date</TableHead>
                   <TableHead>Agent</TableHead>
                   <TableHead className="min-w-[260px]">Note</TableHead>
@@ -554,7 +593,7 @@ export const RefundsPaidTab: React.FC<{
               <TableBody>
                 {pagination.paginatedData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={isFinancialRole ? 8 : 7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={isFinancialRole ? 10 : 8} className="text-center py-8 text-muted-foreground">
                       <Banknote className="h-8 w-8 mx-auto mb-2 opacity-40" />
                       No refunds found for this period
                     </TableCell>
@@ -599,6 +638,17 @@ export const RefundsPaidTab: React.FC<{
                             £{(record.final_amount || 0).toFixed(2)}
                           </TableCell>
                         )}
+                        {isFinancialRole && (
+                          <TableCell className="text-sm font-semibold text-destructive">
+                            £{refundInfo(record).paid.toFixed(2)}
+                            {refundInfo(record).estimated && <span className="block text-[10px] font-normal text-muted-foreground">estimated</span>}
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          {refundInfo(record).within
+                            ? <Badge variant="outline" className="text-xs border-emerald-300 text-emerald-700">Within 14 days · full</Badge>
+                            : <Badge variant="outline" className="text-xs border-amber-300 text-amber-700">After 14 days · pro-rata</Badge>}
+                        </TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           <div>{format(new Date(record.updated_at), 'dd MMM yyyy')}</div>
                           <div className="text-xs">{daysHeld} day{daysHeld === 1 ? '' : 's'} after purchase</div>
