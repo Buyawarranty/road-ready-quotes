@@ -193,8 +193,8 @@ const ContactUs = () => {
                   <span className="contact-icon contact-icon-orange"><FileText /></span>
                   <div><h2>Claims &amp; repairs</h2><p>Start a claim or check progress with our claims team.</p></div>
                 </div>
-                <a className="contact-detail-link" href="mailto:claims@pandaprotect.co.uk"><Mail />claims@pandaprotect.co.uk</a>
-                <Button asChild className="contact-action contact-action-navy"><a href="mailto:claims@pandaprotect.co.uk">Email us <ArrowRight /></a></Button>
+                <a className="contact-detail-link" href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20claim%20help"><Mail />support@pandaprotect.co.uk</a>
+                <Button asChild className="contact-action contact-action-navy"><Link to="/make-a-claim">Make a claim <ArrowRight /></Link></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>
               </article>
 

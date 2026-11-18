@@ -530,7 +530,7 @@ const StartClaim: React.FC = () => {
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" variant="outline" onClick={lookupVehicle}>Try again</Button>
                   <Button size="sm" variant="ghost" asChild>
-                    <a href="mailto:hello@pandaprotect.co.uk">Contact support</a>
+                    <a href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20claim%20help">Contact support</a>
                   </Button>
                 </div>
               </div>

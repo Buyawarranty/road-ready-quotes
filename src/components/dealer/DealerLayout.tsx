@@ -34,6 +34,7 @@ import {
   FolderOpen,
   BookOpen,
   Headphones,
+  Mail,
   MoreHorizontal,
   Ban,
 } from 'lucide-react';
@@ -143,7 +144,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               : "Your account isn't linked to an approved dealer profile yet. Our team will be in touch shortly."}
           </p>
           <p className="text-xs text-gray-500">
-            Questions? Email <a className="font-semibold text-crm-orange" href="mailto:hello@pandaprotect.co.uk">hello@pandaprotect.co.uk</a>
+            Questions? Email <a className="font-semibold text-crm-orange" href="mailto:support@pandaprotect.co.uk">support@pandaprotect.co.uk</a>
           </p>
           <Button onClick={signOut} variant="outline" className="w-full">Sign out</Button>
         </div>
@@ -366,8 +367,14 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               <BookOpen className="h-[18px] w-[18px] shrink-0" /> Resources
             </Link>
           </div>
+          <a
+            href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20dealer%20support"
+            className="mb-2 flex min-h-11 items-center gap-2 break-all rounded-md px-3 text-sm font-semibold text-crm-navy transition-colors hover:bg-muted"
+          >
+            <Mail className="h-[18px] w-[18px] shrink-0" /> support@pandaprotect.co.uk
+          </a>
           <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-background font-bold !text-crm-navy hover:bg-crm-orange hover:!text-primary-foreground">
-            <a href="mailto:hello@pandaprotect.co.uk" >Contact support →</a>
+            <a href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20dealer%20support">Contact support →</a>
           </Button>
         </div>
       </aside>

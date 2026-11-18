@@ -65,7 +65,7 @@ const ROUTE_COPY: Record<string, RouteCopy> = {
     title: 'Cancel or amend a dealer-issued warranty',
     subtitle: 'For dealers managing their issued policies.',
     intro:
-      'Dealer-issued warranty cancellations and amendments are handled inside the dealer portal. If you need help, email hello@pandaprotect.co.uk and we will action it the same working day.',
+      'Dealer-issued warranty cancellations and amendments are handled inside the dealer portal. If you need help, email support@pandaprotect.co.uk and we will action it the same working day.',
   },
   '/warranty-transfer': {
     title: 'Transfer cover when a vehicle changes hands',
@@ -77,13 +77,13 @@ const ROUTE_COPY: Record<string, RouteCopy> = {
     title: 'Talk to the Panda Protect trade team',
     subtitle: 'We support UK motor dealers — not retail buyers.',
     intro:
-      'Whether you want to join the programme, ask about cover, or need help on an existing policy, email hello@pandaprotect.co.uk and we will be back to you on the same working day.',
+      'Whether you want to join the programme, ask about cover, or need help on an existing policy, email support@pandaprotect.co.uk and we will be back to you on the same working day.',
   },
   '/complaints': {
     title: 'Complaints handling for dealers',
     subtitle: 'How to raise a concern with Panda Protect.',
     intro:
-      'If you are a dealer or end customer with a concern about a Panda Protect product, please email hello@pandaprotect.co.uk with the policy or registration number. We acknowledge complaints within one working day and aim to resolve within 14 days.',
+      'If you are a dealer or end customer with a concern about a Panda Protect product, please email support@pandaprotect.co.uk with the policy or registration number. We acknowledge complaints within one working day and aim to resolve within 14 days.',
   },
   '/warranty-plan': {
     title: 'Panda Protect dealer warranty plans',
@@ -149,7 +149,7 @@ const ROUTE_COPY: Record<string, RouteCopy> = {
     title: 'Dealer FAQ',
     subtitle: 'Common questions from motor trade dealers.',
     intro:
-      'Quick answers for dealers thinking about joining the Panda Protect programme. For anything specific to your business, email hello@pandaprotect.co.uk.',
+      'Quick answers for dealers thinking about joining the Panda Protect programme. For anything specific to your business, email support@pandaprotect.co.uk.',
   },
 };
 
@@ -293,9 +293,9 @@ const TradeOnlyPage: React.FC = () => {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="text-base border-white/70 bg-white text-foreground hover:bg-white/90">
-                <a href="mailto:hello@pandaprotect.co.uk">
+                <a href="mailto:support@pandaprotect.co.uk">
                   <Mail className="mr-2 h-5 w-5" />
-                  hello@pandaprotect.co.uk
+                  support@pandaprotect.co.uk
                 </a>
               </Button>
             </div>
@@ -439,7 +439,7 @@ const TradeOnlyPage: React.FC = () => {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="text-base">
-                <a href="mailto:hello@pandaprotect.co.uk">
+                <a href="mailto:support@pandaprotect.co.uk">
                   <Mail className="mr-2 h-5 w-5" />
                   Email the trade team
                 </a>
@@ -456,8 +456,8 @@ const TradeOnlyPage: React.FC = () => {
             </p>
             <p>
               Dealer support:{' '}
-              <a className="text-primary hover:underline" href="mailto:hello@pandaprotect.co.uk">
-                hello@pandaprotect.co.uk
+              <a className="text-primary hover:underline" href="mailto:support@pandaprotect.co.uk">
+                support@pandaprotect.co.uk
               </a>
             </p>
           </div>
