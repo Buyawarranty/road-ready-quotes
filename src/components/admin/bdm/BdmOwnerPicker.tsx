@@ -8,10 +8,11 @@ import BdmOwnerTag from './BdmOwnerTag';
 interface Props {
   dealershipId: string; ownerId?: string | null; staff: { user_id: string; name: string }[];
   onChanged: () => void; className?: string;
+  table?: 'bdm_dealerships' | 'bdm_portfolio'; allowNone?: boolean;
 }
 
 /** Clickable owner tag: pick which BDM owns the dealership (or take it yourself). Access is enforced server-side. */
-const BdmOwnerPicker: React.FC<Props> = ({ dealershipId, ownerId, staff, onChanged, className }) => {
+const BdmOwnerPicker: React.FC<Props> = ({ dealershipId, ownerId, staff, onChanged, className, table = 'bdm_dealerships', allowNone = true }) => {
   const { toast } = useToast();
   const [me, setMe] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -21,7 +22,7 @@ const BdmOwnerPicker: React.FC<Props> = ({ dealershipId, ownerId, staff, onChang
   const assign = async (uid: string | null) => {
     if (busy || uid === (ownerId ?? null)) return;
     setBusy(true);
-    const { data, error } = await (supabase as any).from('bdm_dealerships').update({ assigned_bdm: uid }).eq('id', dealershipId).select('id');
+    const { data, error } = await (supabase as any).from(table).update(table === 'bdm_portfolio' ? { bdm_user_id: uid } : { assigned_bdm: uid }).eq('id', dealershipId).select('id');
     setBusy(false);
     if (error || !data?.length) { toast({ title: 'Could not change owner', description: error?.message || 'You do not have access to this dealership.', variant: 'destructive' }); return; }
     toast({ title: uid ? `Owner set to ${staff.find((s) => s.user_id === uid)?.name ?? 'you'}` : 'Owner removed' });
@@ -43,7 +44,7 @@ const BdmOwnerPicker: React.FC<Props> = ({ dealershipId, ownerId, staff, onChang
             <span className="flex-1">{s.name}</span>{s.user_id === ownerId && <Check className="h-4 w-4" />}
           </DropdownMenuItem>
         ))}
-        {ownerId && <><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => assign(null)} className="text-muted-foreground">Remove owner</DropdownMenuItem></>}
+        {ownerId && allowNone && <><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => assign(null)} className="text-muted-foreground">Remove owner</DropdownMenuItem></>}
       </DropdownMenuContent>
     </DropdownMenu>
   );
