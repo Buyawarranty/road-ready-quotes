@@ -105,7 +105,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
             <ValidatedField icon={Phone} id="add-dealer-phone" label="Phone *" type="tel" inputMode="tel" placeholder="e.g. 07700 900123" autoComplete="tel" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} error={errors.phone} show={shown('phone')} hasValue={!!form.phone.trim()} maxLength={20} />
             <label className="flex items-start gap-2 rounded-md border border-dashed p-3 text-sm cursor-pointer">
               <input type="checkbox" className="mt-1" checked={isTest} onChange={e => setIsTest(e.target.checked)} />
-              <span><span className="font-semibold">TEST account</span><br /><span className="text-muted-foreground">Only Admins, Super Admins and testers can see it. Use it to try the full dealer dashboard.</span></span>
+              <span><span className="font-semibold">This is a test account</span><br /><span className="text-muted-foreground">Tick only if this dealer is for testing. Leave unticked for a real dealer. Test accounts are seen only by Admins, Super Admins and testers.</span></span>
             </label>
             <div className="flex justify-end gap-2 pt-2">
               <Button type="button" variant="outline" onClick={() => close(false)}>Cancel</Button>
