@@ -286,12 +286,22 @@ const Step3Pricing: React.FC = () => {
     <WhatsCoveredPanel />
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
       <div className="flex flex-col items-start gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-      {trade ? <div className="flex w-full shrink-0 items-stretch justify-center gap-4 rounded-lg border border-crm-line bg-card px-5 py-4 sm:w-auto sm:justify-start">
-        <span aria-hidden className="w-1 shrink-0 rounded-full bg-crm-orange" />
-        <div className="min-w-0 text-center sm:text-left">
-          <p className="text-sm font-extrabold text-crm-navy">Approx. profit</p>
-          <strong className="mt-1 block text-3xl font-black leading-9 text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
-          <p className="mt-2 max-w-52 text-xs leading-5 text-muted-foreground">{term && prices[term] != null ? 'Based on your selling price' : 'Based on recommended retail price'} · rounded to a whole number</p>
+      {trade ? <div className="w-full overflow-hidden rounded-xl border border-crm-line bg-card shadow-sm lg:w-auto lg:min-w-[440px]" aria-label="Price summary">
+        <div className="grid grid-cols-2 divide-x divide-crm-line">
+          <div className="px-4 py-4 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">You pay</p>
+            <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(cost) : '—'}</strong>
+            <p className="text-xs text-muted-foreground">Trade price inc. VAT</p>
+          </div>
+          <div className="bg-crm-orange-soft/50 px-4 py-4 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-crm-orange">Customer pays</p>
+            <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(retail) : '—'}</strong>
+            <p className="text-xs text-muted-foreground">{term && prices[term] != null ? 'Your selling price' : 'Recommended retail'} inc. VAT</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-3 border-t border-crm-line px-4 py-3">
+          <span className="flex items-center gap-2 text-sm font-extrabold text-crm-navy"><TrendingUp className="h-4 w-4 text-crm-gold" aria-hidden="true" />Your approx. profit</span>
+          <strong className="text-2xl font-black text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
