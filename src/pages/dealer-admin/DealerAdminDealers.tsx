@@ -30,6 +30,7 @@ interface DealerRow {
   phone: string | null;
   company_name: string;
   website?: string | null;
+  vehicle_stock?: number | null;
   is_test?: boolean;
   status?: string | null;
   discount_pct: number;
@@ -85,7 +86,7 @@ const DealerAdminDealers: React.FC = () => {
   const [savingEdit, setSavingEdit] = useState(false);
   const EDIT_FIELDS: [string, string][] = [
     ['company_name', 'Company name'], ['trading_name', 'Trading name'], ['first_name', 'First name'], ['last_name', 'Last name'],
-    ['phone', 'Phone'], ['website', 'Website'], ['address_line1', 'Address line 1'], ['address_line2', 'Address line 2'], ['city', 'Town / city'],
+    ['phone', 'Phone'], ['website', 'Website'], ['vehicle_stock', 'Cars in stock'], ['address_line1', 'Address line 1'], ['address_line2', 'Address line 2'], ['city', 'Town / city'],
     ['county', 'County'], ['postcode', 'Postcode'], ['fca_number', 'FCA number'],
   ];
   const saveEdit = async () => {
@@ -95,6 +96,11 @@ const DealerAdminDealers: React.FC = () => {
     const patch: Record<string, any> = {};
     EDIT_FIELDS.forEach(([k]) => { const v = String(editing[k] ?? '').trim(); patch[k] = v || null; });
     patch.company_name = String(editing.company_name).trim();
+    if (patch.vehicle_stock != null) {
+      const n = Number(String(patch.vehicle_stock).replace(/[^\d]/g, ''));
+      if (!Number.isInteger(n) || n < 0 || String(patch.vehicle_stock).replace(/[\d,\s]/g, '')) { setSavingEdit(false); toast({ title: 'Cars in stock must be a whole number', variant: 'destructive' }); return; }
+      patch.vehicle_stock = n;
+    }
     if (patch.website && !/^https?:\/\//i.test(patch.website)) patch.website = `https://${patch.website}`;
     const full = [patch.first_name, patch.last_name].filter(Boolean).join(' ');
     if (full) patch.name = full;
@@ -351,6 +357,7 @@ const DealerAdminDealers: React.FC = () => {
                         <td className="px-3 py-2">
                           <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}{r.accounts_pending && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground align-middle">Accounts@ needs to approve</span>}</p>
                           {r.bdm ? <div className="mt-1"><BdmOwnerPicker dealershipId={r.bdm.id} ownerId={r.bdm.assigned_bdm} staff={staff} onChanged={load} /></div> : <BdmOwnerTag name={null} className="mt-1" />}
+                          {r.vehicle_stock != null && <span className="block text-xs text-muted-foreground">{r.vehicle_stock} cars in stock</span>}
                           {r.website && <a href={r.website} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="block text-xs text-primary hover:underline truncate max-w-[220px]">{r.website.replace(/^https?:\/\//, "")}</a>}
                           <p className="text-xs text-muted-foreground">{r.name}</p>
                         </td>
