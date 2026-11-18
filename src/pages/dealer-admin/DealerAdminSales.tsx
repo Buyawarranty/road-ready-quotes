@@ -3,7 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Search } from 'lucide-react';
+import { Loader2, Search, Ban, FlaskConical, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
@@ -20,6 +23,7 @@ interface SaleRow {
   signup_date: string;
   final_amount: number | null;
   dealer_id: string;
+  is_test?: boolean;
   dealer_name?: string;
   dealer_company?: string;
 }
@@ -31,15 +35,29 @@ const DealerAdminSales: React.FC = () => {
   const [search, setSearch] = useState('');
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
   const [dealerFilter, setDealerFilter] = useState<string>('all');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [canManage, setCanManage] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [reload, setReload] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('user_roles').select('role').eq('user_id', user.id).in('role', ['super_admin']);
+      setCanManage(!!data?.length);
+    })();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
       const [{ data: customers, error: customersError }, { data: dealers, error: dealersError }] = await Promise.all([
         supabase
           .from('customers')
-          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, dealer_id')
+          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, dealer_id, is_test' as any)
           .eq('brand', 'pandaprotect')
           .not('dealer_id', 'is', null)
+          .or('is_deleted.is.null,is_deleted.eq.false')
           .order('signup_date', { ascending: false })
           .limit(1000),
         supabase.from('dealers').select('id, name, company_name'),
@@ -65,7 +83,7 @@ const DealerAdminSales: React.FC = () => {
       setLoading(false);
     };
     load();
-  }, []);
+  }, [reload]);
 
   const dealerOptions = useMemo(() => {
     const m = new Map<string, string>();
@@ -91,7 +109,22 @@ const DealerAdminSales: React.FC = () => {
     });
   }, [rows, search, paymentFilter, dealerFilter]);
 
-  const totalRevenue = filtered.reduce((sum, r) => sum + dealerSaleAmount(r), 0);
+  const totalRevenue = filtered.filter(r => !r.is_test).reduce((sum, r) => sum + dealerSaleAmount(r), 0);
+  const allSelected = filtered.length > 0 && filtered.every(r => selected.has(r.id));
+  const toggle = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const act = async (kind: 'cancel' | 'test' | 'untest' | 'delete', ids: string[]) => {
+    if (!ids.length) return;
+    const label = { cancel: 'cancel', test: 'mark as test', untest: 'unmark as test', delete: 'delete' }[kind];
+    if (!window.confirm(`Are you sure you want to ${label} ${ids.length} sale${ids.length > 1 ? 's' : ''}?`)) return;
+    setBusy(true);
+    const patch = kind === 'cancel' ? { status: 'Cancelled' } : kind === 'test' ? { is_test: true } : kind === 'untest' ? { is_test: false } : { is_deleted: true, deleted_at: new Date().toISOString() };
+    const { error } = await supabase.from('customers').update(patch as any).in('id', ids);
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success('Updated');
+    setSelected(new Set());
+    setReload(x => x + 1);
+  };
 
   return (
     <div className="space-y-6">
@@ -138,6 +171,15 @@ const DealerAdminSales: React.FC = () => {
             </Select>
           </div>
 
+          {canManage && selected.size > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/40 p-2 text-sm">
+              <span className="font-semibold">{selected.size} selected</span>
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => act('cancel', [...selected])}><Ban className="mr-1 h-4 w-4" /> Cancel</Button>
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => act('test', [...selected])}><FlaskConical className="mr-1 h-4 w-4" /> Mark as test</Button>
+              <Button size="sm" variant="destructive" disabled={busy} onClick={() => act('delete', [...selected])}><Trash2 className="mr-1 h-4 w-4" /> Delete</Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>Clear</Button>
+            </div>
+          )}
           {loading ? (
             <div className="py-12 flex justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -151,6 +193,7 @@ const DealerAdminSales: React.FC = () => {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 border-y border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
+                    {canManage && <th className="px-3 py-2"><Checkbox aria-label="Select all" checked={allSelected} onCheckedChange={() => setSelected(allSelected ? new Set() : new Set(filtered.map(r => r.id)))} /></th>}
                     <th className="px-3 py-2 font-medium">Date</th>
                     <th className="px-3 py-2 font-medium">Customer</th>
                     <th className="px-3 py-2 font-medium">Vehicle</th>
@@ -159,6 +202,7 @@ const DealerAdminSales: React.FC = () => {
                     <th className="px-3 py-2 font-medium">Payment</th>
                     <th className="px-3 py-2 font-medium">Status</th>
                     <th className="px-3 py-2 font-medium text-right">Amount</th>
+                    {canManage && <th className="px-3 py-2 font-medium text-right">Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -167,6 +211,7 @@ const DealerAdminSales: React.FC = () => {
                     const active = (r.status || '').toLowerCase() === 'active';
                     return (
                       <tr key={r.id} className="border-b border-border hover:bg-muted/30">
+                        {canManage && <td className="px-3 py-2"><Checkbox aria-label="Select sale" checked={selected.has(r.id)} onCheckedChange={() => toggle(r.id)} /></td>}
                         <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">
                           {new Date(r.signup_date).toLocaleDateString('en-GB')}
                         </td>
@@ -186,10 +231,16 @@ const DealerAdminSales: React.FC = () => {
                           <Badge variant="outline" className={active ? 'border-green-500 text-green-700' : ''}>
                             {r.status || '—'}
                           </Badge>
+                          {r.is_test && <Badge variant="secondary" className="ml-1">Test</Badge>}
                         </td>
                         <td className="px-3 py-2 text-right font-semibold">
                           £{dealerSaleAmount(r).toFixed(2)}
                         </td>
+                        {canManage && <td className="px-3 py-2 text-right whitespace-nowrap">
+                          {!['cancelled','refunded'].includes((r.status||'').toLowerCase()) && <Button size="icon" variant="ghost" title="Cancel sale" disabled={busy} onClick={() => act('cancel', [r.id])}><Ban className="h-4 w-4" /></Button>}
+                          <Button size="icon" variant="ghost" title={r.is_test ? 'Unmark as test' : 'Mark as test'} disabled={busy} onClick={() => act(r.is_test ? 'untest' : 'test', [r.id])}><FlaskConical className="h-4 w-4" /></Button>
+                          <Button size="icon" variant="ghost" title="Delete sale" disabled={busy} onClick={() => act('delete', [r.id])}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                        </td>}
                       </tr>
                     );
                   })}

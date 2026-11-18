@@ -5477,6 +5477,7 @@ export type Database = {
           is_deleted: boolean | null
           is_direct_website_sale: boolean | null
           is_manual_entry: boolean | null
+          is_test: boolean
           is_test_cancellation: boolean
           labour_rate: number | null
           last_login: string | null
@@ -5627,6 +5628,7 @@ export type Database = {
           is_deleted?: boolean | null
           is_direct_website_sale?: boolean | null
           is_manual_entry?: boolean | null
+          is_test?: boolean
           is_test_cancellation?: boolean
           labour_rate?: number | null
           last_login?: string | null
@@ -5777,6 +5779,7 @@ export type Database = {
           is_deleted?: boolean | null
           is_direct_website_sale?: boolean | null
           is_manual_entry?: boolean | null
+          is_test?: boolean
           is_test_cancellation?: boolean
           labour_rate?: number | null
           last_login?: string | null
