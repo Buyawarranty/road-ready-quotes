@@ -72,6 +72,7 @@ const UnifiedEmailHub = lazy(() => import('@/components/admin/UnifiedEmailHub'))
 const AccountSettings = lazy(() => import('@/components/admin/AccountSettings'));
 const AttributionSettingsTab = lazy(() => import('@/components/admin/AttributionSettingsTab'));
 const FeatureFlagsTab = lazy(() => import('@/components/admin/FeatureFlagsTab'));
+const CyberSecurityTab = lazy(() => import('@/components/admin/CyberSecurityTab'));
 const ApiConnectivityTest = lazy(() => import('@/components/admin/ApiConnectivityTest').then(m => ({ default: m.ApiConnectivityTest })));
 const UserPermissionsTab = lazy(() => import('@/components/admin/UserPermissionsTab').then(m => ({ default: m.UserPermissionsTab })));
 const LeadTeamsTab = lazy(() => import('@/components/admin/LeadTeamsTab').then(m => ({ default: m.LeadTeamsTab })));
@@ -1000,6 +1001,16 @@ const AdminDashboard = () => {
           );
         }
         return <FeatureFlagsTab userRole={effectiveUserRole} />;
+      case 'cyber-security':
+        if (effectiveUserRole !== 'super_admin' && effectiveUserRole !== 'admin') {
+          return (
+            <div className="p-6">
+              <h2 className="text-xl font-semibold">Access denied</h2>
+              <p className="text-sm text-muted-foreground mt-1">Cyber security is restricted to administrators.</p>
+            </div>
+          );
+        }
+        return <CyberSecurityTab />;
       case 'staff-hub':
         return <StaffHubTab />;
       case 'agent-feedback':

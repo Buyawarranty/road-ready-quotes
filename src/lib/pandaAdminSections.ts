@@ -24,6 +24,7 @@ export const PANDA_SECTION_ORDER: { id: string; label: string; description: stri
   { id: 'plans', label: 'Terms & conditions', description: 'Warranty terms versions' },
   { id: 'emails', label: 'Email hub', description: 'Emails sent to dealers and customers' },
   { id: 'feature-flags', label: 'Feature switches', description: 'Turn features such as Manage My Claim on or off' },
+  { id: 'cyber-security', label: 'Cyber security', description: 'Planned data-protection requirements · Admin and Super Admin only' },
   { id: 'user-permissions', label: 'User permissions', description: 'Staff access' },
   { id: 'staff-hub', label: 'Staff hub', description: 'Staff documents and notices' },
   { id: 'timesheets', label: 'Timesheets', description: 'Staff hours' },
@@ -60,5 +61,5 @@ export const PANDA_BRAND = 'pandaprotect';
 export const BDM_ROLE_TABS = ['bdm-contacts', 'bdm-allocation', 'staff-hub', 'timesheets', 'account'];
 /** Default sections for the Manager job: most CRM views, but no staff access, pricing or system settings. */
 export const MANAGER_ROLE_TABS = PANDA_SECTION_ORDER.map((s) => s.id).filter(
-  (id) => !['user-permissions', 'trader-pricing', 'discount-codes', 'feature-flags', 'plans', 'document-mapping', 'analytics', 'partners'].includes(id),
+  (id) => !['user-permissions', 'trader-pricing', 'discount-codes', 'feature-flags', 'plans', 'document-mapping', 'analytics', 'partners', 'cyber-security'].includes(id),
 );
