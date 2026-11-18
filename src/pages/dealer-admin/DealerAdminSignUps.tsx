@@ -651,7 +651,7 @@ const DealerAdminSignUps: React.FC = () => {
         </div>
       </div>
 
-      <DealerFollowUpBar storageKey="pp-signups-followup-dismissed" count={readyRows.length} newestSignIn={newestReady} onView={() => setStatusFilter('ready')} />
+      <DealerFollowUpBar storageKey="pp-signups-followup-dismissed" count={readyRows.length} newestSignIn={newestReady} onView={() => { setSearch(''); setDateFilter('all'); setExtraFilter('all'); setSortBy('newest'); setStatusFilter('ready'); setTimeout(() => document.getElementById('signup-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); }} />
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -717,9 +717,9 @@ const DealerAdminSignUps: React.FC = () => {
           <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setSortBy('smart'); setDateFilter('all'); setExtraFilter('all'); setSearch(''); }}>Reset filters</Button>
         )}
         <div className="w-full flex flex-wrap gap-2">
-          {(['all', 'new', 'pending', 'approved', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
-            const count = s === 'all' ? rows.length : rows.filter(r => r.status === s).length;
-            const label = s === 'all' ? 'All' : (STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1));
+          {(['all', 'ready', 'new', 'pending', 'approved', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
+            const count = s === 'all' ? rows.length : s === 'ready' ? readyRows.length : rows.filter(r => r.status === s).length;
+            const label = s === 'all' ? 'All' : s === 'ready' ? 'Ready for follow-up' : (STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1));
             return (
               <Button key={s} type="button" size="sm" variant={statusFilter === s ? 'default' : 'outline'} className="rounded-full h-8" onClick={() => setStatusFilter(s)}>
                 {label} <span className="ml-1.5 opacity-70">{count}</span>
@@ -727,7 +727,7 @@ const DealerAdminSignUps: React.FC = () => {
             );
           })}
         </div>
-        <div className="text-sm text-gray-500 ml-auto">{filtered.length} result{filtered.length === 1 ? '' : 's'}</div>
+        <div id="signup-results" className="text-sm text-gray-500 ml-auto scroll-mt-4">{filtered.length} result{filtered.length === 1 ? '' : 's'}</div>
       </div>
 
       {canBulkDelete && (
