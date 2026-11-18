@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, Download, Mail, Link2, Copy, FileText, Info } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { drawInvoiceHeader, drawInvoiceFooter, loadInvoiceLogo } from '@/lib/dealerPdf';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,7 +62,7 @@ const buildInvoiceHtml = (g: Group, r: UnpaidRow, invoiceNumber: string) => `
       <tr style="background:#f97316;color:#fff"><th style="padding:10px;text-align:left">Customer</th><th style="padding:10px;text-align:left">Vehicle</th><th style="padding:10px;text-align:left">Plan</th><th style="padding:10px;text-align:right">Amount</th></tr>
       <tr><td style="padding:10px;border-bottom:1px solid #eee">${r.name || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${r.registration_plate || ''}</td><td style="padding:10px;border-bottom:1px solid #eee">${displayWarrantyPlanName(r.plan_type)}</td><td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${money(Number(r.final_amount ?? 0))}</td></tr>
     </table>
-    <p style="margin-top:20px;font-size:13px;color:#666">Please settle this invoice using the payment link provided, or contact hello@pandaprotect.co.uk.</p>
+    <p style="margin-top:20px;font-size:13px;color:#666">Please settle this invoice using the payment link provided, or contact support@pandaprotect.co.uk.</p>
   </body></html>`;
 
 const DealerAdminInvoices: React.FC = () => {
@@ -211,7 +212,7 @@ const DealerAdminInvoices: React.FC = () => {
     toast({ title: 'Invoice sent', description: `Emailed to ${g.dealer_email}` });
   };
 
-  const downloadPdf = (g: Group, only?: UnpaidRow) => {
+  const downloadPdf = async (g: Group, only?: UnpaidRow) => {
     const target = only ? [only] : g.rows;
     const total = target.reduce((s, r) => s + Number(r.final_amount ?? 0), 0);
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -219,54 +220,43 @@ const DealerAdminInvoices: React.FC = () => {
       ? `PP-${stamp}-${only.id.replace(/-/g, '').slice(0, 6).toUpperCase()}`
       : `PP-${stamp}-${g.dealer_company.replace(/[^A-Z0-9]/gi, '').slice(0, 6).toUpperCase()}`;
 
+    const logo = await loadInvoiceLogo();
     const doc = new jsPDF();
-    doc.setFillColor(17, 24, 39);
-    doc.rect(0, 0, 210, 28, 'F');
-    doc.setTextColor(255, 122, 0);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text('INVOICE', 14, 18);
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.text('Panda Protect', 196, 14, { align: 'right' });
-    doc.text('hello@pandaprotect.co.uk', 196, 20, { align: 'right' });
-
-    doc.setTextColor(40, 40, 40);
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.text(`Invoice ${invoiceNumber}`, 14, 42);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, 14, 49);
-    doc.text(`Billed to: ${g.dealer_company}`, 196, 42, { align: 'right' });
-    if (g.dealer_email) doc.text(g.dealer_email, 196, 49, { align: 'right' });
+    drawInvoiceHeader(doc, invoiceNumber, new Date().toLocaleDateString('en-GB'), logo);
+    doc.setFillColor(15, 38, 71); doc.rect(16, 66, 178, 7, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5);
+    doc.text('BILL TO', 20, 70.8);
+    doc.setFillColor(247, 249, 251); doc.rect(16, 73, 178, 18, 'F');
+    doc.setTextColor(15, 38, 71); doc.setFontSize(10); doc.text(g.dealer_company || 'Dealer account', 20, 80);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(91, 104, 121);
+    if (g.dealer_email) doc.text(g.dealer_email, 20, 86);
 
     autoTable(doc, {
-      startY: 60,
-      head: [['Date', 'Customer', 'Vehicle', 'Plan', 'Amount']],
+      startY: 97,
+      head: [['Date', 'Customer', 'Registration', 'Plan', 'Amount']],
       body: target.map((r) => [
         new Date(r.signup_date).toLocaleDateString('en-GB'),
         r.name || '—',
         (r.registration_plate || '—').toUpperCase(),
-        r.plan_type || 'Warranty',
+        displayWarrantyPlanName(r.plan_type),
         money(Number(r.final_amount ?? 0)),
       ]),
-      theme: 'grid',
-      headStyles: { fillColor: [255, 122, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
-      styles: { font: 'helvetica', fontSize: 10, cellPadding: 3 },
-      columnStyles: { 4: { halign: 'right' } },
+      theme: 'plain',
+      headStyles: { fillColor: [15, 38, 71], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8 },
+      bodyStyles: { textColor: [17, 24, 39], fontSize: 9, lineColor: [222, 227, 233], lineWidth: { bottom: 0.3 } },
+      styles: { font: 'helvetica', cellPadding: 3.5 },
+      columnStyles: { 4: { halign: 'right', fontStyle: 'bold' } },
+      margin: { left: 16, right: 16 },
     });
 
-    const finalY = (doc as any).lastAutoTable?.finalY || 90;
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.text('Total due', 150, finalY + 14);
-    doc.text(money(total), 196, finalY + 14, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(120, 120, 120);
-    doc.text('Please settle using the payment link provided, or contact hello@pandaprotect.co.uk.', 14, finalY + 26, { maxWidth: 182 });
-
+    const finalY = (doc as any).lastAutoTable?.finalY || 120;
+    doc.setFillColor(15, 38, 71); doc.rect(16, finalY + 4, 178, 11, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+    doc.text('TOTAL DUE', 20, finalY + 11.3);
+    doc.text(money(total), 190, finalY + 11.3, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(91, 104, 121);
+    doc.text('Please pay using the secure payment link provided, or contact support@pandaprotect.co.uk.', 16, finalY + 24, { maxWidth: 178 });
+    drawInvoiceFooter(doc);
     doc.save(`${invoiceNumber}.pdf`);
   };
 

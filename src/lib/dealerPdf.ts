@@ -22,6 +22,14 @@ export interface DealerPdfRow {
   policy_end_date?: string | null;
   signup_date?: string | null;
   warranty_number?: string | null;
+  phone?: string | null;
+  address_line?: string | null;
+  address_town?: string | null;
+  vehicle_year?: string | number | null;
+  mileage?: string | number | null;
+  claim_limit?: number | null;
+  voluntary_excess?: number | null;
+  labour_rate?: number | null;
 }
 
 const fmt = (d?: string | null) => (d ? new Date(d).toLocaleDateString('en-GB') : '—');
@@ -122,185 +130,158 @@ function statusColours(view: DealerInvoiceView): { text: [number, number, number
   return { text: [174, 94, 0], background: [255, 245, 229] };
 }
 
+const LIGHT: [number, number, number] = [255, 246, 236];
+const SOFT: [number, number, number] = [247, 249, 251];
+
+export interface InvoiceBillTo {
+  name?: string | null;
+  addressLines?: (string | null | undefined)[];
+  email?: string | null;
+  phone?: string | null;
+}
+
+/** Shared Panda Protect invoice header: logo + address on the left, INVOICE with number/date boxes on the right. */
+export function drawInvoiceHeader(doc: jsPDF, invoiceNumber: string, invoiceDate: string, logoDataUrl?: string | null) {
+  doc.setFillColor(...ORANGE);
+  doc.rect(0, 0, 210, 4, 'F');
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, 'PNG', 16, 12, 46, 22.3, undefined, 'FAST');
+  } else {
+    doc.setTextColor(...NAVY); doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
+    doc.text('panda', 16, 23); doc.setTextColor(...ORANGE); doc.text('protect', 16, 31);
+  }
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...SLATE);
+  doc.text('Warranty House, 62 Berkhamsted Ave', 16, 41);
+  doc.text('Wembley, HA9 6DT, England', 16, 46);
+  doc.setTextColor(...NAVY);
+  doc.text('support@pandaprotect.co.uk', 16, 51);
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(26); doc.setTextColor(...NAVY);
+  doc.text('INVOICE', 194, 22, { align: 'right' });
+  const box = (label: string, value: string, x: number) => {
+    doc.setFillColor(...NAVY); doc.rect(x, 29, 39, 7, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(7.5); doc.setFont('helvetica', 'bold');
+    doc.text(label, x + 19.5, 33.8, { align: 'center' });
+    doc.setFillColor(...SOFT); doc.rect(x, 36, 39, 9, 'F');
+    doc.setTextColor(...DARK); doc.setFontSize(8.5);
+    doc.text(value, x + 19.5, 41.8, { align: 'center', maxWidth: 37 });
+  };
+  box('INVOICE #', invoiceNumber, 116);
+  box('DATE', invoiceDate, 155);
+  doc.setDrawColor(...LINE); doc.setLineWidth(0.4); doc.line(16, 58, 194, 58);
+}
+
+/** Shared footer: thank-you line, contact and legal line. */
+export function drawInvoiceFooter(doc: jsPDF) {
+  doc.setFillColor(...LIGHT); doc.roundedRect(16, 252, 178, 12, 2, 2, 'F');
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(...NAVY);
+  doc.text('Thank you for your business!', 21, 259.6);
+  doc.setFont('helvetica', 'normal'); doc.setTextColor(...ORANGE);
+  doc.text('support@pandaprotect.co.uk', 189, 259.6, { align: 'right' });
+  doc.setDrawColor(...LINE); doc.line(16, 270, 194, 270);
+  doc.setFontSize(7.5); doc.setTextColor(...SLATE);
+  doc.text('Panda Protect  •  Trusted Auto Warranties', 105, 276, { align: 'center' });
+  doc.text('Pandaprotect.co.uk is a trading name of Buy A Warranty Limited. Company No: 10314863. VAT No: 519 1099 85.', 105, 281, { align: 'center', maxWidth: 178 });
+}
+
+function drawBillTo(doc: jsPDF, billTo: InvoiceBillTo, refs: [string, string][], y = 66) {
+  const head = (t: string, x: number, w: number) => {
+    doc.setFillColor(...ORANGE); doc.rect(x, y, w, 7, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5);
+    doc.text(t, x + 4, y + 4.8);
+  };
+  head('BILL TO', 16, 104); head('POLICY REFERENCE', 124, 70);
+  doc.setFillColor(...SOFT); doc.rect(16, y + 7, 104, 34, 'F'); doc.rect(124, y + 7, 70, 34, 'F');
+  doc.setTextColor(...NAVY); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text(billTo.name || 'Customer', 20, y + 14, { maxWidth: 96 });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...SLATE);
+  let ly = y + 20;
+  const lines = [...(billTo.addressLines || []).filter(Boolean) as string[], [billTo.email, billTo.phone].filter(Boolean).join('  |  ')].filter(Boolean);
+  for (const l of lines.slice(0, 4)) { doc.text(l, 20, ly, { maxWidth: 96 }); ly += 5; }
+  let ry = y + 13;
+  for (const [label, value] of refs) {
+    doc.setFontSize(7); doc.setTextColor(...SLATE); doc.setFont('helvetica', 'normal'); doc.text(label.toUpperCase(), 128, ry);
+    doc.setFontSize(9); doc.setTextColor(...NAVY); doc.setFont('helvetica', 'bold'); doc.text(value, 128, ry + 4.5, { maxWidth: 62 });
+    ry += 10;
+  }
+  return y + 41;
+}
+
 export function createInvoicePdf(row: DealerPdfRow, dealerName?: string, logoDataUrl?: string | null, now: Date = new Date()) {
   const doc = new jsPDF();
   const view = getDealerInvoiceView(row, now);
   const colours = statusColours(view);
-  const vehicle = [row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ');
-  const duration = Number(row.payment_type || 0) ? `${Number(row.payment_type)} months` : 'Duration not supplied';
+  const vehicle = [row.vehicle_year, row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ') || '—';
+  const duration = Number(row.payment_type || 0) ? `${Number(row.payment_type)} months` : '—';
+  const invoiceNumber = row.warranty_number || `PP-${ref(row.id)}`;
 
-  doc.setFillColor(...ORANGE);
-  doc.rect(0, 0, 210, 3, 'F');
+  drawInvoiceHeader(doc, invoiceNumber, view.invoiceDate, logoDataUrl);
 
-  if (logoDataUrl) {
-    doc.addImage(logoDataUrl, 'PNG', 16, 12, 48, 23.28, undefined, 'FAST');
-  } else {
-    doc.setTextColor(...NAVY);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(22);
-    doc.text('panda', 16, 23);
-    doc.setTextColor(...ORANGE);
-    doc.text('protect', 16, 31);
-  }
+  // Status pill under header
+  doc.setFillColor(...colours.background); doc.roundedRect(144, 47.5, 50, 7, 2, 2, 'F');
+  doc.setTextColor(...colours.text); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5);
+  doc.text(view.statusLabel, 169, 52.2, { align: 'center' });
 
-  doc.setTextColor(...NAVY);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(24);
-  doc.text('INVOICE', 194, 20, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...SLATE);
-  doc.text(`#${ref(row.id)}`, 194, 26, { align: 'right' });
+  const afterBill = drawBillTo(doc, {
+    name: dealerName ? `${dealerName}` : row.name,
+    addressLines: [row.address_line, row.address_town].concat(dealerName && row.name ? [`Customer: ${row.name}`] : []),
+    email: row.email, phone: row.phone,
+  }, [
+    ['Policy / certificate number', invoiceNumber],
+    ['Vehicle registration', (row.registration_plate || '—').toUpperCase()],
+    ['Reference', ref(row.id)],
+  ]);
 
-  doc.setFillColor(...colours.background);
-  doc.roundedRect(137, 30, 57, 9, 2, 2, 'F');
-  doc.setTextColor(...colours.text);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.text(view.statusLabel, 165.5, 36, { align: 'center' });
+  const L = (t: string) => ({ content: t, styles: { textColor: SLATE, fontSize: 7, fontStyle: 'bold' as const, cellPadding: { top: 2.6, bottom: 0.3, left: 4, right: 4 } } });
+  const V = (t: string) => ({ content: t, styles: { textColor: NAVY, fontSize: 9.5, fontStyle: 'bold' as const, cellPadding: { top: 0.3, bottom: 2.4, left: 4, right: 4 } } });
+  const section = (t: string) => [{ content: t, colSpan: 3, styles: { fillColor: LIGHT, textColor: ORANGE, fontSize: 7.5, fontStyle: 'bold' as const, cellPadding: 3 } }];
+  const pair = (a: string, b: string, av: string, bv: string) => [[L(a), L(b), ''], [V(av), V(bv), '']];
+  const money2 = (n?: number | null) => (n == null || Number.isNaN(Number(n)) ? '—' : money(Number(n)));
 
-  doc.setDrawColor(...LINE);
-  doc.setLineWidth(0.4);
-  doc.line(16, 44, 194, 44);
-
-  const heading = (text: string, x: number) => {
-    doc.setTextColor(...ORANGE);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
-    doc.text(text, x, 53);
-  };
-  heading('FROM', 16);
-  heading('BILLED TO', 82);
-  heading('INVOICE DETAILS', 145);
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...NAVY);
-  doc.text('Panda Protect', 16, 61);
-  doc.text(dealerName || 'Dealer account', 82, 61, { maxWidth: 56 });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...SLATE);
-  doc.text('support@pandaprotect.co.uk', 16, 67);
-  doc.text('0330 229 6547', 16, 72);
-  doc.text('pandaprotect.co.uk', 16, 77);
-  doc.text('Trade warranty purchase', 82, 67, { maxWidth: 56 });
-
-  const detail = (label: string, value: string, y: number) => {
-    doc.setTextColor(...SLATE);
-    doc.setFontSize(7.5);
-    doc.text(label, 145, y);
-    doc.setTextColor(...NAVY);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8.5);
-    doc.text(value, 194, y, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-  };
-  detail('Invoice date', view.invoiceDate, 60);
-  detail(view.isPaid ? 'Payment received' : 'Payment due', view.isPaid ? view.paidDate || 'Confirmed' : view.dueDate, 67);
-  detail('Currency', 'GBP', 74);
-
-  doc.setDrawColor(...LINE);
-  doc.line(16, 84, 194, 84);
-  doc.setTextColor(...NAVY);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('Warranty purchase', 16, 94);
+  const body: any[] = [
+    section('COVER'),
+    ...pair('PLAN TYPE', 'DURATION', `${displayWarrantyPlanName(row.plan_type)} warranty`, duration),
+    ...pair('VEHICLE', 'MILEAGE', vehicle, row.mileage ? `${Number(row.mileage).toLocaleString('en-GB')} miles` : '—'),
+    ...pair('POLICY START DATE', 'POLICY END DATE', fmt(row.warranty_start_date), fmt(row.policy_end_date)),
+    ...pair('AMOUNT PAID', 'PAYMENT METHOD', money(view.amountPaid), view.paymentMethod),
+    section('POLICY DETAILS'),
+    ...pair('CLAIM LIMIT', 'VOLUNTARY EXCESS', row.claim_limit ? `${money2(row.claim_limit)} per claim` : '—', money2(row.voluntary_excess)),
+    ...pair('LABOUR RATE', 'PAYMENT STATUS', row.labour_rate ? `${money2(row.labour_rate)} / hour` : '—', view.isPaid ? 'Paid' : 'Outstanding'),
+  ];
+  body[1][2] = { content: money(view.total), rowSpan: 2, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: 12, textColor: NAVY } };
 
   autoTable(doc, {
-    startY: 100,
-    head: [['VEHICLE & CUSTOMER', 'COVER', 'AMOUNT']],
-    body: [[
-      `${row.registration_plate || 'Registration not supplied'}${vehicle ? `\n${vehicle}` : ''}\nCustomer: ${row.name || 'Not supplied'}`,
-      `${displayWarrantyPlanName(row.plan_type)} warranty\n${duration}\nRef: ${ref(row.id)}`,
-      money(view.total),
-    ]],
+    startY: afterBill + 6,
+    head: [[{ content: 'DESCRIPTION', colSpan: 2 }, { content: 'AMOUNT', styles: { halign: 'right' } }]],
+    body,
     theme: 'plain',
-    headStyles: { fillColor: NAVY, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8, cellPadding: { top: 4, bottom: 4, left: 4, right: 4 } },
-    bodyStyles: { textColor: DARK, fontSize: 9, cellPadding: { top: 5, bottom: 5, left: 4, right: 4 }, lineColor: LINE, lineWidth: { bottom: 0.3 } },
-    columnStyles: {
-      0: { cellWidth: 77 },
-      1: { cellWidth: 68 },
-      2: { cellWidth: 33, halign: 'right', fontStyle: 'bold', fontSize: 11, valign: 'top' },
-    },
+    headStyles: { fillColor: NAVY, textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8, cellPadding: 3.5 },
+    columnStyles: { 0: { cellWidth: 72 }, 1: { cellWidth: 72 }, 2: { cellWidth: 34 } },
     margin: { left: 16, right: 16 },
   });
 
-  const finalY = (doc as any).lastAutoTable.finalY || 135;
-  const totalsY = finalY + 8;
-  doc.setFillColor(247, 249, 251);
-  doc.roundedRect(108, totalsY, 86, 37, 2, 2, 'F');
-  doc.setFontSize(8.5);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(...SLATE);
-  doc.text('Invoice total', 114, totalsY + 9);
-  doc.text(view.isPaid ? 'Amount paid' : 'Amount paid to date', 114, totalsY + 18);
-  doc.setTextColor(...NAVY);
-  doc.text(money(view.total), 188, totalsY + 9, { align: 'right' });
-  doc.text(money(view.amountPaid), 188, totalsY + 18, { align: 'right' });
-  doc.setDrawColor(...LINE);
-  doc.line(114, totalsY + 23, 188, totalsY + 23);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...colours.text);
-  doc.text(view.isPaid ? 'Balance due' : 'Balance due', 114, totalsY + 31);
-  doc.text(money(view.balanceDue), 188, totalsY + 31, { align: 'right' });
-
-  const statusY = totalsY + 47;
-  doc.setFillColor(...colours.background);
-  doc.roundedRect(16, statusY, 178, 34, 2, 2, 'F');
-  doc.setFillColor(...colours.text);
-  doc.circle(25, statusY + 10, 3, 'F');
-  if (view.isPaid) {
-    doc.setDrawColor(255, 255, 255);
-    doc.setLineWidth(0.7);
-    doc.line(23.3, statusY + 10, 24.5, statusY + 11.2);
-    doc.line(24.5, statusY + 11.2, 26.9, statusY + 8.6);
-  } else {
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7);
-    doc.text('!', 25, statusY + 11, { align: 'center' });
+  const y = ((doc as any).lastAutoTable.finalY || 200) + 2;
+  doc.setFillColor(...NAVY); doc.rect(16, y, 178, 11, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text('TOTAL', 20, y + 7.3);
+  doc.text(money(view.total), 190, y + 7.3, { align: 'right' });
+  if (!view.isPaid) {
+    doc.setTextColor(...colours.text); doc.setFontSize(8.5);
+    doc.text(`Balance due ${money(view.balanceDue)}  •  Due ${view.dueDate}`, 190, y + 17, { align: 'right' });
+  } else if (view.paidDate) {
+    doc.setTextColor(...GREEN); doc.setFontSize(8.5);
+    doc.text(`Paid in full on ${view.paidDate}`, 190, y + 17, { align: 'right' });
   }
-  doc.setTextColor(...colours.text);
-  doc.setFontSize(11);
-  doc.text(view.statusTitle, 33, statusY + 11);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.text(view.statusMessage, 33, statusY + 18, { maxWidth: 153 });
-  doc.setTextColor(...SLATE);
-  doc.setFontSize(8);
-  const paymentMeta = view.isPaid
-    ? `${view.paymentMethod}${view.paidDate ? `  |  Paid ${view.paidDate}` : ''}`
-    : `${view.paymentMethod}  |  Due ${view.dueDate}`;
-  doc.text(paymentMeta, 33, statusY + 27, { maxWidth: 153 });
 
-  const helpY = Math.max(statusY + 46, 231);
-  doc.setTextColor(...NAVY);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9);
-  doc.text('Questions about this invoice?', 16, helpY);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...SLATE);
-  doc.text('Email support@pandaprotect.co.uk or call 0330 229 6547 and quote the invoice number.', 16, helpY + 6, { maxWidth: 178 });
-
-  doc.setDrawColor(...LINE);
-  doc.line(16, 264, 194, 264);
-  doc.setFontSize(7.5);
-  doc.setTextColor(...SLATE);
-  doc.text('Panda Protect is a trading name of Buy A Warranty Limited. Company No: 10314863.', 16, 271, { maxWidth: 178 });
-  doc.text('Registered office: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT.', 16, 276, { maxWidth: 178 });
-  doc.setTextColor(...NAVY);
-  doc.setFont('helvetica', 'bold');
-  doc.text('pandaprotect.co.uk  |  support@pandaprotect.co.uk', 16, 284);
-
+  drawInvoiceFooter(doc);
   return doc;
 }
 
+export { loadLogoDataUrl as loadInvoiceLogo };
+
 export async function downloadInvoicePdf(row: DealerPdfRow, dealerName?: string) {
   const logoDataUrl = await loadLogoDataUrl();
-  createInvoicePdf(row, dealerName, logoDataUrl).save(`invoice-${ref(row.id)}.pdf`);
+  createInvoicePdf(row, dealerName, logoDataUrl).save(`invoice-${row.warranty_number || ref(row.id)}.pdf`);
 }
 
 export function downloadWarrantyPdf(row: DealerPdfRow, dealerName?: string) {
