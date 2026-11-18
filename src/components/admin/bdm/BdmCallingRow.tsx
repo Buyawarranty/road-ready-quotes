@@ -7,6 +7,7 @@ import BdmReminderPopover from './BdmReminderPopover';
 import BdmQuickNotePopover from './BdmQuickNotePopover';
 import BdmEditNotes from './BdmEditNotes';
 import BdmEmailDialog from './BdmEmailDialog';
+import BdmOwnerTag from './BdmOwnerTag';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -234,7 +235,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
             {r.autotrader_url && <a href={r.autotrader_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AutoTrader page</a>}
           </p>
         )}
-        {showAssigned && <p className="text-[11px] text-muted-foreground">BDM: {assignedName ?? 'Unassigned'}</p>}
+        <BdmOwnerTag name={assignedName} className="mt-1" />
       </td>
       {/* Phone */}
       <td className="p-2">

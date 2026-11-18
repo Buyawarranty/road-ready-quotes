@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
 import BdmQuickNotePopover from '@/components/admin/bdm/BdmQuickNotePopover';
 import BdmReminderPopover from '@/components/admin/bdm/BdmReminderPopover';
+import BdmOwnerTag from '@/components/admin/bdm/BdmOwnerTag';
 import BdmEmailDialog from '@/components/admin/bdm/BdmEmailDialog';
 import { Bell, Mail, X } from 'lucide-react';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
@@ -34,7 +35,7 @@ interface DealerRow {
   sales_count?: number;
   accounts_pending?: boolean;
   revenue?: number;
-  bdm?: { id: string; next_follow_up_at: string | null; next_action: string | null } | null;
+  bdm?: { id: string; next_follow_up_at: string | null; next_action: string | null; assigned_bdm?: string | null } | null;
   last_activity?: { page_label: string; activity_at: string } | null;
 }
 
@@ -101,6 +102,9 @@ const DealerAdminDealers: React.FC = () => {
     setEditing(null);
     toast({ title: 'Dealer details updated' });
   };
+  const [staff, setStaff] = useState<{ user_id: string; name: string }[]>([]);
+  useEffect(() => { (supabase.rpc as any)('bdm_staff_list').then(({ data }: any) => setStaff(data || [])); }, []);
+  const ownerName = (id?: string | null) => (id ? staff.find((s) => s.user_id === id)?.name : null);
   const [mailTo, setMailTo] = useState<DealerRow | null>(null);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [tick, setTick] = useState(Date.now());
@@ -142,7 +146,7 @@ const DealerAdminDealers: React.FC = () => {
     const { data: pendingReqs } = await supabase.from('dealer_paylater_requests').select('dealer_id').eq('status', 'pending');
     const { data: acts } = await (supabase as any).from('dealer_last_activity').select('dealer_id, page_label, activity_at');
     const actMap = new Map<string, any>((acts || []).map((a: any) => [a.dealer_id, a]));
-    const { data: bdmRows } = await (supabase as any).from('bdm_dealerships').select('id, dealer_id, next_follow_up_at, next_action').not('dealer_id', 'is', null);
+    const { data: bdmRows } = await (supabase as any).from('bdm_dealerships').select('id, dealer_id, next_follow_up_at, next_action, assigned_bdm').not('dealer_id', 'is', null);
     const bdmMap = new Map<string, any>((bdmRows || []).map((b: any) => [b.dealer_id, b]));
     const pendingSet = new Set((pendingReqs || []).map((p: any) => p.dealer_id));
     const stats = new Map<string, { count: number; revenue: number }>();
@@ -343,6 +347,7 @@ const DealerAdminDealers: React.FC = () => {
                         <td className="px-3 py-2"><Checkbox aria-label={`Select ${r.company_name}`} checked={checked.has(r.id)} onCheckedChange={() => toggleOne(r.id)} /></td>
                         <td className="px-3 py-2">
                           <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}{r.accounts_pending && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground align-middle">Accounts@ needs to approve</span>}</p>
+                          <BdmOwnerTag name={ownerName(r.bdm?.assigned_bdm)} className="mt-1" />
                           <p className="text-xs text-muted-foreground">{r.name}</p>
                         </td>
                         <td className="px-3 py-2">

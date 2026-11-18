@@ -1,3 +1,4 @@
+import BdmOwnerTag from './BdmOwnerTag';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { supabase } from '@/integrations/supabase/client';
@@ -155,7 +156,7 @@ const BdmPortfolioPanel: React.FC = () => {
                 const due = r.next_follow_up_at && r.next_follow_up_at <= today;
                 return (
                   <tr key={r.id} className="border-t align-top">
-                    <td className="p-2"><p className="font-semibold">{r.dealership_name}</p><p className="text-xs text-muted-foreground">{[r.town, r.postcode].filter(Boolean).join(' · ')}</p></td>
+                    <td className="p-2"><p className="font-semibold">{r.dealership_name}</p><BdmOwnerTag name={nameOf(r.bdm_user_id)} className="my-0.5" /><p className="text-xs text-muted-foreground">{[r.town, r.postcode].filter(Boolean).join(' · ')}</p></td>
                     <td className="p-2"><p>{r.contact_name || '—'}</p><p className="text-xs text-muted-foreground">{[r.phone, r.email].filter(Boolean).join(' · ')}</p></td>
                     <td className="p-2 whitespace-nowrap">{ukDate(r.onboarded_at)}</td>
                     <td className="p-2 space-y-1"><Badge variant="secondary">{statusLabel(r.status)}</Badge>{r.dealer_id && pendingCredit.has(r.dealer_id) && <Badge className="block w-fit border-accent bg-accent text-accent-foreground" title="30-day invoice request waiting for accounts@ to approve">Accounts@ needs to approve</Badge>}</td>
