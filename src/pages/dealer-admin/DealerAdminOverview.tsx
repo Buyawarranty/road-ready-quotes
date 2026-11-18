@@ -1,3 +1,4 @@
+import DealerActivityFeed from '@/components/admin/dealers/DealerActivityFeed';
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,8 +77,8 @@ const DealerAdminOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Overview</h1>
-        <p className="text-muted-foreground text-sm mt-1">Dealer channel performance at a glance.</p>
+        <h1 className="text-2xl font-bold text-foreground">Activity overview</h1>
+        <p className="text-muted-foreground text-sm mt-1">Dealer sign-ins, portal activity and channel performance.</p>
       </div>
 
       {loading ? (
@@ -99,6 +100,7 @@ const DealerAdminOverview: React.FC = () => {
           ))}
         </div>
       )}
+      <DealerActivityFeed />
     </div>
   );
 };

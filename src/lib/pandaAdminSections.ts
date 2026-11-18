@@ -5,7 +5,7 @@
 export const PANDA_SECTION_ORDER: { id: string; label: string; description: string }[] = [
   { id: 'bdm-contacts', label: 'BDM contacts', description: 'Dealership prospects, calls, follow-ups and pipeline' },
   { id: 'bdm-allocation', label: 'BDM allocation', description: 'Dealer portfolio, town access and blocks' },
-  { id: 'dealer-overview', label: 'Overview', description: 'Dealer sales, warranties and money owed at a glance' },
+  { id: 'dealer-overview', label: 'Activity overview', description: 'Dealer sign-ins, portal activity, sales and money owed' },
   { id: 'dealer-dealers', label: 'Dealers', description: 'Sign-ups, approved dealers and traders in one place' },
   { id: 'dealer-sales', label: 'Dealer sales', description: 'Warranties sold by each dealer' },
   { id: 'analytics', label: 'Sales analytics', description: 'Customers, dealer signups, sales and revenue · Admin and Super Admin only' },

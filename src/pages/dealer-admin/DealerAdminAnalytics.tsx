@@ -70,6 +70,16 @@ const DealerAdminAnalytics: React.FC = () => {
     });
     return Array.from(map.values()).sort((a, b) => b.paidRevenue - a.paidRevenue || b.sales - a.sales).slice(0, 10);
   }, [metrics]);
+  const daily = useMemo(() => {
+    const key = (v?: string | null) => (v ? new Date(v).toLocaleDateString('en-CA', { timeZone: 'Europe/London' }) : '');
+    const map = new Map<string, { day: string; sales: number; value: number; signups: number }>();
+    const row = (k: string) => { let r = map.get(k); if (!r) { r = { day: k, sales: 0, value: 0, signups: 0 }; map.set(k, r); } return r; };
+    metrics.issued.forEach((s) => { const k = key(s.signup_date || s.created_at); if (!k) return; const r = row(k); r.sales += 1; r.value += dealerSaleAmount(s); });
+    metrics.filteredSignups.forEach((s) => { const k = key(s.created_at); if (k) row(k).signups += 1; });
+    const rows = Array.from(map.values()).sort((a, b) => b.day.localeCompare(a.day));
+    const total = rows.reduce((t, r) => ({ sales: t.sales + r.sales, value: t.value + r.value, signups: t.signups + r.signups }), { sales: 0, value: 0, signups: 0 });
+    return { rows, total };
+  }, [metrics]);
   const planMix = useMemo(() => {
     const map = new Map<string, number>();
     metrics.issued.forEach((sale) => {
@@ -113,6 +123,14 @@ const DealerAdminAnalytics: React.FC = () => {
       <Card className="border-2">
         <CardHeader><CardTitle className="text-lg">Sales, signups and paid revenue · last 12 months</CardTitle></CardHeader>
         <CardContent><div className="h-80" aria-label="Monthly sales analytics chart"><ResponsiveContainer width="100%" height="100%"><ComposedChart data={monthly} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}><CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} /><XAxis dataKey="month" tick={{ fontSize: 11 }} /><YAxis yAxisId="count" allowDecimals={false} tick={{ fontSize: 11 }} /><YAxis yAxisId="revenue" orientation="right" tick={{ fontSize: 11 }} tickFormatter={(value) => `£${value}`} /><Tooltip formatter={(value, name) => name === 'Paid revenue' ? [money(Number(value)), name] : [value, name]} /><Bar yAxisId="count" dataKey="sales" name="Warranty sales" fill="hsl(var(--crm-orange))" radius={[3, 3, 0, 0]} /><Bar yAxisId="count" dataKey="signups" name="Dealer signups" fill="hsl(var(--crm-blue))" radius={[3, 3, 0, 0]} /><Line yAxisId="revenue" type="monotone" dataKey="revenue" name="Paid revenue" stroke="hsl(var(--crm-green))" strokeWidth={2} dot={{ r: 3 }} /></ComposedChart></ResponsiveContainer></div></CardContent>
+      </Card>
+
+      <Card className="border-2">
+        <CardHeader><CardTitle className="text-lg">Daily sales and signups</CardTitle><p className="text-sm text-muted-foreground">Each day in the selected period, newest first. Sales value is the total of issued warranty sales that day.</p></CardHeader>
+        <CardContent>{daily.rows.length ? <div className="max-h-[480px] overflow-auto"><table className="w-full text-sm"><thead className="sticky top-0 border-y bg-muted text-left text-xs uppercase text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Day</th><th className="px-3 py-2 text-right font-medium">Sales</th><th className="px-3 py-2 text-right font-medium">Sales value</th><th className="px-3 py-2 text-right font-medium">Dealer signups</th></tr></thead><tbody>
+          <tr className="border-b bg-crm-orange-soft font-semibold"><td className="px-3 py-2">Total</td><td className="px-3 py-2 text-right">{daily.total.sales}</td><td className="px-3 py-2 text-right">{money(daily.total.value)}</td><td className="px-3 py-2 text-right">{daily.total.signups}</td></tr>
+          {daily.rows.map((r) => <tr key={r.day} className="border-b"><td className="whitespace-nowrap px-3 py-2">{new Date(r.day + 'T12:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</td><td className="px-3 py-2 text-right">{r.sales}</td><td className="px-3 py-2 text-right font-semibold">{money(r.value)}</td><td className="px-3 py-2 text-right">{r.signups}</td></tr>)}
+        </tbody></table></div> : <p className="py-8 text-center text-sm text-muted-foreground">No sales or signups in this period.</p>}</CardContent>
       </Card>
 
       <div className="grid gap-6 lg:grid-cols-3">

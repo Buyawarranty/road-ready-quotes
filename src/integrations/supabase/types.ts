@@ -6006,6 +6006,38 @@ export type Database = {
           },
         ]
       }
+      dealer_activity_log: {
+        Row: {
+          activity_at: string
+          dealer_id: string
+          id: string
+          page_label: string
+          path: string
+        }
+        Insert: {
+          activity_at?: string
+          dealer_id: string
+          id?: string
+          page_label: string
+          path: string
+        }
+        Update: {
+          activity_at?: string
+          dealer_id?: string
+          id?: string
+          page_label?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_activity_log_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: false
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_admin_blog_posts: {
         Row: {
           author: string | null
