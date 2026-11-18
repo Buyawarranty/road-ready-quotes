@@ -8,9 +8,10 @@ import BdmQuickNotePopover from './BdmQuickNotePopover';
 import BdmEditNotes from './BdmEditNotes';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Bell, Copy, Mail, MailX, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
+import { Bell, ChevronDown, Copy, Mail, MailX, MessageSquare, Minus, NotebookPen, Pencil, Phone, Plus, Send } from 'lucide-react';
 import { BDM_STAGES, STAGE_TONE, BdmDealership } from '@/lib/bdm/bdmShared';
 
 export type BdmRowContact = { full_name: string; phone: string | null; mobile: string | null; email?: string | null };
@@ -197,13 +198,17 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
         {onboardedBy && <span className="ml-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">Onboarded by {onboardedBy}</span>}
         {inMine && <span className="ml-2 inline-block rounded-full bg-crm-orange-soft px-2 py-0.5 text-[11px] font-semibold text-crm-orange">★ My contacts</span>}
         {onToggleMine && (
-          <Select value="" onValueChange={v => { if (v === '__mine') onToggleMine(r.id); else if (v.startsWith('town:')) onMoveTown?.(r.id, v.slice(5)); }}>
-            <SelectTrigger aria-label="File this dealership" className="mt-1 h-7 w-[170px] text-xs"><SelectValue placeholder="Put in…" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__mine">{inMine ? 'Remove from My contacts' : 'Add to My contacts'}</SelectItem>
-              {towns.filter(t => t !== r.town).map(t => <SelectItem key={t} value={`town:${t}`}>Move to town: {t}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" aria-label="File this dealership" className="mt-1 flex h-9 w-[180px] touch-manipulation items-center justify-between rounded-md border bg-background px-3 text-xs hover:bg-accent">
+                Put in… <ChevronDown className="h-4 w-4 opacity-60" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="max-h-72 w-56 overflow-y-auto">
+              <DropdownMenuItem onSelect={() => onToggleMine(r.id)}>{inMine ? 'Remove from My contacts' : 'Add to My contacts'}</DropdownMenuItem>
+              {towns.filter(t => t !== r.town).map(t => <DropdownMenuItem key={t} onSelect={() => onMoveTown?.(r.id, t)}>Move to town: {t}</DropdownMenuItem>)}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         <p className="text-xs text-muted-foreground">{c?.full_name ? `Contact: ${c.full_name} · ` : ''}{[r.town, r.postcode].filter(Boolean).join(' · ')}</p>
         {(r.star_rating != null || r.vehicle_stock != null || r.website || r.autotrader_url) && (
