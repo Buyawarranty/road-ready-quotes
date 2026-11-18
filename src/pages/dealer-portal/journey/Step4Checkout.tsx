@@ -286,7 +286,7 @@ const Step4Checkout: React.FC = () => {
 
   const paidCount = eligibility?.paid_count ?? 0;
   const invoiceRequired = eligibility?.required ?? 3;
-  const introLeft = 0; // Old 3+3 progress card retired by buy-one-get-one-free.
+  const introLeft: number = 0; // Old 3+3 progress card retired by buy-one-get-one-free.
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = termsAccepted !== true
