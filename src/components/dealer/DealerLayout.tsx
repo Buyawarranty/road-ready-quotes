@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { isAdminRole } from '@/lib/adminRoles';
 import { useDealerImpersonation } from '@/hooks/useDealerImpersonation';
+import { supabase } from '@/integrations/supabase/client';
+import { dealerPageLabel } from '@/lib/dealerActivityLabel';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import {
@@ -76,6 +78,11 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const { isImpersonating, impersonatedDealer, stopImpersonation } = useDealerImpersonation();
   const navigate = useNavigate();
   const location = useLocation();
+  useEffect(() => {
+    if (isImpersonating) return;
+    const path = location.pathname;
+    void (supabase as any).rpc('record_dealer_activity', { p_path: path, p_label: dealerPageLabel(path) }).then(() => {});
+  }, [location.pathname, isImpersonating]);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');

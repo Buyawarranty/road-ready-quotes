@@ -7325,6 +7325,35 @@ export type Database = {
           },
         ]
       }
+      dealer_last_activity: {
+        Row: {
+          activity_at: string
+          dealer_id: string
+          page_label: string
+          path: string
+        }
+        Insert: {
+          activity_at?: string
+          dealer_id: string
+          page_label: string
+          path: string
+        }
+        Update: {
+          activity_at?: string
+          dealer_id?: string
+          page_label?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_last_activity_dealer_id_fkey"
+            columns: ["dealer_id"]
+            isOneToOne: true
+            referencedRelation: "dealers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dealer_leads: {
         Row: {
           archived_at: string | null
@@ -17087,6 +17116,10 @@ export type Database = {
           taken_today: number
           taken_total: number
         }[]
+      }
+      record_dealer_activity: {
+        Args: { p_label: string; p_path: string }
+        Returns: undefined
       }
       recover_leads_from_step2: {
         Args: { p_lookback_hours?: number }

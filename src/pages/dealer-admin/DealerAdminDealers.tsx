@@ -14,6 +14,7 @@ import { useDealerExportAccess } from '@/hooks/useDealerExportAccess';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 import { useNavigate } from 'react-router-dom';
 import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
+import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
 
 interface DealerRow {
@@ -29,6 +30,7 @@ interface DealerRow {
   sales_count?: number;
   accounts_pending?: boolean;
   revenue?: number;
+  last_activity?: { page_label: string; activity_at: string } | null;
 }
 
 type StatusKey = 'all' | 'approved' | 'pending' | 'cancelled' | 'declined' | 'other';
@@ -128,6 +130,8 @@ const DealerAdminDealers: React.FC = () => {
       supabase.from('customers').select('dealer_id, final_amount, status').eq('brand', 'pandaprotect').not('dealer_id', 'is', null),
     ]);
     const { data: pendingReqs } = await supabase.from('dealer_paylater_requests').select('dealer_id').eq('status', 'pending');
+    const { data: acts } = await (supabase as any).from('dealer_last_activity').select('dealer_id, page_label, activity_at');
+    const actMap = new Map<string, any>((acts || []).map((a: any) => [a.dealer_id, a]));
     const pendingSet = new Set((pendingReqs || []).map((p: any) => p.dealer_id));
     const stats = new Map<string, { count: number; revenue: number }>();
     (customers || []).filter(isCountedDealerSale).forEach((c: any) => {
@@ -142,6 +146,7 @@ const DealerAdminDealers: React.FC = () => {
         sales_count: stats.get(d.id)?.count || 0,
         revenue: stats.get(d.id)?.revenue || 0,
         accounts_pending: pendingSet.has(d.id),
+        last_activity: actMap.get(d.id) || null,
       }))
     );
     setLoading(false);
@@ -293,6 +298,7 @@ const DealerAdminDealers: React.FC = () => {
                         Joined {newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
                       </button>
                     </th>
+                    <th className="px-3 py-2 font-medium">Last activity</th>
                     <th className="px-3 py-2 font-medium text-right">Sales</th>
                     <th className="px-3 py-2 font-medium text-right">Revenue</th>
                     <th className="px-3 py-2 font-medium">Discount %</th>
@@ -319,6 +325,14 @@ const DealerAdminDealers: React.FC = () => {
                         </td>
                         <td className="px-3 py-2 text-muted-foreground whitespace-nowrap">
                           {new Date(r.created_at).toLocaleDateString('en-GB')}
+                        </td>
+                        <td className="px-3 py-2 whitespace-nowrap">
+                          {r.last_activity ? (
+                            <div className="leading-tight">
+                              <div className="font-medium text-foreground">{r.last_activity.page_label}</div>
+                              <div className="text-xs text-muted-foreground">{formatActivityTime(r.last_activity.activity_at)}</div>
+                            </div>
+                          ) : <span className="text-xs text-muted-foreground">No activity yet</span>}
                         </td>
                         <td className="px-3 py-2 text-right font-medium">{r.sales_count}</td>
                         <td className="px-3 py-2 text-right font-semibold">£{(r.revenue || 0).toFixed(2)}</td>
