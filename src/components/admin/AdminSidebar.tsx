@@ -706,7 +706,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
     }
 
     if (userRole === 'accounts_manager' || userRole === 'accounts_payroll') {
-      const accountsTabIds = ['customers', 'timesheets', 'hr', 'analytics', 'user-permissions', 'price-updates', 'discounts-given', 'cancellations', 'refunds-paid', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
+      const accountsTabIds = ['customers', 'dealer-cancellations', 'timesheets', 'hr', 'analytics', 'user-permissions', 'price-updates', 'discounts-given', 'cancellations', 'refunds-paid', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
       return defaultTabs.filter(tab => accountsTabIds.includes(tab.id));
     }
 
@@ -726,7 +726,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
     }
 
     if (userRole === 'accounts') {
-      const accountsTabIds = ['new-leads', 'get-quote', 'customers', 'discount-codes', 'price-updates', 'discounts-given', 'cancellations', 'refunds-paid', 'policy-documents', 'timesheets', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
+      const accountsTabIds = ['new-leads', 'get-quote', 'customers', 'dealer-cancellations', 'discount-codes', 'price-updates', 'discounts-given', 'cancellations', 'refunds-paid', 'policy-documents', 'timesheets', 'staff-hub', 'agent-feedback', 'unsubscribe', 'account'];
       return defaultTabs.filter(tab => accountsTabIds.includes(tab.id));
     }
 

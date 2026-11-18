@@ -201,6 +201,8 @@ Deno.serve(async (req: Request) => {
       vehicle_make: vehicle.make || null,
       vehicle_model: vehicle.model || null,
       vehicle_year: vehicle.year || null,
+      vehicle_fuel_type: vehicle.fuel_type || vehicle.fuelType || null,
+      vehicle_transmission: vehicle.transmission || null,
       mileage: vehicle.mileage ? parseInt(vehicle.mileage, 10) : null,
       plan_type: plan.plan_type,
       payment_type: String(plan.duration_months),

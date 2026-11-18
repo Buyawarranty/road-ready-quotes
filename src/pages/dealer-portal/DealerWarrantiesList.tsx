@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
+  CalendarDays,
+  CarFront,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
@@ -19,6 +21,7 @@ import {
   RotateCcw,
   Search,
   ShieldCheck,
+  UserRound,
   XCircle,
   type LucideIcon,
 } from 'lucide-react';
@@ -30,9 +33,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
-import { downloadInvoicePdf, downloadWarrantyPdf, type DealerPdfRow } from '@/lib/dealerPdf';
+import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import DealerRegistrationPlate from '@/components/dealer/DealerRegistrationPlate';
+import { dealerVehicleSpecification, dealerVehicleSummary, mergeWarrantyVehicleLookup, shouldLookupWarrantyVehicle } from '@/lib/dealerWarrantyVehicle';
+import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
+import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -54,6 +61,9 @@ type WarrantyRow = DealerPdfRow & {
   voluntary_excess?: number | string | null;
   labour_rate?: number | string | null;
   policy_number?: string | null;
+  vehicle_year?: string | number | null;
+  vehicle_fuel_type?: string | null;
+  vehicle_transmission?: string | null;
 };
 
 type WarrantyEmailPreview = {
@@ -100,7 +110,10 @@ const getCoverKey = (row: WarrantyRow): Exclude<CoverFilter, 'all'> => {
 
 const getCoverLabel = (row: WarrantyRow) => {
   const key = getCoverKey(row);
-  if (key === 'pending') return row.status || 'Pending';
+  if (key === 'pending') {
+    const status = String(row.status || '').trim();
+    return !status || status.toLowerCase() === 'pending' ? 'Awaiting activation' : status.replace(/_/g, ' ');
+  }
   return key.charAt(0).toUpperCase() + key.slice(1);
 };
 
@@ -115,6 +128,27 @@ function StatCard({ icon: Icon, label, value, green = false }: { icon: LucideIco
         <p className={`mt-1 whitespace-nowrap text-xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
       </div>
     </div>
+  );
+}
+
+function DetailItem({ label, value }: { label: string; value: React.ReactNode }) {
+  return <div><dt className="text-xs font-semibold text-muted-foreground">{label}</dt><dd className="mt-1 break-words text-sm font-bold text-crm-navy">{value}</dd></div>;
+}
+
+function DetailSection({ icon: Icon, title, tone = 'orange', children }: { icon: LucideIcon; title: string; tone?: 'orange' | 'blue' | 'green'; children: React.ReactNode }) {
+  const tones = {
+    orange: 'bg-crm-orange-soft text-crm-orange',
+    blue: 'bg-crm-blue-soft text-crm-blue',
+    green: 'bg-crm-green-soft text-crm-green',
+  };
+  return (
+    <section className="rounded-2xl border border-crm-line bg-card p-4 shadow-sm">
+      <h3 className="flex items-center gap-2 text-sm font-extrabold text-crm-navy">
+        <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${tones[tone]}`}><Icon className="h-4 w-4" aria-hidden="true" /></span>
+        {title}
+      </h3>
+      <dl className="mt-4 grid grid-cols-1 gap-x-5 gap-y-4 min-[420px]:grid-cols-2">{children}</dl>
+    </section>
   );
 }
 
@@ -153,6 +187,7 @@ const DealerWarrantiesList = () => {
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
   const [detailRow, setDetailRow] = useState<WarrantyRow | null>(null);
+  const [vehicleLookup, setVehicleLookup] = useState<{ id: string; status: 'loading' | 'error' } | null>(null);
   const [search, setSearch] = useState('');
   const [coverFilter, setCoverFilter] = useState<CoverFilter>('all');
   const [paymentFilter, setPaymentFilter] = useState<'all' | DealerPaymentKey>('all');
@@ -417,12 +452,33 @@ const DealerWarrantiesList = () => {
     );
   };
 
+  const openWarrantyDetails = (row: WarrantyRow) => {
+    setDetailRow(row);
+    if (!shouldLookupWarrantyVehicle(row)) {
+      setVehicleLookup(null);
+      return;
+    }
+    setVehicleLookup({ id: row.id, status: 'loading' });
+    void (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('dvla-vehicle-lookup', {
+          body: { registrationNumber: String(row.registration_plate || '').replace(/\s/g, '') },
+        });
+        if (error || !data?.make) throw new Error('Vehicle details unavailable');
+        setDetailRow((current) => current?.id === row.id ? mergeWarrantyVehicleLookup(current, data) : current);
+        setVehicleLookup((current) => current?.id === row.id ? null : current);
+      } catch {
+        setVehicleLookup((current) => current?.id === row.id ? { id: row.id, status: 'error' } : current);
+      }
+    })();
+  };
+
   const renderActions = (row: WarrantyRow, mobile = false) => (
     <div className={`flex items-center gap-2 ${mobile ? 'w-full' : 'justify-end'}`}>
       <Button
         variant="outline"
         size="sm"
-        onClick={() => setDetailRow(row)}
+        onClick={() => openWarrantyDetails(row)}
         className={`h-10 rounded-xl border-crm-orange/60 bg-card px-4 font-bold text-crm-orange hover:bg-crm-orange-soft hover:text-crm-orange ${mobile ? 'flex-1' : ''}`}
       >
         <Eye className="mr-2 h-4 w-4" />View details
@@ -437,8 +493,11 @@ const DealerWarrantiesList = () => {
           <DropdownMenuItem onClick={() => openEmailDialog(row)}>
             <Mail className="mr-2 h-4 w-4" />{isPaid(row) ? 'Resend documents' : 'Email warranty'}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => downloadWarrantyPdf(row, dealer?.name)}>
-            <FileText className="mr-2 h-4 w-4" />Download warranty
+          <DropdownMenuItem asChild>
+            <a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4" />Platinum warranty plan</a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4" />Terms & Conditions</a>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => downloadInvoicePdf(row, dealer?.name)}>
             <Download className="mr-2 h-4 w-4" />Download invoice
@@ -466,8 +525,8 @@ const DealerWarrantiesList = () => {
         <article key={row.id} className="rounded-2xl border-2 border-crm-line/70 bg-card p-4 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-mono text-base font-extrabold uppercase text-crm-navy">{row.registration_plate || '—'}</p>
-              <p className="mt-0.5 text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ') || 'Vehicle details unavailable'}</p>
+              <DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" />
+              <p className="mt-2 text-sm text-muted-foreground">{dealerVehicleSummary(row)}</p>
               <p className="mt-1 font-mono text-xs font-semibold text-muted-foreground">Ref {warrantyRef(row)}</p>
             </div>
             <p className="shrink-0 text-lg font-extrabold text-crm-navy">{money(row.final_amount)}</p>
@@ -520,8 +579,8 @@ const DealerWarrantiesList = () => {
                 <p className="mt-1 max-w-[190px] break-all text-sm text-muted-foreground">{row.email || '—'}</p>
               </TableCell>
               <TableCell className="align-top">
-                <p className="font-mono font-bold uppercase text-crm-navy">{row.registration_plate || '—'}</p>
-                <p className="mt-1 max-w-[210px] text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}</p>
+                <DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" />
+                <p className="mt-2 max-w-[210px] text-sm text-muted-foreground">{dealerVehicleSummary(row)}</p>
               </TableCell>
               <TableCell className="align-top">
                 <p className="font-bold text-crm-navy">{productName(row)}</p>
@@ -560,14 +619,15 @@ const DealerWarrantiesList = () => {
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
-                  <div><p className="font-mono font-bold uppercase text-crm-navy">{row.registration_plate || '—'}</p><p className="text-sm text-muted-foreground">{row.name || '—'}</p></div>
+                  <div><DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" /><p className="mt-2 text-sm text-muted-foreground">{row.name || '—'}</p></div>
                   <p className="font-extrabold text-crm-navy">{money(row.final_amount)}</p>
                 </div>
                 <p className="mt-3 text-xs font-semibold text-crm-orange">Invoice {ref(row.id)}</p>
                 <div className="mt-3">{renderPaymentStatus(row)}</div>
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <Button variant="outline" className="rounded-xl" onClick={() => downloadInvoicePdf(row, dealer?.name)}><Download className="mr-2 h-4 w-4" />Invoice</Button>
-                  <Button variant="outline" className="rounded-xl" onClick={() => downloadWarrantyPdf(row, dealer?.name)}><FileText className="mr-2 h-4 w-4" />Warranty</Button>
+                  <Button asChild variant="outline" className="rounded-xl"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4" />Warranty plan</a></Button>
+                  <Button asChild variant="outline" className="col-span-2 rounded-xl"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4" />Terms & Conditions</a></Button>
                 </div>
               </div>
             </div>
@@ -594,11 +654,11 @@ const DealerWarrantiesList = () => {
                 <TableCell className="px-5"><Checkbox checked={!!selected[row.id]} onCheckedChange={(value) => setSelected((current) => ({ ...current, [row.id]: !!value }))} className="border-crm-line data-[state=checked]:bg-crm-orange data-[state=checked]:text-primary-foreground" aria-label={`Select invoice ${ref(row.id)}`} /></TableCell>
                 <TableCell className="font-mono font-bold text-crm-orange">{ref(row.id)}</TableCell>
                 <TableCell><p className="font-bold text-crm-navy">{row.name || '—'}</p><p className="text-sm text-muted-foreground">{row.email || '—'}</p></TableCell>
-                <TableCell><p className="font-mono font-bold uppercase text-crm-navy">{row.registration_plate || '—'}</p><p className="text-sm text-muted-foreground">{[row.vehicle_make, row.vehicle_model].filter(Boolean).join(' ')}</p></TableCell>
+                <TableCell><DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" /><p className="mt-2 text-sm text-muted-foreground">{dealerVehicleSummary(row)}</p></TableCell>
                 <TableCell className="text-sm text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}<br />{fmt(computeEnd(row))}</TableCell>
                 <TableCell className="font-extrabold text-crm-navy">{money(row.final_amount)}</TableCell>
                 <TableCell>{renderPaymentStatus(row)}</TableCell>
-                <TableCell className="sticky right-0 z-10 bg-card pr-5 group-hover:bg-crm-orange-soft"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" title="Download invoice" onClick={() => downloadInvoicePdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><Download className="h-4 w-4" /></Button><Button size="icon" variant="ghost" title="Download warranty" onClick={() => downloadWarrantyPdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><FileText className="h-4 w-4" /></Button></div></TableCell>
+                <TableCell className="sticky right-0 z-10 bg-card pr-5 group-hover:bg-crm-orange-soft"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" title="Download invoice" onClick={() => downloadInvoicePdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><Download className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" title="Download Platinum warranty plan" className="rounded-xl text-crm-navy hover:text-crm-orange"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="h-4 w-4" /></a></Button><Button asChild size="icon" variant="ghost" title="Download Terms & Conditions" className="rounded-xl text-crm-navy hover:text-crm-orange"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="h-4 w-4" /></a></Button></div></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -696,7 +756,7 @@ const DealerWarrantiesList = () => {
                 <SelectContent className="rounded-xl">
                   <SelectItem value="all">Cover status: All</SelectItem>
                   <SelectItem value="active">Cover status: Active</SelectItem>
-                  <SelectItem value="pending">Cover status: Pending</SelectItem>
+                  <SelectItem value="pending">Cover status: Awaiting activation</SelectItem>
                   <SelectItem value="expired">Cover status: Expired</SelectItem>
                   <SelectItem value="cancelled">Cover status: Cancelled</SelectItem>
                 </SelectContent>
@@ -735,45 +795,75 @@ const DealerWarrantiesList = () => {
         </Tabs>
       </div>
 
-      <Dialog open={!!detailRow} onOpenChange={(open) => !open && setDetailRow(null)}>
-        <DialogContent className="dealer-crm sm:max-w-xl">
+      <Dialog open={!!detailRow} onOpenChange={(open) => { if (!open) { setDetailRow(null); setVehicleLookup(null); } }}>
+        <DialogContent className="dealer-crm sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Warranty details</DialogTitle>
-            <DialogDescription>Cover, payment and document details for <span className="font-bold uppercase">{detailRow?.registration_plate}</span>.</DialogDescription>
+            <DialogDescription>Vehicle, cover, payment and official warranty documents.</DialogDescription>
           </DialogHeader>
           {detailRow && (
-            <div className="space-y-5">
-              <div className="flex flex-wrap gap-2">{renderPaymentStatus(detailRow)}{renderCoverStatus(detailRow)}</div>
-              <dl className="grid grid-cols-1 gap-x-5 gap-y-4 rounded-2xl border border-crm-line bg-muted/30 p-4 sm:grid-cols-2">
-                {[
-                  ['Customer', detailRow.name || '—'],
-                  ['Email', detailRow.email || '—'],
-                  ['Vehicle', [detailRow.vehicle_make, detailRow.vehicle_model].filter(Boolean).join(' ') || '—'],
-                  ['Reference', warrantyRef(detailRow)],
-                  ['Cover', coverName(detailRow)],
-                  ['Product', productName(detailRow)],
-                  ['Duration', detailRow.payment_type ? `${detailRow.payment_type} months` : '—'],
-                  ['Activation', fmt(activationDate(detailRow))],
-                  ['Inception', fmt(detailRow.warranty_start_date || detailRow.signup_date)],
-                  ['Expiry', fmt(computeEnd(detailRow))],
-                  ['Claim limit', wholeMoney(detailRow.claim_limit)],
-                  ['Voluntary excess', wholeMoney(detailRow.voluntary_excess)],
-                  ['Labour rate', detailRow.labour_rate ? `${wholeMoney(detailRow.labour_rate)}/hr` : '—'],
-                  ['Amount', money(detailRow.final_amount)],
-                ].map(([label, value]) => <div key={label}><dt className="text-xs font-semibold text-muted-foreground">{label}</dt><dd className="mt-1 break-words text-sm font-bold text-crm-navy">{value}</dd></div>)}
-              </dl>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <Button variant="outline" className="rounded-xl" onClick={() => openEmailDialog(detailRow)}><Mail className="mr-2 h-4 w-4" />Email documents</Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => downloadWarrantyPdf(detailRow, dealer?.name)}><FileText className="mr-2 h-4 w-4" />Warranty PDF</Button>
-                <Button variant="outline" className="rounded-xl" onClick={() => downloadInvoicePdf(detailRow, dealer?.name)}><Download className="mr-2 h-4 w-4" />Invoice PDF</Button>
+            <div className="space-y-4">
+              <section className="rounded-2xl border border-crm-orange/25 bg-crm-orange-soft p-4 text-center">
+                <DealerRegistrationPlate registration={detailRow.registration_plate} className="mx-auto max-w-xs" />
+                <p className="mt-4 flex items-center justify-center gap-2 text-base font-extrabold text-crm-navy"><CarFront className="h-5 w-5 shrink-0 text-crm-orange" aria-hidden="true" />{dealerVehicleSummary(detailRow)}</p>
+                {dealerVehicleSpecification(detailRow) && <p className="mt-1 text-sm text-muted-foreground">{dealerVehicleSpecification(detailRow)}</p>}
+                {vehicleLookup?.id === detailRow.id && vehicleLookup.status === 'loading' && <p role="status" className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-crm-navy"><Loader2 className="h-4 w-4 animate-spin text-crm-orange" />Retrieving vehicle details…</p>}
+                {vehicleLookup?.id === detailRow.id && vehicleLookup.status === 'error' && <p role="status" className="mt-3 text-sm text-muted-foreground">The vehicle lookup could not add any further details for this registration.</p>}
+              </section>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <section className="rounded-xl border border-crm-amber/20 bg-crm-amber-soft p-3.5">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-crm-gold-deep">Payment</h3>
+                  {renderPaymentStatus(detailRow)}
+                </section>
+                <section className="rounded-xl border border-crm-blue/15 bg-crm-blue-soft p-3.5">
+                  <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-crm-navy">Cover status</h3>
+                  {renderCoverStatus(detailRow)}
+                </section>
               </div>
+
+              <div className="space-y-3">
+                <DetailSection icon={UserRound} title="Customer & warranty">
+                  <DetailItem label="Customer" value={detailRow.name || '—'} />
+                  <DetailItem label="Email" value={detailRow.email || '—'} />
+                  <DetailItem label="Reference" value={warrantyRef(detailRow)} />
+                  <DetailItem label="Product" value={productName(detailRow)} />
+                </DetailSection>
+                <DetailSection icon={ShieldCheck} title="Warranty cover" tone="green">
+                  <DetailItem label="Cover" value={coverName(detailRow)} />
+                  <DetailItem label="Duration" value={detailRow.payment_type ? `${detailRow.payment_type} months` : '—'} />
+                  <DetailItem label="Claim limit" value={wholeMoney(detailRow.claim_limit)} />
+                  <DetailItem label="Voluntary excess" value={wholeMoney(detailRow.voluntary_excess)} />
+                  <DetailItem label="Labour rate" value={detailRow.labour_rate ? `${wholeMoney(detailRow.labour_rate)}/hr` : '—'} />
+                  <DetailItem label="Amount" value={money(detailRow.final_amount)} />
+                </DetailSection>
+                <DetailSection icon={CalendarDays} title="Cover dates" tone="blue">
+                  <DetailItem label="Activation" value={fmt(activationDate(detailRow))} />
+                  <DetailItem label="Inception" value={fmt(detailRow.warranty_start_date || detailRow.signup_date)} />
+                  <DetailItem label="Expiry" value={fmt(computeEnd(detailRow))} />
+                </DetailSection>
+              </div>
+
+              <section className="rounded-2xl border border-crm-orange/20 bg-crm-orange-soft/60 p-4">
+                <h3 className="flex items-center gap-2 text-sm font-extrabold text-crm-navy"><FileText className="h-5 w-5 text-crm-orange" aria-hidden="true" />Documents & actions</h3>
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <Button asChild variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3 text-left">
+                    <a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Platinum warranty plan<Download className="ml-auto h-4 w-4 shrink-0" /></a>
+                  </Button>
+                  <Button asChild variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3 text-left">
+                    <a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Terms & Conditions<Download className="ml-auto h-4 w-4 shrink-0" /></a>
+                  </Button>
+                  <Button variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3" onClick={() => openEmailDialog(detailRow)}><Mail className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Email documents</Button>
+                  <Button variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3" onClick={() => downloadInvoicePdf(detailRow, dealer?.name)}><ReceiptText className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Invoice PDF<Download className="ml-auto h-4 w-4 shrink-0" /></Button>
+                </div>
+              </section>
             </div>
           )}
           <DialogFooter>
             {!['cancelled', 'refunded'].includes(String(detailRow?.status || '').toLowerCase()) && !pendingCancel.has(detailRow?.id || '') && (
               <Button variant="ghost" className="text-crm-red" onClick={() => detailRow && openCancellationDialog(detailRow)}><XCircle className="mr-2 h-4 w-4" />Request cancellation</Button>
             )}
-            <Button variant="outline" onClick={() => setDetailRow(null)}>Close</Button>
+            <Button variant="outline" onClick={() => { setDetailRow(null); setVehicleLookup(null); }}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

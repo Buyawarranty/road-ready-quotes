@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 type Req = {
   id: string; dealer_id: string; customer_id: string; reason: string; status: string;
@@ -20,6 +21,7 @@ const gbp = (n?: number | null) => (n == null ? '—' : `£${Number(n).toFixed(2
 
 const DealerAdminCancellations: React.FC = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [rows, setRows] = useState<Req[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'all'>('pending');
@@ -46,10 +48,12 @@ const DealerAdminCancellations: React.FC = () => {
     }
     setRows(list);
     setLoading(false);
-    // Pop the oldest pending request open so it gets processed
-    if (filter === 'pending' && list.length && !open) openReq(list[list.length - 1]);
+    // Open the request chosen in the alert, or the oldest pending request.
+    const requestedId = searchParams.get('request');
+    const requested = requestedId ? list.find((request) => request.id === requestedId) : null;
+    if (filter === 'pending' && list.length && !open) openReq(requested || list[list.length - 1]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, toast]);
+  }, [filter, toast, searchParams]);
 
   useEffect(() => { load(); }, [load]);
 

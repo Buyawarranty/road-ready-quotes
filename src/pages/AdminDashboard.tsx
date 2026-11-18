@@ -35,6 +35,7 @@ import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
 import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
+import DealerCancellationRequestAlert from '@/components/admin/DealerCancellationRequestAlert';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
 
@@ -190,6 +191,7 @@ const isTabAllowedForRole = (rawTab: string, role: string | null, permissions?: 
   if (tab === 'analytics') return canAccessSalesAnalytics(role, permissions);
   if (tab === 'partners') return canManagePartners(role, permissions);
   if (tab === 'discount-codes') return canManageDealerPromos(role);
+  if (tab === 'dealer-cancellations' && ['admin', 'super_admin', 'accounts', 'accounts_manager'].includes(role || '')) return true;
   const permKey = `tab_${tab}`;
   if (tab === 'account') return true;
   if (tab === 'unsubscribe') return true;
@@ -1232,6 +1234,7 @@ const AdminDashboardInner: React.FC<{
       <NewLeadAlerts />
       <BdmNoteAlerts />
       <SignupAlerts />
+      <DealerCancellationRequestAlert userRole={displayRole} />
 
 
       {/* Persistent "Take lead" popup for agents on Open Pool mode */}
