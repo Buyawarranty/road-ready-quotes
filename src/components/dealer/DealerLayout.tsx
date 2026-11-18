@@ -66,7 +66,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dealer-portal/invoicing', label: 'Invoicing', icon: ReceiptText, trader: true },
   { to: '/dealer-portal/customers', label: 'Customers', icon: Users, trader: true },
   { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
-  { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
+  { to: '/dealer-portal/documents', label: 'Documents', icon: FolderOpen, trader: true },
   { to: '/dealer-portal/analytics', label: 'Reports', icon: BarChart3 },
   { to: '/dealer-portal/settings/profile', label: 'Settings', icon: Settings, trader: true },
 ];
