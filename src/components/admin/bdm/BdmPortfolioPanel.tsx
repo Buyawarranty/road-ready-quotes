@@ -11,6 +11,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Briefcase, Plus, Upload, Link2, BadgeCheck, Pencil } from 'lucide-react';
+import { useDealerPortalUsage } from '@/hooks/useDealerPortalUsage';
+import { DealerFollowUpBar } from '@/components/admin/DealerFollowUpBar';
+import { PORTAL_STAGE_LABEL, portalStage, isActiveOnPortal, isReadyForFollowUp, newestReadySignIn } from '@/lib/dealerPortalProgress';
 import { PORTFOLIO_STATUSES, PortfolioInput, mapPortfolioRow } from '@/lib/bdm/bdmPortfolio';
 
 type Row = PortfolioInput & { id: string; bdm_user_id: string; dealership_id: string | null; dealer_id: string | null };
@@ -27,6 +30,7 @@ const BdmPortfolioPanel: React.FC = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [owner, setOwner] = useState('mine');
   const [q, setQ] = useState('');
+  const [view, setView] = useState<'all' | 'active' | 'ready'>('all');
   const [edit, setEdit] = useState<(PortfolioInput & { id?: string; bdm_user_id?: string }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [pendingCredit, setPendingCredit] = useState<Set<string>>(new Set());
@@ -63,10 +67,15 @@ const BdmPortfolioPanel: React.FC = () => {
 
   const nameOf = (id: string) => staff.find(s => s.user_id === id)?.name || 'Unknown';
   const today = new Date().toISOString().slice(0, 10);
+  const usage = useDealerPortalUsage(useMemo(() => rows.map(r => r.dealer_id).filter(Boolean) as string[], [rows]));
+  const mineOrAll = rows.filter(r => owner === 'all' || (owner === 'mine' ? r.bdm_user_id === me : r.bdm_user_id === owner));
+  const activeCount = mineOrAll.filter(r => r.dealer_id && isActiveOnPortal(usage[r.dealer_id])).length;
+  const readyList = mineOrAll.filter(r => r.dealer_id && isReadyForFollowUp(usage[r.dealer_id]));
   const shown = useMemo(() => rows.filter(r =>
+    (view === 'all' || (!!r.dealer_id && (view === 'active' ? isActiveOnPortal(usage[r.dealer_id]) : isReadyForFollowUp(usage[r.dealer_id])))) &&
     (owner === 'all' || (owner === 'mine' ? r.bdm_user_id === me : r.bdm_user_id === owner)) &&
     (!q.trim() || [r.dealership_name, r.contact_name, r.town, r.postcode, r.phone, r.email].join(' ').toLowerCase().includes(q.trim().toLowerCase()))
-  ), [rows, owner, q, me]);
+  ), [rows, owner, q, me, view, usage]);
   const dueCount = shown.filter(r => r.next_follow_up_at && r.next_follow_up_at <= today).length;
 
   const save = async () => {
@@ -113,6 +122,13 @@ const BdmPortfolioPanel: React.FC = () => {
         <p className="text-xs text-muted-foreground">Import reads Excel or CSV with headings like Dealership, Contact, Phone, Email, Town, Postcode, Date onboarded, Status, Next follow-up, Notes. Dates as DD/MM/YYYY.</p>
       </CardHeader>
       <CardContent className="space-y-3">
+        <DealerFollowUpBar storageKey="pp-portfolio-followup-dismissed" count={readyList.length} newestSignIn={newestReadySignIn(readyList.map(r => usage[r.dealer_id!]))} onView={() => setView('ready')} />
+        <div className="flex flex-wrap gap-2" role="tablist">
+          {([['all', 'All dealerships', mineOrAll.length], ['active', 'Active on portal', activeCount], ['ready', 'Ready for follow-up', readyList.length]] as const).map(([id, label, n]) => (
+            <Button key={id} role="tab" aria-selected={view === id} size="sm" variant={view === id ? 'default' : 'outline'} onClick={() => setView(id)}>{label} ({n})</Button>
+          ))}
+        </div>
+        {view === 'active' && <p className="text-xs text-muted-foreground">Active = signed in, or updated a quote or warranty, in the last 30 days.</p>}
         <div className="flex flex-wrap items-center gap-2">
           <Input className="max-w-xs" value={q} onChange={e => setQ(e.target.value)} placeholder="Search dealership, town, phone…" />
           {seeAll && (
@@ -130,11 +146,11 @@ const BdmPortfolioPanel: React.FC = () => {
         <div className="overflow-x-auto rounded-md border">
           <table className="w-full min-w-[860px] text-sm">
             <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
-              <tr><th className="p-2">Dealership</th><th className="p-2">Contact</th><th className="p-2">Onboarded</th><th className="p-2">Status</th><th className="p-2">Next follow-up</th><th className="p-2">Links</th>{seeAll && <th className="p-2">BDM</th>}<th className="p-2" /></tr>
+              <tr><th className="p-2">Dealership</th><th className="p-2">Contact</th><th className="p-2">Onboarded</th><th className="p-2">Status</th><th className="p-2">Next follow-up</th><th className="p-2">Portal</th><th className="p-2">Links</th>{seeAll && <th className="p-2">BDM</th>}<th className="p-2" /></tr>
             </thead>
             <tbody>
               {shown.length === 0 ? (
-                <tr><td colSpan={8} className="p-6 text-center text-muted-foreground">No dealerships yet — add one or import your sheet.</td></tr>
+                <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">No dealerships yet — add one or import your sheet.</td></tr>
               ) : shown.map(r => {
                 const due = r.next_follow_up_at && r.next_follow_up_at <= today;
                 return (
@@ -144,6 +160,10 @@ const BdmPortfolioPanel: React.FC = () => {
                     <td className="p-2 whitespace-nowrap">{ukDate(r.onboarded_at)}</td>
                     <td className="p-2 space-y-1"><Badge variant="secondary">{statusLabel(r.status)}</Badge>{r.dealer_id && pendingCredit.has(r.dealer_id) && <Badge className="block w-fit border-accent bg-accent text-accent-foreground" title="30-day invoice request waiting for accounts@ to approve">Accounts@ needs to approve</Badge>}</td>
                     <td className="p-2"><p className={due ? 'font-semibold text-destructive' : ''}>{ukDate(r.next_follow_up_at)}</p>{r.follow_up_action && <p className="text-xs text-muted-foreground">{r.follow_up_action}</p>}</td>
+                    <td className="p-2 space-y-1">{(() => { const u = r.dealer_id ? usage[r.dealer_id] : undefined; return (<>
+                      <Badge variant={isActiveOnPortal(u) ? 'default' : 'outline'}>{PORTAL_STAGE_LABEL[portalStage(r.dealer_id, u)]}</Badge>
+                      {u && <p className="text-xs text-muted-foreground">Last sign-in {ukDate(u.last_sign_in_at)}<br />{u.quote_count} quotes · {u.warranty_count} warranties</p>}
+                    </>); })()}</td>
                     <td className="p-2 space-y-1">
                       {r.dealership_id ? <a className="flex items-center gap-1 text-xs text-primary hover:underline" href={`/admin-dashboard/?tab=bdm-contacts&q=${encodeURIComponent(r.dealership_name)}`}><Link2 className="h-3 w-3" />BDM contact</a> : <span className="block text-xs text-muted-foreground">No contact match</span>}
                       {r.dealer_id ? <><span className="flex items-center gap-1 text-xs text-primary"><BadgeCheck className="h-3 w-3" />Dealer account</span><span className="flex flex-wrap gap-1"><Badge variant={counts[r.dealer_id]?.claims ? 'destructive' : 'outline'} className="text-[11px]">{counts[r.dealer_id]?.claims ?? 0} claims</Badge><Badge variant={counts[r.dealer_id]?.refunds ? 'destructive' : 'outline'} className="text-[11px]">{counts[r.dealer_id]?.refunds ?? 0} refunds</Badge></span></> : <span className="block text-xs text-muted-foreground">No account yet</span>}

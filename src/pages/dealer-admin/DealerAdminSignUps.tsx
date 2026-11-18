@@ -25,6 +25,9 @@ import type { DealerSignupActivity } from '@/lib/dealerSignupActivity';
 import { dealerSignupDetailsDraft, validateDealerSignupDetails, type DealerSignupDetailsDraft } from '@/lib/dealerSignupDetails';
 import { duplicateDealerSignupIds, isDealerSignupSetAside, isProtectedDealerSignup, organiseDealerSignups } from '@/lib/dealerSignupOrganisation';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useDealerPortalUsage } from '@/hooks/useDealerPortalUsage';
+import { DealerFollowUpBar } from '@/components/admin/DealerFollowUpBar';
+import { PORTAL_STAGE_LABEL, portalStage, isReadyForFollowUp, newestReadySignIn } from '@/lib/dealerPortalProgress';
 import { Archive, ChevronDown, RotateCcw } from 'lucide-react';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -93,7 +96,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [statusSaving, setStatusSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | Status>('all');
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Signup | null>(null);
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
@@ -207,10 +210,14 @@ const DealerAdminSignUps: React.FC = () => {
   }, [noteIndex]);
 
   const duplicateIds = useMemo(() => duplicateDealerSignupIds(rows), [rows]);
+  const portalUsage = useDealerPortalUsage(useMemo(() => rows.map(r => r.dealer_id).filter(Boolean) as string[], [rows]));
+  const readyRows = rows.filter(r => r.dealer_id && isReadyForFollowUp(portalUsage[r.dealer_id]));
+  const newestReady = newestReadySignIn(readyRows.map(r => portalUsage[r.dealer_id!]));
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const matches = rows.filter((r) => {
-      if (statusFilter !== 'all' && r.status !== statusFilter) return false;
+      if (statusFilter === 'ready') { if (!r.dealer_id || !isReadyForFollowUp(portalUsage[r.dealer_id])) return false; }
+      else if (statusFilter !== 'all' && r.status !== statusFilter) return false;
       if (!q) return true;
       return [
         r.dealership_name, r.contact_name, r.email_address, r.phone_number,
@@ -220,7 +227,7 @@ const DealerAdminSignUps: React.FC = () => {
 
     });
     return organiseDealerSignups(matches, duplicateIds);
-  }, [rows, search, statusFilter, duplicateIds]);
+  }, [rows, search, statusFilter, duplicateIds, portalUsage]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -631,6 +638,8 @@ const DealerAdminSignUps: React.FC = () => {
         </div>
       </div>
 
+      <DealerFollowUpBar storageKey="pp-signups-followup-dismissed" count={readyRows.length} newestSignIn={newestReady} onView={() => setStatusFilter('ready')} />
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard label="Total signups" value={rows.length} />
@@ -656,6 +665,7 @@ const DealerAdminSignUps: React.FC = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
+            <SelectItem value="ready">Ready for follow-up</SelectItem>
             {STATUS_OPTIONS.map((s) => (
               <SelectItem key={s} value={s}>{STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
             ))}
@@ -706,6 +716,7 @@ const DealerAdminSignUps: React.FC = () => {
                   <Th>Email</Th>
                   <Th>Phone</Th>
                   <Th>Status</Th>
+                  <Th>Portal progress</Th>
                   <Th>Monthly Sales</Th>
                   <Th>Current Provider</Th>
                   <Th>Interested In</Th>
@@ -721,7 +732,7 @@ const DealerAdminSignUps: React.FC = () => {
                     <React.Fragment key={r.id}>
                       {showSetAsideHeading && (
                         <tr className="border-y border-border bg-muted/60">
-                          <td colSpan={canBulkDelete ? 13 : 12} className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          <td colSpan={canBulkDelete ? 14 : 13} className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             Declined and possible duplicates — kept below fresh signups
                           </td>
                         </tr>
@@ -790,6 +801,14 @@ const DealerAdminSignUps: React.FC = () => {
                             className="text-gray-700 hover:underline">{r.phone_number}</a>
                         </Td>
                         <Td><div onClick={event => event.stopPropagation()}><Select value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
+                        <Td className="whitespace-nowrap">{(() => {
+                          const u = r.dealer_id ? portalUsage[r.dealer_id] : undefined;
+                          const stage = portalStage(r.dealer_id, u);
+                          return (<div className="space-y-1">
+                            <Badge variant={stage === 'first_warranty' ? 'default' : stage === 'signed_up' ? 'outline' : 'secondary'}>{PORTAL_STAGE_LABEL[stage]}</Badge>
+                            {u?.last_sign_in_at && <div className="text-xs text-gray-500">Last sign-in {format(new Date(u.last_sign_in_at), 'dd MMM yyyy')}</div>}
+                          </div>);
+                        })()}</Td>
                         <Td className="text-gray-700">{r.monthly_vehicle_sales || '—'}</Td>
                         <Td className="text-gray-700">{r.current_warranty_provider || '—'}</Td>
                         <Td className="text-gray-700 capitalize">{r.interested_in?.replace('-', ' ') || '—'}</Td>
