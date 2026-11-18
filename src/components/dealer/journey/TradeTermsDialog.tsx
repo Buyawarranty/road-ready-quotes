@@ -60,7 +60,7 @@ export const TradeTermsDialog: React.FC<Props> = ({ dealerId, open, onOpenChange
         </ul>
         <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-crm-green/30 bg-crm-green-soft px-4 py-3 !text-sm font-medium leading-snug text-crm-navy">
           <input type="checkbox" checked={checked} onChange={(event) => setChecked(event.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-crm-orange" />
-          <span>I confirm I have read and accept the Trade Terms & Conditions, including the 3+3 introductory offer and invoicing terms.</span>
+          <span>I confirm I have read and accept the Trade Terms & Conditions, including the buy one, get the next one free offer and invoicing terms.</span>
         </label>
         {error && <DealerFieldError>{error}</DealerFieldError>}
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">

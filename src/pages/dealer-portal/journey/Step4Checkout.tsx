@@ -1,3 +1,4 @@
+import BogofBanner from '@/components/dealer/offer/BogofBanner';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
@@ -285,13 +286,13 @@ const Step4Checkout: React.FC = () => {
 
   const paidCount = eligibility?.paid_count ?? 0;
   const invoiceRequired = eligibility?.required ?? 3;
-  const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
+  const introLeft = 0; // Old 3+3 progress card retired by buy-one-get-one-free.
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = termsAccepted !== true
     ? 'Review trade terms to continue'
     : introFreeApplied
-      ? 'Activate now with your free 3+3 warranty'
+      ? 'Activate your free warranty now'
       : accountSelected
         ? 'Activate now and pay later'
         : `Pay £${total.toFixed(2)} & issue warranty`;
@@ -330,6 +331,7 @@ const Step4Checkout: React.FC = () => {
         <h2 className="text-2xl font-extrabold text-crm-navy sm:text-3xl">Trade checkout</h2>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-crm-green-soft px-3 py-1.5 text-sm font-bold text-crm-green-deep"><ShieldCheck className="h-4 w-4" /> Trade account</span>
       </div>
+      <div className="mx-auto mb-5 w-full max-w-3xl"><BogofBanner /></div>
       <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-6">
         {/* Warranty details */}
         <section className="min-w-0">
@@ -399,7 +401,7 @@ const Step4Checkout: React.FC = () => {
           {introFreeApplied && (
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your free warranty is ready</p>
-              <p className="mt-2 text-sm text-muted-foreground">Your 3+3 offer applies to this warranty at £0. Our team will approve it before cover goes live, and you have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Buy one, get the next one free applies to this warranty at £0. Cover goes live straight away. You have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
             </div>
           )}
           {!introFreeApplied && introLeft > 0 && (
@@ -471,7 +473,7 @@ const Step4Checkout: React.FC = () => {
           </div>
 
           <div className="mt-6 border-t border-border pt-5">
-            {introFreeApplied && <p className="mb-3 rounded-xl bg-crm-green-soft p-3 text-sm font-semibold text-crm-green-deep">3+3 introductory offer applied automatically · £{plan.dealer_price.toFixed(2)} off</p>}
+            {introFreeApplied && <p className="mb-3 rounded-xl bg-crm-green-soft p-3 text-sm font-semibold text-crm-green-deep">Buy one get one free applied automatically · £{plan.dealer_price.toFixed(2)} off</p>}
             <label htmlFor="dealer-promo" className="mb-2 block text-sm font-bold text-crm-navy">Promo code</label>
             <div className="flex gap-2">
               <Input id="dealer-promo" value={promoCode} disabled={submitting || checkingPromo || introFreeApplied} onChange={event => { setPromoCode(event.target.value.toUpperCase()); setPromo(null); setPromoError(null); }} placeholder={introFreeApplied ? 'Free offer already applied' : 'Enter promo code'} className="min-w-0 flex-1" />
@@ -501,7 +503,7 @@ const Step4Checkout: React.FC = () => {
             )}
           </Button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
-            {introFreeApplied ? <>3+3 introductory offer · no payment due · approved by our team</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
+            {introFreeApplied ? <>Buy one get one free · no payment due</> : accountSelected ? <>Added to your dealer account — no card payment today</> : <><Lock className="h-3.5 w-3.5" /> Secure payment powered by Stripe</>}
           </p>
         </section>
       </div>

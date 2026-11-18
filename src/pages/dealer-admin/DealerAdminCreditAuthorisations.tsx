@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import BogofOfferSettings from '@/components/dealer-admin/BogofOfferSettings';
 import IntroFreeApprovals from '@/components/dealer-admin/IntroFreeApprovals';
 
 const db = supabase as any;
@@ -92,6 +93,7 @@ const DealerAdminCreditAuthorisations: React.FC = () => {
         <h1 className="text-2xl font-bold">Credit authorisations</h1>
         <p className="mt-1 text-sm text-muted-foreground">Review dealer requests for 30-day invoicing. Dealers need 3 paid warranties with no cancellations or refunds, an active account and no overdue balance.</p>
       </div>
+      <BogofOfferSettings />
       <IntroFreeApprovals />
       <div className="grid grid-cols-3 gap-3">
         <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Pending</p><p className="mt-1 text-2xl font-bold">{counts.pending}</p></CardContent></Card>

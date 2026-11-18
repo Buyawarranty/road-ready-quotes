@@ -8,7 +8,6 @@ import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
-import { qualifiesForIntroFree } from '../_shared/dealerIntroOffer.ts';
 import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
 
 const corsHeaders = {
@@ -135,14 +134,9 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Four-year warranty sales are awaiting approval.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const [{ count: paidForOffer, error: paidOfferError }, { count: introUsed, error: introUsedError }] = await Promise.all([
-      adminClient.from('customers').select('id', { count: 'exact', head: true })
-        .eq('dealer_id', dealer.id).eq('payment_status', 'paid').gt('final_amount', 0),
-      adminClient.from('dealer_intro_free_redemptions').select('id', { count: 'exact', head: true })
-        .eq('dealer_id', dealer.id).neq('status', 'rejected'),
-    ]);
-    if (paidOfferError || introUsedError) throw new Error('Unable to verify the introductory offer. Please try again.');
-    const introFreeAvailable = qualifiesForIntroFree(paidForOffer || 0, introUsed || 0, plan.duration_months);
+    const { data: bogofRemaining, error: bogofError } = await adminClient.rpc('dealer_bogof_remaining', { p_dealer_id: dealer.id });
+    if (bogofError) throw new Error('Unable to verify the free warranty offer. Please try again.');
+    const introFreeAvailable = Number(bogofRemaining || 0) > 0 && plan.duration_months >= 1 && plan.duration_months <= 36;
 
     const promoCode = String(body.promo_code || '').trim().toUpperCase();
     let promo: { code: string; discount_amount: number; total: number; redemption_id?: string } | null = null;
@@ -158,7 +152,7 @@ Deno.serve(async (req: Request) => {
       promo = data;
     }
     if (body.preview_only) return new Response(JSON.stringify(introFreeAvailable
-      ? { code: '3+3 INTRO', discount_amount: plan.dealer_price, total: 0, intro_free: true }
+      ? { code: 'BOGOF FREE', discount_amount: plan.dealer_price, total: 0, intro_free: true }
       : promo || { total: plan.dealer_price, discount_amount: 0, intro_free: false }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
     const { data: latestTerms } = await adminClient.from('dealer_trade_terms_versions')
@@ -212,9 +206,9 @@ Deno.serve(async (req: Request) => {
       final_amount: payable,
       original_amount: introFreeAvailable ? plan.dealer_price : plan.retail_price,
       discount_amount: introFreeAvailable ? plan.dealer_price : +(plan.retail_price - payable).toFixed(2),
-      discount_code: introFreeAvailable ? '3+3 INTRO' : promo?.code || null,
+      discount_code: introFreeAvailable ? 'BOGOF FREE' : promo?.code || null,
       ...dealerCheckoutState(payment_method),
-      ...(introFreeAvailable ? { status: 'Pending', payment_status: 'intro_pending', payment_verified: false } : {}),
+      ...(introFreeAvailable ? { status: 'Active', payment_status: 'paid', payment_verified: true, payment_verified_at: new Date().toISOString(), payment_verification_status: 'verified', payment_verification_source: 'bogof_free' } : {}),
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
@@ -309,9 +303,11 @@ Deno.serve(async (req: Request) => {
         await adminClient.from('dealer_intro_free_redemptions').delete().eq('customer_id', freeCustomerId);
         throw new Error(freeInsertError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review it.' : freeInsertError.message);
       }
-      // Free cover waits for Admin/Super Admin review (could follow a cancellation or refund).
+      // Buy one get one free: cover goes live straight away.
       await adminClient.from('dealer_intro_free_redemptions').update({ dealer_quote_id: quote_id || null }).eq('customer_id', freeCustomerId);
-      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_pending_approval: true, intro_free_slot: claim.slot, total: 0 }), {
+      await syncDealerSale(adminClient, { customerId: freeCustomerId, quoteId: quote_id || null, quoteStatus: 'paid' });
+      await notifyDealerSale(adminClient, freeCustomerId, 'paid').catch((e: unknown) => console.error('bogof email', e));
+      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_pending_approval: false, intro_free_slot: claim.slot, total: 0 }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }

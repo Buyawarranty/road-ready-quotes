@@ -7134,6 +7134,33 @@ export type Database = {
           },
         ]
       }
+      dealer_bogof_settings: {
+        Row: {
+          banner_text: string
+          banner_title: string
+          enabled: boolean
+          id: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          banner_text?: string
+          banner_title?: string
+          enabled?: boolean
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          banner_text?: string
+          banner_title?: string
+          enabled?: boolean
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       dealer_cancellation_requests: {
         Row: {
           admin_note: string | null
@@ -16318,6 +16345,7 @@ export type Database = {
         Args: { p_email?: string; p_phone?: string; p_reg?: string }
         Returns: string
       }
+      dealer_bogof_remaining: { Args: { p_dealer_id: string }; Returns: number }
       dealer_login_history: {
         Args: { p_limit?: number; p_user: string }
         Returns: {

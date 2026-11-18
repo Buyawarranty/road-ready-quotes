@@ -2,8 +2,8 @@ export const DEALER_TRADE_TERMS_VERSION = '2026-11-15-v1';
 
 export const DEALER_TRADE_TERMS_SUMMARY = [
   {
-    title: 'Introductory offer',
-    description: "After your first 3 paid warranties, your next 3 qualifying warranties are free (up to 3 years' duration).",
+    title: 'Buy one, get the next one free',
+    description: "Every paid warranty earns your next warranty free (up to 3 years' duration), while the offer is running.",
   },
   {
     title: '30-day invoicing',
@@ -17,10 +17,10 @@ export const DEALER_TRADE_TERMS_SUMMARY = [
 
 export const DEALER_FULL_TRADE_TERMS = [
   {
-    title: '1. Introductory 3+3 offer',
+    title: '1. Buy one, get the next one free',
     paragraphs: [
-      "After a dealership completes its first 3 paid warranties, the next 3 qualifying warranties are automatically free, with cover up to 3 years' duration each.",
-      'Introductory free warranties do not count as paid purchases towards the 10-paid-warranty invoicing requirement and do not create additional introductory entitlements. Each dealership can use this introductory offer once.',
+      "While the offer is running, each paid warranty (not cancelled or refunded) earns the dealership one free warranty, with cover up to 3 years' duration, applied automatically at checkout.",
+      'Free warranties do not count as paid purchases and do not earn further free warranties. Panda Protect may end or change the offer at any time; free warranties already issued stay in place.',
     ],
   },
   {
