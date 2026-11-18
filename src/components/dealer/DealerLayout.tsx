@@ -18,6 +18,7 @@ import {
   Home,
   FilePlus2,
   FileText,
+  ReceiptText,
   Shield,
   BarChart3,
   Menu,
@@ -61,6 +62,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   { to: '/dealer-portal/quotes', label: 'Quotes', icon: FileText, trader: true },
   { to: '/dealer-portal/warranties', label: 'Warranties', icon: Shield, trader: true },
+  { to: '/dealer-portal/invoicing', label: 'Invoicing', icon: ReceiptText, trader: true },
   { to: '/dealer-portal/customers', label: 'Customers', icon: Users, trader: true },
   { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
   { to: '/dealer-portal/coming-soon?section=documents', label: 'Documents', icon: FolderOpen, trader: true },
@@ -151,10 +153,15 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
 
 
   const isActive = (item: NavItem) => {
+    const tab = new URLSearchParams(location.search).get('tab');
+    if (item.label === 'Invoicing') {
+      return location.pathname.replace(/\/$/, '') === '/dealer-portal/invoicing'
+        || (location.pathname.replace(/\/$/, '') === '/dealer-portal/warranties' && tab === 'payments');
+    }
     if (item.to.startsWith('/dealer-portal/warranties')) {
-      const cancellations = new URLSearchParams(location.search).get('tab') === 'cancellations';
+      const cancellations = tab === 'cancellations';
       return location.pathname.replace(/\/$/, '') === '/dealer-portal/warranties' &&
-        (item.label === 'Cancellations' ? cancellations : !cancellations);
+        (item.label === 'Cancellations' ? cancellations : !cancellations && tab !== 'payments');
     }
     if (location.pathname.replace(/\/$/, '') === item.to.replace(/\/$/, '')) return true;
     if (item.matchPaths?.some((p) => location.pathname.startsWith(p))) return true;
@@ -167,8 +174,8 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
   const displayName = (dealer?.name || user.email || 'Dealer').toUpperCase();
   const businessName = dealer?.company_name || 'Dealer account';
 
-  const primaryNav = navItems.slice(0, 6);
-  const secondaryNav = navItems.slice(6);
+  const primaryNav = navItems.slice(0, 7);
+  const secondaryNav = navItems.slice(7);
   const topNav = primaryNav;
 
   const renderNavItem = (item: NavItem, mobile = false) => {
@@ -257,7 +264,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                   <Button variant="ghost" size="icon" className="text-foreground" aria-label="Notifications"><Bell className="h-5 w-5" /></Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => navigate('/dealer-portal/warranties')}>Review warranties and outstanding invoices</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/dealer-portal/invoicing')}>Review outstanding invoices and due dates</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <DropdownMenu>

@@ -461,7 +461,7 @@ const Step4Checkout: React.FC = () => {
                     </Button>
                   )}
                   {eligibility?.reason === 'overdue' && (
-                    <button type="button" onClick={() => navigate('/dealer-portal/warranties')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
+                    <button type="button" onClick={() => navigate('/dealer-portal/invoicing')} className="mt-1 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue underline">
                       View outstanding invoices <ChevronRight className="h-3.5 w-3.5" />
                     </button>
                   )}

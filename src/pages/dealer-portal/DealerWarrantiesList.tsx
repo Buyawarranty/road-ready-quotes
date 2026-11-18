@@ -34,7 +34,8 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
-import { DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
+import { compareDealerInvoiceDueDates, DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
+import { isCountedDealerSale, isOutstandingDealerInvoice } from '@/lib/dealerSales';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import DealerRegistrationPlate from '@/components/dealer/DealerRegistrationPlate';
 import { dealerVehicleSpecification, dealerVehicleSummary, mergeWarrantyVehicleLookup, shouldLookupWarrantyVehicle } from '@/lib/dealerWarrantyVehicle';
@@ -222,10 +223,15 @@ const DealerWarrantiesList = () => {
     () => rows.filter((row) => ['cancelled', 'refunded'].includes(String(row.status || '').trim().toLowerCase())),
     [rows],
   );
-  const unpaidRows = useMemo(() => rows.filter((row) => !isPaid(row)), [rows]);
+  const unpaidRows = useMemo(
+    () => rows.filter((row) => isCountedDealerSale(row) && isOutstandingDealerInvoice(row)).sort(compareDealerInvoiceDueDates),
+    [rows],
+  );
   const activeCoverCount = useMemo(() => rows.filter((row) => getCoverKey(row) === 'active').length, [rows]);
-  const overdueCount = useMemo(() => rows.filter((row) => getDealerPaymentState(row).key === 'overdue').length, [rows]);
+  const overdueCount = useMemo(() => unpaidRows.filter((row) => getDealerPaymentState(row).key === 'overdue').length, [unpaidRows]);
   const outstandingTotal = useMemo(() => unpaidRows.reduce((sum, row) => sum + Number(row.final_amount || 0), 0), [unpaidRows]);
+  const nextDueRow = unpaidRows[0];
+  const nextDueDate = nextDueRow ? getDealerPaymentState(nextDueRow).dueDate : null;
 
   const computeEnd = (row: WarrantyRow): string | null => {
     if (row.policy_end_date) return row.policy_end_date;
@@ -326,10 +332,10 @@ const DealerWarrantiesList = () => {
     };
   }, [emailRow, emailRow?.id, emailTarget, emailTo, emailNote]);
 
-  const selectedIds = useMemo(() => Object.keys(selected).filter((key) => selected[key]), [selected]);
+  const selectedIds = useMemo(() => unpaidRows.filter((row) => selected[row.id]).map((row) => row.id), [unpaidRows, selected]);
   const selectedTotal = useMemo(
-    () => rows.filter((row) => selected[row.id] && !isPaid(row)).reduce((sum, row) => sum + Number(row.final_amount || 0), 0),
-    [rows, selected],
+    () => unpaidRows.filter((row) => selected[row.id]).reduce((sum, row) => sum + Number(row.final_amount || 0), 0),
+    [unpaidRows, selected],
   );
   const pageUnpaidIds = activeTab === 'payments' ? paginatedRows.map((row) => row.id) : [];
   const allSelected = pageUnpaidIds.length > 0 && pageUnpaidIds.every((id) => selected[id]);
@@ -414,7 +420,7 @@ const DealerWarrantiesList = () => {
     setPaying(true);
     try {
       const { data, error } = await supabase.functions.invoke('dealer-pay-invoices', {
-        body: { dealer_id: dealer.id, customer_ids: selectedIds },
+        body: { dealer_id: dealer.id, customer_ids: selectedIds, return_path: '/dealer-portal/invoicing' },
       });
       if (error) throw error;
       if (data?.checkout_url) {
@@ -624,6 +630,10 @@ const DealerWarrantiesList = () => {
                 </div>
                 <p className="mt-3 text-xs font-semibold text-crm-orange">Invoice {ref(row.id)}</p>
                 <div className="mt-3">{renderPaymentStatus(row)}</div>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                  <div><dt className="text-muted-foreground">Issued</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(row.signup_date)}</dd></div>
+                  <div><dt className="text-muted-foreground">Payment due</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(getDealerPaymentState(row).dueDate?.toISOString())}</dd></div>
+                </dl>
                 <div className="mt-4 grid grid-cols-2 gap-2">
                   <Button variant="outline" className="rounded-xl" onClick={() => downloadInvoicePdf(row, dealer?.name)}><Download className="mr-2 h-4 w-4" />Invoice</Button>
                   <Button asChild variant="outline" className="rounded-xl"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4" />Warranty plan</a></Button>
@@ -642,7 +652,8 @@ const DealerWarrantiesList = () => {
               <TableHead className="font-bold text-crm-navy">Invoice</TableHead>
               <TableHead className="font-bold text-crm-navy">Customer</TableHead>
               <TableHead className="font-bold text-crm-navy">Vehicle</TableHead>
-              <TableHead className="font-bold text-crm-navy">Cover period</TableHead>
+              <TableHead className="whitespace-nowrap font-bold text-crm-navy">Issued</TableHead>
+              <TableHead className="whitespace-nowrap font-bold text-crm-navy">Payment due</TableHead>
               <TableHead className="font-bold text-crm-navy">Amount</TableHead>
               <TableHead className="font-bold text-crm-navy">Payment</TableHead>
               <TableHead className="sticky right-0 z-20 bg-muted pr-5 text-right font-bold text-crm-navy">Documents</TableHead>
@@ -655,7 +666,8 @@ const DealerWarrantiesList = () => {
                 <TableCell className="font-mono font-bold text-crm-orange">{ref(row.id)}</TableCell>
                 <TableCell><p className="font-bold text-crm-navy">{row.name || '—'}</p><p className="text-sm text-muted-foreground">{row.email || '—'}</p></TableCell>
                 <TableCell><DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" /><p className="mt-2 text-sm text-muted-foreground">{dealerVehicleSummary(row)}</p></TableCell>
-                <TableCell className="text-sm text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}<br />{fmt(computeEnd(row))}</TableCell>
+                <TableCell className="whitespace-nowrap text-sm text-crm-navy">{fmt(row.signup_date)}</TableCell>
+                <TableCell className="whitespace-nowrap text-sm font-semibold text-crm-navy">{fmt(getDealerPaymentState(row).dueDate?.toISOString())}</TableCell>
                 <TableCell className="font-extrabold text-crm-navy">{money(row.final_amount)}</TableCell>
                 <TableCell>{renderPaymentStatus(row)}</TableCell>
                 <TableCell className="sticky right-0 z-10 bg-card pr-5 group-hover:bg-crm-orange-soft"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" title="Download invoice" onClick={() => downloadInvoicePdf(row, dealer?.name)} className="rounded-xl text-crm-navy hover:text-crm-orange"><Download className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" title="Download Platinum warranty plan" className="rounded-xl text-crm-navy hover:text-crm-orange"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="h-4 w-4" /></a></Button><Button asChild size="icon" variant="ghost" title="Download Terms & Conditions" className="rounded-xl text-crm-navy hover:text-crm-orange"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="h-4 w-4" /></a></Button></div></TableCell>
@@ -702,19 +714,30 @@ const DealerWarrantiesList = () => {
       <div className="mx-auto w-full max-w-[1600px] space-y-6">
         <header className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-center sm:text-left">
-            <h1 className="text-3xl font-extrabold tracking-tight text-crm-navy sm:text-4xl">Dealer warranties</h1>
-            <p className="mt-2 text-sm text-muted-foreground sm:text-base">Manage customer cover, payments and documents.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight text-crm-navy sm:text-4xl">{activeTab === 'payments' ? 'Invoicing' : 'Dealer warranties'}</h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">{activeTab === 'payments' ? 'See what is due, when it is due and pay your outstanding account invoices.' : 'Manage customer cover, payments and documents.'}</p>
           </div>
           <Button asChild className="h-12 w-full rounded-xl bg-crm-orange px-5 text-base font-bold text-primary-foreground shadow-sm hover:bg-crm-orange/90 sm:w-auto">
             <Link to="/dealer-portal/quote/pricing"><Plus className="mr-2 h-5 w-5" />New warranty</Link>
           </Button>
         </header>
 
-        <section aria-label="Warranty summary" className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-          <StatCard icon={FileText} label="Total plans" value={rows.length} />
-          <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} green />
-          <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} />
-          <StatCard icon={Coins} label="Outstanding" value={money(outstandingTotal)} />
+        <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+          {activeTab === 'payments' ? (
+            <>
+              <StatCard icon={ReceiptText} label="Outstanding invoices" value={unpaidRows.length} />
+              <StatCard icon={Coins} label="Total outstanding" value={money(outstandingTotal)} />
+              <StatCard icon={Clock3} label="Overdue invoices" value={overdueCount} />
+              <StatCard icon={CalendarDays} label={nextDueDate ? `Next due · ${fmt(nextDueDate.toISOString())}` : 'Next payment due'} value={nextDueRow ? money(nextDueRow.final_amount) : '—'} />
+            </>
+          ) : (
+            <>
+              <StatCard icon={FileText} label="Total plans" value={rows.length} />
+              <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} green />
+              <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} />
+              <StatCard icon={Coins} label="Outstanding" value={money(outstandingTotal)} />
+            </>
+          )}
         </section>
 
         {overdueCount > 0 && (
@@ -735,7 +758,7 @@ const DealerWarrantiesList = () => {
             <TabsList className="h-auto w-max min-w-full justify-start gap-1 rounded-none border-b border-crm-line bg-transparent p-0">
               {[
                 { value: 'plans', label: `All warranties (${rows.length})` },
-                { value: 'payments', label: `Payments (${unpaidRows.length})` },
+                { value: 'payments', label: `Invoicing (${unpaidRows.length})` },
                 { value: 'cancellations', label: `Cancellations (${cancellationRows.length})` },
               ].map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value} className="min-h-12 shrink-0 rounded-none border-b-2 border-transparent bg-transparent px-4 text-sm font-bold text-muted-foreground shadow-none data-[state=active]:border-crm-orange data-[state=active]:bg-transparent data-[state=active]:text-crm-orange data-[state=active]:shadow-none sm:px-5 sm:text-base">
@@ -780,7 +803,7 @@ const DealerWarrantiesList = () => {
           <TabsContent value="payments" className="mt-0 space-y-4">
             <div className="flex flex-col gap-3 rounded-2xl border-2 border-crm-line/70 bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-muted-foreground">
-                {selectedIds.length > 0 ? <span><strong className="text-crm-navy">{selectedIds.length}</strong> selected · <strong className="text-crm-orange">{money(selectedTotal)}</strong></span> : 'Select unpaid warranties to pay their invoices in one secure checkout.'}
+                {selectedIds.length > 0 ? <span><strong className="text-crm-navy">{selectedIds.length}</strong> selected · <strong className="text-crm-orange">{money(selectedTotal)}</strong></span> : 'Select outstanding account invoices to pay them in one secure checkout.'}
               </div>
               <Button onClick={handlePaySelected} disabled={paying || selectedIds.length === 0} className="h-11 rounded-xl bg-crm-orange font-bold text-primary-foreground hover:bg-crm-orange/90">
                 {paying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}Pay selected

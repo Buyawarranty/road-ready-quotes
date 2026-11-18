@@ -120,7 +120,7 @@ const ConditionalFooter = () => {
   
   // Hide footer on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget');
+  const isDealerDashboard = location.pathname.startsWith('/dealer-portal/dashboard') || location.pathname.startsWith('/dealer-portal/quotes') || location.pathname.startsWith('/dealer-portal/warranties') || location.pathname.startsWith('/dealer-portal/invoicing') || location.pathname.startsWith('/dealer-portal/quote/') || location.pathname.startsWith('/dealer-portal/analytics') || location.pathname.startsWith('/dealer-portal/customers') || location.pathname.startsWith('/dealer-widget');
   
   // Hide footer on brand landing pages (Google Ads pages)
   const isBrandLanding = location.pathname.startsWith('/warranty-types/') && location.pathname !== '/warranty-types/';
@@ -256,6 +256,12 @@ const DealerCustomersList = lazy(() => import("./pages/dealer-portal/DealerCusto
 const DealerQuoteEntry = () => {
   const { search } = useLocation();
   return <Navigate to={`/dealer-portal/quote/pricing${search}`} replace />;
+};
+const DealerInvoicingEntry = () => {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  params.set('tab', 'payments');
+  return <Navigate to={`/dealer-portal/warranties?${params.toString()}`} replace />;
 };
 const DealerJourneyStep2 = lazy(() => import("./pages/dealer-portal/journey/Step2Customer"));
 const DealerJourneyStep3 = lazy(() => import("./pages/dealer-portal/journey/Step3Pricing"));
@@ -403,6 +409,7 @@ const App = () => {
                     <Route path="/dealer-portal/quotes/create" element={<DealerQuoteEntry />} />
                     <Route path="/dealer-portal/quotes" element={<DealerJourneyProvider><DealerQuotesList /></DealerJourneyProvider>} />
                     <Route path="/dealer-portal/warranties" element={<DealerWarrantiesList />} />
+                    <Route path="/dealer-portal/invoicing" element={<DealerInvoicingEntry />} />
                     <Route path="/dealer-portal/claims" element={<Navigate to="/dealer-portal/dashboard" replace />} />
                     <Route path="/dealer-portal/claims/new" element={<DealerStartClaim />} />
                     <Route path="/dealer-portal/customers" element={<DealerCustomersList />} />

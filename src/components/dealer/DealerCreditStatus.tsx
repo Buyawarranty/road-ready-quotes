@@ -94,7 +94,7 @@ export const DealerCreditStatus: React.FC = () => {
             {available && <Button size="sm" onClick={() => navigate('/dealer-portal/quote/pricing')}>Start a quote <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
             {eligibility?.can_request && <Button size="sm" disabled={requesting} onClick={requestCredit}>{requesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}Request invoicing</Button>}
             {eligibility?.reason === 'pending' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-navy"><Clock3 className="h-4 w-4" />Request sent</span>}
-            {eligibility?.reason === 'overdue' && <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/warranties')}>View invoices <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
+            {eligibility?.reason === 'overdue' && <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/invoicing')}>View invoices <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
             {!available && !eligibility?.can_request && eligibility?.reason === 'new' && <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" />Card payment until eligible</span>}
             {available && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-green-deep"><CheckCircle2 className="h-4 w-4" />Ready at checkout</span>}
           </div>

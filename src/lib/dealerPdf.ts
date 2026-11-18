@@ -71,7 +71,7 @@ export function getDealerInvoiceView(row: DealerPdfRow, now: Date = new Date()):
       : isOverdue
         ? 'This invoice is past its due date. Please arrange payment as soon as possible.'
         : payment.key === 'due'
-          ? 'Please pay this invoice by the due date through the Dealer Portal Payments tab.'
+          ? 'Please pay this invoice by the due date through the Dealer Portal Invoicing section.'
           : 'Complete payment through the Dealer Portal to finalise this invoice.',
     paymentMethod: isPaid
       ? sessionId && !sessionId.startsWith('invoice:') ? 'Card payment via Stripe' : isCreditInvoice ? 'Dealer account invoice' : 'Payment confirmed'

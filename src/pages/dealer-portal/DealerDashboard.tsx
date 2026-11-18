@@ -14,7 +14,7 @@ import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 import { DealerCreditStatus } from '@/components/dealer/DealerCreditStatus';
 import { isOutstandingDealerInvoice } from '@/lib/dealerSales';
 
-const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers' };
+const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers', Invoicing: '/dealer-portal/invoicing' };
 const series = [
   { key: 'Quotes', label: 'Total quotes', icon: FileText, tone: 'bg-crm-blue-soft text-crm-blue', colour: 'hsl(var(--crm-blue))' },
   { key: 'Warranties', label: 'Active warranties', icon: Shield, tone: 'bg-crm-green-soft text-crm-green', colour: 'hsl(var(--crm-green))' },
@@ -45,7 +45,7 @@ export default function DealerDashboard() {
   }, [data, range]);
   const attention = [
     { title: 'Quotes awaiting action', detail: 'Saved drafts and pending quotes', count: quotes.filter(row => ['draft', 'pending'].includes(row.status.toLowerCase())).length, icon: FileText, tone: 'bg-crm-orange-soft text-crm-orange', to: routes.Quotes },
-    { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(isOutstandingDealerInvoice).length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Warranties },
+    { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(isOutstandingDealerInvoice).length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Invoicing },
   ];
   const actions = [
     { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/pricing', primary: true },

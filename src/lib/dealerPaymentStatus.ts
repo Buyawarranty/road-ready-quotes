@@ -18,14 +18,39 @@ export const DEALER_PAYMENT_STYLES: Record<DealerPaymentKey, { label: string; cl
   awaiting: { label: 'Awaiting payment', className: 'bg-slate-500 text-white border-transparent' },
 };
 
+export interface DealerPaymentDateRow {
+  payment_status?: string | null;
+  signup_date?: string | null;
+  payment_due_date?: string | null;
+}
+
+const validDate = (value?: string | null) => {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
+};
+
+/** The recorded due date wins; older invoices fall back to 30 days after issue. */
+export function getDealerInvoiceDueDate(row: DealerPaymentDateRow): Date | null {
+  const recorded = validDate(row.payment_due_date);
+  if (recorded) return recorded;
+  const issued = validDate(row.signup_date);
+  return issued ? new Date(issued.getTime() + DEALER_PAYMENT_TERMS_DAYS * 86400000) : null;
+}
+
+/** Soonest due first; records without a usable due date stay at the end. */
+export function compareDealerInvoiceDueDates(a: DealerPaymentDateRow, b: DealerPaymentDateRow): number {
+  return (getDealerInvoiceDueDate(a)?.getTime() ?? Number.POSITIVE_INFINITY)
+    - (getDealerInvoiceDueDate(b)?.getTime() ?? Number.POSITIVE_INFINITY);
+}
+
 export function getDealerPaymentState(
-  row: { payment_status?: string | null; signup_date?: string | null },
+  row: DealerPaymentDateRow,
   now: Date = new Date(),
 ): { key: DealerPaymentKey; dueDate: Date | null } {
   const s = String(row.payment_status || '').toLowerCase();
   if (s === 'paid') return { key: 'paid', dueDate: null };
-  const dueDate = row.signup_date ? new Date(row.signup_date) : null;
-  if (dueDate) dueDate.setDate(dueDate.getDate() + DEALER_PAYMENT_TERMS_DAYS);
+  const dueDate = getDealerInvoiceDueDate(row);
   if (s === 'overdue') return { key: 'overdue', dueDate };
   if (s === 'invoice_pending') {
     return { key: dueDate && dueDate < now ? 'overdue' : 'due', dueDate };

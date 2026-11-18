@@ -20,6 +20,7 @@ type BillableCustomer = {
   payment_type: string | null;
   final_amount: number | null;
   payment_status: string | null;
+  status: string | null;
   dealer_id: string | null;
 };
 
@@ -61,7 +62,7 @@ Deno.serve(async (req: Request) => {
     // Fetch the selected customer rows (must belong to this dealer + be unpaid)
     const { data: rows, error: rowsErr } = await admin
       .from('customers')
-      .select('id, name, registration_plate, plan_type, payment_type, final_amount, payment_status, dealer_id')
+      .select('id, name, registration_plate, plan_type, payment_type, final_amount, payment_status, status, dealer_id')
       .in('id', customer_ids)
       .eq('dealer_id', dealer_id);
 
@@ -70,15 +71,17 @@ Deno.serve(async (req: Request) => {
     }
 
     const typedRows = rows as BillableCustomer[];
-    const billable = typedRows.filter((r) => r.payment_status !== 'paid');
-    if (billable.length === 0) return json({ error: 'Nothing to pay — all selected plans are already paid' }, 400);
+    const billable = typedRows.filter((r) =>
+      ['invoice_pending', 'overdue'].includes(String(r.payment_status || '').toLowerCase())
+      && !['cancelled', 'refunded'].includes(String(r.status || '').toLowerCase()));
+    if (billable.length === 0) return json({ error: 'Nothing to pay — select genuine outstanding account invoices' }, 400);
 
     const brand = resolveBrand(req, { force: 'pandaprotect' });
     const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2024-11-20.acacia' });
     const origin = req.headers.get('origin') || brand.siteUrl;
     const safeReturnPath = typeof return_path === 'string' && return_path.startsWith('/dealer-portal/')
       ? return_path
-      : '/dealer-portal/warranties';
+      : '/dealer-portal/invoicing';
     const separator = safeReturnPath.includes('?') ? '&' : '?';
 
     const line_items = billable.map((r) => ({
