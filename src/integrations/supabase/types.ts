@@ -16192,6 +16192,10 @@ export type Database = {
         Returns: undefined
       }
       delete_chat_thread: { Args: { _thread_id: string }; Returns: boolean }
+      delete_trade_warranty_signups: {
+        Args: { p_signup_ids: string[] }
+        Returns: Json
+      }
       derive_lead_source: {
         Args: { p_cart_metadata: Json }
         Returns: Database["public"]["Enums"]["lead_source"]
