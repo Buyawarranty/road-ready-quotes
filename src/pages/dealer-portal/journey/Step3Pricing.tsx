@@ -204,8 +204,13 @@ const Step3Pricing: React.FC = () => {
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
     const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
     url.searchParams.set('view', 'cv');
-    if (tab) tab.location.href = url.href;
-    else setError('Your browser blocked the new tab. Allow pop-ups for this site and try again.');
+    let opened = false;
+    if (tab) {
+      try { tab.location.href = url.href; opened = true; }
+      catch { try { tab.close(); } catch { /* ignore */ } }
+    }
+    // Some mobile browsers block or drop the new tab — fall back to opening the customer view in this tab.
+    if (!opened) window.location.href = url.href;
     setOpening(false);
   };
   if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
@@ -313,15 +318,15 @@ const Step3Pricing: React.FC = () => {
             <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(cost) : '—'}</strong>
             <p className="text-xs text-muted-foreground">Trade price inc. VAT</p>
           </div>
-          <div className="bg-crm-orange-soft/50 px-4 py-4 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.08em] text-crm-orange">Customer pays</p>
+          <div className="px-4 py-4 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">{term && prices[term] != null ? 'Customer pays' : 'Recommended price'}</p>
             <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(retail) : '—'}</strong>
             <p className="text-xs text-muted-foreground">{term && prices[term] != null ? 'Your selling price' : 'Recommended retail'} inc. VAT</p>
           </div>
         </div>
-        <div className="flex items-center justify-between gap-3 border-t border-crm-line px-4 py-3">
+        <div className="flex items-center justify-between gap-3 border-t border-crm-gold/40 bg-crm-gold-soft px-4 py-3">
           <span className="flex items-center gap-2 text-sm font-extrabold text-crm-navy"><TrendingUp className="h-4 w-4 text-crm-gold" aria-hidden="true" />Your approx. profit</span>
-          <strong className="text-2xl font-black text-crm-gold">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <strong className="text-2xl font-black text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
       <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
