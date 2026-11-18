@@ -54,7 +54,7 @@ const DealerAdminSales: React.FC = () => {
       const [{ data: customers, error: customersError }, { data: dealers, error: dealersError }] = await Promise.all([
         supabase
           .from('customers')
-          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, dealer_id, is_test' as any)
+          .select('id, name, email, registration_plate, plan_type, payment_type, payment_status, status, signup_date, final_amount, dealer_id, is_test')
           .eq('brand', 'pandaprotect')
           .not('dealer_id', 'is', null)
           .or('is_deleted.is.null,is_deleted.eq.false')
@@ -72,7 +72,7 @@ const DealerAdminSales: React.FC = () => {
       }
 
       const dealerMap = new Map((dealers || []).map((d: any) => [d.id, d]));
-      const merged = (customers || []).filter(isCountedDealerSale).map((c: any) => ({
+      const merged = ((customers as any[]) || []).filter(isCountedDealerSale).map((c: any) => ({
         ...c,
         dealer_name: dealerMap.get(c.dealer_id)?.name,
         dealer_company: dealerMap.get(c.dealer_id)?.company_name,
