@@ -7142,6 +7142,7 @@ export type Database = {
           banner_text: string
           banner_title: string
           enabled: boolean
+          eyebrow: string
           id: number
           updated_at: string
           updated_by: string | null
@@ -7150,6 +7151,7 @@ export type Database = {
           banner_text?: string
           banner_title?: string
           enabled?: boolean
+          eyebrow?: string
           id?: number
           updated_at?: string
           updated_by?: string | null
@@ -7158,6 +7160,7 @@ export type Database = {
           banner_text?: string
           banner_title?: string
           enabled?: boolean
+          eyebrow?: string
           id?: number
           updated_at?: string
           updated_by?: string | null
