@@ -90,7 +90,7 @@ const DealerAdminCreditAuthorisations: React.FC = () => {
     <div className="max-w-6xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Credit authorisations</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Review dealer requests for 30-day invoicing. Dealers need 10 paid warranties, an active account and no overdue balance.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Review dealer requests for 30-day invoicing. Dealers need 3 paid warranties with no cancellations or refunds, an active account and no overdue balance.</p>
       </div>
       <IntroFreeApprovals />
       <div className="grid grid-cols-3 gap-3">

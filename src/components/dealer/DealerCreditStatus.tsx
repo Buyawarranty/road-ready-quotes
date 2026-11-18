@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface PayLaterEligibility {
   eligible: boolean;
-  reason: 'new' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
+  reason: 'new' | 'cancellations' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
   paid_count: number;
   required: number;
   term_days: number;

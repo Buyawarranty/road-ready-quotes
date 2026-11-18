@@ -47,7 +47,7 @@ const PAYMENT_TERM_DAYS = 30;
 
 interface PayLaterEligibility {
   eligible: boolean;
-  reason: 'new' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
+  reason: 'new' | 'cancellations' | 'overdue' | 'blocked' | 'pending' | 'approval_required' | null;
   paid_count: number;
   required: number;
   term_days: number;
@@ -284,7 +284,7 @@ const Step4Checkout: React.FC = () => {
   ].filter(Boolean).join(' · ');
 
   const paidCount = eligibility?.paid_count ?? 0;
-  const invoiceRequired = eligibility?.required ?? 10;
+  const invoiceRequired = eligibility?.required ?? 3;
   const introLeft = eligibility ? Math.max(0, INTRO_PAID_TARGET - paidCount) : 0;
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
@@ -387,7 +387,7 @@ const Step4Checkout: React.FC = () => {
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Request after {invoiceRequired} paid warranties. Activation requires Admin or Super Admin approval and a healthy account status.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Available once you've paid for {invoiceRequired} warranties with no cancellations or refunds. Approved by our team.</span></span>
               </li>
             </ul>
             <a href="/dealer-portal/trade-terms" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
@@ -451,7 +451,7 @@ const Step4Checkout: React.FC = () => {
                   </div>
                   {eligibility?.reason === 'new' ? (
                     <>
-                      <p className="text-sm text-muted-foreground">Available to request after {invoiceRequired} paid warranties. You currently have {paidCount} of {invoiceRequired}.</p>
+                      <p className="text-sm text-muted-foreground">Available after {invoiceRequired} paid warranties with no cancellations or refunds. You currently have {paidCount} of {invoiceRequired}.</p>
                       <div className="mt-2 h-2 overflow-hidden rounded-full bg-border"><div className="h-full rounded-full bg-crm-blue" style={{ width: `${Math.min(100, (paidCount / Math.max(1, invoiceRequired)) * 100)}%` }} /></div>
                     </>
                   ) : <p className="text-sm text-muted-foreground">{blockedText}</p>}
