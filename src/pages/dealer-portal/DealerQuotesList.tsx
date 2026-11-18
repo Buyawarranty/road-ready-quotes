@@ -175,7 +175,7 @@ const DealerQuotesList = () => {
         label: 'Manage My Claim',
         detail: 'Manage My Claim only · You pay the repair bill',
         Icon: ClipboardCheck,
-        tone: 'border-crm-blue/30 bg-crm-blue-soft text-crm-navy',
+        tone: 'md:border-crm-blue/30 md:bg-crm-blue-soft md:text-crm-navy',
       };
     }
 
@@ -184,7 +184,7 @@ const DealerQuotesList = () => {
         label: 'Fully Covered Warranty',
         detail: 'Comprehensive cover · We handle claims and pay for repairs',
         Icon: ShieldCheck,
-        tone: 'border-crm-green/30 bg-crm-green-soft text-crm-navy',
+        tone: 'md:border-crm-green/30 md:bg-crm-green-soft md:text-crm-navy',
       };
     }
 
@@ -192,7 +192,7 @@ const DealerQuotesList = () => {
       label: 'Warranty not selected',
       detail: 'Resume this quote to choose the warranty type',
       Icon: ShieldCheck,
-      tone: 'border-crm-line bg-muted text-crm-navy',
+      tone: 'md:border-crm-line md:bg-muted md:text-crm-navy',
     };
   };
 
@@ -245,7 +245,7 @@ const DealerQuotesList = () => {
       </section>
 
       {/* Quote list */}
-      <div className="space-y-3">
+      <div className="space-y-5 md:space-y-3">
         {filtered.length === 0 ? (
           <div className="bg-card border border-crm-line rounded-lg px-4 py-8 text-center">
             <p className="text-muted-foreground">
@@ -259,12 +259,12 @@ const DealerQuotesList = () => {
             return (
             <div
               key={q.id}
-              className="bg-card border border-crm-line rounded-lg overflow-hidden hover:border-crm-orange/50 transition-colors"
+              className="bg-card border border-crm-line rounded-xl md:rounded-lg overflow-hidden shadow-sm md:shadow-none hover:border-crm-orange/50 transition-colors"
             >
               <div className="flex flex-col md:flex-row">
                 {/* Vehicle registration plate */}
-                <div className="w-full md:w-72 bg-muted flex items-center justify-center shrink-0 border-b md:border-b-0 md:border-r border-crm-line p-3 sm:p-4">
-                  <div className="w-full max-w-[17rem] space-y-2.5">
+                <div className="w-full md:w-72 bg-card md:bg-muted flex items-center justify-center shrink-0 md:border-r border-crm-line px-4 pt-4 pb-1 md:p-4">
+                  <div className="w-full max-w-[15rem] md:max-w-[17rem] space-y-2 md:space-y-2.5">
                     <div className="vehicle-reg-plate vehicle-reg-plate--list relative" aria-label={`Registration ${formatRegistration(q.vehicle_reg)}`}>
                       <div className="vehicle-reg-plate__country">
                         <span>GB</span>
@@ -278,22 +278,22 @@ const DealerQuotesList = () => {
                       )}
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-extrabold uppercase text-foreground">{vehicleDescription(q)}</p>
+                      <p className="text-xs md:text-sm font-semibold md:font-extrabold uppercase text-muted-foreground md:text-foreground">{vehicleDescription(q)}</p>
                       {mileageLabel(q.mileage) && <p className="mt-1 text-xs font-semibold text-muted-foreground">{mileageLabel(q.mileage)}</p>}
                     </div>
                   </div>
                 </div>
 
                 {/* Middle: details */}
-                <div className="flex-1 p-3 sm:p-4 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                <div className="flex-1 px-4 py-2 md:p-4 min-w-0 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start gap-2 flex-wrap mb-1 md:mb-2">
                     <h3 className="text-sm font-bold text-foreground break-words">
                       Quote #{formatRef(q.id)}
                     </h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-semibold text-foreground">Step:</span>{' '}
-                    <span className="text-crm-orange font-medium">
+                    <span className="text-foreground md:text-crm-orange font-medium">
                       {q.status === 'awaiting_panda'
                         ? 'Awaiting Panda Protect'
                         : q.status === 'converted' || q.status === 'completed'
@@ -309,10 +309,10 @@ const DealerQuotesList = () => {
                       <span className="text-foreground">{q.customer_name}</span>
                     </p>
                   )}
-                  <div className={`mt-3 inline-flex max-w-full items-start gap-2 rounded-md border px-3 py-2 ${warranty.tone}`}>
-                    <WarrantyIcon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                  <div className={`mt-2 md:mt-3 inline-flex max-w-full items-start justify-center gap-2 text-foreground md:rounded-md md:border md:px-3 md:py-2 ${warranty.tone}`}>
+                    <WarrantyIcon className="mt-0.5 h-4 w-4 shrink-0 hidden md:block" aria-hidden="true" />
                     <div className="min-w-0">
-                      <p className="text-xs font-extrabold">{warranty.label}</p>
+                      <p className="text-sm md:text-xs font-bold md:font-extrabold">{warranty.label}</p>
                       {(() => {
                         const details = warrantyDetails(q);
                         return details.length > 0 ? (
@@ -326,7 +326,7 @@ const DealerQuotesList = () => {
                 </div>
 
                 {/* Right: price + actions */}
-                <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end justify-between md:justify-center gap-3 px-3 py-3 sm:px-4 md:py-4 md:min-w-[200px] border-t md:border-t-0 md:border-l border-crm-line bg-card">
+                <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end justify-between md:justify-center gap-3 px-4 pt-2 pb-4 md:py-4 md:min-w-[200px] md:border-l border-crm-line bg-card text-center md:text-right">
                   <div className="text-xl md:text-2xl font-extrabold text-foreground">
                     {q.price ? `£${Number(q.price).toFixed(2)}` : '—'}
                   </div>
