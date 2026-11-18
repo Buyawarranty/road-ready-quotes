@@ -329,18 +329,15 @@ const Step3Pricing: React.FC = () => {
           <strong className="text-2xl font-black text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
-      <div className="grid w-full min-w-0 grid-cols-2 gap-2 lg:flex lg:w-auto lg:flex-1 lg:flex-wrap lg:items-center lg:justify-end">
+      <div className="grid w-full min-w-0 gap-2 lg:w-auto lg:flex-1">
+      <div className="grid grid-cols-3 gap-2" role="group" aria-label="Quote actions">
         {trade && <Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
-        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid}><Share2 />Share quote</Button></DropdownMenuTrigger>
+        <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid}><Share2 />Share</Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end"><DropdownMenuItem onClick={() => share('email')}><Mail />Email</DropdownMenuItem><DropdownMenuItem onClick={() => share('print')}><Printer />Print</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
-        {trade && <Button className="col-span-2 min-h-12 h-auto min-w-0 whitespace-normal px-3 py-3 text-sm font-extrabold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 lg:px-5 lg:text-base" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
-      </div></div>
-      <div className="grid gap-2 sm:max-w-md" role="group" aria-label="Quote view">
-        <Button variant="outline" type="button" disabled={opening} onClick={() => { void openCustomerTab(); }} className="relative h-auto justify-start gap-3 whitespace-normal rounded-lg border-2 !border-crm-line !bg-card px-4 py-3 text-left !text-foreground transition-colors hover:!border-crm-orange focus-visible:ring-crm-orange disabled:opacity-60">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange">{opening ? <Loader2 className="h-5 w-5 animate-spin" /> : <Eye className="h-5 w-5" />}</span>
-          <span className="min-w-0"><strong className="block text-base font-extrabold text-crm-navy">Customer view</strong><span className="block text-xs text-muted-foreground">Opens a new tab with the cover described — no prices shown</span></span>
-        </Button>
+        <Button variant="outline" type="button" title="Opens a new tab with the cover described — no prices shown" disabled={opening} onClick={() => { void openCustomerTab(); }} className="h-12 min-w-0 px-3 !border-crm-line !bg-card font-bold !text-crm-navy">{opening ? <Loader2 className="animate-spin" /> : <Eye />}Customer view</Button>
       </div>
+        {trade && <Button className="min-h-12 h-auto min-w-0 whitespace-normal px-3 py-3 text-sm font-extrabold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 lg:px-5 lg:text-base" disabled={saving || !valid} onClick={() => persist(true)}>Continue to customer details<ArrowRight /></Button>}
+      </div></div>
       {trade && <p className="text-center text-xs leading-5 font-semibold text-muted-foreground"><ShieldCheck className="mr-1.5 inline-block h-4 w-4 align-text-bottom text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
