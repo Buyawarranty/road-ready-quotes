@@ -2965,7 +2965,7 @@ body {
   .public-dealer-home .home-included-grid,
   .public-dealer-home .home-faq-grid,
   .public-dealer-home .home-resource-grid { grid-template-columns: 1fr; }
-  .public-dealer-home .home-plan-section .home-plan-grid { grid-template-areas: "top" "visual" "footer"; grid-template-rows: none; }
+  .public-dealer-home .home-plan-section .home-plan-grid { grid-template-areas: "top" "visual" "footer"; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
   .public-dealer-home .home-plan-section .home-plan-copy-col { display: contents; }
   .public-dealer-home .home-plan-section .home-plan-top { grid-area: top; }
   .public-dealer-home .home-plan-section .home-plan-footer { grid-area: footer; }
@@ -3463,4 +3463,25 @@ img, video { height: auto; }
   .public-dealer-home .home-hero-bullets li > svg { display: none; }
   .public-dealer-home .home-hero-bullets li > span { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.35rem; }
   .public-dealer-home .home-hero-bullets li > span > span { margin-inline: 0; }
+}
+
+@media (max-width: 767px) {
+  .public-dealer-home .home-plan-section .home-plan-top { text-align: center; }
+  .public-dealer-home .home-plan-section h2.home-plan-heading { font-size: 2.1rem; line-height: 1.12; }
+  .public-dealer-home .home-plan-copy p { font-size: 1rem; line-height: 1.6; }
+  .public-dealer-home .home-plan-benefits { justify-content: center; }
+  .public-dealer-home .home-plan-cta { text-align: center; justify-items: center; }
+}
+
+@media (max-width: 767px) {
+  .public-dealer-home .home-section-heading-left,
+  .public-dealer-home .home-story-grid > div:not(.home-story-image) > :is(.home-eyebrow, h2, p),
+  .public-dealer-home .home-plan-section:not(:has(.home-plan-copy-col)) .home-plan-grid > div:first-child > :is(.home-eyebrow, h2) { text-align: center; }
+  .public-dealer-home .home-story-grid > div:not(.home-story-image) { display: flex; flex-direction: column; }
+  .public-dealer-home .home-story-grid > div:not(.home-story-image) > a { align-self: center; }
+  .public-dealer-home .home-story-grid li { align-items: flex-start; }
+  .public-dealer-home .home-story-grid li > svg { margin-top: 0.3rem; flex-shrink: 0; }
+  .public-dealer-home .home-plan-step { display: flex; gap: 0.75rem; align-items: flex-start; }
+  .public-dealer-home .home-plan-step-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .public-dealer-home .home-cover-content > a, .public-dealer-home .home-cover-content > .home-primary-button { margin-inline: auto; display: flex; width: fit-content; }
 }
