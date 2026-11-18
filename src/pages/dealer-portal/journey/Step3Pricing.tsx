@@ -188,7 +188,7 @@ const Step3Pricing: React.FC = () => {
     const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
     if (action === 'pay') { url.searchParams.set('pay', id); setPaylink(url.href); return; }
     if (action === 'print') { url.searchParams.set('print', '1'); window.open(url.href, '_blank', 'noopener,noreferrer'); return; }
-    const message = customerQuoteMessage(safePayload, url.href);
+    const message = customerQuoteMessage(safePayload, url.href, { hidePrice: true });
     if (action === 'email') setEmailQuote(id);
     else window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };

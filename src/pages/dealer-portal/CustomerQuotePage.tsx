@@ -15,7 +15,9 @@ const CustomerQuotePage: React.FC = () => {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const payQuoteId = params.get('pay');
   const paid = params.get('paid') === '1';
-  const hidePrices = params.get('view') === 'cv';
+  // Shared quotes never show a price — the dealer sets their own selling price.
+  // Only a payment link (pay/paid) shows the amount, because a card charge must display it.
+  const hidePrices = !payQuoteId && !paid;
   const cancelled = params.get('cancelled') === '1';
   const [selected, setSelected] = useState(data?.adjustable?.selected || []);
   const [extras, setExtras] = useState(data?.adjustable?.selectedExtras || []);
