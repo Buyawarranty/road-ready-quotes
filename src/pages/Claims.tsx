@@ -278,7 +278,7 @@ Additional Information: ${formData.additionalInfo}
 
       toast({
         title: "✓ Claim Submitted!",
-        description: "We'll review and respond Monday–Friday, 9 AM–5 PM. You can also call our claims line during these hours on 0330 229 5045. Thank you!",
+        description: "We'll review and respond Monday–Friday, 9 AM–5 PM. You can also call our claims line during these hours on 0330 229 6547. Thank you!",
         className: "bg-green-600 text-white border-green-700 [&>div]:text-white",
       });
 
@@ -302,7 +302,7 @@ Additional Information: ${formData.additionalInfo}
       console.error('Submission error:', error);
       toast({
         title: "Submission Failed",
-        description: error.message || "Please try again or call us at 0330 229 5045.",
+        description: error.message || "Please try again or call us at 0330 229 6547.",
         variant: "destructive",
       });
     } finally {
@@ -405,7 +405,7 @@ Additional Information: ${formData.additionalInfo}
                 </a>
 
                 <a 
-                  href="tel:03302295045"
+                  href="tel:03302296547"
                   className="group block p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-100 hover:border-orange-300 hover:-translate-y-1"
                 >
                   <div className="flex items-center gap-4 mb-4">
@@ -417,7 +417,7 @@ Additional Information: ${formData.additionalInfo}
                       <p className="text-sm text-gray-500">Speak to our claims team</p>
                     </div>
                   </div>
-                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">0330 229 5045</p>
+                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">0330 229 6547</p>
                   <p className="text-sm text-green-600 font-medium mt-3">Monday to Friday, 9am to 5pm</p>
                 </a>
               </div>
@@ -803,7 +803,7 @@ Additional Information: ${formData.additionalInfo}
                   1
                 </div>
                 <p className="text-gray-700 text-lg leading-relaxed">
-                  Report the fault to us at <span className="font-semibold text-orange-500">0330 229 5045</span> (Mon-Fri 9am to 5:30pm) or complete the form on this page
+                  Report the fault to us at <span className="font-semibold text-orange-500">0330 229 6547</span> (Mon-Fri 9am to 5:30pm) or complete the form on this page
                 </p>
               </div>
               

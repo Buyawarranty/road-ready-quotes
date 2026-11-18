@@ -129,7 +129,7 @@ const DiscountsOffers: React.FC = () => {
     "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "image": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
     "description": "UK's trusted vehicle warranty provider offering comprehensive mechanical and electrical protection for cars, vans, EVs and motorbikes. Discount codes and special offers available.",
-    "telephone": "+443302295045",
+    "telephone": "+443302296547",
     "email": "support@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",

@@ -232,9 +232,9 @@ const DealerHome = () => {
 
             <div className="home-contact-card">
               <div className="home-contact-row">
-                <a href="tel:03309122535" className="home-contact-phone">
+                <a href="tel:03302296547" className="home-contact-phone">
                   <span className="home-contact-icon"><Phone aria-hidden="true" /></span>
-                  0330 912 2535
+                  0330 229 6547
                 </a>
                 <span className="home-contact-divider" aria-hidden="true" />
                 <button type="button" className="home-contact-callback" onClick={() => setCallbackOpen(true)}>
@@ -587,7 +587,7 @@ const DealerHome = () => {
           <p>Talk to our dealer team about exclusive motor trade warranty deals and onboarding.</p>
           <div>
             <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Dealer programme sign up <ArrowRight aria-hidden="true" /></Link></Button>
-            <a href="tel:03302295045"><Phone aria-hidden="true" />0330 229 5045</a>
+            <a href="tel:03302296547"><Phone aria-hidden="true" />0330 229 6547</a>
             <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden="true" />WhatsApp us</a>
             <a href="mailto:dealers@pandaprotect.co.uk" className="sr-only"><Mail aria-hidden="true" />dealers@pandaprotect.co.uk</a>
           </div>

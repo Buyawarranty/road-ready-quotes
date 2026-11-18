@@ -302,7 +302,7 @@ const CarExtendedWarranty: React.FC = () => {
     },
     {
       question: "How do I make a claim?",
-      answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 5045. It's important to note that failure to do so will not allow us to process your claim."
+      answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. It's important to note that failure to do so will not allow us to process your claim."
     },
     {
       question: "Are electric or hybrid vehicles covered?",
@@ -407,10 +407,10 @@ const CarExtendedWarranty: React.FC = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                onClick={() => window.location.href = 'tel:03302295045'}
+                onClick={() => window.location.href = 'tel:03302296547'}
                 className="border-primary text-primary hover:bg-primary hover:text-white text-base sm:text-lg w-full sm:w-auto"
               >
-                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Call 0330 229 5045
+                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Call 0330 229 6547
               </Button>
             </div>
 
@@ -1058,7 +1058,7 @@ const CarExtendedWarranty: React.FC = () => {
               <div className="space-y-4 mb-6">
                 <div className="flex items-start gap-3">
                   <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">Call us on <strong>0330 229 5045</strong> or complete the simple online claim form</p>
+                  <p className="text-gray-700">Call us on <strong>0330 229 6547</strong> or complete the simple online claim form</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
@@ -1304,10 +1304,10 @@ const CarExtendedWarranty: React.FC = () => {
               </Button>
               <Button 
                 size="lg"
-                onClick={() => window.location.href = 'tel:03302295045'}
+                onClick={() => window.location.href = 'tel:03302296547'}
                 className="bg-black text-white hover:bg-black/90"
               >
-                <Phone className="mr-2 h-5 w-5" /> Call 0330 229 5045
+                <Phone className="mr-2 h-5 w-5" /> Call 0330 229 6547
               </Button>
             </div>
 
@@ -1337,7 +1337,7 @@ const CarExtendedWarranty: React.FC = () => {
             <MessageCircle className="h-10 w-10" />
           </a>
           <a 
-            href="tel:03302295045"
+            href="tel:03302296547"
             className="bg-[#1e40af] text-white p-4 rounded-full shadow-lg hover:bg-[#1e40af]/90 transition-all hover:scale-110"
           >
             <Phone className="h-6 w-6" />
@@ -1358,7 +1358,7 @@ const CarExtendedWarranty: React.FC = () => {
               <MessageCircle className="mr-2 h-5 w-5" /> WhatsApp
             </Button>
           </a>
-          <a href="tel:03302295045" className="flex-1">
+          <a href="tel:03302296547" className="flex-1">
             <Button className="w-full bg-[#1e40af] text-white hover:bg-[#1e40af]/90">
               <Phone className="mr-2 h-5 w-5" /> Call Us
             </Button>

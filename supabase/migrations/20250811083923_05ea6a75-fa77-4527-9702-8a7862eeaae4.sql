@@ -24,7 +24,7 @@ You''ve made a smart choice to safeguard your vehicle and avoid unexpected repai
 **Need help?**
 If you have any questions about your coverage or need to make a claim, please contact us on:
 Customer care: 0330 229 5040
-Claims line: 0330 229 5045
+Claims line: 0330 229 6547
 
 We recommend keeping these documents safe and accessible - that way you''ll have everything you need right at your fingertips if you ever need to make a claim.
 

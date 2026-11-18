@@ -318,8 +318,8 @@ const PrivacyPolicy = () => {
                 <p className="flex items-center text-white">
                   <Phone className="w-5 h-5 mr-3 text-white" />
                   <span className="font-medium mr-2 text-white">Phone:</span>
-                  <a href="tel:03302295045" className="text-white hover:text-gray-200 transition-colors">
-                    0330 229 5045
+                  <a href="tel:03302296547" className="text-white hover:text-gray-200 transition-colors">
+                    0330 229 6547
                   </a>
                 </p>
                 <p className="flex items-center text-white">

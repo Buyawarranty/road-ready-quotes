@@ -51,7 +51,7 @@ SET content = jsonb_build_object(
         <h3 style="color: #1f2937; margin: 0 0 15px 0; font-size: 18px; font-weight: 600;">📞 Need Support?</h3>
         <p style="color: #1f2937; margin: 10px 0; font-size: 16px;">Our customer care team is here to help:</p>
         <p style="margin: 8px 0; color: #1f2937; font-size: 16px;"><strong>Customer Care:</strong> <a href="tel:03302295040" style="color: #ea580c; text-decoration: none; font-weight: 600;">0330 229 5040</a></p>
-        <p style="margin: 8px 0; color: #1f2937; font-size: 16px;"><strong>Claims Line:</strong> <a href="tel:03302295045" style="color: #ea580c; text-decoration: none; font-weight: 600;">0330 229 5045</a></p>
+        <p style="margin: 8px 0; color: #1f2937; font-size: 16px;"><strong>Claims Line:</strong> <a href="tel:03302296547" style="color: #ea580c; text-decoration: none; font-weight: 600;">0330 229 6547</a></p>
         <p style="margin: 8px 0; color: #1f2937; font-size: 16px;"><strong>Email:</strong> <a href="mailto:info@buyawarranty.co.uk" style="color: #ea580c; text-decoration: none; font-weight: 600;">info@buyawarranty.co.uk</a></p>
     </div>
 

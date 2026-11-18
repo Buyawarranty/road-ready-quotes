@@ -255,9 +255,9 @@ const DealerLogin = () => {
             <p className="text-center text-xs text-gray-500 mt-2">Takes less than 60 seconds. No card required.</p>
 
             <div className="mt-6 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
-              <a href="tel:03302295045" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-gray-900">
+              <a href="tel:03302296547" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-gray-900">
                 <Phone className="w-4 h-4 text-orange-500" />
-                Dealer support · 0330 229 5045
+                Dealer support · 0330 229 6547
               </a>
               <Link to="/dealer-portal/" className="inline-flex items-center gap-1 text-gray-500 hover:text-gray-800">
                 <HelpCircle className="w-4 h-4" />

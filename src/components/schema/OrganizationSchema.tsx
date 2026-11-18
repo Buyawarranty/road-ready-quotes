@@ -16,14 +16,14 @@ export const OrganizationSchema = ({ type = 'LocalBusiness' }: OrganizationSchem
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "telephone": "+44-330-229-5045",
+          "telephone": "+44-330-229-6547",
           "contactType": "customer service",
           "areaServed": "GB",
           "availableLanguage": "en"
         },
         {
           "@type": "ContactPoint",
-          "telephone": "+44-330-229-5045",
+          "telephone": "+44-330-229-6547",
           "contactType": "sales",
           "areaServed": "GB",
           "availableLanguage": "en"

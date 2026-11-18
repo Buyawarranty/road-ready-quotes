@@ -2189,7 +2189,7 @@ const CustomerDashboard = () => {
                         <Phone className="h-5 w-5 text-blue-600" />
                         <div>
                           <p className="font-medium">Phone Support</p>
-                          <p className="text-sm text-gray-600">0330 229 5045</p>
+                          <p className="text-sm text-gray-600">0330 229 6547</p>
                           <p className="text-xs text-gray-500">Mon-Fri: 9AM-6PM</p>
                         </div>
                       </div>
@@ -2209,7 +2209,7 @@ const CustomerDashboard = () => {
                         <Phone className="h-5 w-5 text-green-600" />
                         <div>
                           <p className="font-medium">Claims Phone</p>
-                          <p className="text-sm text-gray-600">0330 229 5045</p>
+                          <p className="text-sm text-gray-600">0330 229 6547</p>
                           <p className="text-xs text-gray-500">Mon-Fri: 9AM-6PM</p>
                         </div>
                       </div>

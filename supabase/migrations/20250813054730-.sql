@@ -43,7 +43,7 @@ SET content = jsonb_set(
     <h3 style=\"color: #333333; margin-top: 0;\">📞 Need help?</h3>
     <p style=\"color: #333333; margin: 8px 0;\">If you have any questions about your coverage or need to make a claim, please contact us on:</p>
     <p style=\"color: #333333; margin: 8px 0; font-weight: bold;\">Customer care: <a href=\"tel:03302295040\" style=\"color: #28a745; text-decoration: none;\">0330 229 5040</a></p>
-    <p style=\"color: #333333; margin: 8px 0; font-weight: bold;\">Claims line: <a href=\"tel:03302295045\" style=\"color: #28a745; text-decoration: none;\">0330 229 5045</a></p>
+    <p style=\"color: #333333; margin: 8px 0; font-weight: bold;\">Claims line: <a href=\"tel:03302296547\" style=\"color: #28a745; text-decoration: none;\">0330 229 6547</a></p>
   </div>
 
   <div style=\"background-color: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffc107;\">

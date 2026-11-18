@@ -115,7 +115,7 @@ const BrandLandingPage: React.FC<BrandLandingPageProps> = ({
     "name": "Panda Protect",
     "description": `${brandName} extended warranty specialists in the UK`,
     "url": "https://pandaprotect.co.uk",
-    "telephone": "+44-330-229-5045",
+    "telephone": "+44-330-229-6547",
     "email": "info@pandaprotect.co.uk",
     "address": {
       "@type": "PostalAddress",

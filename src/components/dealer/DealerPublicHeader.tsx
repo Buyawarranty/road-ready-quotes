@@ -69,13 +69,13 @@ export const DealerPublicHeader: React.FC = () => {
                 </PopoverTrigger>
                 <PopoverContent align="end" sideOffset={10} className="public-call-menu">
                   <div className="public-call-hours"><Clock3 aria-hidden="true" /> Mon-Fri 9am to 5:30pm</div>
-                  <a href="tel:03309122535" className="public-call-option">
+                  <a href="tel:03302296547" className="public-call-option">
                     <Phone aria-hidden="true" />
-                    <span><strong>Get a Quote</strong><small>0330 912 2535</small></span>
+                    <span><strong>Get a Quote</strong><small>0330 229 6547</small></span>
                   </a>
-                  <a href="tel:03302295045" className="public-call-option">
+                  <a href="tel:03302296547" className="public-call-option">
                     <Phone aria-hidden="true" />
-                    <span><strong>Make a Claim</strong><small>0330 229 5045</small></span>
+                    <span><strong>Make a Claim</strong><small>0330 229 6547</small></span>
                   </a>
                   <Button type="button" variant="ghost" className="public-callback-option" onClick={() => setCallbackOpen(true)}>
                     <PhoneCall aria-hidden="true" />
@@ -127,8 +127,8 @@ export const DealerPublicHeader: React.FC = () => {
 
                   <div className="public-mobile-contact">
                     <div className="public-call-hours"><Clock3 aria-hidden="true" /> Mon-Sat 9am to 6pm</div>
-                    <a href="tel:03309122535" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 912 2535</small></span></a>
-                    <a href="tel:03302295045" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Make a Claim</strong><small>0330 229 5045</small></span></a>
+                    <a href="tel:03302296547" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 229 6547</small></span></a>
+                    <a href="tel:03302296547" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Make a Claim</strong><small>0330 229 6547</small></span></a>
                     <Button type="button" variant="ghost" className="public-callback-option" onClick={openCallback}><PhoneCall aria-hidden="true" /><span><strong>Request Call-Back</strong><small>We'll call you back</small></span></Button>
                   </div>
 
@@ -155,7 +155,7 @@ export const DealerPublicHeader: React.FC = () => {
           </p>
           <div className="flex gap-2">
             <a
-              href="tel:03309122535"
+              href="tel:03302296547"
               className="min-w-0 flex-1 whitespace-nowrap bg-white border-2 border-crm-green-deep text-crm-green-deep font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 shadow-sm transition-colors"
               aria-label="Call us"
             >

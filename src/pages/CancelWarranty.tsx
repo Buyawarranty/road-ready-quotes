@@ -479,7 +479,7 @@ const CancelWarranty = () => {
             </div>
 
             <p className="text-[#333] text-center mb-5">
-              Message us on <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="text-[#009A44] font-semibold hover:underline">WhatsApp</a> or call <a href="tel:03302295045" className="text-[#009A44] font-semibold hover:underline">0330 229 5045</a> if you would like to continue your cover.
+              Message us on <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer" className="text-[#009A44] font-semibold hover:underline">WhatsApp</a> or call <a href="tel:03302296547" className="text-[#009A44] font-semibold hover:underline">0330 229 6547</a> if you would like to continue your cover.
             </p>
 
             {!showStayForm ? (
@@ -650,11 +650,11 @@ const CancelWarranty = () => {
               <a href="mailto:support@pandaprotect.co.uk" className="flex items-center gap-2 text-[#FF7A00] hover:underline font-medium">
                 <Mail className="w-4 h-4" /> support@pandaprotect.co.uk
               </a>
-              <a href="tel:03302295045" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
-                <Phone className="w-4 h-4" /> 0330 229 5045
+              <a href="tel:03302296547" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
+                <Phone className="w-4 h-4" /> 0330 229 6547
               </a>
               <a
-                href="https://wa.me/443302295045?text=Hi%2C%20I%20have%20a%20question%20about%20cancelling%20my%20warranty"
+                href="https://wa.me/443302296547?text=Hi%2C%20I%20have%20a%20question%20about%20cancelling%20my%20warranty"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-[#009A44] hover:underline font-medium"
@@ -674,8 +674,8 @@ const CancelWarranty = () => {
               <Link to="/">
                 <Button className="h-12 bg-[#FF7A00] hover:bg-[#e56e00] text-white font-bold rounded-lg text-base">Get your free quote</Button>
               </Link>
-              <a href="tel:03302295045" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
-                <Phone className="w-4 h-4" /> 0330 229 5045
+              <a href="tel:03302296547" className="flex items-center gap-2 text-[#333] hover:underline font-medium">
+                <Phone className="w-4 h-4" /> 0330 229 6547
               </a>
             </div>
           </section>

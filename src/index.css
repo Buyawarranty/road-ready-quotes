@@ -3456,3 +3456,11 @@ img, video { height: auto; }
   .customer-quote-view > div:last-child { padding: 0 !important; max-width: none !important; }
   .customer-quote-view dl, .customer-quote-view li { break-inside: avoid; }
 }
+
+@media (max-width: 640px) {
+  .public-dealer-home .home-hero-bullets { margin-inline: auto; justify-items: center; gap: 0.4rem; }
+  .public-dealer-home .home-hero-bullets li { justify-content: center; text-align: center; font-size: 0.9rem; gap: 0.4rem; line-height: 1.35; }
+  .public-dealer-home .home-hero-bullets li > svg { display: none; }
+  .public-dealer-home .home-hero-bullets li > span { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.35rem; }
+  .public-dealer-home .home-hero-bullets li > span > span { margin-inline: 0; }
+}

@@ -178,7 +178,7 @@ const DesktopPlanHeader: React.FC<DesktopPlanHeaderProps> = ({
           </div>
           <div className="flex items-start gap-3">
             <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#0BA360] text-white text-xs font-bold flex items-center justify-center mt-0.5">3</span>
-            <p className="text-sm text-gray-700">Claim anytime — online or by phone <span className="font-semibold">0330 229 5045</span></p>
+            <p className="text-sm text-gray-700">Claim anytime — online or by phone <span className="font-semibold">0330 229 6547</span></p>
           </div>
         </div>
       </div>

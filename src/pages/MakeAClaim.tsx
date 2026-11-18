@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 const PLATINUM_PDF = platinumPlanDoc.url;
 const TANDC_PDF = termsDoc.url;
 const CLAIMS_EMAIL = 'support@pandaprotect.co.uk';
-const CLAIMS_PHONE = '0330 229 5045';
+const CLAIMS_PHONE = '0330 229 6547';
 const WHATSAPP_URL = 'https://wa.me/message/SPQPJ6O3UBF5B1';
 
 const SectionKicker: React.FC<{ children: React.ReactNode }> = ({ children }) => (

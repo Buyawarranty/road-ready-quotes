@@ -242,7 +242,7 @@ const evFAQs = [
   },
   {
     question: "How do I make a claim?",
-    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 5045. Failure to do so will not allow us to process your claim."
+    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. Failure to do so will not allow us to process your claim."
   },
   {
     question: "How much does EV warranty cover cost?",
@@ -508,7 +508,7 @@ const EVWarrantyLanding: React.FC = () => {
       "name": "Panda Protect",
       "url": "https://pandaprotect.co.uk",
       "logo": "https://pandaprotect.co.uk/__l5e/assets-v1/35829c2d-410a-4c30-b0b5-7476ecd2a66d/panda-protect-logo-current.png",
-      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
+      "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-6547", "contactType": "customer service", "availableLanguage": "English", "areaServed": "GB" }
     },
     "offers": {
       "@type": "Offer",
@@ -560,7 +560,7 @@ const EVWarrantyLanding: React.FC = () => {
     "description": "UK's trusted extended vehicle warranty provider. Protecting cars, vans, electric vehicles, and motorcycles.",
     "foundingDate": "2016",
     "sameAs": ["https://uk.trustpilot.com/review/pandaprotect.co.uk"],
-    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-5045", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
+    "contactPoint": { "@type": "ContactPoint", "telephone": "+44-330-229-6547", "contactType": "customer service", "areaServed": "GB", "availableLanguage": "English" }
   };
 
   const webPageSchema = {
@@ -584,7 +584,7 @@ const EVWarrantyLanding: React.FC = () => {
     "name": "Panda Protect",
     "description": "UK's specialist electric vehicle warranty provider. Protecting EVs, cars, vans and motorcycles since 2016.",
     "url": "https://pandaprotect.co.uk",
-    "telephone": "+44-330-229-5045",
+    "telephone": "+44-330-229-6547",
     "email": "support@pandaprotect.co.uk",
     "foundingDate": "2016",
     "priceRange": "£19-£99/month",
@@ -742,8 +742,8 @@ const EVWarrantyLanding: React.FC = () => {
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
                       <span className="text-gray-600">Speak to an expert:</span>
-                      <a href="tel:03302295045" className="font-semibold text-gray-900 hover:underline">
-                        0330 229 5045
+                      <a href="tel:03302296547" className="font-semibold text-gray-900 hover:underline">
+                        0330 229 6547
                       </a>
                       <span className="text-gray-400">or</span>
                       <button
@@ -1285,11 +1285,11 @@ const EVWarrantyLanding: React.FC = () => {
                 <ArrowRight className="ml-2 w-5 h-5 md:w-6 md:h-6" />
               </Button>
               <a
-                href="tel:03302295045"
+                href="tel:03302296547"
                 className="inline-flex items-center gap-2 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"
               >
                 <Phone className="w-5 h-5 md:w-6 md:h-6" />
-                0330 229 5045
+                0330 229 6547
               </a>
             </div>
           </div>

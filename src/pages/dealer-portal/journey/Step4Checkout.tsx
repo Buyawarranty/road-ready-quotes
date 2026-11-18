@@ -310,7 +310,7 @@ const Step4Checkout: React.FC = () => {
     eligibility?.reason === 'new'
       ? `Account billing unlocks once your account is established. Pay by card for ${Math.max(1, (eligibility.required ?? 0) - (eligibility.paid_count ?? 0))} more warranty${(eligibility.required - eligibility.paid_count) === 1 ? '' : 's'} to unlock it (${eligibility.paid_count} of ${eligibility.required} so far).`
       : eligibility?.reason === 'blocked'
-        ? 'Account billing is not switched on for your dealership. Call 0330 229 5045 to talk about account terms.'
+        ? 'Account billing is not switched on for your dealership. Call 0330 229 6547 to talk about account terms.'
         : eligibility?.reason === 'overdue'
           ? 'Your dealer account has an overdue balance. Clear outstanding invoices to use account billing.'
           : eligibility?.reason === 'pending'

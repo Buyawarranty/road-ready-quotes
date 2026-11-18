@@ -527,7 +527,7 @@ const HyundaiWarranty = () => {
               <img src={whatsappIconNew} alt="WhatsApp" className="w-12 h-12" />
             </a>
             <a
-              href="tel:03302295045"
+              href="tel:03302296547"
               className="fixed bottom-36 right-4 z-40 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300"
             >
               <Phone className="w-6 h-6" />

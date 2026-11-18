@@ -5,7 +5,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 
-const CLAIMS_PHONE = '0330 229 5045';
+const CLAIMS_PHONE = '0330 229 6547';
 const SUPPORT_EMAIL = 'support@pandaprotect.co.uk';
 
 const DealerPublicFooter: React.FC = () => {
@@ -16,14 +16,14 @@ const DealerPublicFooter: React.FC = () => {
         <div className="dealer-footer-contact-strip">
           <h2>Need advice? Have any questions?</h2>
           <div className="dealer-footer-strip-actions">
-            <a href="tel:03302295045" className="dealer-footer-strip-action">
+            <a href="tel:03302296547" className="dealer-footer-strip-action">
               <Phone /> Call us: {CLAIMS_PHONE}
             </a>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="dealer-footer-strip-action">
               <Mail /> {SUPPORT_EMAIL}
             </a>
             <a
-              href="https://wa.me/443302295045"
+              href="https://wa.me/443302296547"
               target="_blank"
               rel="noopener noreferrer"
               className="dealer-footer-strip-action"

@@ -120,7 +120,7 @@ INSERT INTO public.email_templates (
                 Email: <a href="mailto:claims@buyawarranty.co.uk" style="color: #ff6b35; text-decoration: none;">claims@buyawarranty.co.uk</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
-                Phone: <a href="tel:03302295045" style="color: #ff6b35; text-decoration: none;">0330 229 5045</a>
+                Phone: <a href="tel:03302296547" style="color: #ff6b35; text-decoration: none;">0330 229 6547</a>
               </p>
             </div>
             

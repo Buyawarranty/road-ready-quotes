@@ -17,12 +17,12 @@ const leftColumnFAQs = [
   {
     id: 'car-issue',
     question: 'What should I do if my car has an issue?',
-    answer: 'If your car experiences a problem, please contact our Claims Team at 0330 229 5045. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form.'
+    answer: 'If your car experiences a problem, please contact our Claims Team at 0330 229 6547. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form.'
   },
   {
     id: 'modified-vehicles',
     question: 'What about modified vehicles?',
-    answer: 'Most body modifications are accepted. Call us on 0330 229 5045 or request a call back using the Call us button in the top navigation bar.'
+    answer: 'Most body modifications are accepted. Call us on 0330 229 6547 or request a call back using the Call us button in the top navigation bar.'
   },
   {
     id: 'claim-limit-choice',
@@ -45,7 +45,7 @@ const rightColumnFAQs = [
   {
     id: 'how-make-claim',
     question: 'How do I make a claim?',
-    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 5045. It's important to note that failure to do so will not allow us to process your claim."
+    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. It's important to note that failure to do so will not allow us to process your claim."
   },
   {
     id: 'how-much-cost',

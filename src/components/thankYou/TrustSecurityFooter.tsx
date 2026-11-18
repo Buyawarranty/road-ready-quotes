@@ -29,10 +29,10 @@ export const TrustSecurityFooter: React.FC = () => {
             <div className="text-left">
               <p className="font-semibold text-foreground text-sm mb-1">Claims Line</p>
               <a 
-                href="tel:03302295045" 
+                href="tel:03302296547" 
                 className="text-sm text-primary hover:underline"
               >
-                0330 229 5045
+                0330 229 6547
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 <a 
@@ -50,10 +50,10 @@ export const TrustSecurityFooter: React.FC = () => {
             <div className="text-left">
               <p className="font-semibold text-foreground text-sm mb-1">Customer Support</p>
               <a 
-                href="tel:03302295045" 
+                href="tel:03302296547" 
                 className="text-sm text-primary hover:underline"
               >
-                0330 229 5045
+                0330 229 6547
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 <a 

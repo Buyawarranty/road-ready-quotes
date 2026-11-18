@@ -71,7 +71,7 @@ SET
             <p style="margin: 0 0 10px 0; color: #856404;">If you have any questions about your coverage or need to make a claim, please contact us on:</p>
             <p style="margin: 0; color: #856404;">
                 <strong>Customer care:</strong> 0330 229 5040<br>
-                <strong>Claims line:</strong> 0330 229 5045
+                <strong>Claims line:</strong> 0330 229 6547
             </p>
         </div>
         

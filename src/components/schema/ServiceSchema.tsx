@@ -77,7 +77,7 @@ export const ServiceSchema = ({
       "availableChannel": {
         "@type": "ServiceChannel",
         "serviceUrl": "https://pandaprotect.co.uk",
-        "servicePhone": "+44 330 229 5045",
+        "servicePhone": "+44 330 229 6547",
         "serviceSmsNumber": "+44 7700 900123"
       }
     };

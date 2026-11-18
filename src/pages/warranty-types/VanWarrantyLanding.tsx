@@ -182,7 +182,7 @@ const vanFAQs = [
   },
   {
     question: "What about modified vans?",
-    answer: "Most body modifications are accepted — racking, ply-lining, sign-writing, and similar fitments are fine. Give us a ring on 0330 229 5045 if you're unsure about a specific modification."
+    answer: "Most body modifications are accepted — racking, ply-lining, sign-writing, and similar fitments are fine. Give us a ring on 0330 229 6547 if you're unsure about a specific modification."
   },
   {
     question: "Do I need a full service history?",
@@ -202,7 +202,7 @@ const vanFAQs = [
   },
   {
     question: "How do I make a claim?",
-    answer: "Take your van to any VAT-registered garage for diagnosis. Before any repairs begin, the garage must call our claims team on 0330 229 5045. We'll authorise the work and pay the garage directly. It's that simple."
+    answer: "Take your van to any VAT-registered garage for diagnosis. Before any repairs begin, the garage must call our claims team on 0330 229 6547. We'll authorise the work and pay the garage directly. It's that simple."
   },
   {
     question: "What's the most expensive repair you've covered?",
@@ -685,12 +685,12 @@ const VanWarrantyLanding: React.FC = () => {
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-xs sm:text-[15px] mt-1.5">
                       <span className="text-gray-600">Speak to an expert:</span>
-                      <a href="tel:03302295045" className="font-semibold text-gray-900 hover:underline">
-                        0330 229 5045
+                      <a href="tel:03302296547" className="font-semibold text-gray-900 hover:underline">
+                        0330 229 6547
                       </a>
                       <span className="text-gray-400">·</span>
                       <a
-                        href="https://wa.me/443302295045"
+                        href="https://wa.me/443302296547"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-green-600 hover:underline font-medium inline-flex items-center gap-1"
@@ -1146,7 +1146,7 @@ const VanWarrantyLanding: React.FC = () => {
               <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm">
                 <Phone className="w-5 h-5 text-brand-orange" />
                 <span className="text-sm font-medium text-gray-700">
-                  UK claims team: <a href="tel:03302295045" className="font-bold text-gray-900 hover:underline">0330 229 5045</a>
+                  UK claims team: <a href="tel:03302296547" className="font-bold text-gray-900 hover:underline">0330 229 6547</a>
                   <span className="text-gray-400 mx-2">·</span>
                   Mon-Fri 9am-5:30pm
                 </span>
@@ -1404,15 +1404,15 @@ const VanWarrantyLanding: React.FC = () => {
               </Button>
               <div className="flex items-center gap-3">
                 <a
-                  href="tel:03302295045"
+                  href="tel:03302296547"
                   className="inline-flex items-center gap-2 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"
                 >
                   <Phone className="w-5 h-5 md:w-6 md:h-6" />
-                  0330 229 5045
+                  0330 229 6547
                 </a>
                 <span className="text-white/50">·</span>
                 <a
-                  href="https://wa.me/443302295045"
+                  href="https://wa.me/443302296547"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"

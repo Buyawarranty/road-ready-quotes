@@ -514,11 +514,11 @@ export default function LiveQuotePage() {
             <p className="text-gray-600 mb-6">
               This quote link may have expired or is no longer valid.
             </p>
-            <Button onClick={() => window.location.href = 'tel:03302295045'} className="w-full">
+            <Button onClick={() => window.location.href = 'tel:03302296547'} className="w-full">
               <Phone className="h-4 w-4 mr-2" />
               Call Us for a Fresh Quote
             </Button>
-            <p className="text-sm text-gray-500 mt-4">0330 229 5045</p>
+            <p className="text-sm text-gray-500 mt-4">0330 229 6547</p>
           </CardContent>
         </Card>
       </div>
@@ -535,11 +535,11 @@ export default function LiveQuotePage() {
             <p className="text-gray-600 mb-6">
               This quote has expired. Tap below to request a fresh quote with the same details.
             </p>
-            <Button onClick={() => window.location.href = 'tel:03302295045'} className="w-full bg-orange-600 hover:bg-orange-700">
+            <Button onClick={() => window.location.href = 'tel:03302296547'} className="w-full bg-orange-600 hover:bg-orange-700">
               <Phone className="h-4 w-4 mr-2" />
               Request Fresh Quote
             </Button>
-            <p className="text-sm text-gray-500 mt-4">0330 229 5045</p>
+            <p className="text-sm text-gray-500 mt-4">0330 229 6547</p>
           </CardContent>
         </Card>
       </div>
@@ -563,7 +563,7 @@ export default function LiveQuotePage() {
       setConfirmationStep('flagged');
     } catch (err) {
       console.error('Error flagging details:', err);
-      toast.error('Failed to report issue. Please call us on 0330 229 5045.');
+      toast.error('Failed to report issue. Please call us on 0330 229 6547.');
     } finally {
       setFlagging(false);
     }
@@ -596,7 +596,7 @@ export default function LiveQuotePage() {
               </div>
               <div className="text-sm text-gray-500 space-y-1">
                 <p>Need urgent help? Contact us:</p>
-                <p className="font-medium">0330 229 5045</p>
+                <p className="font-medium">0330 229 6547</p>
                 <p>support@pandaprotect.co.uk</p>
               </div>
             </CardContent>
@@ -636,7 +636,7 @@ export default function LiveQuotePage() {
               </div>
               <div className="text-sm text-gray-500 space-y-1">
                 <p>Need help? Contact us:</p>
-                <p className="font-medium">0330 229 5045</p>
+                <p className="font-medium">0330 229 6547</p>
                 <p>support@pandaprotect.co.uk</p>
               </div>
             </CardContent>
@@ -758,7 +758,7 @@ export default function LiveQuotePage() {
             </div>
 
             <div className="text-center mt-4 text-sm text-gray-500 space-y-1">
-              <p>Need help? Call us: <strong>0330 229 5045</strong></p>
+              <p>Need help? Call us: <strong>0330 229 6547</strong></p>
             </div>
           </CardContent>
         </Card>
@@ -1541,7 +1541,7 @@ export default function LiveQuotePage() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Phone className="w-3 h-3" />
-                      <span>0330 229 5045</span>
+                      <span>0330 229 6547</span>
                     </div>
                   </div>
                 </CardContent>

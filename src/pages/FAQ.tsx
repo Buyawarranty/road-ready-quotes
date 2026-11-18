@@ -250,7 +250,7 @@ const FAQ = () => {
         - Cover begins immediately with no waiting period (pre-existing faults excluded)
         - Fast claim processing (within 90 minutes of approval)
         - Direct payment to garages or reimbursement
-        - Claims team: 0330 229 5045 (Mon-Fri 09:00-17:30)
+        - Claims team: 0330 229 6547 (Mon-Fri 09:00-17:30)
         - Support email: support@pandaprotect.co.uk
         
         Coverage Details:
@@ -269,7 +269,7 @@ const FAQ = () => {
         - Commercial use (taxi, courier, rental)
         
         Claims Process:
-        1. Contact claims team at 0330 229 5045
+        1. Contact claims team at 0330 229 6547
         2. Get vehicle diagnosed at garage
         3. Garage must contact claims team before repairs
         4. Fast approval and payment process
@@ -296,7 +296,7 @@ const FAQ = () => {
       if (lowerQuery.includes('price') || lowerQuery.includes('cost') || lowerQuery.includes('how much')) {
         response = 'Our warranty costs start from just £12 per month, depending on your vehicle and coverage level. We offer flexible payment options including paying in full (with savings), 12-month interest-free payments, or monthly Pay As You Go. You can get an instant quote by entering your registration number on our homepage.';
       } else if (lowerQuery.includes('claim') || lowerQuery.includes('repair')) {
-        response = 'To make a claim, contact our Claims Team at 0330 229 5045 (Mon-Fri 09:00-17:30) or use our online form. Get your vehicle diagnosed at a garage first, then the garage must contact our claims team before starting repairs. We process claims within 90 minutes of approval and can pay the garage directly.';
+        response = 'To make a claim, contact our Claims Team at 0330 229 6547 (Mon-Fri 09:00-17:30) or use our online form. Get your vehicle diagnosed at a garage first, then the garage must contact our claims team before starting repairs. We process claims within 90 minutes of approval and can pay the garage directly.';
       } else if (lowerQuery.includes('cover') || lowerQuery.includes('what') || lowerQuery.includes('include')) {
         response = 'Our Platinum Plan covers all mechanical and electrical parts including engine, gearbox, drivetrain, electrical systems, ECUs, sensors, and labour costs. We cover cars, vans, and motorcycles (petrol, diesel, hybrid, and electric). Optional add-ons available for wear & tear, tyres, Europe cover, and more.';
       } else if (lowerQuery.includes('electric') || lowerQuery.includes('ev') || lowerQuery.includes('hybrid')) {
@@ -304,7 +304,7 @@ const FAQ = () => {
       } else if (lowerQuery.includes('garage') || lowerQuery.includes('mechanic')) {
         response = 'You can use your preferred garage for repairs as long as they\'re VAT registered. You can choose a main dealer, but may need to cover the price difference compared to an independent garage. We can also recommend trusted repair centres in our network.';
       } else if (lowerQuery.includes('cancel') || lowerQuery.includes('refund')) {
-        response = 'You have 14 days to cancel your warranty for a full refund (if no repairs have been made). After this period, our standard cancellation policy applies. Contact us at support@pandaprotect.co.uk or call 0330 229 5045 for cancellation requests.';
+        response = 'You have 14 days to cancel your warranty for a full refund (if no repairs have been made). After this period, our standard cancellation policy applies. Contact us at support@pandaprotect.co.uk or call 0330 229 6547 for cancellation requests.';
       } else if (lowerQuery.includes('transfer') || lowerQuery.includes('sell') || lowerQuery.includes('new owner')) {
         response = 'Yes, the warranty is transferable to a new owner when you sell your vehicle privately. This adds value to your car and is a great selling point. There is a £30 fee for transferring the warranty. Contact us to arrange the transfer.';
       } else if (lowerQuery.includes('age') || lowerQuery.includes('old') || lowerQuery.includes('mileage') || lowerQuery.includes('eligible')) {
@@ -314,13 +314,13 @@ const FAQ = () => {
       } else if (lowerQuery.includes('service') || lowerQuery.includes('maintenance') || lowerQuery.includes('mot')) {
         response = 'Yes, you need to keep up with regular servicing to maintain your warranty validity. Follow the manufacturer\'s service schedule and keep your receipts. Routine maintenance isn\'t covered unless you add our Wear & Tear cover add-on.';
       } else {
-        response = `I couldn't find a specific FAQ for "${query}", but I can help! Our comprehensive warranty covers mechanical and electrical parts for cars, vans, and motorcycles. For specific questions, please contact our team at 0330 229 5045 or support@pandaprotect.co.uk. You can also browse our detailed FAQ categories above for more information.`;
+        response = `I couldn't find a specific FAQ for "${query}", but I can help! Our comprehensive warranty covers mechanical and electrical parts for cars, vans, and motorcycles. For specific questions, please contact our team at 0330 229 6547 or support@pandaprotect.co.uk. You can also browse our detailed FAQ categories above for more information.`;
       }
 
       setAiAnswer(response);
     } catch (error) {
       console.error('Error generating AI answer:', error);
-      setAiAnswer(`I couldn't find a specific answer for "${query}" in our FAQ. For personalized assistance, please contact our support team at 0330 229 5045 or support@pandaprotect.co.uk. You can also browse our FAQ categories above for related information.`);
+      setAiAnswer(`I couldn't find a specific answer for "${query}" in our FAQ. For personalized assistance, please contact our support team at 0330 229 6547 or support@pandaprotect.co.uk. You can also browse our FAQ categories above for related information.`);
     } finally {
       setIsLoadingAI(false);
     }
@@ -648,8 +648,8 @@ const FAQ = () => {
                       <div className="mt-4 pt-4 border-t border-blue-200">
                         <p className="text-sm text-blue-600">
                           For more specific information, please contact our team at{' '}
-                          <a href="tel:03302295045" className="font-medium hover:underline">
-                            0330 229 5045
+                          <a href="tel:03302296547" className="font-medium hover:underline">
+                            0330 229 6547
                           </a>{' '}
                           or{' '}
                           <a href="mailto:support@pandaprotect.co.uk" className="font-medium hover:underline">
@@ -752,12 +752,12 @@ const FAQ = () => {
                         <p className="font-semibold text-brand-dark-text">
                           Call Us
                         </p>
-                        <a href="tel:03302295045" className="text-primary hover:underline">
-                          Phone: 0330 229 5045
+                        <a href="tel:03302296547" className="text-primary hover:underline">
+                          Phone: 0330 229 6547
                         </a>
                         <span className="text-brand-dark-text"> | </span>
-                        <a href="tel:03302295045" className="text-primary hover:underline">
-                          Claims: 0330 229 5045
+                        <a href="tel:03302296547" className="text-primary hover:underline">
+                          Claims: 0330 229 6547
                         </a>
                       </div>
                     </div>
