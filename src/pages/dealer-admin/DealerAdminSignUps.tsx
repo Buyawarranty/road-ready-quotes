@@ -231,7 +231,7 @@ const DealerAdminSignUps: React.FC = () => {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const deletablePageRows = pageRows.filter(row => !isProtectedDealerSignup(row));
+  const deletablePageRows = pageRows;
   const allPageSelected = deletablePageRows.length > 0 && deletablePageRows.every(row => checkedIds.has(row.id));
   const somePageSelected = deletablePageRows.some(row => checkedIds.has(row.id));
 
@@ -607,7 +607,7 @@ const DealerAdminSignUps: React.FC = () => {
       setCheckedIds(new Set());
       setDeleteConfirmOpen(false);
       if (selected && deletedIds.has(selected.id)) closeDetail();
-      if (deleted === 0) toast.error('No signups were deleted. Approved or recently changed signups stay protected.');
+      if (deleted === 0) toast.error('No signups were archived.');
       else toast.success(`${deleted} signup${deleted === 1 ? '' : 's'} moved to the archive${skipped ? `; ${skipped} protected or changed row${skipped === 1 ? '' : 's'} skipped` : ''}`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not delete the selected signups');
@@ -679,9 +679,9 @@ const DealerAdminSignUps: React.FC = () => {
           <span className="text-sm font-semibold">{checkedIds.size} selected</span>
           <Button type="button" size="sm" variant="outline" disabled={!checkedIds.size || deleting} onClick={() => setCheckedIds(new Set())}>Clear selection</Button>
           <Button type="button" size="sm" variant="destructive" disabled={!checkedIds.size || deleting} onClick={() => setDeleteConfirmOpen(true)}>
-            <Trash2 className="mr-2 h-4 w-4" />Delete selected
+            <Trash2 className="mr-2 h-4 w-4" />Archive selected
           </Button>
-          <span className="text-xs text-muted-foreground">Use the top tick box to select this page. Approved dealer accounts stay protected.</span>
+          <span className="text-xs text-muted-foreground">Use the top tick box to select this page. Archived signups move to the Archive section at the bottom and can be restored.</span>
         </div>
       )}
 
@@ -746,8 +746,8 @@ const DealerAdminSignUps: React.FC = () => {
                                 aria-label={`Select ${r.dealership_name || 'signup'}`}
                                 checked={checkedIds.has(r.id)}
                                 onCheckedChange={() => toggleChecked(r.id)}
-                                disabled={protectedFromDeletion || deleting}
-                                title={protectedFromDeletion ? 'Approved dealer accounts are protected' : 'Select signup'}
+                                disabled={deleting}
+                                title={protectedFromDeletion ? 'Archiving hides this signup only — the dealer login stays active' : 'Select signup'}
                               />
                             </div>
                           </Td>
@@ -834,9 +834,9 @@ const DealerAdminSignUps: React.FC = () => {
         <AlertDialog open={deleteConfirmOpen} onOpenChange={open => { if (!deleting) setDeleteConfirmOpen(open); }}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Delete {checkedIds.size} selected signup{checkedIds.size === 1 ? '' : 's'}?</AlertDialogTitle>
+              <AlertDialogTitle>Are you sure? Archive {checkedIds.size} selected signup{checkedIds.size === 1 ? '' : 's'}?</AlertDialogTitle>
               <AlertDialogDescription>
-                The selected unapproved applications move to the hidden Archive at the bottom of this page, where you can restore them if deleted by mistake. Approved applications, dealer accounts, warranties and sales remain protected.
+                The selected signups move to the Archive section at the bottom of this page, where you can restore them if archived by mistake. Approved dealers keep their login, warranties and sales — only the signup entry is hidden from this list.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -846,7 +846,7 @@ const DealerAdminSignUps: React.FC = () => {
                 disabled={deleting || !checkedIds.size}
                 onClick={event => { event.preventDefault(); void deleteCheckedSignups(); }}
               >
-                {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Deleting…</> : 'Move to archive'}
+                {deleting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Archiving…</> : 'Move to archive'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
