@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, MessageCircle, Phone } from 'lucide-react';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 
 const CLAIMS_PHONE = '0330 229 5045';
@@ -98,6 +99,8 @@ const DealerPublicFooter: React.FC = () => {
             </ul>
           </div>
         </div>
+
+        <FooterCompanyDetails />
 
         <div className="dealer-footer-bottom">
           <div>© {new Date().getFullYear()} Panda Protect. All rights reserved.</div>

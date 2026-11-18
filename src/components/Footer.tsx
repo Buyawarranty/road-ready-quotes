@@ -2,6 +2,7 @@
 import React from 'react';
 import { Phone, Mail, Facebook, Instagram } from 'lucide-react';
 import { X } from 'lucide-react';
+import FooterCompanyDetails from './FooterCompanyDetails';
 
 const Footer = () => {
   return (
@@ -106,6 +107,9 @@ const Footer = () => {
           </div>
         </div>
       </footer>
+      <div className="max-w-5xl mx-auto px-4 pb-2">
+        <FooterCompanyDetails />
+      </div>
     </div>
   );
 };

@@ -2,10 +2,14 @@
 import React from 'react';
 import { Phone, Mail, BookOpen, X, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import FooterCompanyDetails from './FooterCompanyDetails';
 
 const NewFooter = () => {
   return (
     <div className="bg-white border-t border-gray-200">
+      <div className="max-w-6xl mx-auto px-4">
+        <FooterCompanyDetails divider={false} />
+      </div>
 
       {/* Main footer section */}
       <div className="bg-[#284185] text-white py-8">

@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, Phone, Mail, MessageCircle } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
+import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 
 // Pages that have their own final CTA section
@@ -179,14 +180,10 @@ const WebsiteFooter = () => {
           </div>
 
           {/* Copyright & Company Details */}
-          <div className="text-center pt-8 border-t border-gray-200 mt-8">
-            <p className="text-sm text-gray-600 max-w-4xl mx-auto">
-              © Panda protect. All rights reserved.
-            </p>
-            <p className="text-sm text-gray-600 mt-2 max-w-4xl mx-auto">
-              Pandaprotect.co.uk is a trading name of Buy A Warranty Limited. Established 2016. Registered in the United Kingdom under Company number: 10314863 Registered address: Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT, England
-            </p>
-          </div>
+          <FooterCompanyDetails />
+          <p className="text-center text-sm text-gray-600 max-w-4xl mx-auto mt-6">
+            © Panda protect. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
