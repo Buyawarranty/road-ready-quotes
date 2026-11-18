@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Save, MapPin, Building2, Lock } from 'lucide-react';
 import DealerChangePassword from '@/components/dealer/DealerChangePassword';
 import BillingAddressFields from '@/components/dealer/BillingAddressFields';
+import { toAddressRequest, formatAddressValue } from '@/lib/dealerAddressChange';
 import {
   BillingAddress,
   billingErrors,
@@ -32,12 +33,21 @@ const DealerProfileSettings: React.FC = () => {
   const [newName, setNewName] = useState('');
   const [reason, setReason] = useState('');
   const [requesting, setRequesting] = useState(false);
+  const [pendingAddress, setPendingAddress] = useState<string | null>(null);
+  const [addrOpen, setAddrOpen] = useState(false);
+  const [addrDraft, setAddrDraft] = useState<BillingAddress>(() => billingFromDealer(dealer));
+  const [addrReason, setAddrReason] = useState('');
+  const [addrShowErrors, setAddrShowErrors] = useState(false);
 
   useEffect(() => {
     if (!dealer?.id) return;
-    (supabase as any).from('dealer_profile_change_requests').select('requested_value, created_at')
-      .eq('dealer_id', dealer.id).eq('status', 'pending').maybeSingle()
-      .then(({ data }: any) => setPending(data || null));
+    (supabase as any).from('dealer_profile_change_requests').select('field, requested_value, created_at')
+      .eq('dealer_id', dealer.id).eq('status', 'pending')
+      .then(({ data }: any) => {
+        const list = data || [];
+        setPending(list.find((r: any) => r.field === 'company_name') || null);
+        setPendingAddress(list.find((r: any) => r.field === 'company_address')?.requested_value || null);
+      });
   }, [dealer?.id]);
 
   const submitRequest = async () => {
@@ -54,6 +64,28 @@ const DealerProfileSettings: React.FC = () => {
     toast({ title: 'Request sent', description: 'We will review your new company name and let you know.' });
   };
 
+  const addrErrors = useMemo(() => billingErrors(addrDraft), [addrDraft]);
+  const submitAddress = async () => {
+    if (!dealer) return;
+    if (!isBillingComplete(addrDraft)) { setAddrShowErrors(true); return; }
+    const current = toAddressRequest(billingFromDealer(dealer));
+    const next = toAddressRequest(addrDraft);
+    if (JSON.stringify(current) === JSON.stringify(next)) {
+      toast({ title: 'No change', description: 'The new address is the same as your current one.' });
+      return;
+    }
+    setRequesting(true);
+    const value = JSON.stringify(next);
+    const { error } = await (supabase as any).from('dealer_profile_change_requests').insert({
+      dealer_id: dealer.id, field: 'company_address', current_value: JSON.stringify(current),
+      requested_value: value, reason: addrReason.trim() || null,
+    });
+    setRequesting(false);
+    if (error) { toast({ title: 'Could not send request', description: error.message, variant: 'destructive' }); return; }
+    setPendingAddress(value); setAddrOpen(false); setAddrReason(''); setAddrShowErrors(false);
+    toast({ title: 'Request sent', description: 'We will review your new company address and let you know.' });
+  };
+
   useEffect(() => {
     if (dealer && !touched) {
       setBilling(billingFromDealer(dealer));
@@ -66,15 +98,10 @@ const DealerProfileSettings: React.FC = () => {
 
   const save = async () => {
     if (!dealer) return;
-    if (!isBillingComplete(billing)) {
-      setShowErrors(true);
-      toast({ title: 'Check your address', description: 'Some required fields are missing.', variant: 'destructive' });
-      return;
-    }
     setSaving(true);
     const { error } = await supabase
       .from('dealers')
-      .update({ ...billingToDealerColumns(billing), phone: phone.trim() || null, name: contactName.trim() || dealer.name })
+      .update({ first_name: billingToDealerColumns(billing).first_name, last_name: billingToDealerColumns(billing).last_name, phone: phone.trim() || null, name: contactName.trim() || dealer.name })
       .eq('id', dealer.id);
     setSaving(false);
     if (error) {
@@ -170,14 +197,39 @@ const DealerProfileSettings: React.FC = () => {
             <section className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-orange-500" />
-                <h2 className="font-bold text-gray-900">Billing address</h2>
+                <h2 className="font-bold text-gray-900">Company address</h2>
+                <span className="ml-1 inline-flex items-center gap-1 text-xs text-gray-500"><Lock className="h-3 w-3" aria-hidden="true" />locked</span>
               </div>
               <BillingAddressFields
                 value={billing}
                 onChange={(next) => { setBilling(next); setTouched(true); }}
                 errors={showErrors ? errors : {}}
                 disabled={saving}
+                lockAddress
               />
+              <p className="text-xs text-gray-500">
+                Your company address is locked. You can change the billing first and last name here. To change the address, send it to us for approval.
+              </p>
+              {pendingAddress ? (
+                <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+                  Company address change to <strong>{formatAddressValue(pendingAddress)}</strong> is waiting for approval.
+                </p>
+              ) : addrOpen ? (
+                <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+                  <p className="text-sm font-semibold text-gray-900">New company address</p>
+                  <BillingAddressFields value={addrDraft} onChange={setAddrDraft} errors={addrShowErrors ? addrErrors : {}} disabled={requesting} hideNames />
+                  <Label className="text-xs font-semibold text-gray-700">Reason (optional)</Label>
+                  <Input value={addrReason} onChange={(e) => setAddrReason(e.target.value)} placeholder="e.g. We have moved premises" className="h-10" />
+                  <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                    <Button variant="outline" className="rounded-full" onClick={() => setAddrOpen(false)}>Cancel</Button>
+                    <Button className="rounded-full bg-orange-500 hover:bg-orange-600 text-white" disabled={requesting} onClick={submitAddress}>
+                      {requesting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Send for approval
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button variant="outline" className="h-auto min-h-11 w-full whitespace-normal rounded-full sm:w-auto" onClick={() => { setAddrDraft(billingFromDealer(dealer)); setAddrOpen(true); }}>Request company address change</Button>
+              )}
             </section>
 
             <div className="flex justify-end">
