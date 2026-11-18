@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
@@ -50,6 +50,25 @@ const Step3Pricing: React.FC = () => {
     setMileageInput(String(next));
     setMileageConfirmed(false);
   };
+
+  // Keep the mileage box filled from the vehicle (restored quotes load after first render).
+  useEffect(() => {
+    if (mileageInput === '' && vehicle?.mileage != null) setMileageInput(String(vehicle.mileage));
+  }, [vehicle?.mileage]);
+  // Vehicle known but no mileage saved: fetch the last MOT mileage once.
+  const motFetchedFor = useRef<string | null>(null);
+  const vehicleRef = useRef(vehicle); vehicleRef.current = vehicle;
+  useEffect(() => {
+    const reg = vehicle?.reg;
+    if (!reg || vehicle?.mileage != null || motFetchedFor.current === reg) return;
+    motFetchedFor.current = reg;
+    supabase.functions.invoke('dvla-vehicle-lookup', { body: { registrationNumber: normaliseReg(reg) } }).then(({ data }) => {
+      if (data?.lastMotMileage != null) {
+        const v: any = vehicleRef.current; if (v && v.reg === reg && v.mileage == null) setVehicle({ ...v, mileage: Number(data.lastMotMileage) });
+        setMileageInput((m) => m || String(data.lastMotMileage));
+      }
+    }).catch(() => {});
+  }, [vehicle?.reg, vehicle?.mileage]);
 
   const lookupVehicle = async (rawReg: string) => {
     const cleaned = normaliseReg(rawReg);
@@ -223,19 +242,19 @@ const Step3Pricing: React.FC = () => {
     </section>
     {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <>{n > 150000 && <p role="alert" className="rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
-    <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-line bg-muted/60 px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
+    <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-orange/40 bg-crm-orange-soft px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
       <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
       <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
       <div className="flex items-center gap-1.5">
-        <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-11 w-11 shrink-0 border-crm-line bg-card p-0 text-lg font-bold hover:border-crm-orange">&minus;</Button>
+        <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-11 w-11 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
           onChange={(e) => { setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7)); setMileageConfirmed(false); }} onBlur={(e) => commitMileage(e.target.value)}
           className="h-11 w-28 min-w-0 rounded-md border border-crm-line bg-card px-2 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none sm:w-32" />
-        <Button variant="outline" type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="h-11 w-11 shrink-0 border-crm-line bg-card p-0 text-lg font-bold hover:border-crm-orange">+</Button>
+        <Button variant="outline" type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="h-11 w-11 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">+</Button>
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
       {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-grey font-bold !text-crm-navy hover:!bg-crm-grey/80 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-navy font-bold !text-primary-foreground hover:!bg-crm-navy/90 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
 
     </section></>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
