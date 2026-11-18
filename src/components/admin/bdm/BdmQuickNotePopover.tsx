@@ -58,8 +58,8 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button type="button" className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-md border border-dashed border-primary/50 bg-primary/10 px-3 text-sm font-semibold text-primary transition-all duration-150 hover:-translate-y-px hover:border-solid hover:bg-primary hover:text-primary-foreground hover:shadow-md active:translate-y-0 active:scale-95" aria-label={`Notes for ${dealershipName}`}>
-          <NotebookPen className="h-4 w-4" />Notes
+        <button type="button" onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} className="inline-flex h-10 min-w-[96px] cursor-pointer select-none touch-manipulation items-center justify-center gap-1.5 rounded-md border border-primary/50 bg-primary/10 px-3 text-sm font-semibold text-primary transition-colors duration-150 hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label={`Notes for ${dealershipName}`}>
+          <NotebookPen className="pointer-events-none h-4 w-4" /><span className="pointer-events-none">Notes</span>
         </button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[min(340px,calc(100vw-1.5rem))] p-3">
