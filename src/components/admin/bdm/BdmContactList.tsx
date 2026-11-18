@@ -438,6 +438,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
                 onToggleMine={toggleMine}
                 onMoveTown={moveToTown}
                 showAssigned={isManager}
+                staff={staff}
                 onOpen={open}
                 onChanged={refresh}
               />

@@ -17,6 +17,7 @@ import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDeale
 import BdmQuickNotePopover from '@/components/admin/bdm/BdmQuickNotePopover';
 import BdmReminderPopover from '@/components/admin/bdm/BdmReminderPopover';
 import BdmOwnerTag from '@/components/admin/bdm/BdmOwnerTag';
+import BdmOwnerPicker from '@/components/admin/bdm/BdmOwnerPicker';
 import BdmEmailDialog from '@/components/admin/bdm/BdmEmailDialog';
 import { Bell, Mail, X } from 'lucide-react';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
@@ -347,7 +348,7 @@ const DealerAdminDealers: React.FC = () => {
                         <td className="px-3 py-2"><Checkbox aria-label={`Select ${r.company_name}`} checked={checked.has(r.id)} onCheckedChange={() => toggleOne(r.id)} /></td>
                         <td className="px-3 py-2">
                           <p className="font-semibold text-foreground">{r.company_name}{r.is_test && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold uppercase text-accent-foreground align-middle">Test account</span>}{r.accounts_pending && <span className="ml-2 rounded bg-accent px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground align-middle">Accounts@ needs to approve</span>}</p>
-                          <BdmOwnerTag name={ownerName(r.bdm?.assigned_bdm)} className="mt-1" />
+                          {r.bdm ? <div className="mt-1"><BdmOwnerPicker dealershipId={r.bdm.id} ownerId={r.bdm.assigned_bdm} staff={staff} onChanged={load} /></div> : <BdmOwnerTag name={null} className="mt-1" />}
                           <p className="text-xs text-muted-foreground">{r.name}</p>
                         </td>
                         <td className="px-3 py-2">

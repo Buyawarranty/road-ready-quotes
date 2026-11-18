@@ -7,7 +7,7 @@ import BdmReminderPopover from './BdmReminderPopover';
 import BdmQuickNotePopover from './BdmQuickNotePopover';
 import BdmEditNotes from './BdmEditNotes';
 import BdmEmailDialog from './BdmEmailDialog';
-import BdmOwnerTag from './BdmOwnerTag';
+import BdmOwnerPicker from './BdmOwnerPicker';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -57,6 +57,7 @@ interface Props {
   /** Name of the BDM whose portfolio already holds this dealership. */
   onboardedBy?: string;
   showAssigned: boolean;
+  staff?: { user_id: string; name: string }[];
   onOpen: (id: string, tab?: string) => void;
   onChanged: () => void;
   rowNumber?: number;
@@ -67,7 +68,7 @@ interface Props {
   onMoveTown?: (id: string, town: string) => void;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, onOpen, onChanged, rowNumber, striped, inMine, towns = [], onToggleMine, onMoveTown }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, staff = [], onOpen, onChanged, rowNumber, striped, inMine, towns = [], onToggleMine, onMoveTown }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -235,7 +236,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
             {r.autotrader_url && <a href={r.autotrader_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">AutoTrader page</a>}
           </p>
         )}
-        <BdmOwnerTag name={assignedName} className="mt-1" />
+        <div className="mt-1"><BdmOwnerPicker dealershipId={r.id} ownerId={r.assigned_bdm} staff={staff} onChanged={onChanged} /></div>
       </td>
       {/* Phone */}
       <td className="p-2">
