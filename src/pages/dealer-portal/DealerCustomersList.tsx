@@ -72,6 +72,7 @@ type CustomerRow = {
   payment_status: string | null;
   payment_due_date: string | null;
   payment_collected_at: string | null;
+  stripe_session_id: string | null;
   signup_date: string | null;
   status: string | null;
   claim_limit: number | null;
@@ -128,6 +129,7 @@ const SELECTED_CUSTOMER_FIELDS = `
   payment_status,
   payment_due_date,
   payment_collected_at,
+  stripe_session_id,
   signup_date,
   status,
   claim_limit,
@@ -343,6 +345,9 @@ const CustomerDetailDrawer = ({
     payment_type: customer.payment_type,
     final_amount: customer.final_amount,
     payment_status: customer.payment_status,
+    payment_due_date: customer.payment_due_date,
+    payment_collected_at: customer.payment_collected_at,
+    stripe_session_id: customer.stripe_session_id,
     warranty_start_date: startDate,
     policy_end_date: endDate,
     signup_date: customer.signup_date,
