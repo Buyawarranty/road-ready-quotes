@@ -187,8 +187,10 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         key={item.to}
         to={item.to}
         onClick={() => mobile && setMobileOpen(false)}
-        className={`flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors ${
-          active
+        className={`flex ${mobile ? 'min-h-10' : 'min-h-11'} items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors ${
+          active && mobile
+            ? 'bg-primary text-primary-foreground shadow-sm'
+            : active
             ? 'bg-crm-orange text-primary-foreground shadow-sm'
             : mobile
               ? 'text-foreground hover:bg-muted'
@@ -311,21 +313,21 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px] max-w-[calc(100vw-2rem)] border-crm-line bg-card p-0">
-                  <div className="flex flex-col h-full">
-                    <div className="border-b border-crm-line p-5">
+                <SheetContent side="right" className="dealer-crm w-[290px] max-w-[calc(100vw-2rem)] border-crm-line bg-card p-0">
+                  <div className="flex h-full flex-col overflow-y-auto">
+                    <div className="border-b border-crm-line px-5 py-4">
                       <img
                         src={pandaLogoUrl}
                         alt="Panda Protect"
                         className="h-9 w-auto"
                       />
                     </div>
-                    <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
+                    <nav className="flex flex-col gap-0.5 px-3 pt-3">
                       {navItems.map((item) => renderNavItem(item, true))}
                     </nav>
-                    <div className="border-t border-crm-line p-4">
+                    <div className="mx-3 mt-2 border-t border-crm-line pt-2 pb-4">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => {
                           setMobileOpen(false);
                           if (isImpersonating) {
@@ -335,7 +337,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
                             signOut();
                           }
                         }}
-                        className="w-full gap-2 text-destructive"
+                        className="h-10 w-full justify-start gap-3 px-3 text-destructive hover:bg-destructive/10"
                       >
                         <LogOut className="h-4 w-4" /> {isImpersonating ? 'Exit dealer view' : 'Sign out'}
                       </Button>
