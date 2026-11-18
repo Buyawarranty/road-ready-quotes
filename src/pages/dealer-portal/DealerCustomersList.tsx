@@ -21,6 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DEFAULT_CUSTOMER_WARRANTY_FILTER,
+  customerMatchesWarrantyFilter,
+} from '@/lib/dealerCustomerFilters';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { cn } from '@/lib/utils';
@@ -605,7 +609,7 @@ const DealerCustomersList = () => {
   const { dealer } = useDealerAuth();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [warrantyFilter, setWarrantyFilter] = useState('all');
+  const [warrantyFilter, setWarrantyFilter] = useState(DEFAULT_CUSTOMER_WARRANTY_FILTER);
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
@@ -665,7 +669,7 @@ const DealerCustomersList = () => {
         (customer.phone || '').toLowerCase().includes(q) ||
         (customer.registration_plate || '').toLowerCase().includes(q) ||
         getVehicleName(customer).toLowerCase().includes(q);
-      const matchesWarranty = warrantyFilter === 'all' || warrantyStatus.toLowerCase().includes(warrantyFilter);
+      const matchesWarranty = customerMatchesWarrantyFilter(warrantyStatus, warrantyFilter);
       const matchesPayment = paymentFilter === 'all' || paymentStatus === paymentFilter;
       const matchesType = typeFilter === 'all' || plan.includes(typeFilter);
       const matchesSource = sourceFilter === 'all' || source === sourceFilter;
@@ -676,6 +680,21 @@ const DealerCustomersList = () => {
   React.useEffect(() => {
     setPage(1);
   }, [search, warrantyFilter, paymentFilter, typeFilter, sourceFilter]);
+
+  const filtersActive =
+    search.trim() !== '' ||
+    warrantyFilter !== 'all' ||
+    paymentFilter !== 'all' ||
+    typeFilter !== 'all' ||
+    sourceFilter !== 'all';
+
+  const showAllCustomers = () => {
+    setSearch('');
+    setWarrantyFilter('all');
+    setPaymentFilter('all');
+    setTypeFilter('all');
+    setSourceFilter('all');
+  };
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -828,7 +847,20 @@ const DealerCustomersList = () => {
                   <tr><td colSpan={11} className="px-4 py-12 text-center text-gray-500"><Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin text-crm-orange" />Loading customers...</td></tr>
                 )}
                 {!isLoading && visible.length === 0 && (
-                  <tr><td colSpan={11} className="px-4 py-12 text-center text-gray-500">No customers found.</td></tr>
+                  <tr>
+                    <td colSpan={11} className="px-4 py-12 text-center text-gray-500">
+                      {filtersActive ? (
+                        <div className="flex flex-col items-center gap-3">
+                          <p>No customers match these filters.</p>
+                          <Button variant="outline" size="sm" onClick={showAllCustomers}>
+                            Show all customers
+                          </Button>
+                        </div>
+                      ) : (
+                        'No customers found.'
+                      )}
+                    </td>
+                  </tr>
                 )}
                 {visible.map((customer) => {
                   const status = getWarrantyStatus(customer);
