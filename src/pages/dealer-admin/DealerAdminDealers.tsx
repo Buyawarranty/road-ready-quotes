@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Download } from 'lucide-react';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
+import { useDealerExportAccess } from '@/hooks/useDealerExportAccess';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
 import { useNavigate } from 'react-router-dom';
 import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
@@ -54,6 +55,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 const DealerAdminDealers: React.FC = () => {
   const { toast } = useToast();
+  const canExport = useDealerExportAccess();
   const [rows, setRows] = useState<DealerRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -266,7 +268,7 @@ const DealerAdminDealers: React.FC = () => {
           {checked.size > 0 && (
             <div className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
               <span className="font-semibold">{checked.size} selected</span>
-              <Button size="sm" variant="outline" onClick={exportChecked}><Download className="h-4 w-4 mr-1" />Download spreadsheet</Button>
+              {canExport && <Button size="sm" variant="outline" onClick={exportChecked}><Download className="h-4 w-4 mr-1" />Download spreadsheet</Button>}
               <Button size="sm" variant="ghost" onClick={() => setChecked(new Set())}>Clear</Button>
             </div>
           )}

@@ -63,7 +63,7 @@ describe('Panda Protect grantable permission sections', () => {
 
   it('only offers extra detail switches where they exist', () => {
     const granular = PANDA_GRANTABLE_TABS.filter((t) => t.hasGranular).map((t) => t.id);
-    assert.deepEqual(granular, ['customers']);
+    assert.deepEqual([...granular].sort(), ['customers', 'dealer-dealers']);
   });
 
   it('automatically includes a newly created dashboard section as an assignable option', () => {

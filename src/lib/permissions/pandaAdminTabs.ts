@@ -18,7 +18,7 @@ export const buildGrantableTabs = (
   sections: ReadonlyArray<{ id: string; label: string; description: string }>,
 ): GrantableTab[] => sections.map((section) => ({
   ...section,
-  hasGranular: section.id === 'customers',
+  hasGranular: section.id === 'customers' || section.id === 'dealer-dealers',
 }));
 
 export const PANDA_GRANTABLE_TABS = buildGrantableTabs(PANDA_SECTION_ORDER);

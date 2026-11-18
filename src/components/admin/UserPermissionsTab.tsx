@@ -50,6 +50,9 @@ interface Permission {
 
 // Granular permissions for specific tabs
 const GRANULAR_PERMISSIONS = {
+  'dealer-dealers': [
+    { key: 'export', label: 'Export', description: 'Can download dealer and signup lists (Super Admin always can)' },
+  ],
   'customers': [
     { key: 'view', label: 'View', description: 'Can view customer data' },
     { key: 'own-only', label: 'Own Customers Only', description: 'Only see customers from their own orders (via Quotes & Orders)' },

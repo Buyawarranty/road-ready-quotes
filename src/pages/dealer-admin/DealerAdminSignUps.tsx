@@ -26,6 +26,7 @@ import { dealerSignupDetailsDraft, validateDealerSignupDetails, type DealerSignu
 import { duplicateDealerSignupIds, isDealerSignupSetAside, isProtectedDealerSignup, organiseDealerSignups } from '@/lib/dealerSignupOrganisation';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useDealerPortalUsage } from '@/hooks/useDealerPortalUsage';
+import { useDealerExportAccess } from '@/hooks/useDealerExportAccess';
 import { DealerFollowUpBar } from '@/components/admin/DealerFollowUpBar';
 import { PORTAL_STAGE_LABEL, portalStage, isReadyForFollowUp, newestReadySignIn } from '@/lib/dealerPortalProgress';
 import { Archive, ChevronDown, RotateCcw } from 'lucide-react';
@@ -103,6 +104,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [extraFilter, setExtraFilter] = useState<'all' | 'duplicates' | 'no_login' | 'has_login'>('all');
   const [selected, setSelected] = useState<Signup | null>(null);
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
+  const canExport = useDealerExportAccess();
   const [canBulkDelete, setCanBulkDelete] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -645,9 +647,11 @@ const DealerAdminSignUps: React.FC = () => {
           <Button variant="outline" size="sm" onClick={load} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
           </Button>
-          <Button size="sm" onClick={exportCsv} disabled={!filtered.length}>
-            <Download className="w-4 h-4 mr-2" /> Export CSV
-          </Button>
+          {canExport && (
+            <Button size="sm" onClick={exportCsv} disabled={!filtered.length}>
+              <Download className="w-4 h-4 mr-2" /> Export CSV
+            </Button>
+          )}
         </div>
       </div>
 
