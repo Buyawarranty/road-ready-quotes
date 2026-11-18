@@ -1,6 +1,7 @@
 import { makeClaimUrl, transactionalEmailIdentity, type Brand } from './brand.ts';
 import { polishEmailPayload } from './emailPolish.ts';
 import { displayWarrantyPlanName } from './warrantyPlanDisplay.ts';
+import { pandaWarrantyDocumentsHtml, type PandaWarrantyAttachment } from './dealerWarrantyDocuments.ts';
 
 export interface DealerWarrantyEmailTemplate {
   subject: string;
@@ -125,6 +126,7 @@ export function buildDealerWarrantyEmail(options: {
         ${endRow}
       </table>
       ${closing}
+      ${pandaWarrantyDocumentsHtml()}
       <p style="font-size:13px;color:#666;margin-top:22px"><strong>Need to make a claim?</strong><br>Visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>. Please quote your warranty reference.</p>
       <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
     </div>`;
@@ -141,5 +143,6 @@ export function buildDealerWarrantyEmail(options: {
     subject: string;
     html: string;
     text: string;
+    attachments?: PandaWarrantyAttachment[];
   };
 }

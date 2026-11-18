@@ -4,6 +4,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { z } from 'https://esm.sh/zod@3.23.8';
 import { resolveBrand } from '../_shared/brand.ts';
 import { resendFetch } from '../_shared/emailPolish.ts';
+import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
 import { requireStaffAdmin } from '../_shared/staffAuth.ts';
 import {
   buildDealerWarrantyEmail,
@@ -162,6 +163,12 @@ Deno.serve(async (req: Request) => {
 
     const resendKey = Deno.env.get('RESEND_API_KEY');
     if (!resendKey) return json({ error: 'Email sending is not configured' }, 500);
+    try {
+      email.attachments = await loadPandaWarrantyAttachments();
+    } catch (error) {
+      console.error('dealer-send-customer-warranty PDF loading error', error);
+      return json({ error: 'The warranty PDFs could not be loaded, so no email was sent. Please try again.' }, 502);
+    }
     const response = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
@@ -181,6 +188,8 @@ Deno.serve(async (req: Request) => {
       sent_to: to,
       from: email.from,
       provider_id: (provider as { id?: string })?.id || null,
+      attachment_count: email.attachments?.length || 0,
+      attachment_names: (email.attachments || []).map(attachment => attachment.filename),
     });
   } catch (error) {
     console.error('dealer-send-customer-warranty error', error);

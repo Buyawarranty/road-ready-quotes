@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Attach the official v11 Platinum Warranty Plan and Terms & Conditions to automatic and dealer-sent customer warranty emails, show both documents in the preview, and verify the live services. Four tests pass, both live PDFs load as attachments, services are deployed and a sample email was visually checked; real customer inbox delivery was not tested.
 - [x] Clarify dealer warranty cover versus payment status; improve detail-popup spacing, light Panda colours and professional icons.
 - [x] Show stored API vehicle details and a yellow UK registration plate throughout dealer warranty views; older blank records retrieve details when opened and new checkouts preserve fuel/transmission data.
 - [x] Provide separate Platinum Warranty Plan and Terms & Conditions PDF downloads in warranty details and action menus; both links return the official PDFs.

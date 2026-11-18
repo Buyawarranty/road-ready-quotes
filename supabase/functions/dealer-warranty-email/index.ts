@@ -4,6 +4,8 @@ import { resendFetch } from '../_shared/emailPolish.ts';
 import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerPurchaseRecipients } from '../_shared/dealerSaleFulfilment.ts';
+import { buildDealerWarrantyEmail, DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE } from '../_shared/dealerWarrantyEmail.ts';
+import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,7 +14,6 @@ const corsHeaders = {
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 const money = (value: number) => `£${Number(value || 0).toFixed(2)}`;
 const esc = (value: unknown) => String(value ?? '').replace(/[<>&"]/g, character => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[character] as string));
-const fmt = (value?: string | null) => value ? new Date(value).toLocaleDateString('en-GB') : '—';
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -49,10 +50,6 @@ Deno.serve(async (req: Request) => {
     const vehicle = [c.vehicle_make, c.vehicle_model, c.vehicle_year].filter(Boolean).join(' ');
     const ref = String(c.warranty_number || String(c.id).replace(/-/g, '').slice(0, 8).toUpperCase());
     const planDisplayName = displayWarrantyPlanName(c.plan_type, 'Platinum').replace(/[-_]/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
-    const months = Number.parseInt(String(c.payment_type || ''), 10);
-    const endDate = c.signup_date && Number.isFinite(months)
-      ? (() => { const date = new Date(c.signup_date); date.setMonth(date.getMonth() + months); return date.toISOString(); })()
-      : null;
 
     const dealerRows = `
       <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(ref)}</td></tr>
@@ -91,27 +88,32 @@ Deno.serve(async (req: Request) => {
 
     if (!recipients.customer) return json({ success: true, dealer_sent: true, customer_sent: false, customer_skipped: 'no_valid_email', kind });
 
-    // Customer copy deliberately excludes trade price, discount and profit information.
-    const customerRows = `
-      <tr><td style="padding:8px 0;color:#666">Reference</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(ref)}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Vehicle</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(c.registration_plate || '—')}${vehicle ? ` · ${esc(vehicle)}` : ''}</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Plan</td><td style="padding:8px 0;text-align:right;font-weight:600">${esc(planDisplayName)} · ${esc(c.payment_type || '')} months</td></tr>
-      <tr><td style="padding:8px 0;color:#666">Start date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(c.signup_date)}</td></tr>
-      ${endDate ? `<tr><td style="padding:8px 0;color:#666">Expiry date</td><td style="padding:8px 0;text-align:right;font-weight:600">${fmt(endDate)}</td></tr>` : ''}`;
-    const customerHtml = `
-      <div style="font-family:Arial,sans-serif;color:#333;max-width:620px;margin:0 auto;padding:24px">
-        <h1 style="color:#f97316;font-size:22px;margin:0 0 6px">Your warranty is confirmed</h1>
-        <p style="font-size:13px;color:#666;margin:0 0 18px">Provided by ${esc(dealer?.company_name || dealer?.name || 'your dealer')} · ${new Date().toLocaleDateString('en-GB')}</p>
-        <p style="font-size:14px;line-height:1.6">Hi ${esc(c.name || 'there')},</p>
-        <p style="font-size:14px;line-height:1.6">${esc(dealer?.company_name || dealer?.name || 'Your dealer')} has arranged a ${esc(brand.name)} warranty for your vehicle. Here are your warranty details:</p>
-        <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:16px;border-top:1px solid #eee">${customerRows}</table>
-        <p style="font-size:13px;color:#666;margin-top:22px"><strong>Need to make a claim?</strong><br />Visit our <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a> to start your claim online. You can also email <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a>. Please quote your warranty reference.</p>
-        <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
-      </div>`;
+    // Use the same Admin-controlled template and document block as the dealer preview.
+    // The customer payload deliberately excludes trade price, discount and profit information.
+    const { data: storedTemplate, error: templateError } = await supabase
+      .from('dealer_warranty_email_templates')
+      .select('subject, heading, introduction, closing_text')
+      .eq('template_key', 'dealer_warranty')
+      .maybeSingle();
+    if (templateError) throw templateError;
+    const customerEmail = buildDealerWarrantyEmail({
+      brand,
+      template: storedTemplate || DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE,
+      customer: c,
+      dealer: dealer || { id: c.dealer_id },
+      recipientType: 'customer',
+      to: recipients.customer,
+    });
+    try {
+      customerEmail.attachments = await loadPandaWarrantyAttachments();
+    } catch (error) {
+      console.error('dealer-warranty-email PDF loading error', error);
+      return json({ success: false, dealer_sent: true, customer_sent: false, error: 'The warranty PDFs could not be loaded, so the customer email was not sent.' }, 502);
+    }
     const customerResponse = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-      body: JSON.stringify({ ...transactionalEmailIdentity(brand, 'warranty_purchase'), to: [recipients.customer], subject: `Your vehicle warranty — ${c.registration_plate || ref}`, html: customerHtml }),
+      body: JSON.stringify(customerEmail),
     });
     const customerPayload = await customerResponse.json().catch(() => ({}));
     if (!customerResponse.ok) {
@@ -119,7 +121,7 @@ Deno.serve(async (req: Request) => {
       return json({ success: false, dealer_sent: true, customer_sent: false, error: (customerPayload as any)?.message || 'Customer email could not be sent' });
     }
 
-    return json({ success: true, dealer_sent: true, customer_sent: true, kind });
+    return json({ success: true, dealer_sent: true, customer_sent: true, kind, attachments_included: customerEmail.attachments?.length || 0 });
   } catch (error: any) {
     console.error('dealer-warranty-email error', error);
     return json({ success: false, error: error?.message || 'Internal error' }, 500);
