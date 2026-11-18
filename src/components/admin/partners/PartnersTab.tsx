@@ -7,10 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Copy, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
-import { partnerButtonHtml, partnerCheckoutUrl, partnerSlug } from '@/lib/partnerCheckout';
+import { Code2, Webhook, MousePointerClick, Copy, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
+import { PARTNER_SITE, partnerButtonHtml, partnerCheckoutUrl, partnerSlug } from '@/lib/partnerCheckout';
 
 const db = supabase as any;
+const API_BASE = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/partner-api-v1`;
 interface Partner { id: string; name: string; slug: string; contact_name: string | null; contact_email: string | null; platform: string | null; mode: string; status: string; api_key_prefix: string | null; webhook_url: string | null }
 interface Dealer { id: string; company_name: string | null; name: string | null }
 const copy = (text: string, what: string) => navigator.clipboard.writeText(text).then(() => toast.success(`${what} copied`));
@@ -78,7 +79,38 @@ const PartnersTab: React.FC = () => {
         <Button onClick={() => setCreating(true)}><Plus className="mr-1 h-4 w-4" /> Add partner</Button>
       </div>
 
-      {partners.length === 0 && <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No partners yet. Add the CRM supplier to get started.</p>}
+
+      <section aria-labelledby="partner-guide" className="rounded-xl border border-border bg-muted/30 p-4">
+        <h2 id="partner-guide" className="font-semibold">How a partner connects</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Add a partner, link their dealers, then create their API key. Everything below becomes available for that partner.</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          <div className="rounded-lg border border-border bg-background p-3 text-sm">
+            <p className="flex items-center gap-2 font-semibold"><MousePointerClick className="h-4 w-4 text-primary" />1. Checkout button</p>
+            <p className="mt-1 text-muted-foreground">A ready-made link and button for each linked dealer. The customer pays Panda Protect the standard price.</p>
+            <code className="mt-2 block break-all rounded bg-muted px-2 py-1 text-xs">{PARTNER_SITE}/partner/checkout?p=…&amp;d=…&amp;reg=…</code>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-3 text-sm">
+            <p className="flex items-center gap-2 font-semibold"><Code2 className="h-4 w-4 text-primary" />2. API</p>
+            <p className="mt-1 text-muted-foreground">Sent with <code>Authorization: Bearer pp_live_…</code>.</p>
+            <ul className="mt-2 space-y-1 text-xs">
+              <li><code className="break-all">GET {API_BASE}/prices?dealer=…</code></li>
+              <li><code className="break-all">GET {API_BASE}/warranties?reg=…</code></li>
+              <li><code className="break-all">GET {API_BASE}/warranties/:id</code></li>
+            </ul>
+            <Button variant="outline" size="sm" className="mt-2" onClick={() => copy(API_BASE, 'API address')}><Copy className="mr-1 h-3 w-3" />Copy API address</Button>
+          </div>
+          <div className="rounded-lg border border-border bg-background p-3 text-sm">
+            <p className="flex items-center gap-2 font-semibold"><Webhook className="h-4 w-4 text-primary" />3. Webhook updates</p>
+            <p className="mt-1 text-muted-foreground">We post to the partner's update address, signed with their signing secret.</p>
+            <ul className="mt-2 space-y-1 text-xs">
+              <li><code>warranty.paid</code> — sale completed</li>
+              <li><code>warranty.test</code> — test / live-test sale</li>
+              <li><code>ping</code> — test button</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      {partners.length === 0 && <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No partners yet. Press “Add partner” to create the CRM supplier — their API key, webhook and checkout links appear here once added.</p>}
       {partners.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {partners.map((p) => (
