@@ -188,7 +188,7 @@ const Step4Checkout: React.FC = () => {
         discount_pct,
         promo_code: preview ? promoCode : promo?.code,
         preview_only: preview,
-        embedded: method === 'pay_now' && !!stripePromise,
+        embedded: method === 'pay_now' && !!stripePromise && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches),
       },
     });
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
@@ -519,7 +519,7 @@ const Step4Checkout: React.FC = () => {
           <DialogDescription>Enter your card details below. You stay on this page.</DialogDescription>
           {clientSecret && stripePromise && (
             <EmbeddedCheckoutProvider key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
-              <EmbeddedCheckout />
+              <div className="min-h-[480px] w-full min-w-0"><EmbeddedCheckout /></div>
             </EmbeddedCheckoutProvider>
           )}
         </DialogContent>
