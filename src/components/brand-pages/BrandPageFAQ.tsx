@@ -17,7 +17,7 @@ const leftColumnFAQs = [
   {
     id: 'car-issue',
     question: 'What should I do if my car has an issue?',
-    answer: 'If your car experiences a problem, please contact our Claims Team at 0330 229 6547. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form.'
+    answer: 'If your car experiences a problem, please email our Claims Team at claims@pandaprotect.co.uk. They are available Monday to Friday from 09:00 to 17:30 and can help start and process your warranty claim. If the issue arises outside of these hours, please fill out our online contact form.'
   },
   {
     id: 'modified-vehicles',
@@ -45,7 +45,7 @@ const rightColumnFAQs = [
   {
     id: 'how-make-claim',
     question: 'How do I make a claim?',
-    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. It's important to note that failure to do so will not allow us to process your claim."
+    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly email our Claims Team at claims@pandaprotect.co.uk. It's important to note that failure to do so will not allow us to process your claim."
   },
   {
     id: 'how-much-cost',

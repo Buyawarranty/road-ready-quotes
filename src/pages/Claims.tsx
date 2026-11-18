@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Upload, X, Mail, Phone, Search, Loader2 } from 'lucide-react';
+import { Menu, Upload, X, Mail, Search, Loader2, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SEOHead } from '@/components/SEOHead';
 import { Button } from '@/components/ui/button';
@@ -278,7 +278,7 @@ Additional Information: ${formData.additionalInfo}
 
       toast({
         title: "✓ Claim Submitted!",
-        description: "We'll review and respond Monday–Friday, 9 AM–5 PM. You can also call our claims line during these hours on 0330 229 6547. Thank you!",
+        description: "We'll review and respond Monday–Friday, 9 AM–5 PM. You can also email our claims team on claims@pandaprotect.co.uk. Thank you!",
         className: "bg-green-600 text-white border-green-700 [&>div]:text-white",
       });
 
@@ -405,20 +405,20 @@ Additional Information: ${formData.additionalInfo}
                 </a>
 
                 <a 
-                  href="tel:03302296547"
+                  href="#claim-form"
                   className="group block p-8 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-100 hover:border-orange-300 hover:-translate-y-1"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex-shrink-0 w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center group-hover:bg-orange-500 transition-colors duration-300">
-                      <Phone className="w-7 h-7 text-orange-500 group-hover:text-white transition-colors duration-300" />
+                      <FileText className="w-7 h-7 text-orange-500 group-hover:text-white transition-colors duration-300" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors duration-300">Call Us</h3>
-                      <p className="text-sm text-gray-500">Speak to our claims team</p>
+                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors duration-300">Use the online form</h3>
+                      <p className="text-sm text-gray-500">Fill in the claim form below</p>
                     </div>
                   </div>
-                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">0330 229 6547</p>
-                  <p className="text-sm text-green-600 font-medium mt-3">Monday to Friday, 9am to 5pm</p>
+                  <p className="text-lg font-semibold text-orange-500 group-hover:text-orange-600 transition-colors duration-300">Start your claim</p>
+                  <p className="text-sm text-green-600 font-medium mt-3">Takes about 3 minutes — we respond as quickly as possible.</p>
                 </a>
               </div>
             </div>

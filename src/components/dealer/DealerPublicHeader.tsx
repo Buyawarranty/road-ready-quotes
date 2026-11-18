@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Clock3, LogIn, Menu, MessageCircle, Phone, PhoneCall } from 'lucide-react';
+import { ArrowRight, Clock3, LogIn, Mail, Menu, MessageCircle, Phone, PhoneCall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -73,9 +73,9 @@ export const DealerPublicHeader: React.FC = () => {
                     <Phone aria-hidden="true" />
                     <span><strong>Get a Quote</strong><small>0330 229 6547</small></span>
                   </a>
-                  <a href="tel:03302296547" className="public-call-option">
-                    <Phone aria-hidden="true" />
-                    <span><strong>Make a Claim</strong><small>0330 229 6547</small></span>
+                  <a href="mailto:claims@pandaprotect.co.uk" className="public-call-option">
+                    <Mail aria-hidden="true" />
+                    <span><strong>Make a Claim</strong><small>claims@pandaprotect.co.uk</small></span>
                   </a>
                   <Button type="button" variant="ghost" className="public-callback-option" onClick={() => setCallbackOpen(true)}>
                     <PhoneCall aria-hidden="true" />
@@ -128,7 +128,7 @@ export const DealerPublicHeader: React.FC = () => {
                   <div className="public-mobile-contact">
                     <div className="public-call-hours"><Clock3 aria-hidden="true" /> Mon-Sat 9am to 6pm</div>
                     <a href="tel:03302296547" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 229 6547</small></span></a>
-                    <a href="tel:03302296547" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Make a Claim</strong><small>0330 229 6547</small></span></a>
+                    <a href="mailto:claims@pandaprotect.co.uk" className="public-call-option"><Mail aria-hidden="true" /><span><strong>Make a Claim</strong><small>claims@pandaprotect.co.uk</small></span></a>
                     <Button type="button" variant="ghost" className="public-callback-option" onClick={openCallback}><PhoneCall aria-hidden="true" /><span><strong>Request Call-Back</strong><small>We'll call you back</small></span></Button>
                   </div>
 

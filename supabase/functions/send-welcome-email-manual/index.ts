@@ -743,7 +743,7 @@ const handler = async (req: Request): Promise<Response> => {
                 Email: <a href="mailto:${brand.claimsEmail}" style="color: #ff6b35; text-decoration: none;">${brand.claimsEmail}</a>
               </p>
               <p style="color: #333; margin-bottom: 0;">
-                Phone: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #ff6b35; text-decoration: none;">${brand.claimsPhone}</a>
+                Contact claims: <a href="mailto:${brand.claimsEmail}" style="color: #ff6b35; text-decoration: none;">${brand.claimsEmail}</a>
               </p>
             </div>
             

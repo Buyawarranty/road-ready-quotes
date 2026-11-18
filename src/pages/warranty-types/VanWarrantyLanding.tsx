@@ -202,7 +202,7 @@ const vanFAQs = [
   },
   {
     question: "How do I make a claim?",
-    answer: "Take your van to any VAT-registered garage for diagnosis. Before any repairs begin, the garage must call our claims team on 0330 229 6547. We'll authorise the work and pay the garage directly. It's that simple."
+    answer: "Take your van to any VAT-registered garage for diagnosis. Before any repairs begin, the garage must email our claims team at claims@pandaprotect.co.uk. We'll authorise the work and pay the garage directly. It's that simple."
   },
   {
     question: "What's the most expensive repair you've covered?",
@@ -1146,7 +1146,7 @@ const VanWarrantyLanding: React.FC = () => {
               <div className="inline-flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-5 py-3 shadow-sm">
                 <Phone className="w-5 h-5 text-brand-orange" />
                 <span className="text-sm font-medium text-gray-700">
-                  UK claims team: <a href="tel:03302296547" className="font-bold text-gray-900 hover:underline">0330 229 6547</a>
+                  UK claims team: <a href="mailto:claims@pandaprotect.co.uk" className="font-bold text-gray-900 hover:underline break-all">claims@pandaprotect.co.uk</a>
                   <span className="text-gray-400 mx-2">·</span>
                   Mon-Fri 9am-5:30pm
                 </span>

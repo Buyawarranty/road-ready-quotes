@@ -5,7 +5,8 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 
-const CLAIMS_PHONE = '0330 229 6547';
+const SALES_PHONE = '0330 229 6547';
+const CLAIMS_EMAIL = 'claims@pandaprotect.co.uk';
 const SUPPORT_EMAIL = 'support@pandaprotect.co.uk';
 
 const DealerPublicFooter: React.FC = () => {
@@ -17,7 +18,7 @@ const DealerPublicFooter: React.FC = () => {
           <h2>Need advice? Have any questions?</h2>
           <div className="dealer-footer-strip-actions">
             <a href="tel:03302296547" className="dealer-footer-strip-action">
-              <Phone /> Call us: {CLAIMS_PHONE}
+              <Phone /> Call us: {SALES_PHONE}
             </a>
             <a href={`mailto:${SUPPORT_EMAIL}`} className="dealer-footer-strip-action">
               <Mail /> {SUPPORT_EMAIL}
@@ -44,8 +45,8 @@ const DealerPublicFooter: React.FC = () => {
               you're eligible for comprehensive warranty cover with Panda Protect today.
             </p>
             <div className="dealer-footer-contact">
-              <p><Phone /> <span>Sales Enquiries: {CLAIMS_PHONE}</span></p>
-              <p><Phone /> <span>Claims Hotline: {CLAIMS_PHONE}</span></p>
+              <p><Phone /> <span>Sales Enquiries: {SALES_PHONE}</span></p>
+              <a href={`mailto:${CLAIMS_EMAIL}`}><Mail />Contact Claims: {CLAIMS_EMAIL}</a>
               <a href={`mailto:${SUPPORT_EMAIL}`}><Mail />Email Support: {SUPPORT_EMAIL}</a>
             </div>
           </div>

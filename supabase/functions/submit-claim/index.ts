@@ -368,8 +368,7 @@ const handler = async (req: Request): Promise<Response> => {
         
         <p>If you need urgent assistance during these hours, you can:</p>
         <ul style="margin: 10px 0; padding-left: 20px;">
-          <li style="margin-bottom: 8px;"><strong>Call us:</strong> ${brand.claimsPhone}</li>
-          <li><strong>Email us:</strong> <a href="mailto:${brand.claimsEmail}" style="color: ${brand.accentColor};">${brand.claimsEmail}</a></li>
+          <li style="margin-bottom: 8px;"><strong>Email us:</strong> <a href="mailto:${brand.claimsEmail}" style="color: ${brand.accentColor};">${brand.claimsEmail}</a></li>
         </ul>
         
         <p>Thank you for your patience – we're here to help!</p>

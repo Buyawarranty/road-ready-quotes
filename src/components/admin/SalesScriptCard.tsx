@@ -112,7 +112,7 @@ const SECTIONS: ScriptSection[] = [
     id: 'claim',
     title: '6. How to make a claim',
     lines: [
-      { kind: 'say', text: <><b>Call the claims line</b> Monday to Friday, <b>9 to 5:30</b>. Take the vehicle to the <b>VAT-registered garage</b> of your choice.</> },
+      { kind: 'say', text: <><b>Email the claims team</b> at <b>claims@pandaprotect.co.uk</b>. Take the vehicle to the <b>VAT-registered garage</b> of your choice.</> },
       { kind: 'say', text: <>They will do a <b>diagnostic or report</b> and send it over to us.</> },
       { kind: 'say', text: <>That will be <b>reviewed</b> and repairs can then begin.</> },
       { kind: 'say', text: <>Once repairs are completed and we receive the invoice, we will <b>settle it within 24 hours</b> with the garage directly.</> },

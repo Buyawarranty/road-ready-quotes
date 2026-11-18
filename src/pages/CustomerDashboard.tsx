@@ -2206,18 +2206,10 @@ const CustomerDashboard = () => {
                     <div className="space-y-3 pt-4 border-t">
                       <h4 className="font-medium text-sm text-gray-700">Claims and Repairs</h4>
                       <div className="flex items-center gap-3 p-3 border rounded-lg">
-                        <Phone className="h-5 w-5 text-green-600" />
-                        <div>
-                          <p className="font-medium">Claims Phone</p>
-                          <p className="text-sm text-gray-600">0330 229 6547</p>
-                          <p className="text-xs text-gray-500">Mon-Fri: 9AM-6PM</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 p-3 border rounded-lg">
                         <Mail className="h-5 w-5 text-green-600" />
                         <div>
-                          <p className="font-medium">Claims Email</p>
-                          <p className="text-sm text-gray-600">claims@pandaprotect.co.uk</p>
+                          <p className="font-medium">Contact Claims</p>
+                          <p className="text-sm text-gray-600 break-all">claims@pandaprotect.co.uk</p>
                           <p className="text-xs text-gray-500">For warranty claims and repairs</p>
                         </div>
                       </div>

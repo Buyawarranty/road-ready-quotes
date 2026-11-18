@@ -302,7 +302,7 @@ const CarExtendedWarranty: React.FC = () => {
     },
     {
       question: "How do I make a claim?",
-      answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. It's important to note that failure to do so will not allow us to process your claim."
+      answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly email our Claims Team at claims@pandaprotect.co.uk. It's important to note that failure to do so will not allow us to process your claim."
     },
     {
       question: "Are electric or hybrid vehicles covered?",
@@ -1058,7 +1058,7 @@ const CarExtendedWarranty: React.FC = () => {
               <div className="space-y-4 mb-6">
                 <div className="flex items-start gap-3">
                   <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
-                  <p className="text-gray-700">Call us on <strong>0330 229 6547</strong> or complete the simple online claim form</p>
+                  <p className="text-gray-700">Email our claims team at <strong>claims@pandaprotect.co.uk</strong> or complete the simple online claim form</p>
                 </div>
                 <div className="flex items-start gap-3">
                   <Check className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />

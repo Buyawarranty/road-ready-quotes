@@ -84,7 +84,7 @@ export const defaultClaimsSteps: HowToStep[] = [
   },
   {
     name: "Contact Us for Authorisation",
-    text: "Call our UK-based claims team on 0330 229 6547. We'll review the diagnosis and authorise the repair quickly."
+    text: "Email our UK-based claims team at claims@pandaprotect.co.uk. We'll review the diagnosis and authorise the repair quickly."
   },
   {
     name: "Get Your Vehicle Repaired",

@@ -160,8 +160,8 @@ const WebsiteFooter = () => {
                   <a href="tel:03302296547" className="text-lg font-bold text-[#eb4b00] hover:underline">0330 229 6547</a>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">Claims Hotline:</p>
-                  <a href="tel:03302296547" className="text-lg font-bold text-[#eb4b00] hover:underline">0330 229 6547</a>
+                  <p className="font-semibold text-gray-900">Contact Claims:</p>
+                  <a href="mailto:claims@pandaprotect.co.uk" className="text-[#eb4b00] font-bold hover:underline break-all">claims@pandaprotect.co.uk</a>
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Email Support:</p>

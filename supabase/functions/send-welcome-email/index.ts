@@ -473,7 +473,7 @@ serve(async (req) => {
               <p style="color: #333333; font-size: 15px; margin: 0 0 5px 0;"><strong>Claims and Repairs</strong></p>
               <p style="color: #333333; font-size: 15px; margin: 0 0 10px 0;">To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #1a73e8; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.</p>
               <p style="color: #333333; font-size: 15px; margin: 0;">Email: <a href="mailto:${brand.claimsEmail}" style="color: #1a73e8; text-decoration: none;">${brand.claimsEmail}</a></p>
-              <p style="color: #333333; font-size: 15px; margin: 0;">Phone: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #1a73e8; text-decoration: none;">${brand.claimsPhone}</a></p>
+              <p style="color: #333333; font-size: 15px; margin: 0;">Contact claims: <a href="mailto:${brand.claimsEmail}" style="color: #1a73e8; text-decoration: none;">${brand.claimsEmail}</a></p>
               <p style="color: #555555; font-size: 14px; margin: 5px 0 0 0;">Hours: Monday to Friday, 9am – 5:30pm</p>
             </div>
           </div>

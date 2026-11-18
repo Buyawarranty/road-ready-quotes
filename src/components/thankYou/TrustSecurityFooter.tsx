@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Phone, Mail, Clock } from 'lucide-react';
+import { Shield, Mail, Clock } from 'lucide-react';
 
 export const TrustSecurityFooter: React.FC = () => {
   return (
@@ -25,22 +25,17 @@ export const TrustSecurityFooter: React.FC = () => {
         
         <div className="grid sm:grid-cols-2 gap-4 mb-6">
           <div className="flex items-start gap-3 p-4 bg-background rounded-lg border border-border">
-            <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+            <Mail className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <div className="text-left">
-              <p className="font-semibold text-foreground text-sm mb-1">Claims Line</p>
+              <p className="font-semibold text-foreground text-sm mb-1">Contact Claims</p>
               <a 
-                href="tel:03302296547" 
-                className="text-sm text-primary hover:underline"
+                href="mailto:claims@pandaprotect.co.uk"
+                className="text-sm text-primary hover:underline break-all"
               >
-                0330 229 6547
+                claims@pandaprotect.co.uk
               </a>
               <p className="text-xs text-muted-foreground mt-1">
-                <a 
-                  href="mailto:claims@pandaprotect.co.uk"
-                  className="hover:text-foreground"
-                >
-                  claims@pandaprotect.co.uk
-                </a>
+                Email us with your warranty number
               </p>
             </div>
           </div>

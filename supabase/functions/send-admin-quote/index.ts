@@ -448,7 +448,7 @@ const handler = async (req: Request): Promise<Response> => {
                               Customer Services and Sales: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${brand.quotePhone}</a>
                             </p>
                             <p style="font-size: 13px; color: #64748b; margin: 0 0 16px 0;">
-                              Claims Line: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${brand.claimsPhone}</a>
+                              Contact Claims: <a href="mailto:${brand.claimsEmail}" style="color: #ea580c; text-decoration: none; font-weight: 500;">${brand.claimsEmail}</a>
                             </p>
                             <p style="font-size: 13px; color: #94a3b8; margin: 0;">
                               <a href="${brand.siteUrl}" style="color: #ea580c; text-decoration: none;">${brand.domain}</a>

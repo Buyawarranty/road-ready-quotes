@@ -250,7 +250,7 @@ const FAQ = () => {
         - Cover begins immediately with no waiting period (pre-existing faults excluded)
         - Fast claim processing (within 90 minutes of approval)
         - Direct payment to garages or reimbursement
-        - Claims team: 0330 229 6547 (Mon-Fri 09:00-17:30)
+        - Claims team: claims@pandaprotect.co.uk (Mon-Fri 09:00-17:30)
         - Support email: support@pandaprotect.co.uk
         
         Coverage Details:
@@ -269,7 +269,7 @@ const FAQ = () => {
         - Commercial use (taxi, courier, rental)
         
         Claims Process:
-        1. Contact claims team at 0330 229 6547
+        1. Email the claims team at claims@pandaprotect.co.uk
         2. Get vehicle diagnosed at garage
         3. Garage must contact claims team before repairs
         4. Fast approval and payment process
@@ -296,7 +296,7 @@ const FAQ = () => {
       if (lowerQuery.includes('price') || lowerQuery.includes('cost') || lowerQuery.includes('how much')) {
         response = 'Our warranty costs start from just £12 per month, depending on your vehicle and coverage level. We offer flexible payment options including paying in full (with savings), 12-month interest-free payments, or monthly Pay As You Go. You can get an instant quote by entering your registration number on our homepage.';
       } else if (lowerQuery.includes('claim') || lowerQuery.includes('repair')) {
-        response = 'To make a claim, contact our Claims Team at 0330 229 6547 (Mon-Fri 09:00-17:30) or use our online form. Get your vehicle diagnosed at a garage first, then the garage must contact our claims team before starting repairs. We process claims within 90 minutes of approval and can pay the garage directly.';
+        response = 'To make a claim, email our Claims Team at claims@pandaprotect.co.uk (Mon-Fri 09:00-17:30) or use our online form. Get your vehicle diagnosed at a garage first, then the garage must contact our claims team before starting repairs. We process claims within 90 minutes of approval and can pay the garage directly.';
       } else if (lowerQuery.includes('cover') || lowerQuery.includes('what') || lowerQuery.includes('include')) {
         response = 'Our Platinum Plan covers all mechanical and electrical parts including engine, gearbox, drivetrain, electrical systems, ECUs, sensors, and labour costs. We cover cars, vans, and motorcycles (petrol, diesel, hybrid, and electric). Optional add-ons available for wear & tear, tyres, Europe cover, and more.';
       } else if (lowerQuery.includes('electric') || lowerQuery.includes('ev') || lowerQuery.includes('hybrid')) {
@@ -756,8 +756,8 @@ const FAQ = () => {
                           Phone: 0330 229 6547
                         </a>
                         <span className="text-brand-dark-text"> | </span>
-                        <a href="tel:03302296547" className="text-primary hover:underline">
-                          Claims: 0330 229 6547
+                        <a href="mailto:claims@pandaprotect.co.uk" className="text-primary hover:underline break-all">
+                          Claims: claims@pandaprotect.co.uk
                         </a>
                       </div>
                     </div>

@@ -293,7 +293,7 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '6px', padding: '14px 16px', marginBottom: '18px', fontSize: '11px', color: '#333' }}>
               <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e3a5f', marginBottom: '6px' }}>How to Make a Claim</div>
               <p style={{ marginBottom: '6px' }}>If your vehicle experiences a fault, contact our Claims Team <strong>before</strong> any repairs are carried out so we can authorise the work.</p>
-              <p style={{ marginBottom: '4px' }}><strong>Claims Hotline:</strong> 0330 229 6547</p>
+              <p style={{ marginBottom: '4px' }}><strong>Contact Claims:</strong> claims@pandaprotect.co.uk</p>
               <p><strong>Opening Hours:</strong> Monday–Friday, 9am–5pm</p>
             </div>
 
@@ -315,8 +315,8 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
                 <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>0330 229 6547</div>
               </div>
               <div>
-                <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Claims Hotline</div>
-                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '13px', marginTop: '3px' }}>0330 229 6547</div>
+                <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact Claims</div>
+                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '12px', marginTop: '3px', wordBreak: 'break-all' }}>claims@pandaprotect.co.uk</div>
               </div>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Support</div>

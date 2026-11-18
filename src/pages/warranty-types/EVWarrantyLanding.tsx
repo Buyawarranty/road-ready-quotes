@@ -242,7 +242,7 @@ const evFAQs = [
   },
   {
     question: "How do I make a claim?",
-    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly contact our Claims Team at 0330 229 6547. Failure to do so will not allow us to process your claim."
+    answer: "Arrange for your vehicle to be inspected by a local independent repair garage to diagnose any issues. Once diagnosed, before any repairs are conducted, the repairer must directly email our Claims Team at claims@pandaprotect.co.uk. Failure to do so will not allow us to process your claim."
   },
   {
     question: "How much does EV warranty cover cost?",

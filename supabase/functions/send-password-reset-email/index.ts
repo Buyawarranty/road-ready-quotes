@@ -212,7 +212,7 @@ serve(async (req) => {
                     
                     <div style="color: #6b7280; font-size: 13px; line-height: 1.6;">
                       <div style="margin-bottom: 5px;">
-                        <strong>Claims line:</strong> ${brand.claimsPhone} | ${brand.claimsEmail}
+                        <strong>Contact claims:</strong> ${brand.claimsEmail}
                       </div>
                       <div>
                         <strong>Customer support:</strong> ${brand.quotePhone} | ${brand.supportEmail}

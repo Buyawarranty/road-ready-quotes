@@ -219,8 +219,8 @@ const WarrantyPlan = () => {
                     <p className="text-2xl font-bold text-primary">0330 229 6547</p>
                   </div>
                   <div className="space-y-2">
-                    <p className="font-semibold text-foreground">Claims Line</p>
-                    <p className="text-2xl font-bold text-primary">0330 229 6547</p>
+                    <p className="font-semibold text-foreground">Contact Claims</p>
+                    <a href="mailto:claims@pandaprotect.co.uk" className="text-lg font-bold text-primary break-all">claims@pandaprotect.co.uk</a>
                   </div>
                 </div>
               </CardContent>
@@ -1724,7 +1724,7 @@ const WarrantyPlan = () => {
                     <h4 className="font-bold text-gray-900 mb-4">Vehicle Diagnosis</h4>
                     <p className="text-gray-600 mb-4">Book your vehicle with a local independent repair agent for a complete diagnosis of the issue.</p>
                     <h5 className="font-semibold text-gray-900 mb-2">Contact Before Repairs</h5>
-                    <p className="text-gray-600 mb-4">Once diagnosis is complete, but before any repairs begin, your repairer must contact our team for authorisation on our claims line or via email claims@pandaprotect.co.uk.</p>
+                    <p className="text-gray-600 mb-4">Once diagnosis is complete, but before any repairs begin, your repairer must email our claims team for authorisation at claims@pandaprotect.co.uk.</p>
                     <h5 className="font-semibold text-gray-900 mb-2">Visit Our Claims Section</h5>
                     <p className="text-gray-600">Begin the process by visiting our dedicated claims section online at www.pandaprotect.co.uk/make-a-claim.</p>
                   </div>
@@ -1806,8 +1806,8 @@ const WarrantyPlan = () => {
                 <p className="text-blue-200">0330 229 6547</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
-                <p className="font-medium mb-2">Claims line:</p>
-                <p className="text-blue-200">0330 229 6547</p>
+                <p className="font-medium mb-2">Contact claims:</p>
+                <p className="text-blue-200 break-all">claims@pandaprotect.co.uk</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Website:</p>

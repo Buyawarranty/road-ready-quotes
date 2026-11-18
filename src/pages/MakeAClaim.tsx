@@ -12,7 +12,6 @@ import {
   FileText,
   Info,
   Mail,
-  Phone,
   ShieldCheck,
   Upload,
   Ban,
@@ -23,8 +22,7 @@ import { Button } from '@/components/ui/button';
 
 const PLATINUM_PDF = platinumPlanDoc.url;
 const TANDC_PDF = termsDoc.url;
-const CLAIMS_EMAIL = 'support@pandaprotect.co.uk';
-const CLAIMS_PHONE = '0330 229 6547';
+const CLAIMS_EMAIL = 'claims@pandaprotect.co.uk';
 const WHATSAPP_URL = 'https://wa.me/message/SPQPJ6O3UBF5B1';
 
 const SectionKicker: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -259,11 +257,6 @@ const MakeAClaim: React.FC = () => {
                       Our friendly team can answer any questions before you proceed.
                     </p>
                     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-foreground">
-                      <a href={`tel:${CLAIMS_PHONE.replace(/\s/g, '')}`} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
-                        <Phone className="h-4 w-4" />
-                        {CLAIMS_PHONE}
-                      </a>
-                      <span className="hidden sm:inline text-muted-foreground">|</span>
                       <a href={`mailto:${CLAIMS_EMAIL}`} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors break-all">
                         <Mail className="h-4 w-4" />
                         {CLAIMS_EMAIL}
@@ -403,24 +396,22 @@ const MakeAClaim: React.FC = () => {
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                   <Mail className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Email us</h3>
-                <p className="text-muted-foreground text-sm mb-3">Send your claim details</p>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Email our claims team</h3>
+                <p className="text-muted-foreground text-sm mb-3">Send your claim details and we'll take it from there</p>
                 <p className="font-semibold text-foreground text-sm break-all group-hover:text-primary transition-colors">
                   {CLAIMS_EMAIL}
                 </p>
               </a>
               <a
-                href={`tel:${CLAIMS_PHONE.replace(/\s/g, '')}`}
+                href="#claim-form"
                 className="group rounded-2xl border bg-card p-6 hover:border-primary/40 hover:shadow-md transition-all"
               >
                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
-                  <Phone className="h-5 w-5" />
+                  <FileText className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Call us</h3>
-                <p className="text-muted-foreground text-sm mb-3">Mon-Fri, 9am-5pm</p>
-                <p className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">
-                  {CLAIMS_PHONE}
-                </p>
+                <h3 className="text-lg font-semibold text-foreground mb-1">Use the online form</h3>
+                <p className="text-muted-foreground text-sm mb-3">Fill in the claim form on this page — takes about 3 minutes</p>
+                <p className="font-semibold text-foreground text-sm group-hover:text-primary transition-colors">Start your claim</p>
               </a>
             </div>
 

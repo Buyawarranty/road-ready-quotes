@@ -100,7 +100,7 @@ const buildTemplateHtml = (greeting: string, content: string, recipientEmail: st
       <div class="contact-section">
         <p style="margin: 0 0 8px; font-weight: bold; color: #1a365d;">Need help?</p>
         <p style="margin: 4px 0;"><strong>Sales & Support:</strong> ${brand.supportEmail} | ${brand.quotePhone}</p>
-        <p style="margin: 4px 0;"><strong>Claims:</strong> ${brand.claimsEmail} | ${brand.claimsPhone}</p>
+        <p style="margin: 4px 0;"><strong>Claims:</strong> ${brand.claimsEmail}</p>
         <p style="margin: 4px 0; color: #666;">Monday to Friday, 9am – 5:30pm</p>
       </div>
       <div class="trustpilot-section">
@@ -263,7 +263,7 @@ serve(async (req) => {
                 <h3 style="margin-top: 0; color: #1a365d;">📞 Need a hand?</h3>
                 <p>If you've got any questions or need help, feel free to reach out:</p>
                 <div class="contact-block"><div class="contact-title">Customer Sales and Support</div><div><strong>Email:</strong> ${brand.supportEmail}</div><div><strong>Phone:</strong> ${brand.quotePhone}</div></div>
-                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><p style="margin: 0 0 10px;">To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #1a365d; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.</p><div><strong>Email:</strong> ${brand.claimsEmail}</div><div><strong>Phone:</strong> ${brand.claimsPhone}</div></div>
+                <div class="contact-block"><div class="contact-title">Claims and Repairs</div><p style="margin: 0 0 10px;">To start a claim online, visit our <a href="${makeClaimUrl(brand)}" style="color: #1a365d; font-weight: 600;">Make a claim page</a>. Please have your warranty number ready.</p><div><strong>Email:</strong> ${brand.claimsEmail}</div></div>
                 <div style="margin-top: 10px; color: #666;"><strong>Hours:</strong> Monday to Friday, 9am – 5:30pm</div>
               </div>
               <p>Thanks again for choosing ${brand.name} — we're here to keep you covered and give you peace of mind on the road.</p>
