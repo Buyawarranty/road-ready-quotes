@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Loader2, Plus, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ValidatedField } from '@/components/ui/validated-field';
@@ -19,6 +20,8 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
   const [isTest, setIsTest] = useState(false);
+  const [password, setPassword] = useState('');
+  const pwError = password && (password.length < 8 || password.length > 72 || /^\s|\s$/.test(password)) ? 'Use 8 to 72 characters, with no spaces at the start or end' : '';
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [tried, setTried] = useState(false);
   const errors = {
@@ -37,11 +40,12 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
     e.preventDefault();
     setTried(true);
     const firstBad = (Object.keys(errors) as (keyof typeof empty)[]).find(k => errors[k]);
+    if (pwError) { document.getElementById('add-dealer-password')?.focus(); return; }
     if (firstBad) { (document.getElementById(`add-dealer-${firstBad}`) as HTMLInputElement | null)?.focus(); return; }
     setSaving(true);
     const clean = { company_name: form.company_name.trim(), contact_name: form.contact_name.trim(), email: form.email.trim().toLowerCase(), phone: normaliseUkPhone(form.phone) };
     const { data, error } = await supabase.functions.invoke('dealer-signup-decision', {
-      body: { decision: 'create', manual: clean },
+      body: { decision: 'create', manual: { ...clean, ...(password ? { password } : {}) } },
     });
     setSaving(false);
     if (error) {
@@ -62,7 +66,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
 
   const close = (o: boolean) => {
     setOpen(o);
-    if (!o) { setForm(empty); setIsTest(false); setResult(null); setTouched({}); setTried(false); }
+    if (!o) { setForm(empty); setIsTest(false); setPassword(''); setResult(null); setTouched({}); setTried(false); }
   };
 
   const loginUrl = `${window.location.origin}/dealer-portal/login`;
@@ -103,6 +107,11 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
             <ValidatedField icon={User} id="add-dealer-contact_name" label="Contact name" placeholder="e.g. John Smith" autoComplete="name" value={form.contact_name} onChange={set('contact_name')} onBlur={blur('contact_name')} error={errors.contact_name} show={shown('contact_name')} hasValue={!!form.contact_name.trim()} maxLength={100} />
             <ValidatedField icon={Mail} id="add-dealer-email" label="Email *" type="email" placeholder="e.g. john@smithmotors.co.uk" autoComplete="email" value={form.email} onChange={set('email')} onBlur={blur('email')} error={errors.email} show={shown('email')} hasValue={!!form.email.trim()} maxLength={255} />
             <ValidatedField icon={Phone} id="add-dealer-phone" label="Phone *" type="tel" inputMode="tel" placeholder="e.g. 07700 900123" autoComplete="tel" value={form.phone} onChange={set('phone')} onBlur={blur('phone')} error={errors.phone} show={shown('phone')} hasValue={!!form.phone.trim()} maxLength={20} />
+            <div className="space-y-1">
+              <Label htmlFor="add-dealer-password">Password (optional)</Label>
+              <PasswordInput id="add-dealer-password" autoComplete="new-password" placeholder="Leave blank to create one automatically" value={password} onChange={e => setPassword(e.target.value)} maxLength={72} />
+              {pwError ? <p className="text-sm font-semibold text-destructive">{pwError}</p> : <p className="text-xs text-muted-foreground">The dealer is emailed this password with the login link and can change it after signing in.</p>}
+            </div>
             <label className="flex items-start gap-2 rounded-md border border-dashed p-3 text-sm cursor-pointer">
               <input type="checkbox" className="mt-1" checked={isTest} onChange={e => setIsTest(e.target.checked)} />
               <span><span className="font-semibold">This is a test account</span><br /><span className="text-muted-foreground">Tick only if this dealer is for testing. Leave unticked for a real dealer. Test accounts are seen only by Admins, Super Admins and testers.</span></span>

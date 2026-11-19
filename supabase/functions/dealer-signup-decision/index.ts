@@ -101,6 +101,7 @@ serve(async (req) => {
     let signupId: string | undefined = body?.signup_id;
     let decision: string | undefined = body?.decision;
     let manualCreate = false;
+    let manualPassword: string | null = null;
 
     // Manual dealer creation by staff: record it as a signup, then approve it.
     if (decision === "create") {
@@ -109,6 +110,15 @@ serve(async (req) => {
       const mPhone = (m.phone ?? "").toString().trim();
       const mCompany = (m.company_name ?? "").toString().trim();
       const mName = (m.contact_name ?? "").toString().trim();
+      const mPw = typeof m.password === "string" ? m.password : "";
+      if (mPw) {
+        if (mPw.length < 8 || mPw.length > 72 || /^\s|\s$/.test(mPw)) {
+          return new Response(JSON.stringify({ error: "Password must be 8 to 72 characters with no spaces at the start or end" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        manualPassword = mPw;
+      }
       let ukPhone = mPhone.replace(/[\s\-().]/g, "");
       if (ukPhone.startsWith("+44")) ukPhone = "0" + ukPhone.slice(3); else if (ukPhone.startsWith("0044")) ukPhone = "0" + ukPhone.slice(4);
       const phoneOk = /^07\d{9}$/.test(ukPhone) || /^0[1238]\d{8,9}$/.test(ukPhone);
@@ -124,7 +134,7 @@ serve(async (req) => {
       }
       const { data: dup } = await admin.from("dealers").select("id").ilike("email", mEmail).maybeSingle();
       if (dup) {
-        return new Response(JSON.stringify({ error: "A dealer with this email already exists" }), {
+        return new Response(JSON.stringify({ error: "A dealer with this email already exists. Use a different email (for a test, e.g. hello+test1@pandaprotect.co.uk), or use Resend login on the Dealers list." }), {
           status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -268,7 +278,7 @@ serve(async (req) => {
     // ---------------- APPROVE ----------------
     // 1. find or create the auth user
     let userId: string | null = null;
-    let password: string | null = generatePassword();
+    let password: string | null = manualPassword ?? generatePassword();
 
     const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
