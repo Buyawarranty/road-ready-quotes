@@ -39,7 +39,8 @@ export function buildCustomerQuoteUrl(p: CustomerQuotePayload) {
 
 export function decodeCustomerQuote(hash: string): CustomerQuotePayload | null {
   try {
-    const raw = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(hash.replace(/^#/, '')), c => c.charCodeAt(0))));
+    // A trailing query string (e.g. ...#<quote>?view=cv) is not part of the encoded quote.
+    const raw = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(hash.replace(/^#/, '').split('?')[0]), c => c.charCodeAt(0))));
     if (!raw || typeof raw.coverTitle !== 'string' || !Number.isFinite(raw.price) || raw.price < 0 || !Array.isArray(raw.specs)) return null;
     if (raw.adjustable) {
       const a = raw.adjustable;
@@ -60,6 +61,20 @@ export function customerQuoteMessage(p: CustomerQuotePayload, url: string, opts:
     opts.hidePrice ? 'Price on request from your dealer' : `Customer price: £${safe.price.toFixed(2)} ${safe.priceSuffix || ''} including VAT`,
     ...(safe.included || []), 'Quote only — subject to eligibility and policy terms.', url].filter(Boolean).join('\n');
 }
+/**
+ * Whether a customer-quote screen must hide every price.
+ * Shared quotes and the dealer's "Customer view" preview (view=cv) show cover only;
+ * a payment link (pay= / paid=) must still show the amount being charged.
+ */
+export function quoteHidesPrices(search: string): boolean {
+  const params = new URLSearchParams(search);
+  // A payment link must show the amount; a shared link or Customer view preview must not.
+  if (String(params.get('pay') || '') !== '') return false;
+  if (String(params.get('paid') || '') === '1') return false;
+  if (String(params.get('view') || '') === 'cv') return true;
+  return true;
+}
+
 export function adjustableQuotePrice(a: AdjustableQuote, selected: string[], extras: string[]) {
   let index = 0;
   for (let i = 0; i < a.groups.length; i++) {

@@ -1,6 +1,6 @@
 import { describe, it as test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildCustomerQuoteUrl, decodeCustomerQuote, customerQuoteMessage, adjustableQuotePrice } from '../customerQuoteSharing';
+import { buildCustomerQuoteUrl, decodeCustomerQuote, customerQuoteMessage, adjustableQuotePrice, quoteHidesPrices } from '../customerQuoteSharing';
 import { calculateFullWarranty } from '../fullWarrantyConfiguration';
 
 describe('Customer quote separation', () => {
@@ -69,5 +69,17 @@ d2('no-price customer view sharing', () => {
     const m = msgNoPrice({ coverTitle: 'Comprehensive Warranty', price: 899, specs: [], included: [] } as any, 'https://x', { hidePrice: true });
     e2(m).not.toContain('£899');
     e2(m).toContain('Price on request');
+  });
+  i2('hides prices on the dealer Customer view preview (view=cv) and shared links', () => {
+    e2(quoteHidesPrices('?view=cv')).toBe(true);
+    e2(quoteHidesPrices('')).toBe(true);
+  });
+  i2('still shows the amount on a payment link', () => {
+    e2(quoteHidesPrices('?pay=abc123')).toBe(false);
+    e2(quoteHidesPrices('?paid=1')).toBe(false);
+  });
+  i2('a trailing query string after the quote data still decodes', () => {
+    const encoded = buildCustomerQuoteUrl({ coverTitle: 'Warranty', price: 177, specs: [] } as any).split('#')[1];
+    e2(decodeCustomerQuote(`${encoded}?view=cv`)?.price).toBe(177);
   });
 });

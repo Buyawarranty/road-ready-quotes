@@ -204,7 +204,8 @@ const Step3Pricing: React.FC = () => {
     if (!id) { tab?.close(); setOpening(false); return; }
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
     const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
-    url.searchParams.set('view', 'cv');
+    // Flags go before the hash so the quote data stays a clean hash fragment.
+    url.search = '?view=cv';
     let opened = false;
     if (tab) {
       try { tab.location.href = url.href; opened = true; }

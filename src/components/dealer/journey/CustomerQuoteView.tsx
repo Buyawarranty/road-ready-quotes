@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { pandaLogoUrl as logoAssetUrl } from '@/lib/pandaLogo';
 import WhatsCoveredPanel from '@/components/dealer/journey/WhatsCoveredPanel';
 import pandaAssetUrl from '@/assets/customer-quote-panda.webp';
+import { quoteHidesPrices } from '@/lib/customerQuoteSharing';
 
 export interface CustomerQuoteViewProps {
   open: boolean;
@@ -56,6 +57,12 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
   shareSection,
   hidePrices = false,
 }) => {
+  // Shared quotes and the dealer's Customer-view preview (?view=cv) must never
+  // show a price; only a payment link (pay/paid) may. Computed here as well as
+  // from the prop so the rule holds even if a caller forgets to pass it.
+  const pricesHidden = hidePrices || quoteHidesPrices(
+    typeof window !== 'undefined' ? window.location.search : '',
+  );
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -101,7 +108,7 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
               {included.length > 0 && <><h3 className="mb-3 mt-6 text-sm font-bold">What's included</h3><ul className="space-y-3">{included.map(i => <li key={i} className="flex items-start gap-2 text-sm"><Check className="mt-0.5 h-4 w-4 shrink-0 text-crm-green" />{i}</li>)}</ul></>}
             </section>
             <WhatsCoveredPanel audience="customer" />
-            {hidePrices ? <section className="rounded-lg border border-crm-line bg-card p-5 sm:p-6">
+            {pricesHidden ? <section className="rounded-lg border border-crm-line bg-card p-5 sm:p-6">
               <h2 className="mb-2 text-base font-bold">Your price</h2>
               <p className="text-sm text-muted-foreground">Your dealer will talk you through the price for this cover. Ask them about the cover length and the £5,000 claim limit boost.</p>
             </section> : <section className="rounded-lg border border-crm-line bg-card p-5 sm:p-6">
@@ -123,8 +130,8 @@ const CustomerQuoteView: React.FC<CustomerQuoteViewProps> = ({
             <h2 className="border-b border-crm-line pb-3 text-base font-bold">Your cover summary</h2>
             <p className="mt-4 text-sm font-bold">{coverTitle}</p>
             <dl className="mt-3 space-y-3 text-xs">{specs.map(s => <div key={s.label} className="flex justify-between gap-3"><dt className="text-muted-foreground">{s.label}</dt><dd className="max-w-[55%] text-right font-semibold">{s.value}</dd></div>)}</dl>
-            {hidePrices ? <p className="mt-5 border-t border-crm-line pt-4 text-sm font-semibold">Price on request from your dealer</p> : <div className="mt-5 border-t border-crm-line pt-4"><p className="text-xs text-muted-foreground">Full warranty price</p><p className="mt-1 text-3xl font-bold text-crm-green">{fmt(price)}{priceSuffix}</p><p className="mt-1 text-xs text-muted-foreground">Including {fmt(price - price / 1.2)} VAT</p></div>}
-            {!hidePrices && secondaryLabel && secondaryValue && <p className="mt-3 text-sm">{secondaryLabel} <strong>{secondaryValue}</strong></p>}
+            {pricesHidden ? <p className="mt-5 border-t border-crm-line pt-4 text-sm font-semibold">Price on request from your dealer</p> : <div className="mt-5 border-t border-crm-line pt-4"><p className="text-xs text-muted-foreground">Full warranty price</p><p className="mt-1 text-3xl font-bold text-crm-green">{fmt(price)}{priceSuffix}</p><p className="mt-1 text-xs text-muted-foreground">Including {fmt(price - price / 1.2)} VAT</p></div>}
+            {!pricesHidden && secondaryLabel && secondaryValue && <p className="mt-3 text-sm">{secondaryLabel} <strong>{secondaryValue}</strong></p>}
             <img src={pandaAssetUrl} alt="Panda Protect warranty protection" className="mx-auto mt-5 h-36 w-auto object-contain" />
             <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" />Secure checkout</p>
           </aside>

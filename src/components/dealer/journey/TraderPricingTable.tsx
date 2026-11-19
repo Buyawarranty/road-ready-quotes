@@ -278,7 +278,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
       ],
       included: Object.keys(addOns).filter((k) => addOns[k]),
     });
-    window.open(`${url}?view=cv`, '_blank', 'noopener');
+    window.open(`${url.split('#')[0]}?view=cv#${url.split('#')[1]}`, '_blank', 'noopener');
   };
 
 

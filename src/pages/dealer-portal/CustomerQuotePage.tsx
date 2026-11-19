@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { CreditCard, Settings, Link2, MessageCircle, Mail, FileDown } from 'lucide-react';
-import { decodeCustomerQuote, adjustableQuotePrice, customerQuoteMessage } from '@/lib/customerQuoteSharing';
+import { decodeCustomerQuote, adjustableQuotePrice, customerQuoteMessage, quoteHidesPrices } from '@/lib/customerQuoteSharing';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
@@ -16,8 +16,9 @@ const CustomerQuotePage: React.FC = () => {
   const payQuoteId = params.get('pay');
   const paid = params.get('paid') === '1';
   // Shared quotes never show a price — the dealer sets their own selling price.
+  // The dealer's "Customer view" tab (view=cv) is a cover-only preview too.
   // Only a payment link (pay/paid) shows the amount, because a card charge must display it.
-  const hidePrices = !payQuoteId && !paid;
+  const hidePrices = quoteHidesPrices(window.location.search);
   const cancelled = params.get('cancelled') === '1';
   const [selected, setSelected] = useState(data?.adjustable?.selected || []);
   const [extras, setExtras] = useState(data?.adjustable?.selectedExtras || []);
