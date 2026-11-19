@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUp, Pencil } from 'lucide-react';
+import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUpDown, ArrowUp, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -72,6 +72,7 @@ const DealerAdminDealers: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusTab, setStatusTab] = useState<StatusKey>('all');
   const [newestFirst, setNewestFirst] = useState(true);
+  const [sortCol, setSortCol] = useState<'activity' | 'joined'>('activity');
   const [testFilter, setTestFilter] = useState<'all' | 'hide' | 'only'>('all');
   const [salesFilter, setSalesFilter] = useState<'all' | 'sold' | 'none'>('all');
   const [joined, setJoined] = useState<'all' | 'week' | 'month' | 'custom'>('all');
@@ -217,7 +218,17 @@ const DealerAdminDealers: React.FC = () => {
         }
         return true;
       })
-      .sort((a, b) => (newestFirst ? -1 : 1) * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()));
+      .sort((a, b) => {
+        if (sortCol === 'activity') {
+          const ta = a.last_activity ? new Date(a.last_activity.activity_at).getTime() : null;
+          const tb = b.last_activity ? new Date(b.last_activity.activity_at).getTime() : null;
+          if (ta === null && tb === null) return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          if (ta === null) return 1; // never active always at the bottom
+          if (tb === null) return -1;
+          return (newestFirst ? -1 : 1) * (ta - tb);
+        }
+        return (newestFirst ? -1 : 1) * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      });
     if (!q) return base;
     return base.filter(
       (r) =>
@@ -358,12 +369,16 @@ const DealerAdminDealers: React.FC = () => {
                     <th className="px-3 py-2 font-medium">Contact</th>
                     <th className="px-3 py-2 font-medium">Status</th>
                     <th className="px-3 py-2 font-medium">
-                      <button type="button" className="inline-flex items-center gap-1 uppercase hover:text-foreground" onClick={() => setNewestFirst((v) => !v)}>
-                        Joined {newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                      <button type="button" className="inline-flex items-center gap-1 uppercase hover:text-foreground" onClick={() => { if (sortCol === 'joined') setNewestFirst((v) => !v); else { setSortCol('joined'); setNewestFirst(true); } }} title="Sort by joined date">
+                        Joined {sortCol === 'joined' ? (newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3 opacity-40" />}
                       </button>
                     </th>
                     <th className="px-3 py-2 font-medium">Follow up</th>
-                    <th className="px-3 py-2 font-medium">Last activity</th>
+                    <th className="px-3 py-2 font-medium">
+                      <button type="button" className="inline-flex items-center gap-1 uppercase hover:text-foreground" onClick={() => { if (sortCol === 'activity') setNewestFirst((v) => !v); else { setSortCol('activity'); setNewestFirst(true); } }} title="Sort by last activity">
+                        Last activity {sortCol === 'activity' ? (newestFirst ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />) : <ArrowUpDown className="h-3 w-3 opacity-40" />}
+                      </button>
+                    </th>
                     <th className="px-3 py-2 font-medium text-right">Sales</th>
                     <th className="px-3 py-2 font-medium text-right">Revenue</th>
                     <th className="px-3 py-2 font-medium">Discount %</th>
