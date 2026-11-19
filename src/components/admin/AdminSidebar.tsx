@@ -3,9 +3,11 @@ import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import { SidebarAlertSlotTarget } from '@/components/admin/SidebarAlertSlot';
 import { canManagePartners } from '@/lib/partnerCheckout';
 import { PANDA_SECTION_ORDER, BDM_ROLE_TABS, MANAGER_ROLE_TABS } from '@/lib/pandaAdminSections';
+import { filterSectionsBySearch } from '@/lib/adminSectionSearch';
+import { Input } from '@/components/ui/input';
 import { canAccessSalesAnalytics } from '@/lib/salesAnalyticsAccess';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2 } from 'lucide-react';
+import { Users, FileText, Car, BarChart3, Mail, MailX, Settings, Menu, X, TestTube, Percent, Shield, FolderOpen, Receipt, MessageSquare, MessageCircle, PenTool, ShoppingCart, Calculator, GripVertical, UserPlus, Clock, Globe, Target, Lightbulb, CalendarClock, Star, Megaphone, Eye, Trophy, Database, ChevronsUpDown, Check, Ban, LogOut, UserCog, FlaskConical, AlertTriangle, RotateCcw, Repeat, Gem, Wifi, PanelLeftClose, PanelLeftOpen, PhoneCall, PoundSterling, Signpost, Gift, Building2, Search } from 'lucide-react';
 import { useAdminSidebarCollapsed } from '@/hooks/useAdminSidebarCollapsed';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -882,14 +884,20 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
     }
   };
 
+  const [sectionSearch, setSectionSearch] = useState('');
+
   const handleTabClick = (tabId: string) => {
     onTabChange(tabId);
     setIsOpen(false);
+    setSectionSearch('');
   };
 
   const [jumpOpen, setJumpOpen] = useState(false);
+  const [jumpQuery, setJumpQuery] = useState('');
   const sortedTabs = useMemo(() => [...tabs].sort((a, b) => a.label.localeCompare(b.label)), [tabs]);
-  const activeLabel = tabs.find(t => t.id === activeTab)?.label || 'Select tab...';
+  const jumpTabs = useMemo(() => filterSectionsBySearch(sortedTabs, jumpQuery), [sortedTabs, jumpQuery]);
+  const navTabs = useMemo(() => filterSectionsBySearch(tabs, sectionSearch), [tabs, sectionSearch]);
+  const activeLabel = tabs.find(t => t.id === activeTab)?.label || 'Select section...';
 
   return (
     <TooltipProvider>
@@ -952,7 +960,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
               </Tooltip>
             </div>
             {/* Searchable quick-jump dropdown */}
-            <Popover open={jumpOpen} onOpenChange={setJumpOpen}>
+            <Popover
+              open={jumpOpen}
+              onOpenChange={(open) => {
+                setJumpOpen(open);
+                if (!open) setJumpQuery('');
+              }}
+            >
               <PopoverTrigger asChild>
                 <button
                   role="combobox"
@@ -964,12 +978,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-[232px] p-0" align="start">
-                <Command>
-                  <CommandInput placeholder="Search tabs..." />
+                <Command shouldFilter={false}>
+                  <CommandInput
+                    placeholder="Search sections..."
+                    value={jumpQuery}
+                    onValueChange={setJumpQuery}
+                  />
                   <CommandList>
-                    <CommandEmpty>No tab found.</CommandEmpty>
+                    <CommandEmpty>No section found.</CommandEmpty>
                     <CommandGroup>
-                      {sortedTabs.map((tab) => (
+                      {jumpTabs.map((tab) => (
                         <CommandItem
                           key={tab.id}
                           value={tab.label}
@@ -979,7 +997,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
                           }}
                         >
                           <Check className={cn("mr-2 h-4 w-4", activeTab === tab.id ? "opacity-100" : "opacity-0")} />
-                          {tab.label}
+                          <div className="min-w-0">
+                            <div className="truncate">{tab.label}</div>
+                            <div className="truncate text-[11px] text-gray-500">{tab.description}</div>
+                          </div>
                         </CommandItem>
                       ))}
                     </CommandGroup>
@@ -1019,13 +1040,37 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
             'mt-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4',
             collapsed ? 'h-[calc(100%-120px)]' : 'h-[calc(100%-180px)]',
           )}>
+            {!collapsed && (
+              <div className="sticky top-0 z-10 bg-white px-3 pb-2 pt-1">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    value={sectionSearch}
+                    onChange={(e) => setSectionSearch(e.target.value)}
+                    placeholder="Search sections..."
+                    aria-label="Search sections"
+                    className="h-9 pl-9 pr-8 text-sm"
+                  />
+                  {sectionSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setSectionSearch('')}
+                      aria-label="Clear section search"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
             {!collapsed && <SidebarAlertSlotTarget />}
 
             <SortableContext
-              items={tabs.map(tab => tab.id)}
+              items={navTabs.map(tab => tab.id)}
               strategy={verticalListSortingStrategy}
             >
-              {tabs.map((tab) => (
+              {navTabs.map((tab) => (
                 <SortableTab
                   key={tab.id}
                   tab={tab}
@@ -1035,6 +1080,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChan
                 />
               ))}
             </SortableContext>
+            {!collapsed && navTabs.length === 0 && (
+              <p className="px-4 py-3 text-sm text-gray-500">
+                No section matches "{sectionSearch}".
+              </p>
+            )}
           </nav>
         </DndContext>
 
