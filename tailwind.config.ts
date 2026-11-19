@@ -24,6 +24,7 @@ export default {
 				helvetica: ['Helvetica Neue', 'Inter', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
 			},
 			colors: {
+				'brand-orange': '#eb4b00',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
