@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { buildPendingCancellationUpdate } from '@/lib/dealerCancellationPending';
 import { DEALER_CANCELLATION_REASONS, dealerCancellationReasonMatches } from '@/lib/dealerCancellationReasons';
+import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Req = {
@@ -76,16 +77,19 @@ const DealerAdminCancellations: React.FC = () => {
     setWorkNote('');
   };
 
-  const saveProgress = async (closeAfterSave = false) => {
+  const saveProgress = async (closeAfterSave = false, noteOnly = false) => {
     if (!open) return;
+    if (noteOnly && !workNote.trim()) {
+      toast({ title: 'Type a note first', variant: 'destructive' }); return;
+    }
     setBusy(true);
-    const payload = buildPendingCancellationUpdate(open.id, progress, workNote, closeAfterSave ? note : '');
+    const payload = buildPendingCancellationUpdate(open.id, noteOnly ? open.progress || 'new' : progress, workNote, closeAfterSave ? note : '');
     const { error } = await (supabase as any).rpc('update_dealer_cancellation_progress', payload);
     setBusy(false);
     if (error) { toast({ title: 'Could not save', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: closeAfterSave ? 'Saved as pending' : 'Update saved' });
-    const entry = { at: new Date().toISOString(), by: 'You', note: payload.p_note, progress: progress !== open.progress ? progress : null };
-    setOpen(closeAfterSave ? null : { ...open, progress, notes_log: [...(open.notes_log || []), entry] });
+    toast({ title: closeAfterSave ? 'Saved as pending' : noteOnly ? 'Note added' : 'Update saved' });
+    const entry = { at: new Date().toISOString(), by: 'You', note: payload.p_note, progress: !noteOnly && progress !== open.progress ? progress : null };
+    setOpen(closeAfterSave ? null : { ...open, progress: noteOnly ? open.progress : progress, notes_log: [...(open.notes_log || []), entry] });
     setWorkNote('');
     load(false);
   };
@@ -141,7 +145,7 @@ const DealerAdminCancellations: React.FC = () => {
                 <td className="p-3 max-w-[240px]">{r.reason}</td>
                 <td className="p-3">{gbp(r.cancellation_fee)}</td>
                 <td className="p-3">{gbp(r.refund_amount)}</td>
-                <td className="p-3">{r.status === 'pending' ? <><span>Pending</span>{r.progress && r.progress !== 'new' && <span className="block text-xs text-muted-foreground">{PROGRESS[r.progress] || r.progress}</span>}</> : <span className="capitalize">{r.status}</span>}</td>
+                <td className="p-3">{r.status === 'pending' ? <><span>Pending</span>{r.progress && r.progress !== 'new' && <span className="block text-xs text-muted-foreground">{PROGRESS[r.progress] || r.progress}</span>}</> : <span className="capitalize">{r.status}</span>}{(r.notes_log?.length ?? 0) > 0 && <span className="block text-xs text-muted-foreground">{r.notes_log!.length} note{r.notes_log!.length === 1 ? '' : 's'}</span>}</td>
                 <td className="p-3">{r.status === 'pending' && <Button size="sm" onClick={() => openReq(r)}>Process</Button>}</td>
               </tr>
             ))}</tbody>
@@ -167,27 +171,35 @@ const DealerAdminCancellations: React.FC = () => {
               <div className="space-y-1"><Label htmlFor="cx-refund">Refund to dealer (£)</Label><Input id="cx-refund" inputMode="decimal" value={refund} onChange={e => setRefund(e.target.value)} /></div>
             </div>
             <div className="space-y-2 rounded-md border p-3">
-              <p className="font-semibold">Progress and notes</p>
+              <p className="font-semibold">Notes</p>
+              {(open?.notes_log?.length ?? 0) > 0 ? (
+                <ul className="max-h-56 space-y-2 overflow-y-auto rounded-md bg-muted/50 p-2">
+                  {[...(open?.notes_log || [])].reverse().map((n, i) => (
+                    <li key={i} className="border-b pb-2 text-xs last:border-0 last:pb-0">
+                      <span className="font-medium text-muted-foreground">{formatActivityTime(n.at)} · {n.by}</span>
+                      {n.progress && <span className="ml-1 font-medium">→ {PROGRESS[n.progress] || n.progress}</span>}
+                      {n.note && <p className="mt-0.5 whitespace-pre-wrap text-sm text-foreground">{n.note}</p>}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-muted-foreground">No notes yet. Add the first one below.</p>
+              )}
+              <div className="space-y-1">
+                <Label htmlFor="cx-worknote">Add a note</Label>
+                <Textarea id="cx-worknote" rows={3} placeholder="e.g. Called dealer, waiting for mileage photo" value={workNote} onChange={e => setWorkNote(e.target.value)} />
+              </div>
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => saveProgress(false, true)}>Add note</Button>
+            </div>
+            <div className="space-y-2 rounded-md border p-3">
               <div className="space-y-1"><Label htmlFor="cx-progress">Stage</Label>
                 <select id="cx-progress" className="h-10 w-full rounded-md border bg-background px-3" value={progress} onChange={e => setProgress(e.target.value)}>
                   {Object.entries(PROGRESS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
               </div>
-              <Textarea rows={2} placeholder="Add a note, e.g. called dealer, waiting for mileage photo" value={workNote} onChange={e => setWorkNote(e.target.value)} />
-              <Button size="sm" variant="outline" disabled={busy} onClick={() => saveProgress()}>Save update</Button>
-              {(open?.notes_log?.length ?? 0) > 0 && (
-                <ul className="max-h-40 space-y-2 overflow-y-auto border-t pt-2">
-                  {[...(open?.notes_log || [])].reverse().map((n, i) => (
-                    <li key={i} className="text-xs">
-                      <span className="text-muted-foreground">{new Date(n.at).toLocaleString('en-GB')} · {n.by}</span>
-                      {n.progress && <span className="ml-1 font-medium">→ {PROGRESS[n.progress] || n.progress}</span>}
-                      {n.note && <p className="whitespace-pre-wrap text-foreground">{n.note}</p>}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => saveProgress()}>Save stage{workNote.trim() ? ' & note' : ''}</Button>
             </div>
-            <div className="space-y-1"><Label htmlFor="cx-note">Note (optional)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
+            <div className="space-y-1"><Label htmlFor="cx-note">Decision note (saved with approve or decline)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
           </div>
           <DialogFooter className="flex-wrap gap-2">
             <Button variant="outline" disabled={busy} onClick={() => saveProgress(true)}>Save as pending</Button>
