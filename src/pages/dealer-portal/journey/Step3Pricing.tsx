@@ -198,14 +198,17 @@ const Step3Pricing: React.FC = () => {
     if (opening) return;
     if (!valid) { setError('Choose a warranty length and a valid customer selling price before opening the customer view.'); return; }
     setOpening(true);
+    // Mobile browsers block new tabs from buttons — open the customer view in this tab instead.
+    const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
     // The tab must open inside the click itself, or the browser blocks it; it is pointed at the quote once saved.
-    const tab = window.open('about:blank', '_blank');
+    const tab = isMobile ? null : window.open('about:blank', '_blank');
     const id = await persist();
     if (!id) { tab?.close(); setOpening(false); return; }
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
     const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
     // Flags go before the hash so the quote data stays a clean hash fragment.
     url.search = '?view=cv';
+    if (isMobile) { window.location.href = url.href; return; }
     let opened = false;
     if (tab) {
       try { tab.location.href = url.href; opened = true; }

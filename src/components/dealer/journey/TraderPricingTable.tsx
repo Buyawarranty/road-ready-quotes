@@ -278,7 +278,12 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
       ],
       included: Object.keys(addOns).filter((k) => addOns[k]),
     });
-    window.open(`${url.split('#')[0]}?view=cv#${url.split('#')[1]}`, '_blank', 'noopener');
+    const target = `${url.split('#')[0]}?view=cv#${url.split('#')[1]}`;
+    // Mobile browsers block new tabs from buttons — open the customer view in this tab instead.
+    const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+    if (isMobile) { window.location.href = target; return; }
+    const tab = window.open(target, '_blank', 'noopener');
+    if (!tab) window.location.href = target;
   };
 
 
