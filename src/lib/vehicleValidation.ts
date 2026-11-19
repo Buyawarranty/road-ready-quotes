@@ -539,7 +539,7 @@ export function calculateVehiclePriceAdjustment(
 
     let reasonParts: string[] = [`high mileage (${mileage?.toLocaleString()} miles)`];
     if (ageQualifies) {
-      reasonParts.push(`older vehicle (${vehicleAgeYears} years old)`);
+      reasonParts.push(`older vehicle (${(vehicleAgePrecise ?? vehicleAgeYears ?? 0).toFixed(1)} years old)`);
     }
     breakdown.push({
       baseAdjustment: surcharge,
@@ -552,7 +552,7 @@ export function calculateVehiclePriceAdjustment(
     adjustmentAmount += surcharge;
     breakdown.push({
       baseAdjustment: surcharge,
-      adjustmentReason: `Older vehicle premium (${vehicleAgeYears} years old): +£${surcharge} for ${warrantyDurationYears} year warranty`
+      adjustmentReason: `Older vehicle premium (${(vehicleAgePrecise ?? vehicleAgeYears ?? 0).toFixed(1)} years old): +£${surcharge} for ${warrantyDurationYears} year warranty`
     });
     console.log('💰 Age Surcharge Applied:', { vehicleAgeYears, surcharge, warrantyDurationYears });
   }

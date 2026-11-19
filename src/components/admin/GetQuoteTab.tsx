@@ -3565,7 +3565,7 @@ Questions? Call 0330 229 5040`;
                             <div className="flex items-center gap-5 text-xs">
                               <span className={`flex items-center gap-1.5 ${ageOver && !ageOverrideEnabled ? 'text-red-700' : 'text-gray-600'}`}>
                                 <Calendar className="w-3.5 h-3.5" />
-                                Age <strong className="text-gray-900 font-semibold">{typeof d.ageYears === 'number' ? `${d.ageYears} yr${d.ageYears === 1 ? '' : 's'}` : '—'}</strong>
+                                Age <strong className="text-gray-900 font-semibold">{typeof d.ageYears === 'number' ? `${d.ageYears.toFixed(1)} yrs` : '—'}</strong>
                               </span>
                               <span className={`flex items-center gap-1.5 ${mileageOver ? 'text-red-700' : 'text-gray-600'}`}>
                                 <Gauge className="w-3.5 h-3.5" />

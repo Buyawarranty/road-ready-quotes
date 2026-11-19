@@ -114,7 +114,7 @@ export function evaluateBoundaries(input: BoundaryInput): BoundaryResult {
 
   // Hard declines next — a clearly over-limit vehicle is never a referral.
   if (ageYears !== null && ageYears > MAX_VEHICLE_AGE_YEARS) {
-    reasons.push(`Age ${ageYears.toFixed(2)}y exceeds ${MAX_VEHICLE_AGE_YEARS}y`);
+    reasons.push(`Age ${ageYears.toFixed(1)}y exceeds ${MAX_VEHICLE_AGE_YEARS}y`);
   }
   if (mileage !== null && mileage > MAX_VEHICLE_MILEAGE) {
     reasons.push(`Mileage ${mileage.toLocaleString()} exceeds ${MAX_VEHICLE_MILEAGE.toLocaleString()}`);
