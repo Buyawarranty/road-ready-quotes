@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { buildPendingCancellationUpdate } from '@/lib/dealerCancellationPending';
 
 type Req = {
   id: string; dealer_id: string; customer_id: string; reason: string; status: string;
@@ -18,7 +19,7 @@ type Req = {
   customer?: { name: string | null; registration_plate: string | null; final_amount: number | null; signup_date: string | null; payment_type: string | null } | null;
 };
 
-const PROGRESS: Record<string, string> = { new: 'New', in_progress: 'In progress', waiting_dealer: 'Waiting on dealer', waiting_customer: 'Waiting on customer' };
+const PROGRESS: Record<string, string> = { new: 'Pending', in_progress: 'In progress', waiting_dealer: 'Waiting on dealer', waiting_customer: 'Waiting on customer' };
 const gbp = (n?: number | null) => (n == null ? '—' : `£${Number(n).toFixed(2)}`);
 
 const DealerAdminCancellations: React.FC = () => {
@@ -35,7 +36,7 @@ const DealerAdminCancellations: React.FC = () => {
   const [progress, setProgress] = useState('new');
   const [workNote, setWorkNote] = useState('');
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (autoOpen = true) => {
     setLoading(true);
     let q = (supabase as any).from('dealer_cancellation_requests')
       .select('*, dealers(company_name, email, phone)').order('created_at', { ascending: false }).limit(200);
@@ -55,7 +56,7 @@ const DealerAdminCancellations: React.FC = () => {
     // Open the request chosen in the alert, or the oldest pending request.
     const requestedId = searchParams.get('request');
     const requested = requestedId ? list.find((request) => request.id === requestedId) : null;
-    if (filter === 'pending' && list.length && !open) openReq(requested || list[list.length - 1]);
+    if (autoOpen && filter === 'pending' && list.length && !open) openReq(requested || list[list.length - 1]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, toast, searchParams]);
 
@@ -70,19 +71,18 @@ const DealerAdminCancellations: React.FC = () => {
     setWorkNote('');
   };
 
-  const saveProgress = async () => {
+  const saveProgress = async (closeAfterSave = false) => {
     if (!open) return;
     setBusy(true);
-    const { error } = await (supabase as any).rpc('update_dealer_cancellation_progress', {
-      p_request_id: open.id, p_progress: progress, p_note: workNote.trim() || null,
-    });
+    const payload = buildPendingCancellationUpdate(open.id, progress, workNote, closeAfterSave ? note : '');
+    const { error } = await (supabase as any).rpc('update_dealer_cancellation_progress', payload);
     setBusy(false);
     if (error) { toast({ title: 'Could not save', description: error.message, variant: 'destructive' }); return; }
-    toast({ title: 'Update saved' });
-    const entry = { at: new Date().toISOString(), by: 'You', note: workNote.trim() || null, progress: progress !== open.progress ? progress : null };
-    setOpen({ ...open, progress, notes_log: [...(open.notes_log || []), entry] });
+    toast({ title: closeAfterSave ? 'Saved as pending' : 'Update saved' });
+    const entry = { at: new Date().toISOString(), by: 'You', note: payload.p_note, progress: progress !== open.progress ? progress : null };
+    setOpen(closeAfterSave ? null : { ...open, progress, notes_log: [...(open.notes_log || []), entry] });
     setWorkNote('');
-    load();
+    load(false);
   };
 
   const process = async (approve: boolean) => {
@@ -132,7 +132,7 @@ const DealerAdminCancellations: React.FC = () => {
                 <td className="p-3 max-w-[240px]">{r.reason}</td>
                 <td className="p-3">{gbp(r.cancellation_fee)}</td>
                 <td className="p-3">{gbp(r.refund_amount)}</td>
-                <td className="p-3">{r.status === 'pending' ? (PROGRESS[r.progress || 'new'] || 'Pending') : <span className="capitalize">{r.status}</span>}</td>
+                <td className="p-3">{r.status === 'pending' ? <><span>Pending</span>{r.progress && r.progress !== 'new' && <span className="block text-xs text-muted-foreground">{PROGRESS[r.progress] || r.progress}</span>}</> : <span className="capitalize">{r.status}</span>}</td>
                 <td className="p-3">{r.status === 'pending' && <Button size="sm" onClick={() => openReq(r)}>Process</Button>}</td>
               </tr>
             ))}</tbody>
@@ -165,7 +165,7 @@ const DealerAdminCancellations: React.FC = () => {
                 </select>
               </div>
               <Textarea rows={2} placeholder="Add a note, e.g. called dealer, waiting for mileage photo" value={workNote} onChange={e => setWorkNote(e.target.value)} />
-              <Button size="sm" variant="outline" disabled={busy} onClick={saveProgress}>Save update</Button>
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => saveProgress()}>Save update</Button>
               {(open?.notes_log?.length ?? 0) > 0 && (
                 <ul className="max-h-40 space-y-2 overflow-y-auto border-t pt-2">
                   {[...(open?.notes_log || [])].reverse().map((n, i) => (
@@ -178,9 +178,10 @@ const DealerAdminCancellations: React.FC = () => {
                 </ul>
               )}
             </div>
-            <div className="space-y-1"><Label htmlFor="cx-note">Decision note (optional)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
+            <div className="space-y-1"><Label htmlFor="cx-note">Note (optional)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="flex-wrap gap-2">
+            <Button variant="outline" disabled={busy} onClick={() => saveProgress(true)}>Save as pending</Button>
             <Button variant="outline" disabled={busy} onClick={() => process(false)}>Decline</Button>
             <Button disabled={busy} onClick={() => process(true)}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Approve & cancel warranty</Button>
           </DialogFooter>
