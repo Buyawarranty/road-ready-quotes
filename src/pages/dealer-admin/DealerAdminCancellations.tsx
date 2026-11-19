@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -75,6 +74,7 @@ const DealerAdminCancellations: React.FC = () => {
     setNote(r.admin_note || '');
     setProgress(r.progress || 'new');
     setWorkNote('');
+    setTimeout(() => document.getElementById('cancellation-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
   };
 
   const saveProgress = async (closeAfterSave = false, noteOnly = false) => {
@@ -153,14 +153,17 @@ const DealerAdminCancellations: React.FC = () => {
         </div>
       )}
 
-      <Dialog open={!!open} onOpenChange={(o) => !o && setOpen(null)}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Process cancellation</DialogTitle>
-            <DialogDescription>
+      {open && (
+        <section id="cancellation-panel" className="rounded-lg border bg-card p-4 space-y-4">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div>
+            <h2 className="text-lg font-bold">Process cancellation</h2>
+            <p className="text-sm text-muted-foreground">
               {open?.dealers?.company_name || 'Dealer'} · <span className="font-mono uppercase">{open?.customer?.registration_plate}</span> · {open?.customer?.name}
-            </DialogDescription>
-          </DialogHeader>
+            </p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setOpen(null)}>Close</Button>
+          </div>
           <div className="space-y-3 text-sm">
             <div className="rounded-md bg-muted p-3">
               <p className="font-semibold">Reason</p><p>{open?.reason}</p>
@@ -201,13 +204,13 @@ const DealerAdminCancellations: React.FC = () => {
             </div>
             <div className="space-y-1"><Label htmlFor="cx-note">Decision note (saved with approve or decline)</Label><Textarea id="cx-note" rows={2} value={note} onChange={e => setNote(e.target.value)} /></div>
           </div>
-          <DialogFooter className="flex-wrap gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button variant="outline" disabled={busy} onClick={() => saveProgress(true)}>Save as pending</Button>
             <Button variant="outline" disabled={busy} onClick={() => process(false)}>Decline</Button>
             <Button disabled={busy} onClick={() => process(true)}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Approve & cancel warranty</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
