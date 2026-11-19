@@ -1,4 +1,4 @@
-import BogofBanner from '@/components/dealer/offer/BogofBanner';
+import BogofBanner, { loadBogofSettings } from '@/components/dealer/offer/BogofBanner';
 import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Search } from 'lucide-react';
+import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Search, Gift } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import WhatsCoveredPanel from '@/components/dealer/journey/WhatsCoveredPanel';
@@ -38,6 +38,9 @@ const Step3Pricing: React.FC = () => {
   const [editingReg, setEditingReg] = useState(false);
   const [regInput, setRegInput] = useState('');
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
+  // The buy-one-get-one line only appears while Super Admin has the offer switched on.
+  const [offerOn, setOfferOn] = useState(false);
+  useEffect(() => { let live = true; loadBogofSettings().then(s => { if (live) setOfferOn(!!s?.enabled); }); return () => { live = false; }; }, []);
   const [lookupMsg, setLookupMsg] = useState('');
   const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
   const [mileageConfirmed, setMileageConfirmed] = useState(false);
@@ -222,7 +225,7 @@ const Step3Pricing: React.FC = () => {
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="px-1 pb-1 text-center sm:px-0 sm:text-left">
-      <div><h1 className="font-bold">Choose your warranty</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p></div>
+      <div><h1 className="font-bold">Activate your warranty in 60 seconds</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p>{offerOn && <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-crm-navy"><Gift className="h-4 w-4 shrink-0 text-crm-orange" aria-hidden="true" />Buy one warranty, get the next one free — up to 3 years' cover.</p>}</div>
     </header>
     <BogofBanner />
     <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
