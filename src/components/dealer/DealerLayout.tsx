@@ -8,6 +8,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { dealerPageLabel } from '@/lib/dealerActivityLabel';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+const SUPPORT_EMAIL = 'support@pandaprotect.co.uk';
+const SUPPORT_MAILTO = `mailto:${SUPPORT_EMAIL}?subject=Panda%20Protect%20dealer%20support`;
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,6 +88,19 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     void (supabase as any).rpc('record_dealer_activity', { p_path: path, p_label: dealerPageLabel(path) }).then(() => {});
   }, [location.pathname, isImpersonating]);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [supportCopied, setSupportCopied] = useState(false);
+  const copySupportEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(SUPPORT_EMAIL);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = SUPPORT_EMAIL; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } finally { t.remove(); }
+    }
+    setSupportCopied(true);
+    window.setTimeout(() => setSupportCopied(false), 2500);
+  };
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const searchRef = useRef<HTMLInputElement>(null);
@@ -376,15 +393,38 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               <BookOpen className="h-[18px] w-[18px] shrink-0" /> FAQs
             </Link>
           </div>
-          <a
-            href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20dealer%20support"
-            className="mb-2 flex min-h-11 items-center gap-2 break-all rounded-md px-3 text-sm font-semibold text-crm-navy transition-colors hover:bg-muted"
+          <button
+            type="button"
+            onClick={() => setSupportOpen(true)}
+            className="mb-2 flex min-h-11 w-full items-center gap-2 break-all rounded-md px-3 text-left text-sm font-semibold text-crm-navy transition-colors hover:bg-muted"
           >
             <Mail className="h-[18px] w-[18px] shrink-0" /> support@pandaprotect.co.uk
-          </a>
-          <Button variant="outline" size="sm" asChild className="w-full border-crm-orange bg-background font-bold !text-crm-navy hover:bg-crm-orange hover:!text-primary-foreground">
-            <a href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20dealer%20support">Contact support →</a>
+          </button>
+          <Button variant="outline" size="sm" type="button" onClick={() => setSupportOpen(true)} className="w-full border-crm-orange bg-background font-bold !text-crm-navy hover:bg-crm-orange hover:!text-primary-foreground">
+            Contact support →
           </Button>
+          <Dialog open={supportOpen} onOpenChange={setSupportOpen}>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Contact support</DialogTitle>
+                <DialogDescription>Our UK team is here to help, 9am to 6pm, Monday to Saturday.</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2">
+                <Button className="w-full bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" asChild>
+                  <a href={SUPPORT_MAILTO} target="_top">Open my email app</a>
+                </Button>
+                <Button variant="outline" className="w-full" asChild>
+                  <a href={`https://mail.google.com/mail/?view=cm&to=${SUPPORT_EMAIL}&su=Panda%20Protect%20dealer%20support`} target="_blank" rel="noopener noreferrer">Email with Gmail</a>
+                </Button>
+                <Button variant="outline" className="w-full" type="button" onClick={copySupportEmail}>
+                  {supportCopied ? 'Email address copied' : `Copy ${SUPPORT_EMAIL}`}
+                </Button>
+                <Button variant="outline" className="w-full" asChild>
+                  <a href="tel:03302296547">Call 0330 229 6547</a>
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </aside>
 
