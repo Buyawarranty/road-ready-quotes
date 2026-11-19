@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
+import { StampedNotesHistory } from '@/components/shared/StampedNotesHistory';
+import { useBdmNoteHistory } from './useBdmNoteHistory';
 import { CalendarClock, ChevronRight, NotebookPen, Phone, PhoneCall, PhoneOff, TriangleAlert, Voicemail } from 'lucide-react';
 
 const OUTCOMES = [
@@ -28,6 +30,7 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const db = supabase.rpc.bind(supabase) as any;
+  const history = useBdmNoteHistory(dealershipId, open);
 
   const log = async (type: 'note' | 'call', outcome: string | null, text: string | null) => {
     setBusy(true);
@@ -43,7 +46,7 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
   const saveNote = async () => {
     const t = note.trim();
     if (!t || busy) return;
-    if (await log('note', null, t.slice(0, 2000))) { toast({ title: 'Note saved' }); setNote(''); setOpen(false); onSaved(); }
+    if (await log('note', null, t.slice(0, 2000))) { toast({ title: 'Note saved' }); setNote(''); history.reload(); onSaved(); }
   };
 
   const logOutcome = async (id: string, label: string) => {
@@ -75,6 +78,8 @@ const BdmQuickNotePopover: React.FC<Props> = ({ dealershipId, dealershipName, co
           className="w-full resize-none rounded-md border-2 border-primary bg-muted/30 px-3 py-2 text-sm focus:outline-none"
         />
         <p className="mb-3 mt-1 text-xs text-muted-foreground">Press Enter to save · Shift+Enter for a new line</p>
+        <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Notes history</p>
+        <div className="mb-3"><StampedNotesHistory items={history.items} maxHeight="max-h-48" /></div>
         <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Log outcome</p>
         <div className="grid grid-cols-2 gap-2">
           {OUTCOMES.map(o => (

@@ -15,6 +15,8 @@ import { Briefcase, Plus, Upload, Link2, BadgeCheck, Pencil } from 'lucide-react
 import { useDealerPortalUsage } from '@/hooks/useDealerPortalUsage';
 import { DealerFollowUpBar } from '@/components/admin/DealerFollowUpBar';
 import { PORTAL_STAGE_LABEL, portalStage, isActiveOnPortal, isReadyForFollowUp, newestReadySignIn } from '@/lib/dealerPortalProgress';
+import { appendStampedNote, parseStampedNotes } from '@/lib/stampedNotes';
+import { StampedNotesHistory } from '@/components/shared/StampedNotesHistory';
 import { PORTFOLIO_STATUSES, PortfolioInput, mapPortfolioRow } from '@/lib/bdm/bdmPortfolio';
 
 type Row = PortfolioInput & { id: string; bdm_user_id: string; dealership_id: string | null; dealer_id: string | null };
@@ -34,6 +36,7 @@ const BdmPortfolioPanel: React.FC = () => {
   const [view, setView] = useState<'all' | 'active' | 'ready'>('all');
   const [edit, setEdit] = useState<(PortfolioInput & { id?: string; bdm_user_id?: string }) | null>(null);
   const [busy, setBusy] = useState(false);
+  const [newNote, setNewNote] = useState('');
   const [pendingCredit, setPendingCredit] = useState<Set<string>>(new Set());
   const [counts, setCounts] = useState<Record<string, { claims: number; refunds: number }>>({});
   const fileRef = useRef<HTMLInputElement>(null);
@@ -83,11 +86,12 @@ const BdmPortfolioPanel: React.FC = () => {
     if (!edit || !edit.dealership_name.trim()) { toast.error('Enter the dealership name'); return; }
     setBusy(true);
     const { id, ...rest } = edit;
-    const payload = { ...rest, dealership_name: rest.dealership_name.trim(), bdm_user_id: rest.bdm_user_id || me };
+    const author = staff.find(s => s.user_id === me)?.name ?? null;
+    const payload = { ...rest, notes: appendStampedNote(rest.notes, newNote, author) || null, dealership_name: rest.dealership_name.trim(), bdm_user_id: rest.bdm_user_id || me };
     const { error } = id ? await db.from('bdm_portfolio').update(payload).eq('id', id) : await db.from('bdm_portfolio').insert(payload);
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    toast.success('Saved'); setEdit(null); load();
+    toast.success('Saved'); setEdit(null); setNewNote(''); load();
   };
 
   const onFile = async (f: File) => {
@@ -179,7 +183,7 @@ const BdmPortfolioPanel: React.FC = () => {
         </div>
       </CardContent>
 
-      <Dialog open={!!edit} onOpenChange={o => !o && setEdit(null)}>
+      <Dialog open={!!edit} onOpenChange={o => { if (!o) { setEdit(null); setNewNote(''); } }}>
         <DialogContent>
           <DialogHeader><DialogTitle>{edit?.id ? 'Edit dealership' : 'Add dealership'}</DialogTitle></DialogHeader>
           {edit && (
@@ -199,7 +203,9 @@ const BdmPortfolioPanel: React.FC = () => {
               </div>
               <div><Label>Next follow-up</Label><Input type="date" value={edit.next_follow_up_at ?? ''} onChange={e => set('next_follow_up_at', e.target.value)} /></div>
               <div className="sm:col-span-2"><Label>Follow-up action</Label><Input value={edit.follow_up_action ?? ''} onChange={e => set('follow_up_action', e.target.value)} placeholder="e.g. Check first sales, send marketing pack" /></div>
-              <div className="sm:col-span-2"><Label>Notes</Label><Textarea value={edit.notes ?? ''} onChange={e => set('notes', e.target.value)} /></div>
+              <div className="sm:col-span-2 grid gap-2"><Label>Add a note</Label><Textarea value={newNote} maxLength={2000} onChange={e => setNewNote(e.target.value)} placeholder="Saved with today's date and time when you press Save" />
+                <Label>Notes history</Label>
+                <StampedNotesHistory items={parseStampedNotes(edit.notes).map((n, i) => ({ id: String(i), ...n }))} maxHeight="max-h-48" /></div>
             </div>
           )}
           <DialogFooter><Button variant="outline" onClick={() => setEdit(null)}>Cancel</Button><Button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save'}</Button></DialogFooter>

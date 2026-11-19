@@ -5,27 +5,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-
-type Note = { id: string; notes: string | null; created_at: string; activity_type: string };
-const stamp = (d: string) => new Date(d).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+import { StampedNotesHistory } from '@/components/shared/StampedNotesHistory';
+import { useBdmNoteHistory } from './useBdmNoteHistory';
 
 /** Timestamped notes for a dealership, with optional "send to an agent" alert. */
 const BdmEditNotes: React.FC<{ dealershipId: string; dealershipName: string; onSaved: () => void }> = ({ dealershipId, dealershipName, onSaved }) => {
   const { toast } = useToast();
   const sb = supabase as any;
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { items, reload: load } = useBdmNoteHistory(dealershipId);
   const [staff, setStaff] = useState<{ user_id: string; name: string }[]>([]);
   const [text, setText] = useState('');
   const [assignee, setAssignee] = useState('none');
   const [saving, setSaving] = useState(false);
 
-  const load = async () => {
-    const { data } = await sb.from('bdm_activities').select('id, notes, created_at, activity_type')
-      .eq('dealership_id', dealershipId).not('notes', 'is', null).order('created_at', { ascending: false }).limit(10);
-    setNotes(data || []);
-  };
   useEffect(() => {
-    load();
     sb.rpc('bdm_staff_list').then(({ data }: any) => setStaff(data || []));
   }, [dealershipId]);
 
@@ -59,16 +52,8 @@ const BdmEditNotes: React.FC<{ dealershipId: string; dealershipName: string; onS
         </Select>
         <Button size="sm" onClick={save} disabled={saving || !text.trim()}>{saving ? 'Saving…' : 'Add note'}</Button>
       </div>
-      {notes.length > 0 && (
-        <ul className="grid max-h-40 gap-2 overflow-y-auto">
-          {notes.map(n => (
-            <li key={n.id} className="rounded-md bg-muted px-2 py-1.5 text-xs">
-              <div className="font-medium text-muted-foreground">{stamp(n.created_at)}{n.activity_type !== 'note' ? ` · ${n.activity_type}` : ''}</div>
-              <div className="whitespace-pre-wrap text-foreground">{n.notes}</div>
-            </li>
-          ))}
-        </ul>
-      )}
+      <Label className="mt-1">Notes history</Label>
+      <StampedNotesHistory items={items} />
     </div>
   );
 };
