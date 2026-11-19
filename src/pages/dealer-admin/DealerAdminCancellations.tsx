@@ -9,6 +9,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { buildPendingCancellationUpdate } from '@/lib/dealerCancellationPending';
+import { DEALER_CANCELLATION_REASONS, dealerCancellationReasonMatches } from '@/lib/dealerCancellationReasons';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type Req = {
   id: string; dealer_id: string; customer_id: string; reason: string; status: string;
@@ -35,6 +37,9 @@ const DealerAdminCancellations: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState('new');
   const [workNote, setWorkNote] = useState('');
+  const [reasonFilter, setReasonFilter] = useState('all');
+  const visibleRows = rows.filter(row => dealerCancellationReasonMatches(row.reason, reasonFilter));
+  const reasonOptions = [...new Set([...DEALER_CANCELLATION_REASONS, ...rows.map(row => row.reason).filter(reason => !DEALER_CANCELLATION_REASONS.some(option => dealerCancellationReasonMatches(reason, option)))])];
 
   const load = useCallback(async (autoOpen = true) => {
     setLoading(true);
@@ -109,12 +114,16 @@ const DealerAdminCancellations: React.FC = () => {
           <h1 className="text-xl font-bold">Dealer cancellation requests</h1>
           <p className="text-sm text-muted-foreground">Dealers request cancellations from their warranties page. Set any fee and refund, then approve or decline.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Select value={reasonFilter} onValueChange={setReasonFilter}>
+            <SelectTrigger className="w-56" aria-label="Filter cancellation reasons"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="all">All cancellation reasons</SelectItem>{reasonOptions.map(reason => <SelectItem key={reason} value={reason}>{reason}</SelectItem>)}</SelectContent>
+          </Select>
           <Button variant={filter === 'pending' ? 'default' : 'outline'} onClick={() => setFilter('pending')}>Pending</Button>
           <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>All</Button>
         </div>
       </div>
-      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : rows.length === 0 ? (
+      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : visibleRows.length === 0 ? (
         <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">No {filter === 'pending' ? 'pending ' : ''}requests.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
@@ -123,7 +132,7 @@ const DealerAdminCancellations: React.FC = () => {
               <th className="p-3">Requested</th><th className="p-3">Dealer</th><th className="p-3">Customer</th><th className="p-3">Reg</th>
               <th className="p-3">Reason</th><th className="p-3">Fee</th><th className="p-3">Refund</th><th className="p-3">Status</th><th className="p-3" />
             </tr></thead>
-            <tbody>{rows.map(r => (
+            <tbody>{visibleRows.map(r => (
               <tr key={r.id} className="border-t">
                 <td className="p-3 whitespace-nowrap">{new Date(r.created_at).toLocaleDateString('en-GB')}</td>
                 <td className="p-3">{r.dealers?.company_name || '—'}<br /><span className="text-xs text-muted-foreground">{r.dealers?.email}</span></td>

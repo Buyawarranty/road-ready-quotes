@@ -37,6 +37,7 @@ import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
 import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
 import DealerCancellationRequestAlert from '@/components/admin/DealerCancellationRequestAlert';
 import DealerProfileChangeAlert from '@/components/admin/DealerProfileChangeAlert';
+import { showDealerProfileReminder } from '@/lib/dealerCancellationReasons';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
 import { NewLeadTopBanner } from '@/components/admin/leads/NewLeadTopBanner';
 
@@ -1243,7 +1244,7 @@ const AdminDashboardInner: React.FC<{
       <BdmNoteAlerts />
       <SignupAlerts />
       <DealerCancellationRequestAlert userRole={displayRole} />
-      <DealerProfileChangeAlert userRole={displayRole} />
+      {showDealerProfileReminder(activeTab) && <DealerProfileChangeAlert userRole={displayRole} />}
 
 
       {/* Persistent "Take lead" popup for agents on Open Pool mode */}

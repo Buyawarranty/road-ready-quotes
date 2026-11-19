@@ -55,6 +55,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { functionErrorMessage } from '@/lib/functionError';
+import { DEALER_CANCELLATION_REASONS, formatDealerCancellationReason } from '@/lib/dealerCancellationReasons';
 
 type WarrantyRow = DealerPdfRow & {
   status?: string | null;
@@ -186,6 +187,7 @@ const DealerWarrantiesList = () => {
   const [previewError, setPreviewError] = useState('');
   const [cancelRow, setCancelRow] = useState<WarrantyRow | null>(null);
   const [cancelReason, setCancelReason] = useState('');
+  const [cancelDetails, setCancelDetails] = useState('');
   const [cancelling, setCancelling] = useState(false);
   const [detailRow, setDetailRow] = useState<WarrantyRow | null>(null);
   const [vehicleLookup, setVehicleLookup] = useState<{ id: string; status: 'loading' | 'error' } | null>(null);
@@ -349,13 +351,14 @@ const DealerWarrantiesList = () => {
 
   const submitCancellation = async () => {
     if (!cancelRow || !dealer?.id) return;
-    if (cancelReason.trim().length < 3) {
-      toast.error('Please give a reason for the cancellation');
+    const reason = formatDealerCancellationReason(cancelReason, cancelDetails);
+    if (!reason) {
+      toast.error(cancelReason === 'Other reason' ? 'Please add details for the cancellation' : 'Please select a cancellation reason');
       return;
     }
     setCancelling(true);
     const { data, error } = await supabase.functions.invoke('dealer-request-cancellation', {
-      body: { customer_id: cancelRow.id, reason: cancelReason.trim() },
+      body: { customer_id: cancelRow.id, reason },
     });
     setCancelling(false);
     if (error || !data?.success) {
@@ -382,6 +385,7 @@ const DealerWarrantiesList = () => {
     setDetailRow(null);
     setCancelRow(row);
     setCancelReason('');
+    setCancelDetails('');
   };
 
   const sendWarrantyToCustomer = async () => {
@@ -958,7 +962,12 @@ const DealerWarrantiesList = () => {
           </DialogHeader>
           <div className="space-y-2">
             <Label htmlFor="cancel-reason">Reason for cancelling</Label>
-            <Textarea id="cancel-reason" rows={3} value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} placeholder="e.g. Customer returned the vehicle" className="bg-muted/50" />
+            <Select value={cancelReason} onValueChange={setCancelReason}>
+              <SelectTrigger id="cancel-reason"><SelectValue placeholder="Select a cancellation reason" /></SelectTrigger>
+              <SelectContent>{DEALER_CANCELLATION_REASONS.map(reason => <SelectItem key={reason} value={reason}>{reason}</SelectItem>)}</SelectContent>
+            </Select>
+            <Label htmlFor="cancel-details">{cancelReason === 'Other reason' ? 'Details' : 'Additional details (optional)'}</Label>
+            <Textarea id="cancel-details" rows={3} value={cancelDetails} onChange={(event) => setCancelDetails(event.target.value)} className="bg-muted/50" />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCancelRow(null)} disabled={cancelling}>Back</Button>
