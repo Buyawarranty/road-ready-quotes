@@ -267,8 +267,9 @@ const Step3Pricing: React.FC = () => {
     <>{n > 150000 && <p role="alert" className="rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
     <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-orange/40 bg-crm-orange-soft px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
       <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground">From the last MOT — adjust in steps of 1,000 or type the figure, then confirm.</p></div>
-      <div className="flex items-center gap-1.5">
+      <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
+      <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex items-center gap-1.5" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">
         <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-11 w-11 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
           onChange={(e) => { setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7)); setMileageConfirmed(false); }} onBlur={(e) => commitMileage(e.target.value)}
@@ -277,7 +278,8 @@ const Step3Pricing: React.FC = () => {
         <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
       </div>
       {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-navy font-bold !text-primary-foreground hover:!bg-crm-navy/90 sm:w-auto" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-orange font-bold !text-primary-foreground hover:!bg-crm-orange/90" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+      </div>
 
     </section></>); })()}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
