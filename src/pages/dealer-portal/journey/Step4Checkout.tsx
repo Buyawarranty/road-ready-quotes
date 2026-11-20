@@ -286,7 +286,6 @@ const Step4Checkout: React.FC = () => {
 
   const paidCount = eligibility?.paid_count ?? 0;
   const invoiceRequired = eligibility?.required ?? 3;
-  const introLeft: number = 0; // Old 3+3 progress card retired by buy-one-get-one-free.
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = termsAccepted !== true
@@ -404,19 +403,6 @@ const Step4Checkout: React.FC = () => {
             <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
               <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your free warranty is ready</p>
               <p className="mt-2 text-sm text-muted-foreground">Buy one, get the next one free applies to this warranty at £0. Cover goes live straight away. You have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
-            </div>
-          )}
-          {!introFreeApplied && introLeft > 0 && (
-            <div className="mb-6 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
-              <p className="flex items-center gap-2 text-lg font-bold text-crm-navy"><Gift className="h-5 w-5 text-crm-green-deep" /> Your introductory trade offer</p>
-              <div className="mt-2 flex items-center justify-between gap-2 text-sm">
-                <span className="text-crm-navy">{Math.min(paidCount, INTRO_PAID_TARGET)} of {INTRO_PAID_TARGET} paid warranties completed</span>
-                <span className="font-bold text-crm-green-deep">{introLeft} to go</span>
-              </div>
-              <div className="mt-2 grid grid-cols-3 gap-1.5">
-                {Array.from({ length: INTRO_PAID_TARGET }).map((_, i) => <span key={i} className={`h-2 rounded-full ${i < paidCount ? 'bg-crm-green' : 'bg-border'}`} />)}
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">Purchase {introLeft} more warrant{introLeft === 1 ? 'y' : 'ies'} to unlock {INTRO_PAID_TARGET} free warranties, each up to 3 years' cover.</p>
             </div>
           )}
           <h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>

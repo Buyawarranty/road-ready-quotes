@@ -28,7 +28,7 @@ interface Pending {
 const isUnwound = (s: any) => ['cancelled', 'refunded'].includes(String(s.status || '').toLowerCase())
   || ['refunded', 'cancelled'].includes(String(s.payment_status || '').toLowerCase());
 
-/** Free 3+3 warranties stay pending until an Admin/Super Admin checks the dealer's paid sales were not cancelled or refunded. */
+/** Free warranties stay pending until an Admin/Super Admin checks the dealer's paid sales were not cancelled or refunded. */
 const IntroFreeApprovals: React.FC = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<Pending[]>([]);
@@ -86,7 +86,7 @@ const IntroFreeApprovals: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg"><Gift className="h-5 w-5" /> Free 3+3 warranties to approve {rows.length > 0 && <Badge className="bg-crm-orange-soft text-crm-navy">{rows.length}</Badge>}</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-lg"><Gift className="h-5 w-5" /> Free warranties to approve {rows.length > 0 && <Badge className="bg-crm-orange-soft text-crm-navy">{rows.length}</Badge>}</CardTitle>
         <p className="text-sm text-muted-foreground">Check the dealer's paid warranties are still live (not cancelled or refunded) before activating free cover.</p>
       </CardHeader>
       <CardContent className="divide-y divide-border">
@@ -95,7 +95,7 @@ const IntroFreeApprovals: React.FC = () => {
         ) : rows.map((row) => (
           <div key={row.id} className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="font-semibold text-crm-navy">{row.dealers?.company_name || 'Dealership'} · free warranty {row.slot} of 3</p>
+              <p className="font-semibold text-crm-navy">{row.dealers?.company_name || 'Dealership'} · free warranty #{row.slot}</p>
               <p className="mt-1 text-sm text-muted-foreground">{row.customers?.name || 'Customer'} · {row.customers?.registration_plate || '—'} · {row.duration_months} months · £{Number(row.original_amount).toFixed(2)} trade value</p>
               <p className="mt-1 text-sm"><strong>{row.paid ?? 0}</strong> live paid warranties{(row.unwound ?? 0) > 0 && <span className="ml-2 font-semibold text-destructive"><AlertTriangle className="mr-1 inline h-4 w-4" />{row.unwound} cancelled or refunded</span>}</p>
             </div>
@@ -111,7 +111,7 @@ const IntroFreeApprovals: React.FC = () => {
           <DialogTitle>{decision === 'approved' ? 'Approve free warranty' : 'Reject free warranty'}</DialogTitle>
           <DialogDescription>{selected?.dealers?.company_name || 'This dealership'} · {selected?.customers?.registration_plate || ''}</DialogDescription>
           <div className="rounded-xl bg-muted p-3 text-sm">
-            <p><strong>{selected?.paid ?? 0}</strong> live paid warranties (3 needed).</p>
+            <p><strong>{selected?.paid ?? 0}</strong> live paid warranties.</p>
             {(selected?.unwound ?? 0) > 0 && <p className="mt-1 font-semibold text-destructive">{selected?.unwound} paid warranties were cancelled or refunded. Please check before approving.</p>}
             <p className="mt-2 text-muted-foreground">{decision === 'approved' ? 'Cover goes live now and the dealer and customer are emailed.' : 'The warranty is not issued and the free place goes back to the dealer.'}</p>
           </div>
