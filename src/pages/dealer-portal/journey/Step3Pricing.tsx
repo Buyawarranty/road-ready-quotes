@@ -243,7 +243,7 @@ const Step3Pricing: React.FC = () => {
         <div className="flex items-center justify-center sm:justify-start"><img src={pandaLogoUrl} alt="Panda Protect" className="h-7 w-auto" /></div>
         <h1>MORE PROFIT. LESS HASSLE.<span>ACTIVATE A WARRANTY IN 60 SECONDS.</span></h1>
         <p className="text-sm text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the vehicle registration to start activating your warranty.'}</p>
-        <ul className="mt-3 grid max-w-lg grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-bold sm:grid-cols-3">{['Fixed trade prices', 'Full cover', 'Parts and labour', 'Quick activation', 'Simple claims', 'Fast payouts'].map(text => <li key={text} className="flex items-center gap-2"><Check className="h-4 w-4 shrink-0 text-crm-green" />{text}</li>)}{offerOn && <li className="flex items-center gap-2 text-crm-orange"><Gift className="h-4 w-4 shrink-0" />Buy one get one free</li>}</ul>
+        <ul className="mt-3 grid max-w-lg grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-bold sm:grid-cols-3">{['Fixed trade prices', 'Full cover', 'Parts and labour', 'Quick activation', 'Simple claims', 'Fast payouts'].map(text => <li key={text} className="flex items-center gap-2"><Check className="h-4 w-4 shrink-0 text-crm-green" />{text}</li>)}</ul>
       </div>
     </header>
     <section className="pricing-vehicle flex flex-col items-center gap-3 rounded-lg border border-crm-line bg-card p-3 sm:flex-row sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">

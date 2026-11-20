@@ -19,6 +19,9 @@ describe('Buy one get one free offer copy', () => {
     expect(source).toContain('BOGOF_SHORT_LABEL');
     expect(source).toContain('<OfferDetailTip');
     expect(source).not.toContain(DETAIL);
+    expect(source).not.toContain('Buy one get one free');
+    const body = source.split('\n').filter((line) => !line.startsWith('import ')).join('\n');
+    expect(body.match(/BOGOF_SHORT_LABEL/g)).toHaveLength(1);
   });
 
   it('full sentence is written down once, in the offer module only', () => {
