@@ -270,7 +270,7 @@ const PasswordReset = () => {
   if (!isValidSession) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-[calc(100vw-2rem)] shrink-0 sm:w-[28rem] lg:w-[35vw] !max-w-[42rem]">
           <CardHeader className="text-center">
             <img 
               src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
@@ -293,7 +293,7 @@ const PasswordReset = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-[calc(100vw-2rem)] shrink-0 sm:w-[28rem] lg:w-[35vw] !max-w-[42rem]">
         <CardHeader className="text-center">
           <img 
             src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
@@ -307,7 +307,7 @@ const PasswordReset = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
               <Label htmlFor="password">New Password</Label>
               <button
                 type="button"
