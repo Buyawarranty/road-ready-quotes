@@ -26,7 +26,7 @@ const WhatsCoveredPanel: React.FC<{ audience?: 'dealer' | 'customer'; coveredPar
           <Download className="h-4 w-4 shrink-0 text-crm-navy" />
         </a>
       </div>
-      <a href="/what-is-covered/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">Read the terms online</a></CollapsibleContent>
+      <a href="/what-is-covered/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-block font-semibold text-crm-navy underline">See what's covered</a></CollapsibleContent>
   </Collapsible>
 );
 
