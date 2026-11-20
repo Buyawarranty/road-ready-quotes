@@ -120,7 +120,7 @@ const getCoverLabel = (row: WarrantyRow) => {
   return key.charAt(0).toUpperCase() + key.slice(1);
 };
 
-function StatCard({ icon: Icon, label, value, green = false }: { icon: LucideIcon; label: string; value: string | number; green?: boolean }) {
+function StatCard({ icon: Icon, label, value, green = false, sub }: { icon: LucideIcon; label: string; value: string | number; green?: boolean; sub?: string }) {
   return (
     <div className="crm-panel-shadow flex min-h-32 flex-col items-start gap-3 rounded-2xl border-2 border-crm-line/70 bg-card p-4 sm:min-h-28 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl sm:h-14 sm:w-14 sm:rounded-2xl ${green ? 'bg-crm-green-soft text-crm-green' : 'bg-muted text-crm-navy-soft'}`}>
@@ -738,7 +738,7 @@ const DealerWarrantiesList = () => {
           </Button>
         </header>
 
-        <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className={`grid grid-cols-2 gap-3 ${activeTab === 'payments' ? 'xl:grid-cols-4' : 'xl:grid-cols-5'}`}>
+        <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className={`grid grid-cols-2 gap-3 ${activeTab === 'payments' ? 'xl:grid-cols-4' : 'sm:grid-cols-3'}`}>
           {activeTab === 'payments' ? (
             <>
               <StatCard icon={ReceiptText} label="Outstanding invoices" value={unpaidRows.length} />
@@ -748,10 +748,8 @@ const DealerWarrantiesList = () => {
             </>
           ) : (
             <>
-              <StatCard icon={FileText} label="Total plans" value={rows.length} />
-              <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} green />
-              <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} />
-              <StatCard icon={Coins} label="Outstanding" value={money(outstandingTotal)} />
+              <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} sub={`of ${rows.length} plan${rows.length === 1 ? '' : 's'} in total`} green />
+              <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} sub={`${money(outstandingTotal)} outstanding`} />
               <StatCard icon={Gift} label="Free warranties remaining" value={freeLeft ?? '—'} green />
             </>
           )}
