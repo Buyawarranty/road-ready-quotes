@@ -1,0 +1,1 @@
+UPDATE public.dealer_paylater_settings SET required_paid_warranties = 6, updated_at = now() WHERE id = 1;

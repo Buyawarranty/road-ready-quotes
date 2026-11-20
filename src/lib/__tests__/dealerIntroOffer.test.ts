@@ -24,12 +24,12 @@ describe('dealer 3+3 introductory offer', () => {
 });
 
 describe('dealer credit authorisation', () => {
-  it('allows a request only after 10 paid warranties with a clear account and no pending request', () => {
-    expect(canRequestDealerCredit({ paidCount: 9 })).toBe(false);
-    expect(canRequestDealerCredit({ paidCount: 10 })).toBe(true);
-    expect(canRequestDealerCredit({ paidCount: 10, requestStatus: 'pending' })).toBe(false);
-    expect(canRequestDealerCredit({ paidCount: 10, overdueCount: 1 })).toBe(false);
-    expect(canRequestDealerCredit({ paidCount: 10, mode: 'allow' })).toBe(false);
+  it('allows a request only after 6 paid warranties with a clear account and no pending request', () => {
+    expect(canRequestDealerCredit({ paidCount: 5 })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 6 })).toBe(true);
+    expect(canRequestDealerCredit({ paidCount: 6, requestStatus: 'pending' })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 6, overdueCount: 1 })).toBe(false);
+    expect(canRequestDealerCredit({ paidCount: 6, mode: 'allow' })).toBe(false);
   });
 
   it('allows only Admin and Super Admin to review requests', () => {

@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 /** The offer wording lives here once, so every dealer page says the same thing. */
 export const BOGOF_SHORT_LABEL = 'Buy one get one free';
-export const BOGOF_DETAIL = "Buy one, get the next one free on your first three warranties — up to 3 years' cover.";
+export const BOGOF_DETAIL = "Buy one, get the next one free on your first three warranties — buy 3, get 3 free, up to 3 years' cover. Then monthly invoicing after six paid warranties.";
 
 export type BogofSettings = { enabled: boolean; eyebrow: string; banner_title: string; banner_text: string };
 

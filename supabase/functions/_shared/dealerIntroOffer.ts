@@ -1,7 +1,7 @@
 export const DEALER_INTRO_PAID_TARGET = 3;
 export const DEALER_INTRO_FREE_TOTAL = 3;
 export const DEALER_INTRO_MAX_MONTHS = 36;
-export const DEALER_CREDIT_PAID_TARGET = 10;
+export const DEALER_CREDIT_PAID_TARGET = 6;
 
 export function introFreeRemaining(paidCount: number, redemptionCount: number): number {
   if (paidCount < DEALER_INTRO_PAID_TARGET) return 0;

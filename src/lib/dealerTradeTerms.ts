@@ -7,7 +7,7 @@ export const DEALER_TRADE_TERMS_SUMMARY = [
   },
   {
     title: '30-day invoicing',
-    description: 'Available to request after 3 paid warranties with no cancellations or refunds, subject to approval and account status.',
+    description: 'Available to request after 6 paid warranties with no cancellations or refunds, subject to approval and account status.',
   },
   {
     title: 'Eligible use',
@@ -26,7 +26,7 @@ export const DEALER_FULL_TRADE_TERMS = [
   {
     title: '2. Thirty-day dealer invoicing',
     paragraphs: [
-      'A dealership may request 30-day invoicing after completing 3 paid warranties with no cancellations or refunds. Reaching this threshold makes the dealership eligible to request credit; it does not activate invoicing automatically.',
+      'A dealership may request 30-day invoicing after completing 6 paid warranties with no cancellations or refunds. Reaching this threshold makes the dealership eligible to request credit; it does not activate invoicing automatically.',
       'Panda Protect must authorise the request before invoicing is switched on. Approval also depends on the dealership remaining active and its account status, including any overdue balances.',
       'Once authorised, the dealer can choose Activate now and pay later at checkout. The warranty is issued immediately and added to the dealer account, with payment due within 30 days. Overdue invoices can pause further invoice purchases until the balance is cleared.',
     ],
