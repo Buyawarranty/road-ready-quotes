@@ -1,4 +1,4 @@
-import { loadBogofEligibility, loadBogofSettings } from '@/components/dealer/offer/BogofBanner';
+import { BOGOF_SHORT_LABEL, loadBogofEligibility, loadBogofSettings, OfferDetailTip } from '@/components/dealer/offer/BogofBanner';
 import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -255,7 +255,7 @@ const Step3Pricing: React.FC = () => {
               <input ref={regRef} value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
             <Button type="submit" disabled={lookup === 'loading'} className={`h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base ${!vehicle?.reg ? 'reg-cta-pulse' : ''}`}>{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>CONTINUE<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
-            {offerOn && <p className="col-span-2 flex items-center gap-1.5 text-sm font-bold sm:col-span-1"><Gift className="h-4 w-4 shrink-0 text-crm-orange" />Buy one, get the next one free on your first three warranties — up to 3 years' cover.</p>}
+            {offerOn && <p className="col-span-2 flex items-center justify-center gap-1.5 text-sm font-bold text-crm-orange sm:mx-auto"><Gift className="h-4 w-4 shrink-0" aria-hidden="true" />{BOGOF_SHORT_LABEL}<OfferDetailTip /></p>}
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && (/15 years/.test(lookupMsg) ? <p role="alert" className="w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ {lookupMsg}</p> : <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>)}

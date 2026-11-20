@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Check, ChevronDown, Gift, Tag, X } from 'lucide-react';
+import { Check, ChevronDown, Gift, Info, Tag, X } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
+
+/** The offer wording lives here once, so every dealer page says the same thing. */
+export const BOGOF_SHORT_LABEL = 'Buy one get one free';
+export const BOGOF_DETAIL = "Buy one, get the next one free on your first three warranties — up to 3 years' cover.";
 
 export type BogofSettings = { enabled: boolean; eyebrow: string; banner_title: string; banner_text: string };
 
@@ -22,6 +27,31 @@ export async function loadBogofEligibility(dealerId?: string | null): Promise<bo
   if (error || !data) return true;
   const e = data as { paid_count?: number; intro_free_remaining?: number };
   return (e.intro_free_remaining ?? 0) > 0 || (e.paid_count ?? 0) < 3;
+}
+
+/**
+ * Short offer label with the full wording in a hover bubble, so the pricing row
+ * stays compact. Hovering reveals the detail on a desktop; a tap shows it on a
+ * phone, because a hover-only tip is useless there. The bubble is kept inside
+ * the screen edge by the tooltip's collision handling.
+ */
+export function OfferDetailTip({ detail = BOGOF_DETAIL }: { detail?: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Tooltip open={open} onOpenChange={setOpen}>
+      <TooltipTrigger asChild>
+        <button type="button" aria-label="Offer details" aria-expanded={open}
+          onPointerDown={event => { if (event.pointerType === 'touch') setOpen(true); }}
+          onClick={event => event.preventDefault()}
+          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-crm-orange/40 bg-card text-crm-orange hover:bg-crm-orange-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange">
+          <Info className="h-3.5 w-3.5" aria-hidden="true" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" collisionPadding={12} className="max-w-[16rem] text-center text-xs font-semibold leading-snug text-crm-navy">
+        {detail}
+      </TooltipContent>
+    </Tooltip>
+  );
 }
 
 /** Visual banner; shared by the dealer pages and the Super Admin preview. */
