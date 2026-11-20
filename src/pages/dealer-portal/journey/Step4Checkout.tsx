@@ -270,7 +270,7 @@ const Step4Checkout: React.FC = () => {
       toast({ title: 'Credit request not sent', description: message, variant: 'destructive' });
       return;
     }
-    toast({ title: 'Request sent', description: 'An Admin or Super Admin can now authorise 30-day invoicing from Dealer billing.' });
+    toast({ title: 'Request sent', description: 'Your 30-day invoicing request is now with our team for approval.' });
     await refreshEligibility();
   };
 
@@ -315,7 +315,7 @@ const Step4Checkout: React.FC = () => {
         : eligibility?.reason === 'overdue'
           ? 'Your dealer account has an overdue balance. Clear outstanding invoices to use account billing.'
           : eligibility?.reason === 'pending'
-            ? 'Your 30-day invoicing request is waiting for Admin or Super Admin authorisation.'
+            ? 'Your 30-day invoicing request is waiting for approval.'
             : eligibility?.reason === 'approval_required'
               ? 'You meet the paid-warranty criteria. Request authorisation to activate 30-day invoicing.'
               : 'Checking whether account billing is available for your dealership.';

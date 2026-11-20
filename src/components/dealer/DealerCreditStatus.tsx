@@ -48,7 +48,7 @@ export const DealerCreditStatus: React.FC = () => {
       toast({ title: 'Credit request not sent', description, variant: 'destructive' });
       return;
     }
-    toast({ title: 'Request sent', description: 'An Admin or Super Admin can now review it in Dealer billing → Credit authorisations.' });
+    toast({ title: 'Request sent', description: 'Your request is now with our team for approval.' });
     await refresh();
   };
 
@@ -79,14 +79,14 @@ export const DealerCreditStatus: React.FC = () => {
               {available
                 ? `Choose “${eligibility?.term_days ?? 30}-day invoice” at trade checkout. Each payment is due ${eligibility?.term_days ?? 30} days after issue.`
                 : eligibility?.reason === 'pending'
-                  ? 'Your request is waiting for an Admin or Super Admin. The invoice option appears at checkout after approval.'
+                  ? 'Your request is waiting for approval. The invoice option appears at checkout once it is authorised.'
                   : eligibility?.reason === 'overdue'
                     ? `Clear ${eligibility?.overdue_count || 'your'} overdue invoice${eligibility?.overdue_count === 1 ? '' : 's'} to restore account billing.`
                     : eligibility?.reason === 'blocked'
                       ? 'Account billing is paused for your dealership. Contact Panda Protect to review your terms.'
                       : eligibility?.can_request
                         ? 'You meet the paid-warranty requirement. Request authorisation to switch on account billing.'
-                        : `Pay by card until you reach ${required} paid warranties, then request Admin or Super Admin authorisation.`}
+                        : `Pay by card until you reach ${required} paid warranties, then request account billing.`}
             </p>
             <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" />Approval and a healthy account status are required. Overdue balances pause invoicing.</p>
           </div>
