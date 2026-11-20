@@ -18,6 +18,7 @@ import audiHeroImage from '@/assets/audi-hero.png';
 import audiCarImage from '@/assets/audi-car.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const AudiWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -531,7 +532,7 @@ const AudiWarranty = () => {
         </a>
 
         <a
-          href="https://wa.me/message/SPQPJ6O3UBF5B1"
+          href={PANDA_WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-24 left-6 z-40"

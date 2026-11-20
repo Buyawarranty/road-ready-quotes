@@ -4,6 +4,7 @@ import { Mail, MessageCircle, Phone } from 'lucide-react';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const SALES_PHONE = '0330 229 6547';
 const CLAIMS_EMAIL = 'claims@pandaprotect.co.uk';
@@ -24,7 +25,7 @@ const DealerPublicFooter: React.FC = () => {
               <Mail /> {SUPPORT_EMAIL}
             </a>
             <a
-              href="https://wa.me/443302296547"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="dealer-footer-strip-action"

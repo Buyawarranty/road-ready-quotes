@@ -21,6 +21,7 @@ import mercedesHeroImage from '@/assets/mercedes-hero.png';
 import mercedesVanImage from '@/assets/mercedes-van.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const MercedesWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -196,7 +197,7 @@ const MercedesWarranty = () => {
                     Get My Mercedes Quote →
                   </Button>
                   <a 
-                    href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+                    href={PANDA_WHATSAPP_URL} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-lg transition-colors"

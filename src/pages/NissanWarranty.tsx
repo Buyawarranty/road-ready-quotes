@@ -19,6 +19,7 @@ import nissanQashqaiImage from '@/assets/nissan-qashqai-warranty-cover.png';
 import nissanJukeImage from '@/assets/nissan-juke-extended-warranty.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const NissanWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -369,7 +370,7 @@ const NissanWarranty = () => {
       {/* Floating WhatsApp Button - Mobile Only */}
       {isMobile && (
         <a
-          href="https://wa.me/message/SPQPJ6O3UBF5B1"
+          href={PANDA_WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-20 right-4 z-40 bg-[#25D366] rounded-full p-1 shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"

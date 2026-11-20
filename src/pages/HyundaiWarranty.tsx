@@ -18,6 +18,7 @@ import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import hyundaiHeroImage from '@/assets/kona-kia-extended-used-car-warranty.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const HyundaiWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -519,7 +520,7 @@ const HyundaiWarranty = () => {
         {isMobile && (
           <>
             <a
-              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="fixed bottom-24 right-4 z-40 bg-green-500 text-white p-1 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 flex items-center justify-center"

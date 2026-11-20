@@ -17,6 +17,7 @@ import fordFocusImage from '@/assets/ford-focus-transparent.png';
 import fordPumaImage from '@/assets/ford-puma-transparent.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const FordWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -429,7 +430,7 @@ const FordWarranty = () => {
       {/* WhatsApp Floating Button */}
       {!isMobile && (
         <a
-          href="https://wa.me/message/SPQPJ6O3UBF5B1"
+          href={PANDA_WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-4 right-4 z-50 bg-[#25D366] hover:bg-[#1da851] text-white rounded-full p-1 shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center"

@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -200,10 +202,10 @@ const ContactUs = () => {
 
               <article className="contact-channel-card">
                 <div className="contact-channel-heading">
-                  <span className="contact-icon contact-icon-green"><MessageCircle /></span>
+                  <span className="contact-icon contact-icon-green"><WhatsAppIcon size={16} /></span>
                   <div><h2>WhatsApp</h2><p>Quick question? Message us and we'll be right with you.</p></div>
                 </div>
-                <Button asChild className="contact-action contact-action-green"><a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">Start chat <ArrowRight /></a></Button>
+                <Button asChild className="contact-action contact-action-green"><a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /> Start chat <ArrowRight /></a></Button>
                 <a className="contact-email-shortcut" href="mailto:support@pandaprotect.co.uk">Email us</a>
                 <p className="contact-availability"><Clock3 />Replies during opening hours</p>
               </article>

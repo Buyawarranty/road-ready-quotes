@@ -25,6 +25,12 @@ export default {
 			},
 			colors: {
 				'brand-orange': '#eb4b00',
+				whatsapp: {
+					DEFAULT: 'hsl(var(--whatsapp))',
+					foreground: 'hsl(var(--whatsapp-foreground))',
+					strong: 'hsl(var(--whatsapp-strong))',
+					soft: 'hsl(var(--whatsapp-soft))',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

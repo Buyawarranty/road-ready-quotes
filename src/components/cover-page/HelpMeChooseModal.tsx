@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { HelpCircle, Phone, MessageCircle } from 'lucide-react';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 interface HelpMeChooseModalProps {
   isOpen: boolean;
@@ -45,7 +46,7 @@ const HelpMeChooseModal: React.FC<HelpMeChooseModalProps> = ({ isOpen, onClose }
             </button>
 
             <a
-              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center gap-3 p-4 rounded-xl border border-border hover:bg-muted/30 transition-colors text-left"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { Check, ArrowRight, Star, Shield, Clock, Zap, Car, Truck, Battery, Bike, Menu, X, Phone, FileCheck, MessageCircle } from 'lucide-react';
+import { Check, ArrowRight, Star, Shield, Clock, Zap, Car, Truck, Battery, Bike, Menu, X, Phone, FileCheck } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Link } from 'react-router-dom';
@@ -31,6 +31,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import MileageQuickSelect from './MileageQuickSelect';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 import { trackButtonClick, trackEvent, trackQuoteRequest } from '@/utils/analytics';
 
 interface VehicleData {
@@ -906,14 +908,30 @@ const Homepage: React.FC<HomepageProps> = ({ onRegistrationSubmit }) => {
       <section className="py-6 md:py-8 bg-white text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* CTA Button */}
-          <button 
-            onClick={scrollToQuoteForm}
-            className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-10 py-4 md:py-6 text-lg md:text-xl rounded-lg shadow-lg transition-colors w-full sm:w-auto justify-center animate-cta-enhanced"
-          >
-            Secure your warranty
-            <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
-          </button>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4">
+            <button 
+              onClick={scrollToQuoteForm}
+              className="inline-flex items-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-bold px-6 md:px-10 py-4 md:py-6 text-lg md:text-xl rounded-lg shadow-lg transition-colors w-full sm:w-auto justify-center animate-cta-enhanced"
+            >
+              Secure your warranty
+              <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+
+            <a
+              href={PANDA_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-whatsapp hover:bg-whatsapp-strong text-whatsapp-foreground font-bold px-6 md:px-8 py-4 md:py-6 text-lg md:text-xl rounded-lg shadow-lg transition-colors w-full sm:w-auto justify-center"
+            >
+              <WhatsAppIcon size={22} />
+              Chat with us on WhatsApp
+            </a>
+          </div>
+
+          <p className="mt-4 text-sm md:text-base text-gray-600">
+            Prefer to message us? We reply on WhatsApp during opening hours, 9am to 6pm, Monday to Saturday.
+          </p>
         </div>
       </section>
 

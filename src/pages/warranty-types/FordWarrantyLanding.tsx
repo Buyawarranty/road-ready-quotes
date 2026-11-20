@@ -33,6 +33,7 @@ import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
 import fordFocusHero from '@/assets/ford-focus-extended-warranty-uk.png';
 import fordKugaWarranty from '@/assets/ford-kuga-used-car-warranty.png';
 import fordPumaHighMileage from '@/assets/ford-puma-high-mileage-warranty.png';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 // Ford Models covered (grouped by category) - 2012 to 2026
 const fordModelCategories = {
@@ -1303,7 +1304,7 @@ const FordWarrantyLanding: React.FC = () => {
         {isMobile && (
           <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
             <a
-              href="https://wa.me/447700161515"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-colors"

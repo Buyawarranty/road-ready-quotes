@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TrustpilotHeader from '@/components/TrustpilotHeader';
 import { AuthPasswordGate } from '@/components/auth/AuthPasswordGate';
 import { isAdminRole } from '@/lib/adminRoles';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const withTimeout = async <T,>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> => {
   return Promise.race([
@@ -429,7 +430,7 @@ const Auth = () => {
 
             {/* Desktop CTA Buttons - Show on desktop */}
             <div className="hidden lg:flex items-center space-x-3">
-              <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
+              <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -505,7 +506,7 @@ const Auth = () => {
 
                   {/* CTA Buttons */}
                   <div className="space-y-4 pt-6 mt-auto">
-                    <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
+                    <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                       <Button 
                         variant="outline" 
                         className="w-full bg-green-500 text-white border-green-500 hover:bg-green-600 hover:border-green-600 text-lg py-3"

@@ -30,6 +30,7 @@ import trustpilotBadge from '@/assets/trustpilot-badge.png';
 import vanHeroImage from '@/assets/van-warranty-hero-optimized.webp';
 import fordTransitVan from '@/assets/uk-van-warranty-ford-transit.webp';
 import vanIcon from '@/assets/van-icon.png';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 // UK Van Models covered (grouped by manufacturer) - 2012-2026
 const vanModelCategories = {
@@ -690,7 +691,7 @@ const VanWarrantyLanding: React.FC = () => {
                       </a>
                       <span className="text-gray-400">·</span>
                       <a
-                        href="https://wa.me/443302296547"
+                        href={PANDA_WHATSAPP_URL}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-green-600 hover:underline font-medium inline-flex items-center gap-1"
@@ -1412,7 +1413,7 @@ const VanWarrantyLanding: React.FC = () => {
                 </a>
                 <span className="text-white/50">·</span>
                 <a
-                  href="https://wa.me/443302296547"
+                  href={PANDA_WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-white font-bold text-base md:text-xl hover:text-white/80 transition-colors"

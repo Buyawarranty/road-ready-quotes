@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import pandaMechanicImage from '@/assets/panda-mechanic-car.png';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 interface VehicleData {
   registration: string;
@@ -458,7 +459,7 @@ const HomepageAlt: React.FC<HomepageAltProps> = ({ onRegistrationSubmit }) => {
             </a>
 
             <a 
-              href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+              href={PANDA_WHATSAPP_URL} 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-white hover:text-white/80 transition-colors font-medium text-lg"

@@ -17,6 +17,7 @@ import trustpilotLogo from '@/assets/trustpilot-excellent-box.webp';
 import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const SkodaWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -420,7 +421,7 @@ const SkodaWarranty = () => {
       {isMobile && (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
           <a
-            href="https://wa.me/message/SPQPJ6O3UBF5B1"
+            href={PANDA_WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center bg-[#25D366] hover:bg-[#20BA59] transition-colors"

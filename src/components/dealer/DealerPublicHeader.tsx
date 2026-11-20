@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Clock3, LogIn, Mail, Menu, MessageCircle, Phone, PhoneCall } from 'lucide-react';
+import { ArrowRight, Clock3, LogIn, Mail, Menu, Phone, PhoneCall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const NAV_ITEMS = [
   { label: "What's covered", to: '/what-is-covered/' },
@@ -82,12 +84,12 @@ export const DealerPublicHeader: React.FC = () => {
                     <span><strong>Request Call-Back</strong><small>We'll call you back</small></span>
                   </Button>
                   <a
-                    href="https://wa.me/message/SPQPJ6O3UBF5B1"
+                    href={PANDA_WHATSAPP_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="public-whatsapp-option"
                   >
-                    <MessageCircle aria-hidden="true" />
+                    <WhatsAppIcon size={20} />
                     <span><strong>WhatsApp Us</strong><small>Start a chat</small></span>
                   </a>
                 </PopoverContent>
@@ -130,6 +132,7 @@ export const DealerPublicHeader: React.FC = () => {
                     <a href="tel:03302296547" className="public-call-option"><Phone aria-hidden="true" /><span><strong>Get a Quote</strong><small>0330 229 6547</small></span></a>
                     <a href="mailto:claims@pandaprotect.co.uk" className="public-call-option"><Mail aria-hidden="true" /><span><strong>Make a Claim</strong><small>claims@pandaprotect.co.uk</small></span></a>
                     <Button type="button" variant="ghost" className="public-callback-option" onClick={openCallback}><PhoneCall aria-hidden="true" /><span><strong>Request Call-Back</strong><small>We'll call you back</small></span></Button>
+                    <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="public-whatsapp-option"><WhatsAppIcon size={20} /><span><strong>WhatsApp Us</strong><small>Start a chat</small></span></a>
                   </div>
 
                   <div className="mt-auto pt-6">

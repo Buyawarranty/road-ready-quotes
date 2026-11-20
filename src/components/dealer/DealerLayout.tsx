@@ -41,9 +41,14 @@ import {
   BookOpen,
   Headphones,
   Mail,
+  Copy,
+  Check,
+  Phone,
   MoreHorizontal,
   Ban,
 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 interface DealerLayoutProps {
   children: React.ReactNode;
@@ -396,16 +401,19 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               </DialogHeader>
               <div className="space-y-2">
                 <Button className="w-full bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" asChild>
-                  <a href={SUPPORT_MAILTO} target="_top">Open my email app</a>
+                  <a href={SUPPORT_MAILTO} target="_top"><Mail className="h-4 w-4" aria-hidden="true" /> Open my email app</a>
                 </Button>
-                <Button variant="outline" className="w-full" asChild>
-                  <a href={`https://mail.google.com/mail/?view=cm&to=${SUPPORT_EMAIL}&su=Panda%20Protect%20dealer%20support`} target="_blank" rel="noopener noreferrer">Email with Gmail</a>
+                <Button variant="outline" className="w-full border-crm-navy/25 text-crm-navy hover:bg-crm-navy/5" asChild>
+                  <a href={`https://mail.google.com/mail/?view=cm&to=${SUPPORT_EMAIL}&su=Panda%20Protect%20dealer%20support`} target="_blank" rel="noopener noreferrer"><Mail className="h-4 w-4" aria-hidden="true" /> Email with Gmail</a>
                 </Button>
-                <Button variant="outline" className="w-full" type="button" onClick={copySupportEmail}>
-                  {supportCopied ? 'Email address copied' : `Copy ${SUPPORT_EMAIL}`}
+                <Button variant="outline" className="w-full border-crm-navy/25 text-crm-navy hover:bg-crm-navy/5" type="button" onClick={copySupportEmail}>
+                  {supportCopied ? <><Check className="h-4 w-4" aria-hidden="true" /> Email address copied</> : <><Copy className="h-4 w-4" aria-hidden="true" /> Copy {SUPPORT_EMAIL}</>}
                 </Button>
-                <Button variant="outline" className="w-full" asChild>
-                  <a href="tel:03302296547">Call 0330 229 6547</a>
+                <Button variant="outline" className="w-full border-crm-green-deep/30 text-crm-green-deep hover:bg-crm-green-soft" asChild>
+                  <a href="tel:03302296547"><Phone className="h-4 w-4" aria-hidden="true" /> Call 0330 229 6547</a>
+                </Button>
+                <Button className="w-full bg-whatsapp text-whatsapp-foreground hover:bg-whatsapp-strong" asChild>
+                  <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /> WhatsApp us</a>
                 </Button>
               </div>
             </DialogContent>

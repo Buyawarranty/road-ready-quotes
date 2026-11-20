@@ -16,6 +16,7 @@ import whatsappIconNew from '@/assets/whatsapp-icon-new.png';
 import companyRegistration from '@/assets/company-registration-footer.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const BuyCarWarranty: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -697,7 +698,7 @@ const BuyCarWarranty: React.FC = () => {
       {isMobile && (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
           <a
-            href="https://wa.me/message/SPQPJ6O3UBF5B1"
+            href={PANDA_WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-[#25D366] hover:bg-[#20BA5A] text-white p-1 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center"

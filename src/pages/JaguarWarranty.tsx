@@ -21,6 +21,7 @@ import jaguarFTypeImage from '@/assets/jaguar-ftype.png';
 import jaguarIPaceImage from '@/assets/jaguar-ipace.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const JaguarWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -618,7 +619,7 @@ const JaguarWarranty = () => {
               <Phone className="w-6 h-6" />
             </a>
             <a
-              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#25D366] p-1 rounded-full shadow-lg hover:bg-[#128C7E] transition-all hover:scale-110 flex items-center justify-center"

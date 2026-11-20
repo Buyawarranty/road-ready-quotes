@@ -49,6 +49,7 @@ import { initPhoneClickTracker } from '@/utils/phoneEventLogger';
 import { WorkingWeekReminderBanner } from '@/components/admin/timesheets/WorkingWeekReminderBanner';
 import { DiscountAuthBanner } from '@/components/admin/DiscountAuthBanner';
 import { GlobalAutoDistributeBar } from '@/components/admin/leads/GlobalAutoDistributeBar';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const ManagerOverviewTab = lazy(() => import('@/components/admin/ManagerOverviewTab'));
 const PriceUpdatesTab = lazy(() => import('@/components/admin/PriceUpdatesTab'));
@@ -1150,7 +1151,7 @@ const AdminDashboardInner: React.FC<{
               {isSuperAdmin && <ViewAsDropdown />}
 
               
-              <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
+              <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -1194,7 +1195,7 @@ const AdminDashboardInner: React.FC<{
                       <span className="text-orange-500 font-semibold text-sm py-2 border-b border-gray-200">Admin Dashboard</span>
                     </nav>
                     <div className="space-y-4 pt-6 mt-auto">
-                      <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer">
+                      <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
                         <Button variant="outline" className="w-full bg-green-500 text-white border-green-500 hover:bg-green-600 hover:border-green-600 text-lg py-3" onClick={() => setIsMobileMenuOpen(false)}>WhatsApp Us</Button>
                       </a>
                       <Button className="w-full bg-orange-500 text-white hover:bg-orange-600 text-lg py-3" onClick={() => { setIsMobileMenuOpen(false); navigateToQuoteForm(); }}>Get my quote</Button>

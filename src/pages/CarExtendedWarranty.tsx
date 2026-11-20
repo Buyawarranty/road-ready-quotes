@@ -35,6 +35,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import trustpilotLogo from '@/assets/trustpilot-logo.webp';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 interface DynamicLandingPage {
   id: string;
   slug: string;
@@ -1329,7 +1330,7 @@ const CarExtendedWarranty: React.FC = () => {
       {!isMobile && (
         <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
           <a 
-            href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+            href={PANDA_WHATSAPP_URL} 
             target="_blank" 
             rel="noopener noreferrer"
             className="bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-110"
@@ -1349,7 +1350,7 @@ const CarExtendedWarranty: React.FC = () => {
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 z-50 flex gap-3">
           <a 
-            href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+            href={PANDA_WHATSAPP_URL} 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex-1"

@@ -27,6 +27,7 @@ import skodaLogo from '@/assets/logos/skoda.webp';
 import ssangyongLogo from '@/assets/logos/ssangyong.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 const EVWarranty = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -723,7 +724,7 @@ const EVWarranty = () => {
       {!isMobile && (
         <div className="fixed right-6 bottom-6 z-40 flex flex-col gap-3">
           <a 
-            href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+            href={PANDA_WHATSAPP_URL} 
             target="_blank" 
             rel="noopener noreferrer"
             className="bg-green-500 hover:bg-green-600 text-white rounded-full p-1 shadow-lg transition-all hover:scale-110 flex items-center justify-center"

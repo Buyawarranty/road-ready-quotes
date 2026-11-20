@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MessageCircle, Star, X, HelpCircle, PhoneCall } from 'lucide-react';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const HelpFAB: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -68,7 +69,7 @@ const HelpFAB: React.FC = () => {
             </button>
 
             <a 
-              href="https://wa.me/message/SPQPJ6O3UBF5B1"
+              href={PANDA_WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"

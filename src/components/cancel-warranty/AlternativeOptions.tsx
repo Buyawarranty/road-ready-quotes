@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const AlternativeOptions: React.FC = () => {
   const [showContactDialog, setShowContactDialog] = useState(false);
@@ -52,7 +53,7 @@ const AlternativeOptions: React.FC = () => {
   };
 
   const handleWhatsApp = () => {
-    window.open('https://api.whatsapp.com/message/SPQPJ6O3UBF5B1?autoload=1&app_absent=0', '_blank');
+    window.open(PANDA_WHATSAPP_URL, '_blank');
   };
 
   return (

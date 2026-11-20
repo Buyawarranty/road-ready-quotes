@@ -8,6 +8,7 @@ import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import MobileNavigation from '@/components/MobileNavigation';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 
 const StickyNavigation: React.FC = () => {
   const navigate = useNavigate();
@@ -110,7 +111,7 @@ const StickyNavigation: React.FC = () => {
 
               {/* WhatsApp Us Button */}
               <a 
-                href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+                href={PANDA_WHATSAPP_URL} 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-3 xl:px-4 py-2 bg-[#25D366] text-white text-sm xl:text-base font-semibold rounded-lg hover:bg-[#20BA5A] transition-colors whitespace-nowrap"

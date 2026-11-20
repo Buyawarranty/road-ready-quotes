@@ -1,5 +1,7 @@
 import React from 'react';
-import { Star, Phone, Mail, MessageCircle } from 'lucide-react';
+import { Star, Phone, Mail } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 import { Link, useLocation } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
@@ -92,12 +94,12 @@ const WebsiteFooter = () => {
                 support@pandaprotect.co.uk
               </a>
               <a 
-                href="https://wa.me/message/SPQPJ6O3UBF5B1" 
+                href={PANDA_WHATSAPP_URL} 
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-sm font-semibold text-[#25D366] hover:text-[#20BA5A] transition-colors"
+                className="flex items-center text-sm font-semibold text-whatsapp hover:text-whatsapp-strong transition-colors"
               >
-                <MessageCircle className="w-4 h-4 mr-1.5" />
+                <WhatsAppIcon size={16} className="mr-1.5" />
                 WhatsApp Us
               </a>
             </div>

@@ -16,7 +16,6 @@ import {
   Headphones,
   LifeBuoy,
   Mail,
-  MessageCircle,
   Phone,
   PawPrint,
   PoundSterling,
@@ -41,6 +40,8 @@ const coveredPartsImage = programmeBannerAsset.url;
 import pandaDealerPhoto from '@/assets/panda-dealer-details.webp';
 import pandaCustomerPhoto from '@/assets/panda-customer-docs.webp';
 import pandaHeroImage from '@/assets/panda-hero-optimized.webp';
+import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 
 const HOME_FAQS: { q: string; a: string }[] = [
   {
@@ -241,6 +242,15 @@ const DealerHome = () => {
                   Request a callback <ArrowRight aria-hidden="true" />
                 </button>
               </div>
+              <a
+                href={PANDA_WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="home-contact-whatsapp"
+              >
+                <WhatsAppIcon size={17} />
+                Chat with us on WhatsApp
+              </a>
               <p className="home-contact-note">Speak to our UK team – Lines open 9am to 6pm, Monday to Saturday.</p>
             </div>
           </div>
@@ -588,7 +598,15 @@ const DealerHome = () => {
           <div>
             <Button asChild className="home-primary-button"><Link to="/dealer-portal/signup">Dealer programme sign up <ArrowRight aria-hidden="true" /></Link></Button>
             <a href="tel:03302296547"><Phone aria-hidden="true" />0330 229 6547</a>
-            <a href="https://wa.me/message/SPQPJ6O3UBF5B1" target="_blank" rel="noopener noreferrer"><MessageCircle aria-hidden="true" />WhatsApp us</a>
+            <a
+              href={PANDA_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="home-closing-whatsapp"
+            >
+              <WhatsAppIcon size={17} />
+              WhatsApp us
+            </a>
             <a href="mailto:dealers@pandaprotect.co.uk" className="sr-only"><Mail aria-hidden="true" />dealers@pandaprotect.co.uk</a>
           </div>
         </div>
