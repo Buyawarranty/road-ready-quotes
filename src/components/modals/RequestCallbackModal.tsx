@@ -33,8 +33,8 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
   const [error, setError] = useState('');
   const [showContent, setShowContent] = useState(false);
   const [securityOk, setSecurityOk] = useState(false);
-  const [securityError, setSecurityError] = useState('');
-  // Bumping this remounts the security check so a wrong answer gets a new sum.
+  const [securityAttempted, setSecurityAttempted] = useState(0);
+  // Bumping this remounts the security check so the next visit gets a new sum.
   const [securityKey, setSecurityKey] = useState(0);
 
   useEffect(() => {
@@ -48,8 +48,6 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
 
   const handleSecurityAnswer = useCallback((verified: boolean) => {
     setSecurityOk(verified);
-    // Typing a new answer clears the previous complaint.
-    setSecurityError('');
   }, []);
 
   const validateUKPhone = (phoneNumber: string): { isValid: boolean; type: 'mobile' | 'landline' | null } => {
@@ -74,8 +72,7 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
     if (!phone.trim()) { setError('Please enter your phone number'); return; }
     if (!isPhoneValid) { setError('Please enter a valid UK phone number (e.g. 07123 456789)'); return; }
     if (!securityOk) {
-      setSecurityError('Please answer the quick security check to continue.');
-      setSecurityKey((k) => k + 1);
+      setSecurityAttempted((n) => n + 1);
       return;
     }
 
@@ -118,7 +115,7 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
         setIsSuccess(false);
         setPhone('');
         setSecurityOk(false);
-        setSecurityError('');
+        setSecurityAttempted(0);
         setSecurityKey((k) => k + 1);
         onClose();
       }, 3500);
@@ -139,7 +136,7 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
       setPhone('');
       setError('');
       setSecurityOk(false);
-      setSecurityError('');
+      setSecurityAttempted(0);
       setSecurityKey((k) => k + 1);
       setIsSuccess(false);
       onClose();
@@ -284,7 +281,7 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
                 {/* Quick security check */}
                 <QuickSecurityCheck
                   key={securityKey}
-                  error={securityError}
+                  attempted={securityAttempted}
                   onAnswerChange={handleSecurityAnswer}
                 />
 

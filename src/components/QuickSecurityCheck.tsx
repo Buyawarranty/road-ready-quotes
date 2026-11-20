@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { RotateCw, ShieldCheck } from 'lucide-react';
 
 type QuickSecurityCheckProps = {
-  /** Message shown under the box when the parent rejects the answer. */
-  error?: string;
+  /** Increments each time the parent rejects the answer; shows a prompt. */
+  attempted?: number;
   /** Called whenever whether the typed answer matches the sum changes. */
   onAnswerChange: (verified: boolean) => void;
 };
@@ -19,16 +19,21 @@ const makeSum = () => {
  * of website call-back requests. The question is deliberately bold so it is
  * the first thing a visitor reads.
  */
-const QuickSecurityCheck: React.FC<QuickSecurityCheckProps> = ({ error, onAnswerChange }) => {
+const QuickSecurityCheck: React.FC<QuickSecurityCheckProps> = ({ attempted = 0, onAnswerChange }) => {
   const [sum, setSum] = useState(makeSum);
   const [value, setValue] = useState('');
 
   const trimmed = value.trim();
   const verified = trimmed !== '' && Number(trimmed) === sum.answer;
+  const showPrompt = attempted > 0 && !verified;
+  const prompt =
+    trimmed === ''
+      ? 'Please answer the quick security check to continue.'
+      : "That answer isn't right — please try the sum again.";
 
   useEffect(() => {
     onAnswerChange(verified);
-  }, [verified, value, sum, onAnswerChange]);
+  }, [verified, onAnswerChange]);
 
   const refresh = () => {
     setSum(makeSum());
@@ -53,7 +58,7 @@ const QuickSecurityCheck: React.FC<QuickSecurityCheckProps> = ({ error, onAnswer
           autoComplete="off"
           value={value}
           onChange={(e) => setValue(e.target.value.replace(/[^\d]/g, '').slice(0, 3))}
-          aria-invalid={error ? true : undefined}
+          aria-invalid={showPrompt ? true : undefined}
           className="h-10 w-16 rounded-lg border-2 border-border bg-background px-2 text-center text-base font-bold text-foreground outline-none transition-colors focus:border-brand-orange"
         />
         <button
@@ -66,8 +71,10 @@ const QuickSecurityCheck: React.FC<QuickSecurityCheckProps> = ({ error, onAnswer
         </button>
       </div>
 
-      {error ? (
-        <p className="mt-2 text-sm font-medium text-red-500">{error}</p>
+      {showPrompt ? (
+        <p className="mt-2 text-sm font-medium text-red-500" role="alert">
+          {prompt}
+        </p>
       ) : (
         <p className="mt-2 text-sm text-muted-foreground">
           Just a quick sum so we know you're a person, not a spam robot.
