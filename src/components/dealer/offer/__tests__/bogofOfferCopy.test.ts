@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 const read = (relativePath: string) => readFileSync(resolve(process.cwd(), relativePath), 'utf8');
 
-const DETAIL = "Buy one, get the next one free on your first three warranties";
+const DETAIL = "up to 3 free warranties in total";
 
 describe('Buy one get one free offer copy', () => {
   it('lives in the offer module as one short label and one detail sentence', () => {
