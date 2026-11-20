@@ -6,7 +6,15 @@
 .dealer-crm .pricing-heading h1 { font-size: 26px !important; line-height: 1.2 !important; font-weight: 900; margin: 12px 0 5px !important; }
 .dealer-crm .pricing-heading h1 span { display: block; color: hsl(var(--crm-orange)); }
 .dealer-crm .pricing-hero-car { position: absolute; right: -24px; top: -8px; width: 38%; height: 210px; object-fit: cover; object-position: right top; mask-image: linear-gradient(to right, transparent, black 28%), linear-gradient(to bottom, black 75%, transparent); mask-composite: intersect; }
-.dealer-crm .pricing-vehicle { border: 0; padding: 0; background: transparent; }
+.dealer-crm .pricing-vehicle { border: 1px solid hsl(var(--crm-line)); padding: 10px; background: hsl(var(--card)); }
+@media (min-width: 1024px) {
+  .dealer-crm .pricing-vehicle { flex-wrap: nowrap; gap: 10px; }
+  .dealer-crm .pricing-vehicle > div.flex-1 { flex: 0 1 170px; }
+  .dealer-crm .pricing-vehicle > [aria-label="Current mileage"] { margin-left: 0; gap: 8px; }
+  .dealer-crm .pricing-vehicle > [aria-label="Current mileage"] > div:last-child { flex-direction: row; align-items: center; gap: 8px; }
+  .dealer-crm .pricing-vehicle > [aria-label="Current mileage"] > div:last-child > button,
+  .dealer-crm .pricing-vehicle > [aria-label="Current mileage"] > div:last-child > span { width: auto; height: 36px; white-space: nowrap; }
+}
 .dealer-crm .pricing-term { min-height: 152px; border-width: 1px; border-radius: 8px; padding: 14px 12px 12px; }
 .dealer-crm .pricing-term .pricing-popular { position: absolute; top: 7px; left: 12px; }
 .dealer-crm .pricing-term .pricing-term-title { font-size: 16px; line-height: 20px; padding-top: 14px; }
