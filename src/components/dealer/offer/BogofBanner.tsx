@@ -40,7 +40,7 @@ export function BogofBannerView({ s, compact = false, onClose }: { s: BogofSetti
       <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-crm-green-deep ${compact ? '' : 'md:mt-0 md:flex-col md:border-l md:border-border md:pl-6 md:pr-8'}`}>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />No code needed</span>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />Applied automatically at checkout</span>
-        <span className="w-full text-xs font-medium leading-snug text-muted-foreground">Applies to your first three warranties: buy three, get three free.</span>
+        <span className="flex w-full gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Applies to your first three<br />warranties: buy 3, get 3 free</span></span>
       </div>
     </div>
   );
