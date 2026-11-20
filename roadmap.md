@@ -98,6 +98,6 @@
 - [ ] Show a coloured "Panda Protect" tag on forwarded claims inside the Buy A Warranty dashboard: needs write access to that project (private key via the secure form) or a small change made there.
 
 - [ ] Super Admin Testing section: create test logins (dealer + admin, test data only), Stripe test-card purchases, grant tester emails — waiting on Stripe test secret key
-- [ ] BOGOF: confirm rule (each paid = 1 free, continuous) and show offer on pricing page
+- [x] BOGOF: rule confirmed (each paid warranty earns one free, continuous until switched off; first three paid earn three free) and the offer shows on the pricing page — one line under the heading bullets ("Buy one get one free") with the full wording in a hover/tap info bubble
 
 - [x] Point every WhatsApp contact point on the site at the new chat address (https://wa.me/message/I5OUGLJ7XTMOA1): homepage hero card and closing band, Contact Us card, header and footer, help bubble, sticky nav, support pop-up, staff login and all warranty landing pages, with a green icon button style; 335 tests pass and phone/desktop checks confirm the buttons.

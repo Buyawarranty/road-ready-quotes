@@ -43,8 +43,8 @@ export function OfferDetailTip({ detail = BOGOF_DETAIL }: { detail?: string }) {
         <button type="button" aria-label="Offer details" aria-expanded={open}
           onPointerDown={event => { if (event.pointerType === 'touch') setOpen(true); }}
           onClick={event => event.preventDefault()}
-          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-crm-orange/40 bg-card text-crm-orange hover:bg-crm-orange-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange">
-          <Info className="h-3.5 w-3.5" aria-hidden="true" />
+          className="relative inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-crm-orange/40 bg-card text-crm-orange hover:bg-crm-orange-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange sm:h-5 sm:w-5 !min-h-0 !min-w-0 after:absolute after:-inset-3 after:content-['']">
+          <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5" aria-hidden="true" />
         </button>
       </TooltipTrigger>
       <TooltipContent side="top" collisionPadding={12} className="max-w-[16rem] text-center text-xs font-semibold leading-snug text-crm-navy">
