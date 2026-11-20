@@ -17,7 +17,10 @@ import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload 
 import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
-import WhatsCoveredPanel from '@/components/dealer/journey/WhatsCoveredPanel';
+import PricingCoverageOverview from '@/components/dealer/journey/PricingCoverageOverview';
+import { pandaLogoUrl } from '@/lib/pandaLogo';
+import pricingCar from '@/assets/panda-pricing-suv.png.asset.json';
+import './pricing-design.css';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 const gbp = (n: number) => n.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: Number.isInteger(n) ? 0 : 2 });
@@ -224,12 +227,19 @@ const Step3Pricing: React.FC = () => {
   };
   if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
-  return <DealerLayout><div className="mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
-    <header className="px-1 pb-1 text-center sm:px-0 sm:text-left">
-      <div><h1 className="font-bold">Activate your warranty in 60 seconds</h1><p className="mt-1 text-sm leading-5 text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the registration to see the vehicle and confirm mileage.'}</p>{offerOn && <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold text-crm-navy"><Gift className="h-4 w-4 shrink-0 text-crm-orange" aria-hidden="true" />Buy one warranty, get the next one free — up to 3 years' cover.</p>}</div>
+  return <DealerLayout><div className="pricing-page mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
+    <header className="pricing-heading">
+      <img src={pricingCar.url} alt="" aria-hidden="true" className="pricing-hero-car" />
+      <div className="pricing-heading-copy">
+        <div className="flex items-center justify-center gap-3 sm:justify-start"><img src={pandaLogoUrl} alt="Panda Protect" className="h-7 w-auto" /><span className="border-l border-crm-line pl-3 text-[10px] font-bold uppercase text-muted-foreground">Trade warranty solutions</span></div>
+        <h1>MORE PROFIT. LESS HASSLE.<span>ACTIVATE A WARRANTY IN 60 SECONDS.</span></h1>
+        <p className="text-sm text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the vehicle registration to start activating your warranty.'}</p>
+        <ul className="mt-3 grid max-w-lg grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-bold sm:grid-cols-3">{['Fixed trade prices', 'Full cover', 'Parts and labour', 'Quick activation', 'Simple claims', 'Fast payouts'].map(text => <li key={text} className="flex items-center gap-2"><Check className="h-4 w-4 shrink-0 text-crm-green" />{text}</li>)}</ul>
+        {offerOn && <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold"><Gift className="h-4 w-4 text-crm-orange" />Buy one warranty, get the next one free — up to 3 years' cover.</p>}
+      </div>
     </header>
     <BogofBanner />
-    <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
+    <section className="pricing-vehicle grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
         <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); if (!regInput.trim()) { regRef.current?.focus(); return; } void lookupVehicle(regInput); }} noValidate>
           <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:gap-3">
@@ -237,7 +247,7 @@ const Step3Pricing: React.FC = () => {
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
               <input ref={regRef} value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
-            <Button type="submit" disabled={lookup === 'loading'} className={`h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base ${!vehicle?.reg ? 'reg-cta-pulse' : ''}`}>{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>Check the vehicle<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
+            <Button type="submit" disabled={lookup === 'loading'} className={`h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base ${!vehicle?.reg ? 'reg-cta-pulse' : ''}`}>{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>CONTINUE<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && (/15 years/.test(lookupMsg) ? <p role="alert" className="w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ {lookupMsg}</p> : <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>)}
@@ -281,26 +291,26 @@ const Step3Pricing: React.FC = () => {
 
           const shown = trade ? cardCost : cardRetail;
           const selected = term === months;
-          return <div role="radio" aria-checked={selected} aria-disabled={!available} tabIndex={available ? 0 : -1} key={months} onClick={() => { if (available) { setTerm(months); setError(''); } }} onKeyDown={event => { if (event.target === event.currentTarget && available && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setTerm(months); setError(''); } }} className={`relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${!available ? 'opacity-60' : 'cursor-pointer'} ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
-            <span className="mb-3 flex h-6 items-center"><span className={`rounded-full bg-crm-green-deep px-3 py-1 text-[0.62rem] font-black uppercase text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span></span>
+          return <div role="radio" aria-checked={selected} aria-disabled={!available} tabIndex={available ? 0 : -1} key={months} onClick={() => { if (available) { setTerm(months); setError(''); } }} onKeyDown={event => { if (event.target === event.currentTarget && available && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); setTerm(months); setError(''); } }} className={`pricing-term relative flex flex-col rounded-xl border-2 p-4 text-left text-crm-navy transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange ${!available ? 'opacity-60' : 'cursor-pointer'} ${selected ? 'border-crm-orange bg-crm-orange-soft' : 'border-crm-line bg-card hover:border-crm-navy/30'}`}>
+            <span className={`pricing-popular rounded-full bg-crm-green-deep px-2 py-0.5 text-[8px] font-black uppercase text-primary-foreground ${popular ? '' : 'invisible'}`}>Most popular</span>
             <span className="flex items-start justify-between gap-2">
-              <strong className="text-xl font-black leading-6">{months / 12} Year Warranty</strong>
+              <strong className="pricing-term-title text-xl font-black leading-6">{months / 12} Year Warranty</strong>
 
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${selected ? 'border-crm-orange bg-card' : 'border-muted-foreground/40 bg-card'}`}>{selected && <span className="h-3 w-3 rounded-full bg-crm-orange" />}</span>
             </span>
-            <span className="mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
-            <span className="text-sm text-muted-foreground">{trade ? `${prices[months] != null ? 'Your selling price' : 'Recommended retail price'} ${cardRetail != null ? gbp(cardRetail) : '—'} inc. VAT` : 'per vehicle, inc. VAT'}</span>
+            <span className="pricing-term-price mt-2 text-3xl font-black leading-9">{shown != null ? gbp(shown) : '—'}</span>
+            <span className="pricing-retail text-sm text-muted-foreground">{trade ? `${prices[months] != null ? 'Your selling price' : 'Recommended retail price'} ${cardRetail != null ? gbp(cardRetail) : '—'} inc. VAT` : 'per vehicle, inc. VAT'}</span>
             {trade && available && cardRetail != null && <Button type="button" variant="link" className="h-auto w-fit justify-start px-0 py-1 text-xs font-semibold text-crm-navy underline" onClick={event => { event.stopPropagation(); setTerm(months); setExactValue(String(cardRetail - (boostOn ? boostForTerm(boostCfg, months)?.retail_price || 0 : 0))); setExact(true); }}>Change price</Button>}
-            {trade && cardRetail != null && cardCost != null && <span className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn approx. {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
+            {trade && cardRetail != null && cardCost != null && <span className="pricing-profit mt-3 inline-flex w-fit items-center gap-1.5 rounded-full border border-crm-green/25 bg-crm-green-soft px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-crm-green-deep"><TrendingUp className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />You earn approx. {gbp(Math.round(potentialProfit(cardRetail, cardCost)))} profit</span>}
             {!available && <span className="mt-2 text-xs">Unavailable</span>}
           </div>;
         })}
       </div>
     </section>
-    {cover && <section className="grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
+    {cover && <section className="pricing-benefits grid grid-cols-2 gap-3 px-1 py-1 lg:grid-cols-4" aria-label="Included warranty benefits">
       {[{ icon: ShieldCheck, title: gbp(cover.claim), text: 'per eligible claim' }, { icon: Infinity, title: 'Unlimited', text: 'claims' }, { icon: Car, title: 'Up to the value', text: 'of the vehicle' }, { icon: Wrench, title: `${gbp(cover.labour)}/hour`, text: 'labour' }].map(b => <div key={b.text} className="flex min-w-0 flex-col items-center gap-2 py-2 text-center sm:flex-row sm:gap-3 sm:text-left"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted"><b.icon className="h-5 w-5" /></span><p className="text-sm leading-5"><strong className="block text-base">{b.title}</strong><span className="text-muted-foreground">{b.text}</span></p></div>)}
     </section>}
-    <div className={`flex flex-wrap items-center gap-3 rounded-xl border-2 bg-crm-green-soft p-4 text-crm-navy transition-all ${boostOn ? 'border-crm-green-deep' : 'border-crm-green/35'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
+    <div className={`pricing-boost flex flex-wrap items-center gap-3 rounded-xl border-2 bg-crm-green-soft p-4 text-crm-navy transition-all ${boostOn ? 'border-crm-green-deep' : 'border-crm-green/35'} ${boostCfg ? '' : 'opacity-60'}`} aria-label="£5,000 claim limit boost">
       <span aria-hidden className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${boostOn ? 'border-crm-green-deep bg-crm-green-deep' : 'border-crm-green/50 bg-card'}`}>{boostOn && <Check className="h-4 w-4 text-primary-foreground" />}</span>
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-card"><Zap className="h-5 w-5 text-crm-gold-deep" /></span>
       <span className="min-w-0 flex-1">
@@ -310,17 +320,17 @@ const Step3Pricing: React.FC = () => {
       {boostCfg && (() => { const boostPrice = term ? (boostForTerm(boostCfg, term)?.[trade ? 'dealer_price' : 'retail_price'] ?? 0) : (boostLead?.[trade ? 'dealer_price' : 'retail_price'] ?? 0); return (
       <span className="flex w-full shrink-0 flex-wrap items-center justify-center gap-3 sm:w-auto">
         <span className="whitespace-nowrap text-sm font-bold text-crm-green-deep">{term ? `Only ${gbp(boostPrice)}` : `From only ${gbp(boostPrice)}`}</span>
-        <button type="button" onClick={() => { setBoost(!boostOn); setError(''); }} aria-pressed={boostOn} aria-label="Add £5,000 claim limit boost"
+        <Button type="button" onClick={() => { setBoost(!boostOn); setError(''); }} aria-pressed={boostOn} aria-label="Add £5,000 claim limit boost"
           className={`inline-flex h-12 items-center gap-1.5 rounded-lg px-5 text-base font-extrabold transition-colors focus-visible:outline-none focus-visible:ring-2 ${boostOn ? 'bg-crm-green-deep text-primary-foreground hover:bg-crm-green-deep/90 focus-visible:ring-crm-green-deep' : 'bg-crm-green text-primary-foreground hover:bg-crm-green/90 focus-visible:ring-crm-green'}`}>
           {boostOn ? <><Check className="h-4 w-4" />Added</> : 'Add boost'}
-        </button>
+        </Button>
       </span>); })()}
     </div>
-    <WhatsCoveredPanel />
+    <PricingCoverageOverview />
     <section className="grid gap-3 pt-2" aria-label="Quote summary">
-      <div className="flex flex-col items-start gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-      {trade ? <div className="w-full overflow-hidden rounded-xl border border-crm-line bg-card shadow-sm lg:w-auto lg:min-w-[440px]" aria-label="Price summary">
-        <div className="grid grid-cols-2 divide-x divide-crm-line">
+      <div className="pricing-summary-row">
+      {trade ? <div className="pricing-summary-box w-full overflow-hidden border border-crm-line bg-card" aria-label="Price summary">
+        <div className="pricing-summary-values divide-x divide-crm-line">
           <div className="px-4 py-4 text-center">
             <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted-foreground">You pay</p>
             <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(cost) : '—'}</strong>
@@ -331,13 +341,14 @@ const Step3Pricing: React.FC = () => {
             <strong className="mt-1 block text-2xl font-black leading-8 text-crm-navy sm:text-3xl">{term ? gbp(retail) : '—'}</strong>
             <p className="text-xs text-muted-foreground">{term && prices[term] != null ? 'Your selling price' : 'Recommended retail'} inc. VAT</p>
           </div>
-        </div>
-        <div className="flex items-center justify-between gap-3 border-t border-crm-gold/40 bg-crm-gold-soft px-4 py-3">
-          <span className="flex items-center gap-2 text-sm font-extrabold text-crm-navy"><TrendingUp className="h-4 w-4 text-crm-gold" aria-hidden="true" />Your approx. profit</span>
-          <strong className="text-2xl font-black text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+          <div className="pricing-summary-profit">
+            <p className="text-xs font-bold uppercase text-muted-foreground">Your approx. profit</p>
+            <strong className="mt-1 block font-black text-crm-gold-deep">{term ? gbp(Math.round(potentialProfit(retail, cost))) : '—'}</strong>
+            <p className="text-muted-foreground">{term && prices[term] != null ? 'Based on your selling price' : 'Based on recommended retail'}</p>
+          </div>
         </div>
       </div> : <div className="flex shrink-0 items-center rounded-[10px] border border-crm-line bg-card px-3 py-2"><p className="text-xs text-muted-foreground">Customer price<strong className="block text-3xl font-extrabold text-crm-navy">{term ? gbp(retail) : '—'}</strong>inc. VAT</p></div>}
-      <div className="grid w-full min-w-0 gap-2 lg:w-auto lg:flex-1">
+      <div className="pricing-actions grid w-full min-w-0 gap-2">
       <div className="grid grid-cols-3 gap-2" role="group" aria-label="Quote actions">
         {trade && <Button variant="outline" className="h-12 min-w-0 gap-1.5 whitespace-normal px-2 text-xs leading-tight sm:px-3 sm:text-sm !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid} onClick={() => persist()}><Save />Save draft</Button>}
         <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="h-12 min-w-0 gap-1.5 whitespace-normal px-2 text-xs leading-tight sm:px-3 sm:text-sm !border-crm-line !bg-card font-bold !text-crm-navy" disabled={saving || !valid}><Share2 />Share</Button></DropdownMenuTrigger>
