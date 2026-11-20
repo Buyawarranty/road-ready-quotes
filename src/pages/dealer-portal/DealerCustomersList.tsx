@@ -48,10 +48,12 @@ import {
   Search,
   ShieldCheck,
   Upload,
+  Mail,
   Users,
   XCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { functionErrorMessage } from '@/lib/functionError';
 
 type CustomerRow = {
   id: string;
@@ -614,6 +616,21 @@ const DealerCustomersList = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [page, setPage] = useState(1);
+  const resendDocuments = async (customer: CustomerRow) => {
+    const to = (customer.email || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(to)) { toast.error('This customer has no valid email address saved.'); return; }
+    const id = toast.loading(`Sending warranty documents to ${to}…`);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-send-customer-warranty', {
+        body: { action: 'send', customer_id: customer.id, to_email: to, recipient_type: 'customer' },
+      });
+      if (error) throw new Error(await functionErrorMessage(error));
+      if (data?.error) throw new Error(data.error);
+      toast.success(`Warranty documents sent to ${data?.sent_to || to}`, { id });
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not send the warranty documents', { id });
+    }
+  };
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerRow | null>(null);
   const [paying, setPaying] = useState(false);
 
@@ -742,9 +759,6 @@ const DealerCustomersList = () => {
             <p className="mt-1 text-base text-gray-600">View and manage your customer warranties.</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button variant="outline" className="bg-white">
-              <Upload className="mr-2 h-4 w-4" /> Import customers
-            </Button>
             <Button className="bg-crm-orange text-white hover:bg-crm-orange/90">
               <Plus className="mr-2 h-4 w-4" /> Add customer
             </Button>
@@ -912,6 +926,11 @@ const DealerCustomersList = () => {
                                 window.location.assign(`/dealer-portal/claims/new?${params.toString()}`);
                               }}>
                                 <ShieldCheck className="mr-2 h-4 w-4" /> Make claim
+                              </DropdownMenuItem>
+                            )}
+                            {status === 'Active' && (
+                              <DropdownMenuItem onClick={() => resendDocuments(customer)}>
+                                <Mail className="mr-2 h-4 w-4" /> Resend warranty documents
                               </DropdownMenuItem>
                             )}
                             {paymentDue && (
