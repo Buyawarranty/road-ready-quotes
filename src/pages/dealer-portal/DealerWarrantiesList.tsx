@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
+  Gift,
   CalendarDays,
   CarFront,
   CheckCircle2,
@@ -171,6 +172,15 @@ function EmptyState({ filtered, cancellations = false, onReset }: { filtered: bo
 
 const DealerWarrantiesList = () => {
   const { dealer } = useDealerAuth();
+  const { data: freeLeft } = useQuery({
+    queryKey: ['dealer-free-remaining', dealer?.id],
+    enabled: !!dealer?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealer!.id });
+      if (error || !data) return null;
+      return Number((data as { intro_free_remaining?: number }).intro_free_remaining ?? 0);
+    },
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = ['payments', 'cancellations'].includes(searchParams.get('tab') || '')
     ? searchParams.get('tab') || 'plans'
@@ -728,7 +738,7 @@ const DealerWarrantiesList = () => {
           </Button>
         </header>
 
-        <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className={`grid grid-cols-2 gap-3 ${activeTab === 'payments' ? 'xl:grid-cols-4' : 'xl:grid-cols-5'}`}>
           {activeTab === 'payments' ? (
             <>
               <StatCard icon={ReceiptText} label="Outstanding invoices" value={unpaidRows.length} />
@@ -742,6 +752,7 @@ const DealerWarrantiesList = () => {
               <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} green />
               <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} />
               <StatCard icon={Coins} label="Outstanding" value={money(outstandingTotal)} />
+              <StatCard icon={Gift} label="Free warranties remaining" value={freeLeft ?? '—'} green />
             </>
           )}
         </section>
