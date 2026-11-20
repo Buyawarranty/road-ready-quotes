@@ -310,15 +310,19 @@ const DealerAdminDealers: React.FC = () => {
             ))}
           </div>
           <div className="flex flex-wrap items-center gap-3">
-          <div className="relative max-w-md flex-1 min-w-[220px]">
+          <form role="search" className="flex w-full min-w-0 flex-1 items-center gap-2 sm:max-w-xl" onSubmit={(event) => { event.preventDefault(); setSearch((value) => value.trim()); }}>
+          <div className="relative min-w-0 flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search dealer, company, email..."
+              aria-label="Search dealers"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
             />
           </div>
+          <Button type="submit" className="shrink-0 gap-2"><Search className="h-4 w-4" />Search</Button>
+          </form>
           <Button size="sm" variant="outline" onClick={() => setNewestFirst((v) => !v)}>
             {newestFirst ? <ArrowDown className="h-4 w-4 mr-1" /> : <ArrowUp className="h-4 w-4 mr-1" />}
             {newestFirst ? 'Newest first' : 'Oldest first'}
