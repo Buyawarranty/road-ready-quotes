@@ -1,4 +1,4 @@
-import { Camera, Cog, Cpu, Fan, Fuel, Gauge, GitFork, Monitor, Navigation, Radio, ShieldCheck, Snowflake, Users, Wrench, Zap } from 'lucide-react';
+import { Camera, Cog, Cpu, Fan, Fuel, Gauge, GitFork, Monitor, Navigation, Radio, ShieldCheck, Snowflake, Wrench, Zap } from 'lucide-react';
 import WhatsCoveredPanel from './WhatsCoveredPanel';
 
 export default function PricingCoverageOverview() {
@@ -9,11 +9,11 @@ export default function PricingCoverageOverview() {
     </section>
     <section aria-label="Why dealers choose Panda Protect">
       <h2 className="mb-2 text-base font-bold">Why dealers choose Panda Protect</h2>
-      <div className="grid gap-3 md:grid-cols-3">{[
-        { icon: ShieldCheck, title: 'Fully comprehensive cover', text: 'Broad, market-leading cover across the key mechanical and electrical systems.' },
-        { icon: Users, title: 'Exceptional customer service', text: 'We look after your customers with a friendly, knowledgeable UK team and clear, proactive communication.' },
-        { icon: Zap, title: 'Less admin for your dealership', text: 'A simple, streamlined process from quote to claim, so you can focus on selling more vehicles.' },
-      ].map(({ icon: Icon, title, text }) => <article key={title} className="flex items-start gap-3 rounded-lg border border-crm-line bg-card p-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-crm-orange-soft text-crm-orange"><Icon className="h-5 w-5" /></span><div><h3 className="text-xs font-extrabold uppercase">{title}</h3><p className="mt-1 text-xs leading-4 text-muted-foreground">{text}</p></div></article>)}</div>
+      <ul className="list-disc space-y-2 pl-5 text-sm leading-5">{[
+        { title: 'Fully comprehensive cover', text: 'Broad, market-leading cover across the key mechanical and electrical systems.' },
+        { title: 'Exceptional customer service', text: 'We look after your customers with a friendly, knowledgeable UK team and clear, proactive communication.' },
+        { title: 'Less admin for your dealership', text: 'A simple, streamlined process from quote to claim, so you can focus on selling more vehicles.' },
+      ].map(({ title, text }) => <li key={title}><strong className="font-semibold">{title}</strong><span className="text-muted-foreground"> — {text}</span></li>)}</ul>
     </section>
   </>;
 }
