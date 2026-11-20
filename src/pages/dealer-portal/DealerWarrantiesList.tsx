@@ -230,7 +230,6 @@ const DealerWarrantiesList = () => {
     enabled: !!dealer?.id,
   });
 
-  const isPaid = (row: WarrantyRow) => row.payment_status === 'paid';
   const cancellationRows = useMemo(
     () => rows.filter((row) => pendingCancel.has(row.id) || ['cancelled', 'refunded'].includes(String(row.status || '').trim().toLowerCase())),
     [rows, pendingCancel],
@@ -495,34 +494,37 @@ const DealerWarrantiesList = () => {
     })();
   };
 
+  const renderDocsLinks = (row: WarrantyRow) => (
+    <section className="rounded-2xl border border-crm-orange/20 bg-crm-orange-soft/60 p-4">
+      <h3 className="flex items-center gap-2 text-sm font-extrabold text-crm-navy"><FileText className="h-5 w-5 text-crm-orange" aria-hidden="true" />Documents & actions</h3>
+      <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Button asChild variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3 text-left">
+          <a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Platinum warranty plan<Download className="ml-auto h-4 w-4 shrink-0" /></a>
+        </Button>
+        <Button asChild variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3 text-left">
+          <a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Terms & Conditions<Download className="ml-auto h-4 w-4 shrink-0" /></a>
+        </Button>
+        <Button variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3" onClick={() => openEmailDialog(row)}><Mail className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Email documents</Button>
+        <Button variant="outline" className="h-auto min-h-11 justify-start rounded-xl bg-card px-3" onClick={() => downloadInvoicePdf(row, dealer?.name)}><ReceiptText className="mr-2 h-4 w-4 shrink-0 text-crm-orange" />Invoice PDF<Download className="ml-auto h-4 w-4 shrink-0" /></Button>
+      </div>
+    </section>
+  );
+
   const renderActions = (row: WarrantyRow, mobile = false) => (
-    <div className={`flex items-center gap-2 ${mobile ? 'w-full' : 'justify-end'}`}>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => openWarrantyDetails(row)}
-        className={`h-10 rounded-xl border-crm-orange/60 bg-card px-4 font-bold text-crm-orange hover:bg-crm-orange-soft hover:text-crm-orange ${mobile ? 'flex-1' : ''}`}
-      >
-        <Eye className="mr-2 h-4 w-4" />View details
-      </Button>
+    <div className={`flex items-center gap-1 ${mobile ? 'w-full flex-wrap' : 'justify-end'}`}>
+      <Button size="icon" variant="ghost" title="Email documents" aria-label={`Email documents for ${row.registration_plate || row.name || 'warranty'}`} onClick={() => openEmailDialog(row)} className="h-10 w-10 rounded-xl text-crm-navy hover:text-crm-orange"><Mail className="h-4 w-4" /></Button>
+      <Button size="icon" variant="ghost" title="Download invoice" aria-label={`Download invoice for ${row.registration_plate || row.name || 'warranty'}`} onClick={() => downloadInvoicePdf(row, dealer?.name)} className="h-10 w-10 rounded-xl text-crm-navy hover:text-crm-orange"><ReceiptText className="h-4 w-4" /></Button>
+      <Button asChild size="icon" variant="ghost" title="Download Platinum warranty plan" className="h-10 w-10 rounded-xl text-crm-navy hover:text-crm-orange"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="h-4 w-4" /></a></Button>
+      <Button asChild size="icon" variant="ghost" title="Download Terms & Conditions" className="h-10 w-10 rounded-xl text-crm-navy hover:text-crm-orange"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="h-4 w-4" /></a></Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 rounded-xl text-muted-foreground" aria-label={`Actions for ${row.registration_plate || row.name || 'warranty'}`}>
+          <Button variant="ghost" size="icon" className="h-10 w-10 shrink-0 rounded-xl text-muted-foreground" aria-label={`More actions for ${row.registration_plate || row.name || 'warranty'}`}>
             <MoreHorizontal className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56 rounded-xl p-1.5">
-          <DropdownMenuItem onClick={() => openEmailDialog(row)}>
-            <Mail className="mr-2 h-4 w-4" />{isPaid(row) ? 'Resend documents' : 'Email warranty'}
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4" />Platinum warranty plan</a>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4" />Terms & Conditions</a>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => downloadInvoicePdf(row, dealer?.name)}>
-            <Download className="mr-2 h-4 w-4" />Download invoice
+          <DropdownMenuItem onClick={() => openWarrantyDetails(row)}>
+            <Eye className="mr-2 h-4 w-4" />View details
           </DropdownMenuItem>
           {!['cancelled', 'refunded'].includes(String(row.status || '').toLowerCase()) && (
             <>
@@ -567,7 +569,8 @@ const DealerWarrantiesList = () => {
             </dl>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">{renderPaymentStatus(row)}{renderCoverStatus(row)}</div>
-          <div className="mt-4">{renderActions(row, true)}</div>
+          <div className="mt-4">{renderDocsLinks(row)}</div>
+          <div className="mt-3">{renderActions(row, true)}</div>
         </article>
       ))}
     </div>
