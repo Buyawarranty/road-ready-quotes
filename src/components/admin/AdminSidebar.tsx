@@ -535,6 +535,12 @@ export const defaultTabs: Tab[] = [
     description: 'Approve dealer company name changes'
   },
   {
+    id: 'callback-requests',
+    label: 'Call-back requests',
+    icon: Receipt,
+    description: 'Website call-back requests'
+  },
+  {
     id: 'dealer-cancellations',
     label: 'Cancellation Requests',
     icon: Receipt,

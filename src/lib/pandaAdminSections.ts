@@ -13,6 +13,7 @@ export const PANDA_SECTION_ORDER: { id: string; label: string; description: stri
   { id: 'customers', label: 'Customers', description: "Dealers' end customers" },
   // 'claims' is retired: warranty claims are worked by the Buy A Warranty
   // claims desk, so this dashboard must not offer its own claims queue.
+  { id: 'callback-requests', label: 'Call-back requests', description: 'Website call-back requests with a pop-up for each new one' },
   { id: 'dealer-cancellations', label: 'Cancellations & refunds', description: 'Requests, processed cancellations and refunds' },
   { id: 'dealer-invoices', label: 'Dealer billing', description: 'Invoices, pay later rules and dealer finance' },
   { id: 'trader-pricing', label: 'Pricing', description: 'Trade warranty pricing' },

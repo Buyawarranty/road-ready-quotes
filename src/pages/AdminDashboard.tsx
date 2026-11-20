@@ -35,6 +35,7 @@ import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
 import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
+import { CallbackRequestAlert, CallbackRequestsTab } from '@/components/admin/CallbackRequests';
 import DealerProfileChangeAlert from '@/components/admin/DealerProfileChangeAlert';
 import { showDealerProfileReminder } from '@/lib/dealerCancellationReasons';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
@@ -1038,6 +1039,8 @@ const AdminDashboard = () => {
         return <DealerAdminProfileChangesTab />;
       case 'dealer-cancellations':
         return <DealerAdminCancellationsTab />;
+      case 'callback-requests':
+        return <CallbackRequestsTab />;
       case 'trader-pricing':
         return <DealerAdminTraderPricingTab />;
       case 'dealer-finance':
@@ -1243,6 +1246,7 @@ const AdminDashboardInner: React.FC<{
       <NewLeadAlerts />
       <BdmNoteAlerts />
       <SignupAlerts />
+      <CallbackRequestAlert enabled={isTabAllowedForRole('callback-requests', displayRole, displayPermissions)} />
       {showDealerProfileReminder(activeTab) && <DealerProfileChangeAlert userRole={displayRole} />}
 
 
