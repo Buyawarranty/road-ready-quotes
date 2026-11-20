@@ -296,7 +296,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="h-11 min-w-[205px] justify-start gap-2 px-3">
+                  <Button variant="ghost" className="h-11 min-w-[205px] justify-start gap-2 border border-crm-line bg-muted px-3 text-foreground hover:bg-muted-foreground/10 hover:text-foreground">
                     <User className="h-4 w-4" />
                     <span className="min-w-0 flex-1 text-left leading-tight">
                       <span className="block truncate text-[11px] font-bold">{displayName}</span>
