@@ -5,11 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Phone } from 'lucide-react';
 import { BdmDealership, outcomeLabel, stageLabel, typeLabel } from '@/lib/bdm/bdmShared';
 import BdmLogActivityForm, { BdmStaff } from './BdmLogActivityForm';
+import BdmTestContactTag from './BdmTestContactTag';
+import { useTestDealerIds } from '@/hooks/useTestDealerIds';
 
 const endOfToday = () => { const d = new Date(); d.setHours(23, 59, 59, 999); return d.toISOString(); };
 
 const BdmCallQueue: React.FC<{ open: boolean; onClose: () => void; userId: string | null; staff: BdmStaff[]; isManager: boolean; onChanged: () => void }> = ({ open, onClose, userId, staff, isManager, onChanged }) => {
   const [queue, setQueue] = useState<BdmDealership[]>([]);
+  const testDealerIds = useTestDealerIds(queue.map(row => row.dealer_id));
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [contacts, setContacts] = useState<any[]>([]);
@@ -57,6 +60,7 @@ const BdmCallQueue: React.FC<{ open: boolean; onClose: () => void; userId: strin
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="text-lg font-bold">{current.name}</p>
+                  {current.dealer_id && testDealerIds.has(current.dealer_id) && <BdmTestContactTag />}
                   <p className="text-sm text-muted-foreground">{[current.town, current.postcode].filter(Boolean).join(' · ')} · {stageLabel(current.stage)}</p>
                   {new Date(current.next_follow_up_at!) < new Date(new Date().setHours(0, 0, 0, 0)) && <p className="text-xs font-semibold text-destructive">Overdue since {new Date(current.next_follow_up_at!).toLocaleDateString('en-GB')}</p>}
                   {current.next_action && <p className="text-sm">To do: {current.next_action}</p>}

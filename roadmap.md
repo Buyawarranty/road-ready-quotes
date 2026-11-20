@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Label linked Test accounts in BDM contacts, contact details, call lists and allocation portfolios without changing existing access rules.
+- [ ] Confirm whether Test contact deletion is allowed for Admin/Super Admin, Super Admin only, or nobody; awaiting the user's answer.
 - [x] Add All approved signup filtering, confirmed permission-controlled bulk approval, and hidden Test tagging without removing the test dealer’s own portal access. Default-off action checkboxes included; 16 tests and compilation pass, deployed service rejects invalid callers. Live signed-in bulk approval and email delivery remain unverified with external authentication.
 - [x] Match the dealer pricing page to the supplied warranty dashboard design, preserving live prices, customer-safe sharing and the registration start without an error prompt. Compilation and 55 regression tests pass; isolated desktop/320px/393px controls and layout verified. Live dealer sign-in checks remain unavailable with external authentication.
 - [x] Add dealer cancellation reason choices and an admin reason filter; suppress company-change reminders on cancellation pages. Seventeen focused tests pass and preview compilation is clean; live signed-in checks unavailable with external authentication.

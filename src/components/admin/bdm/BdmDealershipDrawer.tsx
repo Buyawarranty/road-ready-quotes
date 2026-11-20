@@ -15,6 +15,8 @@ import {
   BDM_PRIORITIES, BDM_STAGES, BdmDealership, STAGE_TONE, outcomeLabel, stageLabel, typeLabel,
 } from '@/lib/bdm/bdmShared';
 import BdmLogActivityForm, { BdmStaff } from './BdmLogActivityForm';
+import BdmTestContactTag from './BdmTestContactTag';
+import { useTestDealerIds } from '@/hooks/useTestDealerIds';
 
 interface Contact {
   id?: string; full_name: string; job_title: string | null; phone: string | null; mobile: string | null;
@@ -35,6 +37,7 @@ interface Props {
 const BdmDealershipDrawer: React.FC<Props> = ({ dealershipId, staff, isManager, initialTab = 'overview', onClose, onChanged }) => {
   const { toast } = useToast();
   const [d, setD] = useState<BdmDealership | null>(null);
+  const testDealerIds = useTestDealerIds([d?.dealer_id]);
   const [form, setForm] = useState<Partial<BdmDealership>>({});
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
@@ -121,6 +124,7 @@ const BdmDealershipDrawer: React.FC<Props> = ({ dealershipId, staff, isManager, 
           <>
             <SheetHeader className="space-y-1 text-left">
               <SheetTitle className="pr-6">{d.name}</SheetTitle>
+              {d.dealer_id && testDealerIds.has(d.dealer_id) && <div><BdmTestContactTag /><p className="mt-1 text-sm text-destructive">This is a Test contact.</p></div>}
               <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 <span>{[d.town, d.postcode].filter(Boolean).join(' · ') || 'No address yet'}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STAGE_TONE[d.stage] ?? 'bg-muted'}`}>{stageLabel(d.stage)}</span>

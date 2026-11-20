@@ -17,6 +17,7 @@ import {
 import BdmDealershipDrawer from './BdmDealershipDrawer';
 import BdmCallQueue from './BdmCallQueue';
 import BdmCallingRow from './BdmCallingRow';
+import { useTestDealerIds } from '@/hooks/useTestDealerIds';
 import BdmImportDialog from './BdmImportDialog';
 import { MultiFilter, MoreFilters } from './BdmFilterMenus';
 import { BDM_FILTER_OPTIONS, BDM_NO_FILTERS, BdmFilters, bdmFilterConditions } from '@/lib/bdm/bdmFilters';
@@ -44,6 +45,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const [userId, setUserId] = useState<string | null>(null);
   const [staff, setStaff] = useState<BdmStaff[]>([]);
   const [rows, setRows] = useState<BdmDealership[]>([]);
+  const testDealerIds = useTestDealerIds(rows.map(row => row.dealer_id));
   const [onboardedBy, setOnboardedBy] = useState<Record<string, string>>({});
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(0);
@@ -429,6 +431,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
                 rowNumber={page * PAGE + i + 1}
                 striped={i % 2 === 1}
                 r={r as any}
+                isTestContact={Boolean(r.dealer_id && testDealerIds.has(r.dealer_id))}
                 c={contactsBy[r.id]}
                 overdue={!!r.next_follow_up_at && new Date(r.next_follow_up_at) < today}
                 assignedName={staffName(r.assigned_bdm)}

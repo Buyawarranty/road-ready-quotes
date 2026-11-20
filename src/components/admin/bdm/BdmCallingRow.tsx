@@ -8,6 +8,7 @@ import BdmQuickNotePopover from './BdmQuickNotePopover';
 import BdmEditNotes from './BdmEditNotes';
 import BdmEmailDialog from './BdmEmailDialog';
 import BdmOwnerPicker from './BdmOwnerPicker';
+import BdmTestContactTag from './BdmTestContactTag';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -62,13 +63,14 @@ interface Props {
   onChanged: () => void;
   rowNumber?: number;
   striped?: boolean;
+  isTestContact?: boolean;
   inMine?: boolean;
   towns?: string[];
   onToggleMine?: (id: string) => void;
   onMoveTown?: (id: string, town: string) => void;
 }
 
-const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, staff = [], onOpen, onChanged, rowNumber, striped, inMine, towns = [], onToggleMine, onMoveTown }) => {
+const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboardedBy, showAssigned, staff = [], onOpen, onChanged, rowNumber, striped, isTestContact, inMine, towns = [], onToggleMine, onMoveTown }) => {
   const { toast } = useToast();
   const [calls, setCalls] = useState<number>(r.call_count ?? 0);
   const [stage, setStage] = useState(r.stage);
@@ -212,6 +214,7 @@ const BdmCallingRow: React.FC<Props> = ({ r, c, overdue, assignedName, onboarded
       {/* Dealership + contact */}
       <td className="p-2">
         <button type="button" onClick={() => onOpen(r.id)} className="text-left font-bold hover:underline">{r.name}</button>
+        {isTestContact && <div className="mt-1"><BdmTestContactTag /></div>}
         {onboardedBy && <span className="ml-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">Onboarded by {onboardedBy}</span>}
         {inMine && <span className="ml-2 inline-block rounded-full bg-crm-orange-soft px-2 py-0.5 text-[11px] font-semibold text-crm-orange">★ My contacts</span>}
         {onToggleMine && (
