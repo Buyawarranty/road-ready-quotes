@@ -27,17 +27,17 @@ export async function loadBogofEligibility(dealerId?: string | null): Promise<bo
 /** Visual banner; shared by the dealer pages and the Super Admin preview. */
 export function BogofBannerView({ s, compact = false, onClose }: { s: BogofSettings; compact?: boolean; onClose?: () => void }) {
   return (
-    <div role="status" className={`relative overflow-hidden rounded-xl bg-gradient-to-r from-crm-orange to-crm-red p-4 text-primary-foreground shadow-md sm:p-5 ${compact ? '' : 'md:flex md:items-center md:gap-6'}`}>
-      {onClose && <button type="button" aria-label="Close offer" onClick={onClose} className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-background/20 hover:bg-background/30"><X className="h-4 w-4" /></button>}
+    <div role="status" className={`relative overflow-hidden rounded-xl border border-border bg-white p-4 text-foreground shadow-sm sm:p-5 ${compact ? '' : 'md:flex md:items-center md:gap-6'}`}>
+      {onClose && <button type="button" aria-label="Close offer" onClick={onClose} className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/70"><X className="h-4 w-4" /></button>}
       <div className="flex items-center gap-4 md:flex-1">
-        <Tag className="h-10 w-10 shrink-0 text-crm-gold-pure" aria-hidden="true" />
-        <div className="min-w-0 border-l border-background/30 pl-4">
-          <p className="text-xs font-extrabold uppercase tracking-wide">{s.eyebrow}</p>
-          <p className="text-xl font-black leading-tight sm:text-2xl"><span className="text-crm-gold-pure">{s.banner_title}</span></p>
-          {s.banner_text && <span className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-background/60 px-2.5 py-1 text-sm font-bold"><Gift className="h-4 w-4" />{s.banner_text}</span>}
+        <Tag className="h-10 w-10 shrink-0 text-crm-orange" aria-hidden="true" />
+        <div className={`min-w-0 border-l border-border pl-4 ${onClose ? 'pr-12' : ''}`}>
+          <p className="text-xs font-extrabold uppercase tracking-wide text-crm-orange">{s.eyebrow}</p>
+          <p className="text-xl font-black leading-tight text-crm-navy sm:text-2xl"><span className="text-crm-navy">{s.banner_title}</span></p>
+          {s.banner_text && <span className="mt-2 inline-flex items-start gap-1.5 rounded-md border border-crm-orange/30 bg-crm-orange-soft px-2.5 py-1 text-sm font-bold leading-snug text-balance text-crm-orange"><Gift className="mt-0.5 h-4 w-4 shrink-0" />{s.banner_text}</span>}
         </div>
       </div>
-      <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold ${compact ? '' : 'md:mt-0 md:flex-col md:border-l md:border-background/30 md:pl-6 md:pr-8'}`}>
+      <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-crm-green-deep ${compact ? '' : 'md:mt-0 md:flex-col md:border-l md:border-border md:pl-6 md:pr-8'}`}>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />No code needed</span>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />Applied automatically at checkout</span>
       </div>
