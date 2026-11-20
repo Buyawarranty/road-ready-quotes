@@ -13,7 +13,7 @@ import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
-import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
+import { buildCustomerQuoteUrl, customerQuoteMessage, customerQuoteOrigin, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
 import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
@@ -202,7 +202,7 @@ const Step3Pricing: React.FC = () => {
   const share = async (action: 'whatsapp' | 'email' | 'print' | 'pay') => {
     const id = await persist(); if (!id) return;
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
-    const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
+    const url = new URL(buildCustomerQuoteUrl(safePayload), customerQuoteOrigin());
     if (action === 'pay') { url.searchParams.set('pay', id); setPaylink(url.href); return; }
     if (action === 'print') { url.searchParams.set('print', '1'); window.open(url.href, '_blank', 'noopener,noreferrer'); return; }
     const message = customerQuoteMessage(safePayload, url.href, { hidePrice: true });
@@ -221,7 +221,7 @@ const Step3Pricing: React.FC = () => {
     const id = await persist();
     if (!id) { tab?.close(); setOpening(false); return; }
     const safePayload = { ...payload, coverSubtitle: `Quote ${id.slice(0, 8).toUpperCase()}` };
-    const url = new URL(buildCustomerQuoteUrl(safePayload), window.location.origin);
+    const url = new URL(buildCustomerQuoteUrl(safePayload), customerQuoteOrigin());
     // Flags go before the hash so the quote data stays a clean hash fragment.
     url.search = '?view=cv';
     if (isMobile) { window.location.href = url.href; return; }

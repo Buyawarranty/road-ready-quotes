@@ -83,3 +83,10 @@ d2('no-price customer view sharing', () => {
     e2(decodeCustomerQuote(`${encoded}?view=cv`)?.price).toBe(177);
   });
 });
+
+import { customerQuoteOrigin } from '../customerQuoteSharing';
+describe('customer quote origin', () => {
+  test('uses pandaprotect.co.uk instead of preview addresses', () => {
+    assert.equal(customerQuoteOrigin('https://id-preview--abc.lovable.app'), 'https://pandaprotect.co.uk');
+  });
+});

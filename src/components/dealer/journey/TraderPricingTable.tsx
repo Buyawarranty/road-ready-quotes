@@ -18,6 +18,7 @@ import {
 import CarProgressBar from './CarProgressBar';
 import CustomerQuoteView from './CustomerQuoteView';
 import { buildCustomerQuoteUrl } from '@/pages/dealer-portal/CustomerQuotePage';
+import { customerQuoteOrigin } from "@/lib/customerQuoteSharing";
 
 import { calcTraderPrice } from '@/lib/traderPricing';
 import {
@@ -278,7 +279,7 @@ const TraderPricingTable: React.FC<Props> = ({ onContinue, onBack, onSaveDraft, 
       ],
       included: Object.keys(addOns).filter((k) => addOns[k]),
     });
-    const target = `${url.split('#')[0]}?view=cv#${url.split('#')[1]}`;
+    const target = `${customerQuoteOrigin()}${url.split('#')[0]}?view=cv#${url.split('#')[1]}`;
     // Mobile browsers block new tabs from buttons — open the customer view in this tab instead.
     const isMobile = window.matchMedia('(max-width: 768px)').matches || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
     if (isMobile) { window.location.href = target; return; }

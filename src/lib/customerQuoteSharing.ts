@@ -84,3 +84,9 @@ export function adjustableQuotePrice(a: AdjustableQuote, selected: string[], ext
   }
   return Math.round((a.prices[index] + a.extras.filter(e => extras.includes(e.key)).reduce((sum, e) => sum + e.price, 0)) * 100) / 100;
 }
+
+/** Customer-facing links always use the Panda Protect website, never a preview or hosting address. */
+export const PANDA_PUBLIC_ORIGIN = 'https://pandaprotect.co.uk';
+export function customerQuoteOrigin(current: string = typeof window !== 'undefined' ? window.location.origin : PANDA_PUBLIC_ORIGIN) {
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(current) ? current : PANDA_PUBLIC_ORIGIN;
+}
