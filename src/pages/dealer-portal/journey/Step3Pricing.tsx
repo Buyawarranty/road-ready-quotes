@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, customerQuoteOrigin, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
+import { Check, ArrowRight, Eye, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import PricingCoverageOverview from '@/components/dealer/journey/PricingCoverageOverview';
@@ -181,8 +181,6 @@ const Step3Pricing: React.FC = () => {
       .filter((v): v is number => typeof v === 'number');
     return shown.length ? Math.min(...shown) : null;
   })();
-  const rowPrice = term && product ? (trade ? cost : retail) : fromShown;
-  const rowLabel = term && product ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : 'From';
 
   const termLabel = term ? `${term / 12} ${term === 12 ? 'year' : 'years'}` : '';
   const summary = [{ label: 'Warranty term', value: termLabel }, { label: 'Customer excess', value: gbp(cover?.excess || 0) }, { label: 'Labour rate', value: `${gbp(cover?.labour || 0)}/hour` }, { label: 'Per eligible claim', value: gbp(cover?.claim || 0) }];
@@ -261,19 +259,16 @@ const Step3Pricing: React.FC = () => {
 
       ) : (
         <>
-          <div className="flex w-full items-center justify-center gap-2 sm:contents">
-            <div className="w-32 shrink-0 sm:order-1"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
-            {rowPrice != null && <span className="shrink-0 text-right leading-4 sm:order-3"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
-            <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy sm:order-4" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /></Button>
+          <div className="flex w-full items-center justify-center gap-3 sm:order-1 sm:w-auto sm:justify-start">
+            <button type="button" aria-label={`Change registration ${vehicle?.reg}`} title="Change registration" className="w-32 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></button>
+            {(vehicle?.make || vehicle?.model) && <div className="min-w-0 text-left"><p className="break-words text-sm font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>}
           </div>
-          <div className="w-full min-w-0 text-center sm:order-2 sm:w-auto sm:flex-1 sm:text-left"><p className="break-words text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
-
         </>
       )}
     {vehicle?.reg && !editingReg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <>
-    <section className="flex w-full min-w-0 flex-col items-center justify-center gap-2 border-t border-crm-line pt-3 sm:ml-auto sm:w-auto sm:flex-row sm:gap-3 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0" aria-label="Current mileage">
-      <div className="min-w-0 text-center sm:text-left"><p className="text-xs font-extrabold leading-5">Current mileage</p><p className="text-[10px] leading-4 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
+    <section className="flex w-full min-w-0 flex-col items-center justify-center gap-2 border-t border-crm-line pt-3 sm:order-2 sm:ml-auto sm:w-auto sm:flex-row sm:gap-3 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0" aria-label="Current mileage">
+      <div className="min-w-0 text-center sm:text-left"><p className="text-xs font-extrabold leading-5">Current mileage</p><p className="text-[10px] leading-4 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">{vehicle?.mileage != null ? 'From the last MOT' : 'No MOT mileage found — please enter'}</p></div>
       <div className="flex min-w-0 flex-col gap-2">
       <div className="flex items-center gap-1.5" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">
         <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-9 w-9 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
