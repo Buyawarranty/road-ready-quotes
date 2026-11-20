@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
-import { FlaskConical, Loader2, RefreshCw, ExternalLink } from 'lucide-react';
+import { FlaskConical, Loader2, RefreshCw, ExternalLink, Copy, KeyRound } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 type Dealer = { id: string; company_name?: string | null; contact_name?: string | null; email?: string | null; created_at?: string | null };
 type Sale = { id: string; name: string | null; email: string | null; registration_plate: string | null; final_amount: number | null; status: string | null; payment_verified: boolean | null; dealer_id: string | null; signup_date: string | null; created_at: string | null };
@@ -20,6 +21,25 @@ export default function TestingTab() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [q, setQ] = useState('');
+  const loginUrl = `${window.location.origin}/dealer-portal/login`;
+  const copyText = async (text: string, title: string) => { await navigator.clipboard.writeText(text); toast({ title }); };
+  const copyLogin = (d: Dealer) => copyText(`Panda Protect TEST dealer login\nLogin: ${loginUrl}\nEmail: ${d.email}`, 'Login details copied');
+  const newPassword = async (d: Dealer) => {
+    if (!window.confirm(`Set a new password for ${d.email} and email it to them?`)) return;
+    setBusy(d.id);
+    const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { dealer_id: d.id, decision: 'resend' } });
+    setBusy(null);
+    const res = data as any;
+    if (error || res?.error) {
+      let msg = res?.error || error?.message;
+      if (error instanceof FunctionsHttpError) { try { msg = (await error.context.json())?.error || msg; } catch { /* keep */ } }
+      toast({ title: 'Could not set a new password', description: msg, variant: 'destructive' }); return;
+    }
+    const pw = res?.temp_password || res?.password;
+    if (pw) await copyText(`Panda Protect TEST dealer login\nLogin: ${loginUrl}\nEmail: ${d.email}\nPassword: ${pw}`, 'New password set — details copied to share');
+    else toast({ title: 'New password emailed', description: `Sent to ${res?.sent_to || d.email}` });
+  };
 
   const load = useCallback(async () => {
     setLoading(true); setErr(null);
@@ -37,6 +57,9 @@ export default function TestingTab() {
   }, []);
   useEffect(() => { void load(); }, [load]);
 
+  const term = q.trim().toLowerCase();
+  const match = (...v: (string | null | undefined)[]) => !term || v.some(x => (x || '').toLowerCase().includes(term));
+  const shownDealers = dealers.filter(d => match(d.company_name, d.contact_name, d.email));
   const dealerName = (id: string | null) => dealers.find(d => d.id === id)?.company_name || '—';
 
   const markPaid = async (id: string) => {
@@ -53,8 +76,8 @@ export default function TestingTab() {
     void load();
   };
 
-  const pending = sales.filter(s => !s.payment_verified && s.status !== 'Cancelled');
-  const done = sales.filter(s => s.payment_verified || s.status === 'Cancelled');
+  const pending = sales.filter(s => match(s.name, s.email, s.registration_plate, dealerName(s.dealer_id)) && !s.payment_verified && s.status !== 'Cancelled');
+  const done = sales.filter(s => match(s.name, s.email, s.registration_plate, dealerName(s.dealer_id)) && ( s.payment_verified || s.status === 'Cancelled'));
 
   return (
     <div className="space-y-6">
@@ -78,15 +101,17 @@ export default function TestingTab() {
         </CardContent>
       </Card>
 
+      <Input placeholder="Filter test dealers, customers or registrations…" value={q} onChange={e => setQ(e.target.value)} className="max-w-md" aria-label="Filter test data" />
+
       {err && <p className="text-sm text-destructive">{err}</p>}
       {loading ? <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div> : (
         <>
           <Card>
-            <CardHeader><CardTitle className="text-base">Test dealers ({dealers.length})</CardTitle><CardDescription>Only accounts tagged Test appear here.</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-base">Test dealers ({shownDealers.length})</CardTitle><CardDescription>Only accounts tagged Test appear here.</CardDescription></CardHeader>
             <CardContent className="overflow-x-auto">
-              {dealers.length === 0 ? <p className="text-sm text-muted-foreground">No test dealers yet.</p> : (
-                <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Company</th><th>Contact</th><th>Login email</th><th>Created</th></tr></thead>
-                  <tbody>{dealers.map(d => <tr key={d.id} className="border-t"><td className="py-2 font-medium">{d.company_name || '—'} <Badge variant="secondary">Test</Badge></td><td>{d.contact_name || '—'}</td><td>{d.email || '—'}</td><td>{fmt(d.created_at)}</td></tr>)}</tbody></table>
+              {shownDealers.length === 0 ? <p className="text-sm text-muted-foreground">No test dealers yet.</p> : (
+                <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Company</th><th>Contact</th><th>Login email</th><th>Created</th><th /></tr></thead>
+                  <tbody>{shownDealers.map(d => <tr key={d.id} className="border-t"><td className="py-2 font-medium">{d.company_name || '—'} <Badge variant="secondary">Test</Badge></td><td>{d.contact_name || '—'}</td><td>{d.email || '—'}</td><td>{fmt(d.created_at)}</td><td className="whitespace-nowrap text-right"><Button size="sm" variant="outline" className="mr-2" onClick={() => void copyLogin(d)}><Copy className="mr-1 h-3 w-3" />Copy login</Button><Button size="sm" variant="outline" disabled={busy === d.id} onClick={() => void newPassword(d)}>{busy === d.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <KeyRound className="mr-1 h-3 w-3" />}New password</Button></td></tr>)}</tbody></table>
               )}
             </CardContent>
           </Card>
