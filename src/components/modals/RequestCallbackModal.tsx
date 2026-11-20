@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
 import pandaMascot from '@/assets/panda-mascot.png';
+import QuickSecurityCheck from '@/components/QuickSecurityCheck';
 
 const CarIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -31,6 +32,10 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
   const [showContent, setShowContent] = useState(false);
+  const [securityOk, setSecurityOk] = useState(false);
+  const [securityError, setSecurityError] = useState('');
+  // Bumping this remounts the security check so a wrong answer gets a new sum.
+  const [securityKey, setSecurityKey] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,6 +45,12 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
       setShowContent(false);
     }
   }, [isOpen]);
+
+  const handleSecurityAnswer = useCallback((verified: boolean) => {
+    setSecurityOk(verified);
+    // Typing a new answer clears the previous complaint.
+    setSecurityError('');
+  }, []);
 
   const validateUKPhone = (phoneNumber: string): { isValid: boolean; type: 'mobile' | 'landline' | null } => {
     const cleaned = phoneNumber.replace(/\D/g, '');
@@ -56,20 +67,17 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
     const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
     setPhone(digits);
     if (error && validateUKPhone(digits).isValid) setError('');
-
-    // Auto-submit on valid number
-    if (validateUKPhone(digits).isValid && !isSubmitting) {
-      setTimeout(() => {
-        const form = e.target.closest('form');
-        if (form) form.requestSubmit();
-      }, 400);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone.trim()) { setError('Please enter your phone number'); return; }
     if (!isPhoneValid) { setError('Please enter a valid UK phone number (e.g. 07123 456789)'); return; }
+    if (!securityOk) {
+      setSecurityError('Please answer the quick security check to continue.');
+      setSecurityKey((k) => k + 1);
+      return;
+    }
 
     setIsSubmitting(true);
     setError('');
@@ -109,6 +117,9 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
       setTimeout(() => {
         setIsSuccess(false);
         setPhone('');
+        setSecurityOk(false);
+        setSecurityError('');
+        setSecurityKey((k) => k + 1);
         onClose();
       }, 3500);
     } catch (err) {
@@ -127,6 +138,9 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
     if (!isSubmitting) {
       setPhone('');
       setError('');
+      setSecurityOk(false);
+      setSecurityError('');
+      setSecurityKey((k) => k + 1);
       setIsSuccess(false);
       onClose();
     }
@@ -266,6 +280,13 @@ const RequestCallbackModal: React.FC<RequestCallbackModalProps> = ({ isOpen, onC
                     />
                   </div>
                 </div>
+
+                {/* Quick security check */}
+                <QuickSecurityCheck
+                  key={securityKey}
+                  error={securityError}
+                  onAnswerChange={handleSecurityAnswer}
+                />
 
                 {/* CTA Button */}
                 <Button
