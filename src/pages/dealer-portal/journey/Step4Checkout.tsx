@@ -331,7 +331,7 @@ const Step4Checkout: React.FC = () => {
         <h2 className="text-2xl font-extrabold text-crm-navy sm:text-3xl">Trade checkout</h2>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-crm-green-soft px-3 py-1.5 text-sm font-bold text-crm-green-deep"><ShieldCheck className="h-4 w-4" /> Trade account</span>
       </div>
-      <div className="mx-auto mb-5 w-full max-w-3xl"><BogofBanner /></div>
+      <div className="mx-auto mb-5 w-full max-w-3xl"><BogofBanner dealerId={dealer?.id} /></div>
       <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-6">
         {/* Warranty details */}
         <section className="min-w-0">
@@ -383,10 +383,12 @@ const Step4Checkout: React.FC = () => {
           <div className="mt-5 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep"><Gift className="h-5 w-5" /> Your trade benefits</p>
             <ul className="mt-3 space-y-3">
+              {((eligibility?.intro_free_remaining ?? 0) > 0 || (eligibility?.paid_count ?? 0) < INTRO_PAID_TARGET) && (
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
                 <span><span className="block text-sm font-bold text-crm-navy">Buy one warranty, get the next one free</span><span className="text-sm text-muted-foreground">Every paid warranty earns one free warranty (up to 3 years' cover), applied automatically while the offer is running.</span></span>
               </li>
+              )}
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
                 <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Available once you've paid for {invoiceRequired} warranties with no cancellations or refunds. Approved by our team.</span></span>

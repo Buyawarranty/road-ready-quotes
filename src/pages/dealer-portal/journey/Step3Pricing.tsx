@@ -1,4 +1,4 @@
-import BogofBanner, { loadBogofSettings } from '@/components/dealer/offer/BogofBanner';
+import BogofBanner, { loadBogofEligibility, loadBogofSettings } from '@/components/dealer/offer/BogofBanner';
 import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -42,9 +42,18 @@ const Step3Pricing: React.FC = () => {
   const [regInput, setRegInput] = useState('');
   const regRef = useRef<HTMLInputElement>(null);
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
-  // The buy-one-get-one line only appears while Super Admin has the offer switched on.
+  // The buy-one-get-one line only appears while Super Admin has the offer switched on
+  // and this dealer is still eligible (earning free warranties or with free ones left).
   const [offerOn, setOfferOn] = useState(false);
-  useEffect(() => { let live = true; loadBogofSettings().then(s => { if (live) setOfferOn(!!s?.enabled); }); return () => { live = false; }; }, []);
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const s = await loadBogofSettings();
+      const eligible = await loadBogofEligibility(dealer?.id);
+      if (live) setOfferOn(!!s?.enabled && eligible);
+    })();
+    return () => { live = false; };
+  }, [dealer?.id]);
   const [lookupMsg, setLookupMsg] = useState('');
   const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
   const [mileageConfirmed, setMileageConfirmed] = useState(false);
@@ -238,7 +247,7 @@ const Step3Pricing: React.FC = () => {
         {offerOn && <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold"><Gift className="h-4 w-4 text-crm-orange" />Buy one warranty, get the next one free — up to 3 years' cover.</p>}
       </div>
     </header>
-    <BogofBanner />
+    <BogofBanner dealerId={dealer?.id} />
     <section className="pricing-vehicle flex flex-col items-center gap-3 rounded-lg border border-crm-line bg-card p-3 sm:flex-row sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
         <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); if (!regInput.trim()) { regRef.current?.focus(); return; } void lookupVehicle(regInput); }} noValidate>
