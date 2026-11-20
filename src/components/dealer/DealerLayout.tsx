@@ -74,6 +74,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dealer-portal/warranties?tab=cancellations', label: 'Cancellations', icon: Ban, trader: true },
   { to: '/dealer-portal/documents', label: 'Documents', icon: FolderOpen, trader: true },
   { to: '/dealer-portal/analytics', label: 'Reports', icon: BarChart3 },
+  { to: '/faq/traders/', label: 'FAQs', icon: BookOpen, trader: true },
   { to: '/dealer-portal/settings/profile', label: 'Settings', icon: Settings, trader: true },
 ];
 
@@ -379,30 +380,14 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
           <div className="my-3 border-t border-crm-line" />
           {secondaryNav.map((item) => renderNavItem(item))}
         </nav>
-        <div className="mt-auto rounded-md border border-crm-line bg-background p-4 text-crm-navy">
-          <div className="mb-2 flex items-center gap-2">
-            <Headphones className="h-5 w-5 text-crm-navy" />
-            <p className="text-sm font-bold text-crm-navy">Need help?</p>
-          </div>
-          <p className="mb-3 text-xs leading-relaxed text-muted-foreground">Our UK team is here to help.</p>
-          <div className="mb-2 space-y-1">
-            <Link
-              to="/faq/traders/"
-              className="flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-crm-navy transition-colors hover:bg-muted"
-            >
-              <BookOpen className="h-[18px] w-[18px] shrink-0" /> FAQs
-            </Link>
-          </div>
+        <div className="mt-auto">
           <button
             type="button"
             onClick={() => setSupportOpen(true)}
-            className="mb-2 flex min-h-11 w-full items-center gap-2 break-all rounded-md px-3 text-left text-sm font-semibold text-crm-navy transition-colors hover:bg-muted"
+            className="flex min-h-11 w-full items-center gap-2 rounded-md border border-crm-line bg-background px-4 py-3 text-left text-sm font-bold text-crm-navy transition-colors hover:bg-muted"
           >
-            <Mail className="h-[18px] w-[18px] shrink-0" /> support@pandaprotect.co.uk
+            <Headphones className="h-5 w-5 shrink-0" /> Need help?
           </button>
-          <Button variant="outline" size="sm" type="button" onClick={() => setSupportOpen(true)} className="w-full border-crm-orange bg-background font-bold !text-crm-navy hover:bg-crm-orange hover:!text-primary-foreground">
-            Contact support →
-          </Button>
           <Dialog open={supportOpen} onOpenChange={setSupportOpen}>
             <DialogContent className="max-w-sm">
               <DialogHeader>
