@@ -385,7 +385,7 @@ const Step4Checkout: React.FC = () => {
             <ul className="mt-3 space-y-3">
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">After your first {INTRO_PAID_TARGET} paid warranties, your next {INTRO_PAID_TARGET} are free</span><span className="text-sm text-muted-foreground">Applied automatically to qualifying warranties up to 3 years' duration.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">Buy one warranty, get the next one free</span><span className="text-sm text-muted-foreground">Every paid warranty earns one free warranty (up to 3 years' cover), applied automatically while the offer is running.</span></span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>

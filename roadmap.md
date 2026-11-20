@@ -98,3 +98,4 @@
 - [ ] Show a coloured "Panda Protect" tag on forwarded claims inside the Buy A Warranty dashboard: needs write access to that project (private key via the secure form) or a small change made there.
 
 - [ ] Super Admin Testing section: create test logins (dealer + admin, test data only), Stripe test-card purchases, grant tester emails — waiting on Stripe test secret key
+- [ ] BOGOF: confirm rule (each paid = 1 free, continuous) and show offer on pricing page
