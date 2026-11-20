@@ -9,7 +9,7 @@ const corsHeaders = {
 };
 
 // Reminder always goes to one fixed inbox (requested by the owner) — never to an address from the request.
-const REMINDER_TO = "info@buyawarranty.co.uk";
+const REMINDER_TO = "hello@pandaprotect.co.uk";
 const GATE_PASSWORD = Deno.env.get("AUTH_GATE_PASSWORD") ?? "PandaPanda2026!!";
 
 serve(async (req) => {
@@ -20,11 +20,12 @@ serve(async (req) => {
     const { error } = await resend.emails.send({
       from: brandFrom(brand, "Panda Protect", "noreply"),
       to: [REMINDER_TO],
-      subject: "Panda Protect admin login",
-      html: `<h1 style="font-family:Arial">Panda Protect admin login</h1>
-        <p style="font-family:Arial">Someone asked for a reminder of the access password for the Panda Protect admin login page (pandaprotect.co.uk/auth).</p>
-        <p style="font-family:Arial">Access password: <strong>${GATE_PASSWORD}</strong></p>
-        <p style="font-family:Arial">After unlocking, staff sign in with their own email and password.</p>`,
+      subject: "Staff login page — access password reminder",
+      html: `<h1 style="font-family:Arial">Access password reminder</h1>
+        <p style="font-family:Arial">Someone clicked <strong>"Forgot the access password?"</strong> on the staff login page at <a href="https://pandaprotect.co.uk/auth">pandaprotect.co.uk/auth</a>, so here is the password that unlocks that page:</p>
+        <p style="font-family:Arial;font-size:18px">Access password: <strong>${GATE_PASSWORD}</strong></p>
+        <p style="font-family:Arial">Enter it on the login page, then sign in with your own staff email and password as usual.</p>
+        <p style="font-family:Arial;color:#666;font-size:13px">If you didn't ask for this, you can ignore it — the password has not changed and no one has signed in.</p>`,
     });
     if (error) throw new Error(error.message);
     return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
