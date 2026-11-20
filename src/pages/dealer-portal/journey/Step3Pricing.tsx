@@ -239,7 +239,7 @@ const Step3Pricing: React.FC = () => {
       </div>
     </header>
     <BogofBanner />
-    <section className="pricing-vehicle grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
+    <section className="pricing-vehicle flex flex-col items-center gap-3 rounded-lg border border-crm-line bg-card p-3 sm:flex-row sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
         <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); if (!regInput.trim()) { regRef.current?.focus(); return; } void lookupVehicle(regInput); }} noValidate>
           <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:gap-3">
@@ -255,17 +255,19 @@ const Step3Pricing: React.FC = () => {
 
       ) : (
         <>
-          <div className="w-32 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
-          <div className="order-last col-span-3 min-w-0 flex-1 text-center sm:order-none sm:text-left"><p className="break-words text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
-          {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
-          <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /></Button>
+          <div className="flex w-full items-center justify-center gap-2 sm:contents">
+            <div className="w-32 shrink-0 sm:order-1"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
+            {rowPrice != null && <span className="shrink-0 text-right leading-4 sm:order-3"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
+            <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy sm:order-4" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /></Button>
+          </div>
+          <div className="w-full min-w-0 text-center sm:order-2 sm:w-auto sm:flex-1 sm:text-left"><p className="break-words text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
 
         </>
       )}
     {vehicle?.reg && !editingReg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
     <>
-    <section className="col-span-3 flex min-w-0 items-center justify-center gap-3 border-t border-crm-line pt-3 sm:ml-auto sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0" aria-label="Current mileage">
-      <div className="min-w-0 text-left"><p className="text-xs font-extrabold leading-5">Current mileage</p><p className="text-[10px] leading-4 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
+    <section className="flex w-full min-w-0 flex-col items-center justify-center gap-2 border-t border-crm-line pt-3 sm:ml-auto sm:w-auto sm:flex-row sm:gap-3 sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0" aria-label="Current mileage">
+      <div className="min-w-0 text-center sm:text-left"><p className="text-xs font-extrabold leading-5">Current mileage</p><p className="text-[10px] leading-4 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
       <div className="flex min-w-0 flex-col gap-2">
       <div className="flex items-center gap-1.5" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">
         <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-9 w-9 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
