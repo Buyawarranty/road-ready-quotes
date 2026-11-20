@@ -1,8 +1,8 @@
-import { Cog, Cpu, Fan, Fuel, Gauge, GitFork, ShieldCheck, Snowflake, Users, Wrench, Zap } from 'lucide-react';
+import { Camera, Cog, Cpu, Fan, Fuel, Gauge, GitFork, Monitor, Navigation, Radio, ShieldCheck, Snowflake, Users, Wrench, Zap } from 'lucide-react';
 import WhatsCoveredPanel from './WhatsCoveredPanel';
 
 export default function PricingCoverageOverview() {
-  const parts = [{ label: 'Engine', icon: Cog }, { label: 'Gearbox', icon: GitFork }, { label: 'Turbocharger', icon: Gauge }, { label: 'Clutch', icon: Cog }, { label: 'Electrical components', icon: Zap }, { label: 'ECU', icon: Cpu }, { label: 'Fuel system', icon: Fuel }, { label: 'Cooling system', icon: Fan }, { label: 'Steering', icon: Gauge }, { label: 'Suspension', icon: Wrench }, { label: 'Braking system', icon: Cog }, { label: 'Air conditioning', icon: Snowflake }, { label: 'Drive train', icon: GitFork }];
+  const parts = [{ label: 'Engine', icon: Cog }, { label: 'Gearbox', icon: GitFork }, { label: 'Turbocharger', icon: Gauge }, { label: 'Clutch', icon: Cog }, { label: 'Electrical components', icon: Zap }, { label: 'ECU', icon: Cpu }, { label: 'Fuel system', icon: Fuel }, { label: 'Cooling system', icon: Fan }, { label: 'Steering', icon: Gauge }, { label: 'Suspension', icon: Wrench }, { label: 'Braking system', icon: Cog }, { label: 'Air conditioning', icon: Snowflake }, { label: 'Drive train', icon: GitFork }, { label: 'Factory-fitted entertainment & audio', icon: Radio }, { label: 'Touchscreens & digital displays', icon: Monitor }, { label: 'Satellite navigation', icon: Navigation }, { label: 'Parking sensors & reversing cameras', icon: Camera }, { label: 'Driver-assistance systems', icon: ShieldCheck }];
   return <>
     <section aria-label="Covered components">
       <WhatsCoveredPanel coveredParts={<div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-5">{parts.map(({ label, icon: Icon }) => <span key={label} className="flex min-w-0 items-center gap-2 rounded-md border border-crm-line px-2 py-1.5 text-[11px] font-semibold leading-4"><Icon className="h-4 w-4 shrink-0" />{label}</span>)}</div>} />
