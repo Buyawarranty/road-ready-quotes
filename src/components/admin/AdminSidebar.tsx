@@ -394,7 +394,7 @@ export const defaultTabs: Tab[] = [
     id: 'testing',
     label: 'Testing',
     icon: TestTube,
-    description: 'Test APIs and create test data'
+    description: 'Test accounts and test purchases'
   },
   {
     id: 'timesheets',

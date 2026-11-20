@@ -14,12 +14,12 @@ import { ukPhoneError, emailError, personNameError, companyNameError, normaliseU
 
 const empty = { company_name: '', contact_name: '', email: '', phone: '' };
 
-export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; size?: 'sm' | 'default' }> = ({ onCreated, label = 'Add dealer', size = 'default' }) => {
+export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; size?: 'sm' | 'default'; defaultTest?: boolean }> = ({ onCreated, label = 'Add dealer', size = 'default', defaultTest = false }) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(empty);
   const [saving, setSaving] = useState(false);
-  const [isTest, setIsTest] = useState(false);
+  const [isTest, setIsTest] = useState(defaultTest);
   const [password, setPassword] = useState('');
   const pwError = password && (password.length < 8 || password.length > 72 || /^\s|\s$/.test(password)) ? 'Use 8 to 72 characters, with no spaces at the start or end' : '';
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -66,7 +66,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
 
   const close = (o: boolean) => {
     setOpen(o);
-    if (!o) { setForm(empty); setIsTest(false); setPassword(''); setResult(null); setTouched({}); setTried(false); }
+    if (!o) { setForm(empty); setIsTest(defaultTest); setPassword(''); setResult(null); setTouched({}); setTried(false); }
   };
 
   const loginUrl = `${window.location.origin}/dealer-portal/login`;

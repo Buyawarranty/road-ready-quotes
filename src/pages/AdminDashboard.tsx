@@ -85,7 +85,6 @@ const BlogWritingTab = lazy(() => import('@/components/admin/BlogWritingTab').th
 const LandingPageBuilder = lazy(() => import('@/components/admin/LandingPageBuilder').then(m => ({ default: m.LandingPageBuilder })));
 const ClickFraudTab = lazy(() => import('@/components/admin/ClickFraudTab').then(m => ({ default: m.ClickFraudTab })));
 
-const TestingTabContent = lazy(() => import('@/components/admin/TestingTabContent').then(m => ({ default: m.TestingTabContent })));
 const NewLeadsTab = lazy(() => import('@/components/admin/leads/NewLeadsTab').then(m => ({ default: m.NewLeadsTab })));
 const GoldenLeadsTab = lazy(() => import('@/components/admin/leads/LeadRecoveryTab').then(m => ({ default: m.LeadRecoveryTab })));
 const RetentionTab = lazy(() => import('@/components/admin/retention/RetentionTab').then(m => ({ default: m.RetentionTab })));
@@ -123,6 +122,7 @@ const DealerAdminOverviewTab = lazy(() => import('@/pages/dealer-admin/DealerAdm
 const DealerAdminSignUpsTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSignUps'));
 const DealerAdminDealersTab = lazy(() => import('@/pages/dealer-admin/DealerAdminDealers'));
 const DealerAdminTradersTab = lazy(() => import('@/pages/dealer-admin/DealerAdminTraders'));
+const TestingTab = lazy(() => import('@/components/admin/TestingTab'));
 const DealerAdminSalesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminSales'));
 const DealerAdminInvoicesTab = lazy(() => import('@/pages/dealer-admin/DealerAdminInvoices'));
 const DealerAdminPayLaterTab = lazy(() => import('@/pages/dealer-admin/DealerAdminPayLater'));
@@ -177,7 +177,7 @@ const getFirstPermittedTab = (role: string | null, permissions?: Record<string, 
 
 // Tabs that are restricted to super_admin / dev_tester by default.
 // Other roles only see them when explicitly granted via tab_<id> = true in permissions.
-const SUPER_ADMIN_ONLY_TABS = new Set<string>(['plans']);
+const SUPER_ADMIN_ONLY_TABS = new Set<string>(['plans', 'testing']);
 
 // Tab ids that are really the same screen as 'overview' (Live Calls Data).
 // Old bookmarks (?tab=call-stats) and the public slug must never be treated as
@@ -956,7 +956,7 @@ const AdminDashboard = () => {
         }
         return <SalesScoreboardTab />;
       case 'testing':
-        return <TestingTabContent />;
+        return <TestingTab />;
       case 'ab-testing':
         return <AbTestingTab />;
       case 'discounts-given':

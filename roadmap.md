@@ -101,3 +101,4 @@
 - [x] BOGOF: rule confirmed (each paid warranty earns one free, continuous until switched off; first three paid earn three free) and the offer shows on the pricing page — one line under the heading bullets ("Buy one get one free") with the full wording in a hover/tap info bubble
 
 - [x] Point every WhatsApp contact point on the site at the new chat address (https://wa.me/message/I5OUGLJ7XTMOA1): homepage hero card and closing band, Contact Us card, header and footer, help bubble, sticky nav, support pop-up, staff login and all warranty landing pages, with a green icon button style; 335 tests pass and phone/desktop checks confirm the buttons.
+- [x] Testing section in admin: create test dealers, mark test purchases paid without a card, list test sales/customers. Real 4242 card checkout still waits on a Stripe test key.
