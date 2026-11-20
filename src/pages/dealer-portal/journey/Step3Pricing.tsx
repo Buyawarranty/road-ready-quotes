@@ -244,7 +244,6 @@ const Step3Pricing: React.FC = () => {
         <h1>MORE PROFIT. LESS HASSLE.<span>ACTIVATE A WARRANTY IN 60 SECONDS.</span></h1>
         <p className="text-sm text-muted-foreground">{vehicle?.reg ? 'Confirm mileage and select your cover.' : 'Enter the vehicle registration to start activating your warranty.'}</p>
         <ul className="mt-3 grid max-w-lg grid-cols-2 gap-x-4 gap-y-1.5 text-xs font-bold sm:grid-cols-3">{['Fixed trade prices', 'Full cover', 'Parts and labour', 'Quick activation', 'Simple claims', 'Fast payouts'].map(text => <li key={text} className="flex items-center gap-2"><Check className="h-4 w-4 shrink-0 text-crm-green" />{text}</li>)}{offerOn && <li className="flex items-center gap-2 text-crm-orange"><Gift className="h-4 w-4 shrink-0" />Buy one get one free</li>}</ul>
-        {offerOn && <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-bold"><Gift className="h-4 w-4 text-crm-orange" />Buy one warranty, get the next one free — up to 3 years' cover.</p>}
       </div>
     </header>
     <section className="pricing-vehicle flex flex-col items-center gap-3 rounded-lg border border-crm-line bg-card p-3 sm:flex-row sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
@@ -256,6 +255,7 @@ const Step3Pricing: React.FC = () => {
               <input ref={regRef} value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
             <Button type="submit" disabled={lookup === 'loading'} className={`h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base ${!vehicle?.reg ? 'reg-cta-pulse' : ''}`}>{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>CONTINUE<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
+            {offerOn && <p className="col-span-2 flex items-center gap-1.5 text-sm font-bold sm:col-span-1"><Gift className="h-4 w-4 shrink-0 text-crm-orange" />Buy one, get the next one free on your first three warranties — up to 3 years' cover.</p>}
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && (/15 years/.test(lookupMsg) ? <p role="alert" className="w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ {lookupMsg}</p> : <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>)}
