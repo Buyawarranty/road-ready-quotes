@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Search, Gift } from 'lucide-react';
+import { Check, ArrowRight, Eye, Pencil, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import WhatsCoveredPanel from '@/components/dealer/journey/WhatsCoveredPanel';
@@ -37,6 +37,7 @@ const Step3Pricing: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [editingReg, setEditingReg] = useState(false);
   const [regInput, setRegInput] = useState('');
+  const regRef = useRef<HTMLInputElement>(null);
   const [lookup, setLookup] = useState<'idle' | 'loading' | 'error'>('idle');
   // The buy-one-get-one line only appears while Super Admin has the offer switched on.
   const [offerOn, setOfferOn] = useState(false);
@@ -230,18 +231,16 @@ const Step3Pricing: React.FC = () => {
     <BogofBanner />
     <section className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 gap-y-3 rounded-lg border border-crm-line bg-card p-2.5 sm:flex sm:flex-wrap sm:gap-3 sm:p-4" aria-label="Vehicle">
       {!vehicle?.reg || editingReg ? (
-        <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); void lookupVehicle(regInput); }} noValidate>
+        <form className="col-span-3 flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3" onSubmit={event => { event.preventDefault(); if (!regInput.trim()) { regRef.current?.focus(); return; } void lookupVehicle(regInput); }} noValidate>
           <div className="grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex sm:gap-3">
             <div className="min-w-0 sm:w-44 sm:shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--slim vehicle-reg-plate--entry">
               <span className="vehicle-reg-plate__country" aria-hidden="true">GB<span>UK</span></span>
-              <input value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
+              <input ref={regRef} value={regInput} onChange={event => { setRegInput(normaliseReg(event.target.value).slice(0, 8)); if (lookupMsg) setLookupMsg(''); }} placeholder="ENTER REG" aria-label="Vehicle registration" maxLength={8} autoFocus className="vehicle-reg-plate__input" onFocus={event => event.currentTarget.select()} onMouseUp={event => event.preventDefault()} />
             </div></div>
-            <Button type="submit" disabled={lookup === 'loading' || !regInput.trim()} className="h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base">{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>Get prices<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
+            <Button type="submit" disabled={lookup === 'loading'} className={`h-11 shrink-0 gap-1.5 px-2 text-sm font-bold !bg-crm-orange !text-primary-foreground hover:!bg-crm-orange/90 sm:px-5 sm:text-base ${!vehicle?.reg ? 'reg-cta-pulse' : ''}`}>{lookup === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-label="Looking up vehicle" /> : <>Check the vehicle<ArrowRight className="hidden h-4 w-4 sm:block" /></>}</Button>
           </div>
           {editingReg && vehicle?.reg && <Button type="button" variant="link" className="h-auto p-0 text-xs font-semibold" onClick={() => { setEditingReg(false); setLookupMsg(''); }}>Cancel — keep {vehicle.reg}</Button>}
           {lookupMsg && (/15 years/.test(lookupMsg) ? <p role="alert" className="w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ {lookupMsg}</p> : <div className="w-full"><DealerFieldError>{lookupMsg}</DealerFieldError></div>)}
-          {/* Polite prompt in place of a price while no registration has been entered. */}
-          {!vehicle?.reg && !lookupMsg && <p role="status" className="flex w-full items-center gap-2 rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink"><Search className="h-4 w-4 shrink-0" aria-hidden="true" />Please enter the vehicle registration to see prices.</p>}
         </form>
 
       ) : (
@@ -350,7 +349,7 @@ const Step3Pricing: React.FC = () => {
       {trade && <p className="text-center text-xs leading-5 font-semibold text-muted-foreground"><ShieldCheck className="mr-1.5 inline-block h-4 w-4 align-text-bottom text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
     {error && <DealerFieldError>{error}</DealerFieldError>}
-    {!vehicle?.reg ? <p role="status" className="text-center text-sm font-bold leading-5 text-crm-pink">Please enter the registration above to see prices and continue.</p> : <p className="text-center text-xs leading-5 text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>}
+    {!vehicle?.reg ? null : <p className="text-center text-xs leading-5 text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>}
   </div>
   <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader>{(() => { const opts = sellingPriceOptions(product, Number(exactValue) || 0); const lo = opts[0] ?? 0; const hi = opts[opts.length - 1] ?? lo; const cur = Number(exactValue); const step = (d: number) => { if (!product) return; setExactValue(String(stepSellingPrice(cur, d > 0 ? 1 : -1, product))); }; return <div className="space-y-3"><div className="flex items-center justify-between gap-3"><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Lower price by £100" disabled={cur <= lo} onClick={() => step(-100)}>−</Button><strong className="text-4xl font-black text-crm-navy">{gbp(cur || 0)}</strong><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Raise price by £100" disabled={cur >= hi} onClick={() => step(100)}>+</Button></div><select aria-label="Customer selling price" className="h-12 w-full rounded-md border border-crm-line bg-card px-3 text-base font-semibold text-crm-navy" value={opts.includes(cur) ? String(cur) : ''} onChange={e => setExactValue(e.target.value)}>{!opts.includes(cur) && <option value="">{gbp(cur || 0)}</option>}{opts.map(v => <option key={v} value={v}>{gbp(v)}</option>)}</select></div>; })()}<p className="text-xs text-muted-foreground">Warranty price including VAT{boostOn ? `, plus ${gbp(boostRetail)} for the claim limit boost` : ""}. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>
   <Dialog open={!!emailQuote} onOpenChange={open => !open && setEmailQuote(null)}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Email customer quote</DialogTitle></DialogHeader><Input type="email" aria-label="Customer email address" placeholder="Customer email address" value={email} onChange={e => setEmail(e.target.value)} /><Button disabled={emailBusy || !email.includes('@')} onClick={async () => { setEmailBusy(true); const { data, error: sendError } = await supabase.functions.invoke('dealer-quote-email', { body: { quote_id: emailQuote, email } }); setEmailBusy(false); if (sendError || !data?.sent) { toast({ title: data?.error || 'Email could not be sent. Please try again.', variant: 'destructive' }); return; } setEmailQuote(null); toast({ title: 'Customer quote emailed' }); }}>{emailBusy ? 'Sending…' : 'Send quote'}</Button></DialogContent></Dialog>

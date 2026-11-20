@@ -208,6 +208,22 @@
   50% { box-shadow: 0 0 0 6px hsl(var(--crm-orange) / 0.45); }
 }
 
+/* Pulsing starting-point button: draws the eye to the one action, then stops once the vehicle is in. */
+@keyframes reg-cta-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--crm-orange) / 0.5); }
+  50% { box-shadow: 0 0 0 12px hsl(var(--crm-orange) / 0); }
+}
+
+.dealer-crm .reg-cta-pulse {
+  animation: reg-cta-pulse 1.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dealer-crm .reg-cta-pulse {
+    animation: none;
+  }
+}
+
 .dealer-crm .vehicle-reg-plate--error {
   border-color: hsl(var(--destructive));
 }
