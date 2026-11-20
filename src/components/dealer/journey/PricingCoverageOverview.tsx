@@ -8,7 +8,7 @@ export default function PricingCoverageOverview() {
       <WhatsCoveredPanel coveredParts={<><p className="mt-2 text-sm leading-5">For petrol, diesel, hybrid (including plug-in hybrid) and electric vehicles (EVs). Covered components depend on the vehicle type, eligibility and policy terms.</p><div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-3 xl:grid-cols-5">{parts.map(({ label, icon: Icon }) => <span key={label} className="flex min-w-0 items-center gap-2 rounded-md border border-crm-line px-2 py-1.5 text-[11px] font-semibold leading-4"><Icon className="h-4 w-4 shrink-0" />{label}</span>)}</div></>} />
     </section>
     <section aria-label="Why dealers choose Panda Protect">
-      <h2 className="mb-2 text-base font-bold">Why dealers choose Panda Protect</h2>
+      <h2 className="mb-4 text-base font-bold">Why dealers choose Panda Protect</h2>
       <ul className="list-disc space-y-2 pl-5 text-sm leading-5">{[
         { title: 'Fully comprehensive cover', text: 'Broad, market-leading cover across the key mechanical and electrical systems.' },
         { title: 'Exceptional customer service', text: 'We look after your customers with a friendly, knowledgeable UK team and clear, proactive communication.' },
