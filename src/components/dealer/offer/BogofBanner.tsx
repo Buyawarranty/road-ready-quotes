@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check, Gift, Tag, X } from 'lucide-react';
+import { Check, ChevronDown, Gift, Tag, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export type BogofSettings = { enabled: boolean; eyebrow: string; banner_title: string; banner_text: string };
@@ -55,4 +55,37 @@ export default function BogofBanner({ dealerId }: { dealerId?: string | null }) 
   useEffect(() => { let live = true; loadBogofEligibility(dealerId).then(ok => live && setEligible(ok)); return () => { live = false; }; }, [dealerId]);
   if (!s?.enabled || !eligible || closed) return null;
   return <BogofBannerView s={s} onClose={() => setClosed(true)} />;
+}
+
+/** Compact collapsible version of the offer for the pricing page — one line until opened. */
+export function BogofCollapsible({ dealerId }: { dealerId?: string | null }) {
+  const [s, setS] = useState<BogofSettings | null>(null);
+  const [eligible, setEligible] = useState(true);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { let live = true; loadBogofSettings().then(d => live && setS(d)); return () => { live = false; }; }, []);
+  useEffect(() => { let live = true; loadBogofEligibility(dealerId).then(ok => live && setEligible(ok)); return () => { live = false; }; }, [dealerId]);
+  if (!s?.enabled || !eligible) return null;
+  return (
+    <section aria-label={s.eyebrow} className="rounded-xl border border-border bg-card shadow-sm">
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left">
+        <Gift className="h-5 w-5 shrink-0 text-crm-orange" aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-extrabold uppercase tracking-wide text-crm-orange">{s.eyebrow}</span>
+          <span className="block truncate text-sm font-black text-crm-navy">{s.banner_title}</span>
+        </span>
+        <ChevronDown className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      {open && (
+        <div className="space-y-2 border-t border-border px-4 py-3">
+          {s.banner_text && <p className="text-sm font-bold text-crm-orange">{s.banner_text}</p>}
+          <div className="space-y-1 text-sm font-bold text-crm-green-deep">
+            <p className="flex items-center gap-1.5"><Check className="h-4 w-4 shrink-0" />No code needed</p>
+            <p className="flex items-center gap-1.5"><Check className="h-4 w-4 shrink-0" />Applied automatically at checkout</p>
+            <p className="flex gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Applies to your first three warranties: buy 3, get 3 free</span></p>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 }
