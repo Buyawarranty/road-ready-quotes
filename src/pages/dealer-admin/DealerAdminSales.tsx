@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
+import { SortableHeader } from '@/components/admin/SortableHeader';
 
 interface SaleRow {
   id: string;
@@ -37,6 +38,7 @@ const DealerAdminSales: React.FC = () => {
   const [dealerFilter, setDealerFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [canManage, setCanManage] = useState(false);
+  const [newestFirst, setNewestFirst] = useState(true);
   const [busy, setBusy] = useState(false);
   const [reload, setReload] = useState(0);
 
@@ -106,8 +108,11 @@ const DealerAdminSales: React.FC = () => {
         r.registration_plate?.toLowerCase().includes(q) ||
         r.dealer_company?.toLowerCase().includes(q)
       );
+    }).sort((a, b) => {
+      const diff = new Date(b.signup_date).getTime() - new Date(a.signup_date).getTime();
+      return newestFirst ? diff : -diff;
     });
-  }, [rows, search, paymentFilter, dealerFilter]);
+  }, [rows, search, paymentFilter, dealerFilter, newestFirst]);
 
   const totalRevenue = filtered.filter(r => !r.is_test).reduce((sum, r) => sum + dealerSaleAmount(r), 0);
   const allSelected = filtered.length > 0 && filtered.every(r => selected.has(r.id));
@@ -194,7 +199,7 @@ const DealerAdminSales: React.FC = () => {
                 <thead className="bg-muted/50 border-y border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                     {canManage && <th className="px-3 py-2"><Checkbox aria-label="Select all" checked={allSelected} onCheckedChange={() => setSelected(allSelected ? new Set() : new Set(filtered.map(r => r.id)))} /></th>}
-                    <th className="px-3 py-2 font-medium">Date</th>
+                    <th className="px-3 py-2 font-medium"><SortableHeader label="Date" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th>
                     <th className="px-3 py-2 font-medium">Customer</th>
                     <th className="px-3 py-2 font-medium">Vehicle</th>
                     <th className="px-3 py-2 font-medium">Plan</th>

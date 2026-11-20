@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Plus, Search, Pencil, Trash2, FileText, ShoppingCart, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import { SortableHeader } from '@/components/admin/SortableHeader';
 
 interface DealerOption { id: string; name: string }
 
@@ -153,6 +154,8 @@ const DealerAdminQuotesOrders: React.FC = () => {
   };
 
   // Filtering
+  const [quotesNewestFirst, setQuotesNewestFirst] = useState(true);
+  const [ordersNewestFirst, setOrdersNewestFirst] = useState(true);
   const filteredQuotes = useMemo(() => {
     const q = search.toLowerCase().trim();
     return quotes.filter((r) => {
@@ -160,8 +163,11 @@ const DealerAdminQuotesOrders: React.FC = () => {
       if (!q) return true;
       return [r.customer_name, r.customer_email, r.customer_phone, r.vehicle_reg, r.dealer_name]
         .some((v) => (v || '').toLowerCase().includes(q));
+    }).sort((a, b) => {
+      const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return quotesNewestFirst ? diff : -diff;
     });
-  }, [quotes, search, statusFilter]);
+  }, [quotes, search, statusFilter, quotesNewestFirst]);
 
   const filteredOrders = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -170,8 +176,11 @@ const DealerAdminQuotesOrders: React.FC = () => {
       if (!q) return true;
       return [r.customer_name, r.customer_email, r.customer_phone, r.vehicle_reg, r.dealer_name]
         .some((v) => (v || '').toLowerCase().includes(q));
+    }).sort((a, b) => {
+      const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return ordersNewestFirst ? diff : -diff;
     });
-  }, [orders, search, statusFilter]);
+  }, [orders, search, statusFilter, ordersNewestFirst]);
 
   // Counters
   const quoteCounts = useMemo(() => {
@@ -357,7 +366,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
                         <th className="p-2">Plan</th>
                         <th className="p-2">Dealer £</th>
                         <th className="p-2">Status</th>
-                        <th className="p-2">Created</th>
+                        <th className="p-2"><SortableHeader label="Created" active newestFirst={quotesNewestFirst} onToggle={() => setQuotesNewestFirst((v) => !v)} /></th>
                         <th className="p-2 text-right">Actions</th>
                       </tr>
                     </thead>
@@ -437,7 +446,7 @@ const DealerAdminQuotesOrders: React.FC = () => {
                         <th className="p-2">Paid £</th>
                         <th className="p-2">Payment</th>
                         <th className="p-2">Status</th>
-                        <th className="p-2">Created</th>
+                        <th className="p-2"><SortableHeader label="Created" active newestFirst={ordersNewestFirst} onToggle={() => setOrdersNewestFirst((v) => !v)} /></th>
                         <th className="p-2 text-right">Actions</th>
                       </tr>
                     </thead>

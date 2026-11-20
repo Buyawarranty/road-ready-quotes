@@ -11,6 +11,7 @@ import { buildPendingCancellationUpdate } from '@/lib/dealerCancellationPending'
 import { DEALER_CANCELLATION_REASONS, dealerCancellationReasonMatches } from '@/lib/dealerCancellationReasons';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SortableHeader } from '@/components/admin/SortableHeader';
 
 type Req = {
   id: string; dealer_id: string; customer_id: string; reason: string; status: string;
@@ -38,7 +39,13 @@ const DealerAdminCancellations: React.FC = () => {
   const [progress, setProgress] = useState('new');
   const [workNote, setWorkNote] = useState('');
   const [reasonFilter, setReasonFilter] = useState('all');
-  const visibleRows = rows.filter(row => dealerCancellationReasonMatches(row.reason, reasonFilter));
+  const [newestFirst, setNewestFirst] = useState(true);
+  const visibleRows = rows
+    .filter(row => dealerCancellationReasonMatches(row.reason, reasonFilter))
+    .sort((a, b) => {
+      const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return newestFirst ? diff : -diff;
+    });
   const reasonOptions = [...new Set([...DEALER_CANCELLATION_REASONS, ...rows.map(row => row.reason).filter(reason => !DEALER_CANCELLATION_REASONS.some(option => dealerCancellationReasonMatches(reason, option)))])];
 
   const load = useCallback(async (autoOpen = true) => {
@@ -133,7 +140,7 @@ const DealerAdminCancellations: React.FC = () => {
         <div className="overflow-x-auto rounded-lg border">
           <table className="w-full text-sm">
             <thead className="bg-muted text-left"><tr>
-              <th className="p-3">Requested</th><th className="p-3">Dealer</th><th className="p-3">Customer</th><th className="p-3">Reg</th>
+              <th className="p-3"><SortableHeader label="Requested" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th><th className="p-3">Dealer</th><th className="p-3">Customer</th><th className="p-3">Reg</th>
               <th className="p-3">Reason</th><th className="p-3">Fee</th><th className="p-3">Refund</th><th className="p-3">Status</th><th className="p-3" />
             </tr></thead>
             <tbody>{visibleRows.map(r => (

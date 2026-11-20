@@ -20,6 +20,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { toast } from 'sonner';
 import { fireDealerConfetti } from '@/lib/dealerConfetti';
 import { AddDealerDialog } from '@/components/admin/AddDealerDialog';
+import { SortableHeader } from '@/components/admin/SortableHeader';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { DealerSignupActivityCard } from '@/components/admin/DealerSignupActivityCard';
@@ -101,7 +102,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'test' | Status>('all');
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved'>('smart');
+  const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved' | 'approved_oldest'>('smart');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | '7' | '30' | '90'>('all');
   const [extraFilter, setExtraFilter] = useState<'all' | 'duplicates' | 'no_login' | 'has_login'>('all');
   const [selected, setSelected] = useState<Signup | null>(null);
@@ -256,6 +257,7 @@ const DealerAdminSignUps: React.FC = () => {
       if (sortBy === 'oldest') return ts(a.created_at) - ts(b.created_at);
       if (sortBy === 'name') return (a.dealership_name || '').localeCompare(b.dealership_name || '');
       if (sortBy === 'approved') return ts(b.approved_at) - ts(a.approved_at) || ts(b.created_at) - ts(a.created_at);
+      if (sortBy === 'approved_oldest') return ts(a.approved_at) - ts(b.approved_at) || ts(a.created_at) - ts(b.created_at);
       return ts(b.created_at) - ts(a.created_at);
     });
   }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds]);
@@ -745,6 +747,7 @@ const DealerAdminSignUps: React.FC = () => {
             <SelectItem value="newest">Newest first</SelectItem>
             <SelectItem value="oldest">Oldest first</SelectItem>
             <SelectItem value="approved">Recently approved</SelectItem>
+            <SelectItem value="approved_oldest">Oldest approved</SelectItem>
             <SelectItem value="name">Dealership A–Z</SelectItem>
           </SelectContent>
         </Select>
@@ -820,8 +823,8 @@ const DealerAdminSignUps: React.FC = () => {
                     </th>
                   )}
                   <Th>Action</Th>
-                  <Th>Signed Up</Th>
-                  <Th>Approved</Th>
+                  <Th><SortableHeader label="Signed Up" active={sortBy === 'newest' || sortBy === 'oldest'} newestFirst={sortBy !== 'oldest'} onToggle={() => setSortBy(sortBy === 'newest' ? 'oldest' : 'newest')} /></Th>
+                  <Th><SortableHeader label="Approved" active={sortBy === 'approved' || sortBy === 'approved_oldest'} newestFirst={sortBy !== 'approved_oldest'} onToggle={() => setSortBy(sortBy === 'approved' ? 'approved_oldest' : 'approved')} /></Th>
                   <Th>Dealership</Th>
                   <Th>Contact</Th>
                   <Th>Email</Th>

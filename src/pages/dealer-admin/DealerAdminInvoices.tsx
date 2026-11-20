@@ -24,6 +24,7 @@ import { DEALER_PAYMENT_OPTIONS, DEALER_PAYMENT_STYLES, getDealerPaymentState } 
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice } from '@/lib/dealerSales';
 import { functionErrorMessage } from '@/lib/functionError';
+import { SortableHeader } from '@/components/admin/SortableHeader';
 
 interface UnpaidRow {
   id: string;
@@ -109,6 +110,11 @@ const DealerAdminInvoices: React.FC = () => {
 
   useEffect(() => { load(); }, []);
 
+  const [newestFirst, setNewestFirst] = useState(true);
+  const bySignupDate = (a: UnpaidRow, b: UnpaidRow) => {
+    const diff = new Date(b.signup_date).getTime() - new Date(a.signup_date).getTime();
+    return newestFirst ? diff : -diff;
+  };
   const groups: Group[] = useMemo(() => {
     const map = new Map<string, Group>();
     rows.forEach((r) => {
@@ -126,6 +132,7 @@ const DealerAdminInvoices: React.FC = () => {
     });
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [rows]);
+  const sortedPaidRows = useMemo(() => [...paidRows].sort(bySignupDate), [paidRows, newestFirst]);
 
   const grandTotal = groups.reduce((s, g) => s + g.total, 0);
 
@@ -444,7 +451,7 @@ const DealerAdminInvoices: React.FC = () => {
                     <table className="w-full text-sm">
                       <thead className="bg-muted/50 border-y border-border">
                         <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                          <th className="px-3 py-2 font-medium">Date</th>
+                          <th className="px-3 py-2 font-medium"><SortableHeader label="Date" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th>
                           <th className="px-3 py-2 font-medium">Customer</th>
                           <th className="px-3 py-2 font-medium">Vehicle</th>
                           <th className="px-3 py-2 font-medium">Status</th>
@@ -453,7 +460,7 @@ const DealerAdminInvoices: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {g.rows.map((r) => {
+                        {[...g.rows].sort(bySignupDate).map((r) => {
                           const rowLink = links[`link-${r.id}`];
                           return (
                             <tr key={r.id} className="border-b border-border">
@@ -562,10 +569,10 @@ const DealerAdminInvoices: React.FC = () => {
             {paidRows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">Completed dealer sales will appear here.</p> : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="border-y border-border bg-muted/50"><tr className="text-left text-xs uppercase tracking-wide text-muted-foreground"><th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Customer</th><th className="px-3 py-2 font-medium">Vehicle</th><th className="px-3 py-2 font-medium">Dealer</th><th className="px-3 py-2 font-medium">Payment</th><th className="px-3 py-2 text-right font-medium">Amount</th></tr></thead>
-                  <tbody>{paidRows.slice(0, 25).map((r) => <tr key={r.id} className="border-b border-border"><td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(r.signup_date).toLocaleDateString('en-GB')}</td><td className="px-3 py-2"><p className="font-medium">{r.name}</p><p className="break-all text-xs text-muted-foreground">{r.email}</p></td><td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td><td className="px-3 py-2">{r.dealer_company}</td><td className="px-3 py-2"><Badge className="bg-crm-green-soft text-crm-green-deep">{dealerSalePaymentLabel(r)}</Badge></td><td className="px-3 py-2 text-right font-semibold">{money(dealerSaleAmount(r))}</td></tr>)}</tbody>
+                  <thead className="border-y border-border bg-muted/50"><tr className="text-left text-xs uppercase tracking-wide text-muted-foreground"><th className="px-3 py-2 font-medium"><SortableHeader label="Date" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th><th className="px-3 py-2 font-medium">Customer</th><th className="px-3 py-2 font-medium">Vehicle</th><th className="px-3 py-2 font-medium">Dealer</th><th className="px-3 py-2 font-medium">Payment</th><th className="px-3 py-2 text-right font-medium">Amount</th></tr></thead>
+                  <tbody>{sortedPaidRows.slice(0, 25).map((r) => <tr key={r.id} className="border-b border-border"><td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(r.signup_date).toLocaleDateString('en-GB')}</td><td className="px-3 py-2"><p className="font-medium">{r.name}</p><p className="break-all text-xs text-muted-foreground">{r.email}</p></td><td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td><td className="px-3 py-2">{r.dealer_company}</td><td className="px-3 py-2"><Badge className="bg-crm-green-soft text-crm-green-deep">{dealerSalePaymentLabel(r)}</Badge></td><td className="px-3 py-2 text-right font-semibold">{money(dealerSaleAmount(r))}</td></tr>)}</tbody>
                 </table>
-                {paidRows.length > 25 && <p className="pt-3 text-xs text-muted-foreground">Showing the 25 most recent completed sales.</p>}
+                {paidRows.length > 25 && <p className="pt-3 text-xs text-muted-foreground">Showing 25 of {paidRows.length} completed sales.</p>}
               </div>
             )}
           </CardContent>
