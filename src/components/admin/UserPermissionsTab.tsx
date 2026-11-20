@@ -52,6 +52,8 @@ interface Permission {
 const GRANULAR_PERMISSIONS = {
   'dealer-dealers': [
     { key: 'export', label: 'Export', description: 'Can download dealer and signup lists (Super Admin always can)' },
+    { key: 'bulk-approve', label: 'Approve selected dealers', description: 'Admin only when enabled; Super Admin always. Creates dealer logins and sends approval emails.' },
+    { key: 'test-account', label: 'Manage test dealers', description: 'Admin only when enabled; Super Admin always. Tags hidden test accounts without changing login access.' },
   ],
   'customers': [
     { key: 'view', label: 'View', description: 'Can view customer data' },

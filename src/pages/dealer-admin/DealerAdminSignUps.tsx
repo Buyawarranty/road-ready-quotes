@@ -1,3 +1,4 @@
+import { BULK_APPROVE_PERMISSION, TEST_DEALER_PERMISSION, canManageSignupAction, pendingApprovalRows } from '../../../supabase/functions/_shared/dealerSignupActionAccess';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { functionErrorMessage } from '@/lib/functionError';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -98,7 +99,7 @@ const DealerAdminSignUps: React.FC = () => {
   const [statusSaving, setStatusSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | Status>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'test' | Status>('all');
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved'>('smart');
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | '7' | '30' | '90'>('all');
@@ -107,6 +108,12 @@ const DealerAdminSignUps: React.FC = () => {
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const canExport = useDealerExportAccess();
   const [canBulkDelete, setCanBulkDelete] = useState(false);
+  const [canBulkApprove, setCanBulkApprove] = useState(false);
+  const [canMarkTest, setCanMarkTest] = useState(false);
+  const [testDealerIds, setTestDealerIds] = useState<Set<string>>(new Set());
+  const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
+  const [bulkApproving, setBulkApproving] = useState(false);
+  const [testBusy, setTestBusy] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [decisionNotes, setDecisionNotes] = useState('');
@@ -160,6 +167,8 @@ const DealerAdminSignUps: React.FC = () => {
     if (error) {
       toast.error(error.message);
     } else {
+      const { data: testDealers } = await supabase.from('dealers').select('id').eq('is_test', true);
+      setTestDealerIds(new Set((testDealers || []).map(row => row.id)));
       const all = (data || []) as (Signup & { archived_at?: string | null })[];
       setRows(all.filter(r => !r.archived_at));
       setArchivedRows(all.filter(r => !!r.archived_at));
@@ -180,8 +189,13 @@ const DealerAdminSignUps: React.FC = () => {
     const loadDeleteAccess = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: roles } = await supabase.from('user_roles').select('role').eq('user_id', user.id);
-      if (!cancelled) setCanBulkDelete((roles || []).some(row => row.role === 'admin' || row.role === 'super_admin'));
+      const [{ data: roles }, { data: staff }] = await Promise.all([supabase.from('user_roles').select('role').eq('user_id', user.id), supabase.from('admin_users').select('permissions').eq('user_id', user.id).maybeSingle()]);
+      if (!cancelled) {
+        const roleNames = (roles || []).map(row => row.role);
+        setCanBulkDelete(roleNames.some(role => role === 'admin' || role === 'super_admin'));
+        setCanBulkApprove(canManageSignupAction(roleNames, staff?.permissions as Record<string, unknown>, BULK_APPROVE_PERMISSION));
+        setCanMarkTest(canManageSignupAction(roleNames, staff?.permissions as Record<string, unknown>, TEST_DEALER_PERMISSION));
+      }
     };
     void loadDeleteAccess();
     return () => { cancelled = true; };
@@ -217,7 +231,8 @@ const DealerAdminSignUps: React.FC = () => {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     const matches = rows.filter((r) => {
-      if (statusFilter === 'ready') { if (!r.dealer_id || !isReadyForFollowUp(portalUsage[r.dealer_id])) return false; }
+      if (statusFilter === 'test') { if (!r.dealer_id || !testDealerIds.has(r.dealer_id)) return false; }
+      else if (statusFilter === 'ready') { if (!r.dealer_id || !isReadyForFollowUp(portalUsage[r.dealer_id])) return false; }
       else if (statusFilter !== 'all' && r.status !== statusFilter) return false;
       if (dateFilter !== 'all') {
         const t = new Date(r.created_at);
@@ -243,7 +258,7 @@ const DealerAdminSignUps: React.FC = () => {
       if (sortBy === 'approved') return ts(b.approved_at) - ts(a.approved_at) || ts(b.created_at) - ts(a.created_at);
       return ts(b.created_at) - ts(a.created_at);
     });
-  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage]);
+  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -435,9 +450,19 @@ const DealerAdminSignUps: React.FC = () => {
     toast.success(`Town set to ${value} — the dealer contact list is updated too`);
   };
 
-  const updateStatus = async (id: string, status: Status) => {
+  const updateStatus = async (id: string, status: Status | 'test') => {
     const signup = rows.find(row => row.id === id);
     if (!signup) return;
+    if (status === 'test') {
+      if (!signup.dealer_id || !canMarkTest) { toast.error('Approve the dealer first, and enable Manage test dealers in User permissions.'); return; }
+      setTestBusy(true);
+      const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { signup_id: id, decision: 'test' } });
+      setTestBusy(false);
+      if (error || data?.error) { toast.error(data?.error || await functionErrorMessage(error)); return; }
+      const dealerId = signup.dealer_id;
+      setTestDealerIds(current => new Set([...current, dealerId]));
+      toast.success('Marked as Test — their own dealer login stays active'); return;
+    }
     if (status === 'approved' && !signup.dealer_id) { openDetail(signup); toast.info('Use Approve to create this dealer’s login.'); return; }
     setStatusEdit({ signup, status });
     setStatusMessage('');
@@ -490,6 +515,29 @@ const DealerAdminSignUps: React.FC = () => {
     } finally {
       setDeciding(null);
     }
+  };
+
+  const approveSelected = async () => {
+    if (!canBulkApprove || bulkApproving) return;
+    const targets = pendingApprovalRows(rows, checkedIds);
+    setBulkApproving(true);
+    const failures: string[] = [];
+    let approved = 0;
+    let emailFailures = 0;
+    for (const row of targets) {
+      try {
+        const { data, error } = await supabase.functions.invoke('dealer-signup-decision', { body: { signup_id: row.id, decision: 'approve', bulk: true } });
+        if (error || data?.error) throw new Error(data?.error || await functionErrorMessage(error));
+        approved++;
+        if (data.email_sent === false) emailFailures++;
+        setCheckedIds(current => { const next = new Set(current); next.delete(row.id); return next; });
+      } catch (error) { failures.push(`${row.dealership_name || row.email_address}: ${error instanceof Error ? error.message : 'Approval failed'}`); }
+    }
+    await load();
+    setBulkApproving(false); setApproveConfirmOpen(false);
+    if (approved) toast.success(`${approved} dealer${approved === 1 ? '' : 's'} approved`);
+    if (emailFailures) toast.error(`${emailFailures} login emails need resending from the dealer list.`);
+    if (failures.length) toast.error(failures.join(' · '), { duration: 15000 });
   };
 
   const resendCredentials = async () => {
@@ -684,8 +732,9 @@ const DealerAdminSignUps: React.FC = () => {
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
             <SelectItem value="ready">Ready for follow-up</SelectItem>
+            <SelectItem value="test">Test accounts</SelectItem>
             {STATUS_OPTIONS.map((s) => (
-              <SelectItem key={s} value={s}>{STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+              <SelectItem key={s} value={s}>{s === 'approved' ? 'All approved' : STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -722,9 +771,9 @@ const DealerAdminSignUps: React.FC = () => {
           <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setSortBy('smart'); setDateFilter('all'); setExtraFilter('all'); setSearch(''); }}>Reset filters</Button>
         )}
         <div className="w-full flex flex-wrap gap-2">
-          {(['all', 'ready', 'new', 'pending', 'approved', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
-            const count = s === 'all' ? rows.length : s === 'ready' ? readyRows.length : rows.filter(r => r.status === s).length;
-            const label = s === 'all' ? 'All' : s === 'ready' ? 'Ready for follow-up' : (STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1));
+          {(['all', 'ready', 'new', 'pending', 'approved', 'test', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
+            const count = s === 'all' ? rows.length : s === 'ready' ? readyRows.length : s === 'test' ? rows.filter(r => r.dealer_id && testDealerIds.has(r.dealer_id)).length : rows.filter(r => r.status === s).length;
+            const label = s === 'all' ? 'All' : s === 'ready' ? 'Ready for follow-up' : s === 'approved' ? 'All approved' : s === 'test' ? 'Test accounts' : (STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1));
             return (
               <Button key={s} type="button" size="sm" variant={statusFilter === s ? 'default' : 'outline'} className="rounded-full h-8" onClick={() => setStatusFilter(s)}>
                 {label} <span className="ml-1.5 opacity-70">{count}</span>
@@ -738,6 +787,7 @@ const DealerAdminSignUps: React.FC = () => {
       {canBulkDelete && (
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-muted/30 px-4 py-3">
           <span className="text-sm font-semibold">{checkedIds.size} selected</span>
+          {canBulkApprove && <Button size="sm" disabled={bulkApproving || !pendingApprovalRows(rows, checkedIds).length} onClick={() => setApproveConfirmOpen(true)}><Check className="mr-2 h-4 w-4" />Approve selected</Button>}
           <Button type="button" size="sm" variant="outline" disabled={!checkedIds.size || deleting} onClick={() => setCheckedIds(new Set())}>Clear selection</Button>
           <Button type="button" size="sm" variant="destructive" disabled={!checkedIds.size || deleting} onClick={() => setDeleteConfirmOpen(true)}>
             <Trash2 className="mr-2 h-4 w-4" />Archive selected
@@ -862,7 +912,7 @@ const DealerAdminSignUps: React.FC = () => {
                           <a href={`tel:${r.phone_number}`} onClick={(e) => e.stopPropagation()}
                             className="text-gray-700 hover:underline">{r.phone_number}</a>
                         </Td>
-                        <Td><div onClick={event => event.stopPropagation()}><Select value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
+                        <Td>{r.dealer_id && testDealerIds.has(r.dealer_id) && <Badge variant="secondary" className="mb-1">Test account</Badge>}<div onClick={event => event.stopPropagation()}><Select disabled={testBusy} value={r.status} onValueChange={value => updateStatus(r.id, value as Status)}><SelectTrigger aria-label={`Edit status for ${r.dealership_name}`} className="h-9 w-36"><SelectValue /></SelectTrigger><SelectContent>{canMarkTest && r.dealer_id && <SelectItem value="test">Test account</SelectItem>}{STATUS_OPTIONS.map(value => <SelectItem key={value} value={value}>{STATUS_LABEL[value] || value.charAt(0).toUpperCase() + value.slice(1)}</SelectItem>)}</SelectContent></Select></div></Td>
                         <Td className="whitespace-nowrap">{(() => {
                           const u = r.dealer_id ? portalUsage[r.dealer_id] : undefined;
                           const stage = portalStage(r.dealer_id, u);
@@ -894,6 +944,9 @@ const DealerAdminSignUps: React.FC = () => {
           </div>
         )}
 
+        <AlertDialog open={approveConfirmOpen} onOpenChange={open => { if (!bulkApproving) setApproveConfirmOpen(open); }}>
+          <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Approve {pendingApprovalRows(rows, checkedIds).length} selected dealers?</AlertDialogTitle><AlertDialogDescription>Each selected unapproved dealer will receive an approval email and dealer portal access. Existing dealer passwords are preserved. Already approved dealers are skipped.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={bulkApproving}>Back</AlertDialogCancel><Button disabled={bulkApproving} onClick={() => void approveSelected()}>{bulkApproving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}{bulkApproving ? 'Approving…' : 'Approve & send login details'}</Button></AlertDialogFooter></AlertDialogContent>
+        </AlertDialog>
         <Dialog open={!!statusEdit} onOpenChange={open => { if (!open && !statusSaving) setStatusEdit(null); }}>
           <DialogContent className="max-w-md"><DialogHeader><DialogTitle>Update signup status</DialogTitle></DialogHeader><p className="text-sm text-muted-foreground">{statusEdit?.signup.dealership_name} → {statusEdit?.status.replace('_', ' ')}</p><p className="text-sm text-foreground">An account update email will be sent. Withdrawing approval pauses dealer portal access; existing paid warranties remain active.</p><label htmlFor="status-message" className="text-sm font-semibold">Additional message (optional)</label><Textarea id="status-message" value={statusMessage} onChange={event => setStatusMessage(event.target.value)} placeholder="Add a brief explanation for the trader" /><DialogFooter><Button variant="outline" disabled={statusSaving} onClick={() => setStatusEdit(null)}>Cancel</Button><Button disabled={statusSaving} onClick={saveStatus}>{statusSaving ? 'Saving…' : 'Save and email trader'}</Button></DialogFooter></DialogContent>
         </Dialog>
@@ -1137,6 +1190,7 @@ const DealerAdminSignUps: React.FC = () => {
                       <SelectValue placeholder="Change status" />
                     </SelectTrigger>
                     <SelectContent>
+                      {canMarkTest && selected.dealer_id && <SelectItem value="test">Test account</SelectItem>}
                       {STATUS_OPTIONS.map((s) => (
                         <SelectItem key={s} value={s}>{STATUS_LABEL[s] ?? s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
                       ))}

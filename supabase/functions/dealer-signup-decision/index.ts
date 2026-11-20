@@ -5,6 +5,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { validateSignupStatus } from '../_shared/dealerSignupStatus.ts';
+import { BULK_APPROVE_PERMISSION, TEST_DEALER_PERMISSION, canManageSignupAction } from '../_shared/dealerSignupActionAccess.ts';
 
 const esc = (v?: string | null) =>
   (v ?? "")
@@ -87,7 +88,7 @@ serve(async (req) => {
     }
     // Active admin_users staff, or anyone holding an Admin / Super Admin role.
     const [{ data: adminRow }, { data: callerRoles }] = await Promise.all([
-      admin.from("admin_users").select("id, is_active").eq("user_id", userData.user.id).maybeSingle(),
+      admin.from("admin_users").select("id, is_active, permissions").eq("user_id", userData.user.id).maybeSingle(),
       admin.from("user_roles").select("role").eq("user_id", userData.user.id),
     ]);
     const hasAdminRole = (callerRoles ?? []).some((r: { role: string }) => r.role === "admin" || r.role === "super_admin");
@@ -98,6 +99,11 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
+    const roles = (callerRoles ?? []).map((row: { role: string }) => row.role);
+    if ((body.bulk === true && !canManageSignupAction(roles, adminRow?.permissions, BULK_APPROVE_PERMISSION)) ||
+        (body.decision === 'test' && !canManageSignupAction(roles, adminRow?.permissions, TEST_DEALER_PERMISSION))) {
+      return new Response(JSON.stringify({ error: 'This action requires its User permissions checkbox.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
     let signupId: string | undefined = body?.signup_id;
     let decision: string | undefined = body?.decision;
     let manualCreate = false;
@@ -189,7 +195,7 @@ serve(async (req) => {
       body?.alternate_email?.toString().trim().toLowerCase() || null;
     const isResend = decision === "resend";
 
-    if (!signupId || !/^[0-9a-f-]{36}$/i.test(signupId) || (decision !== "approve" && decision !== "reject" && decision !== "status" && !isResend)) {
+    if (!signupId || !/^[0-9a-f-]{36}$/i.test(signupId) || (decision !== "approve" && decision !== "reject" && decision !== "status" && decision !== 'test' && !isResend)) {
       return new Response(JSON.stringify({ error: "signup_id and decision (approve|reject|resend) are required" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -215,6 +221,14 @@ serve(async (req) => {
 
     const email = (signup.email_address || "").trim().toLowerCase();
     const contactName = signup.contact_name || signup.dealership_name || "there";
+    if (decision === 'test') {
+      if (!signup.dealer_id) return new Response(JSON.stringify({ error: 'Approve this dealer first to create their login, then mark the account as Test.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const { error } = await admin.from('dealers').update({ is_test: true }).eq('id', signup.dealer_id);
+      if (error) throw new Error(error.message);
+      return new Response(JSON.stringify({ success: true, is_test: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    if (body.bulk === true && signup.archived_at) throw new Error('Archived signups must be restored before approval.');
+    if (body.bulk === true && signup.status === 'approved') return new Response(JSON.stringify({ success: true, skipped: true, dealer_id: signup.dealer_id }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
     if (decision === 'status' || (decision === 'reject' && (signup.status === 'approved' || signup.approved_at))) {
       const targetStatus = validateSignupStatus(decision === 'reject' ? 'rejected' : body.status);
