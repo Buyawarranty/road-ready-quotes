@@ -1,4 +1,6 @@
 .dealer-crm .pricing-page { max-width: 1240px; }
+.dealer-crm .pricing-page [class*="rounded"]:not([class*="rounded-full"]),
+.dealer-crm .pricing-page .pricing-profit { border-radius: 6px; }
 .dealer-crm .pricing-heading { position: relative; min-height: 182px; padding: 4px 0 12px; }
 .dealer-crm .pricing-heading-copy { position: relative; z-index: 1; max-width: 760px; }
 .dealer-crm .pricing-heading h1 { font-size: 26px !important; line-height: 1.2 !important; font-weight: 900; margin: 12px 0 5px !important; }
