@@ -1,0 +1,1 @@
+- This function completes purchases without a card and must refuse any customer whose dealer is not `is_test`, so live sales can never be marked paid this way.

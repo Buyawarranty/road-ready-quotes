@@ -46,4 +46,3 @@
 - Free 3+3 introductory warranties are created Pending (`intro_pending`) and only go live when an Admin/Super Admin approves them via `dealer-intro-free-decision`; rejection releases the slot. Paid sales behind the offer may later be cancelled or refunded, so free cover is never auto-issued.
 - BDM portfolio (`bdm_portfolio`) RLS limits rows to owner, managers and admins; a trigger links dealerships/dealers, and contacts learn owners only via staff-gated `bdm_portfolio_owners`.
 - Partner sales (`/partner/checkout`) charge server-read retail prices, need an active partner and linked dealer, skip payment in test mode, and finish through shared signed card completion; partner keys are hashed; admin is Admin/Super Admin only.
-- Test purchases complete without a card only via `test-complete-purchase` (Admin/Super Admin), which refuses any customer whose dealer is not `is_test`; live sales can never be marked paid this way.
