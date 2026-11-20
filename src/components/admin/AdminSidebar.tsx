@@ -1,4 +1,5 @@
 import { PendingSignupBadge } from '@/components/admin/PendingSignups';
+import { PendingCancellationBadge } from '@/components/admin/PendingCancellationBadge';
 import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import { SidebarAlertSlotTarget } from '@/components/admin/SidebarAlertSlot';
 import { canManagePartners } from '@/lib/partnerCheckout';
@@ -112,6 +113,7 @@ const SortableTab: React.FC<SortableTabProps> = ({ tab, isActive, onClick, colla
               <Icon className={`h-5 w-5 ${isActive ? 'text-orange-600' : 'text-gray-500'}`} />
               {showFreshBubble && <FreshLeadBubble compact />}
               {tab.id === 'dealer-dealers' && <PendingSignupBadge compact />}
+              {tab.id === 'dealer-cancellations' && <PendingCancellationBadge compact />}
             </button>
           </TooltipTrigger>
           <TooltipContent side="right" className="text-xs font-medium">{tab.label}</TooltipContent>
@@ -146,6 +148,7 @@ const SortableTab: React.FC<SortableTabProps> = ({ tab, isActive, onClick, colla
         </div>
         {showFreshBubble && <FreshLeadBubble />}
         {tab.id === 'dealer-dealers' && <PendingSignupBadge />}
+        {tab.id === 'dealer-cancellations' && <PendingCancellationBadge />}
       </button>
     </div>
   );

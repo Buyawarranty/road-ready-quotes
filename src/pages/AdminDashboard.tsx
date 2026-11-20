@@ -35,7 +35,6 @@ import { useCallRailPresence } from '@/hooks/useCallRailPresence';
 import { MissedCallAlertBar } from '@/components/admin/MissedCallAlertBar';
 import { NewLeadAlerts } from '@/components/admin/leads/NewLeadAlerts';
 import { SignupAlerts, SignupsTabLabel } from '@/components/admin/PendingSignups';
-import DealerCancellationRequestAlert from '@/components/admin/DealerCancellationRequestAlert';
 import DealerProfileChangeAlert from '@/components/admin/DealerProfileChangeAlert';
 import { showDealerProfileReminder } from '@/lib/dealerCancellationReasons';
 import { BdmNoteAlerts } from '@/components/admin/bdm/BdmNoteAlerts';
@@ -1243,7 +1242,6 @@ const AdminDashboardInner: React.FC<{
       <NewLeadAlerts />
       <BdmNoteAlerts />
       <SignupAlerts />
-      <DealerCancellationRequestAlert userRole={displayRole} />
       {showDealerProfileReminder(activeTab) && <DealerProfileChangeAlert userRole={displayRole} />}
 
 
