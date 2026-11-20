@@ -255,33 +255,33 @@ const Step3Pricing: React.FC = () => {
 
       ) : (
         <>
-          <div className="w-32 shrink-0 sm:w-40"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
+          <div className="w-32 shrink-0"><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></div>
           <div className="order-last col-span-3 min-w-0 flex-1 text-center sm:order-none sm:text-left"><p className="break-words text-base font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ') || 'Vehicle'}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>
           {rowPrice != null && <span className="shrink-0 text-right leading-4"><span className="block text-[0.62rem] font-bold uppercase tracking-[0.08em] text-muted-foreground">{rowLabel}</span><span className="block text-base font-black text-crm-navy">{gbp(rowPrice)}</span></span>}
-          <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy sm:w-auto sm:px-4" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /><span className="hidden sm:inline">Change vehicle</span></Button>
+          <Button variant="outline" aria-label="Change vehicle" title="Change vehicle" className="h-11 w-11 shrink-0 px-0 !border-crm-line !bg-card font-bold !text-crm-navy" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><Pencil /></Button>
 
         </>
       )}
-    </section>
-    {vehicle?.reg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
-    <>{n > 150000 && <p role="alert" className="rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
-    <section className="flex flex-wrap items-center justify-center gap-3 rounded-lg border border-crm-orange/40 bg-crm-orange-soft px-3 py-4 sm:justify-start sm:px-4 sm:py-3" aria-label="Current mileage">
-      <span className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-crm-line bg-card sm:flex"><Gauge className="h-5 w-5" /></span>
-      <div className="min-w-0 flex-1 basis-full text-center sm:basis-auto sm:text-left"><p className="text-base font-extrabold leading-5">Current mileage</p><p className="mt-1 text-xs leading-5 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
+    {vehicle?.reg && !editingReg && (() => { const n = Number(mileageInput.replace(/[^0-9]/g, '')); const confirmed = mileageConfirmed && mileageInput !== '' && Number(vehicle?.mileage) === n; return (
+    <>
+    <section className="col-span-3 flex min-w-0 items-center justify-center gap-3 border-t border-crm-line pt-3 sm:ml-auto sm:border-l sm:border-t-0 sm:pl-3 sm:pt-0" aria-label="Current mileage">
+      <div className="min-w-0 text-left"><p className="text-xs font-extrabold leading-5">Current mileage</p><p className="text-[10px] leading-4 text-muted-foreground" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">From the last MOT</p></div>
       <div className="flex min-w-0 flex-col gap-2">
       <div className="flex items-center gap-1.5" title="Adjust in steps of 1,000 or type the current mileage, then select Confirm mileage.">
-        <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-11 w-11 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
+        <Button variant="outline" type="button" aria-label="Reduce mileage by 1,000 miles" onClick={() => stepMileage(-1000)} className="h-9 w-9 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">&minus;</Button>
         <input inputMode="numeric" aria-label="Current mileage" value={mileageInput ? n.toLocaleString('en-GB') : ''} placeholder="Enter mileage"
           onChange={(e) => { setMileageInput(e.target.value.replace(/[^0-9]/g, '').slice(0, 7)); setMileageConfirmed(false); }} onBlur={(e) => commitMileage(e.target.value)}
-          className="h-11 w-28 min-w-0 rounded-md border border-crm-line bg-card px-2 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none sm:w-32" />
-        <Button variant="outline" type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="h-11 w-11 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">+</Button>
-        <span className="ml-1 text-sm font-semibold text-muted-foreground">miles</span>
+          className="h-9 w-24 min-w-0 rounded-md border border-crm-line bg-card px-2 text-center text-base font-bold text-crm-navy focus:border-crm-orange focus:outline-none" />
+        <Button variant="outline" type="button" aria-label="Increase mileage by 1,000 miles" onClick={() => stepMileage(1000)} className="h-9 w-9 shrink-0 border-crm-orange/50 bg-card p-0 text-lg font-bold text-crm-orange hover:border-crm-orange">+</Button>
       </div>
-      {confirmed ? <span className="flex h-10 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-3 text-sm font-bold text-crm-green-deep sm:w-auto"><Check className="h-4 w-4" />Mileage confirmed</span>
-        : <Button className="h-11 w-full shrink-0 justify-center !bg-crm-orange font-bold !text-primary-foreground hover:!bg-crm-orange/90" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
+      {confirmed ? <span className="flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-crm-green bg-crm-green-soft px-2 text-xs font-bold text-crm-green-deep"><Check className="h-4 w-4" />Mileage confirmed</span>
+        : <Button className="h-8 w-full shrink-0 justify-center !bg-crm-orange text-xs font-bold !text-primary-foreground hover:!bg-crm-orange/90" onClick={() => commitMileage(mileageInput)}>Confirm mileage</Button>}
       </div>
 
-    </section></>); })()}
+    </section>
+    {n > 150000 && <p role="alert" className="col-span-3 w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
+    </>); })()}
+    </section>
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
     <section aria-label="Warranty length">
