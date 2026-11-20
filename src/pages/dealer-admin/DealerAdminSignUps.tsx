@@ -102,7 +102,13 @@ const DealerAdminSignUps: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'test' | Status>('all');
   const [page, setPage] = useState(1);
-  const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved' | 'approved_oldest'>('smart');
+  const [sortBy, setSortBy] = useState<'smart' | 'newest' | 'oldest' | 'name' | 'approved' | 'approved_oldest' | 'activity' | 'activity_oldest'>('activity');
+  const [lastActivity, setLastActivity] = useState<Record<string, string>>({});
+  useEffect(() => {
+    (supabase as any).from('dealer_last_activity').select('dealer_id, activity_at').then(({ data }: any) => {
+      setLastActivity(Object.fromEntries((data || []).map((a: any) => [a.dealer_id, a.activity_at])));
+    });
+  }, []);
   const [dateFilter, setDateFilter] = useState<'all' | 'today' | '7' | '30' | '90'>('all');
   const [extraFilter, setExtraFilter] = useState<'all' | 'duplicates' | 'no_login' | 'has_login'>('all');
   const [selected, setSelected] = useState<Signup | null>(null);
@@ -253,14 +259,24 @@ const DealerAdminSignUps: React.FC = () => {
     });
     if (sortBy === 'smart') return organiseDealerSignups(matches, duplicateIds);
     const ts = (v?: string | null) => (v ? new Date(v).getTime() : 0);
+    const act = (r: typeof matches[number]) => {
+      if (!r.dealer_id) return 0;
+      const v = [lastActivity[r.dealer_id], portalUsage[r.dealer_id]?.last_sign_in_at].filter(Boolean).map(x => new Date(x as string).getTime());
+      return v.length ? Math.max(...v) : 0;
+    };
     return [...matches].sort((a, b) => {
+      if (sortBy === 'activity' || sortBy === 'activity_oldest') {
+        const x = act(a), y = act(b);
+        if (!x !== !y) return x ? -1 : 1; // never-active last
+        return (sortBy === 'activity' ? y - x : x - y) || ts(b.created_at) - ts(a.created_at);
+      }
       if (sortBy === 'oldest') return ts(a.created_at) - ts(b.created_at);
       if (sortBy === 'name') return (a.dealership_name || '').localeCompare(b.dealership_name || '');
       if (sortBy === 'approved') return ts(b.approved_at) - ts(a.approved_at) || ts(b.created_at) - ts(a.created_at);
       if (sortBy === 'approved_oldest') return ts(a.approved_at) - ts(b.approved_at) || ts(a.created_at) - ts(b.created_at);
       return ts(b.created_at) - ts(a.created_at);
     });
-  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds]);
+  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds, lastActivity]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -743,6 +759,8 @@ const DealerAdminSignUps: React.FC = () => {
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as any)}>
           <SelectTrigger className="w-[190px]"><SelectValue placeholder="Sort" /></SelectTrigger>
           <SelectContent>
+            <SelectItem value="activity">Last activity (newest)</SelectItem>
+            <SelectItem value="activity_oldest">Last activity (oldest)</SelectItem>
             <SelectItem value="smart">Fresh first (grouped)</SelectItem>
             <SelectItem value="newest">Newest first</SelectItem>
             <SelectItem value="oldest">Oldest first</SelectItem>
@@ -770,8 +788,8 @@ const DealerAdminSignUps: React.FC = () => {
             <SelectItem value="duplicates">Possible duplicates</SelectItem>
           </SelectContent>
         </Select>
-        {(statusFilter !== 'all' || sortBy !== 'smart' || dateFilter !== 'all' || extraFilter !== 'all' || search) && (
-          <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setSortBy('smart'); setDateFilter('all'); setExtraFilter('all'); setSearch(''); }}>Reset filters</Button>
+        {(statusFilter !== 'all' || sortBy !== 'activity' || dateFilter !== 'all' || extraFilter !== 'all' || search) && (
+          <Button variant="ghost" size="sm" onClick={() => { setStatusFilter('all'); setSortBy('activity'); setDateFilter('all'); setExtraFilter('all'); setSearch(''); }}>Reset filters</Button>
         )}
         <div className="w-full flex flex-wrap gap-2">
           {(['all', 'ready', 'new', 'pending', 'approved', 'test', 'rejected', 'contacted', 'needs_info'] as const).map((s) => {
@@ -823,7 +841,7 @@ const DealerAdminSignUps: React.FC = () => {
                     </th>
                   )}
                   <Th>Action</Th>
-                  <Th><SortableHeader label="Signed Up" active={sortBy === 'newest' || sortBy === 'oldest'} newestFirst={sortBy !== 'oldest'} onToggle={() => setSortBy(sortBy === 'newest' ? 'oldest' : 'newest')} /></Th>
+                  <Th><SortableHeader label="Last activity" active={sortBy === 'activity' || sortBy === 'activity_oldest'} newestFirst={sortBy !== 'activity_oldest'} onToggle={() => setSortBy(sortBy === 'activity' ? 'activity_oldest' : 'activity')} /></Th>
                   <Th><SortableHeader label="Approved" active={sortBy === 'approved' || sortBy === 'approved_oldest'} newestFirst={sortBy !== 'approved_oldest'} onToggle={() => setSortBy(sortBy === 'approved' ? 'approved_oldest' : 'approved')} /></Th>
                   <Th>Dealership</Th>
                   <Th>Contact</Th>
@@ -891,10 +909,11 @@ const DealerAdminSignUps: React.FC = () => {
                             </Button>
                           )}
                         </Td>
-                        <Td className="whitespace-nowrap text-gray-600">
-                          {format(new Date(r.created_at), 'd MMM yyyy')}
-                          <div className="text-xs text-gray-400">{format(new Date(r.created_at), 'HH:mm')}</div>
-                        </Td>
+                        <Td className="whitespace-nowrap text-gray-600">{(() => {
+                          const c = r.dealer_id ? [lastActivity[r.dealer_id], portalUsage[r.dealer_id]?.last_sign_in_at].filter(Boolean) as string[] : [];
+                          const at = c.sort((x, y) => new Date(y).getTime() - new Date(x).getTime())[0];
+                          return at ? (<>{format(new Date(at), 'd MMM yyyy')}<div className="text-xs text-gray-400">{format(new Date(at), 'HH:mm')}</div></>) : <span className="text-gray-400">No activity yet</span>;
+                        })()}</Td>
                         <Td className="whitespace-nowrap text-gray-600">
                           {r.approved_at ? format(new Date(r.approved_at), 'd MMM yyyy')
                             : r.rejected_at ? <span className="text-red-600">Declined {format(new Date(r.rejected_at), 'd MMM')}</span>
