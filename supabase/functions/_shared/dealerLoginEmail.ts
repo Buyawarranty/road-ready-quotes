@@ -5,7 +5,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => {
   return entities[character] ?? character;
 });
 
-/** Only a server-verified, authorised caller may receive the login copy. */
+/** Only a server-resolved active assigned agent may receive the login copy. */
 export function dealerLoginRecipients(to: string, staffEmail: string | undefined, fallback: string) {
   const staff = staffEmail?.trim().toLowerCase();
   const validStaff = staff && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(staff) ? staff : undefined;
@@ -14,6 +14,27 @@ export function dealerLoginRecipients(to: string, staffEmail: string | undefined
     ...(validStaff && validStaff !== to.trim().toLowerCase() ? { cc: [validStaff] } : {}),
     reply_to: validStaff ?? fallback,
   };
+}
+
+// Keep this adapter small so routing can be tested without creating real accounts.
+export interface DealerAgentStore {
+  contactOwners(dealerId: string): Promise<Array<{ assigned_bdm: string | null }>>;
+  portfolioOwners(dealerId: string): Promise<Array<{ bdm_user_id: string | null }>>;
+  isActiveStaff(userId: string): Promise<boolean>;
+  authEmail(userId: string): Promise<string | undefined>;
+}
+
+export async function resolveDealerAgentEmail(store: DealerAgentStore, dealerId: string): Promise<string | undefined> {
+  const contacts = await store.contactOwners(dealerId);
+  // A linked contact is the canonical owner; clearing it must not resurrect an old portfolio owner.
+  const owners = contacts.length
+    ? contacts.map((contact) => contact.assigned_bdm)
+    : (await store.portfolioOwners(dealerId)).map((portfolio) => portfolio.bdm_user_id);
+  const unique = [...new Set(owners.filter((owner): owner is string => Boolean(owner)))];
+  if (unique.length !== 1) return undefined;
+  const owner = unique[0];
+  if (!owner || !await store.isActiveStaff(owner)) return undefined;
+  return store.authEmail(owner);
 }
 
 /** Email clients block clipboard scripts; use readable, selectable text instead. */

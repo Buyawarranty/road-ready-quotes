@@ -1,3 +1,3 @@
 # Dealer login emails
-- Use dealerLoginEmail for approval/resend details and recipient routing; derive the staff copy and reply address only from the authenticated, authorised caller, never request-body addresses.
+- Use dealerLoginEmail for approval/resend details and recipient routing; resolve the active assigned agent from server-read linked BDM contacts (portfolio only when no linked contact exists), validate with bdm_is_staff and read their auth email; never use caller or request-body addresses as the owner.
 - Email clients do not support clipboard scripts; keep credentials readable and the portal link clickable without promising automatic copying.

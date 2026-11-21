@@ -1,4 +1,4 @@
-import { dealerLoginDetailsHtml, dealerLoginRecipients } from "../_shared/dealerLoginEmail.ts";
+import { dealerLoginDetailsHtml, dealerLoginRecipients, resolveDealerAgentEmail } from "../_shared/dealerLoginEmail.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
@@ -417,6 +417,28 @@ serve(async (req) => {
     }
 
     // 4. welcome / credentials email
+    const assignedAgentEmail = await resolveDealerAgentEmail({
+      contactOwners: async (id) => {
+        const { data, error } = await admin.from('bdm_dealerships').select('assigned_bdm').eq('dealer_id', id);
+        if (error) throw new Error('Could not check the assigned dealer agent. Please retry sending the login email.');
+        return data ?? [];
+      },
+      portfolioOwners: async (id) => {
+        const { data, error } = await admin.from('bdm_portfolio').select('bdm_user_id').eq('dealer_id', id);
+        if (error) throw new Error('Could not check the dealer portfolio owner. Please retry sending the login email.');
+        return data ?? [];
+      },
+      isActiveStaff: async (id) => {
+        const { data, error } = await admin.rpc('bdm_is_staff', { _uid: id });
+        if (error) throw new Error('Could not verify the assigned agent. Please retry sending the login email.');
+        return data === true;
+      },
+      authEmail: async (id) => {
+        const { data, error } = await admin.auth.admin.getUserById(id);
+        if (error) throw new Error('Could not load the assigned agent’s email. Please retry sending the login email.');
+        return data.user?.email;
+      },
+    }, dealerId);
     const sendTo = alternateEmail || email;
     const mail = await sendEmail(
       brand,
@@ -434,10 +456,10 @@ serve(async (req) => {
           : `Great news — your ${brand.name} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
         ${dealerLoginDetailsHtml(brand, email, password)}
-        <p style="line-height:1.6;font-size:14px;">Need help getting started? Reply to this email to reach the team member who arranged your account.</p>
+        <p style="line-height:1.6;font-size:14px;">Need help getting started? ${assignedAgentEmail ? 'Your assigned agent is copied into this email — reply to reach them directly.' : `Contact our trade team at <a href="mailto:${brand.helloEmail}">${brand.helloEmail}</a>.`}</p>
         <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${brand.name} Trade Team</p>`
       ),
-      userData.user.email
+      assignedAgentEmail
     );
 
     return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error, password_unchanged: password === null, ...(manualCreate ? { login_email: email, temp_password: password } : {}) }), {
