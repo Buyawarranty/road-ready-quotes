@@ -2,6 +2,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=deno';
 import { finaliseDealerCardPayment } from '../_shared/dealerCardPayment.ts';
+import { dealerStripeSecret } from '../_shared/dealerStripeMode.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,12 +33,19 @@ Deno.serve(async req => {
   }
   const eventSession = event.data.object as Stripe.Checkout.Session;
   try {
+    const url = Deno.env.get('SUPABASE_URL');
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!url || !serviceKey) throw new Error('Payment confirmation unavailable.');
+    const admin = createClient(url, serviceKey);
+    // Event metadata is only a lookup hint; the database chooses the key and Stripe confirms the sale.
+    const { data: dealer } = await admin.from('dealers').select('id, is_test').eq('id', eventSession.metadata?.dealer_id || '').maybeSingle();
+    if (!dealer) return new Response(JSON.stringify({ received: true, skipped: 'not_dealer' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const paymentStripe = new Stripe(dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)), { apiVersion: '2024-06-20' });
     // Never trust forwarded event fields alone: Stripe is authoritative for status, amount and metadata.
-    const session = await stripe.checkout.sessions.retrieve(eventSession.id);
+    const session = await paymentStripe.checkout.sessions.retrieve(eventSession.id);
     if (session.metadata?.source !== 'dealer_journey') {
       return new Response(JSON.stringify({ received: true, skipped: 'not_dealer' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const result = await finaliseDealerCardPayment(admin, session);
     return new Response(JSON.stringify({ received: true, ...result }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
   } catch (error) {

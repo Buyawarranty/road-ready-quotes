@@ -62,20 +62,6 @@ export default function TestingTab() {
   const shownDealers = dealers.filter(d => match(d.company_name, d.contact_name, d.email));
   const dealerName = (id: string | null) => dealers.find(d => d.id === id)?.company_name || '—';
 
-  const markPaid = async (id: string) => {
-    setBusy(id);
-    const { data, error } = await supabase.functions.invoke('test-complete-purchase', { body: { customer_id: id } });
-    setBusy(null);
-    if (error) {
-      let msg = error.message;
-      if (error instanceof FunctionsHttpError) { try { msg = (await error.context.json())?.error || msg; } catch { /* keep */ } }
-      toast({ title: 'Test purchase not completed', description: msg, variant: 'destructive' });
-      return;
-    }
-    toast({ title: 'Test purchase marked paid', description: data?.email?.sent ? 'Warranty is live and emails were sent.' : 'Warranty is live.' });
-    void load();
-  };
-
   const pending = sales.filter(s => match(s.name, s.email, s.registration_plate, dealerName(s.dealer_id)) && !s.payment_verified && s.status !== 'Cancelled');
   const done = sales.filter(s => match(s.name, s.email, s.registration_plate, dealerName(s.dealer_id)) && ( s.payment_verified || s.status === 'Cancelled'));
 
@@ -96,8 +82,8 @@ export default function TestingTab() {
         <CardHeader><CardTitle className="text-base">How to test a purchase</CardTitle></CardHeader>
         <CardContent className="space-y-1 text-sm text-muted-foreground">
           <p>1. Create a test dealer above and copy its login.</p>
-          <p>2. Sign in at <a className="text-primary underline" href="/dealer-portal/login" target="_blank" rel="noreferrer">dealer login <ExternalLink className="inline h-3 w-3" /></a> and get as far as the card payment page.</p>
-          <p>3. Come back here and press <strong>Mark as paid</strong> — no card is charged. The warranty goes live and the emails send, exactly as a real sale.</p>
+          <p>2. Sign in at <a className="text-primary underline" href="/dealer-portal/login" target="_blank" rel="noreferrer">dealer login <ExternalLink className="inline h-3 w-3" /></a> and choose Pay now by card.</p>
+          <p>3. Pay with <strong>4242 4242 4242 4242</strong>, any future expiry and any three-digit CVC. Test accounts use Stripe test payments; no real money moves. Completed purchases appear below.</p>
         </CardContent>
       </Card>
 
@@ -122,7 +108,7 @@ export default function TestingTab() {
               {pending.length === 0 ? <p className="text-sm text-muted-foreground">No unpaid test purchases.</p> : (
                 <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Customer</th><th>Reg</th><th>Dealer</th><th>Amount</th><th>Started</th><th /></tr></thead>
                   <tbody>{pending.map(s => <tr key={s.id} className="border-t"><td className="py-2">{s.name || '—'}<div className="text-xs text-muted-foreground">{s.email}</div></td><td>{s.registration_plate}</td><td>{dealerName(s.dealer_id)}</td><td>£{Number(s.final_amount || 0).toFixed(2)}</td><td>{fmt(s.created_at)}</td>
-                    <td className="text-right"><Button size="sm" disabled={busy === s.id} onClick={() => void markPaid(s.id)}>{busy === s.id && <Loader2 className="mr-1 h-3 w-3 animate-spin" />}Mark as paid</Button></td></tr>)}</tbody></table>
+                    <td className="text-right"><Badge variant="secondary">Awaiting test card payment</Badge></td></tr>)}</tbody></table>
               )}
             </CardContent>
           </Card>

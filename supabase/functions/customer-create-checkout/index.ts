@@ -4,6 +4,7 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
+import { dealerStripeSecret } from '../_shared/dealerStripeMode.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,12 +18,6 @@ Deno.serve(async (req: Request) => {
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const STRIPE_KEY = Deno.env.get('STRIPE_SECRET_KEY');
-    if (!STRIPE_KEY) {
-      return new Response(JSON.stringify({ error: 'Card payments are not configured yet.' }), {
-        status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     const { quote_id, return_url } = await req.json();
     if (!quote_id || typeof quote_id !== 'string') {
@@ -53,11 +48,12 @@ Deno.serve(async (req: Request) => {
 
     const { data: dealer } = await adminClient
       .from('dealers')
-      .select('company_name')
+      .select('company_name, is_test')
       .eq('id', quote.dealer_id)
       .maybeSingle();
 
-    const stripe = new Stripe(STRIPE_KEY, { apiVersion: '2023-10-16' });
+    if (!dealer) throw new Error('Dealer account not found.');
+    const stripe = new Stripe(dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)), { apiVersion: '2023-10-16' });
     const base = typeof return_url === 'string' && return_url.startsWith('http') ? return_url.split('#')[0].split('?')[0] : 'https://www.pandaprotect.co.uk/customer-quote/';
     const vehicleLabel = [quote.vehicle_make, quote.vehicle_model].filter(Boolean).join(' ') || quote.vehicle_reg;
 
@@ -80,6 +76,7 @@ Deno.serve(async (req: Request) => {
         dealer_id: quote.dealer_id,
         vehicle_reg: quote.vehicle_reg || '',
         source: 'customer_paylink',
+        is_test: String(dealer.is_test === true),
       },
       success_url: `${base}?paid=1&quote=${quote.id}`,
       cancel_url: `${base}?cancelled=1&quote=${quote.id}`,

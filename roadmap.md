@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Route server-tagged test dealers to hosted Stripe test-card checkout and matching payment confirmation, tag purchases Test and reject cross-mode completion; 43 focused tests pass and payment services deployed.
+- [ ] Verify a complete signed-in 4242 test purchase and email delivery; external unmanaged authentication prevents automated signed-in verification.
 - [x] Label linked Test accounts in BDM contacts, contact details, call lists and allocation portfolios without changing existing access rules.
 - [ ] Confirm whether Test contact deletion is allowed for Admin/Super Admin, Super Admin only, or nobody; awaiting the user's answer.
 - [x] Add All approved signup filtering, confirmed permission-controlled bulk approval, and hidden Test tagging without removing the test dealer’s own portal access. Default-off action checkboxes included; 16 tests and compilation pass, deployed service rejects invalid callers. Live signed-in bulk approval and email delivery remain unverified with external authentication.
@@ -97,8 +99,8 @@
 - [x] Forward dealer claims straight into the Buy A Warranty claims queue with a Panda Protect marker: the desk accepted a labelled test claim (reference 7ee5e1a7-d4e5-4f84-8b9c-c0088b201ee3).
 - [ ] Show a coloured "Panda Protect" tag on forwarded claims inside the Buy A Warranty dashboard: needs write access to that project (private key via the secure form) or a small change made there.
 
-- [ ] Super Admin Testing section: create test logins (dealer + admin, test data only), Stripe test-card purchases, grant tester emails — waiting on Stripe test secret key
+- [ ] Extend Testing to test-data-only staff accounts and tester grants; dealer test-card checkout is implemented, staff-account isolation remains separate work.
 - [x] BOGOF: rule confirmed (each paid warranty earns one free, continuous until switched off; first three paid earn three free) and the offer shows on the pricing page — one line under the heading bullets ("Buy one get one free") with the full wording in a hover/tap info bubble
 
 - [x] Point every WhatsApp contact point on the site at the new chat address (https://wa.me/message/I5OUGLJ7XTMOA1): homepage hero card and closing band, Contact Us card, header and footer, help bubble, sticky nav, support pop-up, staff login and all warranty landing pages, with a green icon button style; 335 tests pass and phone/desktop checks confirm the buttons.
-- [x] Testing section in admin: create test dealers, mark test purchases paid without a card, list test sales/customers. Real 4242 card checkout still waits on a Stripe test key.
+- [x] Testing section in admin: create test dealers, list test sales/customers and use genuine Stripe test-card checkout instead of the manual Mark as paid action.

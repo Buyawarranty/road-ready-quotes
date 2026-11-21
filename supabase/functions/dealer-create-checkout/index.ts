@@ -9,6 +9,7 @@ import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
 import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
+import { dealerStripeSecret, dealerUsesEmbeddedStripe } from '../_shared/dealerStripeMode.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -67,7 +68,6 @@ Deno.serve(async (req: Request) => {
     const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
     if (!SUPABASE_URL || !SERVICE_KEY || !ANON_KEY) throw new Error('Checkout configuration unavailable.');
-    const STRIPE_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
     const adminClient = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: dealer, error: dealerErr } = await adminClient
       .from('dealers')
-      .select('id, user_id, company_name, email, name, status')
+      .select('id, user_id, company_name, email, name, status, is_test')
       .eq('id', dealer_id)
       .maybeSingle();
 
@@ -121,6 +121,9 @@ Deno.serve(async (req: Request) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    const STRIPE_KEY = payment_method === 'pay_now' ? dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)) : undefined;
+    if (dealer.is_test && payment_method === 'worldpay') throw new Error('Use test card checkout for a test dealer account.');
 
     if (plan.pricing_version === 'annual-v1') {
       const { data: config } = await adminClient.from('dealer_admin_plans').select('pricing_matrix, coverage_details')
@@ -214,6 +217,7 @@ Deno.serve(async (req: Request) => {
       signup_date: startDate.toISOString(),
       is_manual_entry: false,
       brand: 'pandaprotect',
+      is_test: dealer.is_test === true,
     } as Record<string, unknown>;
 
     // Helper: upsert dealer customer row by (email, registration_plate) for this dealer.
@@ -378,7 +382,7 @@ Deno.serve(async (req: Request) => {
     const redemptionId = await reservePromo(pendingCustomerId);
 
     const origin = req.headers.get('origin') || 'https://www.pandaprotect.co.uk';
-    const embedded = (body as { embedded?: boolean }).embedded === true;
+    const embedded = dealerUsesEmbeddedStripe(dealer.is_test, (body as { embedded?: boolean }).embedded === true);
     const returnUrl = `${origin}/dealer-portal/quote/confirmation?id=${pendingCustomerId}&method=pay_now&session_id={CHECKOUT_SESSION_ID}`;
     let session;
     try {
@@ -415,6 +419,7 @@ Deno.serve(async (req: Request) => {
         dealer_promo_code: promo?.code || '',
         dealer_base_amount: String(plan.dealer_price),
         dealer_final_amount: String(payable),
+        is_test: String(dealer.is_test === true),
       },
     });
     } catch (error) {

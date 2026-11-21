@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { resolveBrand } from '../_shared/brand.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
+import { dealerStripeSecret } from '../_shared/dealerStripeMode.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,7 +32,6 @@ Deno.serve(async (req: Request) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const STRIPE_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) return json({ error: 'Missing authorization' }, 401);
@@ -47,17 +47,17 @@ Deno.serve(async (req: Request) => {
     if (!dealer_id || !Array.isArray(customer_ids) || customer_ids.length === 0) {
       return json({ error: 'Missing dealer_id or customer_ids' }, 400);
     }
-    if (!STRIPE_KEY) return json({ error: 'Stripe is not configured' }, 500);
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
     // Verify dealer
     const { data: dealer } = await admin
       .from('dealers')
-      .select('id, user_id, email, name, company_name')
+      .select('id, user_id, email, name, company_name, is_test')
       .eq('id', dealer_id)
       .maybeSingle();
     if (!dealer || dealer.user_id !== user.id) return json({ error: 'Dealer not authorized' }, 403);
+    const STRIPE_KEY = dealerStripeSecret(dealer.is_test, name => Deno.env.get(name));
 
     // Fetch the selected customer rows (must belong to this dealer + be unpaid)
     const { data: rows, error: rowsErr } = await admin
@@ -106,6 +106,7 @@ Deno.serve(async (req: Request) => {
       metadata: {
         source: 'dealer_invoice_batch',
         dealer_id,
+        is_test: String(dealer.is_test === true),
         customer_ids: billable.map((r) => r.id).join(','),
       },
     });

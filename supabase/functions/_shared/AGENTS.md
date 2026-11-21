@@ -1,0 +1,3 @@
+# Shared payment rules
+- Choose dealer Stripe credentials from the service-read dealer `is_test` flag, never request flags; missing test configuration must not fall back to live payments.
+- Test dealers use hosted checkout to avoid the live publishable key; completion checks Stripe `livemode` against the dealer flag and tags test purchases before fulfilment, preventing test charges from activating live sales.

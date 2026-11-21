@@ -1,11 +1,13 @@
 import { notifyDealerSale, syncDealerSale } from './dealerSaleFulfilment.ts';
 import { partnerWarrantySummary, sendPartnerWebhook } from './partnerWebhook.ts';
+import { assertDealerStripeMode } from './dealerStripeMode.ts';
 
 interface DealerStripeSession {
   id: string;
   payment_status: string;
   currency: string | null;
   amount_total: number | null;
+  livemode: boolean;
   metadata?: Record<string, string> | null;
 }
 
@@ -17,6 +19,10 @@ export async function finaliseDealerCardPayment(admin: any, session: DealerStrip
   const dealerId = metadata.dealer_id;
   if (!customerId || !dealerId) throw new Error('Dealer sale details are missing from this payment.');
   if (expectedDealerId && dealerId !== expectedDealerId) throw new Error('Payment does not belong to this dealer.');
+
+  const { data: dealer, error: dealerError } = await admin.from('dealers').select('id, is_test').eq('id', dealerId).maybeSingle();
+  if (dealerError || !dealer) throw new Error('Dealer account not found for this payment.');
+  assertDealerStripeMode(dealer.is_test, session.livemode);
 
   const { data: customer, error: customerError } = await admin
     .from('customers')
@@ -48,7 +54,8 @@ export async function finaliseDealerCardPayment(admin: any, session: DealerStrip
       payment_verified: true,
       payment_verified_at: new Date().toISOString(),
       payment_verification_status: 'verified',
-      payment_verification_source: 'stripe',
+      payment_verification_source: dealer.is_test === true ? 'stripe_test' : 'stripe',
+      is_test: dealer.is_test === true,
       status: 'Active',
       updated_at: new Date().toISOString(),
     })
