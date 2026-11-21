@@ -12,7 +12,7 @@ import HighPerformanceExclusionsList from '@/components/HighPerformanceExclusion
 import HelpMeChooseModal from '@/components/cover-page/HelpMeChooseModal';
 import TrustpilotSliderWidget from '@/components/TrustpilotSliderWidget';
 import trustpilotStars from '@/assets/trustpilot-5-stars.png';
-import pandaThumbsUp from '@/assets/panda-thumbs-up.png';
+import pandaPolicySetup from '@/assets/panda-policy-setup.png.asset.json';
 
 const PLATINUM_PDF = platinumPlanDoc.url;
 const TANDC_PDF = termsDoc.url;
@@ -150,7 +150,7 @@ const WhatsCovered: React.FC = () => {
       <div className="min-h-screen bg-white">
         {/* 1. HERO */}
         <section className="relative px-4 sm:px-6 pt-10 pb-10 md:pt-16 md:pb-12 overflow-hidden border-b border-gray-200">
-          <div className="relative z-10 max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
+          <div className="relative z-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
             <div className="text-center md:text-left order-2 md:order-1">
               <span className="inline-flex items-center gap-2 bg-brand-orange/10 border border-brand-orange/25 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-brand-orange mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
@@ -172,8 +172,8 @@ const WhatsCovered: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div className="order-1 md:order-2 hidden md:flex justify-center md:justify-start">
-              <img src={pandaThumbsUp} alt="Panda Protect mascot giving a thumbs up" className="w-64 sm:w-72 md:w-[28.8rem] lg:w-[32rem] xl:w-[35.2rem] h-auto object-contain drop-shadow-xl" loading="eager" />
+            <div className="order-1 md:order-2 hidden md:flex items-center justify-center p-4 lg:p-6">
+              <img src={pandaPolicySetup.url} alt="Panda Protect mascot giving a thumbs up" width={1254} height={1254} className="block w-full max-w-[28rem] aspect-square object-contain" loading="eager" fetchPriority="high" />
             </div>
           </div>
         </section>
