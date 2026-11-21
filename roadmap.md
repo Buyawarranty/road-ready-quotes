@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Simplify dealer approval/login email, remove misleading copy controls, copy the verified approving admin and route replies to them; inspect the existing customer reply once its inbox is connected.
 - [x] Route server-tagged test dealers to hosted Stripe test-card checkout and matching payment confirmation, tag purchases Test and reject cross-mode completion; 43 focused tests pass and payment services deployed.
 - [ ] Verify a complete signed-in 4242 test purchase and email delivery; external unmanaged authentication prevents automated signed-in verification.
 - [x] Label linked Test accounts in BDM contacts, contact details, call lists and allocation portfolios without changing existing access rules.

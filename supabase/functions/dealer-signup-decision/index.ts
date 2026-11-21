@@ -1,4 +1,4 @@
-import { credentialsBlockHtml } from "../_shared/credentialsBlock.ts";
+import { dealerLoginDetailsHtml, dealerLoginRecipients } from "../_shared/dealerLoginEmail.ts";
 import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
@@ -17,12 +17,12 @@ const esc = (v?: string | null) =>
 
 const shell = (brand: Brand, title: string, body: string) => `
 <div style="font-family:Arial,Helvetica,sans-serif;background:#f5f6f8;padding:24px;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">
+  <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb;">
     <div style="background:#ffffff;padding:24px;border-bottom:1px solid #e5e7eb;">
       <img src="${brand.logoUrl}" alt="${brand.name}" width="220" style="display:block;width:220px;max-width:100%;height:auto;border:0;" />
     </div>
     <div style="padding:28px;color:#111827;">
-      <h2 style="margin:0 0 16px 0;font-size:20px;color:#1e3a5f;">${title}</h2>
+      <h2 style="margin:0 0 16px 0;font-size:24px;line-height:1.3;color:#111827;">${title}</h2>
       ${body}
     </div>
     <div style="padding:18px 28px;background:#f8f9fa;border-top:1px solid #e9ecef;color:#6b7280;font-size:12px;text-align:center;">
@@ -37,7 +37,7 @@ function generatePassword() {
   return Array.from(bytes).map((b) => chars[b % chars.length]).join("") + "!7";
 }
 
-async function sendEmail(brand: Brand, to: string, subject: string, html: string) {
+async function sendEmail(brand: Brand, to: string, subject: string, html: string, staffEmail?: string) {
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) {
     console.warn("RESEND_API_KEY missing; skipping email to", to);
@@ -47,7 +47,7 @@ async function sendEmail(brand: Brand, to: string, subject: string, html: string
   const res = await resendFetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from, to: [to], subject, html }),
+    body: JSON.stringify({ from, ...(staffEmail ? dealerLoginRecipients(to, staffEmail, brand.helloEmail) : { to: [to] }), subject, html }),
   });
   const text = await res.text();
   if (!res.ok) {
@@ -433,13 +433,11 @@ serve(async (req) => {
           ? `As requested, here are your ${brand.name} dealer portal login details. Your password has been reset to the temporary one below.`
           : `Great news — your ${brand.name} trade application has been approved. You can now quote, sell and manage warranties from your dealer portal.`}</p>
         ${notes ? `<p style="line-height:1.6;background:#f8f9fa;border-left:4px solid ${brand.accentColor};padding:12px 16px;">${esc(notes)}</p>` : ""}
-        ${password ? credentialsBlockHtml([{ label: "Email", value: email }, { label: "Temporary password", value: password }, { label: "Login page", value: PORTAL_URL }]) : `${credentialsBlockHtml([{ label: "Email", value: email }])}<div style="padding:6px 0;"><strong>Password:</strong> use your existing ${brand.name} dealer password. Forgotten it? <a href="${brand.siteUrl}/forgot-password/" style="color:${brand.accentColor};">Reset it here</a>.</div>`}
-        <div style="text-align:center;margin:28px 0;">
-          <a href="${PORTAL_URL}" style="display:inline-block;background:${brand.accentColor};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 30px;border-radius:8px;">Log in to your dealer portal</a>
-        </div>
-        ${password ? `<p style="line-height:1.6;font-size:14px;color:#6b7280;">After signing in, you can choose your own password in Settings → Change password.</p>` : ""}
+        ${dealerLoginDetailsHtml(brand, email, password)}
+        <p style="line-height:1.6;font-size:14px;">Need help getting started? Reply to this email to reach the team member who arranged your account.</p>
         <p style="line-height:1.6;">${isResend ? "Kind regards" : "Welcome aboard"},<br/>The ${brand.name} Trade Team</p>`
-      )
+      ),
+      userData.user.email
     );
 
     return new Response(JSON.stringify({ success: true, status: isResend ? "resent" : "approved", dealer_id: dealerId, sent_to: sendTo, email_sent: mail.ok, email_error: mail.error, password_unchanged: password === null, ...(manualCreate ? { login_email: email, temp_password: password } : {}) }), {
