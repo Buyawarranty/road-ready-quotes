@@ -1,7 +1,7 @@
 # Roadmap
 - [x] Simplify dealer approval/login email, remove misleading copy controls, copy the dealer’s active assigned agent and route replies to them; 11 focused tests pass, desktop/phone sample verified, service deployed and invalid caller rejected. Existing reply reviewed from supplied screenshot: Craig asks for the deals discussed. Real signed-in sending and inbox delivery remain unverified with external authentication.
-- [ ] Assign Nextgear Motors to Ammara as confirmed and verify the saved owner.
-- [ ] Replace the What’s covered top image with the supplied Panda image and verify its size and spacing on desktop and phone.
+- [x] Assign Nextgear Motors to Ammara as confirmed; saved contact owner verified against her staff email.
+- [x] Replace the What’s covered top image with the supplied Panda image, cap its width and add balanced spacing; desktop/phone checked without overflow, existing mobile image hiding retained. Stored image returns 200 image/png; local layout checked with the original upload because localhost does not serve the asset endpoint. Build passes.
 - [x] Route server-tagged test dealers to hosted Stripe test-card checkout and matching payment confirmation, tag purchases Test and reject cross-mode completion; 43 focused tests pass and payment services deployed.
 - [ ] Verify a complete signed-in 4242 test purchase and email delivery; external unmanaged authentication prevents automated signed-in verification.
 - [x] Label linked Test accounts in BDM contacts, contact details, call lists and allocation portfolios without changing existing access rules.
