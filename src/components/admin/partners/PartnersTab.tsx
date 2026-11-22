@@ -43,7 +43,7 @@ const PartnersTab: React.FC = () => {
 
   useEffect(() => {
     if (!selected) return;
-    db.from('customers').select('id, name, registration_plate, final_amount, payment_status, status, signup_date, dealer_id').eq('partner_id', selected).order('created_at', { ascending: false }).limit(200).then((r: any) => setSales(r.data || []));
+    db.from('customers').select('id, name, registration_plate, final_amount, payment_status, status, signup_date, dealer_id, payment_type, phone, flat_number, building_name, building_number, street, town, county, postcode').eq('partner_id', selected).order('created_at', { ascending: false }).limit(200).then((r: any) => setSales(r.data || []));
     db.from('partner_webhook_deliveries').select('id, event, success, status_code, error, created_at').eq('partner_id', selected).order('created_at', { ascending: false }).limit(10).then((r: any) => setDeliveries(r.data || []));
   }, [selected]);
 
@@ -170,8 +170,8 @@ const PartnersTab: React.FC = () => {
             <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="font-semibold">Sales through {partner.name}</h2>
               <p className="text-sm text-muted-foreground">{paid.length} paid · {gbp(paid.reduce((a, s) => a + Number(s.final_amount || 0), 0))}</p></div>
             {sales.length === 0 ? <p className="text-sm text-muted-foreground">No sales yet.</p> : (
-              <div className="overflow-x-auto"><AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-3">Date</th><th className="pr-3">Customer</th><th className="pr-3">Reg</th><th className="pr-3">Dealer</th><th className="pr-3">Amount</th><th>Status</th></tr></thead>
-                <tbody>{sales.map((s) => <tr key={s.id} className="border-t border-border"><td className="py-2 pr-3">{new Date(s.signup_date).toLocaleDateString('en-GB')}</td><td className="pr-3">{s.name}</td><td className="pr-3 font-mono">{s.registration_plate}</td><td className="pr-3">{dealerName(s.dealer_id)}</td><td className="pr-3">{gbp(s.final_amount)}</td><td><Badge variant={s.payment_status === 'paid' ? 'default' : 'secondary'}>{s.payment_status === 'paid' ? s.status : 'Awaiting payment'}</Badge></td></tr>)}</tbody></AdminTable></div>
+              <div className="overflow-x-auto"><AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-3">Date</th><th className="pr-3">Customer</th><th className="pr-3">Phone</th><th className="pr-3">Address</th><th className="pr-3">Reg</th><th className="pr-3">Dealer</th><th className="pr-3">Amount</th><th className="pr-3">Expiry date</th><th>Status</th></tr></thead>
+                <tbody>{sales.map((s) => <tr key={s.id} className="border-t border-border"><td className="py-2 pr-3">{new Date(s.signup_date).toLocaleDateString('en-GB')}</td><td className="pr-3">{s.name}</td><td className="pr-3 whitespace-nowrap">{s.phone || '—'}</td><td className="pr-3 min-w-[12rem]">{partnerSaleAddress(s) || '—'}</td><td className="pr-3 font-mono">{s.registration_plate}</td><td className="pr-3">{dealerName(s.dealer_id)}</td><td className="pr-3">{gbp(s.final_amount)}</td><td className="pr-3 whitespace-nowrap">{partnerSaleExpiry(s)}</td><td><Badge variant={s.payment_status === 'paid' ? 'default' : 'secondary'}>{s.payment_status === 'paid' ? s.status : 'Awaiting payment'}</Badge></td></tr>)}</tbody></AdminTable></div>
             )}
           </section>
 
@@ -207,3 +207,20 @@ const PartnersTab: React.FC = () => {
   );
 };
 export default PartnersTab;
+
+function partnerSaleAddress(c: any): string {
+  const first = [c.flat_number, c.building_number, c.building_name, c.street].filter((v: any) => String(v || '').trim()).join(' ');
+  return [first, c.town, c.county, c.postcode ? String(c.postcode).toUpperCase() : null].filter((v: any) => String(v || '').trim()).join(', ');
+}
+
+/** Same rule as the customer email: start date plus the warranty length in months. */
+function partnerSaleExpiry(c: any): string {
+  const months = Number.parseInt(String(c.payment_type || ''), 10);
+  if (!c.signup_date || !Number.isFinite(months) || months <= 0) return '—';
+  const d = new Date(c.signup_date);
+  const day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  d.setUTCDate(Math.min(day, new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate()));
+  return d.toLocaleDateString('en-GB', { timeZone: 'UTC' });
+}

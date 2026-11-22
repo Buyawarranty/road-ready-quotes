@@ -1,3 +1,4 @@
+import { customerAddressLine, expiryDate } from './dealerWarrantyEmail.ts';
 // Partner (CRM supplier) automatic updates. Each partner's signing secret is derived
 // from PARTNER_WEBHOOK_MASTER_KEY + partner id, so no per-partner secret is stored.
 const enc = new TextEncoder();
@@ -44,13 +45,15 @@ export async function sendPartnerWebhook(admin: any, partnerId: string, event: s
 /** Customer-safe warranty summary sent to partners: no trade cost or profit. */
 export async function partnerWarrantySummary(admin: any, customerId: string) {
   const { data } = await admin.from('customers')
-    .select('id, name, email, registration_plate, vehicle_make, vehicle_model, payment_type, final_amount, status, payment_status, signup_date, dealer_id, partner_id')
+    .select('id, name, email, registration_plate, vehicle_make, vehicle_model, payment_type, final_amount, status, payment_status, signup_date, dealer_id, partner_id, phone, flat_number, building_name, building_number, street, town, county, postcode')
     .eq('id', customerId).maybeSingle();
   if (!data) return null;
   return {
     warranty_id: data.id, customer_name: data.name, customer_email: data.email, registration: data.registration_plate,
     vehicle: [data.vehicle_make, data.vehicle_model].filter(Boolean).join(' ') || null,
     term_months: Number(data.payment_type) || null, amount_paid: Number(data.final_amount), currency: 'GBP',
-    status: data.status, payment_status: data.payment_status, start_date: data.signup_date, dealer_id: data.dealer_id,
+    status: data.status, payment_status: data.payment_status, start_date: data.signup_date, expiry_date: expiryDate(data),
+    customer_phone: data.phone || null, customer_address: customerAddressLine(data),
+    customer_postcode: data.postcode ? String(data.postcode).toUpperCase() : null, dealer_id: data.dealer_id,
   };
 }

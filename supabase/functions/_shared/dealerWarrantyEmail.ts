@@ -24,6 +24,14 @@ export interface DealerWarrantyEmailCustomer {
   warranty_start_date?: string | null;
   policy_end_date?: string | null;
   warranty_number?: string | null;
+  phone?: string | null;
+  flat_number?: string | null;
+  building_name?: string | null;
+  building_number?: string | null;
+  street?: string | null;
+  town?: string | null;
+  county?: string | null;
+  postcode?: string | null;
 }
 
 export interface DealerWarrantyEmailDealer {
@@ -48,7 +56,14 @@ const fmt = (value?: string | null) => value
   ? new Intl.DateTimeFormat('en-GB', { timeZone: 'UTC' }).format(new Date(value))
   : '—';
 
-function expiryDate(customer: DealerWarrantyEmailCustomer): string | null {
+/** Single postal-address line from the stored customer address parts. */
+export function customerAddressLine(c: DealerWarrantyEmailCustomer): string | null {
+  const first = [c.flat_number, c.building_number, c.building_name, c.street].filter(v => String(v || '').trim()).join(' ');
+  const line = [first, c.town, c.county, c.postcode ? String(c.postcode).toUpperCase() : null].filter(v => String(v || '').trim()).join(', ');
+  return line || null;
+}
+
+export function expiryDate(customer: DealerWarrantyEmailCustomer): string | null {
   if (customer.policy_end_date) return customer.policy_end_date;
   const start = customer.warranty_start_date || customer.signup_date;
   const months = Number.parseInt(String(customer.payment_type || ''), 10);
@@ -134,6 +149,8 @@ export function buildDealerWarrantyEmail(options: {
         ${Number.isFinite(months) && months > 0 ? row('Coverage period', `${months} months`) : ''}
         ${row('Start date', fmt(start))}
         ${end ? row('End date', fmt(end)) : ''}
+        ${recipientType === 'customer' && customer.phone ? row('Phone', esc(customer.phone)) : ''}
+        ${recipientType === 'customer' && customerAddressLine(customer) ? row('Address', esc(customerAddressLine(customer))) : ''}
         ${row('Provided by', esc(dealerName))}
       </table>
       ${loginHtml}

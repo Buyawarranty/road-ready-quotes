@@ -34,7 +34,7 @@ const BodySchema = z.object({
   template: TemplateSchema.optional(),
 });
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const CUSTOMER_FIELDS = 'id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, payment_status, signup_date, dealer_id, warranty_number';
+const CUSTOMER_FIELDS = 'id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, payment_status, signup_date, dealer_id, warranty_number, phone, flat_number, building_name, building_number, street, town, county, postcode';
 
 function serviceClient() {
   return createClient(

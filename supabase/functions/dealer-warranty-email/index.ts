@@ -34,7 +34,7 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: c, error: customerError } = await supabase
       .from('customers')
-      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number, discount_code')
+      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number, discount_code, phone, flat_number, building_name, building_number, street, town, county, postcode')
       .eq('id', customerId)
       .eq('brand', 'pandaprotect')
       .maybeSingle();
