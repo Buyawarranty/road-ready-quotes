@@ -1,3 +1,5 @@
+import { trackDealerSaleKlaviyo } from './klaviyoDealer.ts';
+
 export type DealerSaleMethod = 'pay_now' | 'worldpay' | 'invoice' | 'intro_free';
 
 export function dealerQuoteStatusForMethod(method: DealerSaleMethod): 'paid' | 'invoiced' {
@@ -27,6 +29,8 @@ export async function syncDealerSale(
 }
 
 export async function notifyDealerSale(admin: any, customerId: string, kind: 'invoice' | 'paid') {
+  // Klaviyo "Placed Order" (fire-and-forget; never affects the sale or email).
+  await trackDealerSaleKlaviyo(admin, customerId, kind);
   const { data, error } = await admin.functions.invoke('dealer-warranty-email', {
     body: { customer_id: customerId, kind },
   });
