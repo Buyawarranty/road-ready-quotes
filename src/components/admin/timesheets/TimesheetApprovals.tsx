@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useState, useEffect, useCallback } from 'react';
 import { format, startOfMonth, endOfMonth, subMonths, addMonths } from 'date-fns';
 import { Check, ChevronLeft, ChevronRight, Clock, User, CheckCircle2, Search, MessageSquare, Send, AlertTriangle, XCircle, ChevronDown, ChevronUp, Gift } from 'lucide-react';
@@ -509,7 +510,7 @@ export function TimesheetApprovals() {
                         <p className="text-sm text-gray-400">No entries submitted</p>
                       ) : (
                         <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
+                          <AdminTable className="w-full text-sm">
                             <thead>
                               <tr className="text-left text-gray-500 border-b">
                                 <th className="pb-2 pr-4">Date</th>
@@ -538,7 +539,7 @@ export function TimesheetApprovals() {
                                 </tr>
                               ))}
                             </tbody>
-                          </table>
+                          </AdminTable>
                         </div>
                       )}
                     </div>
@@ -548,7 +549,7 @@ export function TimesheetApprovals() {
                       <div>
                         <h4 className="font-medium text-sm text-gray-700 mb-2">Deals ({agent.deals.length})</h4>
                         <div className="overflow-x-auto">
-                          <table className="w-full text-sm">
+                          <AdminTable className="w-full text-sm">
                             <thead>
                               <tr className="text-left text-gray-500 border-b">
                                 <th className="pb-2 pr-4">Date</th>
@@ -567,7 +568,7 @@ export function TimesheetApprovals() {
                                 </tr>
                               ))}
                             </tbody>
-                          </table>
+                          </AdminTable>
                         </div>
                       </div>
                     )}

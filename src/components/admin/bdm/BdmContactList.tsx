@@ -148,7 +148,7 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
     if (kpiFilter === 'unassigned') q = q.is('assigned_bdm', null);
     if (kpiFilter === 'mine' && userId) q = q.eq('assigned_bdm', userId);
     if (kpiFilter === 'new') q = q.gte('created_at', new Date(Date.now() - days * 864e5).toISOString());
-    q = q.order(sort.col, { ascending: sort.asc, nullsFirst: false }).order('name').range(page * PAGE, page * PAGE + PAGE - 1);
+    q = q.order(sort.col, { ascending: sort.asc, nullsFirst: false }).order('name').order('id').range(page * PAGE, page * PAGE + PAGE - 1);
     const { data, count: c, error } = await q;
     if (error) toast({ title: 'Could not load dealerships', description: error.message, variant: 'destructive' });
     if (error) { setLoading(false); return; } // keep the current list on screen instead of blanking it
@@ -186,10 +186,10 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
   const today = startOfToday();
 
   const SortHead: React.FC<{ col: string; children: React.ReactNode; tone?: string }> = ({ col, children, tone }) => (
-    <th className={`p-2 text-left font-medium ${tone ?? ''}`}>
-      <button type="button" onClick={() => toggleSort(col)} className="inline-flex items-center gap-1 hover:text-foreground">
-        {children}<ArrowUpDown className={`h-3 w-3 ${sort.col === col ? 'text-foreground' : 'text-muted-foreground'}`} />
-      </button>
+    <th aria-sort={sort.col === col ? sort.asc ? 'ascending' : 'descending' : 'none'} className={`p-2 text-left font-medium ${tone ?? ''}`}>
+      <Button variant="ghost" type="button" onClick={() => toggleSort(col)} className="h-auto px-0 py-1 inline-flex items-center gap-1 text-inherit hover:text-foreground">
+        {children}{sort.col === col ? sort.asc ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" /> : <ArrowUpDown className="h-3 w-3 text-muted-foreground" />}
+      </Button>
     </th>
   );
 
@@ -408,12 +408,12 @@ const BdmContactList: React.FC<{ userRole: string | null }> = ({ userRole }) => 
               <SortHead col="call_count" tone="bg-crm-blue-soft/60">Calls</SortHead>
               <th className="bg-muted/50 p-2 text-left font-medium">Actions</th>
               <SortHead col="name">Dealership / contact</SortHead>
-              <th className="p-2 text-left font-medium">Phone</th>
+              <SortHead col="phone">Phone</SortHead>
               <th className="bg-crm-green-soft/50 p-2 text-left font-medium">WhatsApp</th>
-              <th className="p-2 text-left font-medium">Email</th>
+              <SortHead col="email">Email</SortHead>
               <SortHead col="last_spoken_at">Last spoken</SortHead>
               <SortHead col="next_follow_up_at">Follow-up</SortHead>
-              <th className="p-2 text-left font-medium">Latest note</th>
+              <SortHead col="latest_note">Latest note</SortHead>
               <SortHead col="last_attempt_at">Agent activity</SortHead>
               <SortHead col="created_at">Lead date</SortHead>
               <th className="p-2 text-left font-medium">Customer activity</th>

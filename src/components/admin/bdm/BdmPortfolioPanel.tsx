@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import BdmOwnerPicker from './BdmOwnerPicker';
 import BdmTestContactTag from './BdmTestContactTag';
 import { useTestDealerIds } from '@/hooks/useTestDealerIds';
@@ -152,7 +153,7 @@ const BdmPortfolioPanel: React.FC = () => {
           <span className="text-sm text-muted-foreground">{shown.length} dealerships{dueCount ? ` · ${dueCount} follow-ups due` : ''}</span>
         </div>
         <div className="overflow-x-auto rounded-md border">
-          <table className="w-full min-w-[860px] text-sm">
+          <AdminTable className="w-full min-w-[860px] text-sm">
             <thead className="bg-muted/50 text-left text-xs uppercase text-muted-foreground">
               <tr><th className="p-2">Dealership</th><th className="p-2">Contact</th><th className="p-2">Onboarded</th><th className="p-2">Status</th><th className="p-2">Next follow-up</th><th className="p-2">Portal</th><th className="p-2">Links</th>{seeAll && <th className="p-2">BDM</th>}<th className="p-2" /></tr>
             </thead>
@@ -182,7 +183,7 @@ const BdmPortfolioPanel: React.FC = () => {
                 );
               })}
             </tbody>
-          </table>
+          </AdminTable>
         </div>
       </CardContent>
 

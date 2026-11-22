@@ -1,3 +1,5 @@
+import { AdminTable } from '@/components/ui/table-sorting';
+import { useAdminRecordSorting } from '@/hooks/useAdminRecordSorting';
 import { BULK_APPROVE_PERMISSION, TEST_DEALER_PERMISSION, canManageSignupAction, pendingApprovalRows } from '../../../supabase/functions/_shared/dealerSignupActionAccess';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { functionErrorMessage } from '@/lib/functionError';
@@ -231,6 +233,20 @@ const DealerAdminSignUps: React.FC = () => {
     return map;
   }, [noteIndex]);
 
+  const columnSorting = useAdminRecordSorting<typeof rows[number]>({
+    Dealership: r => r.dealership_name,
+    Contact: r => r.contact_name,
+    Email: r => r.email_address,
+    Phone: r => r.phone_number,
+    Status: r => r.status,
+    'Portal progress': r => PORTAL_STAGE_LABEL[portalStage(r.dealer_id, r.dealer_id ? portalUsage[r.dealer_id] : undefined)],
+    'Monthly Sales': r => r.monthly_vehicle_sales,
+    'Last login': r => r.dealer_id ? portalUsage[r.dealer_id]?.last_sign_in_at : null,
+    'Current Provider': r => r.current_warranty_provider,
+    'Interested In': r => r.interested_in,
+    Notes: r => noteCounts[r.id] || 0,
+  });
+
   const duplicateIds = useMemo(() => duplicateDealerSignupIds(rows), [rows]);
   const portalUsage = useDealerPortalUsage(useMemo(() => rows.map(r => r.dealer_id).filter(Boolean) as string[], [rows]));
   const readyRows = rows.filter(r => r.dealer_id && isReadyForFollowUp(portalUsage[r.dealer_id]));
@@ -257,7 +273,11 @@ const DealerAdminSignUps: React.FC = () => {
       ].some((v) => v?.toLowerCase().includes(q));
 
     });
-    if (sortBy === 'smart') return organiseDealerSignups(matches, duplicateIds);
+    if (sortBy === 'smart') {
+      if (!columnSorting.columnSort) return organiseDealerSignups(matches, duplicateIds);
+      const rank = (r: typeof rows[number]) => r.status === 'rejected' ? 2 : duplicateIds.has(r.id) ? 1 : 0;
+      return [...matches].sort((a, b) => rank(a) - rank(b) || columnSorting.compare(a, b) || a.id.localeCompare(b.id));
+    }
     const ts = (v?: string | null) => (v ? new Date(v).getTime() : 0);
     const act = (r: typeof matches[number]) => {
       if (!r.dealer_id) return 0;
@@ -265,6 +285,7 @@ const DealerAdminSignUps: React.FC = () => {
       return v.length ? Math.max(...v) : 0;
     };
     return [...matches].sort((a, b) => {
+      if (columnSorting.columnSort) return columnSorting.compare(a, b);
       if (sortBy === 'activity' || sortBy === 'activity_oldest') {
         const x = act(a), y = act(b);
         if (!x !== !y) return x ? -1 : 1; // never-active last
@@ -276,7 +297,7 @@ const DealerAdminSignUps: React.FC = () => {
       if (sortBy === 'approved_oldest') return ts(a.approved_at) - ts(b.approved_at) || ts(a.created_at) - ts(b.created_at);
       return ts(b.created_at) - ts(a.created_at);
     });
-  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds, lastActivity]);
+  }, [rows, search, statusFilter, dateFilter, extraFilter, sortBy, duplicateIds, portalUsage, testDealerIds, lastActivity, columnSorting.columnSort, columnSorting.compare]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -284,7 +305,8 @@ const DealerAdminSignUps: React.FC = () => {
   const allPageSelected = deletablePageRows.length > 0 && deletablePageRows.every(row => checkedIds.has(row.id));
   const somePageSelected = deletablePageRows.some(row => checkedIds.has(row.id));
 
-  useEffect(() => { setPage(1); }, [search, statusFilter, dateFilter, extraFilter, sortBy]);
+  useEffect(() => { setPage(1); }, [search, statusFilter, dateFilter, extraFilter, sortBy, columnSorting.columnSort]);
+  useEffect(() => { columnSorting.onSortChange(null); }, [sortBy]);
   useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
   useEffect(() => {
     setCheckedIds(current => {
@@ -827,7 +849,7 @@ const DealerAdminSignUps: React.FC = () => {
           <div className="p-12 text-center text-gray-500">No signups match your filters.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <AdminTable className="w-full text-sm" onSortChange={columnSorting.onSortChange} sortColumns={columnSorting.sortColumns}>
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   {canBulkDelete && (
@@ -962,7 +984,7 @@ const DealerAdminSignUps: React.FC = () => {
                   );
                 })}
               </tbody>
-            </table>
+            </AdminTable>
           </div>
         )}
 

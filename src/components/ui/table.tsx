@@ -1,19 +1,25 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { AdminTable, AdminTableSortingScope, SortableTableBody } from "./table-sorting"
+import type { AdminTableProps } from "./table-sorting"
 
 const Table = React.forwardRef<
   HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
+  AdminTableProps
+>(({ className, ...props }, ref) => {
+  const sortable = React.useContext(AdminTableSortingScope)
+  const Element = sortable ? AdminTable : 'table'
+  return (
   <div className="relative w-full min-w-0 max-w-full overflow-auto overscroll-x-contain">
-    <table
+    <Element
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
       {...props}
     />
   </div>
-))
+  )
+})
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef<
@@ -27,13 +33,12 @@ TableHeader.displayName = "TableHeader"
 const TableBody = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
->(({ className, ...props }, ref) => (
-  <tbody
-    ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const sortable = React.useContext(AdminTableSortingScope)
+  return sortable ? <SortableTableBody className={cn("[&_tr:last-child]:border-0", className)} {...props} /> : (
+    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
+  )
+})
 TableBody.displayName = "TableBody"
 
 const TableFooter = React.forwardRef<

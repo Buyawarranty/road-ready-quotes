@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -125,7 +126,7 @@ const DealerAdminTraders: React.FC = () => {
         ) : filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-gray-500">No traders yet.</div>
         ) : (
-          <table className="w-full text-sm">
+          <AdminTable className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="text-left px-4 py-3 font-semibold text-gray-700">Company</th>
@@ -173,7 +174,7 @@ const DealerAdminTraders: React.FC = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </AdminTable>
         )}
       </div>
     </div>

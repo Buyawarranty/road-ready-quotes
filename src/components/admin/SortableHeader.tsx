@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface SortableHeaderProps {
   label: string;
@@ -16,11 +17,12 @@ interface SortableHeaderProps {
  */
 export function SortableHeader({ label, active, newestFirst, onToggle, className = '' }: SortableHeaderProps) {
   return (
-    <button
+    <Button
+      variant="ghost"
       type="button"
       onClick={onToggle}
       title={`Sort by ${label}`}
-      className={`inline-flex items-center gap-1 uppercase hover:text-foreground ${className}`}
+      className={`h-auto px-0 py-1 inline-flex items-center gap-1 uppercase text-inherit hover:text-foreground ${className}`}
     >
       {label}{' '}
       {active ? (
@@ -28,6 +30,6 @@ export function SortableHeader({ label, active, newestFirst, onToggle, className
       ) : (
         <ArrowUpDown className="h-3 w-3 opacity-40" />
       )}
-    </button>
+    </Button>
   );
 }

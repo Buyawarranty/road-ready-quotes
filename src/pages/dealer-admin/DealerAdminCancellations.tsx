@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -138,7 +139,7 @@ const DealerAdminCancellations: React.FC = () => {
         <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">No {filter === 'pending' ? 'pending ' : ''}requests.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
+          <AdminTable className="w-full text-sm">
             <thead className="bg-muted text-left"><tr>
               <th className="p-3"><SortableHeader label="Requested" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th><th className="p-3">Dealer</th><th className="p-3">Customer</th><th className="p-3">Reg</th>
               <th className="p-3">Reason</th><th className="p-3">Fee</th><th className="p-3">Refund</th><th className="p-3">Status</th><th className="p-3" />
@@ -156,7 +157,7 @@ const DealerAdminCancellations: React.FC = () => {
                 <td className="p-3">{r.status === 'pending' && <Button size="sm" onClick={() => openReq(r)}>Process</Button>}</td>
               </tr>
             ))}</tbody>
-          </table>
+          </AdminTable>
         </div>
       )}
 

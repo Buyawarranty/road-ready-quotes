@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +16,7 @@ const DealerAdminFinancePayouts: React.FC = () => {
     <div className="space-y-6">
       <div><h1 className="text-2xl font-bold">Payouts</h1><p className="text-sm text-muted-foreground">Commission and remittance schedule.</p></div>
       <div className="bg-card border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <AdminTable className="w-full text-sm">
           <thead className="bg-muted/50 text-xs uppercase"><tr>
             <th className="text-left px-4 py-3">Dealer</th><th className="text-left px-4 py-3">Period</th>
             <th className="text-left px-4 py-3">Amount</th><th className="text-left px-4 py-3">Status</th>
@@ -33,7 +34,7 @@ const DealerAdminFinancePayouts: React.FC = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </AdminTable>
       </div>
     </div>
   );

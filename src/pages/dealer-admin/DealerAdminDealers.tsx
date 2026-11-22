@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -365,7 +366,7 @@ const DealerAdminDealers: React.FC = () => {
             <p className="text-center py-12 text-muted-foreground text-sm">No dealers found.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <AdminTable className="w-full text-sm">
                 <thead className="bg-muted/50 border-y border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="w-10 px-3 py-2"><Checkbox aria-label="Select all shown dealers" checked={allChecked ? true : someChecked ? 'indeterminate' : false} onCheckedChange={toggleAll} /></th>
@@ -488,7 +489,7 @@ const DealerAdminDealers: React.FC = () => {
                     );
                   })}
                 </tbody>
-              </table>
+              </AdminTable>
             </div>
           )}
         </CardContent>

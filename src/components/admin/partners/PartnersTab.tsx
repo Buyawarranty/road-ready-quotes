@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { AdminTable } from '@/components/ui/table-sorting';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -169,8 +170,8 @@ const PartnersTab: React.FC = () => {
             <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="font-semibold">Sales through {partner.name}</h2>
               <p className="text-sm text-muted-foreground">{paid.length} paid · {gbp(paid.reduce((a, s) => a + Number(s.final_amount || 0), 0))}</p></div>
             {sales.length === 0 ? <p className="text-sm text-muted-foreground">No sales yet.</p> : (
-              <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-3">Date</th><th className="pr-3">Customer</th><th className="pr-3">Reg</th><th className="pr-3">Dealer</th><th className="pr-3">Amount</th><th>Status</th></tr></thead>
-                <tbody>{sales.map((s) => <tr key={s.id} className="border-t border-border"><td className="py-2 pr-3">{new Date(s.signup_date).toLocaleDateString('en-GB')}</td><td className="pr-3">{s.name}</td><td className="pr-3 font-mono">{s.registration_plate}</td><td className="pr-3">{dealerName(s.dealer_id)}</td><td className="pr-3">{gbp(s.final_amount)}</td><td><Badge variant={s.payment_status === 'paid' ? 'default' : 'secondary'}>{s.payment_status === 'paid' ? s.status : 'Awaiting payment'}</Badge></td></tr>)}</tbody></table></div>
+              <div className="overflow-x-auto"><AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-3">Date</th><th className="pr-3">Customer</th><th className="pr-3">Reg</th><th className="pr-3">Dealer</th><th className="pr-3">Amount</th><th>Status</th></tr></thead>
+                <tbody>{sales.map((s) => <tr key={s.id} className="border-t border-border"><td className="py-2 pr-3">{new Date(s.signup_date).toLocaleDateString('en-GB')}</td><td className="pr-3">{s.name}</td><td className="pr-3 font-mono">{s.registration_plate}</td><td className="pr-3">{dealerName(s.dealer_id)}</td><td className="pr-3">{gbp(s.final_amount)}</td><td><Badge variant={s.payment_status === 'paid' ? 'default' : 'secondary'}>{s.payment_status === 'paid' ? s.status : 'Awaiting payment'}</Badge></td></tr>)}</tbody></AdminTable></div>
             )}
           </section>
 

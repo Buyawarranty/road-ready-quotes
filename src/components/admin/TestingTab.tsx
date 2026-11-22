@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import { useCallback, useEffect, useState } from 'react';
 import { FunctionsHttpError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -96,8 +97,8 @@ export default function TestingTab() {
             <CardHeader><CardTitle className="text-base">Test dealers ({shownDealers.length})</CardTitle><CardDescription>Only accounts tagged Test appear here.</CardDescription></CardHeader>
             <CardContent className="overflow-x-auto">
               {shownDealers.length === 0 ? <p className="text-sm text-muted-foreground">No test dealers yet.</p> : (
-                <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Company</th><th>Contact</th><th>Login email</th><th>Created</th><th /></tr></thead>
-                  <tbody>{shownDealers.map(d => <tr key={d.id} className="border-t"><td className="py-2 font-medium">{d.company_name || '—'} <Badge variant="secondary">Test</Badge></td><td>{d.contact_name || '—'}</td><td>{d.email || '—'}</td><td>{fmt(d.created_at)}</td><td className="whitespace-nowrap text-right"><Button size="sm" variant="outline" className="mr-2" onClick={() => void copyLogin(d)}><Copy className="mr-1 h-3 w-3" />Copy login</Button><Button size="sm" variant="outline" disabled={busy === d.id} onClick={() => void newPassword(d)}>{busy === d.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <KeyRound className="mr-1 h-3 w-3" />}New password</Button></td></tr>)}</tbody></table>
+                <AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Company</th><th>Contact</th><th>Login email</th><th>Created</th><th /></tr></thead>
+                  <tbody>{shownDealers.map(d => <tr key={d.id} className="border-t"><td className="py-2 font-medium">{d.company_name || '—'} <Badge variant="secondary">Test</Badge></td><td>{d.contact_name || '—'}</td><td>{d.email || '—'}</td><td>{fmt(d.created_at)}</td><td className="whitespace-nowrap text-right"><Button size="sm" variant="outline" className="mr-2" onClick={() => void copyLogin(d)}><Copy className="mr-1 h-3 w-3" />Copy login</Button><Button size="sm" variant="outline" disabled={busy === d.id} onClick={() => void newPassword(d)}>{busy === d.id ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <KeyRound className="mr-1 h-3 w-3" />}New password</Button></td></tr>)}</tbody></AdminTable>
               )}
             </CardContent>
           </Card>
@@ -106,9 +107,9 @@ export default function TestingTab() {
             <CardHeader><CardTitle className="text-base">Waiting for payment ({pending.length})</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               {pending.length === 0 ? <p className="text-sm text-muted-foreground">No unpaid test purchases.</p> : (
-                <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Customer</th><th>Reg</th><th>Dealer</th><th>Amount</th><th>Started</th><th /></tr></thead>
+                <AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Customer</th><th>Reg</th><th>Dealer</th><th>Amount</th><th>Started</th><th /></tr></thead>
                   <tbody>{pending.map(s => <tr key={s.id} className="border-t"><td className="py-2">{s.name || '—'}<div className="text-xs text-muted-foreground">{s.email}</div></td><td>{s.registration_plate}</td><td>{dealerName(s.dealer_id)}</td><td>£{Number(s.final_amount || 0).toFixed(2)}</td><td>{fmt(s.created_at)}</td>
-                    <td className="text-right"><Badge variant="secondary">Awaiting test card payment</Badge></td></tr>)}</tbody></table>
+                    <td className="text-right"><Badge variant="secondary">Awaiting test card payment</Badge></td></tr>)}</tbody></AdminTable>
               )}
             </CardContent>
           </Card>
@@ -117,8 +118,8 @@ export default function TestingTab() {
             <CardHeader><CardTitle className="text-base">Test sales and customers ({done.length})</CardTitle></CardHeader>
             <CardContent className="overflow-x-auto">
               {done.length === 0 ? <p className="text-sm text-muted-foreground">No completed test sales yet.</p> : (
-                <table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Customer</th><th>Reg</th><th>Dealer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-                  <tbody>{done.map(s => <tr key={s.id} className="border-t"><td className="py-2">{s.name || '—'}<div className="text-xs text-muted-foreground">{s.email}</div></td><td>{s.registration_plate}</td><td>{dealerName(s.dealer_id)}</td><td>£{Number(s.final_amount || 0).toFixed(2)}</td><td><Badge variant="outline">{s.status}</Badge></td><td>{fmt(s.signup_date || s.created_at)}</td></tr>)}</tbody></table>
+                <AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2">Customer</th><th>Reg</th><th>Dealer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                  <tbody>{done.map(s => <tr key={s.id} className="border-t"><td className="py-2">{s.name || '—'}<div className="text-xs text-muted-foreground">{s.email}</div></td><td>{s.registration_plate}</td><td>{dealerName(s.dealer_id)}</td><td>£{Number(s.final_amount || 0).toFixed(2)}</td><td><Badge variant="outline">{s.status}</Badge></td><td>{fmt(s.signup_date || s.created_at)}</td></tr>)}</tbody></AdminTable>
               )}
             </CardContent>
           </Card>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useAdminRecordSorting } from '@/hooks/useAdminRecordSorting';
 import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
 import { AdminNotification } from '@/hooks/useAdminNotifications';
 import { useSearchParams } from 'react-router-dom';
@@ -442,6 +443,23 @@ export const CustomersTab = ({
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [deletedSearchTerm, setDeletedSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('newest'); // Default to newest first
+  const columnSorting = useAdminRecordSorting<Customer>({
+    Name: r => r.name, 'Lead Date': r => (r as any).lead_date,
+    'Purchase Date': r => r.signup_date, Email: r => r.email, Phone: r => r.phone,
+    DOB: r => r.customer_dob, RegNum: r => r.registration_plate,
+    Price: r => r.final_amount, Payment: r => (r as any).payment_status,
+    'Assigned To': r => r.assigned_admin_name || [r.admin_users?.first_name, r.admin_users?.last_name].filter(Boolean).join(' '), SRC: r => r.acquisition_source,
+    Ref: r => r.warranty_reference_number || r.warranty_number,
+    'Email Status': r => r.welcome_email_status, Status: r => r.status,
+    Make: r => r.vehicle_make, Model: r => r.vehicle_model,
+    'Vol. Excess': r => r.voluntary_excess || 100, 'Claim Limit': r => (r.customer_policies?.[0] as any)?.claim_limit || r.claim_limit || 1250,
+    'Labour Rate': r => r.labour_rate || 70, Mileage: r => r.mileage, Address: r => [r.street, r.town, r.postcode].filter(Boolean).join(' '),
+    RegDate: r => r.vehicle_year, WarType: r => displayWarrantyPlanName(getWarrantyType(r.plan_type)),
+    'Dur.': r => getWarrantyDurationInMonths(r.payment_type || ''), 'Start Date': r => r.policy_start_date || r.customer_policies?.[0]?.policy_start_date || r.signup_date,
+    'Expiry Date': r => calculateExpiryDate(r.customer_policies?.[0]?.policy_start_date || r.signup_date, r.payment_type || '').toISOString(), Source: r => r.purchase_source,
+    Device: r => r.device_type,
+  });
+  useEffect(() => { columnSorting.onSortChange(null); }, [sortBy]);
   // 'desc' = slowest (longest) first, 'asc' = fastest (shortest) first, null = inactive
   const [timeToLeadSort, setTimeToLeadSort] = useState<'desc' | 'asc' | null>(null);
   const [initialContactSort, setInitialContactSort] = useState<'desc' | 'asc' | null>(null);
@@ -894,6 +912,7 @@ export const CustomersTab = ({
 
   // Pagination for customers table - only paginate filtered results
   const customersPagination = usePagination(filteredCustomers, { initialPageSize: 50 });
+  useEffect(() => { customersPagination.goToPage(1); }, [columnSorting.columnSort]);
 
   // Cache for tag assignments to avoid DB calls in filter function
   const [tagAssignmentsCache, setTagAssignmentsCache] = useState<Record<string, Set<string>>>({});
@@ -1498,6 +1517,7 @@ export const CustomersTab = ({
       }
 
 
+      if (columnSorting.columnSort) return columnSorting.compare(a, b) || a.id.localeCompare(b.id);
       switch (sortBy) {
         case 'newest':
           return dateB - dateA;
@@ -1524,7 +1544,7 @@ export const CustomersTab = ({
     });
 
     setFilteredCustomers(filtered);
-  }, [customers, debouncedSearchTerm, sortBy, timeToLeadSort, initialContactSort, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByPaymentSource, paymentSourceDateFilter, filterByAgent, filterByPartPayment, partPaymentPlans, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSuperAdmin, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating]);
+  }, [customers, debouncedSearchTerm, sortBy, timeToLeadSort, initialContactSort, filterByPlan, filterByStatus, filterByTag, filterBySource, filterByWarrantyPeriod, filterByPaymentSource, paymentSourceDateFilter, filterByAgent, filterByPartPayment, partPaymentPlans, dateRange, totalSalesDateFilter, tagAssignmentsCache, refundedCustomerIds, currentAdminUser, isSuperAdmin, isSalesAgent, isSalesScopedRole, effectiveAdminId, isImpersonating, columnSorting.columnSort, columnSorting.compare]);
 
   const getCurrentUser = async () => {
     try {
@@ -4952,7 +4972,7 @@ PandaProtect.co.uk`,
       <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden mt-2">
 
         <div className="overflow-x-auto">
-          <Table className="min-w-[1800px]">
+          <Table className="min-w-[1800px]" sortColumns={columnSorting.sortColumns} onSortChange={sort => { setTimeToLeadSort(null); setInitialContactSort(null); columnSorting.onSortChange(sort); }}>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">

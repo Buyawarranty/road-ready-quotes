@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -56,7 +57,7 @@ const DealerAdminProfileChanges: React.FC = () => {
         <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">No {filter === 'pending' ? 'pending ' : ''}requests.</p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm">
+          <AdminTable className="w-full text-sm">
             <thead className="bg-muted text-left"><tr>
               <th className="p-3">Requested</th><th className="p-3">Change</th><th className="p-3">Current</th><th className="p-3">Requested</th>
               <th className="p-3">Reason</th><th className="p-3">Dealer contact</th><th className="p-3">Status</th><th className="p-3" />
@@ -76,7 +77,7 @@ const DealerAdminProfileChanges: React.FC = () => {
                 </div>}</td>
               </tr>
             ))}</tbody>
-          </table>
+          </AdminTable>
         </div>
       )}
     </div>

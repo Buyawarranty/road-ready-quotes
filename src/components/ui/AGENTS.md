@@ -1,0 +1,1 @@
+- Admin table arrows use table-sorting and raw sort-value overrides; paginated parents own sorting through useAdminRecordSorting before slicing, preserving priority groups and server-side BDM ordering. Public/dealer shared tables remain unchanged outside AdminTableSortingScope.

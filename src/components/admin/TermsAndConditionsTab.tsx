@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -591,7 +592,7 @@ const UploadCard: React.FC<{
                 />
               </div>
               <div className="overflow-x-auto rounded-md border bg-white">
-                <table className="w-full text-sm">
+                <AdminTable className="w-full text-sm">
                   <thead className="bg-gray-50 text-xs uppercase text-gray-500">
                     <tr>
                       <th className="px-3 py-2 text-left font-medium">Document</th>
@@ -658,7 +659,7 @@ const UploadCard: React.FC<{
                       ))
                     )}
                   </tbody>
-                </table>
+                </AdminTable>
               </div>
             </div>
           );

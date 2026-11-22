@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -66,7 +67,7 @@ const DealerAdminFinanceQueue: React.FC = () => {
       </div>
 
       <div className="bg-card border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <AdminTable className="w-full text-sm">
           <thead className="bg-muted/50 text-muted-foreground text-xs uppercase tracking-wider">
             <tr>
               <th className="text-left px-4 py-3">Reference</th>
@@ -97,7 +98,7 @@ const DealerAdminFinanceQueue: React.FC = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </AdminTable>
       </div>
     </div>
   );

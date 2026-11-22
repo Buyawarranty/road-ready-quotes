@@ -1,4 +1,5 @@
 import BdmAllocationTab from '@/components/admin/bdm/BdmAllocationTab';
+import { AdminTableSortingScope } from '@/components/ui/table-sorting';
 import { canManageDealerPromos } from '@/lib/dealerPromoAccess';
 import BdmContactList from '@/components/admin/bdm/BdmContactList';
 import WebsiteCancellationRequests from '@/components/admin/WebsiteCancellationRequests';
@@ -1296,7 +1297,9 @@ const AdminDashboardInner: React.FC<{
           <main className="admin-mobile-content min-w-0 p-3 sm:p-4 lg:p-6 overflow-y-auto lg:h-[calc(100dvh-104px)]">
             <TabErrorBoundary tabKey={activeTab} onRetry={() => window.location.reload()}>
               <Suspense fallback={<TabFallback />}>
-                {renderContent(displayRole, displayPermissions)}
+                <AdminTableSortingScope.Provider value={true}>
+                  {renderContent(displayRole, displayPermissions)}
+                </AdminTableSortingScope.Provider>
               </Suspense>
             </TabErrorBoundary>
           </main>

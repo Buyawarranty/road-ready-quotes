@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { AdminTable } from '@/components/ui/table-sorting';
+import { useAdminRecordSorting } from '@/hooks/useAdminRecordSorting';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -21,6 +23,8 @@ const DealerActivityFeed: React.FC = () => {
   const [period, setPeriod] = useState<'today' | '7' | '30' | 'all'>('7');
   const [order, setOrder] = useState<'newest' | 'oldest'>('newest');
   const [shown, setShown] = useState(PAGE);
+  const columnSorting = useAdminRecordSorting<Item>({ 'Time and date': i => i.at, Dealer: i => i.dealer, Activity: i => i.kind === 'login' ? 'Signed in' : `Opened ${i.label}` });
+  useEffect(() => { columnSorting.onSortChange(null); }, [order]);
 
   const load = async () => {
     setLoading(true);
@@ -54,9 +58,9 @@ const DealerActivityFeed: React.FC = () => {
       .filter((i) => dealer === 'all' || i.dealer_id === dealer)
       .filter((i) => kind === 'all' || i.kind === kind)
       .filter((i) => !s || i.dealer.toLowerCase().includes(s) || i.label.toLowerCase().includes(s))
-      .sort((a, b) => (order === 'newest' ? 1 : -1) * (new Date(b.at).getTime() - new Date(a.at).getTime()));
-  }, [items, q, dealer, kind, period, order]);
-  useEffect(() => setShown(PAGE), [q, dealer, kind, period, order]);
+      .sort((a, b) => columnSorting.columnSort ? columnSorting.compare(a, b) : (order === 'newest' ? 1 : -1) * (new Date(b.at).getTime() - new Date(a.at).getTime()));
+  }, [items, q, dealer, kind, period, order, columnSorting.columnSort, columnSorting.compare]);
+  useEffect(() => setShown(PAGE), [q, dealer, kind, period, order, columnSorting.columnSort]);
 
   const activeDealers = new Set(filtered.map((i) => i.dealer_id)).size;
   const loginCount = filtered.filter((i) => i.kind === 'login').length;
@@ -80,7 +84,7 @@ const DealerActivityFeed: React.FC = () => {
       <CardContent>
         {loading ? <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
           : filtered.length === 0 ? <p className="py-8 text-center text-sm text-muted-foreground">No dealer activity for these filters.</p>
-          : <div className="overflow-x-auto"><table className="w-full text-sm">
+          : <div className="overflow-x-auto"><AdminTable className="w-full text-sm" onSortChange={columnSorting.onSortChange} sortColumns={columnSorting.sortColumns}>
               <thead className="border-y bg-muted/50 text-left text-xs uppercase text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Time and date</th><th className="px-3 py-2 font-medium">Dealer</th><th className="px-3 py-2 font-medium">Activity</th></tr></thead>
               <tbody>{filtered.slice(0, shown).map((i) => (
                 <tr key={i.key} className="border-b">
@@ -88,7 +92,7 @@ const DealerActivityFeed: React.FC = () => {
                   <td className="px-3 py-2 font-medium">{i.dealer}</td>
                   <td className="px-3 py-2"><span className="inline-flex items-center gap-1.5">{i.kind === 'login' ? <LogIn className="h-4 w-4 text-primary" /> : <MousePointerClick className="h-4 w-4 text-muted-foreground" />}{i.kind === 'login' ? 'Signed in' : `Opened ${i.label}`}</span></td>
                 </tr>))}</tbody>
-            </table>
+            </AdminTable>
             {shown < filtered.length && <div className="pt-3 text-center"><Button variant="outline" size="sm" onClick={() => setShown((n) => n + PAGE)}>Show more ({filtered.length - shown} left)</Button></div>}
           </div>}
       </CardContent>

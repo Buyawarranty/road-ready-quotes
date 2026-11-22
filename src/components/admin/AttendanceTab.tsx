@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -458,7 +459,7 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ filterRoles }) => 
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <AdminTable className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-muted-foreground uppercase tracking-wide">
                   <th className="pb-3 font-medium">Agent</th>
@@ -467,7 +468,7 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ filterRoles }) => 
                   <th className="pb-3 font-medium">{onlineTimeLabel}</th>
                   <th className="pb-3 font-medium" title="Outbound dial attempts">Dials</th>
                   <th className="pb-3 font-medium" title="Notes added on leads or claims">Notes</th>
-                  <th className="pb-3 font-medium" title="Assignments, status changes, other CRM actions">Actions</th>
+                  <th data-sort-kind="number" className="pb-3 font-medium" title="Assignments, status changes, other CRM actions">Actions</th>
                   <th className="pb-3 font-medium">First in</th>
                   <th className="pb-3 font-medium">Last activity</th>
                   <th className="pb-3 font-medium">Currently on</th>
@@ -578,7 +579,7 @@ export const AttendanceTab: React.FC<AttendanceTabProps> = ({ filterRoles }) => 
                   </tr>
                 )}
               </tbody>
-            </table>
+            </AdminTable>
           </div>
           <p className="text-xs text-muted-foreground mt-4">
             <strong>How this works:</strong> Active means signed in with a heartbeat, real click,

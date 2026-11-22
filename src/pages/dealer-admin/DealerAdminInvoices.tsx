@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -448,7 +449,7 @@ const DealerAdminInvoices: React.FC = () => {
                   )}
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <AdminTable className="w-full text-sm">
                       <thead className="bg-muted/50 border-y border-border">
                         <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
                           <th className="px-3 py-2 font-medium"><SortableHeader label="Date" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th>
@@ -550,7 +551,7 @@ const DealerAdminInvoices: React.FC = () => {
                           );
                         })}
                       </tbody>
-                    </table>
+                    </AdminTable>
                   </div>
                 </CardContent>
               </Card>
@@ -568,10 +569,10 @@ const DealerAdminInvoices: React.FC = () => {
             </div>
             {paidRows.length === 0 ? <p className="py-6 text-center text-sm text-muted-foreground">Completed dealer sales will appear here.</p> : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <AdminTable className="w-full text-sm">
                   <thead className="border-y border-border bg-muted/50"><tr className="text-left text-xs uppercase tracking-wide text-muted-foreground"><th className="px-3 py-2 font-medium"><SortableHeader label="Date" active newestFirst={newestFirst} onToggle={() => setNewestFirst((v) => !v)} /></th><th className="px-3 py-2 font-medium">Customer</th><th className="px-3 py-2 font-medium">Vehicle</th><th className="px-3 py-2 font-medium">Dealer</th><th className="px-3 py-2 font-medium">Payment</th><th className="px-3 py-2 text-right font-medium">Amount</th></tr></thead>
                   <tbody>{sortedPaidRows.slice(0, 25).map((r) => <tr key={r.id} className="border-b border-border"><td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(r.signup_date).toLocaleDateString('en-GB')}</td><td className="px-3 py-2"><p className="font-medium">{r.name}</p><p className="break-all text-xs text-muted-foreground">{r.email}</p></td><td className="px-3 py-2 font-mono text-xs uppercase">{r.registration_plate || '—'}</td><td className="px-3 py-2">{r.dealer_company}</td><td className="px-3 py-2"><Badge className="bg-crm-green-soft text-crm-green-deep">{dealerSalePaymentLabel(r)}</Badge></td><td className="px-3 py-2 text-right font-semibold">{money(dealerSaleAmount(r))}</td></tr>)}</tbody>
-                </table>
+                </AdminTable>
                 {paidRows.length > 25 && <p className="pt-3 text-xs text-muted-foreground">Showing 25 of {paidRows.length} completed sales.</p>}
               </div>
             )}

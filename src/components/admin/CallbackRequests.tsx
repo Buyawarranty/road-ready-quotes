@@ -1,3 +1,4 @@
+import { AdminTable } from '@/components/ui/table-sorting';
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowRight, Check, Phone, PhoneCall } from 'lucide-react';
@@ -81,7 +82,7 @@ export const CallbackRequestsTab: React.FC = () => {
         <p className="rounded-xl border p-6 text-center text-sm text-muted-foreground">No call-back requests yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border">
-          <table className="w-full text-sm">
+          <AdminTable className="w-full text-sm">
             <thead className="bg-muted/50 text-left"><tr><th className="p-3">Requested</th><th className="p-3">Phone</th><th className="p-3">Status</th><th className="p-3" /></tr></thead>
             <tbody>
               {rows.map((r) => (
@@ -95,7 +96,7 @@ export const CallbackRequestsTab: React.FC = () => {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </AdminTable>
         </div>
       )}
     </div>
