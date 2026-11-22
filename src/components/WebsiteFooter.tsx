@@ -5,7 +5,6 @@ import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 import { Link, useLocation } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
-import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 
 // Pages that have their own final CTA section
 const pagesWithOwnCTA = ['/warranty-types/vans-warranty', '/warranty-types/vans-warranty/', '/faq/traders', '/faq/traders/', '/contact-us', '/contact-us/'];
