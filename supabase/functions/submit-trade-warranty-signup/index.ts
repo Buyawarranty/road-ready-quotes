@@ -2,6 +2,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import { resolveBrand, type Brand } from "../_shared/brand.ts";
+import { splitName, trackKlaviyoEvent } from "../_shared/klaviyo.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -129,6 +130,31 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Klaviyo "Submitted Trade Application" (fire-and-forget). This form has no
+    // marketing opt-in, so no email consent is recorded here.
+    trackKlaviyoEvent({
+      metricName: "Submitted Trade Application",
+      email: payload.email_address,
+      phone: payload.phone_number,
+      ...splitName(payload.contact_name),
+      uniqueId: `pandaprotect:trade-signup:${signup.id}`,
+      properties: {
+        brand: "Panda Protect",
+        signup_id: signup.id,
+        dealership_name: payload.dealership_name,
+        monthly_vehicle_sales: payload.monthly_vehicle_sales,
+        current_warranty_provider: payload.current_warranty_provider,
+        interested_in: payload.interested_in,
+        heard_about_us: payload.heard_about_us,
+        town: payload.town,
+      },
+      profileProperties: {
+        account_type: "Panda Protect trade applicant",
+        company_name: payload.dealership_name,
+        town: payload.town,
+      },
+    });
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {

@@ -10,6 +10,7 @@ import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseErro
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
 import { dealerStripeSecret, dealerUsesEmbeddedStripe } from '../_shared/dealerStripeMode.ts';
+import { trackDealerCheckoutKlaviyo } from '../_shared/klaviyoDealer.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -111,7 +112,7 @@ Deno.serve(async (req: Request) => {
     const adminClient = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: dealer, error: dealerErr } = await adminClient
       .from('dealers')
-      .select('id, user_id, company_name, email, name, status, is_test')
+      .select('id, user_id, company_name, email, name, first_name, last_name, phone, status, is_test')
       .eq('id', dealer_id)
       .maybeSingle();
 
@@ -432,6 +433,16 @@ Deno.serve(async (req: Request) => {
       const { error } = await adminClient.from('dealer_promo_redemptions').update({ stripe_session_id: session.id }).eq('id', redemptionId);
       if (error) { await stripe.checkout.sessions.expire(session.id); throw new Error(error.message); }
     }
+
+    // Klaviyo "Started Checkout" (fire-and-forget; test dealers are skipped).
+    trackDealerCheckoutKlaviyo(dealer, {
+      sessionId: session.id,
+      customerId: pendingCustomerId,
+      amount: payable,
+      planType: plan.plan_type,
+      coverMonths: plan.duration_months,
+      vehicleReg: vehicle.reg,
+    });
 
     return new Response(
       JSON.stringify({
