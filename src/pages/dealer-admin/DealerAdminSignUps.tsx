@@ -1124,11 +1124,19 @@ const DealerAdminSignUps: React.FC = () => {
                   </Button>
                                   {selected.dealer_id && canSetPassword && (
                     <div className="border-t border-gray-200 pt-3 space-y-2">
-                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">Set a password to share</div>
-                      <p className="text-xs text-gray-500">Choose a password (at least 8 characters) or leave blank to create one. You can then copy the login and share it; the dealer can change it any time in Settings.</p>
-                      <PasswordInput value={customPassword} onChange={(e) => setCustomPassword(e.target.value)} placeholder="New password (optional)" disabled={settingPassword} autoComplete="new-password" />
-                      <Button variant="outline" disabled={settingPassword || (customPassword.length > 0 && customPassword.length < 8)} onClick={() => setSetPasswordConfirmOpen(true)}>
-                        {settingPassword ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Set & copy password
+                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">Or set a password yourself and share it</div>
+                      <p className="text-xs text-gray-500">No email is sent automatically. You choose the password, check it below, then copy or email both details to the dealer. They can change it any time in Settings.</p>
+                      <div className="rounded-md border border-gray-200 bg-gray-50 p-3 space-y-2">
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="text-gray-500">Login email</span>
+                          <span className="font-semibold break-all text-gray-900">{selected.email_address}</span>
+                        </div>
+                        <label className="block text-xs font-medium text-gray-500">Password (at least 8 characters — leave blank to create one)</label>
+                        <PasswordInput defaultVisible value={customPassword} onChange={(e) => setCustomPassword(e.target.value)} placeholder="Type the password you want" disabled={settingPassword} autoComplete="new-password" />
+                        {customPassword.length > 0 && customPassword.length < 8 && <p className="text-xs font-semibold text-destructive">Password needs {8 - customPassword.length} more character{8 - customPassword.length === 1 ? '' : 's'}.</p>}
+                      </div>
+                      <Button disabled={settingPassword || (customPassword.length > 0 && customPassword.length < 8)} onClick={() => setSetPasswordConfirmOpen(true)}>
+                        {settingPassword ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Save password & show login details
                       </Button>
                     </div>
                   )}
@@ -1137,14 +1145,22 @@ const DealerAdminSignUps: React.FC = () => {
                       <AlertDialogFooter><AlertDialogCancel disabled={resending}>Cancel</AlertDialogCancel><Button disabled={resending} onClick={async () => { await resendCredentials(); setResendConfirmOpen(false); }}>{resending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, send</Button></AlertDialogFooter></AlertDialogContent>
                   </AlertDialog>
                   <AlertDialog open={setPasswordConfirmOpen} onOpenChange={(o) => { if (!settingPassword) setSetPasswordConfirmOpen(o); }}>
-                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Set a new password?</AlertDialogTitle><AlertDialogDescription>{selected.email_address}'s current password will stop working. No email is sent — you share the details yourself.</AlertDialogDescription></AlertDialogHeader>
+                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Save this password?</AlertDialogTitle><AlertDialogDescription>Login email: <strong>{selected.email_address}</strong><br />Password: <strong>{customPassword || 'a new one will be created'}</strong><br />Their current password will stop working. Nothing is emailed until you choose to send it.</AlertDialogDescription></AlertDialogHeader>
                       <AlertDialogFooter><AlertDialogCancel disabled={settingPassword}>Cancel</AlertDialogCancel><Button disabled={settingPassword} onClick={() => void setChosenPassword()}>{settingPassword && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, set password</Button></AlertDialogFooter></AlertDialogContent>
                   </AlertDialog>
                   <Dialog open={!!sharedLogin} onOpenChange={(o) => { if (!o) setSharedLogin(null); }}>
                     <DialogContent><DialogHeader><DialogTitle>Login details to share</DialogTitle></DialogHeader>
-                      <pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-sm">{sharedLoginText}</pre>
-                      <p className="text-xs text-muted-foreground">This password is shown once only.</p>
-                      <DialogFooter><Button onClick={async () => { try { await navigator.clipboard.writeText(sharedLoginText); toast.success('Login details copied'); } catch { toast.error('Could not copy'); } }}>Copy login details</Button></DialogFooter></DialogContent>
+                      <div className="space-y-3">
+                        <div><div className="text-xs font-medium text-muted-foreground mb-1">Login email</div>
+                          <div className="flex gap-2"><Input readOnly value={sharedLogin?.email || ''} /><Button type="button" variant="outline" onClick={async () => { await navigator.clipboard.writeText(sharedLogin?.email || ''); toast.success('Email copied'); }}>Copy</Button></div></div>
+                        <div><div className="text-xs font-medium text-muted-foreground mb-1">Password</div>
+                          <div className="flex gap-2"><PasswordInput defaultVisible readOnly value={sharedLogin?.password || ''} /><Button type="button" variant="outline" onClick={async () => { await navigator.clipboard.writeText(sharedLogin?.password || ''); toast.success('Password copied'); }}>Copy</Button></div></div>
+                        <p className="text-xs text-muted-foreground">Login page: https://pandaprotect.co.uk/dealer-portal/login · Use the eye to hide the password.</p>
+                      </div>
+                      <DialogFooter className="gap-2">
+                        <Button variant="outline" asChild><a href={`mailto:${sharedLogin?.email || ''}?subject=${encodeURIComponent('Your Panda Protect dealer portal login')}&body=${encodeURIComponent(sharedLoginText)}`}><Mail className="w-4 h-4 mr-2" />Email to dealer</a></Button>
+                        <Button onClick={async () => { try { await navigator.clipboard.writeText(sharedLoginText); toast.success('Login details copied'); } catch { toast.error('Could not copy'); } }}>Copy all login details</Button>
+                      </DialogFooter></DialogContent>
                   </Dialog>
                 </div>
 

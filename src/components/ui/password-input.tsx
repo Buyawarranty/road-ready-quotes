@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 /** Password visibility is local to each field and never changes its value. */
-const PasswordInput = React.forwardRef<HTMLInputElement, Omit<React.ComponentProps<typeof Input>, 'type'>>(
-  ({ className, disabled, ...props }, ref) => {
-    const [visible, setVisible] = React.useState(false);
+const PasswordInput = React.forwardRef<HTMLInputElement, Omit<React.ComponentProps<typeof Input>, 'type'> & { defaultVisible?: boolean }>(
+  ({ className, disabled, defaultVisible = false, ...props }, ref) => {
+    const [visible, setVisible] = React.useState(defaultVisible);
     return (
       <div className="relative w-full">
         <Input {...props} ref={ref} disabled={disabled} type={visible ? 'text' : 'password'} className={cn(className, 'pr-12')} />
