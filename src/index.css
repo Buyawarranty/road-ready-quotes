@@ -123,9 +123,12 @@
   min-width: 0;
   align-items: center;
   justify-content: center;
-  padding: 0 0.35rem;
+  padding: 0 0.5rem;
+  padding-right: 1.25rem; /* keep the registration clear of the check badge */
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: clamp(1.25rem, 13cqi, 2.35rem);
+  font-size: clamp(1.1rem, 12cqi, 2rem);
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
@@ -143,7 +146,8 @@
 
 .dealer-crm .vehicle-reg-plate--list .vehicle-reg-plate__text {
   padding: 0 0.5rem;
-  font-size: clamp(1rem, 11cqi, 1.6rem);
+  padding-right: 1.15rem;
+  font-size: clamp(0.95rem, 10.5cqi, 1.45rem);
 }
 
 .dealer-crm .vehicle-reg-plate--quote {
@@ -176,7 +180,8 @@
 
 .dealer-crm .vehicle-reg-plate--slim .vehicle-reg-plate__text {
   padding: 0 0.3rem;
-  font-size: clamp(0.9rem, 10cqi, 1.2rem);
+  padding-right: 1.05rem;
+  font-size: clamp(0.85rem, 9.5cqi, 1.05rem);
 }
 
 .dealer-crm .vehicle-reg-plate--slim .vehicle-reg-plate__input {
