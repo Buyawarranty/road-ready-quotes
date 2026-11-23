@@ -149,7 +149,8 @@ const DealerAdminSignUps: React.FC = () => {
   const viewAsDealer = (signup: Signup) => {
     if (!signup.dealer_id) return;
     const name = signup.dealership_name || signup.contact_name || 'Dealer';
-    const w = window.open(dealerImpersonationUrl('/dealer-portal/dashboard', { dealerId: signup.dealer_id, dealerName: name, dealerEmail: signup.email_address }), '_blank');
+    // Inside the editor preview the staff login only lives in this frame, so a new tab would be signed out.
+    const w = window.self !== window.top ? null : window.open(dealerImpersonationUrl('/dealer-portal/dashboard', { dealerId: signup.dealer_id, dealerName: name, dealerEmail: signup.email_address }), '_blank');
     if (!w) { startImpersonation(signup.dealer_id, name, signup.email_address); navigate('/dealer-portal/dashboard'); return; }
     toast.success(`Opened the dealer portal as ${name} in a new tab`);
   };

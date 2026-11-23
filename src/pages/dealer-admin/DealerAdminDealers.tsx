@@ -128,7 +128,8 @@ const DealerAdminDealers: React.FC = () => {
   const viewAsDealer = (r: DealerRow) => {
     const label = r.company_name || r.name || 'this dealer';
     const url = dealerImpersonationUrl('/dealer-portal/dashboard', { dealerId: r.id, dealerName: label, dealerEmail: r.email });
-    const w = window.open(url, '_blank');
+    // Inside the editor preview the staff login only lives in this frame, so a new tab would be signed out.
+    const w = window.self !== window.top ? null : window.open(url, '_blank');
     if (!w) { startImpersonation(r.id, label, r.email); navigate('/dealer-portal/dashboard'); return; }
     toast({ title: `Opened the dealer portal as ${label} in a new tab` });
   };
