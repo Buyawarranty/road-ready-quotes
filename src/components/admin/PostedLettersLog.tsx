@@ -868,7 +868,7 @@ export const PostedLettersLog: React.FC = () => {
                                 isImpersonating: true,
                                 timestamp: Date.now()
                               }));
-                              window.open('/customer-dashboard', '_blank');
+                              if (window.self !== window.top) window.location.assign('/customer-dashboard'); else window.open('/customer-dashboard', '_blank');
                             }}
                             title="Open customer dashboard in new tab"
                             className="font-mono font-semibold bg-muted px-1.5 py-0.5 rounded text-xs hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
@@ -916,7 +916,7 @@ export const PostedLettersLog: React.FC = () => {
                                     isImpersonating: true,
                                     timestamp: Date.now(),
                                   }));
-                                  window.open('/customer-dashboard', '_blank');
+                                  if (window.self !== window.top) window.location.assign('/customer-dashboard'); else window.open('/customer-dashboard', '_blank');
                                 }}
                               >
                                 <FileText className="h-3.5 w-3.5 mr-2" /> Warranty letter (portal)

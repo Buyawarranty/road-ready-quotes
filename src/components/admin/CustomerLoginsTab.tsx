@@ -686,7 +686,7 @@ const CustomerLoginsTab = () => {
                     timestamp: Date.now()
                   }));
                   // Open customer dashboard in new tab
-                  window.open('/customer-dashboard', '_blank');
+                  if (window.self !== window.top) window.location.assign('/customer-dashboard'); else window.open('/customer-dashboard', '_blank');
                 }}
               >
                 <Eye className="w-4 h-4" />
