@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Switch } from '@/components/ui/switch';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import PartnerUpdatesPanel from './PartnerUpdatesPanel';
 import { buildPartnerGuide } from '@/lib/partnerGuide';
 import { Code2, Webhook, MousePointerClick, Copy, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
 import { PARTNER_SITE, partnerButtonHtml, partnerCheckoutUrl, partnerSlug } from '@/lib/partnerCheckout';
@@ -89,6 +90,8 @@ const PartnersTab: React.FC = () => {
         <Button onClick={() => setCreating(true)}><Plus className="mr-1 h-4 w-4" /> Add partner</Button>
       </div>
 
+
+      <PartnerUpdatesPanel partners={partners} />
 
       <section aria-labelledby="partner-guide" className="rounded-xl border border-border bg-background p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">

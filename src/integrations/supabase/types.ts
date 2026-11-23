@@ -11316,6 +11316,50 @@ export type Database = {
           },
         ]
       }
+      partner_guide_update_emails: {
+        Row: {
+          created_at: string
+          error: string | null
+          guide_version: string
+          id: string
+          partner_id: string
+          sent_by: string | null
+          sent_to: string
+          success: boolean
+          summary: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          guide_version: string
+          id?: string
+          partner_id: string
+          sent_by?: string | null
+          sent_to: string
+          success?: boolean
+          summary: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          guide_version?: string
+          id?: string
+          partner_id?: string
+          sent_by?: string | null
+          sent_to?: string
+          success?: boolean
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_guide_update_emails_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_webhook_deliveries: {
         Row: {
           created_at: string

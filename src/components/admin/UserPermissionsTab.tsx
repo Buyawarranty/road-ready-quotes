@@ -56,6 +56,9 @@ const GRANULAR_PERMISSIONS = {
     { key: 'set-password', label: 'Set & copy dealer passwords', description: 'Admin only when enabled; Super Admin always. Sets a new dealer password and shows it once to copy.' },
     { key: 'test-account', label: 'Manage test dealers', description: 'Admin only when enabled; Super Admin always. Tags hidden test accounts without changing login access.' },
   ],
+  'partners': [
+    { key: 'send-update', label: 'Send guide updates to partners', description: 'Admin only when enabled; Super Admin always. Emails partner contacts what changed for their developers.' },
+  ],
   'customers': [
     { key: 'view', label: 'View', description: 'Can view customer data' },
     { key: 'own-only', label: 'Own Customers Only', description: 'Only see customers from their own orders (via Quotes & Orders)' },
