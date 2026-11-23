@@ -83,23 +83,23 @@ const PartnersTab: React.FC = () => {
   const paid = sales.filter((s) => s.payment_status === 'paid' && !/cancel|refund/i.test(s.status || ''));
 
   return (
-    <div className="space-y-6 p-4 md:p-6">
+    <div className="space-y-5 p-4 text-sm md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div><h1 className="text-2xl font-bold">Partners</h1><p className="text-sm text-muted-foreground">CRM suppliers who sell Panda Protect warranties on their own websites. Customers pay the standard price to Panda Protect.</p></div>
+        <div><h1 className="text-xl font-semibold">Partners</h1><p className="text-sm text-muted-foreground">CRM suppliers who sell Panda Protect warranties on their own websites. Customers pay the standard price to Panda Protect.</p></div>
         <Button onClick={() => setCreating(true)}><Plus className="mr-1 h-4 w-4" /> Add partner</Button>
       </div>
 
 
       <section aria-labelledby="partner-guide" className="rounded-xl border border-border bg-background p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div><h2 id="partner-guide" className="font-semibold">Guide to send the partner</h2>
+          <div><h2 id="partner-guide" className="text-base font-semibold">Guide to send the partner</h2>
             <p className="mt-1 text-sm text-muted-foreground">Only what their developers need. Select a partner below and "Copy guide" fills in their own partner code and dealer IDs.</p></div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => copy(buildPartnerGuide({ apiBase: API_BASE, site: PARTNER_SITE, partner: partner ? { name: partner.name, slug: partner.slug } : null, dealers: links.filter((l) => l.partner_id === selected).map((l) => ({ id: l.dealer_id, name: dealerName(l.dealer_id) })) }), 'Guide')}><Copy className="mr-1 h-3 w-3" />Copy guide{partner ? ` for ${partner.name}` : ''}</Button>
-            <Button variant="outline" size="sm" asChild><a href="/panda-protect-partner-guide.pdf" download>Download PDF</a></Button>
+            <Button size="sm" asChild><a href="/downloads/panda-protect-partner-guide.pdf" download="Panda-Protect-Partner-Guide.pdf">Export guide (PDF)</a></Button>
           </div>
         </div>
-        <Accordion type="multiple" className="mt-2 text-sm">
+        <Accordion type="multiple" className="mt-2 text-sm [&_button]:py-2.5 [&_button]:text-sm [&_button]:font-medium [&_code]:text-xs">
           <AccordionItem value="setup"><AccordionTrigger>What they receive from us</AccordionTrigger><AccordionContent className="space-y-1 text-muted-foreground">
             <p>• Partner code (the <code>p</code> value) and a dealer ID for each linked dealer (the <code>d</code> value).</p>
             <p>• API key <code>pp_live_…</code> — shown once, kept on their server only.</p>
@@ -144,7 +144,7 @@ const PartnersTab: React.FC = () => {
       {partner && (
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="space-y-3 rounded-xl border border-border p-4">
-            <h2 className="font-semibold">Settings</h2>
+            <h2 className="text-base font-semibold">Settings</h2>
             <p className="text-sm text-muted-foreground">{[partner.contact_name, partner.contact_email, partner.platform].filter(Boolean).join(' · ') || 'No contact saved'}</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5"><Label>Mode</Label>
@@ -163,7 +163,7 @@ const PartnersTab: React.FC = () => {
           </section>
 
           <section className="space-y-3 rounded-xl border border-border p-4">
-            <h2 className="font-semibold">Linked dealers</h2>
+            <h2 className="text-base font-semibold">Linked dealers</h2>
             <div className="flex gap-2">
               <Select value={addDealer} onValueChange={setAddDealer}><SelectTrigger><SelectValue placeholder="Choose an approved dealer" /></SelectTrigger>
                 <SelectContent>{dealers.filter((d) => !linked.some((l) => l.dealer_id === d.id)).map((d) => <SelectItem key={d.id} value={d.id}>{d.company_name || d.name}</SelectItem>)}</SelectContent></Select>
@@ -185,7 +185,7 @@ const PartnersTab: React.FC = () => {
           </section>
 
           <section className="space-y-3 rounded-xl border border-border p-4 lg:col-span-2">
-            <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="font-semibold">Sales through {partner.name}</h2>
+            <div className="flex flex-wrap items-baseline justify-between gap-2"><h2 className="text-base font-semibold">Sales through {partner.name}</h2>
               <p className="text-sm text-muted-foreground">{paid.length} paid · {gbp(paid.reduce((a, s) => a + Number(s.final_amount || 0), 0))}</p></div>
             {sales.length === 0 ? <p className="text-sm text-muted-foreground">No sales yet.</p> : (
               <div className="overflow-x-auto"><AdminTable className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-3">Date</th><th className="pr-3">Customer</th><th className="pr-3">Phone</th><th className="pr-3">Address</th><th className="pr-3">Reg</th><th className="pr-3">Dealer</th><th className="pr-3">Amount</th><th className="pr-3">Expiry date</th><th>Status</th></tr></thead>
@@ -194,7 +194,7 @@ const PartnersTab: React.FC = () => {
           </section>
 
           <section className="space-y-2 rounded-xl border border-border p-4 lg:col-span-2">
-            <h2 className="font-semibold">Recent updates sent</h2>
+            <h2 className="text-base font-semibold">Recent updates sent</h2>
             {deliveries.length === 0 ? <p className="text-sm text-muted-foreground">None yet.</p> : deliveries.map((d) => (
               <p key={d.id} className="flex flex-wrap gap-2 text-sm"><Badge variant={d.success ? 'default' : 'destructive'}>{d.success ? 'Delivered' : 'Failed'}</Badge><span className="font-mono">{d.event}</span><span className="text-muted-foreground">{new Date(d.created_at).toLocaleString('en-GB')}{d.error ? ` · ${d.error}` : ''}</span></p>
             ))}
