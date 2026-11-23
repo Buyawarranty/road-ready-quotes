@@ -237,7 +237,7 @@ const DealerAdminSales: React.FC = () => {
                           <Badge variant="outline" className={active ? 'border-green-500 text-green-700' : ''}>
                             {r.status || '—'}
                           </Badge>
-                          {r.is_test && <Badge variant="secondary" className="ml-1">Test</Badge>}
+                          {r.is_test && <Badge variant="test" className="ml-1">Test</Badge>}
                         </td>
                         <td className="px-3 py-2 text-right font-semibold">
                           £{dealerSaleAmount(r).toFixed(2)}

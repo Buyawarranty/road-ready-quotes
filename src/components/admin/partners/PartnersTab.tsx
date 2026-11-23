@@ -116,7 +116,7 @@ const PartnersTab: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           {partners.map((p) => (
             <Button key={p.id} variant={p.id === selected ? 'default' : 'outline'} size="sm" onClick={() => setSelected(p.id)}>
-              {p.name} <Badge variant="secondary" className="ml-2">{p.status === 'paused' ? 'Paused' : p.mode === 'live' ? 'Live' : p.mode === 'live_test' ? 'Live test' : 'Test'}</Badge>
+              {p.name} <Badge variant={p.mode === 'live' ? 'secondary' : 'test'} className="ml-2">{p.status === 'paused' ? 'Paused' : p.mode === 'live' ? 'Live' : p.mode === 'live_test' ? 'Live test' : 'Test'}</Badge>
             </Button>
           ))}
         </div>
