@@ -1153,6 +1153,10 @@ const DealerAdminSignUps: React.FC = () => {
                   </AlertDialog>
                   <Dialog open={!!sharedLogin} onOpenChange={(o) => { if (!o) setSharedLogin(null); }}>
                     <DialogContent><DialogHeader><DialogTitle>Login details to share</DialogTitle></DialogHeader>
+                      <div className="rounded-md border bg-muted/40 p-3 space-y-2">
+                        <pre className="whitespace-pre-wrap break-all text-sm font-sans">{sharedLoginText}</pre>
+                        <Button className="w-full" onClick={async () => { try { await navigator.clipboard.writeText(sharedLoginText); toast.success('All login details copied'); } catch { toast.error('Could not copy'); } }}>Copy all</Button>
+                      </div>
                       <div className="space-y-3">
                         <div><div className="text-xs font-medium text-muted-foreground mb-1">Login email</div>
                           <div className="flex gap-2"><Input readOnly value={sharedLogin?.email || ''} /><Button type="button" variant="outline" onClick={async () => { await navigator.clipboard.writeText(sharedLogin?.email || ''); toast.success('Email copied'); }}>Copy</Button></div></div>
