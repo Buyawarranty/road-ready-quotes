@@ -626,6 +626,9 @@ const DealerAdminSignUps: React.FC = () => {
       if (error) throw new Error(await functionErrorMessage(error));
       if ((data as any)?.error) throw new Error((data as any).error);
       setSharedLogin({ email: (data as any).email || selected.email_address, password: (data as any).password });
+      const em = (data as any).email || selected.email_address;
+      const text = `Panda Protect dealer portal login\nLogin page: https://pandaprotect.co.uk/dealer-portal/login\nEmail: ${em}\nPassword: ${(data as any).password}\nYou can change your password any time in Settings after signing in.`;
+      try { await navigator.clipboard.writeText(text); toast.success('Password set — login details copied, ready to paste'); } catch { toast.success('Password set — use Copy to copy the details'); }
       setCustomPassword('');
     } catch (e: any) {
       toast.error(e?.message || 'Could not set password');
@@ -1145,8 +1148,8 @@ const DealerAdminSignUps: React.FC = () => {
                       <AlertDialogFooter><AlertDialogCancel disabled={resending}>Cancel</AlertDialogCancel><Button disabled={resending} onClick={async () => { await resendCredentials(); setResendConfirmOpen(false); }}>{resending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, send</Button></AlertDialogFooter></AlertDialogContent>
                   </AlertDialog>
                   <AlertDialog open={setPasswordConfirmOpen} onOpenChange={(o) => { if (!settingPassword) setSetPasswordConfirmOpen(o); }}>
-                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Save this password?</AlertDialogTitle><AlertDialogDescription>Login email: <strong>{selected.email_address}</strong><br />Password: <strong>{customPassword || 'a new one will be created'}</strong><br />Their current password will stop working. Nothing is emailed until you choose to send it.</AlertDialogDescription></AlertDialogHeader>
-                      <AlertDialogFooter><AlertDialogCancel disabled={settingPassword}>Cancel</AlertDialogCancel><Button disabled={settingPassword} onClick={() => void setChosenPassword()}>{settingPassword && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, set password</Button></AlertDialogFooter></AlertDialogContent>
+                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Save this password?</AlertDialogTitle><AlertDialogDescription>Login email: <strong>{selected.email_address}</strong><br />Password: <strong>{customPassword || 'a new one will be created'}</strong><br />Their current password will stop working. The email and password will be copied so you can paste them straight to the dealer.</AlertDialogDescription></AlertDialogHeader>
+                      <AlertDialogFooter><AlertDialogCancel disabled={settingPassword}>Cancel</AlertDialogCancel><Button disabled={settingPassword} onClick={() => void setChosenPassword()}>{settingPassword && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, set & copy password</Button></AlertDialogFooter></AlertDialogContent>
                   </AlertDialog>
                   <Dialog open={!!sharedLogin} onOpenChange={(o) => { if (!o) setSharedLogin(null); }}>
                     <DialogContent><DialogHeader><DialogTitle>Login details to share</DialogTitle></DialogHeader>
