@@ -1,3 +1,4 @@
+import { customerQuoteOrigin } from '@/lib/customerQuoteSharing';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -73,7 +74,7 @@ export const SendNotificationDialog = ({
             <p style="color: #333; font-size: 16px; margin: 0; white-space: pre-wrap;">${message.trim()}</p>
           </div>
           <p style="color: #333; font-size: 16px;">
-            You can view more details by <a href="${window.location.origin}/customer-dashboard" style="color: #3b82f6; text-decoration: none;">logging into your dashboard</a>.
+            You can view more details by <a href="${customerQuoteOrigin()}/customer-dashboard" style="color: #3b82f6; text-decoration: none;">logging into your dashboard</a>.
           </p>
           <p style="color: #333; font-size: 16px;">If you have any questions, please don't hesitate to contact us.</p>
           <p style="color: #333; font-size: 16px; margin-top: 30px;">

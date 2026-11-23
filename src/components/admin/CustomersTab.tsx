@@ -1,3 +1,4 @@
+import { customerQuoteOrigin } from '@/lib/customerQuoteSharing';
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useAdminRecordSorting } from '@/hooks/useAdminRecordSorting';
 import { AdminNotificationBell } from '@/components/admin/AdminNotificationBell';
@@ -3780,8 +3781,8 @@ PandaProtect.co.uk`,
           variables: {
             customer_name: customer?.name || customer?.first_name || 'Customer',
             customerName: customer?.name || customer?.first_name || 'Customer',
-            loginLink: `${window.location.origin}/customer-dashboard`,
-            portalLink: `${window.location.origin}/customer-dashboard`
+            loginLink: `${customerQuoteOrigin()}/customer-dashboard`,
+            portalLink: `${customerQuoteOrigin()}/customer-dashboard`
           }
         };
       } else {

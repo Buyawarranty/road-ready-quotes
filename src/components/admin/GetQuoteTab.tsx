@@ -1,3 +1,4 @@
+import { customerQuoteOrigin } from '@/lib/customerQuoteSharing';
 import { getVehicleAge } from '@/lib/vehicleAge';
 import React, { useState, useEffect } from 'react';
 
@@ -2617,7 +2618,7 @@ Questions? Call 0330 229 6547`;
       if (error) throw error;
 
       if (data?.quote?.shareLink || data?.quote?.accessToken) {
-        const origin = window.location.origin;
+        const origin = customerQuoteOrigin();
         const quoteUrl = `${origin}/quote/${data.quote.accessToken}`;
         setQuoteLink(quoteUrl);
         setQuoteGenerated(true);
