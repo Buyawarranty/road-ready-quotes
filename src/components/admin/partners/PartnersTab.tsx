@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { buildPartnerGuide } from '@/lib/partnerGuide';
 import { Code2, Webhook, MousePointerClick, Copy, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
 import { PARTNER_SITE, partnerButtonHtml, partnerCheckoutUrl, partnerSlug } from '@/lib/partnerCheckout';
 
@@ -55,6 +58,12 @@ const PartnersTab: React.FC = () => {
     if (error) return toast.error(error.message);
     toast.success('Saved'); load();
   };
+  const toggle = async (p: Partner, on: boolean) => {
+    if (!on && !window.confirm(`Turn off ${p.name}? Their checkout links and API key stop working until you turn them back on.`)) return;
+    const { error } = await db.from('partners').update({ status: on ? 'active' : 'paused', updated_at: new Date().toISOString() }).eq('id', p.id);
+    if (error) return toast.error(error.message);
+    toast.success(on ? `${p.name} is on` : `${p.name} is off`); load();
+  };
   const call = async (action: string) => {
     const { data, error } = await supabase.functions.invoke('partner-admin', { body: { action, partner_id: partner!.id } });
     if (error || data?.error) { toast.error(data?.error || 'That did not work. Please try again.'); return null; }
@@ -81,43 +90,53 @@ const PartnersTab: React.FC = () => {
       </div>
 
 
-      <section aria-labelledby="partner-guide" className="rounded-xl border border-border bg-muted/30 p-4">
-        <h2 id="partner-guide" className="font-semibold">How a partner connects</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Add a partner, link their dealers, then create their API key. Everything below becomes available for that partner.</p>
-        <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <div className="rounded-lg border border-border bg-background p-3 text-sm">
-            <p className="flex items-center gap-2 font-semibold"><MousePointerClick className="h-4 w-4 text-primary" />1. Checkout button</p>
-            <p className="mt-1 text-muted-foreground">A ready-made link and button for each linked dealer. The customer pays Panda Protect the standard price.</p>
-            <code className="mt-2 block break-all rounded bg-muted px-2 py-1 text-xs">{PARTNER_SITE}/partner/checkout?p=…&amp;d=…&amp;reg=…</code>
-          </div>
-          <div className="rounded-lg border border-border bg-background p-3 text-sm">
-            <p className="flex items-center gap-2 font-semibold"><Code2 className="h-4 w-4 text-primary" />2. API</p>
-            <p className="mt-1 text-muted-foreground">Sent with <code>Authorization: Bearer pp_live_…</code>.</p>
-            <ul className="mt-2 space-y-1 text-xs">
-              <li><code className="break-all">GET {API_BASE}/prices?dealer=…</code></li>
-              <li><code className="break-all">GET {API_BASE}/warranties?reg=…</code></li>
-              <li><code className="break-all">GET {API_BASE}/warranties/:id</code></li>
-            </ul>
-            <Button variant="outline" size="sm" className="mt-2" onClick={() => copy(API_BASE, 'API address')}><Copy className="mr-1 h-3 w-3" />Copy API address</Button>
-          </div>
-          <div className="rounded-lg border border-border bg-background p-3 text-sm">
-            <p className="flex items-center gap-2 font-semibold"><Webhook className="h-4 w-4 text-primary" />3. Webhook updates</p>
-            <p className="mt-1 text-muted-foreground">We post to the partner's update address, signed with their signing secret.</p>
-            <ul className="mt-2 space-y-1 text-xs">
-              <li><code>warranty.paid</code> — sale completed</li>
-              <li><code>warranty.test</code> — test / live-test sale</li>
-              <li><code>ping</code> — test button</li>
-            </ul>
+      <section aria-labelledby="partner-guide" className="rounded-xl border border-border bg-background p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div><h2 id="partner-guide" className="font-semibold">Guide to send the partner</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Only what their developers need. Select a partner below and "Copy guide" fills in their own partner code and dealer IDs.</p></div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" onClick={() => copy(buildPartnerGuide({ apiBase: API_BASE, site: PARTNER_SITE, partner: partner ? { name: partner.name, slug: partner.slug } : null, dealers: links.filter((l) => l.partner_id === selected).map((l) => ({ id: l.dealer_id, name: dealerName(l.dealer_id) })) }), 'Guide')}><Copy className="mr-1 h-3 w-3" />Copy guide{partner ? ` for ${partner.name}` : ''}</Button>
+            <Button variant="outline" size="sm" asChild><a href="/panda-protect-partner-guide.pdf" download>Download PDF</a></Button>
           </div>
         </div>
+        <Accordion type="multiple" className="mt-2 text-sm">
+          <AccordionItem value="setup"><AccordionTrigger>What they receive from us</AccordionTrigger><AccordionContent className="space-y-1 text-muted-foreground">
+            <p>• Partner code (the <code>p</code> value) and a dealer ID for each linked dealer (the <code>d</code> value).</p>
+            <p>• API key <code>pp_live_…</code> — shown once, kept on their server only.</p>
+            <p>• Signing secret <code>whsec_pp_…</code> — to check our updates are genuine.</p>
+            <p>• They give us one HTTPS address where we send sale updates.</p></AccordionContent></AccordionItem>
+          <AccordionItem value="button"><AccordionTrigger><span className="flex items-center gap-2"><MousePointerClick className="h-4 w-4 text-primary" />1. Checkout button</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
+            <p>Put this link next to each vehicle. The customer pays Panda Protect the standard price and gets our confirmation email.</p>
+            <code className="block break-all rounded bg-muted px-2 py-1 text-xs">{PARTNER_SITE}/partner/checkout?p=PARTNER_CODE&amp;d=DEALER_ID&amp;reg=AB12CDE&amp;ref=THEIR_REFERENCE</code>
+            <p><code>reg</code> pre-fills the car; <code>ref</code> is their own deal number, returned in updates. Cars up to 15 years and 150,000 miles.</p></AccordionContent></AccordionItem>
+          <AccordionItem value="api"><AccordionTrigger><span className="flex items-center gap-2"><Code2 className="h-4 w-4 text-primary" />2. API (prices and warranty look-up)</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
+            <p>Every request from their server sends <code>Authorization: Bearer pp_live_…</code>.</p>
+            <ul className="space-y-1 text-xs">
+              <li><code className="break-all">GET {API_BASE}/prices?dealer=DEALER_ID</code> — customer prices incl. VAT</li>
+              <li><code className="break-all">GET {API_BASE}/warranties?reg=AB12CDE</code> — their sales for a car</li>
+              <li><code className="break-all">GET {API_BASE}/warranties/WARRANTY_ID</code> — one warranty</li>
+            </ul>
+            <p>401 = wrong or switched-off key · 404 = dealer not linked or not their warranty.</p>
+            <Button variant="outline" size="sm" onClick={() => copy(API_BASE, 'API address')}><Copy className="mr-1 h-3 w-3" />Copy API address</Button></AccordionContent></AccordionItem>
+          <AccordionItem value="hook"><AccordionTrigger><span className="flex items-center gap-2"><Webhook className="h-4 w-4 text-primary" />3. Sale updates we send them</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
+            <p><code>warranty.paid</code> sale completed · <code>warranty.test</code> test sale · <code>ping</code> test button.</p>
+            <p>Each update includes customer name, email, phone, address, postcode, registration, vehicle, cover months, amount paid, start date and expiry date. Never trade cost or profit.</p>
+            <p>Check it is genuine: HMAC-SHA256 of <code>X-PandaProtect-Timestamp + "." + raw body</code> with the signing secret must equal <code>X-PandaProtect-Signature</code> (after <code>sha256=</code>). Reply 200.</p></AccordionContent></AccordionItem>
+          <AccordionItem value="live"><AccordionTrigger>Going live</AccordionTrigger><AccordionContent className="space-y-1 text-muted-foreground">
+            <p>1. Test mode: we press Send test, they confirm the ping. 2. They call prices and try a checkout (no charge). 3. Live test runs the full page with no payment. 4. We switch them to Live.</p>
+            <p>Switching a partner off stops their checkout links and API key straight away; switching on restores them.</p></AccordionContent></AccordionItem>
+        </Accordion>
       </section>
       {partners.length === 0 && <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No partners yet. Press “Add partner” to create the CRM supplier — their API key, webhook and checkout links appear here once added.</p>}
       {partners.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {partners.map((p) => (
-            <Button key={p.id} variant={p.id === selected ? 'default' : 'outline'} size="sm" onClick={() => setSelected(p.id)}>
-              {p.name} <Badge variant={p.mode === 'live' ? 'secondary' : 'test'} className="ml-2">{p.status === 'paused' ? 'Paused' : p.mode === 'live' ? 'Live' : p.mode === 'live_test' ? 'Live test' : 'Test'}</Badge>
+            <div key={p.id} className="flex items-center gap-2 rounded-lg border border-border px-2 py-1">
+            <Switch checked={p.status === 'active'} aria-label={`Turn ${p.name} ${p.status === 'active' ? 'off' : 'on'}`} onCheckedChange={(on) => toggle(p, on)} />
+            <Button variant={p.id === selected ? 'default' : 'outline'} size="sm" onClick={() => setSelected(p.id)}>
+              {p.name} <Badge variant={p.mode === 'live' ? 'secondary' : 'test'} className="ml-2">{p.status !== 'active' ? 'Off' : p.mode === 'live' ? 'Live' : p.mode === 'live_test' ? 'Live test' : 'Test'}</Badge>
             </Button>
+            </div>
           ))}
         </div>
       )}
@@ -131,9 +150,8 @@ const PartnersTab: React.FC = () => {
               <div className="space-y-1.5"><Label>Mode</Label>
                 <Select value={partner.mode} onValueChange={(v) => update({ mode: v })}><SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent><SelectItem value="test">Test (no payments)</SelectItem><SelectItem value="live_test">Live test (real page, no payment)</SelectItem><SelectItem value="live">Live</SelectItem></SelectContent></Select></div>
-              <div className="space-y-1.5"><Label>Status</Label>
-                <Select value={partner.status} onValueChange={(v) => update({ status: v })}><SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="paused">Paused</SelectItem></SelectContent></Select></div>
+              <div className="space-y-1.5"><Label htmlFor="partner-on">Partner on / off</Label>
+                <div className="flex h-10 items-center gap-2"><Switch id="partner-on" checked={partner.status === 'active'} onCheckedChange={(on) => toggle(partner, on)} /><span className="text-sm">{partner.status === 'active' ? 'On — can sell' : 'Off — links and API stopped'}</span></div></div>
             </div>
             <div className="space-y-1.5"><Label htmlFor="pw-url">Their update address (webhook)</Label>
               <div className="flex gap-2"><Input id="pw-url" defaultValue={partner.webhook_url || ''} key={partner.id} placeholder="https://their-system.com/webhooks/panda" onBlur={(e) => e.target.value !== (partner.webhook_url || '') && update({ webhook_url: e.target.value || null })} />
