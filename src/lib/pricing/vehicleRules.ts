@@ -14,7 +14,7 @@ import { matchModelFloor, type MatchableFloor } from './modelFloorMatch';
 export type VehiclePricingRule = MatchableFloor;
 
 export const MANUAL_REFERRAL_MESSAGE =
-  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 5040 or request a callback and one of the team will come straight back to you.';
+  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 6547 or request a callback and one of the team will come straight back to you.';
 
 /**
  * Term scaling for a one-year minimum price. Mirrors the sellable minimums

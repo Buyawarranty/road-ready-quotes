@@ -12,6 +12,7 @@ import {
   FileText,
   Info,
   Mail,
+  Phone,
   ShieldCheck,
   Upload,
   Ban,
@@ -20,6 +21,7 @@ import {
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { Button } from '@/components/ui/button';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 const PLATINUM_PDF = platinumPlanDoc.url;
 const TANDC_PDF = termsDoc.url;
@@ -258,6 +260,10 @@ const MakeAClaim: React.FC = () => {
                       Our friendly team can answer any questions before you proceed.
                     </p>
                     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-foreground">
+                      <a href={CLAIMS_PHONE_TEL} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+                        <Phone className="h-4 w-4" />
+                        Claims Helpline {CLAIMS_PHONE}
+                      </a>
                       <a href={`mailto:${CLAIMS_EMAIL}`} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors break-all">
                         <Mail className="h-4 w-4" />
                         {CLAIMS_EMAIL}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Mail, Clock } from 'lucide-react';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 export const TrustSecurityFooter: React.FC = () => {
   return (
@@ -33,6 +34,12 @@ export const TrustSecurityFooter: React.FC = () => {
                 className="text-sm text-primary hover:underline break-all"
               >
                 claims@pandaprotect.co.uk
+              </a>
+              <a
+                href={CLAIMS_PHONE_TEL}
+                className="text-sm text-primary hover:underline block mt-1"
+              >
+                Claims Helpline: {CLAIMS_PHONE}
               </a>
               <p className="text-xs text-muted-foreground mt-1">
                 Email us with your warranty number

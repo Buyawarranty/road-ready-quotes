@@ -53,7 +53,7 @@ Here's a quick reminder of what you'll get:
 ✓ 14-day cooling off period
 ✓ No hidden fees
 
-If you'd like to complete your purchase or have any questions, just reply to this email or give us a call on 0330 229 5040.
+If you'd like to complete your purchase or have any questions, just reply to this email or give us a call on 0330 229 6547.
 
 We're here to help!
 

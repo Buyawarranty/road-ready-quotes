@@ -16,6 +16,7 @@ import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -195,6 +196,7 @@ const ContactUs = () => {
                   <span className="contact-icon contact-icon-orange"><FileText /></span>
                   <div><h2>Claims &amp; repairs</h2><p>Start a claim or check progress with our claims team.</p></div>
                 </div>
+                <a className="contact-detail-link" href={CLAIMS_PHONE_TEL}><Phone />Claims Helpline {CLAIMS_PHONE}</a>
                 <a className="contact-detail-link" href="mailto:support@pandaprotect.co.uk?subject=Panda%20Protect%20claim%20help"><Mail />support@pandaprotect.co.uk</a>
                 <Button asChild className="contact-action contact-action-navy"><Link to="/make-a-claim">Make a claim <ArrowRight /></Link></Button>
                 <p className="contact-availability"><Clock3 />{availability}</p>

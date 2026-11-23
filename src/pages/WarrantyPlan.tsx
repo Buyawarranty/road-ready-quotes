@@ -16,6 +16,7 @@ import pandaVehicleCollection from '@/assets/panda-vehicle-collection.png';
 import pandaCelebrating from '@/assets/panda-celebrating.png';
 
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 const WarrantyPlan = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [platinumDocUrl, setPlatinumDocUrl] = useState<string>('');
@@ -220,6 +221,7 @@ const WarrantyPlan = () => {
                   </div>
                   <div className="space-y-2">
                     <p className="font-semibold text-foreground">Contact Claims</p>
+                    <a href={CLAIMS_PHONE_TEL} className="text-2xl font-bold text-primary block">{CLAIMS_PHONE}</a>
                     <a href="mailto:claims@pandaprotect.co.uk" className="text-lg font-bold text-primary break-all">claims@pandaprotect.co.uk</a>
                   </div>
                 </div>
@@ -1807,6 +1809,7 @@ const WarrantyPlan = () => {
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">
                 <p className="font-medium mb-2">Contact claims:</p>
+                <a href={CLAIMS_PHONE_TEL} className="text-blue-200 hover:underline block">Claims Helpline: {CLAIMS_PHONE}</a>
                 <p className="text-blue-200 break-all">claims@pandaprotect.co.uk</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6">

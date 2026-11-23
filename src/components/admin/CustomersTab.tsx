@@ -3386,7 +3386,7 @@ A few quick tips if you're still having trouble:
 • Try the latest version of Chrome, Safari or Edge, or open a private window.
 • Use "Forgot password" on the login page if you'd like to set a new one.
 
-If there's anything else I can help with, please just reply to this email or call us on 0330 229 5040.
+If there's anything else I can help with, please just reply to this email or call us on 0330 229 6547.
 
 Kind regards,
 Mike Swan

@@ -12,14 +12,14 @@
  *  - 15 years exactly is still eligible. 15 years + 1 day is not.
  *  - 150,000 miles exactly is still eligible. 150,001 is not.
  *  - Missing age or mileage is never a silent pass: it returns a polite
- *    referral so an agent can confirm on 0330 229 5040.
+ *    referral so an agent can confirm on 0330 229 6547.
  */
 
 import { getExclusionReason, EXCLUSION_MESSAGE } from '@/lib/vehicleExclusions';
 
 export const MAX_VEHICLE_AGE_YEARS = 15;
 export const MAX_VEHICLE_MILEAGE = 150000;
-export const REFERRAL_PHONE = '0330 229 5040';
+export const REFERRAL_PHONE = '0330 229 6547';
 
 export const REFERRAL_MESSAGE =
   `We just need to check a couple of details on this vehicle before we can quote. ` +

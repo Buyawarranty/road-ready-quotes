@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Printer } from 'lucide-react';
 import { getWarrantyDurationDisplay } from '@/lib/warrantyUtils';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
+import { CLAIMS_PHONE } from '@/lib/contactNumbers';
 
 interface PrintablePolicySummaryProps {
   open: boolean;
@@ -316,7 +317,8 @@ export const PrintablePolicySummary: React.FC<PrintablePolicySummaryProps> = ({
               </div>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact Claims</div>
-                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '12px', marginTop: '3px', wordBreak: 'break-all' }}>claims@pandaprotect.co.uk</div>
+                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '12px', marginTop: '3px' }}>{CLAIMS_PHONE}</div>
+                <div style={{ color: '#eb4b00', fontWeight: '600', fontSize: '12px', marginTop: '2px', wordBreak: 'break-all' }}>claims@pandaprotect.co.uk</div>
               </div>
               <div>
                 <div style={{ color: '#64748b', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Support</div>

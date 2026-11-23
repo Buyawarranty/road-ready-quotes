@@ -11,6 +11,7 @@ import { Search, Printer, FileText, User, Car, Mail, Phone, Tag, Pencil, Save, X
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import { CLAIMS_PHONE } from '@/lib/contactNumbers';
 
 interface CustomerData {
   id: string;
@@ -1037,10 +1038,11 @@ export const PolicyDocumentsTab: React.FC = () => {
               <div style={{ marginTop: '18px', paddingTop: '10px', borderTop: `2px solid ${c.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', fontSize: '10px' }}>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sales Enquiries</div>
-                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 5040</div>
+                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>0330 229 6547</div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ color: c.muted, fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Contact Claims</div>
+                  <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '12px', marginTop: '2px' }}>{CLAIMS_PHONE}</div>
                   <div style={{ color: c.contactValue, fontWeight: '600', fontSize: '11px', marginTop: '2px', wordBreak: 'break-all' }}>claims@pandaprotect.co.uk</div>
                 </div>
                 <div style={{ textAlign: 'center' }}>

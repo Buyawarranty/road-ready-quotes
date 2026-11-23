@@ -9,6 +9,7 @@ import MobileNavigation from '@/components/MobileNavigation';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 const StickyNavigation: React.FC = () => {
   const navigate = useNavigate();
@@ -86,11 +87,11 @@ const StickyNavigation: React.FC = () => {
                         <div className="text-orange-500 font-semibold text-base">0330 229 6547</div>
                       </div>
                     </a>
-                    <a href="tel:03302296547" className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <a href={CLAIMS_PHONE_TEL} className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
                       <Phone className="h-5 w-5 mr-3 text-orange-500" />
                       <div>
                         <div className="font-semibold text-base text-black">Make a Claim</div>
-                        <div className="text-orange-500 font-semibold text-base">0330 229 6547</div>
+                        <div className="text-orange-500 font-semibold text-base">Claims Helpline {CLAIMS_PHONE}</div>
                       </div>
                     </a>
                     

@@ -163,9 +163,10 @@ export function buildDealerWarrantyEmail(options: {
       <p style="font-size:14px;margin:0 0 10px">If you've got any questions or need help, feel free to reach out:</p>
       <p style="font-size:14px;margin:0 0 4px"><strong>Customer sales and support</strong></p>
       <p style="font-size:14px;margin:0 0 4px">Email: <a href="mailto:${brand.supportEmail}" style="color:${brand.accentColor}">${brand.supportEmail}</a></p>
-      <p style="font-size:14px;margin:0 0 12px">Phone: <a href="tel:03302296547" style="color:${brand.accentColor}">0330 229 6547</a></p>
+      <p style="font-size:14px;margin:0 0 12px">Phone: <a href="tel:${brand.quotePhone.replace(/\s/g, '')}" style="color:${brand.accentColor}">${brand.quotePhone}</a></p>
       <p style="font-size:14px;margin:0 0 4px"><strong>Claims and repairs</strong></p>
       <p style="font-size:14px;margin:0 0 4px">Email: <a href="mailto:${brand.claimsEmail}" style="color:${brand.accentColor}">${brand.claimsEmail}</a></p>
+      <p style="font-size:14px;margin:0 0 4px">Claims Helpline: <a href="tel:${brand.claimsPhone.replace(/\s/g, '')}" style="color:${brand.accentColor}">${brand.claimsPhone}</a></p>
       <p style="font-size:14px;margin:0 0 12px">Online: <a href="${makeClaimUrl(brand)}" style="color:${brand.accentColor};font-weight:600">Make a claim page</a></p>
       <p style="font-size:14px;margin:0"><strong>Hours:</strong> Monday to Saturday, 9am – 6pm</p>
       <div style="background:#fff7f2;border-radius:8px;padding:16px 18px;margin:26px 0;font-size:14px;line-height:1.6">${esc(tokens(template.closing_text || 'Thank you for choosing Panda Protect — we are here to keep you covered and give you peace of mind on the road.'))}</div>

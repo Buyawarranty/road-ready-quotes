@@ -56,7 +56,7 @@ export const BRANDS: Record<BrandKey, Brand> = {
     notificationsEmail: "notifications@buyawarranty.co.uk",
     marketingEmail: "marketing@buyawarranty.co.uk",
     quotePhone: "0330 229 6547",
-    claimsPhone: "0330 229 6547",
+    claimsPhone: "0330 229 7311",
   },
   pandaprotect: {
     key: "pandaprotect",
@@ -76,7 +76,7 @@ export const BRANDS: Record<BrandKey, Brand> = {
     notificationsEmail: "notifications@pandaprotect.co.uk",
     marketingEmail: "marketing@pandaprotect.co.uk",
     quotePhone: "0330 229 6547",
-    claimsPhone: "0330 229 6547",
+    claimsPhone: "0330 229 7311",
   },
 };
 

@@ -23,6 +23,7 @@ import { ReturnDiscountBanner } from '@/components/ReturnDiscountBanner';
 import { useImpersonation } from '@/hooks/useImpersonation';
 import { ImpersonationBanner } from '@/components/ImpersonationBanner';
 import { AddressAutocomplete, AddressData as AutocompleteAddressData } from '@/components/ui/address-autocomplete';
+import { CLAIMS_PHONE } from '@/lib/contactNumbers';
 
 
 interface CustomerPolicy {
@@ -2211,6 +2212,14 @@ const CustomerDashboard = () => {
                           <p className="font-medium">Contact Claims</p>
                           <p className="text-sm text-gray-600 break-all">claims@pandaprotect.co.uk</p>
                           <p className="text-xs text-gray-500">For warranty claims and repairs</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 border rounded-lg">
+                        <Phone className="h-5 w-5 text-green-600" />
+                        <div>
+                          <p className="font-medium">Claims Helpline</p>
+                          <p className="text-sm text-gray-600">{CLAIMS_PHONE}</p>
+                          <p className="text-xs text-gray-500">Mon-Fri: 9AM-5PM</p>
                         </div>
                       </div>
                     </div>

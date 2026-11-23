@@ -10,6 +10,7 @@ import { Search, Printer, Tag, X, Users, Plus, Mail, Car, Trash2, AlertTriangle,
 import { format } from 'date-fns';
 import { getDisplayClaimLimitValue } from '@/lib/claimLimitTiers';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
+import { CLAIMS_PHONE } from '@/lib/contactNumbers';
 
 interface QueuedCustomer {
   id: string;
@@ -898,8 +899,8 @@ function buildLetterHTML(c: QueuedCustomer, isBW: boolean): string {
     </div>
     <div style="margin-top:16px;font-size:11px"><p style="margin:1px 0">Warm regards,</p><p style="margin:10px 0 1px;font-weight:600">The Panda Protect Team</p></div>
     <div style="margin-top:18px;padding-top:10px;border-top:2px solid ${col.border};display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:10px">
-      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Sales</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 5040</div></div>
-      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Contact Claims</div><div style="color:${col.contactValue};font-weight:600;font-size:11px;margin-top:2px;word-break:break-all">claims@pandaprotect.co.uk</div></div>
+      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Sales</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">0330 229 6547</div></div>
+      <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Contact Claims</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">${CLAIMS_PHONE}</div><div style="color:${col.contactValue};font-weight:600;font-size:11px;margin-top:2px;word-break:break-all">claims@pandaprotect.co.uk</div></div>
       <div style="text-align:center"><div style="color:${col.muted};font-size:8px;text-transform:uppercase;letter-spacing:0.5px">Support</div><div style="color:${col.contactValue};font-weight:600;font-size:12px;margin-top:2px">support@pandaprotect.co.uk</div></div>
     </div>
     <div style="margin-top:12px;padding-top:8px;border-top:1px solid ${col.border};font-size:8px;color:${col.legal};text-align:center">Buy A Warranty Ltd — Company No: 10314863 — Warranty House, 62 Berkhamsted Ave, Wembley, HA9 6DT</div>

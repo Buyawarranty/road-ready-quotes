@@ -190,10 +190,10 @@ export const PROPOSED_EXCESS_FACTORS: ExcessFactor[] = [
 ];
 
 export const MANUAL_REFERRAL_MESSAGE =
-  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 5040 or request a callback and one of the team will come straight back to you.';
+  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 6547 or request a callback and one of the team will come straight back to you.';
 
 export const OVER_15_REFERRAL_MESSAGE =
-  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 5040 or request a callback and one of the team will come straight back to you.';
+  'We can still help with this vehicle, but it needs a quick manual review. Please call our sales line on 0330 229 6547 or request a callback and one of the team will come straight back to you.';
 
 export const AGE_BAND_PRICING_STORAGE_KEY = 'ageBandPricingModel.v1';
 
@@ -1446,7 +1446,7 @@ export default function AgeBandPricingPreview({
           <p className="text-sm text-muted-foreground">{MANUAL_REFERRAL_MESSAGE}</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" disabled>
-              <PhoneCall className="mr-1 h-4 w-4" /> Call 0330 229 5040
+              <PhoneCall className="mr-1 h-4 w-4" /> Call 0330 229 6547
             </Button>
             <Button size="sm" disabled>
               Request a callback

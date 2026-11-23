@@ -36,7 +36,7 @@ const COMPANY = {
   name: 'Panda Protect',
   website: 'www.pandaprotect.co.uk',
   email: 'support@pandaprotect.co.uk',
-  phone: '0330 229 5040',
+  phone: '0330 229 6547',
   logoUrl: logoAsset.url,
   /** Absolute URL so the logo also renders inside emailed invoices. */
   logoAbsoluteUrl: `https://pandaprotect.co.uk${logoAsset.url}`,

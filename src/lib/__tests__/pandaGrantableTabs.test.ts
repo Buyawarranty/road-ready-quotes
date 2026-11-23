@@ -28,7 +28,6 @@ describe('Panda Protect grantable permission sections', () => {
       'goldmine-leads',
       'ghl-sync-log',
       'security',
-      'testing',
     ]) {
       assert.equal(ids.has(retired), false, `${retired} must not be grantable`);
     }

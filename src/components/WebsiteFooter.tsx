@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, Phone, Mail } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 import { Link, useLocation } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
@@ -162,6 +163,7 @@ const WebsiteFooter = () => {
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900">Contact Claims:</p>
+                  <a href={CLAIMS_PHONE_TEL} className="text-lg font-bold text-[#eb4b00] hover:underline block">{CLAIMS_PHONE}</a>
                   <a href="mailto:claims@pandaprotect.co.uk" className="text-[#eb4b00] font-bold hover:underline break-all">claims@pandaprotect.co.uk</a>
                 </div>
                 <div>

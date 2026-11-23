@@ -5,6 +5,7 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import FooterCompanyDetails from '@/components/FooterCompanyDetails';
 import { pandaLogoUrl as pandaProtectLogo } from '@/lib/pandaLogo';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 const SALES_PHONE = '0330 229 6547';
 const CLAIMS_EMAIL = 'claims@pandaprotect.co.uk';
@@ -48,6 +49,7 @@ const DealerPublicFooter: React.FC = () => {
             <div className="dealer-footer-contact">
               <p><Phone /> <span>Sales Enquiries: {SALES_PHONE}</span></p>
               <a href={`mailto:${CLAIMS_EMAIL}`}><Mail />Contact Claims: {CLAIMS_EMAIL}</a>
+              <a href={CLAIMS_PHONE_TEL}><Phone />Claims Helpline: {CLAIMS_PHONE}</a>
               <a href={`mailto:${SUPPORT_EMAIL}`}><Mail />Email Support: {SUPPORT_EMAIL}</a>
             </div>
           </div>

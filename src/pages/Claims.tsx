@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import pandaMechanicFix from '@/assets/panda-mechanic-fix.png';
 import MileageSlider from '@/components/MileageSlider';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 const Claims = () => {
   const { toast } = useToast();
@@ -302,7 +303,7 @@ Additional Information: ${formData.additionalInfo}
       console.error('Submission error:', error);
       toast({
         title: "Submission Failed",
-        description: error.message || "Please try again or call us at 0330 229 6547.",
+        description: error.message || `Please try again or call the Claims Helpline on ${CLAIMS_PHONE}.`,
         variant: "destructive",
       });
     } finally {
@@ -803,7 +804,7 @@ Additional Information: ${formData.additionalInfo}
                   1
                 </div>
                 <p className="text-gray-700 text-lg leading-relaxed">
-                  Report the fault to us at <span className="font-semibold text-orange-500">0330 229 6547</span> (Mon-Fri 9am to 5:30pm) or complete the form on this page
+                  Report the fault to us on the Claims Helpline <a href={CLAIMS_PHONE_TEL} className="font-semibold text-orange-500 hover:underline">{CLAIMS_PHONE}</a> (Mon-Fri 9am to 5:30pm) or complete the form on this page
                 </p>
               </div>
               

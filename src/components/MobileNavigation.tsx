@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { pandaLogoUrl as buyawarrantyLogo } from '@/lib/pandaLogo';
 import RequestCallbackModal from '@/components/modals/RequestCallbackModal';
+import { CLAIMS_PHONE, CLAIMS_PHONE_TEL } from '@/lib/contactNumbers';
 
 const MobileNavigation: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -109,14 +110,14 @@ const MobileNavigation: React.FC = () => {
                   </div>
                 </a>
                 <a 
-                  href="tel:03302296547" 
+                  href={CLAIMS_PHONE_TEL} 
                   className="flex items-center p-3 rounded-lg hover:bg-gray-50 mb-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Phone className="h-5 w-5 mr-3 text-orange-500" />
                   <div>
                     <div className="font-semibold text-sm">Make a Claim</div>
-                    <div className="text-orange-500 font-semibold">0330 229 6547</div>
+                    <div className="text-orange-500 font-semibold">Claims Helpline {CLAIMS_PHONE}</div>
                   </div>
                 </a>
                 
