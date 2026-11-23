@@ -1,6 +1,6 @@
 import { AdminTable } from '@/components/ui/table-sorting';
 import { useAdminRecordSorting } from '@/hooks/useAdminRecordSorting';
-import { BULK_APPROVE_PERMISSION, TEST_DEALER_PERMISSION, canManageSignupAction, pendingApprovalRows } from '../../../supabase/functions/_shared/dealerSignupActionAccess';
+import { BULK_APPROVE_PERMISSION, TEST_DEALER_PERMISSION, SET_PASSWORD_PERMISSION, canManageSignupAction, pendingApprovalRows } from '../../../supabase/functions/_shared/dealerSignupActionAccess';
 import { formatActivityTime } from '@/lib/dealerActivityLabel';
 import { functionErrorMessage } from '@/lib/functionError';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useDealerImpersonation, dealerImpersonationUrl } from '@/hooks/useDealerImpersonation';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -119,6 +120,12 @@ const DealerAdminSignUps: React.FC = () => {
   const [canBulkDelete, setCanBulkDelete] = useState(false);
   const [canBulkApprove, setCanBulkApprove] = useState(false);
   const [canMarkTest, setCanMarkTest] = useState(false);
+  const [canSetPassword, setCanSetPassword] = useState(false);
+  const [resendConfirmOpen, setResendConfirmOpen] = useState(false);
+  const [customPassword, setCustomPassword] = useState('');
+  const [settingPassword, setSettingPassword] = useState(false);
+  const [setPasswordConfirmOpen, setSetPasswordConfirmOpen] = useState(false);
+  const [sharedLogin, setSharedLogin] = useState<{ email: string; password: string } | null>(null);
   const [testDealerIds, setTestDealerIds] = useState<Set<string>>(new Set());
   const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
   const [bulkApproving, setBulkApproving] = useState(false);
@@ -205,6 +212,7 @@ const DealerAdminSignUps: React.FC = () => {
         setCanBulkDelete(roleNames.some(role => role === 'admin' || role === 'super_admin'));
         setCanBulkApprove(canManageSignupAction(roleNames, staff?.permissions as Record<string, unknown>, BULK_APPROVE_PERMISSION));
         setCanMarkTest(canManageSignupAction(roleNames, staff?.permissions as Record<string, unknown>, TEST_DEALER_PERMISSION));
+        setCanSetPassword(canManageSignupAction(roleNames, staff?.permissions as Record<string, unknown>, SET_PASSWORD_PERMISSION));
       }
     };
     void loadDeleteAccess();
@@ -609,6 +617,21 @@ const DealerAdminSignUps: React.FC = () => {
       setResending(false);
     }
   };
+
+  const setChosenPassword = async () => {
+    if (!selected?.dealer_id) return;
+    setSettingPassword(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-set-password', { body: { dealer_id: selected.dealer_id, password: customPassword || undefined } });
+      if (error) throw new Error(await functionErrorMessage(error));
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setSharedLogin({ email: (data as any).email || selected.email_address, password: (data as any).password });
+      setCustomPassword('');
+    } catch (e: any) {
+      toast.error(e?.message || 'Could not set password');
+    } finally { setSettingPassword(false); setSetPasswordConfirmOpen(false); }
+  };
+  const sharedLoginText = sharedLogin ? `Panda Protect dealer portal login\nLogin page: https://pandaprotect.co.uk/dealer-portal/login\nEmail: ${sharedLogin.email}\nPassword: ${sharedLogin.password}\nYou can change your password any time in Settings after signing in.` : '';
 
   const resendForRow = async (row: Signup) => {
     setRowResending(row.id);
@@ -1072,6 +1095,59 @@ const DealerAdminSignUps: React.FC = () => {
               </SheetHeader>
 
               <div className="mt-4 space-y-5">
+                <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Resend login details
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Didn't receive the credentials email? This resets their password and emails a new
+                    temporary one. Leave blank to send to <strong>{selected.email_address}</strong>, or
+                    enter a different address below.
+                  </p>
+                  <Input
+                    type="email"
+                    value={resendEmail}
+                    onChange={(e) => setResendEmail(e.target.value)}
+                    placeholder={`Alternate email (optional) — default ${selected.email_address}`}
+                    disabled={resending}
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => setResendConfirmOpen(true)}
+                    disabled={resending}
+                    className="border-[#eb4b00] text-[#eb4b00] hover:bg-orange-50"
+                  >
+                    {resending
+                      ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      : <Mail className="w-4 h-4 mr-2" />}
+                    Send login credentials
+                  </Button>
+                                  {selected.dealer_id && canSetPassword && (
+                    <div className="border-t border-gray-200 pt-3 space-y-2">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">Set a password to share</div>
+                      <p className="text-xs text-gray-500">Choose a password (at least 8 characters) or leave blank to create one. You can then copy the login and share it; the dealer can change it any time in Settings.</p>
+                      <PasswordInput value={customPassword} onChange={(e) => setCustomPassword(e.target.value)} placeholder="New password (optional)" disabled={settingPassword} autoComplete="new-password" />
+                      <Button variant="outline" disabled={settingPassword || (customPassword.length > 0 && customPassword.length < 8)} onClick={() => setSetPasswordConfirmOpen(true)}>
+                        {settingPassword ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}Set & copy password
+                      </Button>
+                    </div>
+                  )}
+                  <AlertDialog open={resendConfirmOpen} onOpenChange={(o) => { if (!resending) setResendConfirmOpen(o); }}>
+                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Send new login details?</AlertDialogTitle><AlertDialogDescription>This resets the password and emails a new one to {resendEmail.trim() || selected.email_address}. Their current password will stop working.</AlertDialogDescription></AlertDialogHeader>
+                      <AlertDialogFooter><AlertDialogCancel disabled={resending}>Cancel</AlertDialogCancel><Button disabled={resending} onClick={async () => { await resendCredentials(); setResendConfirmOpen(false); }}>{resending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, send</Button></AlertDialogFooter></AlertDialogContent>
+                  </AlertDialog>
+                  <AlertDialog open={setPasswordConfirmOpen} onOpenChange={(o) => { if (!settingPassword) setSetPasswordConfirmOpen(o); }}>
+                    <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Set a new password?</AlertDialogTitle><AlertDialogDescription>{selected.email_address}'s current password will stop working. No email is sent — you share the details yourself.</AlertDialogDescription></AlertDialogHeader>
+                      <AlertDialogFooter><AlertDialogCancel disabled={settingPassword}>Cancel</AlertDialogCancel><Button disabled={settingPassword} onClick={() => void setChosenPassword()}>{settingPassword && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}Yes, set password</Button></AlertDialogFooter></AlertDialogContent>
+                  </AlertDialog>
+                  <Dialog open={!!sharedLogin} onOpenChange={(o) => { if (!o) setSharedLogin(null); }}>
+                    <DialogContent><DialogHeader><DialogTitle>Login details to share</DialogTitle></DialogHeader>
+                      <pre className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-sm">{sharedLoginText}</pre>
+                      <p className="text-xs text-muted-foreground">This password is shown once only.</p>
+                      <DialogFooter><Button onClick={async () => { try { await navigator.clipboard.writeText(sharedLoginText); toast.success('Login details copied'); } catch { toast.error('Could not copy'); } }}>Copy login details</Button></DialogFooter></DialogContent>
+                  </Dialog>
+                </div>
+
                 <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
                   <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                     Decision
@@ -1304,35 +1380,6 @@ const DealerAdminSignUps: React.FC = () => {
                   )}
                 </section>
 
-
-                <div className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-gray-500">
-                    Resend login details
-                  </div>
-                  <p className="text-xs text-gray-500">
-                    Didn't receive the credentials email? This resets their password and emails a new
-                    temporary one. Leave blank to send to <strong>{selected.email_address}</strong>, or
-                    enter a different address below.
-                  </p>
-                  <Input
-                    type="email"
-                    value={resendEmail}
-                    onChange={(e) => setResendEmail(e.target.value)}
-                    placeholder={`Alternate email (optional) — default ${selected.email_address}`}
-                    disabled={resending}
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={resendCredentials}
-                    disabled={resending}
-                    className="border-[#eb4b00] text-[#eb4b00] hover:bg-orange-50"
-                  >
-                    {resending
-                      ? <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      : <Mail className="w-4 h-4 mr-2" />}
-                    Send login credentials
-                  </Button>
-                </div>
 
                 <div className="flex justify-end pt-2">
                   <Button variant="outline" onClick={closeDetail}>

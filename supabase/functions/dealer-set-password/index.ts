@@ -29,7 +29,9 @@ Deno.serve(async (req) => {
     if (!/^[0-9a-f-]{36}$/i.test(dealerId)) return json(400, { error: "dealer_id is required" });
     const { data: dealer } = await admin.from("dealers").select("id, user_id, email").eq("id", dealerId).maybeSingle();
     if (!dealer?.user_id) return json(404, { error: "This dealer has no portal login yet. Approve them first." });
-    const password = generatePassword();
+    const chosen = typeof body?.password === "string" ? body.password : "";
+    if (chosen && (chosen.length < 8 || chosen.length > 72)) return json(400, { error: "Password must be 8 to 72 characters." });
+    const password = chosen || generatePassword();
     const { data: u } = await admin.auth.admin.getUserById(dealer.user_id);
     const { error } = await admin.auth.admin.updateUserById(dealer.user_id, { password, user_metadata: { ...(u?.user?.user_metadata ?? {}), must_change_password: false } });
     if (error) return json(500, { error: `Could not set the password: ${error.message}` });
