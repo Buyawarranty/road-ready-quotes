@@ -141,6 +141,7 @@ const ConditionalFooter = () => {
 const TradeOnlyPage = lazy(() => import("./pages/TradeOnlyPage"));
 const WhatsCovered = lazy(() => import("./pages/WhatsCovered"));
 const MakeAClaim = lazy(() => import("./pages/MakeAClaim"));
+import NoFrameGuard from "./components/partner/NoFrameGuard";
 const PartnerCheckout = lazy(() => import("./pages/partner/PartnerCheckout"));
 const PartnerCheckoutSuccess = lazy(() => import("./pages/partner/PartnerCheckoutSuccess"));
 const FAQTraders = lazy(() => import("./pages/FAQTraders"));
@@ -367,8 +368,8 @@ const App = () => {
                     <Route path="/what-is-covered/" element={<WhatsCovered />} />
                     <Route path="/claims/" element={<TradeOnlyPage />} />
                     <Route path="/make-a-claim/" element={<MakeAClaim />} />
-                    <Route path="/partner/checkout" element={<PartnerCheckout />} />
-                    <Route path="/partner/checkout/success" element={<PartnerCheckoutSuccess />} />
+                    <Route path="/partner/checkout" element={<NoFrameGuard><PartnerCheckout /></NoFrameGuard>} />
+                    <Route path="/partner/checkout/success" element={<NoFrameGuard><PartnerCheckoutSuccess /></NoFrameGuard>} />
                     <Route path="/cancel-warranty" element={<CancelWarranty />} />
                     <Route path="/cancel-warranty/" element={<CancelWarranty />} />
                     <Route path="/warranty-transfer/" element={<TradeOnlyPage />} />
