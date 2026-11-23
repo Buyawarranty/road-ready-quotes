@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Download } from 'lucide-react';
+import { SET_PASSWORD_PERMISSION, canManageSignupAction } from '../../../supabase/functions/_shared/dealerSignupActionAccess';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useToast } from '@/hooks/use-toast';
 import { useDealerExportAccess } from '@/hooks/useDealerExportAccess';
@@ -137,6 +138,27 @@ const DealerAdminDealers: React.FC = () => {
     try { await navigator.clipboard.writeText(text); toast({ title: 'Login details copied', description: r.email }); }
     catch { toast({ title: 'Could not copy', variant: 'destructive' }); }
   };
+
+  const [canSetPassword, setCanSetPassword] = useState(false);
+  useEffect(() => { (async () => {
+    const { data: { user } } = await supabase.auth.getUser(); if (!user) return;
+    const [{ data: roles }, { data: staffRow }] = await Promise.all([supabase.from('user_roles').select('role').eq('user_id', user.id), supabase.from('admin_users').select('permissions').eq('user_id', user.id).maybeSingle()]);
+    setCanSetPassword(canManageSignupAction((roles || []).map((x: any) => x.role), staffRow?.permissions as Record<string, unknown>, SET_PASSWORD_PERMISSION));
+  })(); }, []);
+  const [newLogin, setNewLogin] = useState<{ email: string; password: string; company: string } | null>(null);
+  const setPassword = async (r: DealerRow) => {
+    if (!window.confirm(`Set a new password for ${r.email}? Their current password will stop working.`)) return;
+    setResendingId(r.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('dealer-set-password', { body: { dealer_id: r.id } });
+      if (error) throw new Error(await functionErrorMessage(error));
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setNewLogin({ email: (data as any).email || r.email, password: (data as any).password, company: r.company_name || r.name || '' });
+    } catch (e: any) {
+      toast({ title: 'Could not set password', description: e?.message, variant: 'destructive' });
+    } finally { setResendingId(null); }
+  };
+  const newLoginText = newLogin ? `Panda Protect dealer portal login\nLogin page: https://pandaprotect.co.uk/dealer-portal/login\nEmail: ${newLogin.email}\nPassword: ${newLogin.password}\nYou can change your password in Settings after signing in.` : '';
 
   const resendLogin = async (r: DealerRow) => {
     if (!window.confirm(`Send new login details to ${r.email}? Their current password will be replaced.`)) return;
@@ -481,6 +503,10 @@ const DealerAdminDealers: React.FC = () => {
                             <Copy className="h-3 w-3" />
                             <span className="ml-1">Copy login</span>
                           </Button>
+                          {canSetPassword && <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" disabled={resendingId === r.id} onClick={() => setPassword(r)}>
+                            <KeyRound className="h-3 w-3" />
+                            <span className="ml-1">Set & copy password</span>
+                          </Button>}
                           <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" disabled={resendingId === r.id} onClick={() => resendLogin(r)}>
                             {resendingId === r.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
                             <span className="ml-1">Resend password</span>
@@ -504,6 +530,21 @@ const DealerAdminDealers: React.FC = () => {
           )}
         </CardContent>
       </Card>
+      <Dialog open={!!newLogin} onOpenChange={(o) => !o && setNewLogin(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>New login for {newLogin?.company}</DialogTitle></DialogHeader>
+          <div className="space-y-2 text-sm">
+            <p><span className="text-muted-foreground">Email:</span> <strong>{newLogin?.email}</strong></p>
+            <p><span className="text-muted-foreground">Password:</span> <strong className="font-mono text-base">{newLogin?.password}</strong></p>
+            <p className="text-xs text-muted-foreground">This password is shown only now. Copy it and send it to the dealer.</p>
+          </div>
+          <DialogFooter>
+            <Button onClick={async () => { try { await navigator.clipboard.writeText(newLoginText); toast({ title: 'Login details copied' }); } catch { toast({ title: 'Could not copy', variant: 'destructive' }); } }}>
+              <Copy className="h-4 w-4 mr-2" />Copy login details
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Edit dealer details</DialogTitle></DialogHeader>
