@@ -69,7 +69,7 @@ export const AddDealerDialog: React.FC<{ onCreated: () => void; label?: string; 
     if (!o) { setForm(empty); setIsTest(defaultTest); setPassword(''); setResult(null); setTouched({}); setTried(false); }
   };
 
-  const loginUrl = `${window.location.origin}/dealer-portal/login`;
+  const loginUrl = 'https://pandaprotect.co.uk/dealer-portal/login';
   const copy = () => {
     if (!result) return;
     navigator.clipboard.writeText(`Login: ${loginUrl}\nEmail: ${result.email}\nPassword: ${result.password ?? 'their existing dealer password'}`);

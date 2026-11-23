@@ -215,7 +215,7 @@ const ROLE_DEFAULT_PERMISSIONS: Record<string, Record<string, boolean>> = {
 };
 
 // /auth is the single canonical staff gateway (all roles).
-const ADMIN_GATEWAY_URL = `${typeof window !== 'undefined' ? window.location.origin : 'https://pandaprotect.co.uk'}/auth`;
+const ADMIN_GATEWAY_URL = 'https://pandaprotect.co.uk/auth';
 const loginUrlForRole = (_role?: string | null) => ADMIN_GATEWAY_URL;
 
 export const UserPermissionsTab = () => {

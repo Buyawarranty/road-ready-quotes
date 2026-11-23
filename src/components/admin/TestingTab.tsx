@@ -23,7 +23,7 @@ export default function TestingTab() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [q, setQ] = useState('');
-  const loginUrl = `${window.location.origin}/dealer-portal/login`;
+  const loginUrl = 'https://pandaprotect.co.uk/dealer-portal/login';
   const copyText = async (text: string, title: string) => { await navigator.clipboard.writeText(text); toast({ title }); };
   const copyLogin = (d: Dealer) => copyText(`Panda Protect TEST dealer login\nLogin: ${loginUrl}\nEmail: ${d.email}`, 'Login details copied');
   const newPassword = async (d: Dealer) => {
