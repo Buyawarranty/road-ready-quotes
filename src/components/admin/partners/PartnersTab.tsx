@@ -99,6 +99,7 @@ const PartnersTab: React.FC = () => {
             <Button size="sm" asChild><a href="/downloads/panda-protect-partner-guide.pdf" download="Panda-Protect-Partner-Guide.pdf">Export guide (PDF)</a></Button>
           </div>
         </div>
+        <p className="mt-3 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm"><strong>Our screens only.</strong> Partners must send every customer to Panda Protect's own checkout pages and designs. They may not build their own quote or payment screens, or copy or restyle ours. Their platform just shows our button or link.</p>
         <Accordion type="multiple" className="mt-2 text-sm [&_button]:py-2.5 [&_button]:text-sm [&_button]:font-medium [&_code]:text-xs">
           <AccordionItem value="setup"><AccordionTrigger>What they receive from us</AccordionTrigger><AccordionContent className="space-y-1 text-muted-foreground">
             <p>• Partner code (the <code>p</code> value) and a dealer ID for each linked dealer (the <code>d</code> value).</p>
@@ -106,10 +107,10 @@ const PartnersTab: React.FC = () => {
             <p>• Signing secret <code>whsec_pp_…</code> — to check our updates are genuine.</p>
             <p>• They give us one HTTPS address where we send sale updates.</p></AccordionContent></AccordionItem>
           <AccordionItem value="button"><AccordionTrigger><span className="flex items-center gap-2"><MousePointerClick className="h-4 w-4 text-primary" />1. Checkout button</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
-            <p>Put this link next to each vehicle. The customer pays Panda Protect the standard price and gets our confirmation email.</p>
+            <p>Put this link next to each vehicle. It opens our own checkout screen; they must not recreate it. The customer pays Panda Protect the standard price and gets our confirmation email.</p>
             <code className="block break-all rounded bg-muted px-2 py-1 text-xs">{PARTNER_SITE}/partner/checkout?p=PARTNER_CODE&amp;d=DEALER_ID&amp;reg=AB12CDE&amp;ref=THEIR_REFERENCE</code>
             <p><code>reg</code> pre-fills the car; <code>ref</code> is their own deal number, returned in updates. Cars up to 15 years and 150,000 miles.</p></AccordionContent></AccordionItem>
-          <AccordionItem value="api"><AccordionTrigger><span className="flex items-center gap-2"><Code2 className="h-4 w-4 text-primary" />2. API (prices and warranty look-up)</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
+          <AccordionItem value="api"><AccordionTrigger><span className="flex items-center gap-2"><Code2 className="h-4 w-4 text-primary" />2. API (read-only look-ups, not for building screens)</span></AccordionTrigger><AccordionContent className="space-y-2 text-muted-foreground">
             <p>Every request from their server sends <code>Authorization: Bearer pp_live_…</code>.</p>
             <ul className="space-y-1 text-xs">
               <li><code className="break-all">GET {API_BASE}/prices?dealer=DEALER_ID</code> — customer prices incl. VAT</li>

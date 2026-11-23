@@ -5,6 +5,8 @@ export function buildPartnerGuide(o: { apiBase: string; site: string; partner: {
   const exampleDealer = o.dealers[0]?.id || 'DEALER_ID';
   return `PANDA PROTECT PARTNER GUIDE${o.partner ? ` - ${o.partner.name}` : ''}
 
+IMPORTANT: Customers must always buy on Panda Protect's own screens. Do not build your own quote, checkout or payment pages, and do not copy, restyle or frame our pages. Your platform only shows a button or link that opens our checkout.
+
 Customers buy and pay Panda Protect directly. We issue the warranty and email the customer; your system gets the sale details automatically.
 
 YOUR DETAILS
@@ -19,7 +21,7 @@ Please send us the HTTPS address where we should post sale updates.
 ${o.site}/partner/checkout?p=${code}&d=${exampleDealer}&reg=AB12CDE&ref=YOUR_REFERENCE
 reg pre-fills the vehicle; ref is your own deal number, returned in updates. Vehicles up to 15 years and 150,000 miles.
 
-2. API (header: Authorization: Bearer pp_live_...)
+2. API - read-only, for showing prices and sales inside your system, never for building a checkout (header: Authorization: Bearer pp_live_...)
 GET ${o.apiBase}/prices?dealer=DEALER_ID        customer prices in GBP incl. VAT
 GET ${o.apiBase}/warranties?reg=AB12CDE          your sales for a registration
 GET ${o.apiBase}/warranties/WARRANTY_ID          one warranty
