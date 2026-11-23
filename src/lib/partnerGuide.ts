@@ -5,7 +5,7 @@ export function buildPartnerGuide(o: { apiBase: string; site: string; partner: {
   const exampleDealer = o.dealers[0]?.id || 'DEALER_ID';
   return `PANDA PROTECT PARTNER GUIDE${o.partner ? ` - ${o.partner.name}` : ''}
 
-IMPORTANT: Customers must always buy on Panda Protect's own screens. Do not build your own quote, checkout or payment pages, and do not copy, restyle or frame our pages. Your platform only shows a button or link that opens our checkout.
+IMPORTANT: Customers must always buy on Panda Protect's own screens. Do not build your own quote, checkout or payment pages, and do not copy, restyle or frame our pages. Your platform only shows a button or link that opens our checkout. Our checkout always opens as a full Panda Protect page, even if placed inside another website.
 
 Customers buy and pay Panda Protect directly. We issue the warranty and email the customer; your system gets the sale details automatically.
 

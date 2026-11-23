@@ -103,7 +103,7 @@ const PartnersTab: React.FC = () => {
             <Button size="sm" variant="outline" asChild><a href="/downloads/panda-protect-partner-guide.pdf" download="Panda-Protect-Partner-Guide.pdf"><Download className="mr-1 h-3 w-3" />Download</a></Button>
           </div>
         </div>
-        <p className="mt-3 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm"><strong>Our screens only.</strong> Partners must send every customer to Panda Protect's own checkout pages and designs. They may not build their own quote or payment screens, or copy or restyle ours. Their platform just shows our button or link.</p>
+        <p className="mt-3 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm"><strong>Our screens only.</strong> Partners must send every customer to Panda Protect's own checkout pages and designs. They may not build their own quote or payment screens, or copy or restyle ours. Their platform just shows our button or link. If someone puts our checkout inside their own website, it opens as our full page instead.</p>
         <Accordion type="multiple" className="mt-2 text-sm [&_button]:py-2.5 [&_button]:text-sm [&_button]:font-medium [&_code]:text-xs">
           <AccordionItem value="setup"><AccordionTrigger>What they receive from us</AccordionTrigger><AccordionContent className="space-y-1 text-muted-foreground">
             <p>• Partner code (the <code>p</code> value) and a dealer ID for each linked dealer (the <code>d</code> value).</p>
