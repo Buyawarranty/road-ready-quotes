@@ -3336,7 +3336,15 @@ img, video { height: auto; }
 
 .dealer-public-footer { margin-top: 0; color: hsl(216 13% 39%); background: hsl(0 0% 100%); border-top: 1px solid hsl(216 17% 88%); font-family: "Helvetica Neue", Inter, "Segoe UI", Roboto, Arial, sans-serif; }
 .dealer-footer-shell { width: min(1180px, calc(100% - 2rem)); margin-inline: auto; padding: 2.4rem 0 1rem; }
-.dealer-footer-grid { display: grid; grid-template-columns: 1.4fr repeat(5, minmax(0, 1fr)); gap: 2rem; }
+.dealer-footer-grid { display: grid; grid-template-columns: 1.9fr repeat(5, minmax(0, 1fr)); gap: 2rem; align-items: start; }
+.dealer-footer-contact-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; margin-top: 2rem; }
+.dealer-public-footer .dealer-footer-contact-row a { display: flex; align-items: center; gap: .7rem; min-width: 0; padding: .8rem 1rem; border: 1px solid hsl(216 17% 88%); border-radius: .65rem; background: hsl(0 0% 100%); transition: border-color .15s; }
+.dealer-public-footer .dealer-footer-contact-row a:hover { border-color: hsl(19 82% 56%); }
+.dealer-footer-contact-row svg { width: 1.05rem; height: 1.05rem; flex: 0 0 auto; color: hsl(19 82% 56%); }
+.dealer-footer-contact-row span { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; font-size: .7rem; color: hsl(216 13% 39%); }
+.dealer-footer-contact-row strong { color: hsl(218 48% 18%); font-size: .72rem; font-weight: 700; }
+@media (max-width: 900px) { .dealer-footer-contact-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .dealer-footer-contact-row { grid-template-columns: 1fr; } }
 .dealer-footer-brand img { width: 145px; height: auto; object-fit: contain; }
 .dealer-footer-brand p { margin: .75rem 0 0; font-size: .72rem; line-height: 1.5; }
 .dealer-footer-brand .dealer-footer-blurb { margin-top: .5rem; }

@@ -39,19 +39,12 @@ const DealerPublicFooter: React.FC = () => {
         <div className="dealer-footer-grid">
           <div className="dealer-footer-brand">
             <OptimizedImage src={pandaProtectLogo} alt="Panda Protect trade warranty solutions" width={1226} height={594} />
-            <p>Get fast, affordable cover tailored to your needs.</p>
             <p className="dealer-footer-blurb">
               Panda Protect – Get fast, affordable cover tailored to your car, van, SUV or motorbike. 'Panda Protect'
               vehicle warranty plans are designed to suit your driving needs – with simple online quotes, flexible
               options, and reliable protection. If your vehicle is under 15 years old and has fewer than 150,000 miles,
               you're eligible for comprehensive warranty cover with Panda Protect today.
             </p>
-            <div className="dealer-footer-contact">
-              <p><Phone /> <span>Sales Enquiries: {SALES_PHONE}</span></p>
-              <a href={`mailto:${CLAIMS_EMAIL}`}><Mail />Contact Claims: {CLAIMS_EMAIL}</a>
-              <a href={CLAIMS_PHONE_TEL}><Phone />Claims Helpline: {CLAIMS_PHONE}</a>
-              <a href={`mailto:${SUPPORT_EMAIL}`}><Mail />Email Support: {SUPPORT_EMAIL}</a>
-            </div>
           </div>
 
           <div>
@@ -102,6 +95,13 @@ const DealerPublicFooter: React.FC = () => {
               <li><Link to="/faq/traders/">FAQs for Trade Dealers</Link></li>
             </ul>
           </div>
+        </div>
+
+        <div className="dealer-footer-contact-row">
+          <a href="tel:03302296547"><Phone /><span><strong>Sales enquiries</strong>{SALES_PHONE}</span></a>
+          <a href={CLAIMS_PHONE_TEL}><Phone /><span><strong>Claims helpline</strong>{CLAIMS_PHONE}</span></a>
+          <a href={`mailto:${CLAIMS_EMAIL}`}><Mail /><span><strong>Contact claims</strong>{CLAIMS_EMAIL}</span></a>
+          <a href={`mailto:${SUPPORT_EMAIL}`}><Mail /><span><strong>Email support</strong>{SUPPORT_EMAIL}</span></a>
         </div>
 
         <FooterCompanyDetails />
