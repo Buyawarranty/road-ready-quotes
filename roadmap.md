@@ -108,3 +108,4 @@
 
 - [x] Point every WhatsApp contact point on the site at the new chat address (https://wa.me/message/I5OUGLJ7XTMOA1): homepage hero card and closing band, Contact Us card, header and footer, help bubble, sticky nav, support pop-up, staff login and all warranty landing pages, with a green icon button style; 335 tests pass and phone/desktop checks confirm the buttons.
 - [x] Testing section in admin: create test dealers, list test sales/customers and use genuine Stripe test-card checkout instead of the manual Mark as paid action.
+- [x] Add a clearly labelled Download button beside Copy guide / Export guide (PDF) on the Partners page, saving the same guide PDF.

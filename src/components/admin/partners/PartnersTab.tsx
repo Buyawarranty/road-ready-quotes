@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import PartnerUpdatesPanel from './PartnerUpdatesPanel';
 import { buildPartnerGuide } from '@/lib/partnerGuide';
-import { Code2, Webhook, MousePointerClick, Copy, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
+import { Code2, Webhook, MousePointerClick, Copy, Download, KeyRound, Link2, Plus, Send, Trash2 } from 'lucide-react';
 import { PARTNER_SITE, partnerButtonHtml, partnerCheckoutUrl, partnerSlug } from '@/lib/partnerCheckout';
 
 const db = supabase as any;
@@ -100,6 +100,7 @@ const PartnersTab: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="sm" onClick={() => copy(buildPartnerGuide({ apiBase: API_BASE, site: PARTNER_SITE, partner: partner ? { name: partner.name, slug: partner.slug } : null, dealers: links.filter((l) => l.partner_id === selected).map((l) => ({ id: l.dealer_id, name: dealerName(l.dealer_id) })) }), 'Guide')}><Copy className="mr-1 h-3 w-3" />Copy guide{partner ? ` for ${partner.name}` : ''}</Button>
             <Button size="sm" asChild><a href="/downloads/panda-protect-partner-guide.pdf" download="Panda-Protect-Partner-Guide.pdf">Export guide (PDF)</a></Button>
+            <Button size="sm" variant="outline" asChild><a href="/downloads/panda-protect-partner-guide.pdf" download="Panda-Protect-Partner-Guide.pdf"><Download className="mr-1 h-3 w-3" />Download</a></Button>
           </div>
         </div>
         <p className="mt-3 rounded-lg border border-primary/40 bg-primary/5 p-3 text-sm"><strong>Our screens only.</strong> Partners must send every customer to Panda Protect's own checkout pages and designs. They may not build their own quote or payment screens, or copy or restyle ours. Their platform just shows our button or link.</p>
