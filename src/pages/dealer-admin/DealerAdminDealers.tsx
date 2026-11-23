@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUpDown, ArrowUp, Pencil } from 'lucide-react';
+import { Copy, Loader2, Search, Save, KeyRound, Eye, ArrowDown, ArrowUpDown, ArrowUp, Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -130,6 +130,12 @@ const DealerAdminDealers: React.FC = () => {
     const w = window.open(url, '_blank');
     if (!w) { startImpersonation(r.id, label, r.email); navigate('/dealer-portal/dashboard'); return; }
     toast({ title: `Opened the dealer portal as ${label} in a new tab` });
+  };
+
+  const copyLogin = async (r: DealerRow) => {
+    const text = `Panda Protect dealer portal login\nLogin page: https://pandaprotect.co.uk/dealer-portal/login\nEmail: ${r.email}\nPassword: use the password you were sent, or click "Forgot password" on the login page.`;
+    try { await navigator.clipboard.writeText(text); toast({ title: 'Login details copied', description: r.email }); }
+    catch { toast({ title: 'Could not copy', variant: 'destructive' }); }
   };
 
   const resendLogin = async (r: DealerRow) => {
@@ -315,7 +321,7 @@ const DealerAdminDealers: React.FC = () => {
           <div className="relative min-w-0 flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search dealer, company, email..."
+              placeholder="Search dealer, company, email to find login..."
               aria-label="Search dealers"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -470,6 +476,10 @@ const DealerAdminDealers: React.FC = () => {
                           <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => viewAsDealer(r)}>
                             <Eye className="h-3 w-3" />
                             <span className="ml-1">View as dealer</span>
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" onClick={() => copyLogin(r)}>
+                            <Copy className="h-3 w-3" />
+                            <span className="ml-1">Copy login</span>
                           </Button>
                           <Button size="sm" variant="outline" className="h-8 whitespace-nowrap" disabled={resendingId === r.id} onClick={() => resendLogin(r)}>
                             {resendingId === r.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <KeyRound className="h-3 w-3" />}
