@@ -86,6 +86,7 @@ const Step4Checkout: React.FC = () => {
   const [termsAccepted, setTermsAccepted] = useState<boolean | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
   const [requestingCredit, setRequestingCredit] = useState(false);
+  const [creditRequestUnconfirmed, setCreditRequestUnconfirmed] = useState(false);
 
   useEffect(() => {
     if (!vehicle || !plan) navigate('/dealer-portal/quote/pricing', { replace: true });
@@ -279,6 +280,7 @@ const Step4Checkout: React.FC = () => {
   const requestCredit = async () => {
     if (requestingCredit) return;
     setRequestingCredit(true);
+    setCreditRequestUnconfirmed(false);
     setSubmitError(null);
     try {
     const { data, error } = await dealerRequest(signal => supabase.functions.invoke('dealer-credit-authorisation', {
@@ -293,6 +295,7 @@ const Step4Checkout: React.FC = () => {
     await refreshEligibility();
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : 'We could not send your request. Please try again.';
+      setCreditRequestUnconfirmed(true);
       setSubmitError(message);
       toast({ title: 'Credit request not confirmed', description: message, variant: 'destructive' });
     } finally {
@@ -507,6 +510,7 @@ const Step4Checkout: React.FC = () => {
 
           {eligibilityError && <div className="mt-4 space-y-2"><DealerFieldError>Account billing and free-offer availability could not be checked. Retry before paying if you are expecting either.</DealerFieldError><Button variant="outline" onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button></div>}
           {submitError && <div className="mt-4"><DealerFieldError>{submitError}</DealerFieldError></div>}
+          {creditRequestUnconfirmed && <Button variant="outline" className="mt-3" disabled={requestingCredit} onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button>}
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
             {submitting ? (
