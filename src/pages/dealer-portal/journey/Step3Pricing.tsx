@@ -260,7 +260,7 @@ const Step3Pricing: React.FC = () => {
       ) : (
         <>
           <div className="flex w-full items-center justify-center gap-3 sm:order-1 sm:w-auto sm:justify-start">
-            <button type="button" aria-label={`Change registration ${vehicle?.reg}`} title="Change registration" className="w-32 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></button>
+            <button type="button" aria-label={`Change registration ${vehicle?.reg}`} title="Change registration" className="w-40 shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crm-orange" onClick={() => { setRegInput(vehicle?.reg || ''); setEditingReg(true); }}><div className="vehicle-reg-plate vehicle-reg-plate--list vehicle-reg-plate--slim"><span className="vehicle-reg-plate__country">GB<span>UK</span></span><span className="vehicle-reg-plate__text">{vehicle?.reg}</span></div></button>
             {(vehicle?.make || vehicle?.model) && <div className="min-w-0 text-left"><p className="break-words text-sm font-extrabold leading-5">{[vehicle?.make, vehicle?.model].filter(Boolean).join(' ')}</p><p className="text-xs leading-5 text-muted-foreground">{[vehicle?.year, vehicle?.fuel_type].filter(Boolean).join(' · ')}</p></div>}
           </div>
         </>
