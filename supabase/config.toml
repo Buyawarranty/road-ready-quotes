@@ -16,3 +16,6 @@ verify_jwt = false
 
 [functions.dealer-set-password]
 verify_jwt = false
+
+[functions.customer-policy-recovery]
+verify_jwt = false

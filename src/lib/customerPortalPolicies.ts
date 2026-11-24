@@ -1,7 +1,7 @@
 import type { supabase } from '@/integrations/supabase/client';
 import { dealerRequest } from './dealerRequest';
 
-type PolicyClient = Pick<typeof supabase, 'from'>;
+type PolicyClient = Pick<typeof supabase, 'from' | 'functions'>;
 export interface CustomerPolicyIdentity {
   email?: string | null;
   userId?: string | null;
@@ -28,6 +28,20 @@ export async function loadCustomerPortalPolicies(client: PolicyClient, identity:
   if (identity.impersonating && identity.customerId) lookups.push({ field: 'customer_id', value: identity.customerId });
   if (lookups.length === 0) return [];
 
+  let recoveryError: Error | null = null;
+  if (!identity.impersonating && identity.userId) {
+    try {
+      const result = await dealerRequest(signal => client.functions.invoke('customer-policy-recovery', {
+        body: {}, signal,
+      }), 'Your warranty details could not be checked. Please try again.', 15000);
+      if (result.error || result.data?.success !== true) {
+        recoveryError = new Error('Your warranty details could not be checked. Please try again.');
+      }
+    } catch {
+      recoveryError = new Error('Your warranty details could not be checked. Please try again.');
+    }
+  }
+
   const results = await Promise.all(lookups.map(({ field, value }) => dealerRequest(signal => {
     let query = client.from('customer_policies').select('*');
     query = field === 'email'
@@ -39,5 +53,8 @@ export async function loadCustomerPortalPolicies(client: PolicyClient, identity:
   for (const result of results) {
     if (result.error) throw new Error('Your warranty details could not be loaded. Please try again.');
   }
-  return [...new Map(results.flatMap(result => result.data || []).map(policy => [policy.id, policy])).values()];
+  const policies = [...new Map(results.flatMap(result => result.data || []).map(policy => [policy.id, policy])).values()];
+  // A failed recovery must not hide already linked cover or masquerade as an empty account.
+  if (policies.length === 0 && recoveryError) throw recoveryError;
+  return policies;
 }

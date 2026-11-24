@@ -4,7 +4,7 @@ import { customerPortalPaymentAmount, loadCustomerPortalPolicies } from '../cust
 function lookupClient(responses: Array<{ data: unknown[] | null; error: unknown }>) {
   const filters: Array<[string, string, unknown]> = [];
   let index = 0;
-  const client = { from: vi.fn(() => {
+  const client = { functions: { invoke: vi.fn().mockResolvedValue({ data: { success: true }, error: null }) }, from: vi.fn(() => {
     const result = responses[index++];
     const query = {
       select: () => query,
@@ -59,5 +59,27 @@ describe('customer portal warranty lookup', () => {
     const { client } = lookupClient([]);
     expect(await loadCustomerPortalPolicies(client, {})).toEqual([]);
     expect(client.from).not.toHaveBeenCalled();
+  });
+  it('checks missing purchase details before reading policies after signup, reload or refresh', async () => {
+    const { client } = lookupClient([{ data: [], error: null }, { data: [{ id: 'recovered-policy' }], error: null }]);
+    expect((await loadCustomerPortalPolicies(client, { email: 'buyer@example.test', userId: 'login-one' })).map(p => p.id))
+      .toEqual(['recovered-policy']);
+    expect(client.functions.invoke).toHaveBeenCalledWith('customer-policy-recovery', { body: {}, signal: expect.any(AbortSignal) });
+    expect(vi.mocked(client.functions.invoke).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(client.from).mock.invocationCallOrder[0]);
+  });
+  it('retains a purchased warranty when recovery is temporarily unavailable', async () => {
+    const { client } = lookupClient([{ data: [{ id: 'existing-policy' }], error: null }]);
+    vi.mocked(client.functions.invoke).mockResolvedValueOnce({ data: null, error: new Error('recovery offline') });
+    expect((await loadCustomerPortalPolicies(client, { userId: 'login-one' })).map(p => p.id)).toEqual(['existing-policy']);
+  });
+  it('does not show a false empty account when recovery failed', async () => {
+    const { client } = lookupClient([{ data: [], error: null }]);
+    vi.mocked(client.functions.invoke).mockResolvedValueOnce({ data: null, error: new Error('recovery offline') });
+    await expect(loadCustomerPortalPolicies(client, { userId: 'login-one' })).rejects.toThrow();
+  });
+  it('view-as remains read-only and never recovers using a staff identity', async () => {
+    const { client } = lookupClient([{ data: [], error: null }]);
+    await loadCustomerPortalPolicies(client, { customerId: 'target-customer', userId: 'staff-login', impersonating: true });
+    expect(client.functions.invoke).not.toHaveBeenCalled();
   });
 });
