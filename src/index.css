@@ -3533,3 +3533,14 @@ img, video { height: auto; }
   .public-dealer-home .home-plan-step-text { display: flex; flex-direction: column; gap: 0.15rem; }
   .public-dealer-home .home-cover-content > a, .public-dealer-home .home-cover-content > .home-primary-button { margin-inline: auto; display: flex; width: fit-content; }
 }
+
+/* List plates must never be squeezed by narrow table columns. */
+.dealer-crm .vehicle-reg-plate--list.vehicle-reg-plate--slim {
+  min-width: 9.5rem;
+  flex-shrink: 0;
+}
+.dealer-crm .vehicle-reg-plate--list.vehicle-reg-plate--slim .vehicle-reg-plate__text {
+  font-size: 1rem;
+  white-space: nowrap;
+  text-overflow: clip;
+}

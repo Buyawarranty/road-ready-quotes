@@ -583,7 +583,7 @@ const DealerWarrantiesList = () => {
           <TableRow className="border-crm-line bg-muted/50 hover:bg-muted/50">
             <TableHead className="px-5 py-4 font-bold text-crm-navy">Reference</TableHead>
             <TableHead className="font-bold text-crm-navy">Customer</TableHead>
-            <TableHead className="font-bold text-crm-navy">Vehicle / reg no.</TableHead>
+            <TableHead className="min-w-[11rem] whitespace-nowrap font-bold text-crm-navy">Vehicle / reg no.</TableHead>
             <TableHead className="min-w-[140px] font-bold text-crm-navy">Product</TableHead>
             <TableHead className="min-w-[230px] font-bold text-crm-navy">Cover</TableHead>
             <TableHead className="whitespace-nowrap font-bold text-crm-navy">Activation</TableHead>
