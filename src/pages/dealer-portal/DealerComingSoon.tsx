@@ -18,6 +18,7 @@ import { signInWithPasswordTolerant } from '@/lib/tolerantSignIn';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { EmailClearInput } from '@/components/auth/EmailClearInput';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 
 // UK phone — accepts 07xxxxxxxxx, 01/02/03 landlines, +44, spaces/dashes
 const UK_PHONE_RE = /^(\+?44\s?|0)\d{2,5}[\s-]?\d{3,4}[\s-]?\d{3,4}$/;
@@ -86,7 +87,7 @@ const DealerComingSoon = () => {
     const redirect = searchParams.get('redirect');
     const regQs = pendingReg ? `?reg=${encodeURIComponent(pendingReg.toUpperCase())}` : '';
     if (redirect && redirect.startsWith('/dealer')) return `${redirect}${regQs}`;
-    return pendingReg ? `/dealer-portal/quote/pricing${regQs}` : '/dealer-portal/dashboard';
+    return pendingReg ? `${DEALER_NEW_QUOTE_URL}&reg=${encodeURIComponent(pendingReg.toUpperCase())}` : '/dealer-portal/dashboard';
   };
   const selectedPlan = searchParams.get('plan')?.trim().toLowerCase() || '';
   const initialInterestedIn = PLAN_LABELS[selectedPlan] ? selectedPlan : '';

@@ -7,6 +7,7 @@ import { functionErrorMessage } from '@/lib/functionError';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 
 interface PayLaterEligibility {
   eligible: boolean;
@@ -91,7 +92,7 @@ export const DealerCreditStatus: React.FC = () => {
             <p className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" />Approval and a healthy account status are required. Overdue balances pause invoicing.</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
-            {available && <Button size="sm" onClick={() => navigate('/dealer-portal/quote/pricing')}>Start a quote <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
+            {available && <Button size="sm" onClick={() => navigate(DEALER_NEW_QUOTE_URL)}>Start a quote <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
             {eligibility?.can_request && <Button size="sm" disabled={requesting} onClick={requestCredit}>{requesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}Request invoicing</Button>}
             {eligibility?.reason === 'pending' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-navy"><Clock3 className="h-4 w-4" />Request sent</span>}
             {eligibility?.reason === 'overdue' && <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/invoicing')}>View invoices <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}

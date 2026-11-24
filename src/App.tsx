@@ -9,6 +9,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { redirectWwwToNonWww } from "@/utils/wwwRedirect";
 import { preloadCriticalRoutes } from "@/utils/preloadRoutes";
 import { PortalSessionBoundary } from '@/components/PortalSessionBoundary';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 
 // Eager load critical components
 import Index from "./pages/Index";
@@ -257,7 +258,9 @@ const DealerDocuments = lazy(() => import("./pages/dealer-portal/DealerDocuments
  */
 const DealerQuoteEntry = () => {
   const { search } = useLocation();
-  return <Navigate to={`/dealer-portal/quote/pricing${search}`} replace />;
+  const params = new URLSearchParams(search);
+  params.set('new', '1');
+  return <Navigate to={`${DEALER_NEW_QUOTE_URL.split('?')[0]}?${params.toString()}`} replace />;
 };
 const DealerInvoicingEntry = () => {
   const { search } = useLocation();

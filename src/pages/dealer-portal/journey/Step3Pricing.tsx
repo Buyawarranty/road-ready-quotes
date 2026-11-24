@@ -11,10 +11,11 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerQuoteSave } from '@/hooks/useDealerQuoteSave';
 import { useDealerAnnualPricing } from '@/hooks/useDealerAnnualPricing';
 import { useToast } from '@/hooks/use-toast';
+import { dealerRequest } from '@/lib/dealerRequest';
 import { supabase } from '@/integrations/supabase/client';
 import { annualProductActive, boostForTerm, isAnnualQuoteSnapshot, potentialProfit, sellingPriceOptions, stepSellingPrice, validSellingPrice } from '@/lib/dealerAnnualPricing';
 import { buildCustomerQuoteUrl, customerQuoteMessage, customerQuoteOrigin, type CustomerQuotePayload } from '@/lib/customerQuoteSharing';
-import { Check, ArrowRight, Eye, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift } from 'lucide-react';
+import { Check, ArrowRight, Eye, ShieldCheck, Wrench, FileText, Save, MessageCircle, Mail, Printer, Link2, Loader2, Coins, Infinity, Car, Zap, ChevronDown, Share2, TrendingUp, Gauge, Download, Gift, Search } from 'lucide-react';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
 import PricingCoverageOverview from '@/components/dealer/journey/PricingCoverageOverview';
@@ -73,6 +74,7 @@ const Step3Pricing: React.FC = () => {
   }, [vehicle?.mileage]);
   // Vehicle known but no mileage saved: fetch the last MOT mileage once.
   const motFetchedFor = useRef<string | null>(null);
+  const lookupGeneration = useRef(0);
   const vehicleRef = useRef(vehicle); vehicleRef.current = vehicle;
   useEffect(() => {
     const reg = vehicle?.reg;
@@ -80,21 +82,27 @@ const Step3Pricing: React.FC = () => {
     motFetchedFor.current = reg;
     supabase.functions.invoke('dvla-vehicle-lookup', { body: { registrationNumber: normaliseReg(reg) } }).then(({ data }) => {
       if (data?.lastMotMileage != null) {
-        const v: any = vehicleRef.current; if (v && v.reg === reg && v.mileage == null) setVehicle({ ...v, mileage: Number(data.lastMotMileage) });
-        setMileageInput((m) => m || String(data.lastMotMileage));
+        const v: any = vehicleRef.current;
+        if (v && v.reg === reg && v.mileage == null) {
+          setVehicle({ ...v, mileage: Number(data.lastMotMileage) });
+          setMileageInput((m) => m || String(data.lastMotMileage));
+        }
       }
     }).catch(() => {});
   }, [vehicle?.reg, vehicle?.mileage]);
 
   const lookupVehicle = async (rawReg: string) => {
+    const generation = ++lookupGeneration.current;
     const cleaned = normaliseReg(rawReg);
     if (!/^[A-Z0-9]{2,8}$/.test(cleaned)) { setLookup('error'); setLookupMsg('Enter a valid UK registration.'); return; }
     setLookup('loading'); setLookupMsg('');
     try {
-      const { data, error: lookupError } = await supabase.functions.invoke('dvla-vehicle-lookup', { body: { registrationNumber: cleaned } });
+      const { data, error: lookupError } = await dealerRequest(signal => supabase.functions.invoke('dvla-vehicle-lookup', { body: { registrationNumber: cleaned }, signal }), 'Vehicle lookup is taking longer than expected. Enter the registration and mileage to continue.');
+      if (generation !== lookupGeneration.current) return;
       if (lookupError || !data?.make) {
         // Lookup unavailable or vehicle not found — continue with the reg so the dealer can still quote.
         setVehicle({ reg: cleaned });
+        setMileageInput(''); setMileageConfirmed(false);
         setLookup('idle'); setEditingReg(false);
         return;
       }
@@ -103,27 +111,35 @@ const Step3Pricing: React.FC = () => {
         if (ageYears > 15) { setLookup('error'); setLookupMsg('This vehicle is over 15 years old. Protection is for vehicles up to 150,000 miles and 15 years old.'); return; }
       }
       setVehicle({ reg: cleaned, make: data.make, model: data.model, year: data.yearOfManufacture ? String(data.yearOfManufacture) : undefined, fuel_type: data.fuelType, ...(data.lastMotMileage != null ? { mileage: Number(data.lastMotMileage) } : {}) } as any);
-      if (data.lastMotMileage != null) setMileageInput(String(data.lastMotMileage));
+      setMileageInput(data.lastMotMileage != null ? String(data.lastMotMileage) : '');
       setMileageConfirmed(false);
       setLookup('idle'); setEditingReg(false);
     } catch {
+      if (generation !== lookupGeneration.current) return;
       setVehicle({ reg: cleaned });
+      setMileageInput(''); setMileageConfirmed(false);
       setLookup('idle'); setEditingReg(false);
     }
   };
 
   useEffect(() => {
+    const newEntry = searchParams.get('new') === '1';
+    if (newEntry) {
+      lookupGeneration.current++;
+      setLookup('idle'); setLookupMsg(''); setRegInput(''); setEditingReg(false);
+      searchParams.delete('new');
+    }
     const regParam = searchParams.get('reg');
     if (regParam && normaliseReg(regParam) !== vehicle?.reg) {
       setRegInput(normaliseReg(regParam));
       void lookupVehicle(regParam);
       searchParams.delete('reg');
       setSearchParams(searchParams, { replace: true });
-    }
+    } else if (newEntry) setSearchParams(searchParams, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location.key]);
   const { data: config, isLoading: pricingLoading, error: pricingError, refetch } = useDealerAnnualPricing(dealer?.id);
-  const { save, saving } = useDealerQuoteSave(3);
+  const { save, saving, saveError } = useDealerQuoteSave(3);
   const { toast } = useToast();
   const [term, setTerm] = useState<number | null>(savedPlan?.duration_months || DEFAULT_TERM);
   // Saved quotes store totals including any boost; the page works with base warranty prices.
@@ -141,6 +157,15 @@ const Step3Pricing: React.FC = () => {
   const [email, setEmail] = useState(customer?.email || '');
   const [emailBusy, setEmailBusy] = useState(false);
   const [opening, setOpening] = useState(false);
+  const previousReg = useRef(vehicle?.reg);
+  useEffect(() => {
+    if (previousReg.current === vehicle?.reg) return;
+    previousReg.current = vehicle?.reg;
+    setMileageInput(vehicle?.mileage != null ? String(vehicle.mileage) : '');
+    setMileageConfirmed(false);
+    setTerm(DEFAULT_TERM); setPrices({}); setBoost(false);
+    setPaylink(''); setEmailQuote(null); setEmail(''); setError('');
+  }, [vehicle?.reg]);
   const boostCfg = config?.boost?.active ? config.boost : null;
   const boostOn = Boolean(boost && boostCfg);
   const selectedBoost = boostOn && boostCfg && term ? boostForTerm(boostCfg, term) : null;
@@ -161,7 +186,7 @@ const Step3Pricing: React.FC = () => {
     parts: savedPlan.selected_options.parts_key || config?.cover.parts || 'age-mileage',
   } : config?.cover;
   const cover = baseCover ? { ...baseCover, claim: boostOn && boostCfg ? boostCfg.claim_limit : baseCover.claim } : baseCover;
-  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg);
+  const valid = Boolean(product && annualProductActive(product) && validSellingPrice(baseRetail, product) && vehicle?.reg && !editingReg && lookup === 'idle' && !lookupMsg);
   const trade = true;
   /** Dealer and customer figures for one term, boost included — shared by the reg row and the cards. */
   const termPrices = (months: number) => {
@@ -188,7 +213,16 @@ const Step3Pricing: React.FC = () => {
     const buildPlan = (): DealerJourneyPlan => ({ plan_type: 'gold', duration_months: term || 0, term_months: term || 0, dealer_price: cost, retail_price: retail,
     selected_options: { ...(historical ? savedPlan?.selected_options : {}), warranty_type: 'fully-covered', label: 'Comprehensive Warranty', term: termLabel, ...cover, parts_key: cover?.parts, claim: cover?.claim, add_ons: historical ? savedPlan?.selected_options?.add_ons || [] : [], price_basis: 'annual-product', product_id: historical ? savedPlan?.selected_options?.product_id : config?.product_id, pricing_version: historical ? savedPlan?.selected_options?.pricing_version : config?.version, customer_price: retail / 1.2, customer_price_mode: 'custom', selling_prices: prices, boost: boostOn, boost_dealer_price: boostCost, boost_retail_price: boostRetail } });
   const persist = async (next = false) => {
-    if (!valid) { setError('Choose an available warranty and a valid customer selling price.'); return null; }
+    if (!valid) {
+      if (!vehicle?.reg || editingReg || lookup !== 'idle' || lookupMsg) {
+        setError('Confirm the vehicle registration before continuing.');
+        regRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        regRef.current?.focus();
+      } else if (pricingError || !config) setError('Warranty prices are unavailable. Select Try again above to reload them.');
+      else if (!product || !annualProductActive(product)) setError('Select an available warranty duration before continuing.');
+      else setError('Check the customer selling price before continuing.');
+      return null;
+    }
     setError(''); const plan = buildPlan(); setPlan(plan);
     const id = await save({ overridePlan: plan, silent: true });
     if (!id) { setError('Your quote could not be saved. Please try again.'); return null; }
@@ -231,7 +265,7 @@ const Step3Pricing: React.FC = () => {
     if (!opened) window.location.href = url.href;
     setOpening(false);
   };
-  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
+  if (loadError) return <DealerLayout>{null}</DealerLayout>;
   if (!loading && !dealer) return <Navigate to={`/dealer-portal/login?redirect=${encodeURIComponent(location.pathname + location.search)}`} replace />;
   return <DealerLayout><div className="pricing-page mx-auto max-w-[1240px] space-y-3 pb-6 text-crm-navy [&_h1]:!text-2xl [&_h1]:!leading-8 [&_h1]:!text-crm-navy [&_h2]:!text-lg [&_h2]:!leading-6 [&_h2]:!text-crm-navy [&_h3]:!text-sm [&_h3]:!leading-5 [&_h3]:!text-crm-navy [&_h1]:!m-0 [&_h2]:!m-0 [&_h3]:!m-0">
     <header className="pricing-heading">
@@ -285,6 +319,7 @@ const Step3Pricing: React.FC = () => {
     {n > 150000 && <p role="alert" className="col-span-3 w-full rounded-md border-2 border-crm-pink bg-crm-pink-soft px-3 py-2 text-sm font-bold text-crm-pink">⚠ This vehicle is over 150,000 miles. Protection is for vehicles up to 150,000 miles and 15 years old.</p>}
     </>); })()}
     </section>
+    {!vehicle?.reg && <p className="flex items-center justify-center gap-2 rounded-md border border-crm-pink bg-crm-pink-soft px-3 py-2 text-center text-sm font-semibold text-crm-pink"><Search className="h-4 w-4 shrink-0" />Please enter the vehicle registration to see prices.</p>}
     {(pricingLoading || loading) && <p role="status">Loading warranty prices…</p>}
     {pricingError && <div role="alert" className="flex flex-wrap items-center gap-3 text-sm font-bold text-destructive"><span className="flex items-start gap-1.5"><span aria-hidden="true">&bull;</span><span>Warranty prices are unavailable.</span></span><Button variant="outline" onClick={() => refetch()}>Try again</Button></div>}
     <section aria-label="Warranty length">
@@ -364,7 +399,7 @@ const Step3Pricing: React.FC = () => {
       </div></div>
       {trade && <p className="text-center text-xs leading-5 font-semibold text-muted-foreground"><ShieldCheck className="mr-1.5 inline-block h-4 w-4 align-text-bottom text-crm-green" />Secure checkout · No payment taken yet · You can edit everything on the next step</p>}
     </section>
-    {error && <DealerFieldError>{error}</DealerFieldError>}
+    {(saveError || error) && <DealerFieldError>{saveError || error}</DealerFieldError>}
     {!vehicle?.reg ? null : <p className="text-center text-xs leading-5 text-muted-foreground">Including VAT. Subject to vehicle eligibility and policy terms.</p>}
   </div>
   <Dialog open={exact} onOpenChange={setExact}><DialogContent className="!left-1/2 !top-1/2 !w-[calc(100%-32px)] !max-w-[380px] !-translate-x-1/2 !-translate-y-1/2 rounded-lg !p-6 [&_h2]:!text-lg [&_h2]:!leading-6"><DialogHeader><DialogTitle>Customer selling price</DialogTitle></DialogHeader>{(() => { const opts = sellingPriceOptions(product, Number(exactValue) || 0); const lo = opts[0] ?? 0; const hi = opts[opts.length - 1] ?? lo; const cur = Number(exactValue); const step = (d: number) => { if (!product) return; setExactValue(String(stepSellingPrice(cur, d > 0 ? 1 : -1, product))); }; return <div className="space-y-3"><div className="flex items-center justify-between gap-3"><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Lower price by £100" disabled={cur <= lo} onClick={() => step(-100)}>−</Button><strong className="text-4xl font-black text-crm-navy">{gbp(cur || 0)}</strong><Button type="button" variant="outline" className="h-14 w-14 text-2xl font-bold" aria-label="Raise price by £100" disabled={cur >= hi} onClick={() => step(100)}>+</Button></div><select aria-label="Customer selling price" className="h-12 w-full rounded-md border border-crm-line bg-card px-3 text-base font-semibold text-crm-navy" value={opts.includes(cur) ? String(cur) : ''} onChange={e => setExactValue(e.target.value)}>{!opts.includes(cur) && <option value="">{gbp(cur || 0)}</option>}{opts.map(v => <option key={v} value={v}>{gbp(v)}</option>)}</select></div>; })()}<p className="text-xs text-muted-foreground">Warranty price including VAT{boostOn ? `, plus ${gbp(boostRetail)} for the claim limit boost` : ""}. Minimum {gbp(product?.min_price || 0)}{product?.max_price != null ? `, maximum ${gbp(product.max_price)}` : ''}.</p><Button disabled={!product || !validSellingPrice(Number(exactValue), product)} onClick={() => { if (term) setPrices(p => ({ ...p, [term]: Math.round(Number(exactValue) * 100) / 100 })); setExact(false); }}>Apply price</Button></DialogContent></Dialog>

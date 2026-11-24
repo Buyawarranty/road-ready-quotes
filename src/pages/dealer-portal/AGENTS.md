@@ -1,0 +1,2 @@
+- New-warranty entry links use the explicit fresh-journey URL; resume/back links preserve drafts, registration changes detach the previous purchaser/quote, and draft saves exclude settled statuses so repeat sales cannot reuse a completed sale.
+- Dealer sale/lookup requests are bounded and surface recoverable errors without automatic payment retries; embedded Stripe completion navigates to signed confirmation, and support dialogs carry the dealer token scope so call actions remain readable outside the shell.

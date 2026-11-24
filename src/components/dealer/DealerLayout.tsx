@@ -49,6 +49,8 @@ import {
 } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { SALES_PHONE, SALES_PHONE_TEL } from '@/lib/contactNumbers';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 
 interface DealerLayoutProps {
   children: React.ReactNode;
@@ -66,7 +68,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { to: '/dealer-portal/dashboard', label: 'Home', icon: Home, trader: true },
   {
-    to: '/dealer-portal/quote/pricing',
+    to: DEALER_NEW_QUOTE_URL,
     label: 'New Quote',
     icon: FilePlus2,
     matchPaths: ['/dealer-portal/quote/', '/dealer-portal/quotes/create'],
@@ -147,7 +149,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
     }
   }, [loading, isTrader, location.pathname, navigate]);
 
-  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><h1 className="text-xl font-semibold text-foreground">Your dealer account needs to reload</h1><p className="text-sm text-muted-foreground">{loadError}</p><Button onClick={retry} className="w-full">Try again</Button><Button variant="outline" onClick={() => window.location.reload()} className="w-full">Reload page</Button></div></div>;
+  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><h1 className="text-xl font-semibold text-foreground">Your dealer account needs to reload</h1><p className="text-sm text-muted-foreground">{loadError}</p><Button onClick={retry} className="w-full">Try again</Button><Button variant="outline" onClick={() => window.location.reload()} className="w-full">Reload page</Button><p className="text-sm text-muted-foreground">Dealer support · 9am–6pm, Monday to Saturday</p><Button variant="outline" asChild className="w-full"><a href={SALES_PHONE_TEL}><Phone className="h-4 w-4" />Call {SALES_PHONE}</a></Button><Button variant="outline" asChild className="w-full"><a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} />WhatsApp us</a></Button></div></div>;
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
@@ -194,7 +196,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
       return location.pathname.replace(/\/$/, '') === '/dealer-portal/warranties' &&
         (item.label === 'Cancellations' ? cancellations : !cancellations && tab !== 'payments');
     }
-    if (location.pathname.replace(/\/$/, '') === item.to.replace(/\/$/, '')) return true;
+    if (location.pathname.replace(/\/$/, '') === item.to.split('?')[0].replace(/\/$/, '')) return true;
     if (item.matchPaths?.some((p) => location.pathname.startsWith(p))) return true;
     if (item.to === '/dealer-portal/quotes' && location.pathname === '/dealer-portal/quotes') return true;
     return false;
@@ -253,7 +255,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
         </div>
       )}
       <header className={`fixed inset-x-0 ${isImpersonating ? 'top-10' : 'top-0'} z-50 h-[72px] border-b border-crm-line bg-card`}>
-        <div className="flex h-full items-center gap-4 px-4 lg:px-5">
+        <div className="flex h-full items-center gap-2 px-4 sm:gap-4 lg:px-5">
             <Link to="/dealer-portal/dashboard" className="flex w-auto items-center gap-2 shrink-0 lg:w-[230px]">
               <img
                 src={pandaLogoUrl}
@@ -291,7 +293,10 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               )}
             </div>
 
-            <div className="ml-auto hidden items-center gap-2 lg:flex">
+            <Button variant="outline" onClick={() => setSupportOpen(true)} aria-label="Contact dealer support" className="ml-auto h-11 shrink-0 gap-2 border-crm-orange/40 px-3 text-crm-orange hover:bg-crm-orange-soft">
+              <Headphones className="h-5 w-5" /><span className="hidden sm:inline">Need help?</span>
+            </Button>
+            <div className="hidden items-center gap-2 lg:flex">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="text-foreground" aria-label="Notifications"><Bell className="h-5 w-5" /></Button>
@@ -336,7 +341,7 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
               </DropdownMenu>
             </div>
 
-            <div className="ml-auto lg:hidden">
+            <div className="lg:hidden">
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="Open dealer menu">
@@ -386,34 +391,36 @@ export const DealerLayout: React.FC<DealerLayoutProps> = ({ children }) => {
           {secondaryNav.map((item) => renderNavItem(item))}
         </nav>
         <div className="mt-auto">
-          <button
+          <Button
             type="button"
             onClick={() => setSupportOpen(true)}
-            className="flex min-h-11 w-full items-center gap-2 rounded-md border border-crm-line bg-background px-4 py-3 text-left text-sm font-bold text-crm-navy transition-colors hover:bg-muted"
+            variant="outline"
+            className="min-h-11 w-full justify-start gap-2 border-crm-line bg-background px-4 py-3 text-left text-sm font-bold text-crm-navy hover:bg-muted"
           >
             <Headphones className="h-5 w-5 shrink-0" /> Need help?
-          </button>
+          </Button>
           <Dialog open={supportOpen} onOpenChange={setSupportOpen}>
-            <DialogContent className="max-w-sm">
+            <DialogContent className="dealer-crm max-w-sm">
               <DialogHeader>
-                <DialogTitle>Contact support</DialogTitle>
+                <DialogTitle>Dealer support</DialogTitle>
                 <DialogDescription>Our UK team is here to help, 9am to 6pm, Monday to Saturday.</DialogDescription>
               </DialogHeader>
-              <div className="space-y-2">
+              <div className="min-w-0 space-y-2">
                 <Button className="w-full bg-crm-orange text-primary-foreground hover:bg-crm-orange/90" asChild>
+                  <a href={SALES_PHONE_TEL}><Phone className="h-4 w-4" aria-hidden="true" /> Call {SALES_PHONE}</a>
+                </Button>
+                <Button className="w-full bg-whatsapp text-whatsapp-foreground hover:bg-whatsapp-strong" asChild>
+                  <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /> WhatsApp us</a>
+                </Button>
+                <p className="pt-1 text-sm text-muted-foreground">For written help, email our support team.</p>
+                <Button variant="outline" className="w-full" asChild>
                   <a href={SUPPORT_MAILTO} target="_top"><Mail className="h-4 w-4" aria-hidden="true" /> Open my email app</a>
                 </Button>
                 <Button variant="outline" className="w-full border-crm-navy/25 text-crm-navy hover:bg-crm-navy/5" asChild>
                   <a href={`https://mail.google.com/mail/?view=cm&to=${SUPPORT_EMAIL}&su=Panda%20Protect%20dealer%20support`} target="_blank" rel="noopener noreferrer"><Mail className="h-4 w-4" aria-hidden="true" /> Email with Gmail</a>
                 </Button>
-                <Button variant="outline" className="w-full border-crm-navy/25 text-crm-navy hover:bg-crm-navy/5" type="button" onClick={copySupportEmail}>
+                <Button variant="outline" className="h-auto min-h-10 w-full min-w-0 whitespace-normal break-all border-crm-navy/25 px-2 text-xs text-crm-navy hover:bg-crm-navy/5 sm:text-sm" type="button" onClick={copySupportEmail}>
                   {supportCopied ? <><Check className="h-4 w-4" aria-hidden="true" /> Email address copied</> : <><Copy className="h-4 w-4" aria-hidden="true" /> Copy {SUPPORT_EMAIL}</>}
-                </Button>
-                <Button variant="outline" className="w-full border-crm-green-deep/30 text-crm-green-deep hover:bg-crm-green-soft" asChild>
-                  <a href="tel:03302296547"><Phone className="h-4 w-4" aria-hidden="true" /> Call 0330 229 6547</a>
-                </Button>
-                <Button className="w-full bg-whatsapp text-whatsapp-foreground hover:bg-whatsapp-strong" asChild>
-                  <a href={PANDA_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><WhatsAppIcon size={16} /> WhatsApp us</a>
                 </Button>
               </div>
             </DialogContent>

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -737,7 +738,7 @@ const DealerWarrantiesList = () => {
             <p className="mt-2 text-sm text-muted-foreground sm:text-base">{activeTab === 'payments' ? 'See what is due, when it is due and pay your outstanding account invoices.' : activeTab === 'cancellations' ? 'Track cancellation requests you have sent and warranties that have been cancelled or refunded. To cancel a warranty, open it in All warranties and tap Request cancellation.' : 'Manage customer cover, payments and documents.'}</p>
           </div>
           <Button asChild className="h-12 w-full rounded-xl bg-crm-orange px-5 text-base font-bold text-primary-foreground shadow-sm hover:bg-crm-orange/90 sm:w-auto">
-            <Link to="/dealer-portal/quote/pricing"><Plus className="mr-2 h-5 w-5" />New warranty</Link>
+            <Link to={DEALER_NEW_QUOTE_URL}><Plus className="mr-2 h-5 w-5" />New warranty</Link>
           </Button>
         </header>
 

@@ -3,6 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { EDITABLE_DEALER_QUOTE_STATUSES } from '@/lib/dealerJourneyState';
+import { dealerRequest } from '@/lib/dealerRequest';
+import { boundedDealerAuth } from '@/lib/dealerAuthLoad';
 
 /**
  * Save the current journey state as a draft in dealer_quotes.
@@ -12,6 +15,7 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
   const { dealer } = useDealerAuth();
   const { quoteId, setQuoteId, vehicle, customer, plan, discount_pct } = useDealerJourney();
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const resolveDealerId = async (): Promise<string | null> => {
     if (dealer?.id) return dealer.id;
@@ -35,18 +39,16 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
     const planToSave = opts?.overridePlan ?? plan;
     const vehicleToSave = opts?.overrideVehicle ?? vehicle;
     const customerToSave = opts?.overrideCustomer ?? customer;
-    const dealerId = await resolveDealerId();
-    if (!dealerId) {
-      if (!opts?.silent) toast.error('Your dealer profile could not be found — please sign in again');
-      return null;
-    }
     if (!vehicleToSave?.reg) {
       if (!opts?.silent) toast.error('Enter a vehicle registration before saving');
       return null;
     }
 
     setSaving(true);
+    setSaveError(null);
     try {
+      const dealerId = await boundedDealerAuth(resolveDealerId());
+      if (!dealerId) throw new Error('Your dealer account could not be loaded. Please try again.');
       const payload: any = {
         dealer_id: dealerId,
         current_step: currentStep,
@@ -80,30 +82,35 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
 
       let id = quoteId;
       if (id) {
-        const { data, error } = await supabase
+        const { data, error } = await dealerRequest(signal => supabase
           .from('dealer_quotes')
           .update(payload)
           .eq('id', id)
+          .eq('dealer_id', dealerId)
+          .in('status', EDITABLE_DEALER_QUOTE_STATUSES)
           .select('id')
-          .maybeSingle();
+          .abortSignal(signal)
+          .maybeSingle(), 'Saving is taking longer than expected. Check your Quotes before trying again.');
         if (error) throw error;
-        // Row missing (deleted elsewhere) — fall back to creating a new one
+        // A missing or settled quote must stay untouched; start a separate draft.
         if (!data) {
-          const { data: created, error: insErr } = await supabase
+          const { data: created, error: insErr } = await dealerRequest(signal => supabase
             .from('dealer_quotes')
             .insert(payload)
             .select('id')
-            .single();
+            .abortSignal(signal)
+            .single(), 'Saving is taking longer than expected. Check your Quotes before trying again.');
           if (insErr) throw insErr;
           id = created.id;
           setQuoteId(id);
         }
       } else {
-        const { data, error } = await supabase
+        const { data, error } = await dealerRequest(signal => supabase
           .from('dealer_quotes')
           .insert(payload)
           .select('id')
-          .single();
+          .abortSignal(signal)
+          .single(), 'Saving is taking longer than expected. Check your Quotes before trying again.');
         if (error) throw error;
         id = data.id;
         setQuoteId(id);
@@ -112,13 +119,14 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
       if (!opts?.silent) toast.success('Quote saved — resume any time from Quotes.');
       return id;
     } catch (err: any) {
-      console.error('Failed to save dealer quote', err);
-      if (!opts?.silent) toast.error(err.message || 'Failed to save quote');
+      const message = err.message || 'Your quote could not be saved. Please try again.';
+      setSaveError(message);
+      if (!opts?.silent) toast.error(message);
       return null;
     } finally {
       setSaving(false);
     }
   };
 
-  return { save, saving };
+  return { save, saving, saveError };
 };

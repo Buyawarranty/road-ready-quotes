@@ -16,6 +16,7 @@ import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 import { DealerCreditStatus } from '@/components/dealer/DealerCreditStatus';
 import { isOutstandingDealerInvoice } from '@/lib/dealerSales';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
+import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 
 const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers', Invoicing: '/dealer-portal/invoicing' };
 const series = [
@@ -51,8 +52,8 @@ export default function DealerDashboard() {
     { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(isOutstandingDealerInvoice).length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Invoicing },
   ];
   const actions = [
-    { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: '/dealer-portal/quote/pricing', primary: true },
-    { title: 'Quick quote', detail: 'Choose cover and get a price', icon: FileText, to: '/dealer-portal/quote/pricing' },
+    { title: 'Start full quote', detail: 'Vehicle, customer & checkout', icon: FilePlus, to: DEALER_NEW_QUOTE_URL, primary: true },
+    { title: 'Quick quote', detail: 'Choose cover and get a price', icon: FileText, to: DEALER_NEW_QUOTE_URL },
     { title: 'View warranties', detail: 'Dealer-issued policies', icon: Shield, to: routes.Warranties },
   ];
   const viewAll = (to: string) => <Button variant="link" className="h-auto gap-1 p-0 text-xs text-crm-orange" onClick={() => navigate(to)}>View all <ArrowRight className="h-3 w-3" /></Button>;
@@ -68,7 +69,7 @@ export default function DealerDashboard() {
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Get a quote, manage warranties and more — all in one place.</p>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Protection for vehicles up to 150,000 miles and 15 years old.</p>
         </div>
-        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`/dealer-portal/quote/pricing?reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
+        <form className="min-w-0" onSubmit={event => { event.preventDefault(); const cleaned = reg.replace(/\s/g, '').toUpperCase(); if (cleaned) navigate(`${DEALER_NEW_QUOTE_URL}&reg=${encodeURIComponent(cleaned)}`); else { setRegMissing(true); (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.focus(); } }}>
           <h2 className="mb-2 text-xs font-bold">Get a quote <span className="font-normal text-muted-foreground">— enter a vehicle registration to start</span></h2>
           <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
             <div className={`vehicle-reg-plate vehicle-reg-plate--quote vehicle-reg-plate--dashboard min-w-0 ${regMissing ? 'vehicle-reg-plate--highlight' : ''}`} onAnimationEnd={() => setRegMissing(false)}>
@@ -77,7 +78,7 @@ export default function DealerDashboard() {
             </div>
             <Button type="submit" className="motion-safe:animate-breathing motion-reduce:animate-none h-16 gap-3 px-6 text-xl font-extrabold sm:h-auto sm:min-h-16 sm:self-stretch [&_svg]:h-6 [&_svg]:w-6">Get quote <ArrowRight aria-hidden="true" /></Button>
           </div>
-          <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate('/dealer-portal/quote/pricing')}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
+          <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate(DEALER_NEW_QUOTE_URL)}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
       </section>
 

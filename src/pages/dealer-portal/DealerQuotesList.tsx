@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
+import { DEALER_NEW_QUOTE_URL, isEditableDealerQuote } from '@/lib/dealerJourneyState';
 import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -103,6 +104,10 @@ const DealerQuotesList = () => {
   };
 
   const handleResume = (q: any) => {
+    if (!isEditableDealerQuote(q.status)) {
+      navigate('/dealer-portal/warranties');
+      return;
+    }
     const addr = q.customer_address || {};
     hydrate({
       quoteId: q.id,
@@ -145,7 +150,7 @@ const DealerQuotesList = () => {
 
   const handleNewQuote = () => {
     reset();
-    navigate('/dealer-portal/quote/pricing');
+    navigate(DEALER_NEW_QUOTE_URL);
   };
 
   const formatRef = (id: string) => id.replace(/-/g, '').slice(0, 8).toUpperCase();

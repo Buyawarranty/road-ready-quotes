@@ -101,7 +101,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
     return () => { cancelled = true; };
   }, [dealer?.id]);
 
-  if (loadError) return <div className="flex min-h-screen items-center justify-center bg-background p-6"><div className="max-w-sm space-y-4 text-center"><p className="text-foreground">{loadError}</p><Button onClick={retry}>Try again</Button><Button variant="outline" onClick={() => window.location.reload()}>Reload page</Button></div></div>;
+  if (loadError) return <DealerLayout>{null}</DealerLayout>;
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -142,7 +142,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
                   Discount: {discount_pct}%
                 </span>
               )}
-              <Button
+              {step !== 5 && <Button
                 variant="default"
                 size="sm"
                 disabled={saving || !vehicle?.reg}
@@ -151,7 +151,7 @@ export const DealerJourneyLayout: React.FC<Props> = ({ step, title, subtitle, ch
               >
                 {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
                 Save & exit
-              </Button>
+              </Button>}
             </div>
           </div>
 

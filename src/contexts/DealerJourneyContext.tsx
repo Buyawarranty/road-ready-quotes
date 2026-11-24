@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { dealerJourneyWithVehicle, emptyDealerJourney, isNewDealerQuote } from '@/lib/dealerJourneyState';
 
 export interface DealerJourneyVehicle {
   reg: string;
@@ -49,18 +51,16 @@ interface DealerJourneyContextValue extends DealerJourneyState {
 
 const STORAGE_KEY = 'dealerJourney';
 
-const defaultState: DealerJourneyState = {
-  quoteId: null,
-  vehicle: null,
-  customer: null,
-  plan: null,
-  discount_pct: 0,
-};
+const defaultState = emptyDealerJourney();
 
 const DealerJourneyContext = createContext<DealerJourneyContextValue | null>(null);
 
 export const DealerJourneyProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const freshEntry = isNewDealerQuote(location.pathname, location.search);
+  const [entryKey, setEntryKey] = useState(location.key);
   const [state, setState] = useState<DealerJourneyState>(() => {
+    if (freshEntry) return emptyDealerJourney();
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       return raw ? { ...defaultState, ...JSON.parse(raw) } : defaultState;
@@ -68,6 +68,13 @@ export const DealerJourneyProvider: React.FC<{ children: ReactNode }> = ({ child
       return defaultState;
     }
   });
+
+  // React may retain this provider between quote routes. Reset before children
+  // initialise their form state, once per explicit new-warranty navigation.
+  if (freshEntry && entryKey !== location.key) {
+    setEntryKey(location.key);
+    setState(emptyDealerJourney());
+  }
 
   useEffect(() => {
     try {
@@ -80,7 +87,7 @@ export const DealerJourneyProvider: React.FC<{ children: ReactNode }> = ({ child
   const value: DealerJourneyContextValue = {
     ...state,
     setQuoteId: (quoteId) => setState((s) => ({ ...s, quoteId })),
-    setVehicle: (vehicle) => setState((s) => ({ ...s, vehicle })),
+    setVehicle: (vehicle) => setState((s) => dealerJourneyWithVehicle(s, vehicle)),
     setCustomer: (customer) => setState((s) => ({ ...s, customer })),
     setPlan: (plan) => setState((s) => ({ ...s, plan })),
     setDiscountPct: (discount_pct) => setState((s) => ({ ...s, discount_pct })),

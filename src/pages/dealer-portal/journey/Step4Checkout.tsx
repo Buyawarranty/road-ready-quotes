@@ -14,6 +14,7 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
 import { fetchCurrentTradeTerms } from '@/lib/dealerTradeTerms';
+import { dealerRequest } from '@/lib/dealerRequest';
 import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
@@ -72,8 +73,10 @@ const Step4Checkout: React.FC = () => {
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [embeddedPayment, setEmbeddedPayment] = useState<{ customerId: string; sessionId: string } | null>(null);
   const [creditBlocked, setCreditBlocked] = useState(false);
   const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
+  const [eligibilityError, setEligibilityError] = useState(false);
   const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [promoCode, setPromoCode] = useState('');
@@ -92,16 +95,23 @@ const Step4Checkout: React.FC = () => {
   // Invoice eligibility and introductory offer use come from server-enforced dealer rules.
   const refreshEligibility = useCallback(async () => {
     if (!dealer?.id) return;
-    const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', {
-      p_dealer_id: dealer.id,
-    });
-    if (error || !data) return;
-    const e = data as PayLaterEligibility;
-    setEligibility(e);
-    if (e.term_days) setTermDays(e.term_days);
-    const blocked = !e.eligible;
-    setCreditBlocked(blocked);
-    if (blocked) setMethod('pay_now');
+    setEligibilityError(false);
+    try {
+      const { data, error } = await dealerRequest<{ data: PayLaterEligibility | null; error: unknown }>(signal => (supabase.rpc as any)('get_dealer_paylater_eligibility', {
+        p_dealer_id: dealer.id,
+      }).abortSignal(signal), 'Account billing needs to be checked again.');
+      if (error || !data) throw new Error('Account billing needs to be checked again.');
+      const e = data as PayLaterEligibility;
+      setEligibility(e);
+      if (e.term_days) setTermDays(e.term_days);
+      const blocked = !e.eligible;
+      setCreditBlocked(blocked);
+      if (blocked) setMethod('pay_now');
+    } catch {
+      setEligibilityError(true);
+      setCreditBlocked(true);
+      setMethod('pay_now');
+    }
   }, [dealer?.id]);
 
   useEffect(() => { void refreshEligibility(); }, [refreshEligibility]);
@@ -110,13 +120,20 @@ const Step4Checkout: React.FC = () => {
     if (!dealer?.id) return;
     let cancelled = false;
     (async () => {
-      const current = await fetchCurrentTradeTerms(supabase);
-      const { data } = await (supabase as any).from('dealer_trade_terms_acceptances')
-        .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', current.version).maybeSingle();
-      if (cancelled) return;
-      const accepted = !!data;
-      setTermsAccepted(accepted);
-      if (!accepted) setTermsOpen(true);
+      try {
+        const current = await dealerRequest(() => fetchCurrentTradeTerms(supabase), 'Trade terms need to be checked again.');
+        const { data, error } = await dealerRequest<{ data: { dealer_id: string } | null; error: unknown }>(signal => (supabase as any).from('dealer_trade_terms_acceptances')
+          .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', current.version).abortSignal(signal).maybeSingle(), 'Trade terms need to be checked again.');
+        if (error) throw error;
+        if (cancelled) return;
+        const accepted = !!data;
+        setTermsAccepted(accepted);
+        if (!accepted) setTermsOpen(true);
+      } catch {
+        if (cancelled) return;
+        setTermsAccepted(false);
+        setSubmitError('Trade terms could not be checked. Select Review trade terms to continue, or contact dealer support.');
+      }
     })();
     return () => { cancelled = true; };
   }, [dealer?.id]);
@@ -161,7 +178,8 @@ const Step4Checkout: React.FC = () => {
   };
 
   const createRecord = async (preview = false) => {
-    const { data, error } = await supabase.functions.invoke('dealer-create-checkout', {
+    const { data, error } = await dealerRequest(signal => supabase.functions.invoke('dealer-create-checkout', {
+      signal,
       body: {
         quote_id: quoteId,
         dealer_id: dealer.id,
@@ -191,9 +209,9 @@ const Step4Checkout: React.FC = () => {
         preview_only: preview,
         embedded: method === 'pay_now' && !!stripePromise && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches),
       },
-    });
+    }), 'Checkout is taking longer than expected. Check your warranties and payment status before trying payment again.');
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; method?: string; code: string; discount_amount: number; total: number };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; session_id?: string; method?: string; code: string; discount_amount: number; total: number };
   };
 
   const applyPromo = async () => {
@@ -228,6 +246,8 @@ const Step4Checkout: React.FC = () => {
 
       if (method === 'pay_now') {
         if (data?.client_secret && stripePromise) {
+          if (!data.customer_id || !data.session_id) throw new Error('Payment details are missing. Check your warranties before trying again.');
+          setEmbeddedPayment({ customerId: data.customer_id, sessionId: data.session_id });
           setClientSecret(data.client_secret);
           setSubmitting(false);
           return;
@@ -390,7 +410,7 @@ const Step4Checkout: React.FC = () => {
               )}
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">Available once you've paid for {invoiceRequired} warranties with no cancellations or refunds. Approved by our team.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">{termDays}-day invoicing</span><span className="text-sm text-muted-foreground">{eligibility ? `Available once you've paid for ${invoiceRequired} warranties with no cancellations or refunds. Approved by our team.` : 'Available for qualifying dealerships, subject to approval by our team.'}</span></span>
               </li>
             </ul>
             <a href="/dealer-portal/trade-terms" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-crm-blue">View trade terms & conditions <ExternalLink className="h-3.5 w-3.5" /></a>
@@ -479,6 +499,7 @@ const Step4Checkout: React.FC = () => {
             </div>
           </div>
 
+          {eligibilityError && <div className="mt-4 space-y-2"><DealerFieldError>Account billing and free-offer availability could not be checked. Retry before paying if you are expecting either.</DealerFieldError><Button variant="outline" onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button></div>}
           {submitError && <div className="mt-4"><DealerFieldError>{submitError}</DealerFieldError></div>}
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">
@@ -508,7 +529,10 @@ const Step4Checkout: React.FC = () => {
           <DialogTitle>Pay securely by card</DialogTitle>
           <DialogDescription>Enter your card details below. You stay on this page.</DialogDescription>
           {clientSecret && stripePromise && (
-            <EmbeddedCheckoutProvider key={clientSecret} stripe={stripePromise} options={{ clientSecret }}>
+            <EmbeddedCheckoutProvider key={clientSecret} stripe={stripePromise} options={{ clientSecret, onComplete: () => {
+              if (!embeddedPayment) return;
+              navigate(`/dealer-portal/quote/confirmation?method=pay_now&id=${encodeURIComponent(embeddedPayment.customerId)}&session_id=${encodeURIComponent(embeddedPayment.sessionId)}`);
+            } }}>
               <div className="min-h-[480px] w-full min-w-0"><EmbeddedCheckout /></div>
             </EmbeddedCheckoutProvider>
           )}
