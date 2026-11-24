@@ -152,7 +152,7 @@ Deno.serve(async (req: Request) => {
     if (!EMAIL_RE.test(to)) return json({ error: 'Enter a valid email address' }, 400);
     const { template } = await loadTemplate(admin);
     const login = recipientType === 'customer' && action !== 'preview'
-      ? await ensureCustomerPortalLogin(admin, to, { policy_number: (customer as any).warranty_number }).catch(() => null)
+      ? await ensureCustomerPortalLogin(admin, to, { policy_number: (customer as any).warranty_number, customer_id: customer.id }).catch(() => null)
       : recipientType === 'customer' ? { email: to, password: '(created when sent)' } : null;
     const email = buildDealerWarrantyEmail({
       login,

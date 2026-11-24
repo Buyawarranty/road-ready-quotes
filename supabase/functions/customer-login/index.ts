@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2'
+import { ensureSignedInCustomerPortalPolicies } from '../_shared/customerPortalPolicy.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -107,6 +108,12 @@ serve(async (req) => {
       );
     }
 
+    // Identity comes from successful authentication, never an unverified request email.
+    if (authData.user.email) {
+      try { await ensureSignedInCustomerPortalPolicies(supabaseAdmin, authData.user.email); }
+      catch (error) { console.error('Customer portal recovery unavailable', error instanceof Error ? error.message : 'Unknown error'); }
+    }
+
     // Check if user has a customer role (optional - for role-based access)
     const { data: roleData } = await supabaseAdmin
       .from('user_roles')
@@ -117,8 +124,11 @@ serve(async (req) => {
     // Get customer data if exists
     const { data: customerData } = await supabaseAdmin
       .from('customers')
-      .select('*')
+      .select('id, name, email, registration_plate, brand')
+      .eq('brand', 'pandaprotect')
       .eq('email', email)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     console.log('Customer login successful for:', email);

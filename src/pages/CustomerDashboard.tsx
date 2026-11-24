@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { SEOHead } from '@/components/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,6 +24,9 @@ import { useImpersonation } from '@/hooks/useImpersonation';
 import { ImpersonationBanner } from '@/components/ImpersonationBanner';
 import { AddressAutocomplete, AddressData as AutocompleteAddressData } from '@/components/ui/address-autocomplete';
 import { CLAIMS_PHONE } from '@/lib/contactNumbers';
+import { customerPortalPaymentAmount, loadCustomerPortalPolicies } from '@/lib/customerPortalPolicies';
+import { dealerRequest } from '@/lib/dealerRequest';
+import { PANDA_WARRANTY_DOCUMENTS } from '../../supabase/functions/_shared/dealerWarrantyDocuments';
 
 
 interface CustomerPolicy {
@@ -40,7 +43,7 @@ interface CustomerPolicy {
   pdf_basic_url?: string;
   pdf_gold_url?: string;
   pdf_platinum_url?: string;
-  payment_amount?: number;
+  payment_amount?: number | null;
   stripe_session_id?: string;
   bumper_order_id?: string;
   document_url?: string; // Add this for fetched documents
@@ -73,6 +76,7 @@ interface CustomerPolicy {
   customer_id?: string;
   customers?: {
     id: string;
+    dealer_id?: string | null;
     vehicle_make?: string;
     vehicle_model?: string;
     vehicle_year?: string;
@@ -123,6 +127,9 @@ const CustomerDashboard = () => {
   const [policies, setPolicies] = useState<CustomerPolicy[]>([]);
   const [selectedPolicy, setSelectedPolicy] = useState<CustomerPolicy | null>(null);
   const [policyLoading, setPolicyLoading] = useState(true);
+  const [policyError, setPolicyError] = useState<string | null>(null);
+  const policyRequest = useRef(0);
+  const policyIdentity = useRef('');
   const [editingAddress, setEditingAddress] = useState(false);
   const [editingPassword, setEditingPassword] = useState(false);
   const [showSupportForm, setShowSupportForm] = useState(false);
@@ -207,6 +214,17 @@ const CustomerDashboard = () => {
       console.log("⏳ Still loading auth state, waiting...");
       return;
     }
+
+    const identityKey = JSON.stringify(isImpersonating
+      ? ['view-as', impersonatedCustomer?.customerId, impersonatedCustomer?.customerEmail]
+      : ['customer', user?.id, user?.email]);
+    if (policyIdentity.current !== identityKey) {
+      policyIdentity.current = identityKey;
+      setPolicies([]);
+      setSelectedPolicy(null);
+      setCustomerData(null);
+      setPolicyError(null);
+    }
     
     // If user is logged in or impersonating, fetch their policies
     if (user || isImpersonating) {
@@ -219,7 +237,7 @@ const CustomerDashboard = () => {
       }
       
       // Set up real-time updates for warranties and customer data changes
-      const effectiveEmail = user?.email || impersonatedCustomer?.customerEmail;
+      const effectiveEmail = isImpersonating ? impersonatedCustomer?.customerEmail : user?.email;
       const channel = supabase
         .channel('customer-data-changes')
         .on(
@@ -264,11 +282,17 @@ const CustomerDashboard = () => {
         .subscribe();
 
       return () => {
+        policyRequest.current += 1;
         supabase.removeChannel(channel);
       };
     } else {
       console.log("❌ No user and not impersonating, showing login form");
       // User not logged in, show login form (don't redirect)
+      policyRequest.current += 1;
+      setPolicies([]);
+      setSelectedPolicy(null);
+      setCustomerData(null);
+      setPolicyError(null);
       setPolicyLoading(false);
     }
   }, [user, loading, isImpersonating, impersonatedCustomer]);
@@ -313,7 +337,7 @@ const CustomerDashboard = () => {
         }
       });
 
-      console.log("Login response:", { data, error });
+
 
       // supabase.functions.invoke puts non-2xx responses in `data` (not `error`)
       // so we must check both `error` AND `data.success === false` / `data.error`
@@ -349,7 +373,7 @@ const CustomerDashboard = () => {
           refresh_token: data.session.refresh_token
         });
         
-        console.log("Session set result:", { sessionData, sessionError });
+
         
         if (sessionError) {
           console.error("Session set error:", sessionError);
@@ -366,11 +390,9 @@ const CustomerDashboard = () => {
           description: "You have been signed in successfully.",
         });
         
-        // Immediately fetch policies after successful login
-        console.log("Fetching policies immediately after login...");
-        await fetchPolicies();
+        // The auth effect fetches with the newly established user, not this stale render.
       } else {
-        console.error("No user or session in response:", data);
+        console.error("Customer login returned no usable user session.");
         toast({
           title: "Login Failed",
           description: "Something went wrong. Please try again or reset your password.",
@@ -419,30 +441,36 @@ const CustomerDashboard = () => {
 
   // Fetch documents for policies
   const fetchPolicyDocuments = async (policies: CustomerPolicy[]): Promise<CustomerPolicy[]> => {
+    const dealerPolicies = policies.map(policy => policy.customers?.dealer_id ? {
+      ...policy,
+      document_url: PANDA_WARRANTY_DOCUMENTS[0].url,
+      pdf_platinum_url: PANDA_WARRANTY_DOCUMENTS[0].url,
+    } : policy);
+    if (dealerPolicies.every(policy => policy.customers?.dealer_id)) return dealerPolicies;
     try {
-      console.log("Fetching documents for policies");
       
       // Get all unique plan types
       const planTypes = [...new Set(policies.map(p => mapPlanTypeToDocumentType(p.plan_type)))];
       console.log("Plan types to fetch documents for:", planTypes);
       
       // Fetch documents for these plan types - get the most recent ones
-      const { data: documents, error } = await supabase
+      const { data: documents, error } = await dealerRequest(signal => supabase
         .from('customer_documents')
         .select('*')
         .in('plan_type', planTypes)
         .eq('vehicle_type', 'standard')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }).abortSignal(signal), 'Documents are taking longer than expected.', 10000);
 
       if (error) {
         console.error('Error fetching documents:', error);
-        return policies;
+        return dealerPolicies;
       }
 
       console.log("Found documents:", documents);
 
       // Attach document URLs to policies
-      const policiesWithDocuments = policies.map(policy => {
+      const policiesWithDocuments = dealerPolicies.map(policy => {
+        if (policy.customers?.dealer_id) return policy;
         const documentType = mapPlanTypeToDocumentType(policy.plan_type);
         const document = documents?.find(doc => doc.plan_type === documentType);
         
@@ -457,7 +485,7 @@ const CustomerDashboard = () => {
       
     } catch (error) {
       console.error('Error in fetchPolicyDocuments:', error);
-      return policies;
+      return dealerPolicies;
     }
   };
 
@@ -483,203 +511,43 @@ const CustomerDashboard = () => {
   };
 
   const fetchPolicies = async () => {
+    const requestId = ++policyRequest.current;
+    const effectiveEmail = isImpersonating ? impersonatedCustomer?.customerEmail : user?.email;
+    setPolicyLoading(true);
+    setPolicyError(null);
     try {
-      setPolicyLoading(true);
-      const effectiveEmail = isImpersonating ? impersonatedCustomer?.customerEmail : user?.email;
-      
-      console.log("=== FETCH POLICIES DEBUG ===");
-      console.log("User:", user);
-      console.log("Effective email:", effectiveEmail);
-      console.log("Is impersonating:", isImpersonating);
-      
-      if (!effectiveEmail && !user?.id) {
-        console.log("ERROR: No user or email available");
-        setPolicyLoading(false);
-        setPolicies([]);
-        return;
-      }
-
-      // Try multiple query strategies
-      let data: any[] | null = null;
-      let error: any = null;
-
-      // Strategy 1: Try by email first (most reliable) - using case-insensitive match
-      if (effectiveEmail) {
-        console.log("Strategy 1: Querying by email:", effectiveEmail);
-        let query = supabase
-          .from('customer_policies')
-          .select('*')
-          .ilike('email', effectiveEmail);
-        
-        // When impersonating, show ALL policies including soft-deleted ones
-        if (!isImpersonating) {
-          query = query.or('is_deleted.is.null,is_deleted.eq.false');
-        }
-        
-        const result = await query.order('created_at', { ascending: false });
-        
-        console.log("Email query result:", result);
-        data = result.data;
-        error = result.error;
-      }
-
-      // Strategy 2: If no results, try by user_id (for normal login)
-      if ((!data || data.length === 0) && user?.id && !isImpersonating) {
-        console.log("Strategy 2: Querying by user_id:", user.id);
-        const result = await supabase
-          .from('customer_policies')
-          .select('*')
-          .eq('user_id', user.id)
-          .or('is_deleted.is.null,is_deleted.eq.false')
-          .order('created_at', { ascending: false });
-        
-        console.log("User ID query result:", result);
-        data = result.data;
-        error = result.error;
-      }
-
-      // Strategy 3: When impersonating and email didn't match, try by customer_id
-      // This handles cases where the policy email has typos but customer_id is correct
-      if ((!data || data.length === 0) && isImpersonating && impersonatedCustomer?.customerId) {
-        console.log("Strategy 3: Querying by customer_id (impersonation fallback):", impersonatedCustomer.customerId);
-        let query = supabase
-          .from('customer_policies')
-          .select('*')
-          .eq('customer_id', impersonatedCustomer.customerId);
-        
-        const result = await query.order('created_at', { ascending: false });
-        
-        console.log("Customer ID query result:", result);
-        data = result.data;
-        error = result.error;
-      }
-      
-      if (error && error.code !== 'PGRST116') {
-        console.error('ERROR fetching policies:', error);
-        toast({
-          title: "Error fetching policies",
-          description: error.message,
-          variant: "destructive",
-        });
-        setPolicyLoading(false);
-        setPolicies([]);
-        return;
-      }
-
-      console.log("Final data check:", { hasData: !!data, count: data?.length });
-
-      if (data && data.length > 0) {
-        console.log("SUCCESS: Found", data.length, "policies");
-        
-        // Fetch customer data separately
-        const customerIds = [...new Set(data.map(p => p.customer_id).filter(Boolean))];
-        console.log("Customer IDs to fetch:", customerIds);
-        
-        if (customerIds.length > 0) {
-        const { data: customersData } = await supabase
-            .from('customers')
-            .select('id, vehicle_make, vehicle_model, vehicle_year, vehicle_fuel_type, vehicle_transmission, registration_plate, mileage, phone, first_name, last_name, flat_number, building_name, building_number, street, town, county, postcode, country, labour_rate')
-            .in('id', customerIds);
-          
-          console.log("Customers data:", customersData);
-          
-          // Attach customer data to policies
-          if (customersData) {
-            data = data.map(policy => ({
-              ...policy,
-              customers: customersData.find(c => c.id === policy.customer_id) || null
-            }));
-          }
-        }
-        
-        // Fetch documents for policies
-        const policiesWithDocuments = await fetchPolicyDocuments(data);
-        console.log("Policies with documents:", policiesWithDocuments);
-        
-        // Sort policies: prioritize Stripe/Bumper-verified over manual admin entries,
-        // then by created_at descending within each group
-        const sortedPolicies = [...policiesWithDocuments].sort((a, b) => {
-          const aIsManual = a.is_manual_entry === true;
-          const bIsManual = b.is_manual_entry === true;
-          // Verified (non-manual) policies come first
-          if (aIsManual !== bIsManual) return aIsManual ? 1 : -1;
-          // Within same group, newest first
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        });
-        
-        setPolicies(sortedPolicies);
-        setSelectedPolicy(sortedPolicies[0]);
-        
-        // Set customer data from the first policy
-        const firstPolicy = policiesWithDocuments[0];
-        if (firstPolicy?.customers) {
-          const customerData = firstPolicy.customers;
-          setCustomerData(customerData);
-          
-          // Set address from customer data
-          setAddress(prev => ({
-            ...prev,
-            phone: customerData.phone || '',
-            firstName: customerData.first_name || '',
-            lastName: customerData.last_name || '',
-            flatNumber: customerData.flat_number || '',
-            buildingName: customerData.building_name || '',
-            buildingNumber: customerData.building_number || '',
-            street: customerData.street || '',
-            city: customerData.town || '',
-            county: (customerData as any).county || '',
-            postcode: customerData.postcode || '',
-            country: customerData.country || 'United Kingdom'
-          }));
-        }
-
-        checkRenewalNotification(policiesWithDocuments[0]);
-      } else {
-        console.log("WARNING: No policies found");
-        setPolicies([]);
-        setSelectedPolicy(null);
-        
-        // When impersonating, still fetch customer data even without policies
-        if (isImpersonating && effectiveEmail) {
-          console.log("Impersonating with no policies - fetching customer data directly");
-          const { data: custData } = await supabase
-            .from('customers')
-            .select('id, vehicle_make, vehicle_model, vehicle_year, vehicle_fuel_type, vehicle_transmission, registration_plate, mileage, phone, first_name, last_name, flat_number, building_name, building_number, street, town, county, postcode, country, labour_rate')
-            .ilike('email', effectiveEmail)
-            .limit(1)
-            .maybeSingle();
-          
-          if (custData) {
-            console.log("Found customer data for impersonation:", custData);
-            setCustomerData(custData);
-            setAddress(prev => ({
-              ...prev,
-              phone: custData.phone || '',
-              firstName: custData.first_name || '',
-              lastName: custData.last_name || '',
-              flatNumber: custData.flat_number || '',
-              buildingName: custData.building_name || '',
-              buildingNumber: custData.building_number || '',
-              street: custData.street || '',
-              city: custData.town || '',
-              county: (custData as any).county || '',
-              postcode: custData.postcode || '',
-              country: custData.country || 'United Kingdom'
-            }));
-          }
-        }
-      }
-    } catch (error) {
-      console.error('EXCEPTION in fetchPolicies:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch policies. Please try again.",
-        variant: "destructive",
+      const records = await loadCustomerPortalPolicies(supabase, {
+        email: effectiveEmail,
+        userId: user?.id,
+        customerId: impersonatedCustomer?.customerId,
+        impersonating: isImpersonating,
       });
-      setPolicies([]);
+      if (requestId !== policyRequest.current) return;
+      let data: CustomerPolicy[] = records;
+      const customerIds = [...new Set(records.map(policy => policy.customer_id).filter((id): id is string => Boolean(id)))];
+      if (customerIds.length > 0) {
+        const result = await dealerRequest(signal => supabase.from('customers')
+          .select('id, dealer_id, vehicle_make, vehicle_model, vehicle_year, vehicle_fuel_type, vehicle_transmission, registration_plate, mileage, phone, first_name, last_name, flat_number, building_name, building_number, street, town, county, postcode, country, labour_rate')
+          .in('id', customerIds).abortSignal(signal), 'Your vehicle details are taking longer than expected. Please try again.');
+        if (result.error) throw new Error('Your vehicle details could not be loaded. Please try again.');
+        data = data.map(policy => ({ ...policy, customers: result.data?.find(customer => customer.id === policy.customer_id) || undefined }));
+      }
+      const withDocuments = await fetchPolicyDocuments(data);
+      if (requestId !== policyRequest.current) return;
+      const sorted = [...withDocuments].sort((a, b) => {
+        if ((a.is_manual_entry === true) !== (b.is_manual_entry === true)) return a.is_manual_entry ? 1 : -1;
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+      });
+      setPolicies(sorted);
+      setSelectedPolicy(previous => sorted.find(policy => policy.id === previous?.id) || sorted[0] || null);
+      if (sorted.length === 0) setCustomerData(null);
+      if (sorted[0]) checkRenewalNotification(sorted[0]);
+    } catch (error) {
+      if (requestId !== policyRequest.current) return;
+      setPolicyError(error instanceof Error ? error.message : 'Your warranty details could not be loaded. Please try again.');
+      // Preserve any previously loaded warranty instead of reporting an empty account on a failed refresh.
     } finally {
-      setPolicyLoading(false);
-      console.log("=== FETCH POLICIES COMPLETE ===");
+      if (requestId === policyRequest.current) setPolicyLoading(false);
     }
   };
 
@@ -1033,7 +901,7 @@ const CustomerDashboard = () => {
     navigate('/');
   };
 
-  if (loading || policyLoading) {
+  if (loading || (policyLoading && policies.length === 0)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -1361,72 +1229,37 @@ const CustomerDashboard = () => {
           </Alert>
         )}
 
+        {policyError && policies.length > 0 && (
+          <Alert className="mb-6 border-destructive">
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span>{policyError}</span>
+              <Button variant="outline" onClick={() => void fetchPolicies()} disabled={policyLoading}>
+                {policyLoading ? 'Loading…' : 'Try again'}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
         {policies.length === 0 ? (
-          <Card>
+          <Card className="mx-auto max-w-2xl">
             <CardHeader>
-              <CardTitle>No Policies Found</CardTitle>
-              <CardDescription>
-                We couldn't find any active policies for your account. 
+              <CardTitle className="text-xl">{policyError ? 'Warranty details temporarily unavailable' : 'Your warranties'}</CardTitle>
+              <CardDescription className="text-base">
+                {policyError || 'No warranties are linked to this sign-in email yet. If your warranty has been confirmed, contact us with your vehicle registration and warranty reference.'}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="text-sm text-gray-600 space-y-2 bg-gray-50 p-4 rounded">
-                  <p><strong>Debug Info:</strong></p>
-                  {isImpersonating && impersonatedCustomer ? (
-                    <>
-                      <p>Impersonating: {impersonatedCustomer.customerName}</p>
-                      <p>Customer Email: {impersonatedCustomer.customerEmail}</p>
-                      <p>Customer ID: {impersonatedCustomer.customerId}</p>
-                      <p>Admin Email: {user?.email || 'Not set'}</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>User ID: {user?.id || 'Not set'}</p>
-                      <p>Email: {user?.email || 'Not set'}</p>
-                    </>
-                  )}
-                  <p>Auth Status: {loading ? 'Loading...' : user ? 'Authenticated' : 'Not authenticated'}</p>
-                  <p>Policies Loading: {policyLoading ? 'Yes' : 'No'}</p>
-                </div>
-                <div className="flex gap-4">
-                  <Button 
-                    onClick={async () => {
-                      console.log("Manual refresh clicked");
-                      console.log("Current user:", user);
-                      console.log("Current email:", user?.email);
-                      await fetchPolicies();
-                    }} 
-                    variant="outline"
-                    disabled={policyLoading}
-                  >
-                    {policyLoading ? 'Loading...' : 'Refresh Policy Data'}
-                  </Button>
-                  <Button 
-                    onClick={async () => {
-                      // Test direct query
-                      console.log("Testing direct query...");
-                      const { data, error } = await supabase
-                        .from('customer_policies')
-                        .select('*')
-                        .eq('email', user?.email);
-                      console.log("Direct query result:", { data, error, count: data?.length });
-                      
-                      toast({
-                        title: "Test Query Result",
-                        description: error ? `Error: ${error.message}` : `Found ${data?.length || 0} policies`,
-                        variant: error ? "destructive" : "default"
-                      });
-                    }}
-                    variant="secondary"
-                  >
-                    Test Database Query
-                  </Button>
-                  <Button onClick={() => setShowSupportForm(true)} variant="default">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Contact Support
-                  </Button>
-                </div>
+            <CardContent className="space-y-5">
+              <p className="break-words text-sm text-muted-foreground">
+                Signed in as <span className="font-medium text-foreground">{isImpersonating ? impersonatedCustomer?.customerEmail : user?.email}</span>
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button onClick={() => void fetchPolicies()} variant="outline" disabled={policyLoading} className="w-full min-w-0">
+                  {policyLoading ? 'Loading…' : 'Refresh warranties'}
+                </Button>
+                <Button onClick={() => setShowSupportForm(true)} className="w-full min-w-0">
+                  <MessageSquare className="mr-2 h-4 w-4 shrink-0" />
+                  Contact support
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -1473,6 +1306,7 @@ const CustomerDashboard = () => {
                                 const policyDate = new Date(policy.policy_start_date).toLocaleDateString('en-GB');
                                 const warrantyRef = policy.warranty_number || policy.policy_number;
                                 const isSelected = selectedPolicy?.id === policy.id;
+                                const customerPayment = customerPortalPaymentAmount(policy);
                                 
                                 return (
                                   <button
@@ -1496,7 +1330,7 @@ const CustomerDashboard = () => {
                                       )}
                                     </div>
                                     <div className="mt-1 text-xs text-gray-500 ml-0">
-                                      Ref: {warrantyRef} · Started: {policyDate} · £{policy.payment_amount?.toFixed(2) || '0.00'}
+                                      Ref: {warrantyRef} · Started: {policyDate}{customerPayment != null ? ` · £${customerPayment.toFixed(2)}` : ''}
                                     </div>
                                   </button>
                                 );
@@ -1659,12 +1493,12 @@ const CustomerDashboard = () => {
                                   </p>
                                 )}
                               </div>
-                              <div>
-                                <Label className="text-xs sm:text-sm font-medium text-gray-500">Amount Paid</Label>
-                                <p className="font-semibold text-sm sm:text-base text-green-700">
-                                  {selectedPolicy?.payment_amount ? `£${selectedPolicy.payment_amount.toFixed(2)}` : 'N/A'}
-                                </p>
-                              </div>
+                              {customerPortalPaymentAmount(selectedPolicy) != null && (
+                                <div>
+                                  <Label className="text-xs sm:text-sm font-medium text-muted-foreground">Amount paid</Label>
+                                  <p className="font-semibold text-sm sm:text-base text-foreground">£{customerPortalPaymentAmount(selectedPolicy)?.toFixed(2)}</p>
+                                </div>
+                              )}
                               <div>
                                 <Label className="text-xs sm:text-sm font-medium text-gray-500">Payment Method</Label>
                                 <p className="font-semibold text-sm sm:text-base">
@@ -1681,6 +1515,10 @@ const CustomerDashboard = () => {
                                 size="sm"
                                 className="bg-orange-500 hover:bg-orange-600 text-white"
                                 onClick={async () => {
+                                  if (selectedPolicy?.customers?.dealer_id) {
+                                    window.open(PANDA_WARRANTY_DOCUMENTS[1].url, '_blank', 'noopener,noreferrer');
+                                    return;
+                                  }
                                   const { data } = await supabase
                                     .from('customer_documents')
                                     .select('file_url')
@@ -1707,7 +1545,8 @@ const CustomerDashboard = () => {
                                 size="sm"
                                 className="bg-orange-500 hover:bg-orange-600 text-white"
                                 onClick={() => {
-                                  const pdfUrl = getPolicyPdf(selectedPolicy!);
+                                  if (!selectedPolicy) return;
+                                  const pdfUrl = getPolicyPdf(selectedPolicy);
                                   if (pdfUrl) {
                                     window.open(pdfUrl, '_blank');
                                   } else {

@@ -1,4 +1,5 @@
 import { trackDealerSaleKlaviyo } from './klaviyoDealer.ts';
+import { ensureDealerCustomerPortalPolicy } from './customerPortalPolicy.ts';
 
 export type DealerSaleMethod = 'pay_now' | 'worldpay' | 'invoice' | 'intro_free';
 
@@ -25,6 +26,8 @@ export async function syncDealerSale(
     p_quote_status: input.quoteStatus,
   });
   if (error) throw new Error(`Unable to complete the dealer sale: ${error.message}`);
+  // Recover a missing portal row even when the dealer warranty already existed on a retry.
+  await ensureDealerCustomerPortalPolicy(admin, input.customerId);
   return data;
 }
 

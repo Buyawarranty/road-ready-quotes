@@ -98,7 +98,7 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
     if (templateError) throw templateError;
     let login: { email: string; password: string | null } | null = null;
-    try { login = await ensureCustomerPortalLogin(supabase, recipients.customer, { policy_number: c.warranty_number }); }
+    try { login = await ensureCustomerPortalLogin(supabase, recipients.customer, { policy_number: c.warranty_number, customer_id: c.id }); }
     catch (error) { console.error('customer login setup failed', error); }
     const customerEmail = buildDealerWarrantyEmail({
       login,

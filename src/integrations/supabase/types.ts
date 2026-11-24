@@ -16435,6 +16435,10 @@ export type Database = {
         Args: { p_agent_id: string; p_override?: boolean }
         Returns: Json
       }
+      ensure_dealer_customer_portal_policy: {
+        Args: { p_customer_id: string }
+        Returns: string
+      }
       evaluate_agent_lead_freeze: {
         Args: never
         Returns: {

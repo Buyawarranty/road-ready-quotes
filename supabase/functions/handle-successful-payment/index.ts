@@ -3,6 +3,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
+import { assertCustomerPolicySaved } from "../_shared/customerPortalPolicy.ts";
 
 // Import addons utility functions
 const getAutoIncludedAddOns = (paymentType: string, planType?: string): string[] => {
@@ -830,6 +831,7 @@ serve(async (req) => {
       const { error: policyError } = await supabaseClient
         .from('customer_policies')
         .insert(policyRecord);
+      assertCustomerPolicySaved(policyError);
 
       // Update customer record with final addon values is no longer needed since they're set correctly from the start
     }

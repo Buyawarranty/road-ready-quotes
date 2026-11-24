@@ -1,5 +1,6 @@
 // Gives a dealer-sold customer a customer-dashboard login and records sent emails.
 // Existing accounts are never given a new password (the address may belong to a dealer or staff member).
+import { ensureDealerCustomerPortalPolicy } from './customerPortalPolicy.ts';
 function tempPassword(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   const bytes = crypto.getRandomValues(new Uint8Array(10));
@@ -7,6 +8,7 @@ function tempPassword(): string {
 }
 
 export async function ensureCustomerPortalLogin(admin: any, email: string, meta: Record<string, unknown> = {}) {
+  if (typeof meta.customer_id === 'string') await ensureDealerCustomerPortalPolicy(admin, meta.customer_id);
   const address = email.trim().toLowerCase();
   const { data: existing } = await admin.from('welcome_emails')
     .select('temporary_password, password_reset_by_user')
