@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
+import { dealerQuoteProgress } from '@/lib/dealerJourneyState';
 import { Card, CardContent } from '@/components/ui/card';
 import { Car, User as UserIcon, Gauge, Tag, Calendar } from 'lucide-react';
 import {
@@ -40,11 +41,13 @@ const DealerAnalytics: React.FC = () => {
 
   const { data: quotes = [] } = useQuery({
     queryKey: ['dealer-analytics-quotes', dealer?.id],
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     queryFn: async () => {
       if (!dealer?.id) return [];
       const { data } = await supabase
         .from('dealer_quotes')
-        .select('id, status, created_at')
+        .select('id, status, paid_at, created_at')
         .eq('dealer_id', dealer.id);
       return data || [];
     },
@@ -105,7 +108,7 @@ const DealerAnalytics: React.FC = () => {
     }));
   }, [warranties]);
 
-  const uncompletedQuotes = quotes.filter((q: any) => q.status !== 'won' && q.status !== 'lost').length;
+  const uncompletedQuotes = quotes.filter(q => dealerQuoteProgress(q).canResume).length;
 
   return (
     <DealerLayout>

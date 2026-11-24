@@ -7,10 +7,12 @@ export function useDealerDashboard(dealerId?: string) {
     queryKey: ['dealer-dashboard', dealerId],
     enabled: !!dealerId,
     staleTime: 30000,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     queryFn: async () => {
       if (!dealerId) throw new Error('Dealer account required');
       const [quotes, customers, claims] = await Promise.all([
-        supabase.from('dealer_quotes').select('id, created_at, vehicle_reg, vehicle_make, vehicle_model, customer_name, dealer_price, price, status').eq('dealer_id', dealerId).order('created_at', { ascending: false }),
+        supabase.from('dealer_quotes').select('id, created_at, vehicle_reg, vehicle_make, vehicle_model, customer_name, dealer_price, price, status, paid_at').eq('dealer_id', dealerId).order('created_at', { ascending: false }),
         supabase.from('customers').select('id, name, registration_plate, vehicle_make, vehicle_model, signup_date, created_at, status, payment_status, payment_due_date, payment_type, is_deleted').eq('dealer_id', dealerId).order('signup_date', { ascending: false }),
         supabase.from('dealer_admin_claims').select('id, created_at, registration_plate, vehicle_make, vehicle_model, customer_name, status').eq('dealer_id', dealerId).order('created_at', { ascending: false }),
       ]);

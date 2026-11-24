@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
-import { DEALER_NEW_QUOTE_URL, isEditableDealerQuote } from '@/lib/dealerJourneyState';
+import { DEALER_NEW_QUOTE_URL, dealerQuoteProgress, EDITABLE_DEALER_QUOTE_STATUSES } from '@/lib/dealerJourneyState';
 import { dealerRequest } from '@/lib/dealerRequest';
 import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -60,6 +60,9 @@ const DealerQuotesList = () => {
     },
     enabled: !!dealer?.id,
     retry: false,
+    staleTime: 0,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
   });
 
   const filtered = useMemo(() => {
@@ -96,9 +99,11 @@ const DealerQuotesList = () => {
     setPageJump('');
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (q: any) => {
+    if (!dealerQuoteProgress(q).canResume) return;
     if (!confirm('Delete this quote?')) return;
-    const { error } = await supabase.from('dealer_quotes').delete().eq('id', id);
+    const { error } = await supabase.from('dealer_quotes').delete().eq('id', q.id)
+      .eq('dealer_id', dealer?.id || '').in('status', EDITABLE_DEALER_QUOTE_STATUSES).is('paid_at', null);
     if (error) {
       toast.error('Failed to delete quote');
       return;
@@ -108,8 +113,9 @@ const DealerQuotesList = () => {
   };
 
   const handleResume = (q: any) => {
-    if (!isEditableDealerQuote(q.status, q.paid_at)) {
-      navigate('/dealer-portal/warranties');
+    const progress = dealerQuoteProgress(q);
+    if (!progress.canResume) {
+      navigate(progress.warrantyHref);
       return;
     }
     const addr = q.customer_address || {};
@@ -267,6 +273,7 @@ const DealerQuotesList = () => {
           paginated.map((q: any) => {
             const warranty = warrantyType(q);
             const WarrantyIcon = warranty.Icon;
+            const progress = dealerQuoteProgress(q);
             return (
             <div
               key={q.id}
@@ -303,13 +310,11 @@ const DealerQuotesList = () => {
                     </h3>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">Step:</span>{' '}
-                    <span className="text-foreground md:text-crm-orange font-medium">
-                      {q.status === 'awaiting_panda'
+                    <span className="font-semibold text-foreground">{progress.canResume ? 'Step:' : 'Status:'}</span>{' '}
+                    <span className={progress.settledLabel?.startsWith('Completed') ? 'text-crm-green-deep font-semibold' : 'text-foreground md:text-crm-orange font-medium'}>
+                      {progress.settledLabel || (q.status === 'awaiting_panda'
                         ? 'Awaiting Panda Protect'
-                        : q.status === 'converted' || q.status === 'completed'
-                        ? 'Completed'
-                        : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote'}
+                        : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote')}
                     </span>
                     <span className="text-muted-foreground"> · Created on </span>
                     <span className="text-foreground">{formatDateTime(q.created_at)}</span>
@@ -342,21 +347,23 @@ const DealerQuotesList = () => {
                     {q.price ? `£${Number(q.price).toFixed(2)}` : '—'}
                   </div>
                   <div className="flex items-center gap-2">
+                    {progress.canResume && (
                     <Button
                       size="icon"
                       variant="outline"
-                      onClick={() => handleDelete(q.id)}
+                      onClick={() => handleDelete(q)}
                       className="h-11 w-11 shrink-0 border-crm-line bg-card text-muted-foreground hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
                       aria-label="Delete quote"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+                    )}
                     <Button
                       size="sm"
                       onClick={() => handleResume(q)}
                       className="h-11 flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
                     >
-                      Resume quote <ArrowRight className="h-4 w-4 ml-1" />
+                      {progress.canResume ? 'Resume quote' : 'View warranty'} <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
                 </div>

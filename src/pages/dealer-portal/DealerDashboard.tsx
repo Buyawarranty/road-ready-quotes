@@ -16,7 +16,7 @@ import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 import { DealerCreditStatus } from '@/components/dealer/DealerCreditStatus';
 import { isOutstandingDealerInvoice } from '@/lib/dealerSales';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
-import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
+import { DEALER_NEW_QUOTE_URL, dealerQuoteProgress } from '@/lib/dealerJourneyState';
 
 const routes = { Quotes: '/dealer-portal/quotes', Warranties: '/dealer-portal/warranties', Customers: '/dealer-portal/customers', Invoicing: '/dealer-portal/invoicing' };
 const series = [
@@ -48,7 +48,7 @@ export default function DealerDashboard() {
     return monthlyActivity(data?.events || [], range?.from || (earliest ? new Date(earliest) : startOfMonth(subMonths(new Date(), 5))), range?.to || new Date());
   }, [data, range]);
   const attention = [
-    { title: 'Quotes awaiting action', detail: 'Saved drafts and pending quotes', count: quotes.filter(row => ['draft', 'pending'].includes(row.status.toLowerCase())).length, icon: FileText, tone: 'bg-crm-orange-soft text-crm-orange', to: routes.Quotes },
+    { title: 'Quotes awaiting action', detail: 'Saved drafts and pending quotes', count: quotes.filter(row => ['draft', 'pending'].includes(row.status.toLowerCase()) && dealerQuoteProgress(row).canResume).length, icon: FileText, tone: 'bg-crm-orange-soft text-crm-orange', to: routes.Quotes },
     { title: 'Invoices outstanding', detail: 'Review balances and payment dates', count: warranties.filter(isOutstandingDealerInvoice).length, icon: Shield, tone: 'bg-crm-red-soft text-crm-red', to: routes.Invoicing },
   ];
   const actions = [
@@ -109,9 +109,9 @@ export default function DealerDashboard() {
           {!isPending && !isError && attention.every(item => !item.count) && <p className="flex items-center gap-2 pt-1 text-xs text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-crm-green" />You’re all up to date.</p>}</div>
         </div>
         <div className={panel}><div className="flex items-center justify-between p-3"><h2 className="text-sm font-bold">Recent quotes</h2>{viewAll(routes.Quotes)}</div>
-          {quotes.length ? <div className="divide-y divide-crm-line px-3 pb-1">{quotes.slice(0, 5).map(quote => <Button key={quote.id} variant="ghost" className="h-auto w-full justify-start gap-2 whitespace-normal rounded-none px-0 py-2.5 text-left" onClick={() => navigate(`${routes.Quotes}?search=${encodeURIComponent(quote.vehicle_reg)}`)}>
+          {quotes.length ? <div className="divide-y divide-crm-line px-3 pb-1">{quotes.slice(0, 5).map(quote => <Button key={quote.id} variant="ghost" className="h-auto w-full justify-start gap-2 whitespace-normal rounded-none px-0 py-2.5 text-left" onClick={() => navigate(dealerQuoteProgress(quote).canResume ? `${routes.Quotes}?search=${encodeURIComponent(quote.vehicle_reg)}` : dealerQuoteProgress(quote).warrantyHref)}>
             <span className="min-w-0 flex-1"><span className="block text-xs font-bold">{quote.vehicle_reg}</span><span className="block truncate text-[10px] font-normal text-muted-foreground">{[quote.vehicle_make, quote.vehicle_model].filter(Boolean).join(' ') || 'Vehicle details pending'}{quote.customer_name ? ` · ${quote.customer_name}` : ''}</span></span>
-            <span className="text-right"><span className="block text-[11px] font-bold">{quote.dealer_price !== null || quote.price !== null ? money(quote.dealer_price ?? quote.price ?? 0) : 'Draft'}</span><span className="block text-[9px] font-normal text-muted-foreground">{format(new Date(quote.created_at), 'dd MMM yy')}</span></span><span className={`rounded px-1.5 py-1 text-[9px] font-semibold capitalize ${statusTone(quote.status)}`}>{quote.status}</span><ChevronRight className="h-3 w-3 shrink-0" />
+            <span className="text-right"><span className="block text-[11px] font-bold">{quote.dealer_price !== null || quote.price !== null ? money(quote.dealer_price ?? quote.price ?? 0) : 'Draft'}</span><span className="block text-[9px] font-normal text-muted-foreground">{format(new Date(quote.created_at), 'dd MMM yy')}</span></span><span className={`rounded px-1.5 py-1 text-[9px] font-semibold capitalize ${statusTone(dealerQuoteProgress(quote).settledLabel?.startsWith('Completed') ? 'completed' : quote.status)}`}>{dealerQuoteProgress(quote).settledLabel || quote.status}</span><ChevronRight className="h-3 w-3 shrink-0" />
           </Button>)}</div> : placeholder('Your recent quotes will appear here.')}
         </div>
         <div className={panel}><div className="flex items-center justify-between p-3"><h2 className="text-sm font-bold">Recent activity</h2></div>

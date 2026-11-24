@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dealerJourneyWithVehicle, emptyDealerJourney, isEditableDealerQuote, isNewDealerQuote, dealerLoginTarget, DEALER_NEW_QUOTE_URL } from '../dealerJourneyState';
+import { dealerJourneyWithVehicle, emptyDealerJourney, isEditableDealerQuote, isNewDealerQuote, dealerLoginTarget, dealerQuoteProgress, dealerQuoteCheckoutError, DEALER_NEW_QUOTE_URL } from '../dealerJourneyState';
 import type { DealerJourneyState } from '@/contexts/DealerJourneyContext';
 
 const firstSale: DealerJourneyState = {
@@ -34,6 +34,43 @@ describe('another dealer warranty starts independently', () => {
   it('protects a paid quote even when its status was overwritten as draft', () => {
     expect(isEditableDealerQuote('draft', '2026-11-21T19:25:46.204139Z')).toBe(false);
     expect(isEditableDealerQuote('draft', null)).toBe(true);
+  });
+});
+
+describe('processed quotes open warranties instead of resuming', () => {
+  it.each(['paid', 'invoiced', 'converted', 'completed', 'sent', 'cancelled', 'refunded', 'closed'])('blocks new checkout or quote email for a settled %s quote', status => {
+    expect(dealerQuoteCheckoutError({ status })).not.toBeNull();
+  });
+  it('blocks a missing quote and a historic paid draft', () => {
+    expect(dealerQuoteCheckoutError(null)).not.toBeNull();
+    expect(dealerQuoteCheckoutError({ status: 'draft', paid_at: '2026-11-21T19:25:46.204139Z' })).not.toBeNull();
+  });
+  it.each(['draft', 'pending', 'quoted', 'awaiting_panda'])('permits an unfinished %s checkout', status => {
+    expect(dealerQuoteCheckoutError({ status, paid_at: null })).toBeNull();
+  });
+  it('recognizes the paid screenshot sale regardless of its saved step', () => {
+    expect(dealerQuoteProgress({ status: 'paid', paid_at: '2026-11-24T15:56:51.952564Z', vehicle_reg: 'FP14 UBL' }))
+      .toEqual({ canResume: false, settledLabel: 'Completed', warrantyHref: '/dealer-portal/warranties?search=FP14UBL' });
+  });
+  it('recognizes a paid timestamp even when the historic status says draft', () => {
+    expect(dealerQuoteProgress({ status: 'draft', paid_at: '2026-11-21T19:25:46.204139Z' }).settledLabel).toBe('Completed');
+    expect(dealerQuoteProgress({ status: 'draft', paid_at: '2026-11-21T19:25:46.204139Z' }).canResume).toBe(false);
+  });
+  it.each(['converted', 'completed', 'sent'])('does not resume a processed %s quote', status => {
+    expect(dealerQuoteProgress({ status }).canResume).toBe(false);
+    expect(dealerQuoteProgress({ status }).settledLabel).toBe('Completed');
+  });
+  it('distinguishes issued invoices from paid warranties', () => {
+    expect(dealerQuoteProgress({ status: 'invoiced' }).settledLabel).toBe('Completed · invoice issued');
+    expect(dealerQuoteProgress({ status: 'invoiced' }).canResume).toBe(false);
+  });
+  it.each([['cancelled', 'Cancelled'], ['refunded', 'Refunded'], ['closed', 'Closed']])('keeps %s records settled', (status, label) => {
+    expect(dealerQuoteProgress({ status, paid_at: '2026-11-24T15:56:51Z' }).settledLabel).toBe(label);
+    expect(dealerQuoteProgress({ status }).canResume).toBe(false);
+  });
+  it.each(['draft', 'pending', 'quoted', 'awaiting_panda'])('keeps genuine %s quotes resumable', status => {
+    expect(dealerQuoteProgress({ status, paid_at: null }).canResume).toBe(true);
+    expect(dealerQuoteProgress({ status, paid_at: null }).settledLabel).toBeNull();
   });
 });
 

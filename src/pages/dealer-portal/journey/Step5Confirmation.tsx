@@ -10,11 +10,13 @@ import { fireDealerConfetti } from '@/lib/dealerConfetti';
 import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 import { dealerRequest } from '@/lib/dealerRequest';
 import { functionErrorMessage } from '@/lib/functionError';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Step5Confirmation: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { reset } = useDealerJourney();
+  const queryClient = useQueryClient();
   const method = searchParams.get('method') || 'pay_now';
   const id = searchParams.get('id');
   const sessionId = searchParams.get('session_id');
@@ -23,6 +25,12 @@ const Step5Confirmation: React.FC = () => {
   const [emailWarning, setEmailWarning] = useState(false);
   const [checking, setChecking] = useState(false);
   const mounted = useRef(true);
+
+  const refreshSaleLists = () => {
+    for (const key of ['dealer-quotes-list', 'dealer-dashboard', 'dealer-analytics-quotes', 'dealer-plans']) {
+      void queryClient.invalidateQueries({ queryKey: [key] });
+    }
+  };
 
   const confirmPayment = async () => {
     if (!id || !sessionId) { setConfirmError('Open your warranties to check the payment status.'); return; }
@@ -37,6 +45,7 @@ const Step5Confirmation: React.FC = () => {
       }
       setEmailWarning(Boolean(data.email && !data.email.sent));
       setConfirmed(true);
+      refreshSaleLists();
       reset();
       fireDealerConfetti(1);
     } catch (error) {
@@ -48,7 +57,7 @@ const Step5Confirmation: React.FC = () => {
 
   useEffect(() => {
     mounted.current = true;
-    if (method === 'invoice' || method === 'free') reset();
+    if (method === 'invoice' || method === 'free') { reset(); refreshSaleLists(); }
     else void confirmPayment();
     return () => { mounted.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps

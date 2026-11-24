@@ -1,7 +1,7 @@
 import type { DealerJourneyState, DealerJourneyVehicle } from '@/contexts/DealerJourneyContext';
 
 export const DEALER_NEW_QUOTE_URL = '/dealer-portal/quote/pricing?new=1';
-export const EDITABLE_DEALER_QUOTE_STATUSES = ['draft', 'pending', 'quoted', 'awaiting_panda'];
+export { EDITABLE_DEALER_QUOTE_STATUSES, isEditableDealerQuote, dealerQuoteProgress, dealerQuoteCheckoutError } from '../../supabase/functions/_shared/dealerQuoteStatus';
 
 export const emptyDealerJourney = (): DealerJourneyState => ({
   quoteId: null, vehicle: null, customer: null, plan: null, discount_pct: 0,
@@ -18,10 +18,6 @@ export function dealerJourneyWithVehicle(state: DealerJourneyState, vehicle: Dea
     return { ...state, vehicle, quoteId: null, customer: null, plan: null };
   }
   return { ...state, vehicle };
-}
-
-export function isEditableDealerQuote(status: string | null | undefined, paidAt?: string | null): boolean {
-  return !paidAt && EDITABLE_DEALER_QUOTE_STATUSES.includes(String(status || '').toLowerCase());
 }
 
 /** Only resume internal dealer pages, preserving fresh-sale/payment query parameters. */

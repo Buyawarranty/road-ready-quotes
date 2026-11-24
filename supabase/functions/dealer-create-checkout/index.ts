@@ -11,6 +11,7 @@ import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
 import { dealerStripeSecret, dealerUsesEmbeddedStripe } from '../_shared/dealerStripeMode.ts';
 import { trackDealerCheckoutKlaviyo } from '../_shared/klaviyoDealer.ts';
+import { dealerQuoteCheckoutError } from '../_shared/dealerQuoteStatus.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -120,6 +121,17 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: 'Dealer not authorized' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // A stale tab must not attach another payment/customer to an already issued quote.
+    if (quote_id) {
+      const { data: quote, error: quoteError } = await adminClient.from('dealer_quotes')
+        .select('status, paid_at').eq('id', quote_id).eq('dealer_id', dealer.id).maybeSingle();
+      if (quoteError) throw new Error('Your quote status could not be checked. Please try again.');
+      const processedError = dealerQuoteCheckoutError(quote);
+      if (processedError) return new Response(JSON.stringify({ error: processedError }), {
+        status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 

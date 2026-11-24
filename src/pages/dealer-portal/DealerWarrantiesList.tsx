@@ -206,7 +206,7 @@ const DealerWarrantiesList = () => {
   const [cancelling, setCancelling] = useState(false);
   const [detailRow, setDetailRow] = useState<WarrantyRow | null>(null);
   const [vehicleLookup, setVehicleLookup] = useState<{ id: string; status: 'loading' | 'error' } | null>(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const [coverFilter, setCoverFilter] = useState<CoverFilter>('all');
   const [paymentFilter, setPaymentFilter] = useState<'all' | DealerPaymentKey>('all');
   const [page, setPage] = useState(1);
@@ -226,6 +226,8 @@ const DealerWarrantiesList = () => {
 
   const { data: rows = [], isPending: isLoading, isError: rowsError, isFetching: rowsFetching, refetch: refetchRows } = useQuery({
     queryKey: ['dealer-plans', dealer?.id],
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     queryFn: async () => {
       if (!dealer?.id) return [];
       const { data, error } = await dealerRequest(signal => supabase

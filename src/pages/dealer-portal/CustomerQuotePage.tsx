@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { CreditCard, Settings, Link2, MessageCircle, Mail, FileDown } from 'lucide-react';
 import { decodeCustomerQuote, adjustableQuotePrice, customerQuoteMessage, quoteHidesPrices } from '@/lib/customerQuoteSharing';
+import { functionErrorMessage } from '@/lib/functionError';
 export { buildCustomerQuoteUrl } from '@/lib/customerQuoteSharing';
 
 const CustomerQuotePage: React.FC = () => {
@@ -77,7 +78,7 @@ const CustomerQuotePage: React.FC = () => {
             setPaying(true); setPayError('');
             const { data: res, error } = await supabase.functions.invoke('customer-create-checkout', { body: { quote_id: payQuoteId, return_url: window.location.href } });
             setPaying(false);
-            if (error || !res?.checkout_url) { setPayError(res?.error || 'Could not start payment — please contact your dealer.'); return; }
+            if (error || !res?.checkout_url) { setPayError(res?.error || (error ? await functionErrorMessage(error) : 'Could not start payment — please contact your dealer.')); return; }
             window.location.href = res.checkout_url;
           }}><CreditCard /> {paying ? 'Redirecting…' : `Pay £${price.toFixed(2)} now`}</Button>
           <p className="mt-2 text-[11px] text-muted-foreground">Secure card payment powered by Stripe.</p>
