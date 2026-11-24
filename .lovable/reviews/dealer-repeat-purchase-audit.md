@@ -48,7 +48,7 @@ Dealers must be able to issue another warranty for a different customer, underst
 | Paused product and cover switch | Availability/switch/route read; paused journey body not read | Paused route redirects to live product; do not call the retained paused journey fully checked |
 | Annual pricing service | Service/validation source read | Modern annual request validated; legacy request branch deserves a separate server-pricing review, not a settings change |
 | Signed card return and dealer webhook | Dealer handlers and shared finalizer read | Signed ownership/amount checks present; no live webhook or payment run |
-| Shared sale completion | Full helper read; deployed completion function read | Customer warranty insert is idempotent; quote completion checks dealer ownership but lacks exact sale binding/terminal-status protection |
+| Shared sale completion | Full helper and deployed completion function re-read for this lost-sales report | Customer warranty insert is idempotent; cross-customer quote reuse is rejected and updates require no paid timestamp plus unfinished status (or invoice-to-paid settlement) |
 | Other Stripe handlers, invoice settlement, email and vehicle services | Located, not all fully read | Outstanding audit; not checked |
 | Dealer auth | Main loading sections and bounded helper read | Bounded profile load present; complete live session chain unverified |
 | Database uniqueness | Live definitions read | Customer uniqueness is email plus plate; no dealer-wide one-sale limit found |
@@ -56,6 +56,21 @@ Dealers must be able to issue another warranty for a different customer, underst
 | All other migrations, triggers and access policies | Not exhaustively read | Outstanding audit; not checked |
 
 ## Remaining verification
+### Lost-sales recheck — 24 November, 18:48 UTC
+- User clarified that the abandoned AUTOSTATE attempts lost multiple sales; this is a checkout incident, distinct from a customer's missing portal warranty.
+- Fresh read-only counts confirm 18 recorded weekend checkout page visits, three saved quotes, two unfinished quotes and one verified paid customer sale. Visit counts are not unique customer counts and cannot establish the number or value of lost sales.
+- Downloaded live `DealerLogin-BzBLB32W.js` lacks the prepared bounded account-loading/session-preservation messages. Live `DealerQuotesList-Bryp-6s3.js` lacks `paid_at`, View warranty and read-error retry controls. Current source includes those protections. Live `Step4Checkout-D-y1STqu.js` includes trade-terms recovery, trade-benefit recheck and bounded checkout messages; live `Step5Confirmation-9MmndfN5.js` includes payment recheck.
+- Publication is still needed for the outstanding frontend repairs. No new charging or permission changes were made, and no settled records, accounts, payments, messages or goodwill warranties were altered.
+- No real dealer session/payment was run; exact failed-attempt errors remain unavailable. Do not describe the lost-sales incident as fully resolved until the dealer's signed-in purchase flow is verified after publication.
+
+#### Fresh code-read coverage for the lost-sales report
+- Read current `DealerJourneyContext`, `dealerJourneyState`, `useDealerQuoteSave`, `useDealerAuth` and `DealerLogin`: explicit new-entry reset, separate registration/customer/quote state, settled draft-write guards, bounded session/account checks and retry recovery are present.
+- Read current dashboard/new-entry navigation in the active shell, legacy sidebar and App entry redirects: new actions use the fresh URL directly or redirect there. Read Quotes new/resume/delete/history and Warranties new/history sections: genuine drafts resume, processed quotes open warranty records, and failed reads have retry controls. Other list actions were not audited.
+- Read pricing lookup/new-entry/persist sections, annual pricing hook/service, customer submission, checkout terms/benefits/create/submit sections, TradeTermsDialog and DealerCreditStatus: errors release actions or provide recovery; current-version terms confirmation is required; an invoice restriction does not disable ordinary card purchasing. Background MOT enrichment is best-effort and does not gate quoting. Commercial eligibility/price rules were not changed.
+- Read all of dealer-create-checkout and the dealer/customer-paylink quote guards: no dealer-wide one-sale cap; pending reuse checks both normalized email and registration plus ownership; settled quote checkout is rejected before charging. Free/invoice/card branches retain their existing offer/settings rules.
+- Read dealer-confirm-payment, dealer-stripe-webhook, partner-confirm-payment, dealer-confirm-invoice-payment, dealer-intro-free-decision, dealerCardPayment, dealerSaleFulfilment and deployed complete_dealer_sale: shared completion is idempotent and existing paid records are not rewritten by repeat completion. Confirmation UI offers payment recheck and an explicit new quote. No handler was invoked to initiate/settle a real transaction.
+- Re-ran 22 Vitest and 69 Bun checks for processed checkout, bounded requests, terms loading, card/sale completion, duplicate matching, customer validation, journey/login targets, auth loading and progress. All pass when using their correct runners. Latest preview compilation reports build OK. No further application-code changes were needed for these already-prepared repeat-sale protections; publication and actual signed-in verification remain outstanding.
+
 The approved reliability gaps are repaired and checked in isolation. Verify AUTOSTATE's actual account and payment journey before promising incident resolution. Broader charging, eligibility, background completion and access rules require their own scoped review; leave current settings and settled records untouched.
 
 AUTOSTATE is identified. External unmanaged authentication prevents an automated real signed-in payment check. Do not tell the dealer the incident is fully resolved based on isolated checks, and do not issue the promised goodwill warranty or contact them automatically.
