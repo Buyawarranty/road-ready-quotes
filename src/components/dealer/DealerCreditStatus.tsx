@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, CheckCircle2, Clock3, FileText, Loader2, Lock, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
+import { dealerRequest } from '@/lib/dealerRequest';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 
 interface PayLaterEligibility {
   eligible: boolean;
@@ -24,33 +27,43 @@ export const DealerCreditStatus: React.FC = () => {
   const { dealer } = useDealerAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
-  const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
+  const [requestError, setRequestError] = useState('');
 
-  const refresh = useCallback(async () => {
-    if (!dealer?.id) return;
-    const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealer.id });
-    setLoading(false);
-    if (!error && data) setEligibility(data as PayLaterEligibility);
-  }, [dealer?.id]);
-
-  useEffect(() => { void refresh(); }, [refresh]);
+  const { data: eligibility, isPending: loading, isError, isFetching, refetch: refresh } = useQuery({
+    queryKey: ['dealer-credit-status', dealer?.id],
+    enabled: !!dealer?.id,
+    retry: false,
+    queryFn: async () => {
+      if (!dealer?.id) return null;
+      const { data, error } = await dealerRequest<{ data: PayLaterEligibility | null; error: unknown }>(signal =>
+        (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealer.id }).abortSignal(signal),
+      'Account billing is taking longer to load. Please try again.');
+      if (error || !data) throw new Error('Account billing could not be checked.');
+      return data;
+    },
+  });
 
   const requestCredit = async () => {
     if (!dealer?.id || requesting) return;
     setRequesting(true);
-    const { data, error } = await supabase.functions.invoke('dealer-credit-authorisation', {
-      body: { action: 'request_credit', dealer_id: dealer.id },
-    });
-    setRequesting(false);
-    if (error || (data as any)?.error) {
-      const description = (data as any)?.error || (error ? await functionErrorMessage(error) : 'Please try again.');
-      toast({ title: 'Credit request not sent', description, variant: 'destructive' });
-      return;
+    setRequestError('');
+    try {
+      const { data, error } = await dealerRequest(signal => supabase.functions.invoke('dealer-credit-authorisation', {
+        signal,
+        body: { action: 'request_credit', dealer_id: dealer.id },
+      }), 'Your request could not be confirmed in time. Check account billing again before resending.');
+      if (error) throw new Error(await functionErrorMessage(error));
+      if (data?.error || !['pending', 'approved'].includes(data?.status)) throw new Error(data?.error || 'Your credit request could not be confirmed. Check account billing again before resending.');
+      toast({ title: 'Request confirmed', description: 'Your account billing status is being updated.' });
+      await refresh();
+    } catch (cause) {
+      const description = cause instanceof Error ? cause.message : 'Your credit request could not be confirmed. Please try again.';
+      setRequestError(description);
+      toast({ title: 'Credit request not confirmed', description, variant: 'destructive' });
+    } finally {
+      setRequesting(false);
     }
-    toast({ title: 'Request sent', description: 'Your request is now with our team for approval.' });
-    await refresh();
   };
 
   const paid = eligibility?.paid_count ?? 0;
@@ -68,10 +81,10 @@ export const DealerCreditStatus: React.FC = () => {
             <p className="mt-1 text-xs text-muted-foreground">Activate approved warranties now and pay through your dealer account.</p>
           </div>
         </div>
-        <Badge className={available ? 'bg-crm-green-soft text-crm-green-deep' : 'bg-crm-orange-soft text-crm-navy'}>{loading ? 'Checking…' : status}</Badge>
+        <Badge className={available ? 'bg-crm-green-soft text-crm-green-deep' : 'bg-crm-orange-soft text-crm-navy'}>{loading ? 'Checking…' : isError ? 'Check unavailable' : status}</Badge>
       </div>
 
-      {loading ? <Loader2 className="mx-auto my-5 h-5 w-5 animate-spin text-muted-foreground" /> : (
+      {isError ? <div role="alert" className="mt-4 space-y-3"><DealerFieldError>Account billing could not be checked. Your account status has been kept; please try again.</DealerFieldError><Button variant="outline" disabled={isFetching} onClick={() => { void refresh(); }}>{isFetching ? 'Checking…' : 'Check account billing again'}</Button></div> : loading ? <Loader2 className="mx-auto my-5 h-5 w-5 animate-spin text-muted-foreground" /> : (
         <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
           <div>
             <div className="flex items-center justify-between gap-3 text-xs"><span className="font-semibold">{Math.min(paid, required)} of {required} paid warranties</span><span className="text-muted-foreground">{available ? 'Requirement met' : `${Math.max(0, required - paid)} to go`}</span></div>
@@ -93,7 +106,7 @@ export const DealerCreditStatus: React.FC = () => {
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
             {available && <Button size="sm" onClick={() => navigate(DEALER_NEW_QUOTE_URL)}>Start a quote <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
-            {eligibility?.can_request && <Button size="sm" disabled={requesting} onClick={requestCredit}>{requesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}Request invoicing</Button>}
+            {eligibility?.can_request && <Button size="sm" disabled={requesting || isFetching} onClick={requestCredit}>{requesting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}Request invoicing</Button>}
             {eligibility?.reason === 'pending' && <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-crm-navy"><Clock3 className="h-4 w-4" />Request sent</span>}
             {eligibility?.reason === 'overdue' && <Button size="sm" variant="outline" onClick={() => navigate('/dealer-portal/invoicing')}>View invoices <ArrowRight className="ml-1 h-3.5 w-3.5" /></Button>}
             {!available && !eligibility?.can_request && eligibility?.reason === 'new' && <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" />Card payment until eligible</span>}
@@ -101,6 +114,7 @@ export const DealerCreditStatus: React.FC = () => {
           </div>
         </div>
       )}
+      {requestError && <div role="alert" className="mt-4 space-y-3"><DealerFieldError>{requestError}</DealerFieldError><Button variant="outline" disabled={isFetching || requesting} onClick={() => { void refresh(); }}>Check account billing again</Button></div>}
     </section>
   );
 };

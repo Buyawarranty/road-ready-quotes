@@ -88,6 +88,7 @@ export const useDealerQuoteSave = (currentStep: 1 | 2 | 3 | 4 | 5) => {
           .eq('id', id)
           .eq('dealer_id', dealerId)
           .in('status', EDITABLE_DEALER_QUOTE_STATUSES)
+          .is('paid_at', null)
           .select('id')
           .abortSignal(signal)
           .maybeSingle(), 'Saving is taking longer than expected. Check your Quotes before trying again.');

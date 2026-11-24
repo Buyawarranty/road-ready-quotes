@@ -20,6 +20,21 @@ export function dealerJourneyWithVehicle(state: DealerJourneyState, vehicle: Dea
   return { ...state, vehicle };
 }
 
-export function isEditableDealerQuote(status: string | null | undefined): boolean {
-  return EDITABLE_DEALER_QUOTE_STATUSES.includes(String(status || '').toLowerCase());
+export function isEditableDealerQuote(status: string | null | undefined, paidAt?: string | null): boolean {
+  return !paidAt && EDITABLE_DEALER_QUOTE_STATUSES.includes(String(status || '').toLowerCase());
+}
+
+/** Only resume internal dealer pages, preserving fresh-sale/payment query parameters. */
+export function dealerLoginTarget(redirect: string | null, registration?: string | null): string {
+  const origin = 'https://pandaprotect.co.uk';
+  if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//') || /[\\\r\n]/.test(redirect)) return '/dealer-portal/dashboard';
+  try {
+    const target = new URL(redirect, origin);
+    const path = target.pathname.replace(/\/$/, '');
+    if (target.origin !== origin || !path.startsWith('/dealer-portal/') || path === '/dealer-portal/login' || path === '/dealer-portal/signup') return '/dealer-portal/dashboard';
+    if (registration && !target.searchParams.has('reg')) target.searchParams.set('reg', registration);
+    return target.pathname + target.search + target.hash;
+  } catch {
+    return '/dealer-portal/dashboard';
+  }
 }

@@ -121,7 +121,7 @@ const Step4Checkout: React.FC = () => {
     let cancelled = false;
     (async () => {
       try {
-        const current = await dealerRequest(() => fetchCurrentTradeTerms(supabase), 'Trade terms need to be checked again.');
+        const current = await dealerRequest(signal => fetchCurrentTradeTerms(supabase, signal), 'Trade terms need to be checked again.');
         const { data, error } = await dealerRequest<{ data: { dealer_id: string } | null; error: unknown }>(signal => (supabase as any).from('dealer_trade_terms_acceptances')
           .select('dealer_id').eq('dealer_id', dealer.id).eq('terms_version', current.version).abortSignal(signal).maybeSingle(), 'Trade terms need to be checked again.');
         if (error) throw error;
@@ -280,18 +280,24 @@ const Step4Checkout: React.FC = () => {
     if (requestingCredit) return;
     setRequestingCredit(true);
     setSubmitError(null);
-    const { data, error } = await supabase.functions.invoke('dealer-credit-authorisation', {
+    try {
+    const { data, error } = await dealerRequest(signal => supabase.functions.invoke('dealer-credit-authorisation', {
+      signal,
       body: { action: 'request_credit', dealer_id: dealer.id },
-    });
-    setRequestingCredit(false);
+    }), 'Your request could not be confirmed in time. Check trade benefits again before resending.');
     if (error || data?.error) {
-      const message = data?.error || 'We could not send your request. Please try again.';
-      setSubmitError(message);
-      toast({ title: 'Credit request not sent', description: message, variant: 'destructive' });
-      return;
+      throw new Error(await readFnError(error, data, 'We could not send your request. Please try again.'));
     }
+    if (!['pending', 'approved'].includes(data?.status)) throw new Error('Your credit request could not be confirmed. Check trade benefits again before resending.');
     toast({ title: 'Request sent', description: 'Your 30-day invoicing request is now with our team for approval.' });
     await refreshEligibility();
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : 'We could not send your request. Please try again.';
+      setSubmitError(message);
+      toast({ title: 'Credit request not confirmed', description: message, variant: 'destructive' });
+    } finally {
+      setRequestingCredit(false);
+    }
   };
 
   const boostOn = options.boost === true;
@@ -522,6 +528,7 @@ const Step4Checkout: React.FC = () => {
       </button>
       <TradeTermsDialog dealerId={dealer.id} open={termsOpen} onOpenChange={setTermsOpen} onAccepted={() => {
         setTermsAccepted(true);
+        setSubmitError(null);
         toast({ title: 'Trade terms accepted', description: 'Your acceptance has been recorded for this dealership.' });
       }} />
       <Dialog open={!!clientSecret} onOpenChange={(o) => { if (!o) setClientSecret(null); }}>

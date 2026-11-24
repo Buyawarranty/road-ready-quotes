@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { fetchCurrentTradeTerms, type TradeTerms } from '@/lib/dealerTradeTerms';
+import { dealerRequest } from '@/lib/dealerRequest';
 
 const newVersionId = () => {
   const d = new Date();
@@ -18,8 +19,18 @@ export const TradeTermsEditor: React.FC = () => {
   const [terms, setTerms] = useState<TradeTerms | null>(null);
   const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
-  useEffect(() => { fetchCurrentTradeTerms(supabase).then(setTerms); }, []);
+  useEffect(() => {
+    let active = true;
+    setLoadError('');
+    dealerRequest(signal => fetchCurrentTradeTerms(supabase, signal), 'Trade terms are taking longer to load. Please try again.')
+      .then(data => { if (active) setTerms(data); })
+      .catch(() => { if (active) setLoadError('Current trade terms could not be loaded. Please try again.'); });
+    return () => { active = false; };
+  }, [loadAttempt]);
+  if (loadError) return <Card><CardContent className="space-y-3 p-6"><p role="alert" className="text-sm font-bold text-destructive">{loadError}</p><Button variant="outline" onClick={() => setLoadAttempt(value => value + 1)}>Try loading terms again</Button></CardContent></Card>;
   if (!terms) return <Card><CardContent className="p-6"><Loader2 className="h-5 w-5 animate-spin" /></CardContent></Card>;
 
   const setSummary = (i: number, key: 'title' | 'description', v: string) =>

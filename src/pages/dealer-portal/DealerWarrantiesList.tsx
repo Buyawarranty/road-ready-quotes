@@ -29,6 +29,8 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
 import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
+import { dealerRequest } from '@/lib/dealerRequest';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -176,9 +178,11 @@ const DealerWarrantiesList = () => {
   const { data: freeLeft } = useQuery({
     queryKey: ['dealer-free-remaining', dealer?.id],
     enabled: !!dealer?.id,
+    retry: false,
     queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealer!.id });
-      if (error || !data) return null;
+      if (!dealer?.id) return null;
+      const { data, error } = await dealerRequest<{ data: { intro_free_remaining?: number } | null; error: unknown }>(signal => (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealer.id }).abortSignal(signal), 'Free-offer availability could not be checked.');
+      if (error || !data) throw new Error('Free-offer availability could not be checked.');
       return Number((data as { intro_free_remaining?: number }).intro_free_remaining ?? 0);
     },
   });
@@ -207,28 +211,34 @@ const DealerWarrantiesList = () => {
   const [paymentFilter, setPaymentFilter] = useState<'all' | DealerPaymentKey>('all');
   const [page, setPage] = useState(1);
 
-  const { data: pendingCancelIds = [], refetch: refetchCancels } = useQuery({
+  const { data: pendingCancelIds = [], isError: cancelsError, isPending: cancelsLoading, isFetching: cancelsFetching, refetch: refetchCancels } = useQuery({
     queryKey: ['dealer-cancel-requests', dealer?.id],
     queryFn: async () => {
-      const { data } = await (supabase as any).from('dealer_cancellation_requests').select('customer_id').eq('status', 'pending');
+      if (!dealer?.id) return [];
+      const { data, error } = await dealerRequest<{ data: { customer_id: string }[] | null; error: unknown }>(signal => supabase.from('dealer_cancellation_requests').select('customer_id').eq('dealer_id', dealer.id).eq('status', 'pending').abortSignal(signal), 'Your cancellation history is taking longer to load. Please try again.');
+      if (error) throw error;
       return ((data || []) as { customer_id: string }[]).map((row) => row.customer_id);
     },
     enabled: !!dealer?.id,
+    retry: false,
   });
   const pendingCancel = useMemo(() => new Set(pendingCancelIds), [pendingCancelIds]);
 
-  const { data: rows = [], isLoading } = useQuery({
+  const { data: rows = [], isPending: isLoading, isError: rowsError, isFetching: rowsFetching, refetch: refetchRows } = useQuery({
     queryKey: ['dealer-plans', dealer?.id],
     queryFn: async () => {
       if (!dealer?.id) return [];
-      const { data } = await supabase
+      const { data, error } = await dealerRequest(signal => supabase
         .from('customers')
         .select('*')
         .eq('dealer_id', dealer.id)
-        .order('signup_date', { ascending: false });
+        .eq('brand', 'pandaprotect')
+        .order('signup_date', { ascending: false }).abortSignal(signal), 'Your warranties are taking longer to load. Please try again.');
+      if (error) throw error;
       return ((data || []) as unknown) as WarrantyRow[];
     },
     enabled: !!dealer?.id,
+    retry: false,
   });
 
   const cancellationRows = useMemo(
@@ -719,7 +729,7 @@ const DealerWarrantiesList = () => {
 
   const renderPlansContent = (cancellations = false) => (
     <div className="overflow-hidden rounded-2xl border-2 border-crm-line/70 bg-card crm-panel-shadow">
-      {isLoading ? (
+      {rowsError || (cancellations && cancelsError) ? renderHistoryError(cancellations) : isLoading || (cancellations && cancelsLoading) ? (
         <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-crm-orange" /></div>
       ) : paginatedRows.length === 0 ? (
         <EmptyState filtered={hasFilters} cancellations={cancellations} onReset={resetFilters} />
@@ -727,6 +737,10 @@ const DealerWarrantiesList = () => {
         <>{renderWarrantyCards(paginatedRows)}{renderWarrantyTable(paginatedRows)}{renderPagination()}</>
       )}
     </div>
+  );
+
+  const renderHistoryError = (cancellations = false) => (
+    <div role="alert" className="space-y-3 p-4"><DealerFieldError>{cancellations ? 'Your cancellation history could not be loaded.' : 'Your warranty and invoice history could not be loaded.'} Your existing records have been kept; please try again.</DealerFieldError><Button variant="outline" disabled={rowsFetching || (cancellations && cancelsFetching)} onClick={() => { void refetchRows(); if (cancellations) void refetchCancels(); }}>{rowsFetching || (cancellations && cancelsFetching) ? 'Loading…' : 'Try loading history again'}</Button></div>
   );
 
   return (
@@ -745,15 +759,15 @@ const DealerWarrantiesList = () => {
         <section aria-label={activeTab === 'payments' ? 'Invoicing summary' : 'Warranty summary'} className={`grid grid-cols-2 gap-3 ${activeTab === 'payments' ? 'xl:grid-cols-4' : 'sm:grid-cols-3'}`}>
           {activeTab === 'payments' ? (
             <>
-              <StatCard icon={ReceiptText} label="Outstanding invoices" value={unpaidRows.length} />
-              <StatCard icon={Coins} label="Total outstanding" value={money(outstandingTotal)} />
-              <StatCard icon={Clock3} label="Overdue invoices" value={overdueCount} />
+              <StatCard icon={ReceiptText} label="Outstanding invoices" value={rowsError || isLoading ? '—' : unpaidRows.length} />
+              <StatCard icon={Coins} label="Total outstanding" value={rowsError || isLoading ? '—' : money(outstandingTotal)} />
+              <StatCard icon={Clock3} label="Overdue invoices" value={rowsError || isLoading ? '—' : overdueCount} />
               <StatCard icon={CalendarDays} label={nextDueDate ? `Next due · ${fmt(nextDueDate.toISOString())}` : 'Next payment due'} value={nextDueRow ? money(nextDueRow.final_amount) : '—'} />
             </>
           ) : (
             <>
-              <StatCard icon={ShieldCheck} label="Active cover" value={activeCoverCount} sub={`of ${rows.length} plan${rows.length === 1 ? '' : 's'} in total`} green />
-              <StatCard icon={ReceiptText} label="Unpaid invoices" value={unpaidRows.length} sub={`${money(outstandingTotal)} outstanding`} />
+              <StatCard icon={ShieldCheck} label="Active cover" value={rowsError || isLoading ? '—' : activeCoverCount} green />
+              <StatCard icon={ReceiptText} label="Unpaid invoices" value={rowsError || isLoading ? '—' : unpaidRows.length} />
               <StatCard icon={Gift} label="Free warranties remaining" value={freeLeft ?? '—'} green />
             </>
           )}
@@ -776,9 +790,9 @@ const DealerWarrantiesList = () => {
           <div className="max-w-full overflow-x-auto overscroll-x-contain">
             <TabsList className="h-auto w-max min-w-full justify-start gap-1 rounded-none border-b border-crm-line bg-transparent p-0">
               {[
-                { value: 'plans', label: `All warranties (${rows.length})` },
-                { value: 'payments', label: `Invoicing (${unpaidRows.length})` },
-                { value: 'cancellations', label: `Cancellations (${cancellationRows.length})` },
+                { value: 'plans', label: `All warranties (${rowsError || isLoading ? '—' : rows.length})` },
+                { value: 'payments', label: `Invoicing (${rowsError || isLoading ? '—' : unpaidRows.length})` },
+                { value: 'cancellations', label: `Cancellations (${rowsError || cancelsError || isLoading || cancelsLoading ? '—' : cancellationRows.length})` },
               ].map((tab) => (
                 <TabsTrigger key={tab.value} value={tab.value} className="min-h-12 shrink-0 rounded-none border-b-2 border-transparent bg-transparent px-4 text-sm font-bold text-muted-foreground shadow-none data-[state=active]:border-crm-orange data-[state=active]:bg-transparent data-[state=active]:text-crm-orange data-[state=active]:shadow-none sm:px-5 sm:text-base">
                   {tab.label}
@@ -824,12 +838,12 @@ const DealerWarrantiesList = () => {
               <div className="text-sm text-muted-foreground">
                 {selectedIds.length > 0 ? <span><strong className="text-crm-navy">{selectedIds.length}</strong> selected · <strong className="text-crm-orange">{money(selectedTotal)}</strong></span> : 'Select outstanding account invoices to pay them in one secure checkout.'}
               </div>
-              <Button onClick={handlePaySelected} disabled={paying || selectedIds.length === 0} className="h-11 rounded-xl bg-crm-orange font-bold text-primary-foreground hover:bg-crm-orange/90">
+              <Button onClick={handlePaySelected} disabled={paying || rowsError || isLoading || selectedIds.length === 0} className="h-11 rounded-xl bg-crm-orange font-bold text-primary-foreground hover:bg-crm-orange/90">
                 {paying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CreditCard className="mr-2 h-4 w-4" />}Pay selected
               </Button>
             </div>
             <div className="overflow-hidden rounded-2xl border-2 border-crm-line/70 bg-card crm-panel-shadow">
-              {isLoading ? <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-crm-orange" /></div> : unpaidRows.length === 0 ? (
+              {rowsError ? renderHistoryError() : isLoading ? <div className="flex justify-center py-16"><Loader2 className="h-7 w-7 animate-spin text-crm-orange" /></div> : unpaidRows.length === 0 ? (
                 <div className="px-5 py-14 text-center"><CheckCircle2 className="mx-auto h-10 w-10 text-crm-green" /><h3 className="mt-4 text-lg font-bold text-crm-navy">All invoices are paid</h3><p className="mt-1 text-sm text-muted-foreground">There are no outstanding invoice payments.</p></div>
               ) : <>{renderPaymentTable(paginatedRows)}{renderPagination()}</>}
             </div>

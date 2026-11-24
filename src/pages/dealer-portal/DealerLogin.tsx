@@ -10,6 +10,10 @@ import { SEOHead } from '@/components/SEOHead';
 import { DealerPublicHeader } from '@/components/dealer/DealerPublicHeader';
 import { isAdminRole } from '@/lib/adminRoles';
 import { readDealerImpersonation } from '@/hooks/useDealerImpersonation';
+import { dealerLoginTarget } from '@/lib/dealerJourneyState';
+import { dealerRequest } from '@/lib/dealerRequest';
+import { boundedDealerAuth } from '@/lib/dealerAuthLoad';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import {
   Eye,
   EyeOff,
@@ -27,27 +31,41 @@ const DealerLogin = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [accountError, setAccountError] = useState('');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
 
+  const target = () => {
+    let pendingReg: string | null = null;
+    try { pendingReg = localStorage.getItem('dealerPendingReg'); } catch { /* Storage may be unavailable. */ }
+    return dealerLoginTarget(searchParams.get('redirect'), searchParams.get('reg') || pendingReg);
+  };
+
+  const loadDealer = (userId: string) => dealerRequest(signal => supabase.from('dealers')
+    .select('id').eq('user_id', userId).abortSignal(signal).maybeSingle(),
+  'Your account is taking longer to load. Please try again.');
+
+  const loadRoles = (userId: string) => dealerRequest(signal => supabase.from('user_roles')
+    .select('role').eq('user_id', userId).abortSignal(signal),
+  'Your account is taking longer to load. Please try again.');
+
   // If already signed in, skip the login form and go straight to the target page.
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      try {
+      const { data: { session }, error: sessionError } = await boundedDealerAuth(supabase.auth.getSession());
+      if (sessionError) throw sessionError;
       if (cancelled || !session?.user) return;
-      const { data: dealer } = await supabase
-        .from('dealers')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .maybeSingle();
-      const { data: roles } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', session.user.id);
+      const { data: dealer, error } = await loadDealer(session.user.id);
+      if (error) throw error;
+      if (cancelled) return;
+      if (dealer) { navigate(target(), { replace: true }); return; }
+      const { data: roles, error: rolesError } = await loadRoles(session.user.id);
+      if (rolesError) throw rolesError;
       // Only auto-forward when a dealer profile will actually load on the
       // target page (own dealer or admin "view as dealer"); otherwise the
       // dealer page bounces back here and the screen flickers in a loop.
@@ -55,12 +73,9 @@ const DealerLogin = () => {
       // An account with its own dealer profile always goes in (even if it also
       // holds a staff role); staff-only accounts only via "view as dealer".
       if (cancelled || !(dealer || (isAdmin && readDealerImpersonation()))) return;
-      const redirect = searchParams.get('redirect');
-      const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
-      if (redirect && redirect.startsWith('/dealer')) {
-        navigate(reg ? `${redirect}?reg=${encodeURIComponent(reg)}` : redirect, { replace: true });
-      } else {
-        navigate('/dealer-portal/dashboard', { replace: true });
+      navigate(target(), { replace: true });
+      } catch {
+        if (!cancelled) setAccountError('Your dealer account could not be loaded just now. Please try signing in again; your existing session has been kept.');
       }
     })();
     return () => { cancelled = true; };
@@ -69,9 +84,10 @@ const DealerLogin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setAccountError('');
     setUnconfirmedEmail(null);
     try {
-      const { data: signInData, error } = await signInWithPasswordTolerant(email, password);
+      const { data: signInData, error } = await boundedDealerAuth(signInWithPasswordTolerant(email, password));
       if (error) {
         if (error.message?.toLowerCase().includes('email not confirmed')) {
           setUnconfirmedEmail(email);
@@ -86,25 +102,23 @@ const DealerLogin = () => {
       }
 
       const userId = signInData.session?.user?.id;
+      if (!userId) throw new Error('Sign-in could not be confirmed. Please try again.');
       if (userId) void (supabase as any).from('dealer_login_events').insert({ user_id: userId, user_agent: navigator.userAgent.slice(0, 300) }).then(() => {});
 
       // The dealer login is for accounts that own a dealer profile. Some
       // dealers also hold a staff role (e.g. accounts copied from Buy A
       // Warranty); they still land in the dealer portal from here, and in the
       // admin dashboard from /auth. Staff-only accounts are turned away.
-      const [{ data: dealer, error: dealerError }, { data: roles }] = await Promise.all([
-        supabase.from('dealers').select('id').eq('user_id', userId as string).maybeSingle(),
-        supabase.from('user_roles').select('role').eq('user_id', userId as string),
-      ]);
+      const { data: dealer, error: dealerError } = await loadDealer(userId);
       if (dealerError) {
         // A failed lookup is not "no dealer account" — ask them to retry.
-        await supabase.auth.signOut();
-        toast({ title: 'Please try again', description: 'We could not load your dealer account just now. Please sign in again.', variant: 'destructive' });
-        return;
+        throw new Error('We could not load your dealer account just now. Please try again; your sign-in has been kept.');
       }
       if (!dealer) {
+        const { data: roles, error: rolesError } = await loadRoles(userId);
+        if (rolesError) throw new Error('Your account access could not be checked. Please try again.');
         const isAdmin = (roles || []).some((r: any) => isAdminRole(r.role as string));
-        await supabase.auth.signOut();
+        await boundedDealerAuth(supabase.auth.signOut({ scope: 'local' }));
         toast(isAdmin
           ? {
               title: 'Staff account',
@@ -115,16 +129,11 @@ const DealerLogin = () => {
         return;
       }
 
-      const redirect = searchParams.get('redirect');
-      const reg = searchParams.get('reg') || localStorage.getItem('dealerPendingReg');
-      if (redirect) {
-        const target = reg ? `${redirect}?reg=${encodeURIComponent(reg)}` : redirect;
-        navigate(target);
-      } else {
-        navigate('/dealer-portal/dashboard');
-      }
+      navigate(target());
     } catch (error: any) {
-      toast({ title: 'Login failed', description: error.message, variant: 'destructive' });
+      const message = error?.message || 'Sign-in could not be completed. Please try again.';
+      setAccountError(message);
+      toast({ title: 'Please try again', description: message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -237,6 +246,7 @@ const DealerLogin = () => {
               >
                 {loading ? 'Signing in…' : 'Sign in to dealer portal'}
               </Button>
+              {accountError && <div role="alert"><DealerFieldError>{accountError}</DealerFieldError></div>}
             </form>
 
             <div className="my-6 flex items-center gap-3">

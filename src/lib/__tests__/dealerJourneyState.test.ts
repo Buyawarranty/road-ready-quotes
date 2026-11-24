@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dealerJourneyWithVehicle, emptyDealerJourney, isEditableDealerQuote, isNewDealerQuote, DEALER_NEW_QUOTE_URL } from '../dealerJourneyState';
+import { dealerJourneyWithVehicle, emptyDealerJourney, isEditableDealerQuote, isNewDealerQuote, dealerLoginTarget, DEALER_NEW_QUOTE_URL } from '../dealerJourneyState';
 import type { DealerJourneyState } from '@/contexts/DealerJourneyContext';
 
 const firstSale: DealerJourneyState = {
@@ -30,5 +30,24 @@ describe('another dealer warranty starts independently', () => {
   });
   it.each(['draft', 'pending', 'quoted', 'awaiting_panda'])('allows an unfinished %s quote to resume', status => {
     expect(isEditableDealerQuote(status)).toBe(true);
+  });
+  it('protects a paid quote even when its status was overwritten as draft', () => {
+    expect(isEditableDealerQuote('draft', '2026-11-21T19:25:46.204139Z')).toBe(false);
+    expect(isEditableDealerQuote('draft', null)).toBe(true);
+  });
+});
+
+describe('dealer sign-in handoff', () => {
+  it('preserves fresh-sale parameters while adding the registration', () => {
+    expect(dealerLoginTarget('/dealer-portal/quote/pricing?new=1', 'AB12 CDE')).toBe('/dealer-portal/quote/pricing?new=1&reg=AB12+CDE');
+  });
+  it('preserves signed payment-return parameters', () => {
+    expect(dealerLoginTarget('/dealer-portal/quote/confirmation?method=pay_now&id=sale&session_id=session', 'AB12CDE')).toBe('/dealer-portal/quote/confirmation?method=pay_now&id=sale&session_id=session&reg=AB12CDE');
+  });
+  it('keeps the registration already belonging to the requested journey', () => {
+    expect(dealerLoginTarget('/dealer-portal/quote/pricing?reg=XY99ZZZ', 'AB12CDE')).toBe('/dealer-portal/quote/pricing?reg=XY99ZZZ');
+  });
+  it.each([null, '//example.com', '/dealer-other', '/dealer-portal/login', '/dealer-portal/signup/', '/auth', '/dealer-portal/../auth', '/dealer-portal/\\example.com'])('rejects invalid or looping destination %s', redirect => {
+    expect(dealerLoginTarget(redirect, 'AB12CDE')).toBe('/dealer-portal/dashboard');
   });
 });

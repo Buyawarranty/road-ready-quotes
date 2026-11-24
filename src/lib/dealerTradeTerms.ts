@@ -56,10 +56,19 @@ export const DEFAULT_TRADE_TERMS: TradeTerms = {
   sections: DEALER_FULL_TRADE_TERMS,
 };
 
+export function isRecordedTradeTermsAcceptance(response: unknown, version: string): boolean {
+  if (!response || typeof response !== 'object') return false;
+  const result = response as { accepted?: unknown; terms_version?: unknown; error?: unknown };
+  return !result.error && result.accepted === true && result.terms_version === version;
+}
+
 /** Latest published version from admin, falling back to the built-in first version. */
-export async function fetchCurrentTradeTerms(client: any): Promise<TradeTerms> {
-  const { data } = await client.from('dealer_trade_terms_versions')
-    .select('version, summary, sections').order('created_at', { ascending: false }).limit(1).maybeSingle();
+export async function fetchCurrentTradeTerms(client: any, signal?: AbortSignal): Promise<TradeTerms> {
+  let query = client.from('dealer_trade_terms_versions')
+    .select('version, summary, sections').order('created_at', { ascending: false }).limit(1);
+  if (signal) query = query.abortSignal(signal);
+  const { data, error } = await query.maybeSingle();
+  if (error) throw error;
   if (!data || !Array.isArray(data.summary) || !Array.isArray(data.sections)) return DEFAULT_TRADE_TERMS;
   return data as TradeTerms;
 }

@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerJourney } from '@/contexts/DealerJourneyContext';
 import { DEALER_NEW_QUOTE_URL, isEditableDealerQuote } from '@/lib/dealerJourneyState';
+import { dealerRequest } from '@/lib/dealerRequest';
+import DealerFieldError from '@/components/dealer/DealerFieldError';
 import { Plus, Search, Trash2, ArrowRight, Check, ShieldCheck, ClipboardCheck, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -44,18 +46,20 @@ const DealerQuotesList = () => {
   const [page, setPage] = useState(1);
   const [pageJump, setPageJump] = useState('');
 
-  const { data: quotes = [] } = useQuery({
+  const { data: quotes = [], isPending, isError, isFetching, refetch } = useQuery({
     queryKey: ['dealer-quotes-list', dealer?.id],
     queryFn: async () => {
       if (!dealer?.id) return [];
-      const { data } = await supabase
+      const { data, error } = await dealerRequest(signal => supabase
         .from('dealer_quotes')
         .select('*')
         .eq('dealer_id', dealer.id)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }).abortSignal(signal), 'Your quotes are taking longer to load. Please try again.');
+      if (error) throw error;
       return data || [];
     },
     enabled: !!dealer?.id,
+    retry: false,
   });
 
   const filtered = useMemo(() => {
@@ -104,7 +108,7 @@ const DealerQuotesList = () => {
   };
 
   const handleResume = (q: any) => {
-    if (!isEditableDealerQuote(q.status)) {
+    if (!isEditableDealerQuote(q.status, q.paid_at)) {
       navigate('/dealer-portal/warranties');
       return;
     }
@@ -244,14 +248,16 @@ const DealerQuotesList = () => {
           </Button>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground" aria-live="polite">
-          <span><strong className="text-crm-navy">{quotes.length}</strong> saved quotes</span>
-          <span>{search || dateRange?.from ? `${filtered.length} matching` : `${filtered.length} quotes`}</span>
+          <span><strong className="text-crm-navy">{isError || isPending ? '—' : quotes.length}</strong> saved quotes</span>
+          {!isError && !isPending && <span>{search || dateRange?.from ? `${filtered.length} matching` : `${filtered.length} quotes`}</span>}
         </div>
       </section>
 
       {/* Quote list */}
       <div className="space-y-5 md:space-y-3">
-        {filtered.length === 0 ? (
+        {isError ? (
+          <div role="alert" className="space-y-3 border border-crm-line rounded-lg p-4"><DealerFieldError>Your quotes could not be loaded. Your saved quotes have been kept; please try again.</DealerFieldError><Button variant="outline" disabled={isFetching} onClick={() => { void refetch(); }}>{isFetching ? 'Loading…' : 'Try loading quotes again'}</Button></div>
+        ) : isPending ? <p role="status" className="py-8 text-center text-muted-foreground">Loading your quotes…</p> : filtered.length === 0 ? (
           <div className="bg-card border border-crm-line rounded-lg px-4 py-8 text-center">
             <p className="text-muted-foreground">
               {search || dateRange?.from ? 'No quotes match your search or filters.' : 'No saved quotes yet. Start a new quote to get going.'}
