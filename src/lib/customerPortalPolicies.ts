@@ -2,6 +2,16 @@ import type { supabase } from '@/integrations/supabase/client';
 import { dealerRequest } from './dealerRequest';
 
 type PolicyClient = Pick<typeof supabase, 'from' | 'functions'>;
+/** The exact linked sale's terminal status wins over a stale portal copy. */
+export function customerPortalCoverStatus(policy: {
+  status?: string | null;
+  customers?: { status?: string | null };
+}): string {
+  const saleStatus = policy.customers?.status?.trim().toLowerCase();
+  if (saleStatus && ['cancelled', 'refunded', 'expired'].includes(saleStatus)) return saleStatus;
+  return policy.status?.trim().toLowerCase() || 'pending';
+}
+
 export interface CustomerPolicyIdentity {
   email?: string | null;
   userId?: string | null;

@@ -2,6 +2,7 @@ import { resendFetch } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
 import { makeClaimUrl, resolveBrand, transactionalEmailIdentity, type Brand } from '../_shared/brand.ts';
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -138,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
       .select(`
         *,
         customers!customer_id (
-          id, name, email, first_name, last_name, brand
+          id, status, name, email, first_name, last_name, brand
         )
       `);
 
@@ -179,6 +180,9 @@ const handler = async (req: Request): Promise<Response> => {
     const customer = policy.customers;
     const brand: Brand = resolveBrand(req, { brand: body?.brand, record: customer });
     const resendFrom = transactionalEmailIdentity(brand, "warranty_purchase").from;
+    if (customer?.brand === 'pandaprotect' && (isTerminalCoverStatus(customer.status) || isTerminalCoverStatus(policy.status))) {
+      return new Response(JSON.stringify({ ok: false, code: 'COVER_NOT_ACTIVE', error: 'This warranty is no longer active; an activation email cannot be sent.' }), { status: 409, headers: { 'content-type': 'application/json', ...corsHeaders } });
+    }
 
     if (!customer) {
       return new Response(JSON.stringify({ 

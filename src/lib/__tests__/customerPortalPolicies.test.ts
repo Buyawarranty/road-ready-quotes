@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { customerPortalPaymentAmount, loadCustomerPortalPolicies } from '../customerPortalPolicies';
+import { customerPortalCoverStatus, customerPortalPaymentAmount, loadCustomerPortalPolicies } from '../customerPortalPolicies';
 
 function lookupClient(responses: Array<{ data: unknown[] | null; error: unknown }>) {
   const filters: Array<[string, string, unknown]> = [];
@@ -20,6 +20,19 @@ function lookupClient(responses: Array<{ data: unknown[] | null; error: unknown 
 }
 
 describe('customer portal warranty lookup', () => {
+  it('shows cancelled FP14UBL cover as cancelled despite a stale active portal copy', () => {
+    expect(customerPortalCoverStatus({ status: 'active', customers: { status: 'Cancelled' } })).toBe('cancelled');
+  });
+  it('keeps a separate replacement warranty active', () => {
+    expect(customerPortalCoverStatus({ status: 'active', customers: { status: 'Active' } })).toBe('active');
+  });
+  it('does not reactivate a cancelled portal policy from an active sale copy', () => {
+    expect(customerPortalCoverStatus({ status: 'cancelled', customers: { status: 'Active' } })).toBe('cancelled');
+  });
+  it('honours refunds and expiry on the exact linked sale', () => {
+    expect(customerPortalCoverStatus({ status: 'active', customers: { status: 'Refunded' } })).toBe('refunded');
+    expect(customerPortalCoverStatus({ status: 'scheduled', customers: { status: 'Expired' } })).toBe('expired');
+  });
   it('never shows dealer charges or an amount before purchaser ownership is resolved', () => {
     expect(customerPortalPaymentAmount({ payment_amount: 99, customers: { dealer_id: 'dealer-one' } })).toBeNull();
     expect(customerPortalPaymentAmount({ payment_amount: 99 })).toBeNull();

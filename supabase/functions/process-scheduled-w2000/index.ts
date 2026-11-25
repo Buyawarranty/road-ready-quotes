@@ -35,6 +35,8 @@ serve(async (req) => {
       .from('customer_policies')
       .select('id, customer_id, email, warranty_number, warranties_2000_scheduled_for, policy_start_date')
       .eq('warranties_2000_status', 'scheduled')
+      .in('status', ['active', 'scheduled'])
+      .or('is_deleted.is.null,is_deleted.eq.false')
       .lte('warranties_2000_scheduled_for', endOfTodayISO)
       .limit(50); // Process up to 50 at a time
 
@@ -69,10 +71,13 @@ serve(async (req) => {
         });
 
         // Mark as processing
-        await supabaseClient
+        const { data: processing, error: processingError } = await supabaseClient
           .from('customer_policies')
           .update({ warranties_2000_status: 'processing' })
-          .eq('id', policy.id);
+          .eq('id', policy.id).in('status', ['active', 'scheduled'])
+          .select('id').maybeSingle();
+        if (processingError) throw processingError;
+        if (!processing) continue;
 
         // Call the W2000 function
         const { data: w2kResult, error: w2kError } = await supabaseClient.functions.invoke('send-to-warranties-2000', {
@@ -85,15 +90,19 @@ serve(async (req) => {
         if (w2kError) {
           throw w2kError;
         }
+        if (w2kResult?.success !== true) throw new Error(w2kResult?.error || 'Warranty submission did not complete');
 
         // Activate the policy now that W2000 submission succeeded and start date has passed
         const startDate = new Date(policy.policy_start_date);
         const now = new Date();
         if (startDate <= now) {
-          await supabaseClient
+          const { data: activated, error: activationError } = await supabaseClient
             .from('customer_policies')
             .update({ status: 'active' })
-            .eq('id', policy.id);
+            .eq('id', policy.id).in('status', ['active', 'scheduled'])
+            .select('id, status').maybeSingle();
+          if (activationError) throw activationError;
+          if (!activated || activated.status !== 'active') continue;
           logStep(`Activated scheduled policy ${policy.id}`);
 
           // Send the welcome/activation email now that the warranty is live

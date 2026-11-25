@@ -3,6 +3,7 @@ import { resendFetch, polishResend } from "../_shared/emailPolish.ts";
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { makeClaimUrl, resolveBrand, transactionalEmailIdentity } from "../_shared/brand.ts";
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -53,9 +54,16 @@ serve(async (req) => {
     logStep("Fetching policy data for seasonal bonus");
     const { data: existingPolicyData, error: policyFetchError } = await supabaseClient
       .from('customer_policies')
-      .select('seasonal_bonus_months')
+      .select('seasonal_bonus_months, status, customers!customer_id(status, brand)')
       .eq('policy_number', policyNumber)
       .maybeSingle();
+
+    if (brand.key === 'pandaprotect') {
+      if (policyFetchError) throw new Error('The warranty status could not be checked before sending.');
+      if (isTerminalCoverStatus(existingPolicyData?.status) || isTerminalCoverStatus(existingPolicyData?.customers?.status)) {
+        return new Response(JSON.stringify({ success: false, error: 'This warranty is no longer active; an activation email cannot be sent.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
 
     const seasonalBonusMonths = existingPolicyData?.seasonal_bonus_months || 0;
     logStep("Seasonal bonus retrieved", { seasonalBonusMonths });

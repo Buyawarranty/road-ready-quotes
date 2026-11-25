@@ -1,6 +1,7 @@
 import { notifyDealerSale, syncDealerSale } from './dealerSaleFulfilment.ts';
 import { partnerWarrantySummary, sendPartnerWebhook } from './partnerWebhook.ts';
 import { assertDealerStripeMode } from './dealerStripeMode.ts';
+import { isTerminalCoverStatus } from './terminalCoverStatus.ts';
 
 interface DealerStripeSession {
   id: string;
@@ -26,12 +27,13 @@ export async function finaliseDealerCardPayment(admin: any, session: DealerStrip
 
   const { data: customer, error: customerError } = await admin
     .from('customers')
-    .select('id, dealer_id, final_amount, stripe_session_id, payment_verified')
+    .select('id, status, dealer_id, final_amount, stripe_session_id, payment_verified')
     .eq('id', customerId)
     .eq('dealer_id', dealerId)
     .eq('brand', 'pandaprotect')
     .maybeSingle();
   if (customerError || !customer) throw new Error('Dealer warranty not found for this payment.');
+  if (isTerminalCoverStatus(customer.status)) throw new Error('This warranty is no longer active. Open your warranties to check its cancellation; payment will not reactivate it.');
   if (customer.stripe_session_id !== session.id) throw new Error('Payment does not match this warranty.');
   if (session.currency !== 'gbp' || session.amount_total !== Math.round(Number(customer.final_amount) * 100)) {
     throw new Error('Payment does not match the warranty amount.');
@@ -61,9 +63,14 @@ export async function finaliseDealerCardPayment(admin: any, session: DealerStrip
     })
     .eq('id', customer.id)
     .eq('payment_verified', false)
+    .in('status', ['Pending', 'pending', 'Active', 'active', 'Scheduled', 'scheduled'])
     .select('id')
     .maybeSingle();
   if (updateError) throw new Error(updateError.message);
+  if (!confirmed && !customer.payment_verified) {
+    const { data: latest, error: latestError } = await admin.from('customers').select('status, payment_verified').eq('id', customer.id).maybeSingle();
+    if (latestError || !latest?.payment_verified || isTerminalCoverStatus(latest.status)) throw new Error('The warranty status changed. Open your warranties before continuing.');
+  }
 
   const sale = await syncDealerSale(admin, {
     customerId: customer.id,

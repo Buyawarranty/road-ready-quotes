@@ -24,7 +24,7 @@ import { useImpersonation } from '@/hooks/useImpersonation';
 import { ImpersonationBanner } from '@/components/ImpersonationBanner';
 import { AddressAutocomplete, AddressData as AutocompleteAddressData } from '@/components/ui/address-autocomplete';
 import { CLAIMS_PHONE } from '@/lib/contactNumbers';
-import { customerPortalPaymentAmount, loadCustomerPortalPolicies } from '@/lib/customerPortalPolicies';
+import { customerPortalCoverStatus, customerPortalPaymentAmount, loadCustomerPortalPolicies } from '@/lib/customerPortalPolicies';
 import { dealerRequest } from '@/lib/dealerRequest';
 import { PANDA_WARRANTY_DOCUMENTS } from '../../supabase/functions/_shared/dealerWarrantyDocuments';
 
@@ -76,6 +76,7 @@ interface CustomerPolicy {
   customer_id?: string;
   customers?: {
     id: string;
+    status?: string | null;
     dealer_id?: string | null;
     vehicle_make?: string;
     vehicle_model?: string;
@@ -527,10 +528,13 @@ const CustomerDashboard = () => {
       const customerIds = [...new Set(records.map(policy => policy.customer_id).filter((id): id is string => Boolean(id)))];
       if (customerIds.length > 0) {
         const result = await dealerRequest(signal => supabase.from('customers')
-          .select('id, dealer_id, vehicle_make, vehicle_model, vehicle_year, vehicle_fuel_type, vehicle_transmission, registration_plate, mileage, phone, first_name, last_name, flat_number, building_name, building_number, street, town, county, postcode, country, labour_rate')
+          .select('id, status, dealer_id, vehicle_make, vehicle_model, vehicle_year, vehicle_fuel_type, vehicle_transmission, registration_plate, mileage, phone, first_name, last_name, flat_number, building_name, building_number, street, town, county, postcode, country, labour_rate')
           .in('id', customerIds).abortSignal(signal), 'Your vehicle details are taking longer than expected. Please try again.');
         if (result.error) throw new Error('Your vehicle details could not be loaded. Please try again.');
-        data = data.map(policy => ({ ...policy, customers: result.data?.find(customer => customer.id === policy.customer_id) || undefined }));
+        data = data.map(policy => {
+          const linked = { ...policy, customers: result.data?.find(customer => customer.id === policy.customer_id) || undefined };
+          return { ...linked, status: customerPortalCoverStatus(linked) };
+        });
       }
       const withDocuments = await fetchPolicyDocuments(data);
       if (requestId !== policyRequest.current) return;
@@ -1331,6 +1335,9 @@ const CustomerDashboard = () => {
                                     </div>
                                     <div className="mt-1 text-xs text-gray-500 ml-0">
                                       Ref: {warrantyRef} · Started: {policyDate}{customerPayment != null ? ` · £${customerPayment.toFixed(2)}` : ''}
+                                      {['cancelled', 'refunded', 'expired'].includes(policy.status) && (
+                                        <span className="ml-1 font-semibold text-destructive">· {policy.status === 'cancelled' ? 'Cancelled' : policy.status === 'refunded' ? 'Refunded' : 'Expired'}</span>
+                                      )}
                                     </div>
                                   </button>
                                 );
@@ -1393,9 +1400,7 @@ const CustomerDashboard = () => {
                                       {displayStatus === 'cancelled' && <X className="h-5 w-5" />}
                                       {displayStatus === 'refunded' && <X className="h-5 w-5" />}
                                       {displayStatus === 'pending' && <AlertCircle className="h-5 w-5" />}
-                                      {displayStatus === 'cancelled' || displayStatus === 'refunded' 
-                                        ? (displayStatus === 'refunded' ? 'REFUNDED' : 'INACTIVE')
-                                        : displayStatus.toUpperCase()}
+                                      {displayStatus.toUpperCase()}
                                     </p>
                                   );
                                 })()}

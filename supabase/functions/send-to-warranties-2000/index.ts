@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.2';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -169,7 +170,7 @@ serve(async (req) => {
         .select(`
           *,
           customers!customer_id (
-            id, name, email, first_name, last_name, phone,
+            id, status, brand, name, email, first_name, last_name, phone,
             registration_plate, vehicle_make, vehicle_model, vehicle_year,
             mileage, flat_number, building_name, building_number,
             street, town, county, postcode, country, plan_type, payment_type,
@@ -235,6 +236,9 @@ serve(async (req) => {
 
     if (!customer) {
       throw new Error('Customer data not found');
+    }
+    if (customer.brand === 'pandaprotect' && (isTerminalCoverStatus(customer.status) || isTerminalCoverStatus(policy?.status))) {
+      return new Response(JSON.stringify({ success: false, error: 'This warranty is no longer active and cannot be submitted for activation.' }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     console.log(`[WARRANTIES-2000] Data validation passed:`, {

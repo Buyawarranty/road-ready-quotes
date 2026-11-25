@@ -7,6 +7,7 @@ import { resendFetch } from '../_shared/emailPolish.ts';
 import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
 import { ensureCustomerPortalLogin, logCustomerEmail } from '../_shared/customerPortalLogin.ts';
 import { requireStaffAdmin } from '../_shared/staffAuth.ts';
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 import {
   buildDealerWarrantyEmail,
   normaliseDealerWarrantyEmailTemplate,
@@ -34,7 +35,7 @@ const BodySchema = z.object({
   template: TemplateSchema.optional(),
 });
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const CUSTOMER_FIELDS = 'id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, payment_status, signup_date, dealer_id, warranty_number, phone, flat_number, building_name, building_number, street, town, county, postcode';
+const CUSTOMER_FIELDS = 'id, status, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, payment_status, signup_date, dealer_id, warranty_number, phone, flat_number, building_name, building_number, street, town, county, postcode';
 
 function serviceClient() {
   return createClient(
@@ -61,6 +62,7 @@ async function adminPreview(admin: ReturnType<typeof serviceClient>, brand: Retu
     .select(CUSTOMER_FIELDS)
     .eq('brand', 'pandaprotect')
     .not('dealer_id', 'is', null)
+    .in('status', ['Active', 'active', 'Scheduled', 'scheduled'])
     .order('signup_date', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -146,6 +148,7 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
     if (customerError || !customer) return json({ error: 'Warranty not found' }, 404);
     if (customer.dealer_id !== dealer.id) return json({ error: 'This warranty does not belong to your dealer account' }, 403);
+    if (isTerminalCoverStatus(customer.status)) return json({ error: `This warranty is ${String(customer.status).toLowerCase()}; an active-cover confirmation cannot be sent.` }, 409);
 
     const recipientType = body.recipient_type === 'me' ? 'me' : 'customer';
     const to = String(body.to_email || (recipientType === 'me' ? dealer.email : customer.email) || '').trim();

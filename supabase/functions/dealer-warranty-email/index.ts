@@ -8,6 +8,7 @@ import { buildDealerWarrantyEmail, DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE } from
 import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
 import { ensureCustomerPortalLogin, logCustomerEmail } from '../_shared/customerPortalLogin.ts';
 import { buildDealerFreeWarrantyEmail, loadDealerFreeOfferProgress } from '../_shared/dealerFreeWarrantyEmail.ts';
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -35,12 +36,13 @@ Deno.serve(async (req: Request) => {
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
     const { data: c, error: customerError } = await supabase
       .from('customers')
-      .select('id, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number, discount_code, phone, flat_number, building_name, building_number, street, town, county, postcode')
+      .select('id, status, name, email, registration_plate, vehicle_make, vehicle_model, vehicle_year, plan_type, payment_type, final_amount, payment_status, signup_date, dealer_id, warranty_number, discount_code, phone, flat_number, building_name, building_number, street, town, county, postcode')
       .eq('id', customerId)
       .eq('brand', 'pandaprotect')
       .maybeSingle();
     if (customerError || !c) return json({ error: 'Warranty not found' }, 404);
     if (!c.dealer_id) return json({ error: 'Not a dealer warranty' }, 400);
+    if (isTerminalCoverStatus(c.status)) return json({ success: false, error: `This warranty is ${String(c.status).toLowerCase()}; an active-cover confirmation cannot be sent.` }, 409);
 
     const { data: dealer } = await supabase.from('dealers').select('id, email, name, company_name').eq('id', c.dealer_id).maybeSingle();
     const recipients = dealerPurchaseRecipients(dealer?.email, c.email);

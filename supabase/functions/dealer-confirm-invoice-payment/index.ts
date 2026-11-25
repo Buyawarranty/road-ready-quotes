@@ -3,6 +3,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.45.0';
 import { z } from 'npm:zod@3.23.8';
 import { canAuthorizeDealerCreditRole } from '../_shared/dealerIntroOffer.ts';
 import { notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
+import { isTerminalCoverStatus } from '../_shared/terminalCoverStatus.ts';
 
 const BodySchema = z.object({ customer_id: z.string().uuid() });
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
@@ -31,10 +32,11 @@ Deno.serve(async (req) => {
 
     const customerId = parsed.data.customer_id;
     const { data: customer, error: customerError } = await admin.from('customers')
-      .select('id, payment_status, dealer_id, brand')
+      .select('id, status, payment_status, dealer_id, brand')
       .eq('id', customerId).eq('brand', 'pandaprotect').not('dealer_id', 'is', null).maybeSingle();
     if (customerError || !customer) return json({ error: 'Dealer sale not found' }, 404);
     if (customer.payment_status === 'paid') return json({ success: true, already_paid: true });
+    if (isTerminalCoverStatus(customer.status)) return json({ error: 'This warranty is no longer active. Review its cancellation before processing an invoice payment.' }, 409);
     if (!['invoice_pending', 'overdue'].includes(customer.payment_status)) {
       return json({ error: 'Only an approved 30-day invoice can be confirmed here' }, 409);
     }
@@ -42,7 +44,6 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const { data: updated, error: updateError } = await admin.from('customers').update({
       payment_status: 'paid',
-      status: 'Active',
       payment_verified: true,
       payment_collected_at: now,
       payment_collected_by: user.id,
@@ -53,9 +54,9 @@ Deno.serve(async (req) => {
       payment_verification_source: 'admin_invoice',
       payment_verification_ref: user.id,
       deferred_paid_at: now,
-    }).eq('id', customerId).in('payment_status', ['invoice_pending', 'overdue']).select('id').maybeSingle();
+    }).eq('id', customerId).in('payment_status', ['invoice_pending', 'overdue']).in('status', ['Active', 'active', 'Scheduled', 'scheduled']).select('id').maybeSingle();
     if (updateError) return json({ error: updateError.message }, 400);
-    if (!updated) return json({ success: true, already_paid: true });
+    if (!updated) return json({ error: 'The invoice or warranty status changed. Refresh before continuing.' }, 409);
 
     const { data: quote } = await admin.from('dealer_quotes').select('id').eq('stripe_session_id', `invoice:${customerId}`).maybeSingle();
     await syncDealerSale(admin, { customerId, quoteId: quote?.id || null, stripeSessionId: `invoice:${customerId}`, quoteStatus: 'paid' });

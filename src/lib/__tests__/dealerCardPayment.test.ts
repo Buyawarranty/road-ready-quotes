@@ -15,16 +15,17 @@ const session = {
   },
 };
 
-function mockAdmin(alreadyVerified = false, isTest = false) {
+function mockAdmin(alreadyVerified = false, isTest = false, status = 'Active') {
   const calls = { rpc: [] as any[], emails: [] as any[], updates: [] as any[] };
   let mode = '';
   let table = '';
   const chain: any = {
     eq: () => chain,
+    in: () => chain,
     select: () => chain,
     maybeSingle: async () => table === 'dealers' ? { data: { id: 'dealer-1', is_test: isTest }, error: null } : mode === 'update'
       ? { data: alreadyVerified ? null : { id: 'customer-1' }, error: null }
-      : { data: { id: 'customer-1', dealer_id: 'dealer-1', final_amount: 1.19, stripe_session_id: session.id, payment_verified: alreadyVerified }, error: null },
+      : { data: { id: 'customer-1', status, dealer_id: 'dealer-1', final_amount: 1.19, stripe_session_id: session.id, payment_verified: alreadyVerified }, error: null },
   };
   const admin = {
     calls,
@@ -39,6 +40,13 @@ function mockAdmin(alreadyVerified = false, isTest = false) {
 }
 
 describe('dealer card completion', () => {
+  it.each([false, true])('never reactivates cancelled cover on a payment retry (verified=%s)', async verified => {
+    const admin = mockAdmin(verified, false, 'Cancelled');
+    await expect(finaliseDealerCardPayment(admin, session)).rejects.toThrow('no longer active');
+    expect(admin.calls.updates).toHaveLength(0);
+    expect(admin.calls.emails).toHaveLength(0);
+    expect(admin.calls.rpc).toHaveLength(0);
+  });
   it('tags completed test-card purchases Test and keeps the normal warranty fulfilment', async () => {
     const admin = mockAdmin(false, true);
     await finaliseDealerCardPayment(admin, { ...session, livemode: false });
