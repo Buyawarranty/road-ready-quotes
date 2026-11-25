@@ -6,7 +6,7 @@ import Stripe from 'https://esm.sh/stripe@14.21.0?target=denonext';
 import { validateAnnualPlan } from '../_shared/dealerAnnualValidation.ts';
 import { calculateDealerPromo } from '../_shared/dealerPromoValidation.ts';
 import { dealerCheckoutState } from '../_shared/dealerCheckoutState.ts';
-import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../_shared/dealerCheckoutDuplicate.ts';
+import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError, dealerFreeCheckoutReuseError, type DealerEarlierCardSession } from '../_shared/dealerCheckoutDuplicate.ts';
 import { displayWarrantyPlanName } from '../_shared/warrantyPlanDisplay.ts';
 import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '../_shared/dealerSaleFulfilment.ts';
 import { dealerStripeSecret, dealerUsesEmbeddedStripe } from '../_shared/dealerStripeMode.ts';
@@ -305,10 +305,39 @@ Deno.serve(async (req: Request) => {
 
     // Customer, free slot, quote, warranty and portal policy commit atomically.
     if (introFreeAvailable) {
+      // An earlier unpaid card attempt for this customer must not block the free warranty: close it, then issue.
       const existing = await findExistingCustomer();
+      let released: { id: string } | null = null;
       if (existing) {
-        const reuseError = dealerCheckoutReuseError(existing, dealer.id);
-        throw new Error(reuseError || 'An unpaid checkout already exists for this quote. Complete it or contact Panda Protect before using the introductory offer.');
+        let session: DealerEarlierCardSession = 'none';
+        if (existing.stripe_session_id && !dealerCheckoutReuseError(existing, dealer.id)) {
+          try {
+            const previous = new Stripe(dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)), { apiVersion: '2024-11-20.acacia' });
+            const found = await previous.checkout.sessions.retrieve(existing.stripe_session_id);
+            session = found.status === 'complete' ? 'complete' : found.status === 'open' ? 'open' : 'expired';
+            if (found.status === 'open') await previous.checkout.sessions.expire(found.id);
+          } catch (e) {
+            console.error('Earlier card checkout could not be checked before free issuance', e);
+            session = 'unknown';
+          }
+        }
+        const blocked = dealerFreeCheckoutReuseError(existing, dealer.id, session);
+        if (blocked) return new Response(JSON.stringify({ error: blocked, code: 'FREE_ISSUE_FAILED' }), {
+          status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+        if (existing.stripe_session_id) {
+          await adminClient.from('dealer_promo_redemptions').update({ status: 'cancelled' }).eq('stripe_session_id', existing.stripe_session_id).eq('status', 'reserved');
+        }
+        // Only this dealer's own unpaid, unverified attempt is ever released.
+        const { data: closed, error: closeError } = await adminClient.from('customers')
+          .update({ status: 'Cancelled', is_deleted: true })
+          .eq('id', existing.id).eq('dealer_id', dealer.id).eq('payment_verified', false).eq('payment_status', 'pending')
+          .select('id');
+        if (closeError || !closed?.length) return new Response(JSON.stringify({
+          error: 'An earlier unfinished checkout for this customer could not be cleared. No warranty was issued and no free entitlement used. Try again or contact dealer support.',
+          code: 'FREE_ISSUE_FAILED',
+        }), { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        released = { id: existing.id };
       }
       const { data: issued, error: issueError } = await adminClient.rpc('issue_dealer_intro_free', {
         p_dealer_id: dealer.id,
@@ -319,6 +348,8 @@ Deno.serve(async (req: Request) => {
       });
       if (issueError || !issued?.customer_id) {
         console.error('Atomic free warranty issuance failed', issueError);
+        // Put the earlier unfinished attempt back exactly as it was, so nothing is lost on failure.
+        if (released) await adminClient.from('customers').update({ status: 'Pending', is_deleted: false }).eq('id', released.id).eq('payment_status', 'pending');
         const changed = issueError?.message?.includes('No free warranty available');
         return new Response(JSON.stringify({
           error: changed ? 'Your trade benefits have changed. Check them again before continuing; no warranty was issued and no payment was taken.'

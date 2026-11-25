@@ -1,6 +1,6 @@
 import { it } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeCheckoutPlate, normalizeCheckoutEmail, dealerCheckoutReuseError } from '../../../supabase/functions/_shared/dealerCheckoutDuplicate';
+import { normalizeCheckoutPlate, normalizeCheckoutEmail, dealerCheckoutReuseError, dealerFreeCheckoutReuseError } from '../../../supabase/functions/_shared/dealerCheckoutDuplicate';
 const row = { dealer_id: 'own', brand: 'pandaprotect', purchase_source: 'dealer', payment_verified: false, payment_status: 'pending' };
 it('normalizes registration spaces and email case for duplicate matching', () => {
   assert.equal(normalizeCheckoutPlate('b11 cad'), 'B11CAD');
@@ -15,4 +15,15 @@ it('preserves paid and invoice-issued warranties', () => {
   assert.ok(dealerCheckoutReuseError({ ...row, payment_verified: true }, 'own'));
   assert.ok(dealerCheckoutReuseError({ ...row, payment_status: 'paid' }, 'own'));
   assert.ok(dealerCheckoutReuseError({ ...row, payment_status: 'invoice_pending' }, 'own'));
+});
+it('lets a free warranty replace the dealer\'s own earlier unpaid attempt without a card payment', () => {
+  assert.equal(dealerFreeCheckoutReuseError(row, 'own', 'none'), null);
+  assert.equal(dealerFreeCheckoutReuseError(row, 'own', 'open'), null);
+  assert.equal(dealerFreeCheckoutReuseError(row, 'own', 'expired'), null);
+});
+it('never issues a free warranty over a paid, foreign or unverifiable earlier checkout', () => {
+  assert.ok(dealerFreeCheckoutReuseError(row, 'own', 'complete'));
+  assert.ok(dealerFreeCheckoutReuseError(row, 'own', 'unknown'));
+  assert.ok(dealerFreeCheckoutReuseError(row, 'other', 'none'));
+  assert.ok(dealerFreeCheckoutReuseError({ ...row, payment_status: 'paid' }, 'own', 'none'));
 });
