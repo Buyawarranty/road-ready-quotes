@@ -1,4 +1,5 @@
 # Shared payment rules
+- Free dealer receipts use dealerFreeWarrantyEmail with post-issuance dealer_bogof_remaining and redemption/settings reads; unavailable balances stay unknown and customer confirmations stay separate, preventing misleading entitlements or leaked offer details.
 - BOGOF uses service-only issue_dealer_intro_free to create or reuse only an owned pending/unverified customer, reserve the slot and fulfil atomically; service-added reuse metadata requires any previous Stripe session to be expired, preventing duplicate payment and preserving unfinished rows on failure. Free receipts have a bounded wait, so email delays cannot hide issued cover.
 - Dealer quote progress/editability is shared in dealerQuoteStatus.ts across lists, dashboard counts, emailed quotes and checkout; paid timestamps override draft labels so stale tabs cannot start another charge on a processed quote.
 - complete_dealer_sale advances only unfinished quotes or invoice-to-paid settlement and rejects cross-customer reuse; repeat completion preserves settled quote/customer/warranty rows to prevent historic sales reopening.

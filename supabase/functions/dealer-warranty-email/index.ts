@@ -7,6 +7,7 @@ import { dealerPurchaseRecipients } from '../_shared/dealerSaleFulfilment.ts';
 import { buildDealerWarrantyEmail, DEFAULT_DEALER_WARRANTY_EMAIL_TEMPLATE } from '../_shared/dealerWarrantyEmail.ts';
 import { loadPandaWarrantyAttachments } from '../_shared/dealerWarrantyDocuments.ts';
 import { ensureCustomerPortalLogin, logCustomerEmail } from '../_shared/customerPortalLogin.ts';
+import { buildDealerFreeWarrantyEmail, loadDealerFreeOfferProgress } from '../_shared/dealerFreeWarrantyEmail.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -76,10 +77,33 @@ Deno.serve(async (req: Request) => {
         <p style="font-size:12px;color:#999;margin-top:24px;border-top:1px solid #eee;padding-top:14px">${esc(brand.name)} · ${brand.supportEmail}</p>
       </div>`;
 
+    const freeProgress = isIntroFree && c.discount_code === 'BOGOF FREE'
+      ? await loadDealerFreeOfferProgress({
+        available: async () => {
+          const { data, error } = await supabase.rpc('dealer_bogof_remaining', { p_dealer_id: c.dealer_id }).abortSignal(AbortSignal.timeout(2500));
+          if (error || typeof data !== 'number') throw new Error('Free balance could not be checked');
+          return data;
+        },
+        redemptions: async () => {
+          const { data, error } = await supabase.from('dealer_intro_free_redemptions').select('status').eq('dealer_id', c.dealer_id).abortSignal(AbortSignal.timeout(2500));
+          if (error || !data) throw new Error('Free redemptions could not be checked');
+          return data;
+        },
+        enabled: async () => {
+          const { data, error } = await supabase.from('dealer_bogof_settings').select('enabled').eq('id', 1).single().abortSignal(AbortSignal.timeout(2500));
+          if (error || typeof data?.enabled !== 'boolean') throw new Error('Offer status could not be checked');
+          return data.enabled;
+        },
+      }) : null;
+    if (isIntroFree && c.discount_code === 'BOGOF FREE' && !freeProgress) console.warn('Free receipt balance unavailable', c.id);
+    const dealerEmail = isIntroFree
+      ? buildDealerFreeWarrantyEmail({ brand, customer: c, dealer: dealer || { id: c.dealer_id }, to: recipients.dealer, progress: freeProgress })
+      : { ...transactionalEmailIdentity(brand, 'warranty_purchase'), to: [recipients.dealer], subject: dealerSubject, html: dealerHtml };
+
     const dealerResponse = await resendFetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-      body: JSON.stringify({ ...transactionalEmailIdentity(brand, 'warranty_purchase'), to: [recipients.dealer], subject: dealerSubject, html: dealerHtml }),
+      body: JSON.stringify(dealerEmail),
     });
     const dealerPayload = await dealerResponse.json().catch(() => ({}));
     if (!dealerResponse.ok) {
