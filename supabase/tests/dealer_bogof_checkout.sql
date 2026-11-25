@@ -2,7 +2,7 @@
 DO $$
 DECLARE
   v_user uuid; v_dealer uuid := gen_random_uuid(); v_quote uuid;
-  v_result jsonb; v_customer jsonb; v_term text; v_before integer; v_cycle integer;
+  v_result jsonb; v_customer jsonb; v_term text; v_before integer; v_cycle integer; v_eligibility jsonb;
   v_snapshot jsonb; v_pending_snapshot jsonb; v_paid_id uuid; v_customer_id uuid; v_pending_id uuid;
 BEGIN
   IF has_function_privilege('authenticated','public.issue_dealer_intro_free(uuid,uuid,integer,numeric,jsonb)','EXECUTE')
@@ -12,6 +12,10 @@ BEGIN
   IF NOT has_function_privilege('service_role','public.issue_dealer_intro_free(uuid,uuid,integer,numeric,jsonb)','EXECUTE') THEN
     RAISE EXCEPTION 'Checkout service needs free issuance access';
   END IF;
+  IF has_function_privilege('authenticated','public.dealer_bogof_paid_count(uuid)','EXECUTE')
+    OR has_function_privilege('anon','public.dealer_bogof_paid_count(uuid)','EXECUTE') THEN
+    RAISE EXCEPTION 'Historical offer counts must remain service-only';
+  END IF;
   IF NOT coalesce((SELECT enabled FROM public.dealer_bogof_settings WHERE id=1),false) THEN
     RAISE EXCEPTION 'Run this regression while the offer is enabled; it never changes the saved switch';
   END IF;
@@ -20,9 +24,16 @@ BEGIN
   BEGIN
     INSERT INTO public.dealers(id,user_id,name,email,company_name,status,is_test)
       VALUES(v_dealer,v_user,'BOGOF regression','bogof-regression@example.test','Rollback-only BOGOF regression','active',true);
+    PERFORM set_config('request.jwt.claim.sub',v_user::text,true);
+    PERFORM set_config('request.jwt.claims',jsonb_build_object('sub',v_user,'role','authenticated')::text,true);
     SELECT coalesce((SELECT version FROM public.dealer_trade_terms_versions ORDER BY created_at DESC LIMIT 1),'2026-11-15-v1') INTO v_term;
     INSERT INTO public.dealer_trade_terms_acceptances(dealer_id,terms_version,accepted_by) VALUES(v_dealer,v_term,v_user);
     IF public.dealer_bogof_remaining(v_dealer) <> 0 THEN RAISE EXCEPTION 'A dealer with no paid purchases must have zero free warranties'; END IF;
+    INSERT INTO public.customers(name,email,plan_type,registration_plate,dealer_id,brand,purchase_source,payment_status,status,final_amount,is_test)
+      VALUES('Rollback-only refunded buyer','refunded@example.test','gold','BGFR0',v_dealer,'pandaprotect','dealer','refunded','Cancelled',99,true);
+    IF public.dealer_bogof_paid_count(v_dealer) <> 0 OR public.dealer_bogof_remaining(v_dealer) <> 0 THEN
+      RAISE EXCEPTION 'Refunded purchases must retain their existing exclusion from the offer';
+    END IF;
     FOR v_cycle IN 1..3 LOOP
       v_paid_id := gen_random_uuid();
       INSERT INTO public.customers(id,name,email,plan_type,registration_plate,dealer_id,brand,purchase_source,
@@ -97,6 +108,20 @@ BEGIN
       EXCEPTION WHEN OTHERS THEN IF SQLSTATE='ZBF03' THEN RAISE; END IF; END;
       IF (SELECT count(*) FROM public.dealer_intro_free_redemptions WHERE dealer_id=v_dealer) <> v_cycle THEN
         RAISE EXCEPTION 'A retry must not consume another free slot';
+      END IF;
+      -- Cancelling the purchase after its free cover is issued must not create a debt for the next pair.
+      UPDATE public.customers SET status='Cancelled' WHERE id=v_paid_id;
+      IF public.dealer_bogof_paid_count(v_dealer) <> v_cycle OR public.dealer_bogof_remaining(v_dealer) <> 0 THEN
+        RAISE EXCEPTION 'Cancellation must preserve historical paid entitlement without granting another free warranty';
+      END IF;
+      v_eligibility := public.get_dealer_paylater_eligibility(v_dealer);
+      IF (v_eligibility->>'intro_paid_count')::integer <> v_cycle
+        OR (v_eligibility->>'intro_free_used')::integer <> v_cycle
+        OR (v_eligibility->>'intro_free_remaining')::integer <> 0 THEN
+        RAISE EXCEPTION 'Portal offer counts must match checkout after cancellation';
+      END IF;
+      IF (v_eligibility->>'paid_count')::integer <> 0 OR (v_eligibility->>'can_request')::boolean THEN
+        RAISE EXCEPTION 'Cancelled and free warranties must remain excluded from invoice eligibility';
       END IF;
     END LOOP;
     INSERT INTO public.customers(name,email,plan_type,registration_plate,dealer_id,brand,payment_status,status,final_amount,is_test)

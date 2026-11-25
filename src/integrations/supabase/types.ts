@@ -16398,6 +16398,10 @@ export type Database = {
         Args: { p_email?: string; p_phone?: string; p_reg?: string }
         Returns: string
       }
+      dealer_bogof_paid_count: {
+        Args: { p_dealer_id: string }
+        Returns: number
+      }
       dealer_bogof_remaining: { Args: { p_dealer_id: string }; Returns: number }
       dealer_login_history: {
         Args: { p_limit?: number; p_user: string }

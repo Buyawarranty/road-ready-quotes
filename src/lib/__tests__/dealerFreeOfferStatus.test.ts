@@ -9,20 +9,31 @@ describe('free warranties left', () => {
     expect(dealerFreeOfferStatus({ intro_offer_enabled: false, intro_free_remaining: 1 })).toBeNull();
   });
   it('one paid warranty gives one free warranty ready to use', () => {
-    const s = dealerFreeOfferStatus({ ...on, paid_count: 1, intro_free_remaining: 1, intro_free_used: 0 })!;
-    expect(s.ready).toBe(1);
-    expect(s.headline).toBe('1 free warranty ready to use · 0 of 3 used');
+    const s = dealerFreeOfferStatus({ ...on, intro_paid_count: 1, intro_free_remaining: 1, intro_free_used: 0 });
+    expect(s?.ready).toBe(1);
+    expect(s?.paidToEarnNext).toBe(0);
   });
   it('a new dealer needs one paid warranty to earn the first free one', () => {
-    expect(dealerFreeOfferStatus({ ...on, paid_count: 0, intro_free_remaining: 0, intro_free_used: 0 })!.detail).toContain('Pay for 1 more warranty');
+    expect(dealerFreeOfferStatus({ ...on, intro_paid_count: 0, intro_free_remaining: 0, intro_free_used: 0 })?.paidToEarnNext).toBe(1);
   });
-  it('cancelled paid warranties stop counting: one active paid and two free used needs two more', () => {
-    const s = dealerFreeOfferStatus({ ...on, paid_count: 1, intro_free_remaining: 0, intro_free_used: 2 })!;
-    expect(s.headline).toBe('0 free warranties ready to use · 2 of 3 used');
-    expect(s.detail).toContain('Pay for 2 more warranties');
+  it('the next paid warranty earns the third free even after the earlier paid cover was cancelled', () => {
+    const s = dealerFreeOfferStatus({ ...on, paid_count: 0, intro_paid_count: 2, intro_free_remaining: 0, intro_free_used: 2 });
+    expect(s?.paidToEarnNext).toBe(1);
+    expect(s?.used).toBe(2);
+  });
+  it('ABC motors has one ready after four historical paid purchases and two free redemptions', () => {
+    const s = dealerFreeOfferStatus({ ...on, paid_count: 1, intro_paid_count: 4, intro_free_remaining: 1, intro_free_used: 2 });
+    expect(s?.ready).toBe(1);
+    expect(s?.paidToEarnNext).toBe(0);
+    expect(s?.cap).toBe(3);
+  });
+  it('never substitutes the active-credit count for a missing historical offer count', () => {
+    expect(dealerFreeOfferStatus({ ...on, paid_count: 0, intro_free_remaining: 0, intro_free_used: 2 })?.paidToEarnNext).toBe(1);
   });
   it('the offer ends after three free warranties', () => {
-    expect(dealerFreeOfferStatus({ ...on, paid_count: 6, intro_free_remaining: 0, intro_free_used: 3 })!.detail).toContain('used all 3');
+    const s = dealerFreeOfferStatus({ ...on, intro_paid_count: 6, intro_free_remaining: 0, intro_free_used: 3 });
+    expect(s?.used).toBe(3);
+    expect(s?.paidToEarnNext).toBe(0);
   });
   it('offer messaging stays while a free warranty can still be earned and stops after three are used', () => {
     expect(dealerFreeOfferOpen({ paid_count: 1, intro_free_remaining: 0, intro_free_used: 2 })).toBe(true);
