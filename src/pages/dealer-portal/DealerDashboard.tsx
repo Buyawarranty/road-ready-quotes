@@ -26,7 +26,7 @@ const series = [
   { key: 'Customers', label: 'Customers', icon: Users, tone: 'bg-crm-purple-soft text-crm-purple', colour: 'hsl(var(--crm-purple))' },
 ] as const;
 const kpiSeries = series.filter(item => item.key !== 'Claims');
-const statusTone = (status: string) => ['paid', 'sent', 'quoted', 'completed'].includes(status.toLowerCase()) ? 'bg-crm-green-soft text-crm-green' : status.toLowerCase() === 'draft' ? 'bg-crm-blue-soft text-crm-blue' : 'bg-crm-amber-soft text-crm-amber';
+const statusTone = (status: string) => ['paid', 'sent', 'quoted', 'completed'].includes(status.toLowerCase()) ? 'bg-crm-green-soft text-crm-green' : status.toLowerCase() === 'draft' ? 'bg-crm-blue-soft text-crm-blue' : ['cancelled', 'refunded'].includes(status.toLowerCase()) ? 'bg-crm-red-soft text-crm-red' : 'bg-crm-amber-soft text-crm-amber';
 const money = (value: number) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(value);
 
 export default function DealerDashboard() {
@@ -111,7 +111,7 @@ export default function DealerDashboard() {
         <div className={panel}><div className="flex items-center justify-between p-3"><h2 className="text-sm font-bold">Recent quotes</h2>{viewAll(routes.Quotes)}</div>
           {quotes.length ? <div className="divide-y divide-crm-line px-3 pb-1">{quotes.slice(0, 5).map(quote => <Button key={quote.id} variant="ghost" className="h-auto w-full justify-start gap-2 whitespace-normal rounded-none px-0 py-2.5 text-left" onClick={() => navigate(dealerQuoteProgress(quote).canResume ? `${routes.Quotes}?search=${encodeURIComponent(quote.vehicle_reg)}` : dealerQuoteProgress(quote).warrantyHref)}>
             <span className="min-w-0 flex-1"><span className="block text-xs font-bold">{quote.vehicle_reg}</span><span className="block truncate text-[10px] font-normal text-muted-foreground">{[quote.vehicle_make, quote.vehicle_model].filter(Boolean).join(' ') || 'Vehicle details pending'}{quote.customer_name ? ` · ${quote.customer_name}` : ''}</span></span>
-            <span className="text-right"><span className="block text-[11px] font-bold">{quote.dealer_price !== null || quote.price !== null ? money(quote.dealer_price ?? quote.price ?? 0) : 'Draft'}</span><span className="block text-[9px] font-normal text-muted-foreground">{format(new Date(quote.created_at), 'dd MMM yy')}</span></span><span className={`rounded px-1.5 py-1 text-[9px] font-semibold capitalize ${statusTone(dealerQuoteProgress(quote).settledLabel?.startsWith('Completed') ? 'completed' : quote.status)}`}>{dealerQuoteProgress(quote).settledLabel || quote.status}</span><ChevronRight className="h-3 w-3 shrink-0" />
+            <span className="text-right"><span className="block text-[11px] font-bold">{quote.dealer_price !== null || quote.price !== null ? money(quote.dealer_price ?? quote.price ?? 0) : 'Draft'}</span><span className="block text-[9px] font-normal text-muted-foreground">{format(new Date(quote.created_at), 'dd MMM yy')}</span></span><span className={`rounded px-1.5 py-1 text-[9px] font-semibold capitalize ${statusTone(dealerQuoteProgress(quote).settledLabel?.startsWith('Completed') ? 'completed' : dealerQuoteProgress(quote).settledLabel || quote.status)}`}>{dealerQuoteProgress(quote).settledLabel || quote.status}</span><ChevronRight className="h-3 w-3 shrink-0" />
           </Button>)}</div> : placeholder('Your recent quotes will appear here.')}
         </div>
         <div className={panel}><div className="flex items-center justify-between p-3"><h2 className="text-sm font-bold">Recent activity</h2></div>

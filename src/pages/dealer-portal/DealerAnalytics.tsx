@@ -36,7 +36,8 @@ const DealerAnalytics: React.FC = () => {
         .select('id, name, vehicle_make, vehicle_model, mileage, final_amount, signup_date, status')
         .eq('dealer_id', dealer.id)
         .order('signup_date', { ascending: false });
-      return data || [];
+      // Cancelled or refunded cover is not counted as an activated plan, matching the dashboard.
+      return (data || []).filter(row => !['cancelled', 'refunded'].includes(String(row.status || '').toLowerCase()));
     },
     enabled: !!dealer?.id,
   });
