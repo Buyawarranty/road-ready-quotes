@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dealerFreeOfferStatus } from '../dealerFreeOfferStatus';
+import { dealerFreeOfferOpen, dealerFreeOfferStatus } from '../dealerFreeOfferStatus';
 
 const on = { intro_offer_enabled: true };
 
@@ -23,5 +23,9 @@ describe('free warranties left', () => {
   });
   it('the offer ends after three free warranties', () => {
     expect(dealerFreeOfferStatus({ ...on, paid_count: 6, intro_free_remaining: 0, intro_free_used: 3 })!.detail).toContain('used all 3');
+  });
+  it('offer messaging stays while a free warranty can still be earned and stops after three are used', () => {
+    expect(dealerFreeOfferOpen({ paid_count: 1, intro_free_remaining: 0, intro_free_used: 2 })).toBe(true);
+    expect(dealerFreeOfferOpen({ paid_count: 1, intro_free_remaining: 0, intro_free_used: 3 })).toBe(false);
   });
 });

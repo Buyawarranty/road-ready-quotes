@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import FreeWarrantyStatus from '@/components/dealer/offer/FreeWarrantyStatus';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerJourneyLayout } from '@/components/dealer/journey/DealerJourneyLayout';
 import { Card, CardContent } from '@/components/ui/card';
@@ -134,6 +135,8 @@ const Step5Confirmation: React.FC = () => {
               </div>
             )}
           </div>
+
+          {confirmed && <FreeWarrantyStatus dealerId={dealer?.id} className="mx-auto mb-6 max-w-md text-left" />}
 
           {isInvoice && (
             <p className="mx-auto mb-6 max-w-md text-xs text-muted-foreground">

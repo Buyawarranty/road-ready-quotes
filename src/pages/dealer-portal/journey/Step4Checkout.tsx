@@ -17,7 +17,8 @@ import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
 import { fetchCurrentTradeTerms } from '@/lib/dealerTradeTerms';
 import { dealerRequest } from '@/lib/dealerRequest';
 import { FreeWarrantyStatusView } from '@/components/dealer/offer/FreeWarrantyStatus';
-import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
+import { dealerFreeOfferOpen } from '@/lib/dealerFreeOfferStatus';
+import { DEALER_INTRO_MAX_MONTHS } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
 import { useToast } from '@/hooks/use-toast';
@@ -42,7 +43,6 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
-const INTRO_PAID_TARGET = DEALER_INTRO_PAID_TARGET;
 
 type Method = 'pay_now' | 'invoice';
 
@@ -431,7 +431,7 @@ const Step4Checkout: React.FC = () => {
           <div className="mt-5 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep"><Gift className="h-5 w-5" /> Your trade benefits</p>
             <ul className="mt-3 space-y-3">
-              {eligibility?.intro_offer_enabled && ((eligibility?.intro_free_remaining ?? 0) > 0 || (eligibility?.paid_count ?? 0) < INTRO_PAID_TARGET) && (
+              {eligibility?.intro_offer_enabled && dealerFreeOfferOpen(eligibility) && (
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
                 <span><span className="block text-sm font-bold text-crm-navy">Buy one warranty, get the next one free</span><span className="text-sm text-muted-foreground">{BOGOF_DETAIL}</span></span>

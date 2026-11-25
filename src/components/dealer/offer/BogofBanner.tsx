@@ -3,6 +3,7 @@ import { Check, ChevronDown, Gift, Info, Tag, X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
 import { dealerRequest } from '@/lib/dealerRequest';
+import { dealerFreeOfferOpen, type FreeOfferFigures } from '@/lib/dealerFreeOfferStatus';
 
 /** The offer wording lives here once, so every dealer page says the same thing. */
 export const BOGOF_SHORT_LABEL = 'Buy one get one free';
@@ -24,7 +25,7 @@ export function subscribeBogofRefresh(refresh: () => void) {
 
 /**
  * Whether the buy-one-get-one-free offer still applies to this dealer:
- * they are still earning their free warranties (fewer than 3 paid) or have
+ * they are still earning their free warranties (fewer than 3 used) or have
  * free warranties left to use. Once all free warranties are used, the offer
  * messaging hides. Defaults to true when the check cannot run, so a temporary
  * read failure never wrongly hides a live offer.
@@ -33,8 +34,7 @@ export async function loadBogofEligibility(dealerId?: string | null): Promise<bo
   if (!dealerId) return true;
   const { data, error } = await dealerRequest<any>(signal => (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealerId }).abortSignal(signal), 'The offer could not be checked.').catch(() => ({ data: null, error: true }));
   if (error || !data) return true;
-  const e = data as { paid_count?: number; intro_free_remaining?: number };
-  return (e.intro_free_remaining ?? 0) > 0 || (e.paid_count ?? 0) < 3;
+  return dealerFreeOfferOpen(data as FreeOfferFigures);
 }
 
 /**

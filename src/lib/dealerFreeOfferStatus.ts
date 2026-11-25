@@ -18,3 +18,8 @@ export function dealerFreeOfferStatus(e: FreeOfferFigures | null | undefined): F
   const needed = Math.max(1, used + 1 - Math.min(FREE_OFFER_CAP, paid));
   return { ready, used, cap: FREE_OFFER_CAP, headline, detail: `Pay for ${needed} more ${needed === 1 ? 'warranty' : 'warranties'} and the next one is free. Cancelled or refunded warranties do not count towards the offer.` };
 }
+
+/** The offer is still open to a dealer while a free warranty is ready or fewer than the cap have been used. */
+export function dealerFreeOfferOpen(e: FreeOfferFigures | null | undefined): boolean {
+  return Number(e?.intro_free_remaining ?? 0) > 0 || Number(e?.intro_free_used ?? 0) < FREE_OFFER_CAP;
+}
