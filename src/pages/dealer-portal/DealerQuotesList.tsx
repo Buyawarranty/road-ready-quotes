@@ -56,7 +56,15 @@ const DealerQuotesList = () => {
         .eq('dealer_id', dealer.id)
         .order('created_at', { ascending: false }).abortSignal(signal), 'Your quotes are taking longer to load. Please try again.');
       if (error) throw error;
-      return data || [];
+      // A quote whose warranty was later cancelled or refunded must show that, not "Completed".
+      const { data: cover, error: coverError } = await dealerRequest(signal => supabase
+        .from('dealer_warranties')
+        .select('quote_id, status')
+        .eq('dealer_id', dealer.id)
+        .not('quote_id', 'is', null).abortSignal(signal), 'Your quotes are taking longer to load. Please try again.');
+      if (coverError) throw coverError;
+      const coverByQuote = new Map((cover || []).map((w: any) => [w.quote_id, w.status]));
+      return (data || []).map((q: any) => ({ ...q, cover_status: coverByQuote.get(q.id) || null }));
     },
     enabled: !!dealer?.id,
     retry: false,
@@ -311,7 +319,7 @@ const DealerQuotesList = () => {
                   </div>
                   <p className="text-sm text-muted-foreground">
                     <span className="font-semibold text-foreground">{progress.canResume ? 'Step:' : 'Status:'}</span>{' '}
-                    <span className={progress.settledLabel?.startsWith('Completed') ? 'text-crm-green-deep font-semibold' : 'text-foreground md:text-crm-orange font-medium'}>
+                    <span className={progress.settledLabel?.startsWith('Completed') ? 'text-crm-green-deep font-semibold' : ['Cancelled', 'Refunded'].includes(progress.settledLabel || '') ? 'text-crm-red font-semibold' : 'text-foreground md:text-crm-orange font-medium'}>
                       {progress.settledLabel || (q.status === 'awaiting_panda'
                         ? 'Awaiting Panda Protect'
                         : STEP_LABELS[Number(q.current_step || 1)] || 'Warranty quote')}

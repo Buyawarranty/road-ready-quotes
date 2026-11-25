@@ -87,4 +87,12 @@ describe('dealer sign-in handoff', () => {
   it.each([null, '//example.com', '/dealer-other', '/dealer-portal/login', '/dealer-portal/signup/', '/auth', '/dealer-portal/../auth', '/dealer-portal/\\example.com'])('rejects invalid or looping destination %s', redirect => {
     expect(dealerLoginTarget(redirect, 'AB12CDE')).toBe('/dealer-portal/dashboard');
   });
+
+  it('shows a paid quote as Cancelled or Refunded once its warranty is cancelled or refunded', () => {
+    const paid = { status: 'paid', paid_at: '2026-11-24T15:56:51Z', vehicle_reg: 'FP14 UBL' };
+    expect(dealerQuoteProgress({ ...paid, cover_status: 'cancelled' }).settledLabel).toBe('Cancelled');
+    expect(dealerQuoteProgress({ ...paid, cover_status: 'refunded' }).settledLabel).toBe('Refunded');
+    expect(dealerQuoteProgress({ ...paid, cover_status: 'cancelled' }).canResume).toBe(false);
+    expect(dealerQuoteProgress({ ...paid, cover_status: 'active' }).settledLabel).toBe('Completed');
+  });
 });

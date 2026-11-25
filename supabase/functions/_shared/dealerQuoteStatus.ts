@@ -5,11 +5,13 @@ export function isEditableDealerQuote(status: string | null | undefined, paidAt?
 }
 
 /** Quote lists and resume controls use payment evidence, not the last saved journey step. */
-export function dealerQuoteProgress(quote: { status?: string | null; paid_at?: string | null; vehicle_reg?: string | null }) {
+export function dealerQuoteProgress(quote: { status?: string | null; paid_at?: string | null; vehicle_reg?: string | null; cover_status?: string | null }) {
   const status = String(quote.status || '').toLowerCase();
-  const canResume = isEditableDealerQuote(status, quote.paid_at);
-  const settledLabel = status === 'cancelled' ? 'Cancelled'
-    : status === 'refunded' ? 'Refunded'
+  // The linked warranty's cover status wins: a cancelled or refunded warranty must never read as a completed quote.
+  const cover = String(quote.cover_status || '').toLowerCase();
+  const canResume = !['cancelled', 'refunded'].includes(cover) && isEditableDealerQuote(status, quote.paid_at);
+  const settledLabel = status === 'cancelled' || cover === 'cancelled' ? 'Cancelled'
+    : status === 'refunded' || cover === 'refunded' ? 'Refunded'
     : status === 'closed' ? 'Closed'
     : status === 'invoiced' ? 'Completed · invoice issued'
     : quote.paid_at || ['paid', 'converted', 'completed', 'sent'].includes(status) ? 'Completed'
