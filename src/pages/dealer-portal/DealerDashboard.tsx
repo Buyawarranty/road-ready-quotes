@@ -14,6 +14,7 @@ import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { useDealerDashboard } from '@/hooks/useDealerDashboard';
 import { monthChange, monthlyActivity } from '@/lib/dealerDashboardMetrics';
 import { DealerCreditStatus } from '@/components/dealer/DealerCreditStatus';
+import FreeWarrantyStatus from '@/components/dealer/offer/FreeWarrantyStatus';
 import { isOutstandingDealerInvoice } from '@/lib/dealerSales';
 import { PANDA_WHATSAPP_URL } from '@/lib/pandaContact';
 import { DEALER_NEW_QUOTE_URL, dealerQuoteProgress } from '@/lib/dealerJourneyState';
@@ -81,6 +82,7 @@ export default function DealerDashboard() {
           <Button variant="link" type="button" className="mt-2 h-auto gap-2 p-0 text-xs text-crm-orange" onClick={() => navigate(DEALER_NEW_QUOTE_URL)}>Or start a full quote <ArrowRight className="h-3 w-3" /></Button>
         </form>
       </section>
+      <FreeWarrantyStatus dealerId={dealer?.id} />
 
       {isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-md border border-crm-line bg-card p-3 text-sm"><span>Dealership figures could not be loaded.</span><Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="mr-2 h-4 w-4" />Try again</Button></div>}
       <section aria-label="Dealership overview" className="grid grid-cols-2 gap-3 xl:grid-cols-3">

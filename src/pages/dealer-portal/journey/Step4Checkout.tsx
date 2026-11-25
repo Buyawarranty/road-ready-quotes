@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/compone
 import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
 import { fetchCurrentTradeTerms } from '@/lib/dealerTradeTerms';
 import { dealerRequest } from '@/lib/dealerRequest';
+import { FreeWarrantyStatusView } from '@/components/dealer/offer/FreeWarrantyStatus';
 import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
@@ -453,7 +454,7 @@ const Step4Checkout: React.FC = () => {
               <p className="mt-2 text-sm text-muted-foreground">Buy one, get the next one free applies to this warranty at £0. Cover goes live straight away. You have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
             </div>
           )}
-          {!introFreeApplied && <><h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>
+          {!introFreeApplied && <><FreeWarrantyStatusView figures={eligibility} className="mb-5" /><h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>
           <div className="space-y-3">
             <button type="button" onClick={() => setMethod('pay_now')} aria-pressed={method === 'pay_now'} className={optionClass(method === 'pay_now')}>
               <div className="flex gap-3">
