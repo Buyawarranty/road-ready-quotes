@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
-import { dealerSaleAmount, isCountedDealerSale } from '@/lib/dealerSales';
+import { dealerSaleAmount, isCountedDealerSale, isPaidDealerPurchase } from '@/lib/dealerSales';
 import { SortableHeader } from '@/components/admin/SortableHeader';
 
 interface SaleRow {
@@ -35,7 +35,7 @@ const DealerAdminSales: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [search, setSearch] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'free' | 'unpaid'>('all');
   const [dealerFilter, setDealerFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [canManage, setCanManage] = useState(false);
@@ -100,7 +100,8 @@ const DealerAdminSales: React.FC = () => {
     const q = search.trim().toLowerCase();
     return rows.filter((r) => {
       if (dealerFilter !== 'all' && r.dealer_id !== dealerFilter) return false;
-      if (paymentFilter === 'paid' && (r.payment_status || '').toLowerCase() !== 'paid') return false;
+      if (paymentFilter === 'paid' && !isPaidDealerPurchase(r)) return false;
+      if (paymentFilter === 'free' && ((r.payment_status || '').toLowerCase() !== 'paid' || dealerSaleAmount(r) !== 0)) return false;
       if (paymentFilter === 'unpaid' && (r.payment_status || '').toLowerCase() === 'paid') return false;
       if (!q) return true;
       return (
@@ -115,7 +116,7 @@ const DealerAdminSales: React.FC = () => {
     });
   }, [rows, search, paymentFilter, dealerFilter, newestFirst]);
 
-  const totalRevenue = filtered.filter(r => !r.is_test).reduce((sum, r) => sum + dealerSaleAmount(r), 0);
+  const totalRevenue = filtered.filter(r => !r.is_test && isPaidDealerPurchase(r)).reduce((sum, r) => sum + dealerSaleAmount(r), 0);
   const allSelected = filtered.length > 0 && filtered.every(r => selected.has(r.id));
   const toggle = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const act = async (kind: 'cancel' | 'test' | 'untest' | 'delete', ids: string[]) => {
@@ -140,7 +141,7 @@ const DealerAdminSales: React.FC = () => {
           <p className="text-muted-foreground text-sm mt-1">All warranty sales originated by dealers.</p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Filtered total</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Paid revenue</p>
           <p className="text-2xl font-bold text-foreground">£{totalRevenue.toLocaleString('en-GB', { maximumFractionDigits: 2 })}</p>
           <p className="text-xs text-muted-foreground">{filtered.length} sales</p>
         </div>
@@ -163,6 +164,7 @@ const DealerAdminSales: React.FC = () => {
               <SelectContent>
                 <SelectItem value="all">All payments</SelectItem>
                 <SelectItem value="paid">Paid only</SelectItem>
+                <SelectItem value="free">Free warranties</SelectItem>
                 <SelectItem value="unpaid">Unpaid only</SelectItem>
               </SelectContent>
             </Select>
@@ -229,8 +231,8 @@ const DealerAdminSales: React.FC = () => {
                         <td className="px-3 py-2 capitalize">{displayWarrantyPlanName(r.plan_type)} · {r.payment_type}m</td>
                         <td className="px-3 py-2 text-foreground">{r.dealer_company || r.dealer_name || '—'}</td>
                         <td className="px-3 py-2">
-                          <Badge variant={paid ? 'default' : 'secondary'} className={paid ? 'bg-green-600' : 'bg-amber-500'}>
-                            {paid ? 'Paid' : (r.payment_status || 'Unpaid')}
+                          <Badge variant={paid ? 'default' : 'secondary'} className={paid ? 'bg-crm-green text-primary-foreground' : 'bg-crm-orange-soft text-crm-navy'}>
+                            {paid && dealerSaleAmount(r) === 0 ? 'Free warranty' : paid ? 'Paid' : (r.payment_status || 'Unpaid')}
                           </Badge>
                         </td>
                         <td className="px-3 py-2">

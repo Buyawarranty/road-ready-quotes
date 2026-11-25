@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Eye, Monitor, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
-import { BogofBannerView, loadBogofSettings, type BogofSettings } from '@/components/dealer/offer/BogofBanner';
+import { BogofBannerView, loadBogofSettings, subscribeBogofRefresh, type BogofSettings } from '@/components/dealer/offer/BogofBanner';
+import { dealerRequest } from '@/lib/dealerRequest';
 
 /** Super Admin only: switch the buy-one-get-one-free offer on/off and edit its banner. */
 export default function BogofOfferSettings() {
@@ -14,23 +15,35 @@ export default function BogofOfferSettings() {
   const [s, setS] = useState<BogofSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [device, setDevice] = useState<'phone' | 'desktop'>('desktop');
+  const [loadError, setLoadError] = useState('');
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    (async () => {
+    let active = true;
+    const refresh = async () => {
+      try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const { data } = await supabase.from('user_roles').select('role').eq('user_id', user.id).eq('role', 'super_admin');
-      if (data?.length) { setIsSuper(true); setS(await loadBogofSettings()); }
-    })();
-  }, []);
+      if (data?.length) { const saved = await loadBogofSettings(); if (active) { setIsSuper(true); setS(saved); setLoadError(saved ? '' : 'The offer settings could not be loaded.'); } }
+      } catch { if (active) setLoadError('The saved offer settings could not be loaded. Try again.'); }
+    };
+    void refresh();
+    const unsubscribe = subscribeBogofRefresh(() => { void refresh(); });
+    return () => { active = false; unsubscribe(); };
+  }, [attempt]);
+  if (loadError) return <div className="space-y-3"><p role="alert" className="text-sm font-bold text-destructive">{loadError}</p><Button variant="outline" onClick={() => setAttempt(value => value + 1)}>Try loading offer again</Button></div>;
   if (!isSuper || !s) return null;
   const save = async (next: BogofSettings) => {
     setSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    const { error } = await (supabase.from as any)('dealer_bogof_settings').update({ ...next, updated_by: user?.id, updated_at: new Date().toISOString() }).eq('id', 1);
-    setSaving(false);
-    if (error) return toast.error(error.message);
-    setS(next);
-    toast.success(next.enabled ? 'Offer is live' : 'Offer saved (switched off)');
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await dealerRequest<any>(signal => (supabase.from as any)('dealer_bogof_settings').update({ ...next, updated_by: user?.id, updated_at: new Date().toISOString() }).eq('id', 1).select('enabled, eyebrow, banner_title, banner_text').abortSignal(signal).single(), 'The offer change could not be confirmed. Reload before trying again.');
+      if (error || !data) throw new Error(error?.message || 'The offer change was not saved.');
+      setS(data);
+      window.dispatchEvent(new Event('dealer-offer-updated'));
+      toast.success(data.enabled ? 'Offer is live' : 'Offer saved (switched off)');
+    } catch (error) { toast.error(error instanceof Error ? error.message : 'The offer change could not be confirmed.'); }
+    finally { setSaving(false); }
   };
   return (
     <div className="space-y-4">
@@ -42,7 +55,7 @@ export default function BogofOfferSettings() {
             <div>
               <p className="flex flex-wrap items-center gap-2 font-semibold">Buy one, get the next one free
                 <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${s.enabled ? 'bg-crm-green-soft text-crm-green-deep' : 'bg-muted text-muted-foreground'}`}>{s.enabled ? 'Offer is live' : 'Offer is off'}</span></p>
-              <p className="mt-1 text-sm text-muted-foreground">{s.enabled ? 'On: every paid warranty earns the dealer one free warranty (up to 3 years).' : 'Off: dealers pay for every warranty and no banner shows.'}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{s.enabled ? 'On: pay one, get one free, three times. Each of the first three paid warranties earns one free warranty (up to 3 years). Maximum three free warranties per dealer.' : 'Off: dealers pay for every warranty and no banner shows.'}</p>
             </div>
             <label className="flex items-center gap-2 text-sm font-bold">{s.enabled ? 'On' : 'Off'}<Switch checked={s.enabled} disabled={saving} onCheckedChange={v => save({ ...s, enabled: v })} /></label>
           </div>

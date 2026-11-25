@@ -355,7 +355,7 @@ const DealerAdminInvoices: React.FC = () => {
             <div className="min-w-0 flex-1">
               <h2 className="font-bold text-crm-navy">How dealer invoicing works</h2>
               <div className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
-                <p><strong>1. Build history</strong><br /><span className="text-muted-foreground">The dealer reaches 10 genuine paid Panda warranties. Free, cancelled and refunded sales do not count.</span></p>
+                <p><strong>1. Build history</strong><br /><span className="text-muted-foreground">The dealer reaches six genuine paid Panda warranties. Free, cancelled and refunded sales do not count.</span></p>
                 <p><strong>2. Request and approve</strong><br /><span className="text-muted-foreground">The dealer requests invoicing from their dashboard or checkout. Admin or Super Admin approves it under Credit authorisations.</span></p>
                 <p><strong>3. Issue and collect</strong><br /><span className="text-muted-foreground">The dealer chooses 30-day invoice at checkout. It appears here as outstanding; overdue balances pause further invoicing.</span></p>
               </div>

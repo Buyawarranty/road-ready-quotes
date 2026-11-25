@@ -42,7 +42,7 @@ const DealerAdminPayLater: React.FC = () => {
         db.from('customers').select('dealer_id, status').eq('brand', 'pandaprotect').eq('payment_status', 'paid').gt('final_amount', 0).not('dealer_id', 'is', null).limit(5000),
       ]);
       setSettings(
-        s.data || { unlock_rule: 'paid_warranties', required_paid_warranties: 10, payment_term_days: 30, block_on_overdue: true },
+        s.data || { unlock_rule: 'paid_warranties', required_paid_warranties: 6, payment_term_days: 30, block_on_overdue: true },
       );
       setDealers(d.data || []);
       setOverrides(Object.fromEntries((o.data || []).map((r: any) => [r.dealer_id, r.mode])));
@@ -90,7 +90,7 @@ const DealerAdminPayLater: React.FC = () => {
       <div>
         <h1 className="text-2xl font-bold">Pay later rules</h1>
         <p className="text-sm text-muted-foreground">
-          Dealers can request 30-day invoicing after 3 paid warranties with no cancellations or refunds. Credit starts only after Admin or Super Admin authorisation; overdue balances are checked automatically.
+          Dealers can request {settings.payment_term_days}-day invoicing after {settings.required_paid_warranties} paid warranties. Free, cancelled and refunded warranties do not count. Credit starts only after Admin or Super Admin authorisation; overdue balances are checked automatically.
         </p>
       </div>
 

@@ -27,6 +27,8 @@ const DealerAnalytics: React.FC = () => {
 
   const { data: warranties = [] } = useQuery({
     queryKey: ['dealer-analytics-warranties', dealer?.id],
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     queryFn: async () => {
       if (!dealer?.id) return [];
       const { data } = await supabase

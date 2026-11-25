@@ -178,6 +178,8 @@ const DealerWarrantiesList = () => {
   const { data: freeLeft } = useQuery({
     queryKey: ['dealer-free-remaining', dealer?.id],
     enabled: !!dealer?.id,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: 'always',
     retry: false,
     queryFn: async () => {
       if (!dealer?.id) return null;

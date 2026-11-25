@@ -4,8 +4,7 @@ export const DEALER_INTRO_MAX_MONTHS = 36;
 export const DEALER_CREDIT_PAID_TARGET = 6;
 
 export function introFreeRemaining(paidCount: number, redemptionCount: number): number {
-  if (paidCount < DEALER_INTRO_PAID_TARGET) return 0;
-  return Math.max(0, DEALER_INTRO_FREE_TOTAL - Math.max(0, redemptionCount));
+  return Math.max(0, Math.min(DEALER_INTRO_FREE_TOTAL, Math.max(0, paidCount)) - Math.max(0, redemptionCount));
 }
 
 export function qualifiesForIntroFree(paidCount: number, redemptionCount: number, durationMonths: number): boolean {

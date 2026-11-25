@@ -16729,6 +16729,16 @@ export type Database = {
         | { Args: never; Returns: boolean }
         | { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      issue_dealer_intro_free: {
+        Args: {
+          p_customer: Json
+          p_dealer_id: string
+          p_dealer_quote_id: string
+          p_duration_months: number
+          p_original_amount: number
+        }
+        Returns: Json
+      }
       lead_has_been_worked: { Args: { p_lead_id: string }; Returns: boolean }
       lead_has_human_activity: { Args: { p_lead_id: string }; Returns: boolean }
       lead_routing_scope: { Args: { _user_id: string }; Returns: string }

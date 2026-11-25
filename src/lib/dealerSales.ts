@@ -29,6 +29,11 @@ export function isCompletedDealerSale(sale: DealerSalePaymentRow): boolean {
   return (sale.payment_status || '').toLowerCase() === 'paid';
 }
 
+/** Paid purchases exclude £0 cover and unwound sales; issued cover is counted separately. */
+export function isPaidDealerPurchase(sale: DealerSalePaymentRow & DealerSaleStatusRow): boolean {
+  return isCountedDealerSale(sale) && isCompletedDealerSale(sale) && dealerSaleAmount(sale) > 0;
+}
+
 export function dealerSalePaymentLabel(sale: DealerSalePaymentRow): string {
   if (Number(sale.final_amount ?? 0) === 0) return 'Introductory offer';
   return (sale.stripe_session_id || '').startsWith('invoice:') ? 'Invoice paid' : 'Card payment';

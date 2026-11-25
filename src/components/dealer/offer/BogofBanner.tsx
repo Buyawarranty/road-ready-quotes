@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check, ChevronDown, Gift, Info, Tag, X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { supabase } from '@/integrations/supabase/client';
+import { dealerRequest } from '@/lib/dealerRequest';
 
 /** The offer wording lives here once, so every dealer page says the same thing. */
 export const BOGOF_SHORT_LABEL = 'Buy one get one free';
@@ -10,8 +11,15 @@ export const BOGOF_DETAIL = "Buy one, get one free — then buy one, get one fre
 export type BogofSettings = { enabled: boolean; eyebrow: string; banner_title: string; banner_text: string };
 
 export async function loadBogofSettings(): Promise<BogofSettings | null> {
-  const { data } = await (supabase.from as any)('dealer_bogof_settings').select('enabled, eyebrow, banner_title, banner_text').eq('id', 1).maybeSingle();
+  const { data, error } = await dealerRequest<any>(signal => (supabase.from as any)('dealer_bogof_settings').select('enabled, eyebrow, banner_title, banner_text').eq('id', 1).abortSignal(signal).maybeSingle(), 'The offer could not be checked.');
+  if (error) throw error;
   return data ?? null;
+}
+
+export function subscribeBogofRefresh(refresh: () => void) {
+  window.addEventListener('focus', refresh);
+  window.addEventListener('dealer-offer-updated', refresh);
+  return () => { window.removeEventListener('focus', refresh); window.removeEventListener('dealer-offer-updated', refresh); };
 }
 
 /**
@@ -23,7 +31,7 @@ export async function loadBogofSettings(): Promise<BogofSettings | null> {
  */
 export async function loadBogofEligibility(dealerId?: string | null): Promise<boolean> {
   if (!dealerId) return true;
-  const { data, error } = await (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealerId });
+  const { data, error } = await dealerRequest<any>(signal => (supabase.rpc as any)('get_dealer_paylater_eligibility', { p_dealer_id: dealerId }).abortSignal(signal), 'The offer could not be checked.').catch(() => ({ data: null, error: true }));
   if (error || !data) return true;
   const e = data as { paid_count?: number; intro_free_remaining?: number };
   return (e.intro_free_remaining ?? 0) > 0 || (e.paid_count ?? 0) < 3;
@@ -70,7 +78,7 @@ export function BogofBannerView({ s, compact = false, onClose }: { s: BogofSetti
       <div className={`mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-bold text-crm-green-deep ${compact ? '' : 'md:mt-0 md:flex-col md:border-l md:border-border md:pl-6 md:pr-8'}`}>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />No code needed</span>
         <span className="inline-flex items-center gap-1.5"><Check className="h-4 w-4" />Applied automatically at checkout</span>
-        <span className="flex w-full gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Applies to your first three<br />warranties: buy 3, get 3 free</span></span>
+        <span className="flex w-full gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Pay one, get one free, three times.<br />Maximum 3 free warranties per dealer.</span></span>
       </div>
     </div>
   );
@@ -81,8 +89,13 @@ export default function BogofBanner({ dealerId }: { dealerId?: string | null }) 
   const [s, setS] = useState<BogofSettings | null>(null);
   const [eligible, setEligible] = useState(true);
   const [closed, setClosed] = useState(false);
-  useEffect(() => { let live = true; loadBogofSettings().then(d => live && setS(d)); return () => { live = false; }; }, []);
-  useEffect(() => { let live = true; loadBogofEligibility(dealerId).then(ok => live && setEligible(ok)); return () => { live = false; }; }, [dealerId]);
+  useEffect(() => {
+    let live = true;
+    const refresh = () => { void Promise.all([loadBogofSettings(), loadBogofEligibility(dealerId)]).then(([settings, ok]) => { if (live) { setS(settings); setEligible(ok); } }).catch(() => { if (live) setS(null); }); };
+    refresh();
+    const unsubscribe = subscribeBogofRefresh(refresh);
+    return () => { live = false; unsubscribe(); };
+  }, [dealerId]);
   if (!s?.enabled || !eligible || closed) return null;
   return <BogofBannerView s={s} onClose={() => setClosed(true)} />;
 }
@@ -92,8 +105,13 @@ export function BogofCollapsible({ dealerId }: { dealerId?: string | null }) {
   const [s, setS] = useState<BogofSettings | null>(null);
   const [eligible, setEligible] = useState(true);
   const [open, setOpen] = useState(false);
-  useEffect(() => { let live = true; loadBogofSettings().then(d => live && setS(d)); return () => { live = false; }; }, []);
-  useEffect(() => { let live = true; loadBogofEligibility(dealerId).then(ok => live && setEligible(ok)); return () => { live = false; }; }, [dealerId]);
+  useEffect(() => {
+    let live = true;
+    const refresh = () => { void Promise.all([loadBogofSettings(), loadBogofEligibility(dealerId)]).then(([settings, ok]) => { if (live) { setS(settings); setEligible(ok); } }).catch(() => { if (live) setS(null); }); };
+    refresh();
+    const unsubscribe = subscribeBogofRefresh(refresh);
+    return () => { live = false; unsubscribe(); };
+  }, [dealerId]);
   if (!s?.enabled || !eligible) return null;
   return (
     <section aria-label={s.eyebrow} className="rounded-xl border border-border bg-card shadow-sm">
@@ -112,7 +130,7 @@ export function BogofCollapsible({ dealerId }: { dealerId?: string | null }) {
           <div className="space-y-1 text-sm font-bold text-crm-green-deep">
             <p className="flex items-center gap-1.5"><Check className="h-4 w-4 shrink-0" />No code needed</p>
             <p className="flex items-center gap-1.5"><Check className="h-4 w-4 shrink-0" />Applied automatically at checkout</p>
-            <p className="flex gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Applies to your first three warranties: buy 3, get 3 free</span></p>
+            <p className="flex gap-1.5 pl-[22px] text-xs font-medium leading-snug text-muted-foreground"><span aria-hidden="true">*</span><span>Pay one, get one free, three times. Maximum 3 free warranties per dealer.</span></p>
           </div>
         </div>
       )}

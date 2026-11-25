@@ -28,7 +28,7 @@ interface Pending {
 const isUnwound = (s: any) => ['cancelled', 'refunded'].includes(String(s.status || '').toLowerCase())
   || ['refunded', 'cancelled'].includes(String(s.payment_status || '').toLowerCase());
 
-/** Free warranties stay pending until an Admin/Super Admin checks the dealer's paid sales were not cancelled or refunded. */
+/** Historical pending requests only; new BOGOF warranties activate automatically. */
 const IntroFreeApprovals: React.FC = () => {
   const { toast } = useToast();
   const [rows, setRows] = useState<Pending[]>([]);
@@ -86,8 +86,8 @@ const IntroFreeApprovals: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg"><Gift className="h-5 w-5" /> Free warranties to approve {rows.length > 0 && <Badge className="bg-crm-orange-soft text-crm-navy">{rows.length}</Badge>}</CardTitle>
-        <p className="text-sm text-muted-foreground">Check the dealer's paid warranties are still live (not cancelled or refunded) before activating free cover.</p>
+        <CardTitle className="flex items-center gap-2 text-lg"><Gift className="h-5 w-5" /> Earlier free warranty requests {rows.length > 0 && <Badge className="bg-crm-orange-soft text-crm-navy">{rows.length}</Badge>}</CardTitle>
+        <p className="text-sm text-muted-foreground">New buy-one-get-one-free warranties activate automatically at £0, up to three per dealer. Only earlier pending requests appear here for review.</p>
       </CardHeader>
       <CardContent className="divide-y divide-border">
         {loading ? <Loader2 className="m-6 h-6 w-6 animate-spin" /> : rows.length === 0 ? (

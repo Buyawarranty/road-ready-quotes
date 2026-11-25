@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice } from '../dealerSales';
+import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice, isPaidDealerPurchase } from '../dealerSales';
 
 describe('dealer sales', () => {
+  it('counts £99 paid cover as a genuine purchase', () => {
+    expect(isPaidDealerPurchase({ final_amount: 99, payment_status: 'paid', status: 'Active' })).toBe(true);
+  });
+  it('keeps £0 free cover in issued warranties but out of paid purchases', () => {
+    const free = { final_amount: 0, payment_status: 'paid', status: 'Active' };
+    expect(isCompletedDealerSale(free)).toBe(true);
+    expect(isPaidDealerPurchase(free)).toBe(false);
+  });
+  it.each(['Cancelled', 'Refunded'])('excludes %s purchases despite their old paid status', status => {
+    expect(isPaidDealerPurchase({ final_amount: 99, payment_status: 'paid', status })).toBe(false);
+  });
+  it('excludes unpaid £99 previews from paid totals', () => {
+    expect(isPaidDealerPurchase({ final_amount: 99, payment_status: 'pending', status: 'Pending' })).toBe(false);
+  });
   it('uses the stored final amount for the reported £1.19 sale', () => {
     expect(dealerSaleAmount({ final_amount: 1.19 })).toBe(1.19);
   });

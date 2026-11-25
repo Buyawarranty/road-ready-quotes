@@ -67,7 +67,7 @@ export const DealerCreditStatus: React.FC = () => {
   };
 
   const paid = eligibility?.paid_count ?? 0;
-  const required = eligibility?.required ?? 10;
+  const required = eligibility?.required ?? 6;
   const available = eligibility?.eligible === true;
   const status = available ? 'Authorised' : eligibility?.reason === 'pending' ? 'Awaiting approval' : eligibility?.reason === 'overdue' ? 'Paused — overdue' : 'Locked';
 

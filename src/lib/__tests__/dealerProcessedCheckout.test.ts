@@ -28,7 +28,8 @@ function handlerFor(file: string, quote: { status: string; paid_at: string | nul
   class StripeStub { constructor() { stripeCreated(); } }
   const source = readFileSync(new URL(`../../../supabase/functions/${file}/index.ts`, import.meta.url), 'utf8').replace(/^import .*;\r?\n/gm, '');
   const javascript = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
-  new Function('Deno', 'createClient', 'Stripe', 'dealerQuoteCheckoutError', javascript)(deno, () => client, StripeStub, dealerQuoteCheckoutError);
+  const importedCors = file === 'dealer-create-checkout' ? 'const corsHeaders = testCorsHeaders;\n' : '';
+  new Function('Deno', 'createClient', 'Stripe', 'dealerQuoteCheckoutError', 'testCorsHeaders', importedCors + javascript)(deno, () => client, StripeStub, dealerQuoteCheckoutError, {});
   if (!handler) throw new Error('Handler was not registered');
   return { handler, writes, stripeCreated };
 }

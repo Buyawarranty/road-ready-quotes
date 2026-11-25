@@ -12,12 +12,7 @@ import { dealerQuoteStatusForMethod, notifyDealerSale, syncDealerSale } from '..
 import { dealerStripeSecret, dealerUsesEmbeddedStripe } from '../_shared/dealerStripeMode.ts';
 import { trackDealerCheckoutKlaviyo } from '../_shared/klaviyoDealer.ts';
 import { dealerQuoteCheckoutError } from '../_shared/dealerQuoteStatus.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 
 interface VehiclePayload {
   reg: string;
@@ -25,6 +20,9 @@ interface VehiclePayload {
   model?: string;
   year?: string;
   mileage?: string;
+  fuel_type?: string;
+  fuelType?: string;
+  transmission?: string;
 }
 
 interface CustomerPayload {
@@ -60,6 +58,7 @@ interface RequestBody {
   discount_pct: number;
   promo_code?: string;
   preview_only?: boolean;
+  expected_free?: boolean;
 }
 
 Deno.serve(async (req: Request) => {
@@ -135,7 +134,7 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const STRIPE_KEY = payment_method === 'pay_now' ? dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)) : undefined;
+    let STRIPE_KEY: string | undefined;
     if (dealer.is_test && payment_method === 'worldpay') throw new Error('Use test card checkout for a test dealer account.');
 
     if (plan.pricing_version === 'annual-v1') {
@@ -153,6 +152,11 @@ Deno.serve(async (req: Request) => {
     const { data: bogofRemaining, error: bogofError } = await adminClient.rpc('dealer_bogof_remaining', { p_dealer_id: dealer.id });
     if (bogofError) throw new Error('Unable to verify the free warranty offer. Please try again.');
     const introFreeAvailable = Number(bogofRemaining || 0) > 0 && plan.duration_months >= 1 && plan.duration_months <= 36;
+    if (body.expected_free !== undefined && (typeof body.expected_free !== 'boolean' || body.expected_free !== introFreeAvailable)) {
+      return new Response(JSON.stringify({ error: 'Your trade benefits have changed. Check them again before continuing; no warranty was issued and no payment was taken.', code: 'FREE_OFFER_CHANGED' }), {
+        status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const promoCode = String(body.promo_code || '').trim().toUpperCase();
     let promo: { code: string; discount_amount: number; total: number; redemption_id?: string } | null = null;
@@ -224,7 +228,6 @@ Deno.serve(async (req: Request) => {
       discount_amount: introFreeAvailable ? plan.dealer_price : +(plan.retail_price - payable).toFixed(2),
       discount_code: introFreeAvailable ? 'BOGOF FREE' : promo?.code || null,
       ...dealerCheckoutState(payment_method),
-      ...(introFreeAvailable ? { status: 'Active', payment_status: 'paid', payment_verified: true, payment_verified_at: new Date().toISOString(), payment_verification_status: 'verified', payment_verification_source: 'bogof_free' } : {}),
       purchase_source: 'dealer',
       dealer_id: dealer.id,
       signup_date: startDate.toISOString(),
@@ -300,34 +303,41 @@ Deno.serve(async (req: Request) => {
       return data.redemption_id as string;
     };
 
-    // === AUTOMATIC 3+3 INTRODUCTORY OFFER ===
+    // Customer, free slot, quote, warranty and portal policy commit atomically.
     if (introFreeAvailable) {
       const existing = await findExistingCustomer();
       if (existing) {
         const reuseError = dealerCheckoutReuseError(existing, dealer.id);
         throw new Error(reuseError || 'An unpaid checkout already exists for this quote. Complete it or contact Panda Protect before using the introductory offer.');
       }
-      const freeCustomerId = crypto.randomUUID();
-      const { data: claim, error: claimError } = await adminClient.rpc('claim_dealer_intro_free', {
+      const { data: issued, error: issueError } = await adminClient.rpc('issue_dealer_intro_free', {
         p_dealer_id: dealer.id,
-        p_customer_id: freeCustomerId,
+        p_dealer_quote_id: quote_id || null,
         p_duration_months: plan.duration_months,
         p_original_amount: plan.dealer_price,
+        p_customer: customerRow,
       });
-      if (claimError || !claim) throw new Error('Your introductory offer status changed. Refresh checkout before continuing.');
-      const { error: freeInsertError } = await adminClient.from('customers').insert({ ...customerRow, id: freeCustomerId });
-      if (freeInsertError) {
-        await adminClient.from('dealer_intro_free_redemptions').delete().eq('customer_id', freeCustomerId);
-        throw new Error(freeInsertError.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Please refresh and review it.' : freeInsertError.message);
+      if (issueError || !issued?.customer_id) {
+        console.error('Atomic free warranty issuance failed', issueError);
+        const changed = issueError?.message?.includes('No free warranty available');
+        return new Response(JSON.stringify({
+          error: changed ? 'Your trade benefits have changed. Check them again before continuing; no warranty was issued and no payment was taken.'
+            : issueError?.code === '23505' ? 'A warranty record already exists for this customer and vehicle. Open your warranties before trying again.'
+              : 'Your free warranty could not be activated. No new warranty was issued or free entitlement used. Try again or contact dealer support.',
+          code: changed ? 'FREE_OFFER_CHANGED' : 'FREE_ISSUE_FAILED',
+        }), { status: changed || issueError?.code === '23505' ? 409 : 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
-      // Buy one get one free: cover goes live straight away.
-      await adminClient.from('dealer_intro_free_redemptions').update({ dealer_quote_id: quote_id || null }).eq('customer_id', freeCustomerId);
-      await syncDealerSale(adminClient, { customerId: freeCustomerId, quoteId: quote_id || null, quoteStatus: 'paid' });
-      await notifyDealerSale(adminClient, freeCustomerId, 'paid').catch((e: unknown) => console.error('bogof email', e));
-      return new Response(JSON.stringify({ customer_id: freeCustomerId, method: 'intro_free', intro_pending_approval: false, intro_free_slot: claim.slot, total: 0 }), {
+      const email = await notifyDealerSale(adminClient, issued.customer_id, 'paid').catch((e: unknown) => {
+        console.error('bogof email', e);
+        return { sent: false };
+      });
+      return new Response(JSON.stringify({ customer_id: issued.customer_id, method: 'intro_free', intro_pending_approval: false, intro_free_slot: issued.slot, total: 0, email }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Free activation needs no Stripe configuration or card session.
+    STRIPE_KEY = payment_method === 'pay_now' ? dealerStripeSecret(dealer.is_test, name => Deno.env.get(name)) : undefined;
 
     // === INVOICE PATH ===
     if (payment_method === 'invoice') {

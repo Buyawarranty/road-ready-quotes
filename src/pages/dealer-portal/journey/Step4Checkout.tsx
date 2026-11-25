@@ -1,4 +1,4 @@
-import BogofBanner from '@/components/dealer/offer/BogofBanner';
+import BogofBanner, { BOGOF_DETAIL, subscribeBogofRefresh } from '@/components/dealer/offer/BogofBanner';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDealerJourney, DEALER_PLAN_LABELS } from '@/contexts/DealerJourneyContext';
@@ -59,6 +59,7 @@ interface PayLaterEligibility {
   can_request: boolean;
   intro_free_remaining: number;
   intro_free_used: number;
+  intro_offer_enabled?: boolean;
 }
 
 const formatDate = (d: Date) =>
@@ -77,6 +78,7 @@ const Step4Checkout: React.FC = () => {
   const [creditBlocked, setCreditBlocked] = useState(false);
   const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
   const [eligibilityError, setEligibilityError] = useState(false);
+  const [checkingEligibility, setCheckingEligibility] = useState(true);
   const [termDays, setTermDays] = useState(PAYMENT_TERM_DAYS);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [promoCode, setPromoCode] = useState('');
@@ -96,6 +98,7 @@ const Step4Checkout: React.FC = () => {
   // Invoice eligibility and introductory offer use come from server-enforced dealer rules.
   const refreshEligibility = useCallback(async () => {
     if (!dealer?.id) return;
+    setCheckingEligibility(true);
     setEligibilityError(false);
     try {
       const { data, error } = await dealerRequest<{ data: PayLaterEligibility | null; error: unknown }>(signal => (supabase.rpc as any)('get_dealer_paylater_eligibility', {
@@ -104,18 +107,26 @@ const Step4Checkout: React.FC = () => {
       if (error || !data) throw new Error('Account billing needs to be checked again.');
       const e = data as PayLaterEligibility;
       setEligibility(e);
+      if (e.intro_free_remaining > 0) setPromo(null);
       if (e.term_days) setTermDays(e.term_days);
       const blocked = !e.eligible;
       setCreditBlocked(blocked);
       if (blocked) setMethod('pay_now');
     } catch {
+      setEligibility(null);
       setEligibilityError(true);
       setCreditBlocked(true);
       setMethod('pay_now');
+    } finally {
+      setCheckingEligibility(false);
     }
   }, [dealer?.id]);
 
-  useEffect(() => { void refreshEligibility(); }, [refreshEligibility]);
+  useEffect(() => {
+    const refresh = () => { void refreshEligibility(); };
+    refresh();
+    return subscribeBogofRefresh(refresh);
+  }, [refreshEligibility]);
 
   useEffect(() => {
     if (!dealer?.id) return;
@@ -147,12 +158,12 @@ const Step4Checkout: React.FC = () => {
 
   if (!vehicle || !customer || !plan || !dealer) return null;
 
-  const introFreeApplied = (eligibility?.intro_free_remaining ?? 0) > 0 && plan.duration_months <= DEALER_INTRO_MAX_MONTHS;
+  const introFreeApplied = !eligibilityError && (eligibility?.intro_free_remaining ?? 0) > 0 && plan.duration_months >= 1 && plan.duration_months <= DEALER_INTRO_MAX_MONTHS;
   const total = introFreeApplied ? 0 : promo?.total ?? plan.dealer_price;
   const options = (plan.selected_options || {}) as Record<string, unknown>;
   const fullPriceBasis = options.price_basis === 'full-warranty';
-  const netPrice = fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
-  const vatAmount = fullPriceBasis ? Number(options.vat_total) : total - netPrice;
+  const netPrice = introFreeApplied ? 0 : fullPriceBasis ? Number(options.ex_vat_total) : total / 1.2;
+  const vatAmount = introFreeApplied ? 0 : fullPriceBasis ? Number(options.vat_total) : total - netPrice;
   const planName = (options.label as string) || DEALER_PLAN_LABELS[plan.plan_type];
   const termLabel = (options.term as string) || `${plan.duration_months} months`;
   const excess = options.excess as number | undefined;
@@ -208,11 +219,12 @@ const Step4Checkout: React.FC = () => {
         discount_pct,
         promo_code: preview ? promoCode : promo?.code,
         preview_only: preview,
+        expected_free: introFreeApplied,
         embedded: method === 'pay_now' && !!stripePromise && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches),
       },
     }), 'Checkout is taking longer than expected. Check your warranties and payment status before trying payment again.');
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
-    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; session_id?: string; method?: string; code: string; discount_amount: number; total: number };
+    return data as { checkout_url?: string; client_secret?: string; customer_id?: string; session_id?: string; method?: string; code: string; discount_amount: number; total: number; email?: { sent: boolean } };
   };
 
   const applyPromo = async () => {
@@ -224,7 +236,7 @@ const Step4Checkout: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (submitting) return;
+    if (submitting || checkingEligibility || eligibilityError || !eligibility) return;
     if (termsAccepted !== true) {
       setTermsOpen(true);
       return;
@@ -233,7 +245,7 @@ const Step4Checkout: React.FC = () => {
       navigate('/dealer-portal/quote/customer');
       return;
     }
-    if (method === 'invoice' && creditBlocked) return;
+    if (!introFreeApplied && method === 'invoice' && creditBlocked) return;
 
     setSubmitError(null);
     setSubmitting(true);
@@ -241,7 +253,8 @@ const Step4Checkout: React.FC = () => {
       const data = await createRecord();
 
       if (data?.method === 'intro_free') {
-        navigate(`/dealer-portal/quote/confirmation?method=free${data.customer_id ? `&id=${data.customer_id}` : ''}`);
+        if (!data.customer_id) throw new Error('The free warranty could not be confirmed. Open your warranties before trying again.');
+        navigate(`/dealer-portal/quote/confirmation?method=free&id=${data.customer_id}&email=${data.email?.sent ? 'sent' : 'pending'}`);
         return;
       }
 
@@ -274,6 +287,7 @@ const Step4Checkout: React.FC = () => {
         variant: 'destructive',
       });
       setSubmitting(false);
+      await refreshEligibility();
     }
   };
 
@@ -314,7 +328,7 @@ const Step4Checkout: React.FC = () => {
   ].filter(Boolean).join(' · ');
 
   const paidCount = eligibility?.paid_count ?? 0;
-  const invoiceRequired = eligibility?.required ?? 3;
+  const invoiceRequired = eligibility?.required ?? 6;
   const accountAvailable = !creditBlocked && !!eligibility;
   const accountSelected = method === 'invoice' && accountAvailable;
   const ctaLabel = termsAccepted !== true
@@ -324,7 +338,7 @@ const Step4Checkout: React.FC = () => {
       : accountSelected
         ? 'Activate now and pay later'
         : `Pay £${total.toFixed(2)} & issue warranty`;
-  const ctaDisabled = submitting || checkingPromo || (method === 'invoice' && creditBlocked);
+  const ctaDisabled = submitting || checkingPromo || checkingEligibility || eligibilityError || !eligibility || (!introFreeApplied && method === 'invoice' && creditBlocked);
 
   const Radio = ({ on }: { on: boolean }) => (
     <span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-crm-orange' : 'border-border'}`}>
@@ -411,10 +425,10 @@ const Step4Checkout: React.FC = () => {
           <div className="mt-5 rounded-2xl border border-crm-green/30 bg-crm-green-soft p-4 sm:p-5">
             <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-crm-green-deep"><Gift className="h-5 w-5" /> Your trade benefits</p>
             <ul className="mt-3 space-y-3">
-              {((eligibility?.intro_free_remaining ?? 0) > 0 || (eligibility?.paid_count ?? 0) < INTRO_PAID_TARGET) && (
+              {eligibility?.intro_offer_enabled && ((eligibility?.intro_free_remaining ?? 0) > 0 || (eligibility?.paid_count ?? 0) < INTRO_PAID_TARGET) && (
               <li className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-crm-green text-primary-foreground"><Check className="h-4 w-4" /></span>
-                <span><span className="block text-sm font-bold text-crm-navy">Buy one warranty, get the next one free</span><span className="text-sm text-muted-foreground">Every paid warranty earns one free warranty (up to 3 years' cover), applied automatically while the offer is running.</span></span>
+                <span><span className="block text-sm font-bold text-crm-navy">Buy one warranty, get the next one free</span><span className="text-sm text-muted-foreground">{BOGOF_DETAIL}</span></span>
               </li>
               )}
               <li className="flex items-start gap-3">
@@ -434,7 +448,7 @@ const Step4Checkout: React.FC = () => {
               <p className="mt-2 text-sm text-muted-foreground">Buy one, get the next one free applies to this warranty at £0. Cover goes live straight away. You have {eligibility?.intro_free_remaining} free {eligibility?.intro_free_remaining === 1 ? 'warranty' : 'warranties'} remaining including this one.</p>
             </div>
           )}
-          <h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>
+          {!introFreeApplied && <><h2 className="mb-4 text-xl font-bold text-crm-navy">Choose how to pay</h2>
           <div className="space-y-3">
             <button type="button" onClick={() => setMethod('pay_now')} aria-pressed={method === 'pay_now'} className={optionClass(method === 'pay_now')}>
               <div className="flex gap-3">
@@ -487,7 +501,7 @@ const Step4Checkout: React.FC = () => {
                 </div>
               </div>
             )}
-          </div>
+          </div></>}
 
           <div className="mt-6 border-t border-border pt-5">
             {introFreeApplied && <p className="mb-3 rounded-xl bg-crm-green-soft p-3 text-sm font-semibold text-crm-green-deep">Buy one get one free applied automatically · £{plan.dealer_price.toFixed(2)} off</p>}
@@ -508,8 +522,9 @@ const Step4Checkout: React.FC = () => {
             </div>
           </div>
 
-          {eligibilityError && <div className="mt-4 space-y-2"><DealerFieldError>Account billing and free-offer availability could not be checked. Retry before paying if you are expecting either.</DealerFieldError><Button variant="outline" onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button></div>}
-          {submitError && <div className="mt-4"><DealerFieldError>{submitError}</DealerFieldError></div>}
+          {eligibilityError && <div className="mt-4 space-y-2"><DealerFieldError>Account billing and free-offer availability could not be checked. Check trade benefits again before continuing.</DealerFieldError><Button variant="outline" disabled={checkingEligibility} onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button></div>}
+          {checkingEligibility && <p role="status" className="mt-4 flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Checking trade benefits…</p>}
+          {submitError && <div className="mt-4 space-y-2"><DealerFieldError>{submitError}</DealerFieldError><Button variant="outline" disabled={checkingEligibility} onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button></div>}
           {creditRequestUnconfirmed && <Button variant="outline" className="mt-3" disabled={requestingCredit} onClick={() => { void refreshEligibility(); }}>Check trade benefits again</Button>}
 
           <Button onClick={handleSubmit} disabled={ctaDisabled} className="mt-5 h-14 w-full rounded-xl bg-crm-orange text-base font-bold text-primary-foreground hover:bg-crm-orange/90">

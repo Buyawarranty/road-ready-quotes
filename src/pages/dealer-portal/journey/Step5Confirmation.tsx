@@ -11,28 +11,49 @@ import { DEALER_NEW_QUOTE_URL } from '@/lib/dealerJourneyState';
 import { dealerRequest } from '@/lib/dealerRequest';
 import { functionErrorMessage } from '@/lib/functionError';
 import { useQueryClient } from '@tanstack/react-query';
+import { useDealerAuth } from '@/hooks/useDealerAuth';
 
 const Step5Confirmation: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { reset } = useDealerJourney();
   const queryClient = useQueryClient();
+  const { dealer } = useDealerAuth();
   const method = searchParams.get('method') || 'pay_now';
   const id = searchParams.get('id');
   const sessionId = searchParams.get('session_id');
-  const [confirmed, setConfirmed] = useState(method === 'invoice' || method === 'free');
+  const [confirmed, setConfirmed] = useState(method === 'invoice');
   const [confirmError, setConfirmError] = useState('');
-  const [emailWarning, setEmailWarning] = useState(false);
+  const [emailWarning, setEmailWarning] = useState(method === 'free' && searchParams.get('email') !== 'sent');
   const [checking, setChecking] = useState(false);
   const mounted = useRef(true);
 
   const refreshSaleLists = () => {
-    for (const key of ['dealer-quotes-list', 'dealer-dashboard', 'dealer-analytics-quotes', 'dealer-plans']) {
+    for (const key of ['dealer-quotes-list', 'dealer-dashboard', 'dealer-analytics-quotes', 'dealer-analytics-warranties', 'dealer-plans', 'dealer-warranties-list', 'dealer-free-remaining']) {
       void queryClient.invalidateQueries({ queryKey: [key] });
     }
   };
 
   const confirmPayment = async () => {
+    if (method === 'free') {
+      if (!id || !dealer?.id) { setConfirmError('Open your warranties to check whether the free warranty was issued.'); return; }
+      setChecking(true);
+      setConfirmError('');
+      try {
+        const { data, error } = await dealerRequest(signal => supabase.from('customers')
+          .select('id').eq('id', id).eq('dealer_id', dealer.id).eq('brand', 'pandaprotect')
+          .eq('payment_status', 'paid').eq('payment_verified', true).eq('final_amount', 0)
+          .eq('discount_code', 'BOGOF FREE').eq('status', 'Active').abortSignal(signal).maybeSingle(), 'The free warranty could not be checked. Open your warranties before trying again.');
+        if (!mounted.current) return;
+        if (error || !data) { setConfirmError('The free warranty is not yet confirmed. Open your warranties before trying again.'); return; }
+        setConfirmed(true);
+        refreshSaleLists();
+        reset();
+      } catch (error) {
+        if (mounted.current) setConfirmError(error instanceof Error ? error.message : 'The free warranty could not be checked.');
+      } finally { if (mounted.current) setChecking(false); }
+      return;
+    }
     if (!id || !sessionId) { setConfirmError('Open your warranties to check the payment status.'); return; }
     setChecking(true);
     setConfirmError('');
@@ -57,7 +78,7 @@ const Step5Confirmation: React.FC = () => {
 
   useEffect(() => {
     mounted.current = true;
-    if (method === 'invoice' || method === 'free') { reset(); refreshSaleLists(); }
+    if (method === 'invoice') { reset(); refreshSaleLists(); }
     else void confirmPayment();
     return () => { mounted.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,7 +92,7 @@ const Step5Confirmation: React.FC = () => {
     : null;
 
   return (
-    <DealerJourneyLayout step={5} title={confirmed ? 'Warranty issued' : 'Confirming payment'} subtitle={confirmed ? 'The warranty is now in your dealer account.' : 'Checking your payment with Stripe.'} showBack={false}>
+    <DealerJourneyLayout step={5} title={confirmed ? 'Warranty issued' : isFree ? 'Confirming free warranty' : 'Confirming payment'} subtitle={confirmed ? 'The warranty is now in your dealer account.' : isFree ? 'Checking that your free warranty is active.' : 'Checking your payment with Stripe.'} showBack={false}>
       <Card className="border-border bg-card">
         <CardContent className="pt-8 pb-8 text-center">
           <div className={`mb-4 inline-flex rounded-full p-4 ${confirmed ? 'bg-crm-green-soft text-crm-green-deep' : 'bg-muted text-muted-foreground'}`}>
@@ -79,7 +100,7 @@ const Step5Confirmation: React.FC = () => {
           </div>
           <h2 className="mb-2 text-2xl font-bold text-foreground">{confirmed ? (isFree ? 'Free warranty issued' : 'Warranty issued') : 'Payment confirmation'}</h2>
           <p className="mx-auto mb-6 max-w-md text-muted-foreground">
-            {!confirmed ? (confirmError || 'Checking your payment…') : emailWarning && !isFree
+            {!confirmed ? (confirmError || (isFree ? 'Checking your free warranty…' : 'Checking your payment…')) : emailWarning
               ? 'Your warranty is active, but the confirmation email could not be sent. You can resend it from Dealer warranties.'
               : isInvoice
               ? "We've recorded this warranty against your dealer account and sent the confirmation by email."
@@ -102,7 +123,7 @@ const Step5Confirmation: React.FC = () => {
             <div className="flex justify-between px-4 py-2">
               <span className="text-muted-foreground">Payment</span>
               <span className={`font-semibold ${isInvoice ? 'text-crm-gold-deep' : confirmed ? 'text-crm-green-deep' : 'text-muted-foreground'}`}>
-                {isInvoice ? 'Invoice pending' : isFree ? 'Free · active' : confirmed ? 'Paid' : 'Awaiting confirmation'}
+                {isInvoice ? 'Invoice pending' : isFree && confirmed ? 'Free · active' : confirmed ? 'Paid' : 'Awaiting confirmation'}
               </span>
             </div>
             {isInvoice && dueDate && (
@@ -121,7 +142,7 @@ const Step5Confirmation: React.FC = () => {
           )}
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            {!confirmed && <Button variant="outline" disabled={checking} onClick={confirmPayment}>{checking ? 'Checking…' : 'Check payment'}</Button>}
+            {!confirmed && <Button variant="outline" disabled={checking} onClick={confirmPayment}>{checking ? 'Checking…' : isFree ? 'Check free warranty' : 'Check payment'}</Button>}
             <Button
               onClick={() => navigate('/dealer-portal/warranties')}
               className="bg-crm-orange text-primary-foreground hover:bg-crm-orange/90"

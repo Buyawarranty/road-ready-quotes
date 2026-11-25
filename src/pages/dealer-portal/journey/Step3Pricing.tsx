@@ -1,4 +1,4 @@
-import { BOGOF_SHORT_LABEL, loadBogofEligibility, loadBogofSettings, OfferDetailTip } from '@/components/dealer/offer/BogofBanner';
+import { BOGOF_SHORT_LABEL, loadBogofEligibility, loadBogofSettings, OfferDetailTip, subscribeBogofRefresh } from '@/components/dealer/offer/BogofBanner';
 import React, { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DealerLayout } from '@/components/dealer/DealerLayout';
@@ -47,12 +47,12 @@ const Step3Pricing: React.FC = () => {
   const [offerOn, setOfferOn] = useState(false);
   useEffect(() => {
     let live = true;
-    (async () => {
-      const s = await loadBogofSettings();
-      const eligible = await loadBogofEligibility(dealer?.id);
+    const refresh = () => { void Promise.all([loadBogofSettings(), loadBogofEligibility(dealer?.id)]).then(([s, eligible]) => {
       if (live) setOfferOn(!!s?.enabled && eligible);
-    })();
-    return () => { live = false; };
+    }).catch(() => { if (live) setOfferOn(false); }); };
+    refresh();
+    const unsubscribe = subscribeBogofRefresh(refresh);
+    return () => { live = false; unsubscribe(); };
   }, [dealer?.id]);
   const [lookupMsg, setLookupMsg] = useState('');
   const [mileageInput, setMileageInput] = useState(vehicle?.mileage != null ? String(vehicle.mileage) : '');
