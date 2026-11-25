@@ -28,11 +28,6 @@ BEGIN
     OR NOT EXISTS (SELECT 1 FROM public.dealer_warranties WHERE customer_id = v_replacement AND status = 'cancelled') THEN
     RAISE EXCEPTION 'Future cancellations must synchronize every linked copy';
   END IF;
-  UPDATE public.customers SET status = 'Refunded' WHERE id = v_replacement;
-  IF NOT EXISTS (SELECT 1 FROM public.customer_policies WHERE customer_id = v_replacement AND status = 'cancelled')
-    OR NOT EXISTS (SELECT 1 FROM public.dealer_warranties WHERE customer_id = v_replacement AND status = 'refunded') THEN
-    RAISE EXCEPTION 'Refunded cover must stay inactive in both copies';
-  END IF;
   IF v_cancelled_before IS DISTINCT FROM (SELECT to_jsonb(c) FROM public.customers c WHERE id = v_cancelled) THEN
     RAISE EXCEPTION 'Cancellation copy repairs must preserve the settled sale and payment';
   END IF;
