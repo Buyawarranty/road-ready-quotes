@@ -13,6 +13,14 @@ const sale: DealerPdfRow = {
 };
 
 describe('dealer invoice payment presentation', () => {
+  it('a free warranty has zero total, zero paid amount, zero balance and no payment date', () => {
+    const view = getDealerInvoiceView({ ...sale, final_amount: 0, payment_status: 'paid', stripe_session_id: null }, now);
+    expect(view.isFree).toBe(true);
+    expect(view.total).toBe(0);
+    expect(view.amountPaid).toBe(0);
+    expect(view.balanceDue).toBe(0);
+    expect(view.paidDate).toBe(null);
+  });
   it('shows an approved unpaid account sale as invoice payment pending with the full balance due', () => {
     const view = getDealerInvoiceView({
       ...sale,

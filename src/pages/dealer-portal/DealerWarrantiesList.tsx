@@ -39,7 +39,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
 import { compareDealerInvoiceDueDates, DEALER_PAYMENT_STYLES, getDealerPaymentState, type DealerPaymentKey } from '@/lib/dealerPaymentStatus';
-import { isCountedDealerSale, isOutstandingDealerInvoice } from '@/lib/dealerSales';
+import { isCountedDealerSale, isOutstandingDealerInvoice, isFreeDealerWarranty } from '@/lib/dealerSales';
 import { displayWarrantyPlanName } from '@/lib/warrantyPlanDisplay';
 import DealerRegistrationPlate from '@/components/dealer/DealerRegistrationPlate';
 import { dealerVehicleSpecification, dealerVehicleSummary, mergeWarrantyVehicleLookup, shouldLookupWarrantyVehicle } from '@/lib/dealerWarrantyVehicle';
@@ -467,11 +467,12 @@ const DealerWarrantiesList = () => {
 
   const renderPaymentStatus = (row: WarrantyRow) => {
     const state = getDealerPaymentState(row);
-    const Icon = state.key === 'paid' ? CheckCircle2 : Clock3;
+    const isFree = isFreeDealerWarranty(row);
+    const Icon = isFree ? Gift : state.key === 'paid' ? CheckCircle2 : Clock3;
     return (
       <div>
         <Badge className={`gap-1.5 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-bold shadow-none ${paymentBadgeClasses[state.key]}`}>
-          <Icon className="h-3.5 w-3.5" />{DEALER_PAYMENT_STYLES[state.key].label}
+          <Icon className="h-3.5 w-3.5" />{isFree ? 'Free · no payment' : DEALER_PAYMENT_STYLES[state.key].label}
         </Badge>
         {state.dueDate && <div className="mt-1.5 whitespace-nowrap text-[11px] text-muted-foreground">Due {state.dueDate.toLocaleDateString('en-GB')}</div>}
       </div>

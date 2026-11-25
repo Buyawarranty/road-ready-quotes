@@ -1,5 +1,5 @@
 # Shared payment rules
-- BOGOF checkout uses service-only issue_dealer_intro_free to save the pending customer before reserving a slot, then activate and fulfil in one transaction; failure rolls everything back, preserving entitlements and existing sales.
+- BOGOF uses service-only issue_dealer_intro_free to create or reuse only an owned pending/unverified customer, reserve the slot and fulfil atomically; service-added reuse metadata requires any previous Stripe session to be expired, preventing duplicate payment and preserving unfinished rows on failure. Free receipts have a bounded wait, so email delays cannot hide issued cover.
 - Dealer quote progress/editability is shared in dealerQuoteStatus.ts across lists, dashboard counts, emailed quotes and checkout; paid timestamps override draft labels so stale tabs cannot start another charge on a processed quote.
 - complete_dealer_sale advances only unfinished quotes or invoice-to-paid settlement and rejects cross-customer reuse; repeat completion preserves settled quote/customer/warranty rows to prevent historic sales reopening.
 - Dealer issuance creates missing customer-safe portal policies through ensure_dealer_customer_portal_policy; retries, customer login and emailed access reuse it without updating settled sales or exposing trade amounts.

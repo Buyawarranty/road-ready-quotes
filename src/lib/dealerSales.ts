@@ -29,6 +29,11 @@ export function isCompletedDealerSale(sale: DealerSalePaymentRow): boolean {
   return (sale.payment_status || '').toLowerCase() === 'paid';
 }
 
+/** A completed zero-charge warranty is settled cover, not a card payment or invoice debt. */
+export function isFreeDealerWarranty(sale: DealerSalePaymentRow): boolean {
+  return sale.final_amount != null && isCompletedDealerSale(sale) && dealerSaleAmount(sale) === 0;
+}
+
 /** Paid purchases exclude £0 cover and unwound sales; issued cover is counted separately. */
 export function isPaidDealerPurchase(sale: DealerSalePaymentRow & DealerSaleStatusRow): boolean {
   return isCountedDealerSale(sale) && isCompletedDealerSale(sale) && dealerSaleAmount(sale) > 0;

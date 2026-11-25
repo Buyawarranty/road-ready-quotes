@@ -3,7 +3,7 @@ DO $$
 DECLARE
   v_user uuid; v_dealer uuid := gen_random_uuid(); v_quote uuid;
   v_result jsonb; v_customer jsonb; v_term text; v_before integer; v_cycle integer;
-  v_snapshot jsonb; v_paid_id uuid; v_customer_id uuid;
+  v_snapshot jsonb; v_pending_snapshot jsonb; v_paid_id uuid; v_customer_id uuid; v_pending_id uuid;
 BEGIN
   IF has_function_privilege('authenticated','public.issue_dealer_intro_free(uuid,uuid,integer,numeric,jsonb)','EXECUTE')
     OR has_function_privilege('anon','public.issue_dealer_intro_free(uuid,uuid,integer,numeric,jsonb)','EXECUTE') THEN
@@ -35,6 +35,11 @@ BEGIN
       v_customer := jsonb_build_object('name','Rollback-only free buyer','email','free-'||v_cycle||'@example.test',
         'dealer_id',v_dealer,'brand','pandaprotect','purchase_source','dealer','registration_plate','BGFF'||v_cycle,
         'plan_type','gold','payment_type','36','final_amount',0,'postcode','SW1A 1AA');
+      -- A paid customer must remain untouched even when the dealer has a free entitlement.
+      BEGIN
+        PERFORM public.issue_dealer_intro_free(v_dealer,NULL,36,99,v_customer||jsonb_build_object('email','paid-'||v_cycle||'@example.test','registration_plate','BGFP'||v_cycle,'_reuse_customer_id',v_paid_id));
+        RAISE EXCEPTION USING ERRCODE='ZBF04',MESSAGE='A paid purchase must never be replaced by free cover';
+      EXCEPTION WHEN OTHERS THEN IF SQLSTATE='ZBF04' THEN RAISE; END IF; END;
       IF v_cycle=1 THEN
         SELECT count(*) INTO v_before FROM public.customers WHERE dealer_id=v_dealer;
         BEGIN
@@ -46,8 +51,30 @@ BEGIN
         IF (SELECT count(*) FROM public.customers WHERE dealer_id=v_dealer) <> v_before
           OR public.dealer_bogof_remaining(v_dealer) <> 1 THEN RAISE EXCEPTION 'Failed issuance must leave no customer and preserve the free entitlement'; END IF;
       END IF;
+      IF v_cycle IN (1,2) THEN
+        v_pending_id := gen_random_uuid();
+        INSERT INTO public.customers(id,name,email,plan_type,registration_plate,dealer_id,brand,purchase_source,payment_status,status,final_amount,payment_type,is_test,payment_verified,stripe_session_id,is_deleted)
+          VALUES(v_pending_id,'Previous unfinished buyer','free-'||v_cycle||'@example.test','gold','BGFF'||v_cycle,v_dealer,'pandaprotect','dealer','pending','Pending',99,'12',true,false,CASE WHEN v_cycle=2 THEN 'cs_expired_rollback_only' ELSE NULL END,NULL);
+        SELECT to_jsonb(c) INTO v_pending_snapshot FROM public.customers c WHERE id=v_pending_id;
+        v_customer := v_customer||jsonb_build_object('_reuse_customer_id',v_pending_id);
+        IF v_cycle=2 THEN
+          BEGIN
+            PERFORM public.issue_dealer_intro_free(v_dealer,v_quote,36,99,v_customer);
+            RAISE EXCEPTION USING ERRCODE='ZBF05',MESSAGE='An unchecked previous card session must not be reused';
+          EXCEPTION WHEN OTHERS THEN IF SQLSTATE='ZBF05' THEN RAISE; END IF; END;
+          v_customer := v_customer||jsonb_build_object('_expired_stripe_session_id','cs_expired_rollback_only');
+        END IF;
+        -- The duration error happens after reuse: the original pending row must roll back byte-for-byte.
+        BEGIN
+          PERFORM public.issue_dealer_intro_free(v_dealer,v_quote,48,99,v_customer||jsonb_build_object('payment_type','48'));
+          RAISE EXCEPTION USING ERRCODE='ZBF06',MESSAGE='Invalid free duration must fail after pending reuse';
+        EXCEPTION WHEN OTHERS THEN IF SQLSTATE='ZBF06' THEN RAISE; END IF; END;
+        IF (SELECT to_jsonb(c) FROM public.customers c WHERE id=v_pending_id) IS DISTINCT FROM v_pending_snapshot
+          OR public.dealer_bogof_remaining(v_dealer) <> 1 THEN RAISE EXCEPTION 'Failed reuse must preserve the exact pending record and entitlement'; END IF;
+      END IF;
       v_result := public.issue_dealer_intro_free(v_dealer,v_quote,36,99,v_customer);
       v_customer_id := (v_result->>'customer_id')::uuid;
+      IF v_cycle IN (1,2) AND v_customer_id IS DISTINCT FROM v_pending_id THEN RAISE EXCEPTION 'An eligible unfinished checkout must reuse its customer instead of deleting it'; END IF;
       IF (v_result->>'total')::numeric <> 0 OR (v_result->>'slot')::integer <> v_cycle THEN RAISE EXCEPTION 'Free warranty % must be zero charge in its own slot',v_cycle; END IF;
       IF NOT EXISTS (SELECT 1 FROM public.customers WHERE id=v_customer_id AND final_amount=0
         AND payment_status='paid' AND status='Active' AND payment_verified AND stripe_session_id IS NULL) THEN

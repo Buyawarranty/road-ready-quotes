@@ -3,6 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { displayWarrantyPlanName } from './warrantyPlanDisplay';
 import { getDealerPaymentState } from './dealerPaymentStatus';
 import { pandaLogoUrl } from './pandaLogo';
+import { isFreeDealerWarranty } from './dealerSales';
 
 export interface DealerPdfRow {
   id: string;
@@ -45,7 +46,7 @@ const GREEN: [number, number, number] = [23, 126, 83];
 const RED: [number, number, number] = [185, 54, 54];
 
 export interface DealerInvoiceView {
-  statusLabel: 'PAID IN FULL' | 'PAYMENT PENDING' | 'PAYMENT OVERDUE' | 'AWAITING PAYMENT';
+  statusLabel: 'NO PAYMENT DUE' | 'PAID IN FULL' | 'PAYMENT PENDING' | 'PAYMENT OVERDUE' | 'AWAITING PAYMENT';
   statusTitle: string;
   statusMessage: string;
   paymentMethod: string;
@@ -56,12 +57,14 @@ export interface DealerInvoiceView {
   dueDate: string;
   paidDate: string | null;
   isPaid: boolean;
+  isFree: boolean;
   isOverdue: boolean;
 }
 
 export function getDealerInvoiceView(row: DealerPdfRow, now: Date = new Date()): DealerInvoiceView {
   const payment = getDealerPaymentState(row, now);
   const isPaid = payment.key === 'paid';
+  const isFree = isFreeDealerWarranty(row);
   const total = Number(row.final_amount || 0);
   const sessionId = String(row.stripe_session_id || '').trim();
   const paymentStatus = String(row.payment_status || '').toLowerCase();
@@ -72,25 +75,26 @@ export function getDealerInvoiceView(row: DealerPdfRow, now: Date = new Date()):
     || (!isPaid && paymentStatus === 'invoice_pending' && !!recordedDueDate && recordedDueDate < now);
 
   return {
-    statusLabel: isPaid ? 'PAID IN FULL' : isOverdue ? 'PAYMENT OVERDUE' : payment.key === 'due' ? 'PAYMENT PENDING' : 'AWAITING PAYMENT',
-    statusTitle: isPaid ? 'Paid in full' : isOverdue ? 'Invoice payment overdue' : payment.key === 'due' ? 'Invoice payment pending' : 'Awaiting payment',
-    statusMessage: isPaid
+    statusLabel: isFree ? 'NO PAYMENT DUE' : isPaid ? 'PAID IN FULL' : isOverdue ? 'PAYMENT OVERDUE' : payment.key === 'due' ? 'PAYMENT PENDING' : 'AWAITING PAYMENT',
+    statusTitle: isFree ? 'Free warranty issued' : isPaid ? 'Paid in full' : isOverdue ? 'Invoice payment overdue' : payment.key === 'due' ? 'Invoice payment pending' : 'Awaiting payment',
+    statusMessage: isFree ? 'Warranty issued at no charge. No payment is due.' : isPaid
       ? 'Payment has been received and reconciled. No further payment is due.'
       : isOverdue
         ? 'This invoice is past its due date. Please arrange payment as soon as possible.'
         : payment.key === 'due'
           ? 'Please pay this invoice by the due date through the Dealer Portal Invoicing section.'
           : 'Complete payment through the Dealer Portal to finalise this invoice.',
-    paymentMethod: isPaid
+    paymentMethod: isFree ? 'Free warranty — no payment' : isPaid
       ? sessionId && !sessionId.startsWith('invoice:') ? 'Card payment via Stripe' : isCreditInvoice ? 'Dealer account invoice' : 'Payment confirmed'
       : isCreditInvoice ? '30-day dealer invoice' : 'Online card payment',
     total,
     amountPaid: isPaid ? total : 0,
     balanceDue: isPaid ? 0 : total,
     invoiceDate: fmt(row.signup_date || now.toISOString()),
-    dueDate: dueDate ? fmt(dueDate) : '—',
-    paidDate: row.payment_collected_at ? fmt(row.payment_collected_at) : null,
+    dueDate: !isFree && dueDate ? fmt(dueDate) : '—',
+    paidDate: !isFree && row.payment_collected_at ? fmt(row.payment_collected_at) : null,
     isPaid,
+    isFree,
     isOverdue,
   };
 }
@@ -246,7 +250,7 @@ export function createInvoicePdf(row: DealerPdfRow, dealerName?: string, logoDat
     ...pair('AMOUNT PAID', 'PAYMENT METHOD', money(view.amountPaid), view.paymentMethod),
     section('POLICY DETAILS'),
     ...pair('CLAIM LIMIT', 'VOLUNTARY EXCESS', row.claim_limit ? `${money2(row.claim_limit)} per claim` : '—', money2(row.voluntary_excess)),
-    ...pair('LABOUR RATE', 'PAYMENT STATUS', row.labour_rate ? `${money2(row.labour_rate)} / hour` : '—', view.isPaid ? 'Paid' : 'Outstanding'),
+    ...pair('LABOUR RATE', 'PAYMENT STATUS', row.labour_rate ? `${money2(row.labour_rate)} / hour` : '—', view.isFree ? 'Free — no payment due' : view.isPaid ? 'Paid' : 'Outstanding'),
   ];
   body[1][2] = { content: money(view.total), rowSpan: 2, styles: { halign: 'right', valign: 'middle', fontStyle: 'bold', fontSize: 12, textColor: NAVY } };
 

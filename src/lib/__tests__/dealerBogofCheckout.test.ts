@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import ts from 'typescript';
 import { describe, expect, it, vi } from 'vitest';
-import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError } from '../../../supabase/functions/_shared/dealerCheckoutDuplicate';
+import { normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError, dealerFreeCheckoutReuseError } from '../../../supabase/functions/_shared/dealerCheckoutDuplicate';
+import { waitForDealerFreeNotification } from '../../../supabase/functions/_shared/dealerFreeNotification';
 import { dealerQuoteCheckoutError } from '../../../supabase/functions/_shared/dealerQuoteStatus';
 import { dealerCheckoutState } from '../../../supabase/functions/_shared/dealerCheckoutState';
 
@@ -38,9 +39,9 @@ function checkout(input: { remaining?: number; issueError?: { message: string; c
   const Deno = { env: { get: () => 'isolated-configuration' }, serve: (h: typeof handler) => { handler = h; } };
   const source = readFileSync(new URL('../../../supabase/functions/dealer-create-checkout/index.ts', import.meta.url), 'utf8').replace(/^import .*;\r?\n/gm, '');
   const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
-  new Function('Deno', 'createClient', 'Stripe', 'corsHeaders', 'dealerStripeSecret', 'dealerQuoteCheckoutError', 'dealerCheckoutState', 'normalizeCheckoutEmail', 'normalizeCheckoutPlate', 'dealerCheckoutReuseError', 'displayWarrantyPlanName', 'notifyDealerSale', js)(
+  new Function('Deno', 'createClient', 'Stripe', 'corsHeaders', 'dealerStripeSecret', 'dealerQuoteCheckoutError', 'dealerCheckoutState', 'normalizeCheckoutEmail', 'normalizeCheckoutPlate', 'dealerCheckoutReuseError', 'displayWarrantyPlanName', 'notifyDealerSale', 'dealerFreeCheckoutReuseError', 'waitForDealerFreeNotification', js)(
     Deno, () => client, class { constructor() { stripeCreated(); } }, {}, stripeSecret, dealerQuoteCheckoutError, dealerCheckoutState,
-    normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError, () => 'Platinum', notify,
+    normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError, () => 'Platinum', notify, dealerFreeCheckoutReuseError, waitForDealerFreeNotification,
   );
   if (!handler) throw new Error('Checkout handler not registered');
   const request = async (extra: object = {}) => handler?.(new Request('https://pandaprotect.co.uk/checkout', {
@@ -92,7 +93,7 @@ describe('earned free warranty checkout', () => {
   it('keeps a paid customer and warranty untouched', async () => {
     const t = checkout({ existing: { id: 'settled', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'paid', payment_verified: true } });
     const result = await t.request();
-    expect(result?.status).toBe(500);
+    expect(result?.status).toBe(409);
     expect(t.rpc).not.toHaveBeenCalledWith('issue_dealer_intro_free', expect.anything());
     expect(t.mutations).not.toHaveBeenCalled();
   });
@@ -101,5 +102,40 @@ describe('earned free warranty checkout', () => {
     const result = await t.request();
     expect(result?.status).toBe(200);
     expect(await result?.json()).toMatchObject({ total: 0, email: { sent: false } });
+  });
+  it('an explicit free method returns £0 without card configuration or an invoice', async () => {
+    const t = checkout();
+    const result = await t.request({ payment_method: 'intro_free' });
+    expect(result?.status).toBe(200);
+    expect(await result?.json()).toMatchObject({ method: 'intro_free', total: 0 });
+    expect(t.stripeSecret).not.toHaveBeenCalled();
+    expect(t.stripeCreated).not.toHaveBeenCalled();
+    expect(t.rpc.mock.calls.map(call => call[0])).toEqual(['dealer_bogof_remaining', 'issue_dealer_intro_free']);
+  });
+  it('the free method cannot become a paid checkout when the offer is unavailable', async () => {
+    const t = checkout({ remaining: 0 });
+    const result = await t.request({ payment_method: 'intro_free', expected_free: undefined });
+    expect(result?.status).toBe(409);
+    expect(t.stripeSecret).not.toHaveBeenCalled();
+    expect(t.stripeCreated).not.toHaveBeenCalled();
+    expect(t.mutations).not.toHaveBeenCalled();
+  });
+  it('reuses an earlier owned pending customer atomically without Stripe or destructive separate writes', async () => {
+    const existing = { id: 'pending', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'pending', payment_verified: false, stripe_session_id: null };
+    const t = checkout({ existing });
+    const result = await t.request({ payment_method: 'intro_free' });
+    expect(result?.status).toBe(200);
+    expect(t.rpc).toHaveBeenCalledWith('issue_dealer_intro_free', expect.objectContaining({ p_customer: expect.objectContaining({ _reuse_customer_id: 'pending', _expired_stripe_session_id: null, final_amount: 0 }) }));
+    expect(t.mutations).not.toHaveBeenCalled();
+    expect(t.stripeSecret).not.toHaveBeenCalled();
+    expect(t.stripeCreated).not.toHaveBeenCalled();
+  });
+  it('failure with an earlier pending customer makes no separate changes to that customer', async () => {
+    const existing = { id: 'pending', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'pending', payment_verified: false, stripe_session_id: null };
+    const t = checkout({ existing, issueError: { message: 'Storage failure' } });
+    const result = await t.request({ payment_method: 'intro_free' });
+    expect(result?.status).toBe(500);
+    expect(t.mutations).not.toHaveBeenCalled();
+    expect(t.notify).not.toHaveBeenCalled();
   });
 });

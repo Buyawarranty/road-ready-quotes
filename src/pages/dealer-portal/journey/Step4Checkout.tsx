@@ -9,7 +9,8 @@ import { canProceedToDealerPayment, isAssistedCustomer } from '@/lib/dealerAssis
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { loadStripe } from '@stripe/stripe-js';
+import type { Stripe } from '@stripe/stripe-js';
+import { loadDealerCardStripe } from '@/lib/dealerStripeLoader';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { TradeTermsDialog } from '@/components/dealer/journey/TradeTermsDialog';
@@ -18,7 +19,6 @@ import { dealerRequest } from '@/lib/dealerRequest';
 import { DEALER_INTRO_MAX_MONTHS, DEALER_INTRO_PAID_TARGET } from '../../../../supabase/functions/_shared/dealerIntroOffer';
 
 const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '';
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 import { useToast } from '@/hooks/use-toast';
 import {
   CreditCard,
@@ -74,6 +74,7 @@ const Step4Checkout: React.FC = () => {
   const [method, setMethod] = useState<Method>('pay_now');
   const [submitting, setSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
   const [embeddedPayment, setEmbeddedPayment] = useState<{ customerId: string; sessionId: string } | null>(null);
   const [creditBlocked, setCreditBlocked] = useState(false);
   const [eligibility, setEligibility] = useState<PayLaterEligibility | null>(null);
@@ -195,7 +196,7 @@ const Step4Checkout: React.FC = () => {
       body: {
         quote_id: quoteId,
         dealer_id: dealer.id,
-        payment_method: method,
+        payment_method: introFreeApplied ? 'intro_free' : method,
         vehicle: {
           reg: vehicle.reg,
           make: vehicle.make,
@@ -220,7 +221,7 @@ const Step4Checkout: React.FC = () => {
         promo_code: preview ? promoCode : promo?.code,
         preview_only: preview,
         expected_free: introFreeApplied,
-        embedded: method === 'pay_now' && !!stripePromise && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches),
+        embedded: !introFreeApplied && method === 'pay_now' && !!stripeKey && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches),
       },
     }), 'Checkout is taking longer than expected. Check your warranties and payment status before trying payment again.');
     if (error) throw new Error(await readFnError(error, data, 'Checkout failed'));
@@ -253,14 +254,18 @@ const Step4Checkout: React.FC = () => {
       const data = await createRecord();
 
       if (data?.method === 'intro_free') {
-        if (!data.customer_id) throw new Error('The free warranty could not be confirmed. Open your warranties before trying again.');
+        if (!data.customer_id || data.total !== 0) throw new Error('The free warranty could not be confirmed. Open your warranties before trying again.');
         navigate(`/dealer-portal/quote/confirmation?method=free&id=${data.customer_id}&email=${data.email?.sent ? 'sent' : 'pending'}`);
         return;
       }
 
+      // An earned £0 checkout must never fall through to any payment screen.
+      if (introFreeApplied) throw new Error('The free warranty could not be confirmed. No payment has been started. Open your warranties before trying again.');
+
       if (method === 'pay_now') {
-        if (data?.client_secret && stripePromise) {
+        if (data?.client_secret && stripeKey) {
           if (!data.customer_id || !data.session_id) throw new Error('Payment details are missing. Check your warranties before trying again.');
+          setStripePromise(loadDealerCardStripe(stripeKey));
           setEmbeddedPayment({ customerId: data.customer_id, sessionId: data.session_id });
           setClientSecret(data.client_secret);
           setSubmitting(false);

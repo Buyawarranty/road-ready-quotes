@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice, isPaidDealerPurchase } from '../dealerSales';
+import { dealerSaleAmount, dealerSalePaymentLabel, isCompletedDealerSale, isCountedDealerSale, isOutstandingDealerInvoice, isPaidDealerPurchase, isFreeDealerWarranty } from '../dealerSales';
 
 describe('dealer sales', () => {
+  it('completed £0 cover is free without outstanding payment and never counts as a paid purchase', () => {
+    const free = { final_amount: 0, payment_status: 'paid', status: 'Active', stripe_session_id: null };
+    expect(isFreeDealerWarranty(free)).toBe(true);
+    expect(isOutstandingDealerInvoice(free)).toBe(false);
+    expect(isPaidDealerPurchase(free)).toBe(false);
+    expect(isFreeDealerWarranty({ ...free, final_amount: 99 })).toBe(false);
+    expect(isFreeDealerWarranty({ ...free, final_amount: null })).toBe(false);
+    expect(isFreeDealerWarranty({ ...free, payment_status: 'pending' })).toBe(false);
+  });
   it('counts £99 paid cover as a genuine purchase', () => {
     expect(isPaidDealerPurchase({ final_amount: 99, payment_status: 'paid', status: 'Active' })).toBe(true);
   });
