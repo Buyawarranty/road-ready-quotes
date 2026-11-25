@@ -78,11 +78,12 @@ const Step5Confirmation: React.FC = () => {
 
   useEffect(() => {
     mounted.current = true;
+    if (method === 'free' && !dealer?.id) return () => { mounted.current = false; };
     if (method === 'invoice') { reset(); refreshSaleLists(); }
     else void confirmPayment();
     return () => { mounted.current = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [method, id, sessionId, dealer?.id]);
 
   const isInvoice = method === 'invoice';
   const isFree = method === 'free';
@@ -98,7 +99,7 @@ const Step5Confirmation: React.FC = () => {
           <div className={`mb-4 inline-flex rounded-full p-4 ${confirmed ? 'bg-crm-green-soft text-crm-green-deep' : 'bg-muted text-muted-foreground'}`}>
             {confirmed ? <CheckCircle2 className="h-10 w-10" /> : <Clock3 className="h-10 w-10" />}
           </div>
-          <h2 className="mb-2 text-2xl font-bold text-foreground">{confirmed ? (isFree ? 'Free warranty issued' : 'Warranty issued') : 'Payment confirmation'}</h2>
+          <h2 className="mb-2 text-2xl font-bold text-foreground">{confirmed ? (isFree ? 'Free warranty issued' : 'Warranty issued') : isFree ? 'Free warranty confirmation' : 'Payment confirmation'}</h2>
           <p className="mx-auto mb-6 max-w-md text-muted-foreground">
             {!confirmed ? (confirmError || (isFree ? 'Checking your free warranty…' : 'Checking your payment…')) : emailWarning
               ? 'Your warranty is active, but the confirmation email could not be sent. You can resend it from Dealer warranties.'
