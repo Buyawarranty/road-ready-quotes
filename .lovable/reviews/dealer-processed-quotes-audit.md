@@ -36,3 +36,46 @@ The screenshot quote is already `paid`, has a payment timestamp and an active li
 - Three changed edge functions deployed. Frontend changes require publication.
 - Real signed-in dealer verification is unavailable: this project's externally managed authentication cannot mint a browser session. Isolated checks do not verify the dealer's session. No payment or email was initiated.
 - Existing security warnings were not introduced by this change and are separate from this repair.
+
+## FP14UBL follow-up — 25 November 2026
+
+**Rule:** a processed quote opens its existing warranty everywhere; it has no Resume/delete action and does not count as needing attention. Settled records, permissions and settings remain untouched.
+
+### Read-only record check
+FP14UBL quote `26548b26-ecc9-4d99-b899-dc888d05d35e` is already `paid`, with payment timestamp `2026-11-24T15:56:51.952564Z`, stored step 3, and an existing linked dealer warranty. Its customer currently has Cancelled cover status and a verified payment; this audit did not change either. Quote completion records issuance history, not current cover validity. FP14UPL is also paid and linked, with step 5.
+
+### Current source versus live site
+- Live `DealerQuotesList-Bryp-6s3.js` still contains unconditional Resume/delete actions and a step-only label, without paid-timestamp/progress handling.
+- Live `DealerDashboard-_jYYX_DO.js` still counts draft/pending labels alone and lacks the paid-timestamp-aware attention rule.
+- Live `DealerAnalytics-C4hTfUZa.js` lacks the corrected unfinished-quote classification and focus refresh.
+- Current saved source already fixes all three. Publishing those saved pages is the remaining step; no record correction is appropriate.
+
+### Places re-read in this request
+| Place | Current source follows rule? |
+| --- | --- |
+| Quotes list, delete and resume | Yes: shared status/payment evidence, no settled delete/resume, registration-filtered warranty destination, arrival/focus refresh. Live page is outdated. |
+| Dashboard and `useDealerDashboard` | Yes: paid timestamp is fetched; attention counts and recent-quote destinations use shared progress. Historical Quote created events remain history, not tasks. Live page is outdated. |
+| Dealer analytics | Yes: shared progress counts genuine unfinished quotes only; arrival/focus refresh. Live page is outdated. |
+| Warranties and cancellations | Yes: registration search is honoured, history refreshes, current cover/payment statuses remain separately readable. |
+| Journey storage, pricing, customer details, paused claim-handling, Save & exit | Yes: fresh entry resets; resumed journeys preserve their own ID; draft updates require editable status and no paid timestamp. Save & exit is absent from confirmation. |
+| Legacy quote creation and saved-template reuse | Yes: new quotes are inserts; templates copy configuration, not settled quote identity. |
+| Dealer card/invoice/free checkout | Yes: shared processed-quote guard before writes; card metadata retains quote ID; invoice completion uses common fulfilment; free issuance is atomic. |
+| Customer quote screen/payment-link service | Yes: server checks processed quote before payment; customer screen displays the explanatory refusal. Shared cover previews do not themselves issue or reopen cover. |
+| Dealer quote email | Yes: shared processed-quote guard before sending. |
+| Dealer payment return, embedded checkout and confirmation | Yes: payment verification precedes completion; confirmed sale refreshes related lists; free confirmation checks saved owned cover. |
+| Dealer Stripe background webhook | Yes for this rule: Stripe-read verified session feeds the common finalizer, not the saved journey step. |
+| Shared card finalizer and sale fulfilment | Yes: verification update is conditional; quote ID reaches guarded `complete_dealer_sale`. |
+| Partner checkout and payment return | Yes for this rule: paid customer reuse is refused; partner sales have no dealer quote ID and finish through the same finalizer. |
+| Invoice settlement | Yes: already-paid records return unchanged; genuine invoice settlement completes its linked quote. |
+| Legacy free approval and manual test completion | Yes for this rule: already-processed requests return without a repeat issuance; first completion uses common fulfilment. |
+| Live database `complete_dealer_sale` | Yes: settled quote rows are excluded from updates, cross-customer reuse is rejected, existing warranty rows remain unchanged on repeat completion. |
+| Live database `issue_dealer_intro_free` / `review_dealer_intro_free` | Yes for this rule: issuance rejects processed quotes and completes atomically; legacy review returns already-reviewed records without updates. |
+| Dealer API quote creation/read | Yes: reads stored history and inserts new quotes; no settled quote resume/update operation. |
+| Staff signup activity and portal usage | Yes: count historical usage, not unfinished work; no misleading Resume action. |
+
+### Verification and limits
+- 69 focused Vitest tests and four existing Bun dashboard tests passed.
+- Five isolated browser flows passed at desktop, 393px and 320px: UBL displays Completed with View warranty and no Resume/delete; its button opens `/dealer-portal/warranties?search=FP14UBL`; only a genuine separate draft resumes and counts as needing attention.
+- Browser checks sent no remote database requests and performed no record writes. Current compilation reported success.
+- Real signed-in verification is unavailable because the external backend cannot mint a sandbox session. The live site has not been published in this request; the publication control requires an explicit publish action.
+- No payments, emails, settled records, cover statuses, permissions, settings or example data changed.
