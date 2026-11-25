@@ -6,10 +6,15 @@ import { waitForDealerFreeNotification } from '../../../supabase/functions/_shar
 import { dealerQuoteCheckoutError } from '../../../supabase/functions/_shared/dealerQuoteStatus';
 import { dealerCheckoutState } from '../../../supabase/functions/_shared/dealerCheckoutState';
 
-function checkout(input: { remaining?: number; issueError?: { message: string; code?: string }; existing?: object; emailSent?: boolean } = {}) {
+function checkout(input: { remaining?: number; issueError?: { message: string; code?: string }; existing?: object; emailSent?: boolean; priorSession?: 'open' | 'expired' | 'complete' | 'unknown'; expireResult?: string; isTest?: boolean } = {}) {
   const mutations = vi.fn();
-  const stripeSecret = vi.fn(() => { throw new Error('A free warranty must not request a Stripe key'); });
+  const stripeSecret = vi.fn(() => {
+    if (input.priorSession) return 'isolated-previous-card-key';
+    throw new Error('A free warranty must not request a Stripe key');
+  });
   const stripeCreated = vi.fn();
+  const retrieve = vi.fn(async () => ({ id: 'cs_previous', status: input.priorSession }));
+  const expire = vi.fn(async () => ({ id: 'cs_previous', status: input.expireResult ?? 'expired' }));
   const notify = vi.fn(async () => ({ sent: input.emailSent !== false }));
   const query = (data: unknown) => {
     const q: Record<string, unknown> = {};
@@ -27,7 +32,7 @@ function checkout(input: { remaining?: number; issueError?: { message: string; c
   const client = {
     auth: { getUser: async () => ({ data: { user: { id: 'dealer-user' } }, error: null }) },
     from: (name: string) => {
-      if (name === 'dealers') return query({ id: 'dealer', user_id: 'dealer-user', status: 'active', is_test: false });
+      if (name === 'dealers') return query({ id: 'dealer', user_id: 'dealer-user', status: 'active', is_test: input.isTest === true });
       if (name === 'dealer_quotes') return query({ status: 'draft', paid_at: null });
       if (name === 'dealer_trade_terms_versions') return query(null);
       if (name === 'dealer_trade_terms_acceptances') return query({ dealer_id: 'dealer' });
@@ -40,7 +45,7 @@ function checkout(input: { remaining?: number; issueError?: { message: string; c
   const source = readFileSync(new URL('../../../supabase/functions/dealer-create-checkout/index.ts', import.meta.url), 'utf8').replace(/^import .*;\r?\n/gm, '');
   const js = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.None } }).outputText;
   new Function('Deno', 'createClient', 'Stripe', 'corsHeaders', 'dealerStripeSecret', 'dealerQuoteCheckoutError', 'dealerCheckoutState', 'normalizeCheckoutEmail', 'normalizeCheckoutPlate', 'dealerCheckoutReuseError', 'displayWarrantyPlanName', 'notifyDealerSale', 'dealerFreeCheckoutReuseError', 'waitForDealerFreeNotification', js)(
-    Deno, () => client, class { constructor() { stripeCreated(); } }, {}, stripeSecret, dealerQuoteCheckoutError, dealerCheckoutState,
+    Deno, () => client, class { checkout = { sessions: { retrieve, expire } }; constructor() { stripeCreated(); } }, {}, stripeSecret, dealerQuoteCheckoutError, dealerCheckoutState,
     normalizeCheckoutEmail, normalizeCheckoutPlate, dealerCheckoutReuseError, () => 'Platinum', notify, dealerFreeCheckoutReuseError, waitForDealerFreeNotification,
   );
   if (!handler) throw new Error('Checkout handler not registered');
@@ -50,7 +55,7 @@ function checkout(input: { remaining?: number; issueError?: { message: string; c
       vehicle: { reg: 'BGF 100A' }, customer: { name: 'Test Buyer', email: 'buyer@example.test', postcode: 'SW1A 1AA' },
       plan: { plan_type: 'gold', duration_months: 12, dealer_price: 99, retail_price: 599 }, ...extra }),
   }));
-  return { request, rpc, notify, stripeCreated, stripeSecret, mutations };
+  return { request, rpc, notify, stripeCreated, stripeSecret, mutations, retrieve, expire };
 }
 
 describe('earned free warranty checkout', () => {
@@ -137,5 +142,36 @@ describe('earned free warranty checkout', () => {
     expect(result?.status).toBe(500);
     expect(t.mutations).not.toHaveBeenCalled();
     expect(t.notify).not.toHaveBeenCalled();
+  });
+  it('test dealers also activate free cover without a test Stripe key', async () => {
+    const t = checkout({ isTest: true });
+    expect((await t.request({ payment_method: 'intro_free' }))?.status).toBe(200);
+    expect(t.stripeSecret).not.toHaveBeenCalled();
+    expect(t.stripeCreated).not.toHaveBeenCalled();
+  });
+  it('safely closes an earlier open card session without creating or charging another one', async () => {
+    const existing = { id: 'pending', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'pending', payment_verified: false, stripe_session_id: 'cs_previous' };
+    const t = checkout({ existing, priorSession: 'open' });
+    expect((await t.request({ payment_method: 'intro_free' }))?.status).toBe(200);
+    expect(t.retrieve).toHaveBeenCalledWith('cs_previous');
+    expect(t.expire).toHaveBeenCalledWith('cs_previous');
+    expect(t.rpc).toHaveBeenCalledWith('issue_dealer_intro_free', expect.objectContaining({ p_customer: expect.objectContaining({ _reuse_customer_id: 'pending', _expired_stripe_session_id: 'cs_previous', final_amount: 0 }) }));
+    expect(t.mutations).not.toHaveBeenCalled();
+  });
+  it.each(['complete', 'unknown'] as const)('preserves an earlier %s card checkout without free issuance', async priorSession => {
+    const existing = { id: 'pending', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'pending', payment_verified: false, stripe_session_id: 'cs_previous' };
+    const t = checkout({ existing, priorSession });
+    expect((await t.request({ payment_method: 'intro_free' }))?.status).toBe(409);
+    expect(t.rpc).not.toHaveBeenCalledWith('issue_dealer_intro_free', expect.anything());
+    expect(t.mutations).not.toHaveBeenCalled();
+    expect(t.expire).not.toHaveBeenCalled();
+    expect(t.notify).not.toHaveBeenCalled();
+  });
+  it('does not reuse an earlier session if closing it did not confirm expiration', async () => {
+    const existing = { id: 'pending', email: 'buyer@example.test', registration_plate: 'BGF100A', dealer_id: 'dealer', brand: 'pandaprotect', purchase_source: 'dealer', payment_status: 'pending', payment_verified: false, stripe_session_id: 'cs_previous' };
+    const t = checkout({ existing, priorSession: 'open', expireResult: 'open' });
+    expect((await t.request({ payment_method: 'intro_free' }))?.status).toBe(409);
+    expect(t.rpc).not.toHaveBeenCalledWith('issue_dealer_intro_free', expect.anything());
+    expect(t.mutations).not.toHaveBeenCalled();
   });
 });

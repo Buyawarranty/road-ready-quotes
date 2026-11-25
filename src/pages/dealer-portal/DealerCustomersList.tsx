@@ -27,6 +27,7 @@ import {
 } from '@/lib/dealerCustomerFilters';
 import { useDealerAuth } from '@/hooks/useDealerAuth';
 import { downloadInvoicePdf, type DealerPdfRow } from '@/lib/dealerPdf';
+import { isFreeDealerWarranty } from '@/lib/dealerSales';
 import { cn } from '@/lib/utils';
 import platinumPlanDoc from '@/assets/panda-protect-platinum-warranty-plan.pdf.asset.json';
 import termsDoc from '@/assets/panda-protect-terms-and-conditions.pdf.asset.json';
@@ -453,7 +454,7 @@ const CustomerDetailDrawer = ({
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 <OverviewBlock label="Warranty" value={planLabel(customer.plan_type)} />
                 <OverviewBlock label="Vehicle" value={vehicle} />
-                <OverviewBlock label="Payment" value={paymentDue ? 'Overdue' : 'Paid'} tone={paymentDue ? 'amber' : 'default'} />
+                <OverviewBlock label="Payment" value={isFreeDealerWarranty(customer) ? 'Free · no payment' : paymentDue ? 'Overdue' : 'Paid'} tone={paymentDue ? 'amber' : 'default'} />
                 <OverviewBlock label="Expiry" value={formatDate(endDate)} />
               </div>
 
@@ -505,7 +506,7 @@ const CustomerDetailDrawer = ({
 
               <DetailSection title="Payment">
                 <dl className="divide-y divide-gray-100">
-                  <DetailRow label="Status" value={<Badge className={cn('border font-bold', paymentBadgeClass(customer))}>{paymentDue ? 'Overdue' : 'Paid'}</Badge>} />
+                  <DetailRow label="Status" value={<Badge className={cn('border font-bold', paymentBadgeClass(customer))}>{isFreeDealerWarranty(customer) ? 'Free · no payment' : paymentDue ? 'Overdue' : 'Paid'}</Badge>} />
                   <DetailRow label={paymentDue ? 'Amount due' : 'Price'} value={formatMoney(customer.final_amount)} />
                   <DetailRow label="Invoice" value={invoiceRef(customer.id)} />
                   {paymentDue ? (
@@ -902,7 +903,7 @@ const DealerCustomersList = () => {
                       <td className="px-4 py-3">
                         <Badge className={cn('border font-bold', paymentBadgeClass(customer))}>
                           {paymentDue ? <AlertTriangle className="mr-1 h-3.5 w-3.5" /> : <CheckCircle2 className="mr-1 h-3.5 w-3.5" />}
-                          {paymentDue ? 'Payment due' : 'Paid'}
+                          {isFreeDealerWarranty(customer) ? 'Free · no payment' : paymentDue ? 'Payment due' : 'Paid'}
                         </Badge>
                       </td>
                       <td className="px-4 py-3"><Badge className={cn('border font-bold', warrantyBadgeClass(status))}>{status}</Badge></td>
