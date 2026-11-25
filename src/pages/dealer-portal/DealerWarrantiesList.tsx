@@ -131,7 +131,7 @@ function StatCard({ icon: Icon, label, value, green = false, sub }: { icon: Luci
       </div>
       <div className="min-w-0">
         <p className="text-xs font-medium text-muted-foreground sm:text-base">{label}</p>
-        <p className={`mt-1 whitespace-nowrap text-xl font-extrabold tracking-tight sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
+        <p className={`mt-1 break-words text-xl font-extrabold sm:text-3xl ${green ? 'text-crm-green-deep' : 'text-crm-navy'}`}>{value}</p>
       </div>
     </div>
   );
@@ -563,7 +563,7 @@ const DealerWarrantiesList = () => {
     <div className="space-y-3 p-3 2xl:hidden">
       {data.map((row) => (
         <article key={row.id} className="rounded-2xl border-2 border-crm-line/70 bg-card p-4 shadow-sm">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" />
               <p className="mt-2 text-sm text-muted-foreground">{dealerVehicleSummary(row)}</p>
@@ -578,7 +578,7 @@ const DealerWarrantiesList = () => {
           <div className="mt-4 border-t border-crm-line pt-4">
             <p className="font-bold text-crm-navy">{coverName(row)}</p>
             <p className="mt-1 text-sm text-muted-foreground">Product {productName(row)} · {row.payment_type ? `${row.payment_type} months` : '—'} · Claim limit {wholeMoney(row.claim_limit)}</p>
-            <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
+            <dl className="mt-3 grid grid-cols-1 gap-2 text-xs min-[420px]:grid-cols-3">
               <div><dt className="text-muted-foreground">Activation</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(activationDate(row))}</dd></div>
               <div><dt className="text-muted-foreground">Inception</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(row.warranty_start_date || row.signup_date)}</dd></div>
               <div><dt className="text-muted-foreground">Expiry</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(computeEnd(row))}</dd></div>
@@ -659,7 +659,7 @@ const DealerWarrantiesList = () => {
                 aria-label={`Select invoice ${ref(row.id)}`}
               />
               <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
                   <div><DealerRegistrationPlate registration={row.registration_plate} slim className="w-36" /><p className="mt-2 text-sm text-muted-foreground">{row.name || '—'}</p></div>
                   <p className="font-extrabold text-crm-navy">{money(row.final_amount)}</p>
                 </div>
@@ -669,10 +669,10 @@ const DealerWarrantiesList = () => {
                   <div><dt className="text-muted-foreground">Issued</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(row.signup_date)}</dd></div>
                   <div><dt className="text-muted-foreground">Payment due</dt><dd className="mt-1 font-semibold text-crm-navy">{fmt(getDealerPaymentState(row).dueDate?.toISOString())}</dd></div>
                 </dl>
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="mt-4 grid grid-cols-1 gap-2 min-[420px]:grid-cols-2">
                   <Button variant="outline" className="rounded-xl" onClick={() => downloadInvoicePdf(row, dealer?.name)}><Download className="mr-2 h-4 w-4" />Invoice</Button>
                   <Button asChild variant="outline" className="rounded-xl"><a href={platinumPlanDoc.url} download="Panda-Protect-Platinum-Warranty-Plan.pdf"><ShieldCheck className="mr-2 h-4 w-4" />Warranty plan</a></Button>
-                  <Button asChild variant="outline" className="col-span-2 rounded-xl"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4" />Terms & Conditions</a></Button>
+                  <Button asChild variant="outline" className="rounded-xl min-[420px]:col-span-2"><a href={termsDoc.url} download="Panda-Protect-Terms-and-Conditions.pdf"><FileText className="mr-2 h-4 w-4" />Terms & Conditions</a></Button>
                 </div>
               </div>
             </div>

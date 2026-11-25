@@ -83,7 +83,7 @@ const PartnerCheckout: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Helmet><title>Panda Protect warranty checkout</title><meta name="robots" content="noindex" /></Helmet>
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
+        <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <img src={pandaLogoUrl} alt="Panda Protect" className="h-9 w-auto" />
           <span className="flex items-center gap-1 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> Secure checkout</span>
         </div>
@@ -126,11 +126,11 @@ const PartnerCheckout: React.FC = () => {
                 </button>
               ))}
             </div>
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground"><ShieldCheck className="h-4 w-4" /> Up to {gbp(info.cover.claim)} per eligible claim · {gbp(info.cover.excess)} excess · {gbp(info.cover.labour)}/hour labour</p>
+            <p className="flex items-start gap-1.5 text-sm text-muted-foreground"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" /><span className="min-w-0">Up to {gbp(info.cover.claim)} per eligible claim · {gbp(info.cover.excess)} excess · {gbp(info.cover.labour)}/hour labour</span></p>
             {term?.boost_price != null && info.cover.boost_claim && (
               <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3">
-                <Checkbox checked={boost} onCheckedChange={(v) => setBoost(v === true)} />
-                <Zap className="h-4 w-4 text-primary" />
+                <Checkbox checked={boost} onCheckedChange={(v) => setBoost(v === true)} className="shrink-0" />
+                <Zap className="h-4 w-4 shrink-0 text-primary" />
                 <span className="text-sm">Boost claims to {gbp(info.cover.boost_claim)} for {gbp(term.boost_price)}</span>
               </label>
             )}
@@ -141,12 +141,12 @@ const PartnerCheckout: React.FC = () => {
             {field('name', 'Full name')}
             <div className="grid gap-3 sm:grid-cols-2">{field('email', 'Email', 'email')}{field('phone', 'Mobile number', 'tel')}</div>
             {field('address_line1', 'Address')}
-            <div className="grid grid-cols-2 gap-3">{field('town', 'Town')}{field('postcode', 'Postcode')}</div>
+            <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2">{field('town', 'Town')}{field('postcode', 'Postcode')}</div>
           </section>
 
           <section className="space-y-3 rounded-xl border border-border p-4">
             <label className="flex items-start gap-3 text-sm">
-              <Checkbox checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5" />
+              <Checkbox checked={agree} onCheckedChange={(v) => setAgree(v === true)} className="mt-0.5 shrink-0" />
               <span>I have read the <a href="/what-is-covered/" target="_blank" rel="noopener" className="font-semibold underline">cover details</a> and <a href="/terms/" target="_blank" rel="noopener" className="font-semibold underline">terms and conditions</a>.</span>
             </label>
             {error && <p role="alert" className="text-sm font-bold text-destructive">{error}</p>}

@@ -3160,9 +3160,9 @@ img, video { height: auto; }
   /* Stop iOS auto-zoom: inputs must render at 16px minimum */
   input, select, textarea { font-size: 16px !important; }
 
-  /* Wide data tables (portal lists) scroll sideways instead of breaking the page */
-  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table thead, table tbody { display: table; min-width: 560px; }
+  /* Table wrappers own horizontal scrolling. Preserve one shared column grid
+     so headings stay aligned with rows and compact detail tables remain narrow. */
+  table { border-collapse: collapse; }
 
   /* Comfortable tap targets */
   button, [role="button"], a[role="button"] { touch-action: manipulation; }

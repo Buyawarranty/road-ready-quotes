@@ -87,7 +87,7 @@ export default function DealerDashboard() {
         {kpiSeries.map(item => {
           const change = monthChange(events.filter(event => event.series === item.key).map(event => event.date));
           const Trend = change !== null && change < 0 ? TrendingDown : TrendingUp;
-          return <Button key={item.key} variant="outline" onClick={() => navigate(routes[item.key])} className={`${panel} h-auto justify-start gap-3 whitespace-normal p-3 text-left hover:border-crm-orange hover:bg-card sm:p-4`}>
+          return <Button key={item.key} variant="outline" onClick={() => navigate(routes[item.key])} className={`${panel} h-auto flex-col items-start justify-start gap-3 whitespace-normal p-3 text-left hover:border-crm-orange hover:bg-card min-[420px]:flex-row min-[420px]:items-center sm:p-4`}>
             <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${item.tone}`}><item.icon className="h-6 w-6" /></span>
             <span className="min-w-0 flex-1"><span className="block text-xs font-normal text-muted-foreground">{item.label}</span><span className="block text-2xl font-bold leading-tight">{isPending || isError ? '—' : counts[item.key]}</span><span className="mt-1 block text-[10px] font-normal text-muted-foreground">{change !== null && <span className={change < 0 ? 'text-crm-red' : 'text-crm-green'}><Trend className="mr-1 inline h-3 w-3" />{change > 0 ? '+' : ''}{change}% </span>}{change === null ? 'This dealership' : 'vs last month'}</span></span>
             <ChevronRight className="hidden h-4 w-4 shrink-0 text-muted-foreground sm:block" />

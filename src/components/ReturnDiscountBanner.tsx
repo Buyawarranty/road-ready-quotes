@@ -132,10 +132,10 @@ export const ReturnDiscountBanner: React.FC<ReturnDiscountBannerProps> = ({
   // Full banner view
   return (
     <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 relative animate-in slide-in-from-top duration-500 shadow-lg">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center gap-3 flex-1">
+      <div className="mx-auto flex max-w-7xl flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
           <Gift className="h-8 w-8 flex-shrink-0" />
-          <div>
+          <div className="min-w-0">
             <p className="font-bold text-lg">Got Another Vehicle?</p>
             <p className="text-sm text-orange-100">
               Enjoy 20% off your next warranty — offer ends in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}.
@@ -144,19 +144,19 @@ export const ReturnDiscountBanner: React.FC<ReturnDiscountBannerProps> = ({
               Cannot be used with other offers or for the same vehicle.
             </p>
             {discountCode && (
-              <p className="text-xs text-orange-100 mt-1">
+              <p className="mt-1 break-all text-xs text-primary-foreground">
                 Code: <span className="font-mono font-semibold">{discountCode}</span>
               </p>
             )}
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Button
             onClick={handleGetDiscount}
             variant="secondary"
             size="sm"
-            className="bg-white text-orange-600 hover:bg-orange-50 font-semibold"
+            className="min-h-11 flex-1 bg-card font-semibold text-primary hover:bg-muted sm:flex-none"
           >
             Buy Now
           </Button>

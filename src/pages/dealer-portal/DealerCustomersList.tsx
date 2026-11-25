@@ -245,9 +245,9 @@ const claimStatusClass = (label: string) => {
 };
 
 const DetailRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-  <div className="grid grid-cols-[130px_minmax(0,1fr)] gap-4 py-2 text-sm">
+  <div className="grid min-w-0 grid-cols-1 gap-1 py-2 text-sm min-[420px]:grid-cols-[110px_minmax(0,1fr)] min-[420px]:gap-4 sm:grid-cols-[130px_minmax(0,1fr)]">
     <dt className="text-gray-500">{label}</dt>
-    <dd className="min-w-0 font-semibold text-gray-900 break-words">{value || '—'}</dd>
+    <dd className="min-w-0 break-words font-semibold text-foreground [overflow-wrap:anywhere]">{value || '—'}</dd>
   </div>
 );
 
@@ -261,7 +261,7 @@ const DetailSection = ({
   children: React.ReactNode;
 }) => (
   <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-    <div className="mb-3 flex items-center justify-between gap-3">
+    <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
       <h3 className="text-sm font-extrabold text-gray-900">{title}</h3>
       {action}
     </div>
@@ -291,7 +291,7 @@ const OverviewBlock = ({
 }) => (
   <div className={cn('rounded-lg border p-3', tone === 'amber' ? 'border-amber-200 bg-amber-50' : 'border-gray-200 bg-gray-50')}>
     <p className={cn('text-[11px] font-semibold uppercase tracking-wide', tone === 'amber' ? 'text-amber-700' : 'text-gray-500')}>{label}</p>
-    <p className="mt-1 truncate text-sm font-extrabold text-gray-900">{value}</p>
+    <p className="mt-1 break-words text-sm font-extrabold text-foreground">{value}</p>
   </div>
 );
 
@@ -382,10 +382,10 @@ const CustomerDetailDrawer = ({
         <ScrollArea className="h-full">
           <div className="flex min-h-screen flex-col bg-white sm:min-h-full">
             <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
-              <div className="flex items-start justify-between gap-4 pr-8">
+              <div className="flex flex-wrap items-start justify-between gap-3 pr-8">
                 <div className="min-w-0">
                   <p className="text-xs font-bold tracking-[0.2em] text-crm-orange">CUSTOMER</p>
-                  <h2 className="mt-1 truncate text-2xl font-black text-crm-navy">{name}</h2>
+                  <h2 className="mt-1 break-words text-xl font-black text-crm-navy sm:text-2xl">{name}</h2>
                   <p className="mt-1 text-sm font-medium text-gray-500">
                     {vehicle} · <span className="font-mono uppercase">{displayReg(customer.registration_plate)}</span>
                   </p>
@@ -752,9 +752,9 @@ const DealerCustomersList = () => {
 
   return (
     <DealerLayout>
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto min-w-0 max-w-7xl py-3 sm:py-8">
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
+          <div className="text-center sm:text-left">
             <p className="text-xs font-bold tracking-[0.28em] text-crm-orange">CUSTOMERS</p>
             <h1 className="mt-1 text-3xl font-black text-crm-navy sm:text-4xl">Customers</h1>
             <p className="mt-1 text-base text-gray-600">View and manage your customer warranties.</p>
@@ -840,7 +840,35 @@ const DealerCustomersList = () => {
         </div>
 
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
+          <div className="space-y-3 p-3 lg:hidden">
+            {isLoading ? <p role="status" className="py-8 text-center text-sm text-muted-foreground">Loading customers…</p> : visible.length === 0 ? (
+              <div className="space-y-3 py-8 text-center text-sm text-muted-foreground">
+                <p>{filtersActive ? 'No customers match these filters.' : 'No customers found.'}</p>
+                {filtersActive && <Button variant="outline" onClick={showAllCustomers}>Show all customers</Button>}
+              </div>
+            ) : visible.map(customer => {
+              const status = getWarrantyStatus(customer);
+              return <article key={customer.id} className="min-w-0 space-y-3 rounded-lg border border-crm-line bg-card p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <RegistrationPlate value={customer.registration_plate} />
+                  <Badge className={cn('border font-bold', warrantyBadgeClass(status))}>{status}</Badge>
+                </div>
+                <div className="min-w-0 space-y-1">
+                  <h2 className="break-words text-base font-bold text-crm-navy">{getCustomerName(customer)}</h2>
+                  <p className="break-all text-sm text-muted-foreground">{customer.email || '—'}</p>
+                  <p className="text-sm text-muted-foreground">{customer.phone || '—'}</p>
+                  <p className="break-words text-sm font-semibold text-crm-navy">{getVehicleName(customer)}</p>
+                </div>
+                <dl className="grid grid-cols-1 gap-2 text-sm min-[420px]:grid-cols-2">
+                  <div><dt className="text-xs text-muted-foreground">Warranty</dt><dd className="font-semibold text-crm-navy">{planLabel(customer.plan_type)}</dd></div>
+                  <div><dt className="text-xs text-muted-foreground">Expiry</dt><dd className="font-semibold text-crm-navy">{formatDate(getEndDate(customer))}</dd></div>
+                </dl>
+                <Badge className={cn('border font-bold', paymentBadgeClass(customer))}>{isFreeDealerWarranty(customer) ? 'Free · no payment' : isPaymentDue(customer) ? 'Payment due' : 'Paid'}</Badge>
+                <Button variant="outline" className="min-h-11 w-full" onClick={() => setSelectedCustomer(customer)}><Eye className="mr-2 h-4 w-4" />View customer</Button>
+              </article>;
+            })}
+          </div>
+          <div className="hidden max-w-full overflow-x-auto overscroll-x-contain lg:block">
             <table className="w-full min-w-[1120px] text-sm">
               <thead className="border-b border-gray-200 bg-gray-50 text-xs text-crm-navy">
                 <tr>
@@ -952,7 +980,7 @@ const DealerCustomersList = () => {
             <span>
               Showing {filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length.toLocaleString('en-GB')} customers
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button variant="outline" size="icon" disabled={safePage === 1} onClick={() => setPage(1)}><ChevronsLeft className="h-4 w-4" /></Button>
               <Button variant="outline" size="icon" disabled={safePage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}><ChevronLeft className="h-4 w-4" /></Button>
               <span className="rounded-md bg-crm-orange px-3 py-2 font-bold text-white">{safePage}</span>

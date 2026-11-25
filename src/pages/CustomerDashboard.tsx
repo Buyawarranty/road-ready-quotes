@@ -1132,7 +1132,7 @@ const CustomerDashboard = () => {
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 sm:py-6 gap-4">
-            <div className="flex items-center">
+            <div className="flex min-w-0 flex-wrap items-center gap-y-2">
               <img 
                 src="/lovable-uploads/9b53da8c-70f3-4fc2-8497-e1958a650b4a.png" 
                 alt="Panda Protect" 
@@ -1140,11 +1140,11 @@ const CustomerDashboard = () => {
               />
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Customer Dashboard</h1>
             </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+            <div className="flex min-w-0 max-w-full flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4">
               <div className="hidden sm:block">
                 <TrustpilotHeader />
               </div>
-              <span className="text-xs sm:text-sm text-gray-600">Welcome, {user?.email}</span>
+              <span className="max-w-full break-all text-xs sm:text-sm text-muted-foreground">Welcome, {user?.email}</span>
               <NotificationBell
                 notifications={notifications}
                 unreadCount={unreadCount}
@@ -1207,7 +1207,7 @@ const CustomerDashboard = () => {
           <Alert className="mb-6 border-orange-200 bg-orange-50">
             <AlertCircle className="h-4 w-4 text-orange-600" />
             <AlertDescription className="text-orange-800">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <strong>Your warranty expires soon!</strong> Renew now and get 10% off your next policy.
                   {renewalDiscount && (
@@ -1276,8 +1276,8 @@ const CustomerDashboard = () => {
                 <div className="lg:col-span-2 space-y-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center justify-between text-lg">
-                        <span className="flex items-center">
+                      <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-lg">
+                        <span className="flex min-w-0 items-center">
                           <FileText className="mr-2 h-5 w-5" />
                           {policies.length > 1 ? 'Your Warranties' : 'Your Active Policy'}
                         </span>
@@ -1318,12 +1318,12 @@ const CustomerDashboard = () => {
                                         : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/50'
                                     }`}
                                   >
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-3">
-                                        <span className="inline-block bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded">
+                                    <div className="flex flex-wrap items-start justify-between gap-2">
+                                      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+                                        <span className="inline-block shrink-0 bg-yellow-400 text-black font-bold text-xs px-2 py-1 rounded">
                                           {vehicleReg}
                                         </span>
-                                        <span className="font-medium text-sm text-gray-900">{vehicleName}</span>
+                                        <span className="min-w-0 break-words font-medium text-sm text-foreground">{vehicleName}</span>
                                       </div>
                                       {isSelected && (
                                         <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-medium">Viewing</span>
@@ -1354,7 +1354,7 @@ const CustomerDashboard = () => {
                               </div>
                               <div className="text-center">
                                 <Label className="text-xs font-medium text-blue-700 uppercase tracking-wide">Warranty Reference</Label>
-                                <p className="text-lg font-bold text-blue-900 mt-1 font-mono">
+                                <p className="mt-1 break-all font-mono text-lg font-bold text-blue-900">
                                   {selectedPolicy?.warranty_number || customerData?.warranty_reference_number || selectedPolicy?.policy_number}
                                 </p>
                               </div>
