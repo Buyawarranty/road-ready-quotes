@@ -7,7 +7,10 @@ BEGIN
   SELECT to_jsonb(q) INTO v_quote FROM public.dealer_quotes q WHERE id = '26548b26-ecc9-4d99-b899-dc888d05d35e';
   SELECT to_jsonb(p) INTO v_before FROM public.customer_policies p WHERE customer_id = 'eb38aa3a-6ae9-4132-b09d-be2fcde00dc6';
   v_id := public.ensure_dealer_customer_portal_policy('eb38aa3a-6ae9-4132-b09d-be2fcde00dc6');
-  SELECT to_jsonb(p) INTO v_policy FROM public.customer_policies p WHERE id = v_id;
+  IF lower(v_customer->>'status') IN ('cancelled', 'refunded', 'expired') AND v_id IS NOT NULL THEN
+    RAISE EXCEPTION 'Recovery cannot issue cover for a terminal sale';
+  END IF;
+  SELECT to_jsonb(p) INTO v_policy FROM public.customer_policies p WHERE customer_id = 'eb38aa3a-6ae9-4132-b09d-be2fcde00dc6';
   IF v_policy IS NULL OR v_policy->>'warranty_number' <> 'PP-2611-402020' THEN RAISE EXCEPTION 'Confirmed warranty must be available in the portal'; END IF;
   IF v_policy->>'user_id' <> '9bc7af00-bfbe-458c-bf6f-46f508f11ef3' THEN RAISE EXCEPTION 'Policy must belong to its customer login'; END IF;
   IF (v_policy->>'policy_start_date')::timestamptz <> '2026-11-24T00:00:00Z'::timestamptz
